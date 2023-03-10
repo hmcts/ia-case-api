@@ -50,6 +50,7 @@ def secrets = [
         secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
         secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
         secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+        secret('docmosis-access-key', 'DOCMOSIS_ACCESS_KEY'),
         secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),

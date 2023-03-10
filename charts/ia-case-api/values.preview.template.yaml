@@ -8,7 +8,7 @@ java:
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
-    IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
+    IA_CASE_DOCUMENTS_API_URL: "http://{{ .Release.Name }}-case-documents-api"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "false"
@@ -69,15 +69,60 @@ ia-case-payments-api:
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ia-payments-api-${SERVICE_FQDN}
+    disableTraefikTls: true
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
+      PAY_CALLBACK_URL: http://ia-payments-api-${SERVICE_FQDN}/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
+ia-case-documents-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    releaseNameOverride: ${SERVICE_NAME}-case-documents-api
+    ingressHost: ia-documents-api-${SERVICE_FQDN}
+    environment:
+      DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
+      #DOCMOSIS_ACCESS_KEY: #Should be set in secrets
+#      DOCMOSIS_RENDER_URL: /rs/render #Should be auto set in documents-api if not present
+#      DOCMOSIS_STATUS_URL: /rs/status
+#      DOCMOSIS_CONVERT_URL: /rs/convert
+      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_BUNDLER_URL: http://em-ccd-orchestrator-aat.service.core-compute-aat.internal
+      EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+
+ia-case-notifications-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
+    ingressHost: ia-notifications-api-${SERVICE_FQDN}
+    environment:
+      IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
+      IA_GOV_NOTIFY_KEY: "test_key-7f72d0fb-2bc4-421b-bceb-1bf5bf350ff9-3df5a74b-f25b-4052-b00f-3f71d33cd0eb"
+      IA_BAIL_GOV_NOTIFY_KEY: "testkey-b9593914-99e1-484e-ad63-a51d7b4c164f-b817a2e5-7a30-4938-98f0-6099110c2879"
+      IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
