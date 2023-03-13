@@ -99,14 +99,6 @@ public class MakeAnApplicationTypesProvider {
 
             case PENDING_PAYMENT:
             case AWAITING_RESPONDENT_EVIDENCE:
-
-                hasInternalAdaRequirements(asylumCase);
-                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
-                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
-                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(OTHER.name(), OTHER.toString()));
-                break;
-
             case CASE_BUILDING:
             case AWAITING_REASONS_FOR_APPEAL:
             case AWAITING_CLARIFYING_QUESTIONS_ANSWERS:
@@ -116,7 +108,9 @@ public class MakeAnApplicationTypesProvider {
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
 
-                hasInternalAdaRequirements(asylumCase);
+                if (currentState == AWAITING_RESPONDENT_EVIDENCE) {
+                    hasInternalAdaRequirements(asylumCase);
+                }
 
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
