@@ -1,7 +1,7 @@
 java:
   # Don't modify below here
   image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_FQDN}
+  ingressHost: ${SERVICE_NAME}.preview.platform.hmcts.net
   environment:
     POSTGRES_HOST: ${SERVICE_NAME}-postgresql
     POSTGRES_NAME: ia-case-api
@@ -12,7 +12,7 @@ java:
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "false"
-    IA_CASE_PAYMENTS_API_URL: "http://{{ .Release.Name }}-case-payments-api"
+    IA_CASE_PAYMENTS_API_URL: "https://${{SERVICE_NAME}}-payments-api.preview.platform.hmcts.net"
     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
@@ -68,14 +68,14 @@ ia-case-payments-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
-    ingressHost: ia-payments-api-${SERVICE_FQDN}
+    ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      PAY_CALLBACK_URL: http://ia-payments-api-${SERVICE_FQDN}/service-request-update
+      PAY_CALLBACK_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
