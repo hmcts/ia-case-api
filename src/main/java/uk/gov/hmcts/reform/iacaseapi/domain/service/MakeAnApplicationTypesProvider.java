@@ -42,6 +42,7 @@ public class MakeAnApplicationTypesProvider {
     private static final List<String> HO_ROLES = List.of(ROLE_HO_APC, ROLE_HO_LART, ROLE_HO_POU, ROLE_HO_RESPONDENT);
 
     private final UserDetails userDetails;
+    final List<Value> values = new ArrayList<>();
 
     public MakeAnApplicationTypesProvider(
         UserDetails userDetails
@@ -59,7 +60,8 @@ public class MakeAnApplicationTypesProvider {
             .stream().anyMatch(HO_ROLES::contains);
 
         DynamicList dynamicList;
-        final List<Value> values = new ArrayList<>();
+        values.clear();
+
         switch (currentState) {
             case APPEAL_SUBMITTED:
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -97,6 +99,14 @@ public class MakeAnApplicationTypesProvider {
 
             case PENDING_PAYMENT:
             case AWAITING_RESPONDENT_EVIDENCE:
+
+                hasInternalAdaRequirements(asylumCase);
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                break;
+
             case CASE_BUILDING:
             case AWAITING_REASONS_FOR_APPEAL:
             case AWAITING_CLARIFYING_QUESTIONS_ANSWERS:
@@ -106,19 +116,7 @@ public class MakeAnApplicationTypesProvider {
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
 
-                if (currentState == AWAITING_RESPONDENT_EVIDENCE
-                    && hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)) {
-
-                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
-                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
-
-                    if (hasSubmittedHearingRequirements(asylumCase)) {
-                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                            UPDATE_HEARING_REQUIREMENTS.toString()));
-                    }
-                }
+                hasInternalAdaRequirements(asylumCase);
 
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
@@ -139,14 +137,6 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
-                if (hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
-                }
-
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
@@ -155,6 +145,9 @@ public class MakeAnApplicationTypesProvider {
 
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
+
+                hasInternalAdaRequirements(asylumCase);
+
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
@@ -164,14 +157,6 @@ public class MakeAnApplicationTypesProvider {
                 if (hasRole(ROLE_LEGAL_REP)) {
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
                         UPDATE_APPEAL_DETAILS.toString()));
-                }
-
-                if (hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
                 }
 
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
@@ -180,6 +165,9 @@ public class MakeAnApplicationTypesProvider {
                 break;
 
             case FINAL_BUNDLING:
+
+                hasInternalAdaRequirements(asylumCase);
+
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
@@ -200,14 +188,6 @@ public class MakeAnApplicationTypesProvider {
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     }
-                }
-
-                if (hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
                 }
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
@@ -216,6 +196,9 @@ public class MakeAnApplicationTypesProvider {
                 break;
 
             case LISTING:
+
+                hasInternalAdaRequirements(asylumCase);
+
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
@@ -236,14 +219,6 @@ public class MakeAnApplicationTypesProvider {
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     }
-                }
-
-                if (hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
                 }
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
@@ -254,6 +229,9 @@ public class MakeAnApplicationTypesProvider {
             case PREPARE_FOR_HEARING:
             case PRE_HEARING:
             case DECISION:
+
+                hasInternalAdaRequirements(asylumCase);
+
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
@@ -275,14 +253,6 @@ public class MakeAnApplicationTypesProvider {
                 if (hasRole(ROLE_LEGAL_REP)) {
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
                         UPDATE_APPEAL_DETAILS.toString()));
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
-                }
-
-                if (hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
                     values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
                         UPDATE_HEARING_REQUIREMENTS.toString()));
                 }
@@ -343,5 +313,20 @@ public class MakeAnApplicationTypesProvider {
         return asylumCase.read(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.class)
             .orElse(YesOrNo.NO)
             .equals(YesOrNo.YES);
+    }
+
+    private void hasInternalAdaRequirements(AsylumCase asylumCase) {
+        if (hasRole(ROLE_ADMIN)
+                && isInternalCase(asylumCase)
+                && isAcceleratedDetainedAppeal(asylumCase)) {
+
+            values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+            values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+
+            if (hasSubmittedHearingRequirements(asylumCase)) {
+                values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                        UPDATE_HEARING_REQUIREMENTS.toString()));
+            }
+        }
     }
 }
