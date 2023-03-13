@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTOMATIC_END_APPEAL_TIMED_EVENT_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -46,8 +48,12 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
                 .orElse(PaymentStatus.PAYMENT_PENDING);
         Optional<String> timedEventId = asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID);
 
+        Event qualifyingEvent = HandlerUtils.isAipJourney(asylumCase)
+            ? Event.PAYMENT_APPEAL
+            : Event.UPDATE_PAYMENT_STATUS;
+
         return  timedEventServiceEnabled
-                && callback.getEvent() == Event.UPDATE_PAYMENT_STATUS
+                && callback.getEvent() == qualifyingEvent
                 && paymentStatus == PaymentStatus.PAID
                 && timedEventId.isPresent();
 
