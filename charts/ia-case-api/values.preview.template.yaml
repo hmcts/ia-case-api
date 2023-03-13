@@ -104,7 +104,7 @@ ia-case-documents-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
 
 ia-case-notifications-api:
-  enabled: false
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
@@ -116,7 +116,7 @@ ia-case-notifications-api:
       IA_BAIL_GOV_NOTIFY_KEY: "testkey-b9593914-99e1-484e-ad63-a51d7b4c164f-b817a2e5-7a30-4938-98f0-6099110c2879"
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
-      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      #IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
