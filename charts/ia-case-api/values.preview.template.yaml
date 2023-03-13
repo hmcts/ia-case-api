@@ -1,7 +1,7 @@
 java:
   # Don't modify below here
   image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_NAME}.preview.platform.hmcts.net
+  ingressHost: ${SERVICE_FQDN}
   environment:
     POSTGRES_HOST: ${SERVICE_NAME}-postgresql
     POSTGRES_NAME: ia-case-api
