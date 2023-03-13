@@ -92,7 +92,7 @@ ia-case-documents-api:
 #      DOCMOSIS_RENDER_URL: /rs/render #Should be auto set in documents-api if not present
 #      DOCMOSIS_STATUS_URL: /rs/status
 #      DOCMOSIS_CONVERT_URL: /rs/convert
-      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      #IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
