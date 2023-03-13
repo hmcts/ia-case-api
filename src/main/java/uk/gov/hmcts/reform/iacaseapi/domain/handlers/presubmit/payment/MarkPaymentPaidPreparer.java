@@ -79,13 +79,18 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
             case PA:
             case AG:
             case EU:
-                if (internalDetainedCase(asylumCase)) {
-                    return callbackResponse;
+                if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+                    callbackResponse.addError("Payment is not required for this type of appeal.");
+                } else if (internalDetainedCase(asylumCase)) {
+                    if (awaitingRemissionDecision(asylumCase)) {
+
+                        callbackResponse.addError("You cannot mark this appeal as paid because the remission decision has not been recorded.");
+                    } else if (remissionDecisionApproved(asylumCase)) {
+
+                        callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
+                    }
                 } else {
                     Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-                    Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
-
-                    Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
                     Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
                     Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
@@ -111,17 +116,16 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                             .ifPresent(s ->
                                 callbackResponse.addError(NOT_AVAILABLE_LABEL)
                             );
-                    } else if ((remissionType.isPresent() && remissionType.get() != NO_REMISSION && !remissionDecision.isPresent())
-                        || (lateRemissionType.isPresent() && !remissionDecision.isPresent())) {
+                    } else if (awaitingRemissionDecision(asylumCase)) {
 
                         callbackResponse.addError("You cannot mark this appeal as paid because the remission decision has not been recorded.");
-                    } else if (isRemissionDecisionExistsAndApproved(remissionDecision)) {
+                    } else if (remissionDecisionApproved(asylumCase)) {
 
                         callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
                     }
-                    break;
-
                 }
+                break;
+
             case RP:
             case DC:
                 callbackResponse.addError("Payment is not required for this type of appeal.");
@@ -134,12 +138,17 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         return callbackResponse;
     }
 
-    private boolean isRemissionDecisionExistsAndApproved(
-        Optional<RemissionDecision> remissionDecision
-    ) {
+    private boolean awaitingRemissionDecision(AsylumCase asylumCase) {
+        Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+        return (remissionType.isPresent() && remissionType.get() != NO_REMISSION && remissionDecision.isEmpty())
+            || (lateRemissionType.isPresent() && remissionDecision.isEmpty());
+    }
 
-        return remissionDecision.isPresent()
-            && remissionDecision.get() == APPROVED;
+    private boolean remissionDecisionApproved(AsylumCase asylumCase) {
+        Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+        return remissionDecision.map(decision -> APPROVED == decision).orElse(false);
     }
 
     private boolean internalDetainedCase(AsylumCase asylumCase) {

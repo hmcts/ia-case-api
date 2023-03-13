@@ -94,7 +94,7 @@ class MarkPaymentPaidPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
-    void should_be_successful_for_all_internal_detained_cases_tcw(AppealType appealType) {
+    void should_be_successful_for_all_internal_detained_cases_without_remission_tcw(AppealType appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -109,7 +109,7 @@ class MarkPaymentPaidPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
-    void should_be_successful_for_all_internal_detained_cases_admin(AppealType appealType) {
+    void should_be_successful_for_all_internal_detained_cases_without_remission_admin(AppealType appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -201,6 +201,25 @@ class MarkPaymentPaidPreparerTest {
     }
 
     @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
+    void should_throw_error_for_ada_appeal(AppealType appealType) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("Payment is not required for this type of appeal.");
+    }
+
+    @ParameterizedTest
     @MethodSource("appealTypesWithRemissionTypes")
     void handling_should_error_for_remission_decision_not_present(AppealType type, RemissionType remissionType, AsylumCaseFieldDefinition field) {
 
@@ -210,6 +229,28 @@ class MarkPaymentPaidPreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
         when(asylumCase.read(field, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        Mockito.when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid because the remission decision has not been recorded.");
+    }
+
+    @ParameterizedTest
+    @MethodSource("appealTypesWithRemissionTypes")
+    void handling_should_error_for_remission_decision_not_present_internal_detained_cases(AppealType type, RemissionType remissionType, AsylumCaseFieldDefinition field) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(field, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
         Mockito.when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
 
@@ -269,6 +310,32 @@ class MarkPaymentPaidPreparerTest {
         when(asylumCase.read(field, RemissionType.class)).thenReturn(Optional.of(remissionType));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid because a full remission has been approved.");
+    }
+
+    @ParameterizedTest
+    @MethodSource("appealTypesWithRemissionApproved")
+    void handling_should_error_for_remission_decision_approved_internal_detained_cases(
+        AppealType type, RemissionType remissionType, RemissionDecision remissionDecision, AsylumCaseFieldDefinition field) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(field, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
