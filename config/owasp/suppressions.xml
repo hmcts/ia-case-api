@@ -93,7 +93,7 @@
         <cve>CVE-2022-31690</cve>
         <cve>CVE-2022-42252</cve>
         <cve>CVE-2022-41854</cve>
-		<cve>CVE-2022-45143</cve>
+	<cve>CVE-2022-45143</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[postgresql:postgresql:42.4.1]]>
@@ -102,7 +102,7 @@
     </suppress>
     <suppress>
         <cve>CVE-2021-37533</cve>
-		<cve>CVE-2021-4277</cve>		
+	<cve>CVE-2021-4277</cve>		
     </suppress>
     <suppress>
         <notes><![CDATA[LatencyUtils-2.0.3.jar vulnerabilities]]>
@@ -111,8 +111,8 @@
         <cve>CVE-2021-4235</cve>
         <cve>CVE-2022-3064</cve>
         <cve>CVE-2022-45143</cve>
-    </suppress>
-    <suppress>
-    	<cve>CVE-2022-31197</cve>
-    </suppress>
+	<cve>CVE-2022-31197</cve>
+        <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-24998</cve>
+    </suppress>    
 </suppressions>
