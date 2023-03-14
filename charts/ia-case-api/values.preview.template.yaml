@@ -66,7 +66,7 @@ ia-case-payments-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
+    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-259 #:pr-259 for NABA :latest for master
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -83,7 +83,7 @@ ia-case-documents-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-520 #pr-520 for NABA
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -107,7 +107,7 @@ ia-case-notifications-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-724 #pr-724 for NABA
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -128,7 +128,7 @@ ia-home-office-integration-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-285 #pr-285 for NABA
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
@@ -254,7 +254,6 @@ ccd:
         DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac
-        #CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,ia, iac #ET don't have this
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
@@ -278,10 +277,6 @@ ccd:
       environment:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
-#        IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
-#        IDAM_OAUTH2_TOKEN_ENDPOINT: https://idam-web-public.aat.platform.hmcts.net/oauth2/token
-#        IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults: []
 
   ccd-definition-store-api:
