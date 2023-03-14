@@ -124,6 +124,18 @@ ia-case-notifications-api:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
+ia-home-office-integration-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
+    ingressHost: home-office-integration-api-${SERVICE_FQDN}
+    environment:
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
