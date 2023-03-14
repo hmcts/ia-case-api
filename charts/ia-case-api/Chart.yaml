@@ -34,6 +34,10 @@ dependencies:
     version: 0.0.37
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
+  - name: ia-home-office-integration-api
+    version: 0.0.20
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-home-office-integration-api.enabled
 #  - name: camunda-bpm
 #    version: 0.0.28
 #    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
