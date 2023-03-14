@@ -145,11 +145,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private Set<Event> getInternalEventsToHandle() {
         Set<Event> eventsToHandle = Set.of(
-            //Event.SUBMIT_APPEAL,
-            Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.REQUEST_RESPONDENT_EVIDENCE,
-            Event.DECIDE_AN_APPLICATION,
-            Event.REQUEST_RESPONSE_REVIEW
+                //Event.SUBMIT_APPEAL,
+                Event.EDIT_APPEAL_AFTER_SUBMIT,
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_RESPONDENT_REVIEW,
+                Event.DECIDE_AN_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
