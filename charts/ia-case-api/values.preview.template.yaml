@@ -8,12 +8,13 @@ java:
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
-    IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
-    IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+    #Un comment APIs if you need to test a local version
+    #IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+    #IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
-    IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
-    IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
+    #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
+    #IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -63,10 +64,10 @@ java:
       password: hmcts
 
 ia-case-payments-api:
-  enabled: true
+  enabled: false #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-259 #:pr-259 for NABA :latest for master
+    image: hmctspublic.azurecr.io/ia/case-payments-api:latest #:pr-259 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -80,19 +81,14 @@ ia-case-payments-api:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
 ia-case-documents-api:
-  enabled: true
+  enabled: false #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-520 #pr-520 for NABA
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-520 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
-      #DOCMOSIS_ACCESS_KEY: #Should be set in secrets
-#      DOCMOSIS_RENDER_URL: /rs/render #Should be auto set in documents-api if not present
-#      DOCMOSIS_STATUS_URL: /rs/status
-#      DOCMOSIS_CONVERT_URL: /rs/convert
-      #IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -104,10 +100,10 @@ ia-case-documents-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
 
 ia-case-notifications-api:
-  enabled: true
+  enabled: false #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-724 #pr-724 for NABA
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest #pr-724 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -116,7 +112,6 @@ ia-case-notifications-api:
       IA_BAIL_GOV_NOTIFY_KEY: "testkey-b9593914-99e1-484e-ad63-a51d7b4c164f-b817a2e5-7a30-4938-98f0-6099110c2879"
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
-      #IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -125,10 +120,10 @@ ia-case-notifications-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
 ia-home-office-integration-api:
-  enabled: true
+  enabled: false #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-285 #pr-285 for NABA
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest #pr-285 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
@@ -218,8 +213,6 @@ ccd:
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
     ccdDefinitionStoreUrl:  http://{{ .Release.Name }}-ccd-definition-store
-    # Enable this to use a local ccd user profile importer
-    # ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net

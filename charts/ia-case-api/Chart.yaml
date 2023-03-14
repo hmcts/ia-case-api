@@ -38,12 +38,3 @@ dependencies:
     version: 0.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
-#  - name: camunda-bpm
-#    version: 0.0.28
-#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-#    condition: camunda-bpm.enabled
-# CCD message publisher
-  #- name: ccd-message-publisher
-  #  version: ~0.1.7
-  #  repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-  #  condition: wa.enabled
