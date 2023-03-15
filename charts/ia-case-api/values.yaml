@@ -6,7 +6,7 @@ java:
   environment:
     POSTGRES_PORT: "{{ .Values.postgresql.service.port }}"
     POSTGRES_HOST: "{{ .Values.postgresql.releaseNameOverride }}"
-    POSTGRES_USERNAME: "{{ .Values.auth.username }}@{{ .Values.postgresql.releaseNameOverride }}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username }}@{{ .Values.postgresql.releaseNameOverride }}"
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
     PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     REF_DATA_CASE_WORKER_URL: "http://rd-caseworker-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
