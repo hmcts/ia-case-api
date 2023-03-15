@@ -81,13 +81,14 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         if (featureToggler.getValue("home-office-uan-feature", false)
                 && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
-            Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
-            YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO);
+            boolean isInCountryAppeal = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> NO == ooc).orElse(true);
 
-            if (isAppealOutOfCountry == NO && (!homeOfficeSearchStatus.isPresent()
-                    || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get()))) {
+            if (isInCountryAppeal
+                && shouldMatchAppellantDetails(asylumCase)
+                && appellantDetailsNotMatchedOrFailed(asylumCase)) {
 
-                callbackResponse.addError("You need to match the appellant details before you can request the respondent evidence.");
+                callbackResponse
+                    .addError("You need to match the appellant details before you can request the respondent evidence.");
                 return callbackResponse;
             }
         }
@@ -133,5 +134,16 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean shouldMatchAppellantDetails(AsylumCase asylumCase) {
+        return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase) || HandlerUtils.isAppellantInDetention(asylumCase));
+    }
+
+    private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
+        Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
+
+        return homeOfficeSearchStatus.isEmpty()
+            || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get());
     }
 }

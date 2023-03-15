@@ -282,9 +282,52 @@ class RequestRespondentEvidencePreparerTest {
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(!callbackResponse.getErrors().isEmpty());
+        assertFalse(callbackResponse.getErrors().isEmpty());
         assertThat(callbackResponse.getErrors())
                 .contains("You need to match the appellant details before you can request the respondent evidence.");
+    }
+
+    @Test
+    void handle_should_throw_error_for_the_detained_appeal() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());;
+    }
+
+    @Test
+    void handle_should_throw_error_for_aaa_appeal() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AG));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());;
     }
 
     @ParameterizedTest
@@ -306,7 +349,7 @@ class RequestRespondentEvidencePreparerTest {
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(!callbackResponse.getErrors().isEmpty());
+        assertFalse(callbackResponse.getErrors().isEmpty());
         assertThat(callbackResponse.getErrors())
                 .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
