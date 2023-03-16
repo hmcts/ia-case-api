@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "ftpaApplicationDeadline": "{$TODAY-20}",
+          "ftpaApplicationDeadlineDate": "{$TODAY_FULL_DATE-20}",
           "listCaseHearingCentre": "manchester",
           "ftpaRespondentDocuments": [],
           "ftpaRespondentOutOfTimeDocuments": [],
