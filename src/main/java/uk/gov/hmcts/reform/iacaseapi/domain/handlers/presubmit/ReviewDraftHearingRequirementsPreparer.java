@@ -51,7 +51,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         final boolean exAdaWithSubmittedHearingRequirements =
             asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
-            && asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES) ;
+            && asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
 
         if (!reviewedHearingRequirements.isPresent()) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);

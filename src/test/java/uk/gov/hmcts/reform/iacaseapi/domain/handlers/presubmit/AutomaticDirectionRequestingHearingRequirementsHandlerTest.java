@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
@@ -225,6 +226,29 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
         when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
             .thenReturn(Optional.of(AppealReviewOutcome.DECISION_WITHDRAWN));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(asylumCase).isEqualTo(callbackResponse.getData());
+
+        verify(scheduler, times(0)).schedule(any(TimedEvent.class));
+        verify(asylumCase, times(0)).write(AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS, id);
+    }
+
+    @Test
+    void should_skip_timed_event_if_hearing_req_submitted_when_case_was_ada() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
+            .thenReturn(Optional.of(AppealReviewOutcome.DECISION_MAINTAINED));
+
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
