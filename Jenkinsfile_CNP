@@ -50,6 +50,7 @@ def secrets = [
         secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
         secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
         secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+        secret('docmosis-access-key', 'DOCMOSIS_ACCESS_KEY'),
         secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
@@ -63,6 +64,20 @@ def secrets = [
         secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
         secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW')
 
+    ],
+    's2s-${env}'      : [
+        secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
+        secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
+        secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
+        secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY')
+    ],
+    'ccd-${env}'      : [
+        secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
+        secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
+        secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+        secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+        secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+        secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
     ]
 ]
 
@@ -95,6 +110,12 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
 
+    before('smoketest:preview') {
+        sh """
+      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+      ./bin/add-roles.sh
+    """
+    }
 
     afterAlways('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
