@@ -20,6 +20,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -46,8 +48,10 @@ class GenerateDocumentHandlerTest {
     private static final int FTPA_DUE_IN_WORKING_DAYS_ADA = 5;
     private static final int FTPA_DUE_IN_DAYS_OOC = 28;
     private static final int FTPA_DUE_IN_DAYS_UK = 14;
+    private static final int FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL = 7;
+    private static final int FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL = 14;
     private static final LocalDate FAKE_APPEAL_DATE = LocalDate.parse("2023-02-11");
-    private static final LocalDate EXPECTED_FTPA_DEADLINE_ADA = LocalDate.parse("2023-02-17");
+    private static final LocalDate EXPECTED_FTPA_DEADLINE_ADA = LocalDate.parse("2023-02-21");
     private static final LocalDate EXPECTED_FTPA_DEADLINE_UK = FAKE_APPEAL_DATE.plusDays(FTPA_DUE_IN_DAYS_UK);
     private static final LocalDate EXPECTED_FTPA_DEADLINE_OOC = FAKE_APPEAL_DATE.plusDays(FTPA_DUE_IN_DAYS_OOC);
     @Mock
@@ -100,8 +104,10 @@ class GenerateDocumentHandlerTest {
                 dueDateService,
                 FTPA_DUE_IN_DAYS_UK,
                 FTPA_DUE_IN_DAYS_OOC,
-                FTPA_DUE_IN_WORKING_DAYS_ADA
-                    );
+                FTPA_DUE_IN_WORKING_DAYS_ADA,
+                FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+            );
     }
 
     void setUpSendDecisionsAndReasonsData(AsylumCase asylumCase) {
@@ -309,15 +315,18 @@ class GenerateDocumentHandlerTest {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
-                false,
-                true,
-                documentGenerator,
-                dateProvider,
-                true,
+                    false,
+                    true,
+                    documentGenerator,
+                    dateProvider,
+                    true,
                     dueDateService,
                     FTPA_DUE_IN_DAYS_UK,
                     FTPA_DUE_IN_DAYS_OOC,
-                    FTPA_DUE_IN_WORKING_DAYS_ADA);
+                    FTPA_DUE_IN_WORKING_DAYS_ADA,
+                    FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                    FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+            );
 
         for (Event event : Event.values()) {
 
@@ -344,10 +353,13 @@ class GenerateDocumentHandlerTest {
                 documentGenerator,
                 dateProvider,
                 true,
-                    dueDateService,
-                    FTPA_DUE_IN_DAYS_UK,
-                    FTPA_DUE_IN_DAYS_OOC,
-                    FTPA_DUE_IN_WORKING_DAYS_ADA);
+                dueDateService,
+                FTPA_DUE_IN_DAYS_UK,
+                FTPA_DUE_IN_DAYS_OOC,
+                FTPA_DUE_IN_WORKING_DAYS_ADA,
+                FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+            );
 
         for (Event event : Event.values()) {
 
@@ -480,6 +492,38 @@ class GenerateDocumentHandlerTest {
 
         verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
             EXPECTED_FTPA_DEADLINE_UK.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+    }
+
+    @ParameterizedTest
+    @EnumSource(YesOrNo.class)
+    void should_populate_ftpa_deadline_for_internal_case(YesOrNo yesOrNo) throws InterruptedException {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
+
+        when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(yesOrNo));
+        when(expectedUpdatedCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final ZonedDateTime fakeAppealDateTime = FAKE_APPEAL_DATE.atStartOfDay(ZoneOffset.UTC);
+        when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL))
+                .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        if (yesOrNo.equals(YesOrNo.YES)) {
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
+                    EXPECTED_FTPA_DEADLINE_ADA.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+        } else {
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
+                    EXPECTED_FTPA_DEADLINE_UK.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+        }
     }
 
 }
