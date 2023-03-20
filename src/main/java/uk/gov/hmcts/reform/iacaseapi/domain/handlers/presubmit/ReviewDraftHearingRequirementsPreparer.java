@@ -49,13 +49,21 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
         final Optional<YesOrNo> reviewedHearingRequirements =
             asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
 
+        final boolean exAdaWithSubmittedHearingRequirements =
+            asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
+            && asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+
         if (!reviewedHearingRequirements.isPresent()) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The case is already listed, you can't request hearing requirements");
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS && reviewedHearingRequirements.get().equals(YesOrNo.YES)) {
+        // prevent triggering if hearing requirements already reviewed or if case has transferred out of ADA after having
+        // already submitted hearing requirements
+
+        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS
+            && (reviewedHearingRequirements.get().equals(YesOrNo.YES) || exAdaWithSubmittedHearingRequirements)) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
             return asylumCasePreSubmitCallbackResponse;
