@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,8 @@ class FtpaAppellantPreparerTest {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
                 .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
 
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_UK.toString()));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_UK
+            .format(DateTimeFormatter.ofPattern("d MMMM yyyy"))));
 
         ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -88,7 +90,8 @@ class FtpaAppellantPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_OOC.toString()));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_OOC
+            .format(DateTimeFormatter.ofPattern("d MMMM yyyy"))));
 
         ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -102,7 +105,7 @@ class FtpaAppellantPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.empty());
 
         RequiredFieldMissingException thrown = assertThrows(
@@ -126,7 +129,7 @@ class FtpaAppellantPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of("2023-01-01"));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
 
@@ -153,7 +156,8 @@ class FtpaAppellantPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE.toString()));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE
+            .format(DateTimeFormatter.ofPattern("d MMMM yyyy"))));
 
         ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -168,7 +172,8 @@ class FtpaAppellantPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE.toString()));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE
+            .format(DateTimeFormatter.ofPattern("d MMMM yyyy"))));
 
         ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -209,8 +214,9 @@ class FtpaAppellantPreparerTest {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String ftpaApplicationDeadline = dateProvider.now().minusDays(15).toString();
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
+        final String ftpaApplicationDeadline = dateProvider.now().minusDays(15)
+            .format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -325,7 +331,7 @@ class FtpaAppellantPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of(input));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(dateProvider.now()).thenReturn(LocalDate.parse(IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE_TO_COMPARE));
@@ -350,7 +356,7 @@ class FtpaAppellantPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE_DATE, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of(input));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(dateProvider.now()).thenReturn(LocalDate.parse(IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE_TO_COMPARE));

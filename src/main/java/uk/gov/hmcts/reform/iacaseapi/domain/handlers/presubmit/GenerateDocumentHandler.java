@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
@@ -145,7 +146,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         LocalDate appealDate = dateProvider.now();
         asylumCase.write(APPEAL_DATE, appealDate.toString());
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
-        asylumCase.write(FTPA_APPLICATION_DEADLINE, getFtpaApplicationDeadline(asylumCase, appealDate));
+        asylumCase.write(FTPA_APPLICATION_DEADLINE_DATE, getFtpaApplicationDeadline(asylumCase, appealDate));
     }
 
     private void changeEditListingApplicationsToCompleted(AsylumCase asylumCase) {
@@ -211,6 +212,6 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             ftpaApplicationDeadline = appealDate.plusDays(ftpaAppealOutOfTimeDaysUk);
         }
 
-        return ftpaApplicationDeadline.toString();
+        return ftpaApplicationDeadline.format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
     }
 }
