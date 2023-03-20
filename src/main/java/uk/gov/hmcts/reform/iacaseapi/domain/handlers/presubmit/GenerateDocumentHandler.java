@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
@@ -37,10 +38,10 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     private final boolean isSaveAndContinueEnabled;
     private final DueDateService dueDateService;
     private final int ftpaAppealOutOfTimeWorkingDaysAdaAppeal;
-
     private final int ftpaAppealOutOfTimeDaysUk;
-
     private final int ftpaAppealOutOfTimeDaysOoc;
+    private final int ftpaAppealOutOfTimeWorkingDaysInternalAdaCases;
+    private final int ftpaAppealOutOfTimeDaysInternalNonAdaCases;
 
     public GenerateDocumentHandler(
             @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
@@ -51,7 +52,9 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             DueDateService dueDateService,
             @Value("${ftpaAppealOutOfTimeDaysUk}") int ftpaAppealOutOfTimeDaysUk,
             @Value("${ftpaAppealOutOfTimeDaysOoc}") int ftpaAppealOutOfTimeDaysOoc,
-            @Value("${ftpaAppealOutOfTimeWorkingDaysAdaAppeal}") int ftpaAppealOutOfTimeWorkingDaysAdaAppeal) {
+            @Value("${ftpaAppealOutOfTimeWorkingDaysAdaAppeal}") int ftpaAppealOutOfTimeWorkingDaysAdaAppeal,
+            @Value("${ftpaAppealOutOfTimeWorkingDaysInternalAdaCases}") int ftpaAppealOutOfTimeWorkingDaysInternalAdaCases,
+            @Value("${ftpaAppealOutOfTimeDaysInternalNonAdaCases}") int ftpaAppealOutOfTimeDaysInternalNonAdaCases) {
         this.isDocmosisEnabled = isDocmosisEnabled;
         this.isEmStitchingEnabled = isEmStitchingEnabled;
         this.documentGenerator = documentGenerator;
@@ -61,6 +64,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         this.ftpaAppealOutOfTimeWorkingDaysAdaAppeal = ftpaAppealOutOfTimeWorkingDaysAdaAppeal;
         this.ftpaAppealOutOfTimeDaysUk = ftpaAppealOutOfTimeDaysUk;
         this.ftpaAppealOutOfTimeDaysOoc = ftpaAppealOutOfTimeDaysOoc;
+        this.ftpaAppealOutOfTimeWorkingDaysInternalAdaCases = ftpaAppealOutOfTimeWorkingDaysInternalAdaCases;
+        this.ftpaAppealOutOfTimeDaysInternalNonAdaCases = ftpaAppealOutOfTimeDaysInternalNonAdaCases;
     }
 
     @Override
@@ -146,6 +151,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         LocalDate appealDate = dateProvider.now();
         asylumCase.write(APPEAL_DATE, appealDate.toString());
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
+        System.out.println(getFtpaApplicationDeadline(asylumCase, appealDate));
         asylumCase.write(FTPA_APPLICATION_DEADLINE_DATE, getFtpaApplicationDeadline(asylumCase, appealDate));
     }
 
@@ -199,10 +205,15 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     }
 
     private String getFtpaApplicationDeadline(AsylumCase asylumCase, LocalDate appealDate) {
+        boolean isInternalCase = isInternalCase(asylumCase);
         boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
         boolean isOoc = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).isPresent();
 
         LocalDate ftpaApplicationDeadline;
+
+        if (isInternalCase) {
+            return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+        }
 
         if (isAda) {
             ftpaApplicationDeadline = dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC), ftpaAppealOutOfTimeWorkingDaysAdaAppeal).toLocalDate();
@@ -213,5 +224,11 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         }
 
         return ftpaApplicationDeadline.format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+    }
+
+    private LocalDate getFtpaApplicationDeadlineForInternalCase(LocalDate appealDate, boolean isAda) {
+        return isAda ? dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC),
+                        ftpaAppealOutOfTimeWorkingDaysInternalAdaCases).toLocalDate() :
+                appealDate.plusDays(ftpaAppealOutOfTimeDaysInternalNonAdaCases);
     }
 }
