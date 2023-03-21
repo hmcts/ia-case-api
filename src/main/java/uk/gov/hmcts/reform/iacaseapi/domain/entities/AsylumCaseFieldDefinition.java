@@ -1437,6 +1437,12 @@ public enum AsylumCaseFieldDefinition {
     IS_OUT_OF_COUNTRY_ENABLED(
         "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
 
+    IS_AGE_ASSESSMENT_ENABLED(
+        "isAgeAssessmentEnabled", new TypeReference<YesOrNo>() {}),
+
+    IS_AGE_ASSESSMENT_VISIBLE(
+        "isAgeAssessmentVisible", new TypeReference<YesOrNo>() {}),
+
     HAS_CORRESPONDENCE_ADDRESS(
         "hasCorrespondenceAddress", new TypeReference<YesOrNo>() {}),
 
