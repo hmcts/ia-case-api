@@ -14,8 +14,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CMA_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_REASONS_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.REASONS_FOR_APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.ArrayList;
@@ -139,6 +143,17 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
+                if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)
+                        && currentState != PENDING_PAYMENT
+                        && currentState != AWAITING_REASONS_FOR_APPEAL
+                        && currentState != AWAITING_CLARIFYING_QUESTIONS_ANSWERS
+                        && currentState != AWAITING_CMA_REQUIREMENTS
+                        && currentState != REASONS_FOR_APPEAL_SUBMITTED) {
+
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                }
+
                 if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)
@@ -202,6 +217,15 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
+                if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                }
+
+                if (!isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
+                }
+
                 if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)
@@ -238,6 +262,12 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
+                if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                }
+
+
                 if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)
@@ -266,7 +296,7 @@ public class MakeAnApplicationTypesProvider {
                 if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                         TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
-                } else {
+                } else if (!isAcceleratedDetainedAppeal(asylumCase)) {
                     values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
                 }
 
