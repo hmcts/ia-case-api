@@ -1,6 +1,5 @@
 {
   "description": "RIA-6877 RIA-6913 age assessment feature flag false",
-  "enabled": true,
   "launchDarklyKey": "age-assessment-feature:false",
   "request": {
     "uri": "/asylum/ccdAboutToStart",

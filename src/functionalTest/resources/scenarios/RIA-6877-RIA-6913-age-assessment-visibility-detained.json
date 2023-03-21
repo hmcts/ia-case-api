@@ -1,5 +1,5 @@
 {
-  "description": "RIA-6877 RIA-6913 age assessment visible for non detained appeal",
+  "description": "RIA-6877 RIA-6913 age assessment visible for detained appeal",
   "enabled": true,
   "request": {
     "uri": "/asylum/ccdMidEvent",
