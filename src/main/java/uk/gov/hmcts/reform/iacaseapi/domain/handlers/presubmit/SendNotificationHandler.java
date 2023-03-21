@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
@@ -49,7 +55,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         if (isInternalCase(asylumCase)) {
             return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && getInternalEventsToHandle().contains(callback.getEvent());
+                    && getInternalEventsToHandle(callback).contains(callback.getEvent());
         }
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
@@ -77,7 +83,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
             Event.REQUEST_CASE_BUILDING,
             Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-            Event.REQUEST_RESPONSE_REVIEW,
             Event.SEND_DECISION_AND_REASONS,
             Event.UPLOAD_ADDITIONAL_EVIDENCE,
             Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
@@ -140,16 +145,18 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
+        if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
+            eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
+        }
         return eventsToHandle;
     }
 
-    private Set<Event> getInternalEventsToHandle() {
-        Set<Event> eventsToHandle = Set.of(
+    private Set<Event> getInternalEventsToHandle(Callback<AsylumCase> callback) {
+        Set<Event> eventsToHandle = Sets.newHashSet(
                 //Event.SUBMIT_APPEAL,
                 Event.EDIT_APPEAL_AFTER_SUBMIT,
                 Event.REQUEST_RESPONDENT_EVIDENCE,
                 Event.REQUEST_RESPONDENT_REVIEW,
-                Event.REQUEST_RESPONSE_REVIEW,
                 Event.DECIDE_AN_APPLICATION,
                 Event.MAKE_AN_APPLICATION,
                 Event.ADA_SUITABILITY_REVIEW,
@@ -158,6 +165,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         );
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
+        }
+        if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
+            eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
         }
         return eventsToHandle;
     }
@@ -180,5 +190,16 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             .read(PAYMENT_STATUS, PaymentStatus.class)
             .map(paymentStatus -> paymentStatus.equals(PaymentStatus.PAID))
             .orElse(false);
+    }
+
+    private boolean isExAdaCaseWithHearingRequirementsSubmitted(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        return asylumCase
+                   .read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES)
+               && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES);
     }
 }
