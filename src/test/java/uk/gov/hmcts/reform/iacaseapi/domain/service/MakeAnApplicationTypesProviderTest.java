@@ -59,6 +59,7 @@ class MakeAnApplicationTypesProviderTest {
 
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
     private static final String ROLE_ADMIN = "caseworker-ia-admofficer";
+    private static final String ROLE_HO_RESPONDENT = "caseworker-ia-respondentofficer";
 
     @Mock Callback<AsylumCase> callback;
     @Mock CaseDetails<AsylumCase> caseCaseDetails;
@@ -443,6 +444,116 @@ class MakeAnApplicationTypesProviderTest {
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
         assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
+    void should_return_transfer_types_when_state_from_hearing_to_decision_with_non_ada_in_ho_role(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+                new Value(TRANSFER.name(), TRANSFER.toString()));
+        DynamicList expectedList =
+                new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
+    void should_not_return_transfer_types_when_state_from_hearing_to_decision_with_ada_in_ho_role(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+                new Value(TRANSFER.name(), TRANSFER.toString()));
+        DynamicList expectedList =
+                new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).doesNotContainAnyElementsOf(expectedList.getListItems());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
+    void should_return_adjourn_expedite_types_after_listing_state_with_non_ada_in_ho_role(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+                new Value(ADJOURN.name(), ADJOURN.toString()),
+                new Value(EXPEDITE.name(), EXPEDITE.toString())
+        );
+        DynamicList expectedList =
+                new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_RESPONDENT_EVIDENCE",
+        "CASE_BUILDING",
+        "CASE_UNDER_REVIEW",
+        "RESPONDENT_REVIEW",
+        "SUBMIT_HEARING_REQUIREMENTS",
+        "LISTING",
+        "PREPARE_FOR_HEARING",
+        "FINAL_BUNDLING",
+        "PRE_HEARING",
+        "DECISION"
+    })
+    void should_return_adjourn_expedite_types_when_state_from_evidence_to_decision_with_ada_in_ho_role(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+                new Value(ADJOURN.name(), ADJOURN.toString()),
+                new Value(EXPEDITE.name(), EXPEDITE.toString())
+        );
+        DynamicList expectedList =
+                new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
