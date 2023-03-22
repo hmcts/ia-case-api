@@ -43,12 +43,12 @@
               "label": "Expedite"
             },
             {
-              "code": "JUDGE_REVIEW",
-              "label": "Judge's review of application decision"
-            },
-            {
               "code": "UPDATE_HEARING_REQUIREMENTS",
               "label": "Update hearing requirements"
+            },
+            {
+              "code": "JUDGE_REVIEW",
+              "label": "Judge's review of application decision"
             },
             {
               "code": "TIME_EXTENSION",
