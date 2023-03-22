@@ -291,6 +291,7 @@ class LegalRepOrganisationFormatterTest {
 
     @Test
     void should_write_skeleton_local_authority_policy_for_internal_case_journey() {
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -316,6 +317,7 @@ class LegalRepOrganisationFormatterTest {
 
         verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, skeletonPolicy);
     }
+
     @Test
     void should_not_allow_null_arguments() {
 
