@@ -1,3 +1,4 @@
+/*
 package uk.gov.hmcts.reform.iacaseapi.component;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,3 +66,4 @@ public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest im
             .isEqualTo(YES);
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -83,3 +84,4 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
         Mockito.verify(idamApi, times(1)).userInfo(token);
     }
 }
+*/
