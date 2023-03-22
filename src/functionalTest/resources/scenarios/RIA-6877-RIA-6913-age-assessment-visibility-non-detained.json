@@ -1,0 +1,29 @@
+{
+  "description": "RIA-6877 RIA-6913 age assessment visible for non detained appeal",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "id": 68774,
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInDetention": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAgeAssessmentVisible": "Yes"
+      }
+    }
+  }
+}
