@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CMA_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_REASONS_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.REASONS_FOR_APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
@@ -110,8 +109,7 @@ public class MakeAnApplicationTypesProvider {
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
 
-                if (currentState == AWAITING_RESPONDENT_EVIDENCE
-                    && hasRole(ROLE_ADMIN)
+                if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
 
@@ -152,14 +150,6 @@ public class MakeAnApplicationTypesProvider {
 
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
-                }
-
-                if (hasRole(ROLE_ADMIN)
-                    && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
                 }
 
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
@@ -228,10 +218,14 @@ public class MakeAnApplicationTypesProvider {
 
                 if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+
+                    if (hasSubmittedHearingRequirements(asylumCase)) {
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
+                    }
                 }
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
@@ -267,13 +261,16 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                 }
 
-
                 if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
-                    && isAcceleratedDetainedAppeal(asylumCase)
-                    && hasSubmittedHearingRequirements(asylumCase)) {
-                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                        UPDATE_HEARING_REQUIREMENTS.toString()));
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+
+                    if (hasSubmittedHearingRequirements(asylumCase)) {
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
+                    }
                 }
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
