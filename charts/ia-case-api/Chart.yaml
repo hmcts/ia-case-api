@@ -8,10 +8,10 @@ maintainers:
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 4.0.12
+    version: 4.0.13
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: ccd
-    version: 8.0.24
+    version: 8.0.27
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
