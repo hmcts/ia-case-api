@@ -30,10 +30,18 @@
         "adaHearingRequirementsToReview": "Yes",
         "makeAnApplicationTypes": {
           "value": {
-            "code": "JUDGE_REVIEW",
-            "label": "Judge's review of application decision"
+            "code": "ADJOURN",
+            "label": "Adjourn"
           },
           "list_items": [
+            {
+              "code": "ADJOURN",
+              "label": "Adjourn"
+            },
+            {
+              "code": "EXPEDITE",
+              "label": "Expedite"
+            },
             {
               "code": "JUDGE_REVIEW",
               "label": "Judge's review of application decision"
