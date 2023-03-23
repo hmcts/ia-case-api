@@ -151,8 +151,6 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         LocalDate appealDate = dateProvider.now();
         asylumCase.write(APPEAL_DATE, appealDate.toString());
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
-        System.out.println(getFtpaApplicationDeadline(asylumCase, appealDate));
-        String ess = getFtpaApplicationDeadline(asylumCase, appealDate);
         asylumCase.write(FTPA_APPLICATION_DEADLINE_DATE, getFtpaApplicationDeadline(asylumCase, appealDate));
     }
 
@@ -208,13 +206,13 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     private String getFtpaApplicationDeadline(AsylumCase asylumCase, LocalDate appealDate) {
         boolean isInternalCase = isInternalCase(asylumCase);
         boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
-        boolean isOoc = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).isPresent();
-
-        LocalDate ftpaApplicationDeadline;
 
         if (isInternalCase) {
             return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
         }
+
+        LocalDate ftpaApplicationDeadline;
+        boolean isOoc = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).isPresent();
 
         if (isAda) {
             ftpaApplicationDeadline = dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC), ftpaAppealOutOfTimeWorkingDaysAdaAppeal).toLocalDate();

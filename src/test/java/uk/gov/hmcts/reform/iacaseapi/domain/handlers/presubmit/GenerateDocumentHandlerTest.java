@@ -496,7 +496,7 @@ class GenerateDocumentHandlerTest {
 
     @ParameterizedTest
     @EnumSource(YesOrNo.class)
-    void should_populate_ftpa_deadline_for_internal_case(YesOrNo yesOrNo) throws InterruptedException {
+    void should_populate_ftpa_deadline_for_internal_case(YesOrNo yesOrNo) {
         AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
         setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
 
