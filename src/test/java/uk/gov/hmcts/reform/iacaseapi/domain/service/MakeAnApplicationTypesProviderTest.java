@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_TAKEN_OFFLINE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
@@ -172,9 +171,24 @@ class MakeAnApplicationTypesProviderTest {
         assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
-    @Test
-    void should_return_correct_application_types_when_internal_ada_case_awaiting_respondent_evidence() {
-        // For internal case, ADA, in AWAITING_RESPONDENT_EVIDENCE state
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_RESPONDENT_EVIDENCE",
+        "CASE_BUILDING",
+        "AWAITING_REASONS_FOR_APPEAL",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "AWAITING_CMA_REQUIREMENTS",
+        "CASE_UNDER_REVIEW",
+        "REASONS_FOR_APPEAL_SUBMITTED",
+        "RESPONDENT_REVIEW",
+        "SUBMIT_HEARING_REQUIREMENTS",
+        "ADJOURNED",
+        "PREPARE_FOR_HEARING",
+        "PRE_HEARING",
+        "DECISION"
+    })
+    void should_return_correct_application_types_when_internal_ada_case(State state) {
+        // For internal case, ADA, between AWAITING_RESPONDENT_EVIDENCE and DECIDED
 
         when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
 
@@ -182,7 +196,7 @@ class MakeAnApplicationTypesProviderTest {
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
