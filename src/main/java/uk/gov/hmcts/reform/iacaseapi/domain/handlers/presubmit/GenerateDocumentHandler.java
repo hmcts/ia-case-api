@@ -152,6 +152,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         asylumCase.write(APPEAL_DATE, appealDate.toString());
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
         System.out.println(getFtpaApplicationDeadline(asylumCase, appealDate));
+        String ess = getFtpaApplicationDeadline(asylumCase, appealDate);
         asylumCase.write(FTPA_APPLICATION_DEADLINE_DATE, getFtpaApplicationDeadline(asylumCase, appealDate));
     }
 
