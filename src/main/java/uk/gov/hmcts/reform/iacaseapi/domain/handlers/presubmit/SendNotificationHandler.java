@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
@@ -169,6 +167,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
         }
+
+        // @TODO Get rid of this condition when appellant application notification is implemented
+        if (isRespondentApplication(callback.getCaseDetails().getCaseData())) {
+            eventsToHandle.add(Event.RESIDENT_JUDGE_FTPA_DECISION);
+            eventsToHandle.add(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        }
+
         return eventsToHandle;
     }
 
@@ -201,5 +206,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
                    .orElse(NO)
                    .equals(YES);
+    }
+
+    private boolean isRespondentApplication(AsylumCase asylumCase) {
+        return asylumCase.read(FTPA_APPLICANT_TYPE, String.class)
+            .map("respondent"::equals).orElse(false);
     }
 }
