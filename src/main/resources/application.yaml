@@ -383,6 +383,7 @@ security:
       - "markAddendumEvidenceAsReviewed"
       - "adaSuitabilityReview"
       - "transferOutOfAda"
+      - "reviewHearingRequirements"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
