@@ -151,6 +151,7 @@ ia-bail-case-api:
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
 
 ia-aip-frontend:
+  enabled: true
   nodejs:
     image: "https://hmctspublic.azurecr.io/ia/aip-frontend:latest"
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
