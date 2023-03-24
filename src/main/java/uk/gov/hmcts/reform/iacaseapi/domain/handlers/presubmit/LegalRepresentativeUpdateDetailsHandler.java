@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppender;
 
-
 @Slf4j
 @Component
 public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -80,6 +79,10 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_NAME, name);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, email);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, reference);
+
+        if (asylumCase.read(LEGAL_REPRESENTATIVE_NAME).isEmpty()) {
+            asylumCase.write(LEGAL_REPRESENTATIVE_NAME, name);
+        }
 
         // remove the field which is used to suppress notifications after appeal is transferred to another Legal Rep firm
         asylumCase.clear(AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD);
