@@ -153,7 +153,8 @@ ia-bail-case-api:
 ia-aip-frontend:
   enabled: true
   nodejs:
-    image: "https://hmctspublic.azurecr.io/ia/aip-frontend:latest"
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     memoryRequests: 256Mi
