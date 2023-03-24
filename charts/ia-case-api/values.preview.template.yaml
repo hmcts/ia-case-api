@@ -1,5 +1,5 @@
 java:
-  # Don't modify below here
+  # Don't modify below here NO Change
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
