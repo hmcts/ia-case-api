@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableSet;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -514,11 +513,9 @@ class GenerateDocumentHandlerTest {
         verify(documentGenerator, times(1)).generate(callback);
 
         if (yesOrNo.equals(YesOrNo.YES)) {
-            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,
-                    EXPECTED_FTPA_DEADLINE_ADA.format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_ADA.toString());
         } else {
-            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,
-                    EXPECTED_FTPA_DEADLINE_UK.format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_UK.toString());
         }
     }
 

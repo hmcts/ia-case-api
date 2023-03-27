@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
@@ -208,7 +207,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
 
         if (isInternalCase) {
-            return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).format(DateTimeFormatter.ofPattern("d MMM yyyy"));
+            return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).toString();
         }
 
         LocalDate ftpaApplicationDeadline;
