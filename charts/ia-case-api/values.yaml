@@ -64,7 +64,9 @@ ia-home-office-integration-api:
 ia-bail-case-api:
   enabled: false
 ia-aip-frontend:
-  enabled: false  
+  enabled: false
+redis:
+  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:
