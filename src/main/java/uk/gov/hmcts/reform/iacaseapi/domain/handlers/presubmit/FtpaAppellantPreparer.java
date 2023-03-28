@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -79,7 +78,7 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
         }
 
         final Optional<String> ftpaApplicationDeadline =
-                asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE_DATE, String.class);
+                asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE, String.class);
 
         if (ftpaApplicationDeadline.isEmpty()) {
             // For in-flight cases
@@ -87,8 +86,7 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        LocalDate ftpaApplicationDeadlineDate = LocalDate.parse(ftpaApplicationDeadline.get(),
-            DateTimeFormatter.ofPattern("d MMMM yyyy"));
+        LocalDate ftpaApplicationDeadlineDate = LocalDate.parse(ftpaApplicationDeadline.get());
 
         if (dateProvider.now().isAfter(ftpaApplicationDeadlineDate)) {
             asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);

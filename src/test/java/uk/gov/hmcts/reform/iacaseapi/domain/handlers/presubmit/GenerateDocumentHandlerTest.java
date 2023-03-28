@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableSet;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -188,8 +187,7 @@ class GenerateDocumentHandlerTest {
             if (event.equals(SEND_DECISION_AND_REASONS)) {
                 verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
                 verify(expectedUpdatedCase).write(APPEAL_DATE, FAKE_APPEAL_DATE.toString());
-                verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
-                    EXPECTED_FTPA_DEADLINE_UK.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+                verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,EXPECTED_FTPA_DEADLINE_UK.toString());
             }
 
             reset(callback);
@@ -451,8 +449,7 @@ class GenerateDocumentHandlerTest {
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
         verify(documentGenerator, times(1)).generate(callback);
 
-        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
-            EXPECTED_FTPA_DEADLINE_ADA.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_ADA.toString());
     }
 
     @Test
@@ -472,8 +469,7 @@ class GenerateDocumentHandlerTest {
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
         verify(documentGenerator, times(1)).generate(callback);
 
-        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
-            EXPECTED_FTPA_DEADLINE_OOC.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_OOC.toString());
     }
 
     @Test
@@ -490,8 +486,7 @@ class GenerateDocumentHandlerTest {
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
         verify(documentGenerator, times(1)).generate(callback);
 
-        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
-            EXPECTED_FTPA_DEADLINE_UK.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_UK.toString());
     }
 
     @ParameterizedTest
@@ -518,11 +513,9 @@ class GenerateDocumentHandlerTest {
         verify(documentGenerator, times(1)).generate(callback);
 
         if (yesOrNo.equals(YesOrNo.YES)) {
-            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
-                    EXPECTED_FTPA_DEADLINE_ADA.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_ADA.toString());
         } else {
-            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE_DATE,
-                    EXPECTED_FTPA_DEADLINE_UK.format(DateTimeFormatter.ofPattern("d MMMM yyyy")));
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_UK.toString());
         }
     }
 
