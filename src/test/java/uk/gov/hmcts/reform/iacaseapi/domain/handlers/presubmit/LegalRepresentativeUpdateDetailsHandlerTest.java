@@ -86,6 +86,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_NAME), eq(legalRepName));
         verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
+        verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_NAME), eq(legalRepName));
 
         verify(asylumCase, times(1)).clear(eq(CHANGE_ORGANISATION_REQUEST_FIELD));
     }
