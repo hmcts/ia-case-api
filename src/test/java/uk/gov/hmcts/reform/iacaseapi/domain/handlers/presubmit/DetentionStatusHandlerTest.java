@@ -97,7 +97,9 @@ class DetentionStatusHandlerTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = detentionStatusHandler.canHandle(callbackStage, callback);
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && ((callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL))) {
+                    && ((callback.getEvent() == Event.START_APPEAL
+                         || callback.getEvent() == Event.EDIT_APPEAL
+                         || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED))) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

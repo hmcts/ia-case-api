@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE_AO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -131,6 +132,8 @@ public class CustodialDateValidatorTest {
 
         when(asylumCase.read(DATE_CUSTODIAL_SENTENCE, CustodialSentenceDate.class))
             .thenReturn(Optional.of(custodialSentenceDate));
+        when(asylumCase.read(DATE_CUSTODIAL_SENTENCE_AO, CustodialSentenceDate.class))
+            .thenReturn(Optional.of(custodialSentenceDate));
 
         String yesterday = now.minusDays(1).toString();
         when(custodialSentenceDate.getCustodialDate()).thenReturn(yesterday);
@@ -144,10 +147,8 @@ public class CustodialDateValidatorTest {
 
         if (event.equals(Event.MARK_APPEAL_AS_DETAINED)) {
             assertThat(errors).hasSize(1).containsOnly(CALLBACK_ERROR_MESSAGE_AO);
-
         } else {
             assertThat(errors).hasSize(1).containsOnly(CALLBACK_ERROR_MESSAGE_LR);
-
         }
     }
 
