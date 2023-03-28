@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,7 +150,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         LocalDate appealDate = dateProvider.now();
         asylumCase.write(APPEAL_DATE, appealDate.toString());
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
-        asylumCase.write(FTPA_APPLICATION_DEADLINE_DATE, getFtpaApplicationDeadline(asylumCase, appealDate));
+        asylumCase.write(FTPA_APPLICATION_DEADLINE, getFtpaApplicationDeadline(asylumCase, appealDate));
     }
 
     private void changeEditListingApplicationsToCompleted(AsylumCase asylumCase) {
@@ -208,7 +207,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
 
         if (isInternalCase) {
-            return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+            return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).toString();
         }
 
         LocalDate ftpaApplicationDeadline;
@@ -222,7 +221,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             ftpaApplicationDeadline = appealDate.plusDays(ftpaAppealOutOfTimeDaysUk);
         }
 
-        return ftpaApplicationDeadline.format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
+        return ftpaApplicationDeadline.toString();
     }
 
     private LocalDate getFtpaApplicationDeadlineForInternalCase(LocalDate appealDate, boolean isAda) {
