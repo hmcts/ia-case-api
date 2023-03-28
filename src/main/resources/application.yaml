@@ -278,7 +278,11 @@ security:
       - "markAppealPaid"
       - "transferOutOfAda"
       - "markAppealAsAda"
+<<<<<<< HEAD
       - "removeDetainedStatus"
+=======
+      - "markAppealAsDetained"
+>>>>>>> d41d233c (RIA-6906 MarkAppealAsDetained event, pre- and post-submit handlers, PrisonNomsNumber entity)
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -320,6 +324,7 @@ security:
       - "editAppealAfterSubmit"
       - "markAppealAsAda"
       - "removeDetainedStatus"
+      - "markAppealAsDetained"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

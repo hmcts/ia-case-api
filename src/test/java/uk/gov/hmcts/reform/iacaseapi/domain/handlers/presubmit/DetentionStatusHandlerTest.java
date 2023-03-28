@@ -67,6 +67,19 @@ class DetentionStatusHandlerTest {
     }
 
     @Test
+    void should_mark_appeal_as_detained() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_AS_DETAINED);
+
+        detentionStatusHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.DETENTION_STATUS, DetentionStatus.DETAINED);
+
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
