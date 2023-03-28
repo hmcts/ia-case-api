@@ -179,6 +179,14 @@ ia-aip-frontend:
       PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
+  redis:
+    enabled: false
+    architecture: standalone
+    master:
+      persistence:
+        enabled: false
+    auth:
+      enabled: false
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
