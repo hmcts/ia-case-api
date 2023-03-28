@@ -45,8 +45,4 @@ dependencies:
  - name: ia-aip-frontend
     version: 0.0.38
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: ia-aip-frontend.enabled    
-  - name: redis
-    version: 16.11.3
-    repository: 'https://charts.bitnami.com/bitnami'
-    condition: ia-aip-frontend.enabled
+    condition: ia-aip-frontend.enabled  
