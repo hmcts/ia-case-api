@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,6 +41,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class CustodialDateValidatorTest {
 
+    private static final String CALLBACK_ERROR_MESSAGE_LR = "Client's release date must be in the future";
+    private static final String CALLBACK_ERROR_MESSAGE_AO = "Appellant's release date must be in the future";
     private static final String CUSTODIAL_SENTENCE_PAGE_ID = "custodialSentence";
     @Mock
     private Callback<AsylumCase> callback;
@@ -50,7 +53,6 @@ public class CustodialDateValidatorTest {
     @Mock
     private CustodialSentenceDate custodialSentenceDate;
     private LocalDate now;
-    private String callbackErrorMessage = "Client's release date must be in the future";
     private CustodialDateValidator custodialDateValidator;
 
     @BeforeEach
@@ -77,7 +79,10 @@ public class CustodialDateValidatorTest {
 
                 boolean canHandle = custodialDateValidator.canHandle(callbackStage, callback);
 
-                if (Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(event)
+                if (Arrays.asList(Event.START_APPEAL,
+                    Event.EDIT_APPEAL,
+                    Event.EDIT_APPEAL_AFTER_SUBMIT,
+                    Event.MARK_APPEAL_AS_DETAINED).contains(event)
                     && callbackStage == MID_EVENT
                     && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)) {
                     assertTrue(canHandle);
@@ -114,8 +119,16 @@ public class CustodialDateValidatorTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void should_error_when_date_is_not_future() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL",
+        "EDIT_APPEAL",
+        "EDIT_APPEAL_AFTER_SUBMIT",
+        "MARK_APPEAL_AS_DETAINED"
+    })
+    void should_error_when_date_is_not_future(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+
         when(asylumCase.read(DATE_CUSTODIAL_SENTENCE, CustodialSentenceDate.class))
             .thenReturn(Optional.of(custodialSentenceDate));
 
@@ -128,7 +141,14 @@ public class CustodialDateValidatorTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(1).containsOnly(callbackErrorMessage);
+
+        if (event.equals(Event.MARK_APPEAL_AS_DETAINED)) {
+            assertThat(errors).hasSize(1).containsOnly(CALLBACK_ERROR_MESSAGE_AO);
+
+        } else {
+            assertThat(errors).hasSize(1).containsOnly(CALLBACK_ERROR_MESSAGE_LR);
+
+        }
     }
 
     @Test
