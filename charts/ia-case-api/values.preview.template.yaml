@@ -200,7 +200,7 @@ idam-pr:
       - https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
     IAC:
       - https://${SERVICE_FQDN}/redirectUrl
-      -
+
 xui-webapp:
   enabled: true
   nodejs:
