@@ -14,7 +14,9 @@ variable "env" {}
 
 variable "subscription" {}
 
-variable "deployment_namespace" {}
+variable "deployment_namespace" {
+  default = ""
+}
 
 variable "common_tags" {
   type = map(string)
