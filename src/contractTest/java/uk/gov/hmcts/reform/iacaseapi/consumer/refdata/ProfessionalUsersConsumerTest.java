@@ -13,8 +13,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
@@ -75,10 +72,6 @@ public class ProfessionalUsersConsumerTest {
     @Pact(provider = "referenceData_professionalExternalUsers", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentForGetUserOrganisation(PactDslWithProvider builder) {
         // @formatter:off
-        Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
-            .put(HttpHeaders.CONNECTION, "close")
-            .build();
-
         return builder
             .given("Professional users exist for an Active organisation")
             .uponReceiving("A Request to get users for an active organisation")
@@ -89,7 +82,6 @@ public class ProfessionalUsersConsumerTest {
             //.query("status=ACTIVE&returnRoles=false")
             .willRespondWith()
             .body(buildOrganisationsResponsePactDsl())
-            .headers(responseheaders)
             .status(HttpStatus.SC_OK)
             .toPact();
     }
