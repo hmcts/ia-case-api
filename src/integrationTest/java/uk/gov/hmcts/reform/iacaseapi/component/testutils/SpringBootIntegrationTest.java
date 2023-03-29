@@ -3,7 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +20,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.iacaseapi.Application;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
 
 
 @SpringBootTest(classes = {
@@ -46,6 +53,17 @@ public abstract class SpringBootIntegrationTest {
     @Autowired
     private WebApplicationContext wac;
 
+    protected static WireMockServer server;
+
+    @BeforeAll
+    public void spinUp() {
+        server = new WireMockServer(WireMockConfiguration.options()
+            .notifier(new Slf4jNotifier(true))
+            .extensions(new DocumentsApiCallbackTransformer(), new NotificationsApiCallbackTransformer())
+            .port(8990));
+        server.start();
+    }
+
     @BeforeEach
     void setUp() {
         WebRequestTrackingFilter filter;
@@ -59,6 +77,11 @@ public abstract class SpringBootIntegrationTest {
     @BeforeEach
     public void setUpApiClient() {
         iaCaseApiClient = new IaCaseApiClient(objectMapper, mockMvc);
+    }
+
+    @AfterAll
+    public void shutDown() {
+        server.stop();
     }
 
 }

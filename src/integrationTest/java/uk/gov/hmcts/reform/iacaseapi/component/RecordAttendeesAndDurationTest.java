@@ -8,11 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDet
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,14 +35,6 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
 
     @Mock
     private UserDetails userDetails;
-
-    private static WireMockServer server;
-
-    @BeforeAll
-    public void spinUp() {
-        server = new WireMockServer(WireMockConfiguration.options().port(8990));
-        server.start();
-    }
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
@@ -85,10 +73,5 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
         assertThat(response.getConfirmationHeader().get())
             .isEqualTo("# You have recorded the attendees and duration of the hearing");
         assertThat(response.getConfirmationBody().get()).contains("You don't need to do anything more with this case.");
-    }
-
-    @AfterAll
-    public void shutDown() {
-        server.stop();
     }
 }

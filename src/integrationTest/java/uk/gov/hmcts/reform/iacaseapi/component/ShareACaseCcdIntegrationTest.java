@@ -9,8 +9,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -19,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
@@ -58,14 +54,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     private String refDataPath;
 
     private String prdResponseJson;
-
-    private static WireMockServer server;
-
-    @BeforeAll
-    public void spinUp() {
-        server = new WireMockServer(WireMockConfiguration.options().port(8990));
-        server.start();
-    }
 
     @BeforeEach
     public void setupReferenceDataStub() throws IOException {
@@ -151,10 +139,4 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
             .fromPath(CCD_ACCESS_API_PATH)
             .build(idamUserId, "ia", "Asylum", caseId);
     }
-
-    @AfterAll
-    public void shutDown() {
-        server.stop();
-    }
-
 }

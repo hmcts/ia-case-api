@@ -10,10 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAKE_AN_APPLICATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,14 +41,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
         "Case",
         "Officer"
     );
-
-    private static WireMockServer server;
-
-    @BeforeAll
-    public void spinUp() {
-        server = new WireMockServer(WireMockConfiguration.options().port(8990));
-        server.start();
-    }
 
     @BeforeEach
     public void setupStubs() {
@@ -89,10 +77,5 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         // assert that only one request is sent to Idam API for user info data
         Mockito.verify(idamApi, times(1)).userInfo(token);
-    }
-
-    @AfterAll
-    public void shutDown() {
-        server.stop();
     }
 }

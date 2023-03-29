@@ -9,11 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -31,14 +27,6 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
 
     private String expectedId = "someId";
     private long caseId = 54321;
-
-    private static WireMockServer server;
-
-    @BeforeAll
-    public void spinUp() {
-        server = new WireMockServer(WireMockConfiguration.options().port(8990));
-        server.start();
-    }
 
     @BeforeEach
     public void setupTimedEventServiceStub() {
@@ -81,10 +69,5 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
             .orElse("");
 
         assertThat(expectedId).isEqualTo(id);
-    }
-
-    @AfterAll
-    public void shutDown() {
-        server.stop();
     }
 }
