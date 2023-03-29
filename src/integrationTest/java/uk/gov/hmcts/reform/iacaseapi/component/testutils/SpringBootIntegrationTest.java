@@ -32,9 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.Application;
     "AAC_URL=http://127.0.0.1:8990",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
     "IA_DOCMOSIS_ENABLED=true"})
-/*@ExtendWith({
-    WiremockResolver.class
-})*/
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
