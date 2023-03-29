@@ -21,6 +21,7 @@ java:
     CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    CASE_DOCUMENT_AM_URL: "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
     OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"

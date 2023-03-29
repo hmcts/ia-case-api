@@ -3,79 +3,83 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
-import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 @Service
+@ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
 public class SystemDocumentManagementUploader {
 
-    private final DocumentUploadClientApi documentUploadClientApi;
+    private final CaseDocumentClient caseDocumentClient;
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
+    @Autowired
     public SystemDocumentManagementUploader(
-        DocumentUploadClientApi documentUploadClientApi,
-        AuthorizationHeadersProvider authorizationHeadersProvider
+            CaseDocumentClient caseDocumentClient,
+            AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
-        this.documentUploadClientApi = documentUploadClientApi;
+        this.caseDocumentClient = caseDocumentClient;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
+
     }
 
     public Document upload(
-        Resource resource,
-        String contentType
+            Resource resource,
+            String contentType
     ) {
         final String serviceAuthorizationToken =
-            authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization()
-                .getValue("ServiceAuthorization");
+                authorizationHeadersProvider
+                        .getLegalRepresentativeAuthorization()
+                        .getValue("ServiceAuthorization");
 
         final String accessToken =
-            authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization()
-                .getValue("Authorization");
-
-        final String userId = "1";
+                authorizationHeadersProvider
+                        .getLegalRepresentativeAuthorization()
+                        .getValue("Authorization");
 
         try {
 
             MultipartFile file = new InMemoryMultipartFile(
-                resource.getFilename(),
-                resource.getFilename(),
-                contentType,
-                ByteStreams.toByteArray(resource.getInputStream())
+                    resource.getFilename(),
+                    resource.getFilename(),
+                    contentType,
+                    ByteStreams.toByteArray(resource.getInputStream())
             );
 
-            UploadResponse uploadResponse =
-                documentUploadClientApi
-                    .upload(
-                        accessToken,
-                        serviceAuthorizationToken,
-                        userId,
-                        Collections.singletonList(file)
-                    );
 
-            uk.gov.hmcts.reform.document.domain.Document uploadedDocument =
-                uploadResponse
-                    .getEmbedded()
-                    .getDocuments()
-                    .get(0);
+            UploadResponse  uploadResponse =
+                    caseDocumentClient.uploadDocuments(
+                            accessToken,
+                            serviceAuthorizationToken,
+                            "Asylum",
+                            "IA",
+                                    Collections.singletonList(file)
+                            );
+
+
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
+                    uploadResponse
+                            .getDocuments()
+                            .get(0);
 
             return new Document(
-                uploadedDocument
-                    .links
-                    .self
-                    .href,
-                uploadedDocument
-                    .links
-                    .binary
-                    .href,
-                uploadedDocument
-                    .originalDocumentName
+                    uploadedDocument
+                            .links
+                            .self
+                            .href,
+                    uploadedDocument
+                            .links
+                            .binary
+                            .href,
+                    uploadedDocument
+                            .originalDocumentName
             );
 
         } catch (IOException e) {

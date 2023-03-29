@@ -13,13 +13,16 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
@@ -44,7 +47,9 @@ public class RefDataConsumerTest {
 
     @Pact(provider = "referenceData_caseworkerRefUsers", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
-
+        Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
+            .put(HttpHeaders.CONNECTION, "close")
+            .build();
         return builder
             .given("A list of users for CRD request")
             .uponReceiving("A request for caseworkers")
@@ -56,6 +61,7 @@ public class RefDataConsumerTest {
             .willRespondWith()
             .status(200)
             .body(buildCaseworkerListResponsePactDsl())
+            .headers(responseheaders)
             .toPact();
     }
 

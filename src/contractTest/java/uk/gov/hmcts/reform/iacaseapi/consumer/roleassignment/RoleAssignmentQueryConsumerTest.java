@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -157,23 +158,24 @@ public class RoleAssignmentQueryConsumerTest {
 
     private String createRoleAssignmentRequestSearchQueryMultipleRoleAssignments() {
         return "{\n"
-            + "\"roleType\": [\"ORGANISATION\"],\n"
-            + "\"roleName\": [\"tribunal-caseworker\",\"senior-tribunal-caseworker\"],\n"
-            + "\"classification\": [\"PUBLIC\",\"RESTRICTED\",\"PRIVATE\"],\n"
-            + "\"grantType\": [\"STANDARD\"],\n"
-            + "\"validAt\": \"2021-12-04T00:00:00\",\n"
-            + "\"attributes\": {\n"
-            + "\"primaryLocation\": [\"500A2S\"],\n"
-            + "\"jurisdiction\": [\"IA\"]\n"
-            + "}\n"
-            + "}";
+               + "\"roleType\": [\"ORGANISATION\"],\n"
+               + "\"roleName\": [\"tribunal-caseworker\",\"senior-tribunal-caseworker\"],\n"
+               + "\"classification\": [\"PUBLIC\",\"RESTRICTED\",\"PRIVATE\"],\n"
+               + "\"grantType\": [\"STANDARD\"],\n"
+               + "\"validAt\": \"2021-12-04T00:00:00\",\n"
+               + "\"attributes\": {\n"
+               + "\"primaryLocation\": [\"500A2S\"],\n"
+               + "\"jurisdiction\": [\"IA\"]\n"
+               + "}\n"
+               + "}";
     }
 
     private Map<String, String> getResponseHeaders() {
         Map<String, String> responseHeaders = Maps.newHashMap();
         responseHeaders.put("Content-Type",
             "application/vnd.uk.gov.hmcts.role-assignment-service.post-assignment-query-request+json;"
-                + "charset=UTF-8;version=1.0");
+            + "charset=UTF-8;version=1.0");
+        responseHeaders.put(HttpHeaders.CONNECTION, "close");
         return responseHeaders;
     }
 

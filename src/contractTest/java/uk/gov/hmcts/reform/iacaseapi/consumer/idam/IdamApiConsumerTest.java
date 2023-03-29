@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,6 +47,10 @@ public class IdamApiConsumerTest {
     @Pact(provider = "idamApi_oidc", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
 
+        Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
+            .put(HttpHeaders.CONNECTION, "close")
+            .build();
+
         return builder
             .given("userinfo is requested")
             .uponReceiving("A request for a UserInfo")
@@ -56,6 +61,7 @@ public class IdamApiConsumerTest {
             .willRespondWith()
             .status(200)
             .body(createUserDetailsResponse())
+            .headers(responseheaders)
             .toPact();
     }
 
@@ -64,6 +70,7 @@ public class IdamApiConsumerTest {
 
         Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
             .put("Content-Type", "application/json")
+            .put(HttpHeaders.CONNECTION, "close")
             .build();
 
         return builder
@@ -95,7 +102,6 @@ public class IdamApiConsumerTest {
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentToken")
     public void verifyIdamUserDetailsRolesPactToken() {
-
         Map<String, String> tokenRequestMap = buildTokenRequestMap();
         Token token = idamApi.token(tokenRequestMap);
         assertEquals("Token is not expected", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre", token.getAccessToken());
