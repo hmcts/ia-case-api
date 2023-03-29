@@ -1,10 +1,11 @@
+/*
 package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import ru.lanwen.wiremock.config.WiremockConfigFactory;
+//import ru.lanwen.wiremock.config.WiremockConfigFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
 
@@ -26,3 +27,4 @@ public class StaticPortWiremockFactory implements WiremockConfigFactory {
     }
 
 }
+*/

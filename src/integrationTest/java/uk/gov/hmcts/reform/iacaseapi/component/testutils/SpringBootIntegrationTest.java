@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.Application;
 
 
@@ -33,11 +32,12 @@ import uk.gov.hmcts.reform.iacaseapi.Application;
     "AAC_URL=http://127.0.0.1:8990",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
     "IA_DOCMOSIS_ENABLED=true"})
-@ExtendWith({
+/*@ExtendWith({
     WiremockResolver.class
-})
+})*/
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class SpringBootIntegrationTest {
 
     @Autowired

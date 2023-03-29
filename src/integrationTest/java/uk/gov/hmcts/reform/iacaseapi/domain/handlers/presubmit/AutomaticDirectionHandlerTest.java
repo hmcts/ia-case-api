@@ -10,11 +10,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -30,6 +32,14 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
     private String expectedId = "someId";
     private long caseId = 54321;
 
+    private static WireMockServer wireMockServer;
+
+    @BeforeAll
+    public void spinUp() {
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8990));
+        wireMockServer.start();
+    }
+
     @BeforeEach
     public void setupTimedEventServiceStub() {
         when(requestTokenProvider.getAccessToken()).thenReturn("Bearer token");
@@ -39,13 +49,12 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
-    void should_trigger_timed_event_service(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    void should_trigger_timed_event_service() {
 
-        addCaseWorkerUserDetailsStub(server);
-        addServiceAuthStub(server);
-        addTimedEventServiceStub(server);
-        addNotificationsApiTransformerStub(server);
+        addCaseWorkerUserDetailsStub(wireMockServer);
+        addServiceAuthStub(wireMockServer);
+        addTimedEventServiceStub(wireMockServer);
+        addNotificationsApiTransformerStub(wireMockServer);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(
             callback()
@@ -72,5 +81,10 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
             .orElse("");
 
         assertThat(expectedId).isEqualTo(id);
+    }
+
+    @AfterAll
+    public void shutDown() {
+        wireMockServer.stop();
     }
 }

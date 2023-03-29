@@ -9,15 +9,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -37,6 +39,14 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
 
     private String prdResponseJson;
 
+    private static WireMockServer wireMockServer;
+
+    @BeforeAll
+    public void spinUp() {
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8990));
+        wireMockServer.start();
+    }
+
     @BeforeEach
     public void setupReferenceDataStub() throws IOException {
 
@@ -48,15 +58,14 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set() {
 
-        addServiceAuthStub(server);
-        addLegalRepUserDetailsStub(server);
-        addReferenceDataPrdResponseStub(server, refDataPathUsers, prdResponseJson);
-        addReferenceDataPrdOrganisationResponseStub(server, refDataPathOrganisation, prdResponseJson);
-        addCcdAssignmentsStub(server);
-        addAcaAssignmentsStub(server);
+        addServiceAuthStub(wireMockServer);
+        addLegalRepUserDetailsStub(wireMockServer);
+        addReferenceDataPrdResponseStub(wireMockServer, refDataPathUsers, prdResponseJson);
+        addReferenceDataPrdOrganisationResponseStub(wireMockServer, refDataPathOrganisation, prdResponseJson);
+        addCcdAssignmentsStub(wireMockServer);
+        addAcaAssignmentsStub(wireMockServer);
 
         long caseId = 9999L;
 
@@ -72,5 +81,10 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
         assertThat(response).isNotNull();
+    }
+
+    @AfterAll
+    public void shutDown() {
+        wireMockServer.stop();
     }
 }
