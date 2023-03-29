@@ -1,4 +1,3 @@
-/*
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -12,14 +11,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAKE_AN_AP
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -46,6 +46,14 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
         "Officer"
     );
 
+    private static WireMockServer server;
+
+    @BeforeAll
+    public void spinUp() {
+        server = new WireMockServer(WireMockConfiguration.options().port(8990));
+        server.start();
+    }
+
     @BeforeEach
     public void setupStubs() {
 
@@ -56,8 +64,7 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_trigger_make_an_application(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void should_trigger_make_an_application() {
 
         addServiceAuthStub(server);
         addNotificationsApiTransformerStub(server);
@@ -83,5 +90,9 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
         // assert that only one request is sent to Idam API for user info data
         Mockito.verify(idamApi, times(1)).userInfo(token);
     }
+
+    @AfterAll
+    public void shutDown() {
+        server.stop();
+    }
 }
-*/
