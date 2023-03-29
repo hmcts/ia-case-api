@@ -278,6 +278,7 @@ security:
       - "markAppealPaid"
       - "transferOutOfAda"
       - "markAppealAsAda"
+      - "removeDetainedStatus"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -318,6 +319,7 @@ security:
       - "markPaymentRequestSent"
       - "editAppealAfterSubmit"
       - "markAppealAsAda"
+      - "removeDetainedStatus"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

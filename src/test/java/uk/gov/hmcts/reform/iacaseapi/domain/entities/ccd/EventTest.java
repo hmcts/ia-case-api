@@ -119,11 +119,12 @@ class EventTest {
         assertEquals("adaSuitabilityReview", Event.ADA_SUITABILITY_REVIEW.toString());
         assertEquals("transferOutOfAda", Event.TRANSFER_OUT_OF_ADA.toString());
         assertEquals("markAppealAsAda", Event.MARK_APPEAL_AS_ADA.toString());
+        assertEquals("removeDetainedStatus", Event.REMOVE_DETAINED_STATUS.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(116, Event.values().length);
+        assertEquals(117, Event.values().length);
     }
 }
