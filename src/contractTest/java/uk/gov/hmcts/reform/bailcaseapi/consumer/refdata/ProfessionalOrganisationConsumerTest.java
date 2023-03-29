@@ -7,6 +7,8 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
@@ -74,6 +77,11 @@ public class ProfessionalOrganisationConsumerTest {
 
     @Pact(provider = "referenceData_organisationalExternalUsers", consumer = "bail_caseApi")
     public RequestResponsePact generatePactFragmentForGetUserOrganisation(PactDslWithProvider builder) {
+
+        Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
+            .put(HttpHeaders.CONNECTION, "close")
+            .build();
+
         // @formatter:off
         return builder
             .given("Organisation with Id exists")
@@ -83,6 +91,7 @@ public class ProfessionalOrganisationConsumerTest {
             .path("/refdata/external/v1/organisations")
             .willRespondWith()
             .body(buildOrganisationResponseDsl())
+            .headers(responseheaders)
             .status(HttpStatus.SC_OK)
             .toPact();
     }

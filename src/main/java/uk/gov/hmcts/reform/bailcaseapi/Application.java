@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
     {
     "uk.gov.hmcts.reform.auth",
     "uk.gov.hmcts.reform.authorisation",
-    "uk.gov.hmcts.reform.bailcaseapi",
+    "uk.gov.hmcts.reform.bailcaseapi"
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
