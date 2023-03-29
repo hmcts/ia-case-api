@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 public class CaseWorkerServiceTest {
 
 
-    private static WireMockServer wireMockServer;
+    private static WireMockServer server;
 
     @MockBean
     private IdamService idamService;
@@ -44,15 +44,15 @@ public class CaseWorkerServiceTest {
 
     @BeforeAll
     public void spinUp() {
-        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8990));
-        wireMockServer.start();
+        server = new WireMockServer(WireMockConfiguration.options().port(8990));
+        server.start();
     }
 
     @Test
     void given_case_worker_ref_data_responds_with_200_then_return_case_worker_name()
         throws IOException {
 
-        CaseWorkerRefDataMock.setup200MockResponse(wireMockServer);
+        CaseWorkerRefDataMock.setup200MockResponse(server);
 
         List<CaseWorkerName> actualCaseWorkerNames = caseWorkerService.getCaseWorkerNameForActorIds(newArrayList(ACTOR_ID));
 
@@ -61,6 +61,6 @@ public class CaseWorkerServiceTest {
 
     @AfterAll
     public void shutDown() {
-        wireMockServer.stop();
+        server.stop();
     }
 }

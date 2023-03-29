@@ -32,12 +32,12 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
     private String expectedId = "someId";
     private long caseId = 54321;
 
-    private static WireMockServer wireMockServer;
+    private static WireMockServer server;
 
     @BeforeAll
     public void spinUp() {
-        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8990));
-        wireMockServer.start();
+        server = new WireMockServer(WireMockConfiguration.options().port(8990));
+        server.start();
     }
 
     @BeforeEach
@@ -51,10 +51,10 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     void should_trigger_timed_event_service() {
 
-        addCaseWorkerUserDetailsStub(wireMockServer);
-        addServiceAuthStub(wireMockServer);
-        addTimedEventServiceStub(wireMockServer);
-        addNotificationsApiTransformerStub(wireMockServer);
+        addCaseWorkerUserDetailsStub(server);
+        addServiceAuthStub(server);
+        addTimedEventServiceStub(server);
+        addNotificationsApiTransformerStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(
             callback()
@@ -85,6 +85,6 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
 
     @AfterAll
     public void shutDown() {
-        wireMockServer.stop();
+        server.stop();
     }
 }

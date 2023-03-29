@@ -39,12 +39,12 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
 
     private String prdResponseJson;
 
-    private static WireMockServer wireMockServer;
+    private static WireMockServer server;
 
     @BeforeAll
     public void spinUp() {
-        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8990));
-        wireMockServer.start();
+        server = new WireMockServer(WireMockConfiguration.options().port(8990));
+        server.start();
     }
 
     @BeforeEach
@@ -60,12 +60,12 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set() {
 
-        addServiceAuthStub(wireMockServer);
-        addLegalRepUserDetailsStub(wireMockServer);
-        addReferenceDataPrdResponseStub(wireMockServer, refDataPathUsers, prdResponseJson);
-        addReferenceDataPrdOrganisationResponseStub(wireMockServer, refDataPathOrganisation, prdResponseJson);
-        addCcdAssignmentsStub(wireMockServer);
-        addAcaAssignmentsStub(wireMockServer);
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPathUsers, prdResponseJson);
+        addReferenceDataPrdOrganisationResponseStub(server, refDataPathOrganisation, prdResponseJson);
+        addCcdAssignmentsStub(server);
+        addAcaAssignmentsStub(server);
 
         long caseId = 9999L;
 
@@ -85,6 +85,6 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
 
     @AfterAll
     public void shutDown() {
-        wireMockServer.stop();
+        server.stop();
     }
 }
