@@ -276,10 +276,10 @@ dependencyManagement {
             entry 'spring-security-oauth2-resource-server'
         }
 
-       /* dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.1') {
+       dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.1') {
             entry 'jackson-databind'
             entry 'jackson-core'
-        }*/
+        }
 
     }
 
