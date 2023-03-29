@@ -11,8 +11,6 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -80,9 +77,6 @@ public class RoleAssignmentApiConsumerTest {
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragment(PactDslWithProvider builder)
         throws JSONException, JsonProcessingException {
-        Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
-            .put(HttpHeaders.CONNECTION, "close")
-            .build();
         return builder
             .given("The assignment request is valid with one requested role and replaceExisting flag as true")
             .uponReceiving("A request to add a role")
@@ -93,7 +87,6 @@ public class RoleAssignmentApiConsumerTest {
             .body(new ObjectMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()
-            .headers(responseheaders)
             .status(201)
             .toPact();
     }
