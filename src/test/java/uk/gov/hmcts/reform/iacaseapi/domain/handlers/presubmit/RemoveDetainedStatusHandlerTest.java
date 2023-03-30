@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -64,6 +65,33 @@ class RemoveDetainedStatusHandlerTest {
         verify(asylumCase).clear(REMOVAL_ORDER_OPTIONS);
         verify(asylumCase).clear(REMOVAL_ORDER_DATE);
         verify(asylumCase).clear(DETENTION_STATUS);
+    }
+
+    @Test
+    void should_not_clear_detention_fields_for_a_non_detained_case() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            removeDetainedStatusHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, never()).clear(DETENTION_FACILITY);
+        verify(asylumCase, never()).clear(IRC_NAME);
+        verify(asylumCase, never()).clear(PRISON_NAME);
+        verify(asylumCase, never()).clear(OTHER_DETENTION_FACILITY_NAME);
+        verify(asylumCase, never()).clear(PRISON_NOMS);
+        verify(asylumCase, never()).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, never()).clear(DATE_CUSTODIAL_SENTENCE);
+        verify(asylumCase, never()).clear(HAS_PENDING_BAIL_APPLICATIONS);
+        verify(asylumCase, never()).clear(BAIL_APPLICATION_NUMBER);
+        verify(asylumCase, never()).clear(REMOVAL_ORDER_OPTIONS);
+        verify(asylumCase, never()).clear(REMOVAL_ORDER_DATE);
+        verify(asylumCase, never()).clear(DETENTION_STATUS);
     }
 
     @Test
