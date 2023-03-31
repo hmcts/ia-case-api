@@ -35,7 +35,7 @@ public class MarkAppealAsDetainedConfirmation implements PostSubmitCallbackHandl
         postSubmitResponse.setConfirmationHeader("# You have marked the appeal as detained");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\nAll parties will be notified that the appeal has been marked an detained.\n\n"
-            + "You should notify the hearing center, if necessary."
+            + "You should update the hearing center, if necessary."
         );
 
         return postSubmitResponse;
