@@ -118,9 +118,10 @@ public enum Event {
     GENERATE_SERVICE_REQUEST("generateServiceRequest"),
     TRANSFER_OUT_OF_ADA("transferOutOfAda"),
     MARK_APPEAL_AS_ADA("markAppealAsAda"),
-
     PIP_ACTIVATION("pipActivation"),
     ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
+    REMOVE_DETAINED_STATUS("removeDetainedStatus"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
