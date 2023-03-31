@@ -1,11 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE_AO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS_AO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_DETAINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -51,6 +47,13 @@ public class MarkAppealAsDetainedHandler implements PreSubmitCallbackHandler<Asy
 
         asylumCase.read(DATE_CUSTODIAL_SENTENCE_AO, CustodialSentenceDate.class)
             .ifPresent(dateAo -> asylumCase.write(DATE_CUSTODIAL_SENTENCE, dateAo));
+
+        // clearing non-detention related fields
+        asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
+        asylumCase.clear(APPELLANT_ADDRESS);
+        asylumCase.clear(CONTACT_PREFERENCE);
+        asylumCase.clear(EMAIL);
+        asylumCase.clear(MOBILE_NUMBER);
 
         asylumCase.write(APPELLANT_IN_DETENTION, YES);
 

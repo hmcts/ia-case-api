@@ -7,11 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE_AO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS_AO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
@@ -73,6 +69,12 @@ class MarkAppealAsDetainedHandlerTest {
         verify(asylumCase).write(PRISON_NOMS, prisonNomsNumber);
         verify(asylumCase).write(DATE_CUSTODIAL_SENTENCE, custodialSentenceDate);
         verify(asylumCase).write(APPELLANT_IN_DETENTION, YES);
+        verify(asylumCase).clear(APPELLANT_HAS_FIXED_ADDRESS);
+        verify(asylumCase).clear(APPELLANT_ADDRESS);
+        verify(asylumCase).clear(CONTACT_PREFERENCE);
+        verify(asylumCase).clear(EMAIL);
+        verify(asylumCase).clear(MOBILE_NUMBER);
+
     }
 
     @Test
