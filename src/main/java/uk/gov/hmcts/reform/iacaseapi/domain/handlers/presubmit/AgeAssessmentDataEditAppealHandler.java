@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,8 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.EDIT_APPEAL);
+                && callback.getEvent() == Event.EDIT_APPEAL
+                && !isAipJourney(callback.getCaseDetails().getCaseData()));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
