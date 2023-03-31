@@ -7,10 +7,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,6 +74,11 @@ public abstract class SpringBootIntegrationTest {
     @BeforeEach
     public void setUpApiClient() {
         iaCaseApiClient = new IaCaseApiClient(objectMapper, mockMvc);
+    }
+
+    @AfterEach
+    public void reset() {
+        server.resetAll();
     }
 
     @AfterAll
