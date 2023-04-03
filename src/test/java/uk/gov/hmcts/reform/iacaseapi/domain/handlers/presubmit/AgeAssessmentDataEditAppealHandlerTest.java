@@ -8,11 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.LATEST;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -43,6 +47,7 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
@@ -204,13 +209,23 @@ public class AgeAssessmentDataEditAppealHandlerTest {
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
-    @Test
-    void check_canHandle() {
+    @ParameterizedTest
+    @EnumSource(value = JourneyType.class, names = { "AIP", "REP" })
+    void check_canHandle(JourneyType journeyType) {
+
+        Optional<JourneyType> isAip = journeyType.equals(JourneyType.AIP)
+            ? Optional.of(JourneyType.AIP)
+            : Optional.empty();
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(isAip);
+
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = ageAssessmentDataEditAppealHandler.canHandle(stage, callback);
-                if ((event == Event.EDIT_APPEAL) && (stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)) {
+                if (event == Event.EDIT_APPEAL
+                    && stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    && isAip.equals(Optional.empty())) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
