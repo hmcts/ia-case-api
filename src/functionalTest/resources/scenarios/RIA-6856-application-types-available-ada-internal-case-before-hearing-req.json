@@ -41,8 +41,16 @@
               "label": "Expedite"
             },
             {
-              "code": "JUDGE_REVIEW",
-              "label": "Judge's review of application decision"
+              "code": "TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS",
+              "label": "Transfer out of accelerated detained appeals process"
+            },
+            {
+              "code": "UPDATE_APPEAL_DETAILS",
+              "label":"Update appeal details"
+            },
+            {
+              "code": "JUDGE_REVIEW_LO",
+              "label": "Judge's review of Legal Officer decision"
             },
             {
               "code": "TIME_EXTENSION",
