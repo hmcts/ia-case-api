@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CustodialSentenceDate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -30,7 +31,10 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)
-               && Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+               && Arrays.asList(Event.START_APPEAL,
+            Event.EDIT_APPEAL,
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.MARK_APPEAL_AS_DETAINED).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -44,13 +48,24 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        AsylumCaseFieldDefinition fieldToBeChecked;
+        String appellantQualifier;
+
+        if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED)) {
+            fieldToBeChecked = DATE_CUSTODIAL_SENTENCE_AO;
+            appellantQualifier = "Appellant";
+        } else {
+            fieldToBeChecked = DATE_CUSTODIAL_SENTENCE;
+            appellantQualifier = "Client";
+        }
+
         Optional<CustodialSentenceDate> optionalCustodialSentenceDate = asylumCase
-            .read(DATE_CUSTODIAL_SENTENCE, CustodialSentenceDate.class);
+            .read(fieldToBeChecked, CustodialSentenceDate.class);
 
         optionalCustodialSentenceDate.ifPresent(custodialSentenceDate -> {
             LocalDate custodialDate = LocalDate.parse(custodialSentenceDate.getCustodialDate());
             if (!custodialDate.isAfter(LocalDate.now())) {
-                response.addError("Client's release date must be in the future");
+                response.addError(appellantQualifier + "'s release date must be in the future");
             }
         });
 

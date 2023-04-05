@@ -5,6 +5,7 @@ import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS_AO;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,7 +13,11 @@ import org.junit.jupiter.api.Test;
 
 class AsylumCaseFieldDefinitionTest {
 
-    List<AsylumCaseFieldDefinition> exceptions = List.of(new AsylumCaseFieldDefinition[]{ATTENDING_TCW, PRISON_NOMS});
+    List<AsylumCaseFieldDefinition> exceptions = List.of(new AsylumCaseFieldDefinition[]{
+        ATTENDING_TCW,
+        PRISON_NOMS,
+        PRISON_NOMS_AO
+    });
 
     @Test
     void mapped_to_equivalent_field_name() {
