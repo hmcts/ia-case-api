@@ -121,6 +121,7 @@ public enum Event {
     PIP_ACTIVATION("pipActivation"),
     ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
     REMOVE_DETAINED_STATUS("removeDetainedStatus"),
+    MARK_APPEAL_AS_DETAINED("markAppealAsDetained"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

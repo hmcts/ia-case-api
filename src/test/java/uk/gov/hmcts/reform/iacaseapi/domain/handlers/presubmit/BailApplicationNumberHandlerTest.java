@@ -122,7 +122,8 @@ public class BailApplicationNumberHandlerTest {
                 if (callbackStage == PreSubmitCallbackStage.MID_EVENT
                     && (callback.getEvent() == Event.START_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
+                    || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED)
                     && callback.getPageId().equals(HAS_PENDING_BAIL_APPLICATIONS.value())) {
 
                     assertTrue(canHandle);

@@ -114,5 +114,6 @@
         <cve>CVE-2022-1471</cve>
         <cve>CVE-2023-28708</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20860</cve>
     </suppress>
 </suppressions>

@@ -1633,7 +1633,10 @@ public enum AsylumCaseFieldDefinition {
         "detentionFacility", new TypeReference<String>(){}),
 
     PRISON_NOMS(
-        "prisonNOMSNumber", new TypeReference<String>(){}),
+        "prisonNOMSNumber", new TypeReference<PrisonNomsNumber>(){}),
+
+    PRISON_NOMS_AO(
+        "prisonNOMSNumberAo", new TypeReference<PrisonNomsNumber>(){}),
 
     IRC_NAME(
         "ircName", new TypeReference<String>(){}),
@@ -1649,6 +1652,9 @@ public enum AsylumCaseFieldDefinition {
 
     DATE_CUSTODIAL_SENTENCE(
         "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+
+    DATE_CUSTODIAL_SENTENCE_AO(
+        "dateCustodialSentenceAo", new TypeReference<CustodialSentenceDate>(){}),
 
     BAIL_APPLICATION_NUMBER(
              "bailApplicationNumber", new TypeReference<String>(){}),
