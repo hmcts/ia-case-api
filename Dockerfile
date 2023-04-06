@@ -1,5 +1,9 @@
-ARG APP_INSIGHTS_AGENT_VERSION=2.5.1-BETA
-FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.4
+ # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
+ARG APP_INSIGHTS_AGENT_VERSION=3.4.8
+
+# Application image
+
+FROM hmctspublic.azurecr.io/base/java:11-distroless
 
 # Change to non-root privilege
 USER hmcts
