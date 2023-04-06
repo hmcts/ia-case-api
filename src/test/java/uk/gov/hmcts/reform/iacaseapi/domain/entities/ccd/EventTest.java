@@ -120,11 +120,11 @@ class EventTest {
         assertEquals("transferOutOfAda", Event.TRANSFER_OUT_OF_ADA.toString());
         assertEquals("markAppealAsAda", Event.MARK_APPEAL_AS_ADA.toString());
         assertEquals("removeDetainedStatus", Event.REMOVE_DETAINED_STATUS.toString());
-
+        assertEquals("markAppealAsDetained", Event.MARK_APPEAL_AS_DETAINED.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(117, Event.values().length);
+        assertEquals(118, Event.values().length);
     }
 }

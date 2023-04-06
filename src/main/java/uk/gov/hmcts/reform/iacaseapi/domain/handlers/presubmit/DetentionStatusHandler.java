@@ -29,7 +29,8 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && (callback.getEvent() == Event.START_APPEAL
-               || callback.getEvent() == Event.EDIT_APPEAL);
+               || callback.getEvent() == Event.EDIT_APPEAL
+               || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED);
     }
 
     @Override
@@ -57,6 +58,10 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
             } else if (appellantInDetention.equals(Optional.of(YesOrNo.YES)) && isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.NO))) {
                 asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
             }
+        }
+
+        if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED)) {
+            asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
