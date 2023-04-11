@@ -27,7 +27,7 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-  postgresql:
+  postgresql:    
     auth:
       username: ia_case_api
       password: ia_case_api
@@ -52,3 +52,18 @@ java:
         - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS-11
         - AppInsightsInstrumentationKey
+        
+ia-case-payments-api:
+  enabled: false
+ia-case-documents-api:
+  enabled: false
+ia-case-notifications-api:
+  enabled: false
+ia-home-office-integration-api:
+  enabled: false
+idam-pr:
+  enabled: false
+xui-webapp:
+  enabled: false
+ccd:
+  enabled: false

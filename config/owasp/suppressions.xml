@@ -61,18 +61,19 @@
         </notes>
         <cve>CVE-2022-34305</cve>
         <cve>CVE-2022-25857</cve>
-    </suppress>
+    </suppress>   
     <suppress>
         <notes>
             The package org.yaml:snakeyaml from 0 and before 1.31 are vulnerable to Denial of Service(DoS) due missing
             to nested depth limitation for collections.
         </notes>
-		<cve>CVE-2021-4235</cve>
-		<cve>CVE-2022-3064</cve>
+	<cve>CVE-2021-4235</cve>
+	<cve>CVE-2022-3064</cve>
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
+	<cve>CVE-2022-25857</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[fasterxml:jackson-databind:2.13.3]]>
@@ -89,7 +90,7 @@
         <cve>CVE-2022-31690</cve>
         <cve>CVE-2022-42252</cve>
         <cve>CVE-2022-41854</cve>
-		<cve>CVE-2022-45143</cve>
+	<cve>CVE-2022-45143</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[postgresql:postgresql:42.4.1]]>
@@ -98,7 +99,7 @@
     </suppress>
     <suppress>
         <cve>CVE-2021-37533</cve>
-		<cve>CVE-2021-4277</cve>		
+	<cve>CVE-2021-4277</cve>		
     </suppress>
     <suppress>
         <notes><![CDATA[LatencyUtils-2.0.3.jar vulnerabilities]]>
@@ -110,5 +111,10 @@
     </suppress>
     <suppress>
     	<cve>CVE-2022-31197</cve>
+    	<cve>CVE-2022-45688</cve>
+    	<cve>CVE-2023-24998</cve>
+	<cve>CVE-2022-1471</cve>
+	<cve>CVE-2023-28708</cve>
+	<cve>CVE-2023-20861</cve>
     </suppress>
 </suppressions>
