@@ -62,8 +62,4 @@ public class HandlerUtils {
     public static String getAfterHearingReqSuffix() {
         return "_afterHearingReq";
     }
-
-    public static boolean isNabaEnabled(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
-    }
 }
