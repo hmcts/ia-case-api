@@ -52,6 +52,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RespondentReviewA
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.SendNotificationHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValid;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidCheckers;
@@ -330,7 +331,7 @@ class PreSubmitCallbackDispatcherTest {
         PreSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseHandler(mock(DocumentReceiver.class), mock(DocumentsAppender.class));
         PreSubmitCallbackHandler<AsylumCase> h3 = new LegalRepresentativeDetailsHandler(mock(UserDetails.class));
         PreSubmitCallbackHandler<AsylumCase> h5 = new RespondentReviewAppealResponseAddedUpdater();
-        PreSubmitCallbackHandler<AsylumCase> h6 = new SendNotificationHandler(mock(NotificationSender.class));
+        PreSubmitCallbackHandler<AsylumCase> h6 = new SendNotificationHandler(mock(NotificationSender.class), mock(FeatureToggler.class));
 
         PreSubmitCallbackDispatcher<AsylumCase> dispatcher = new PreSubmitCallbackDispatcher<>(
             ccdEventAuthorizor,
