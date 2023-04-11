@@ -1,5 +1,6 @@
 {
   "description": "RIA-6907 Remove detained status",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
