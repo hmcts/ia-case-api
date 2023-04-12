@@ -132,7 +132,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.ADA_SUITABILITY_REVIEW,
             Event.TRANSFER_OUT_OF_ADA,
             Event.MARK_APPEAL_AS_ADA,
-            Event.UPDATE_PAYMENT_STATUS
+            Event.UPDATE_PAYMENT_STATUS,
+            Event.REMOVE_DETAINED_STATUS,
+            Event.MARK_APPEAL_AS_DETAINED
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -159,7 +161,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.MAKE_AN_APPLICATION,
                 Event.ADA_SUITABILITY_REVIEW,
                 Event.APPLY_FOR_FTPA_APPELLANT,
-                Event.APPLY_FOR_FTPA_RESPONDENT
+                Event.APPLY_FOR_FTPA_RESPONDENT,
+                Event.REMOVE_DETAINED_STATUS
         );
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
