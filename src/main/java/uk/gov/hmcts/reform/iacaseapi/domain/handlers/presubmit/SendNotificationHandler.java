@@ -129,7 +129,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
 
-        // TODO Get rid of this when notification is activated for AIP
         if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
             && !featureToggler.getValue("aip-ftpa-feature", false)) {
             eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
