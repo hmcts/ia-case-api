@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
@@ -46,6 +47,8 @@ class SendNotificationHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private SendNotificationHandler sendNotificationHandler;
 
@@ -53,7 +56,7 @@ class SendNotificationHandlerTest {
     public void setUp() {
 
         sendNotificationHandler =
-            new SendNotificationHandler(notificationSender);
+            new SendNotificationHandler(notificationSender, featureToggler);
 
         ReflectionTestUtils.setField(sendNotificationHandler, "isSaveAndContinueEnabled", true);
 

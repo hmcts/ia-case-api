@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 @Component
@@ -24,11 +25,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private final NotificationSender<AsylumCase> notificationSender;
     @Value("${featureFlag.isSaveAndContinueEnabled}")
     private boolean isSaveAndContinueEnabled;
+    private final FeatureToggler featureToggler;
 
     public SendNotificationHandler(
-        NotificationSender<AsylumCase> notificationSender
+        NotificationSender<AsylumCase> notificationSender,
+        FeatureToggler featureToggler
     ) {
         this.notificationSender = notificationSender;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -125,8 +129,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
 
-        // TODO Get rid of this when notification is activated for AIP
-        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())) {
+        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+            && !featureToggler.getValue("aip-ftpa-feature", false)) {
             eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
         }
         return eventsToHandle;
