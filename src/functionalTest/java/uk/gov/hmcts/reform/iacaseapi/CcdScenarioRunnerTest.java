@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExtractor;
 import uk.gov.hmcts.reform.iacaseapi.util.StringResourceLoader;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 
+@Slf4j
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
@@ -100,9 +102,9 @@ public class CcdScenarioRunnerTest {
                 .load("/scenarios/" + scenarioPattern)
                 .values();
 
-        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
-        System.out.println((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
-        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
+        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
 
         for (String scenarioSource : scenarioSources) {
 
@@ -140,11 +142,11 @@ public class CcdScenarioRunnerTest {
             }
 
             if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
-                System.out.println((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
+                log.info((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
                 continue;
             }
 
-            System.out.println((char) 27 + "[33m" + "SCENARIO: " + description);
+            log.info((char) 27 + "[33m" + "SCENARIO: " + description);
 
             Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
@@ -202,8 +204,8 @@ public class CcdScenarioRunnerTest {
             );
         }
 
-        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
-        System.out.println((char) 27 + "[0m");
+        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "[0m");
     }
 
     private void loadPropertiesIntoMapValueExpander() {
