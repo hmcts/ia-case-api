@@ -25,6 +25,7 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+    AAC_URL: "http://${SERVICE_NAME}-aac-manage-case-assignment"
   keyVaults:
     ia:
       secrets:
