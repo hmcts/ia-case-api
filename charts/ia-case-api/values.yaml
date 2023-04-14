@@ -71,3 +71,5 @@ xui-webapp:
   enabled: false
 ccd:
   enabled: false
+aac-manage-case-assignment:
+  enabled: false
