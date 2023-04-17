@@ -264,6 +264,8 @@ ccd:
       enabled: false
     s2s:
       enabled: false
+    elastic:
+      enabled: true
     ras:
       enabled: false
   global:
@@ -312,6 +314,9 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
         ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
+        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
@@ -339,6 +344,9 @@ ccd:
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
+        ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
       keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
@@ -346,6 +354,60 @@ ccd:
     persistence:
       enabled: false
 
+  elasticsearch:
+    nameOverride: ${SERVICE_NAME}-es
+    clusterName: "es"
+    replicas: 1
+    initResources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "25m"
+        memory: "512Mi"
+    minimumMasterNodes: 1
+    antiAffinity: "soft"
+    esJavaOpts: "-Xmx512m -Xms512m"
+    extraEnvs:
+      - name: discovery.type
+        value: single-node
+      - name: cluster.initial_master_nodes
+        value: ""
+      - name: action.auto_create_index
+        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
+    persistence:
+      enabled: false
+
+    logstash:
+      devmemoryRequests: 512Mi
+      devcpuRequests: "1000m"
+      devmemoryLimits: 1024Mi
+      devcpuLimits: "2500m"
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 512Mi
+      image:
+        repository: hmctspublic.azurecr.io/ccd/logstash
+        tag: ccd-ia-logstash-latest
+        pullPolicy: Always
+      logstashJavaOpts: -Xmx1g -Xms512M
+      persistence:
+        enabled: false
+      volumeMounts:
+        - name: pipeline
+          mountPath: /usr/share/logstash/files
+      elasticsearch:
+        host: ${SERVICE_NAME}-es-master
+        port: 9200
+      configTpl:
+        xpack.monitoring.enabled: "false"
+        db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+        db.user: hmcts
+        db.pwd: hmcts
+        es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
+      livenessProbe:
+        initialDelaySeconds: 90
 
 aac-manage-case-assignment:
   enabled: true
