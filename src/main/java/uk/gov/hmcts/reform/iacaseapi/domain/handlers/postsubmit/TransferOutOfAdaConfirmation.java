@@ -36,7 +36,7 @@ public class TransferOutOfAdaConfirmation implements PostSubmitCallbackHandler<A
         postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
                         + "All parties will be notified that this is no longer an accelerated detained appeal.\n\n"
-                        + "A Legal Officer will review the case and decide next steps."
+                        + "A Legal Officer will review the case and decide the next steps."
         );
 
         return postSubmitResponse;
