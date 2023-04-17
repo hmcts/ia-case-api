@@ -358,18 +358,19 @@ ccd:
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
+    imageTag: "7.17.1"
     clusterName: "es"
     replicas: 1
     initResources:
       limits:
-        cpu: "500m"
-        memory: "512Mi"
+        cpu: "1000m"
+        memory: "1024Mi"
       requests:
-        cpu: "25m"
-        memory: "512Mi"
+        cpu: "50m"
+        memory: "1024Mi"
     minimumMasterNodes: 1
     antiAffinity: "soft"
-    esJavaOpts: "-Xmx512m -Xms512m"
+    esJavaOpts: "-Xmx1g -Xms1g"
     extraEnvs:
       - name: discovery.type
         value: single-node
@@ -379,9 +380,6 @@ ccd:
         value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
-    ingress:
-      enabled: false
-      className: traefik
 
   logstash:
     devmemoryRequests: 512Mi
