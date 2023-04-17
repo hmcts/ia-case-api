@@ -66,7 +66,7 @@ def secrets = [
 
         secret('idam-caa-username', 'IDAM_CAA_USERNAME'),
         secret('idam-caa-password', 'IDAM_CAA_PASSWORD'),
-        secret('idam-mca-client-secret', 'IDAM_CLIENT_SECRET'),
+        secret('idam-client-secret', 'IDAM_CLIENT_SECRET'),
         secret('manage-case-s2s-key', 'MANAGE_CASE_S2S_KEY'),
         secret('idam-noc-approver-username', 'IDAM_NOC_APPROVER_USERNAME'),
         secret('idam-noc-approver-password', 'IDAM_NOC_APPROVER_PASSWORD'),
