@@ -215,7 +215,6 @@ xui-webapp:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
@@ -226,6 +225,7 @@ xui-webapp:
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac-manage-case-assignment
       JURISDICTIONS: IA
+      WA_SUPPORTED_JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
@@ -234,10 +234,14 @@ xui-webapp:
       FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
+      FEATURE_UPDATED_TASK_PERMISSIONS_ENABLED: false
+      FEATURE_WORKALLOCATION_ENABLED: false
+      FEATURE_ACCESS_MANAGEMENT_ENABLED: false
       NOW: false
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
       PROTOCOL: http
+      STUB: false
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -358,63 +362,12 @@ ccd:
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
-    imageTag: "7.17.1"
-    clusterName: "es"
+    clusterName: es
     replicas: 1
-    initResources:
-      limits:
-        cpu: "1000m"
-        memory: "1024Mi"
-      requests:
-        cpu: "50m"
-        memory: "1024Mi"
-    minimumMasterNodes: 1
-    antiAffinity: "soft"
-    esJavaOpts: "-Xmx1g -Xms1g"
-    extraEnvs:
-      - name: discovery.type
-        value: single-node
-      - name: cluster.initial_master_nodes
-        value: ""
-      - name: action.auto_create_index
-        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
-    persistence:
-      enabled: false
 
   logstash:
-    devmemoryRequests: 512Mi
-    devcpuRequests: "1000m"
-    devmemoryLimits: 1024Mi
-    devcpuLimits: "2500m"
-    resources:
-      requests:
-        cpu: 1000m
-        memory: 1024Mi
-    image: hmctspublic.azurecr.io/ccd/logstash
-    imageTag: "ccd-divorce-logstash-latest"
-    logstashJavaOpts: -Xmx1g -Xms512M
-    extraEnvs:
-      - name: DB_URL
-        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
-      - name: DB_USER
-        value: hmcts
-      - name: DB_PWD
-        value: hmcts
-      - name: ES_HOSTS
-        value: http://${SERVICE_NAME}-es-master:9200
-      - name: ES_DATA_NODES_URL
-        value: http://${SERVICE_NAME}-es-master:9200
-      - name: ELASTIC_SEARCH_DATA_NODES_HOSTS
-        value: http://${SERVICE_NAME}-es-master:9200
-      - name: ES_URL
-        value: http://${SERVICE_NAME}-es-master:9200
-    persistence:
-      enabled: false
-    volumeMounts:
-      - name: pipeline
-        mountPath: /usr/share/logstash/files
-    livenessProbe:
-      initialDelaySeconds: 90
+    image: null
+    tag: ccd-cmc-logstash-latest
 
 aac-manage-case-assignment:
   enabled: true
