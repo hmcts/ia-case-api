@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
@@ -125,12 +125,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (!isPaid(callback)) {
             eventsToHandle.add(Event.END_APPEAL_AUTOMATICALLY);
         }
-        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
+        if (isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
 
-        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+        if (isAipJourney(callback.getCaseDetails().getCaseData())
             && !featureToggler.getValue("aip-ftpa-feature", false)) {
+
+            eventsToHandle.remove(Event.APPLY_FOR_FTPA_RESPONDENT);
             eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
         }
         return eventsToHandle;
