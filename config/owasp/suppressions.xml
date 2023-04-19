@@ -5,7 +5,7 @@
              https://nvd.nist.gov/vuln/detail/CVE-2016-1000027
              Root Cause: spring-web-5.2.3.RELEASE.jar <= org/springframework/remoting/httpinvoker/HttpInvokerServiceExporter.class : [2.5.1,)
              Pivotal Spring Framework 4.1.4 suffers from a potential remote code execution (RCE) issue if used for Java deserialization of untrusted data. Depending on how the library is implemented within a product, this issue may or not occur, and authentication may be required
-             Note: No java deserialization of untrusted data is happening in this component therefore it is suppressed.
+             Note: No java deserialization of untrusted data is happening in this component therefore it is suppressed for now.
             ]]>
         </notes>
         <cve>CVE-2016-1000027</cve>
