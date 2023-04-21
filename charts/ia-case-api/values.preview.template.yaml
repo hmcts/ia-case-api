@@ -323,6 +323,4 @@ ccd:
       limits:
         cpu: "2500m"
         memory: "1024Mi"
-    livenessProbe:
-      initialDelaySeconds: 90
 
