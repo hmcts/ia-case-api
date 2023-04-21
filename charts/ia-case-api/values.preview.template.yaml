@@ -305,21 +305,24 @@ ccd:
         cpu: "25m"
         memory: "512Mi"
   logstash:
+    elasticsearch:
+      host: ${SERVICE_NAME}-es-master
+      port: 9200
     image: hmctspublic.azurecr.io/ccd/logstash
     imageTag: "latest"
     extraEnvs:
       - name: DATA_STORE_URL
         value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
       - name: DATA_STORE_USER
-        value: ${POSTGRES_USER}
+        value: hmcts
       - name: DATA_STORE_PASS
-        value: ${POSTGRES_PASSWORD}
+        value: hmcts
       - name: DB_URL
         value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
       - name: DB_USER
-        value: ${POSTGRES_USER}
+        value: hmcts
       - name: DB_PWD
-        value: ${POSTGRES_PASSWORD}
+        value: hmcts
       - name: ES_HOSTS
         value: http://${SERVICE_NAME}-es-master:9200
       - name: ES_DATA_NODES_URL
@@ -336,9 +339,10 @@ ccd:
         cpu: "2500m"
         memory: "1024Mi"
     configTpl:
+      xpack.monitoring.enabled: "false"
       db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
-      db.user: ${POSTGRES_USER}
-      db.pwd: ${POSTGRES_PASSWORD}
+      db.user: hmcts
+      db.pwd: hmcts
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     livenessProbe:
       initialDelaySeconds: 90
