@@ -296,40 +296,42 @@ ccd:
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
+    imageTag: "7.17.1"
     clusterName: "es"
     replicas: 1
+    initResources:
+      limits:
+        cpu: "1000m"
+        memory: "1024Mi"
+      requests:
+        cpu: "50m"
+        memory: "1024Mi"
     minimumMasterNodes: 1
     antiAffinity: "soft"
-    esJavaOpts: "-Xmx512m -Xms512m"
+    esJavaOpts: "-Xmx1g -Xms1g"
     extraEnvs:
       - name: discovery.type
         value: single-node
       - name: cluster.initial_master_nodes
         value: ""
+      - name: action.auto_create_index
+        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
 
   logstash:
+    devmemoryRequests: 512Mi
+    devcpuRequests: "1000m"
+    devmemoryLimits: 1024Mi
+    devcpuLimits: "2500m"
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 1024Mi
     image: hmctspublic.azurecr.io/ccd/logstash
-    imageTag: "latest"
+    imageTag: "ccd-divorce-logstash-latest"
     logstashJavaOpts: -Xmx1g -Xms512M
-    persistence:
-      enabled: false
-    volumeMounts:
-      - name: pipeline
-        mountPath: /usr/share/logstash/files
-    elasticsearch:
-      host: ${SERVICE_NAME}-es-master
-      port: 9200
-    configTpl:
-      xpack.monitoring.enabled: "false"
-      db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
-      db.user: hmcts
-      db.pwd: hmcts
-      es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     extraEnvs:
-      - name: DATA_STORE_URL
-        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
       - name: DB_URL
         value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
       - name: DB_USER
@@ -344,6 +346,11 @@ ccd:
         value: http://${SERVICE_NAME}-es-master:9200
       - name: ES_URL
         value: http://${SERVICE_NAME}-es-master:9200
+    persistence:
+      enabled: false
+    volumeMounts:
+      - name: pipeline
+        mountPath: /usr/share/logstash/files
     livenessProbe:
       initialDelaySeconds: 90
 
