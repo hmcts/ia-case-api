@@ -9,7 +9,7 @@ java:
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
-    #IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+    IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     #IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
@@ -82,7 +82,7 @@ ia-case-payments-api:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
 ia-case-documents-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-520 or relevant PR number to change
@@ -362,12 +362,57 @@ ccd:
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
-    clusterName: es
-    replicas: 1
-
+    imageTag: "7.17.1"
+    initResources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "25m"
+        memory: "512Mi"
   logstash:
-    image: null
-    tag: ccd-cmc-logstash-latest
+    elasticsearch:
+      host: ${SERVICE_NAME}-es-master
+      port: 9200
+    image: hmctspublic.azurecr.io/ccd/logstash
+    imageTag: "latest"
+    extraEnvs:
+      - name: DATA_STORE_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DATA_STORE_USER
+        value: hmcts
+      - name: DATA_STORE_PASS
+        value: hmcts
+      - name: DB_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DB_USER
+        value: hmcts
+      - name: DB_PWD
+        value: hmcts
+      - name: ES_HOSTS
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ES_DATA_NODES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ELASTIC_SEARCH_DATA_NODES_HOSTS
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1024Mi"
+      limits:
+        cpu: "2500m"
+        memory: "1024Mi"
+    configTpl:
+      xpack.monitoring.enabled: "false"
+      db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      db.user: hmcts
+      db.pwd: hmcts
+      es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
+    livenessProbe:
+      initialDelaySeconds: 90
+
 
 aac-manage-case-assignment:
   enabled: true
