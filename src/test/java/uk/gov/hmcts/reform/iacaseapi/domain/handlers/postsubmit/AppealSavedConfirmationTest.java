@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -508,6 +509,50 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_return_confirmation_for_internal_cases_admin() {
+
+        long caseId = 1234;
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# The appeal has been saved");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("### Do this next");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "[submit the appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+            );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Not ready to submit yet?");
+
     }
 
     @Test
