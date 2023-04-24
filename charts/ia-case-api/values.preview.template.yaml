@@ -25,6 +25,7 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+    AAC_URL: "http://${SERVICE_NAME}-aac-manage-case-assignment"
   keyVaults:
     ia:
       secrets:
@@ -195,7 +196,7 @@ xui-webapp:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
+     # SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
@@ -204,7 +205,8 @@ xui-webapp:
       SERVICES_PRD_LOCATION_API: http://rd-location-ref-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
-      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
+     #SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
+      SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac-manage-case-assignment
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -218,6 +220,7 @@ xui-webapp:
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
       PROTOCOL: http
+      STUB: false
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -292,9 +295,11 @@ ccd:
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: iac,aac_manage_case_assignment
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
         ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
         ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_NODES_DISCOVERY_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
@@ -336,8 +341,16 @@ ccd:
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
-    clusterName: es
-    replicas: 1
+   #clusterName: es
+   #replicas: 1
+    imageTag: "7.17.1"
+    initResources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "25m"
+        memory: "512Mi"
 
   logstash:
     elasticsearch:
@@ -381,4 +394,32 @@ ccd:
         es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
       livenessProbe:
         initialDelaySeconds: 90
-
+  aac-manage-case-assignment:
+    enabled: true
+    java:
+      imagePullPolicy: Always
+      releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
+      image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
+      ingressHost: manage-case-assignment-${SERVICE_NAME}.preview.platform.hmcts.net
+      environment:
+        IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+        S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+        MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
+        MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
+        MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,iac
+        CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        CCD_DEFINITION_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-definition-store
+        PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+        IDAM_CAA_USERNAME: ${IDAM_CAA_USERNAME}
+        IDAM_CAA_PASSWORD: ${IDAM_CAA_PASSWORD}
+        IDAM_CLIENT_SECRET: ${IDAM_MCA_CLIENT_SECRET}
+        MANAGE_CASE_S2S_KEY: ${MANAGE_CASE_S2S_KEY}
+        IDAM_NOC_APPROVER_USERNAME: ${IDAM_NOC_APPROVER_USERNAME}
+        IDAM_NOC_APPROVER_PASSWORD: ${IDAM_NOC_APPROVER_PASSWORD}
+        NOTIFY_MCA_API_KEY: ${UK_GOV_NOTIFY_API_KEY}
+        NOTIFY_EMAIL_TEMPLATE_ID: 85f22924-7b45-4fc6-9954-c08a8833f6a0
+      autoscaling:
+        enabled: false
+      keyVaults: [ ]
