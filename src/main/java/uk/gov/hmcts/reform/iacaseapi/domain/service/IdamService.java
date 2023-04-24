@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @Component
 public class IdamService {
@@ -35,6 +37,7 @@ public class IdamService {
         this.idamApi = idamApi;
     }
 
+    @Cacheable(value = "accessTokenCache")
     public String getServiceUserToken() {
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
@@ -49,4 +52,8 @@ public class IdamService {
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
     }
 
+    @Cacheable(value = "userInfoCache")
+    public UserInfo getUserInfo(String accessToken) {
+        return idamApi.userInfo(accessToken);
+    }
 }

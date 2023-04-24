@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -30,6 +31,8 @@ class IdamUserDetailsProviderTest {
     private AccessTokenProvider accessTokenProvider;
     @Mock
     private IdamApi idamApi;
+    @Mock
+    private IdamService idamService;
 
     private IdamUserDetailsProvider idamUserDetailsProvider;
 
@@ -40,7 +43,8 @@ class IdamUserDetailsProviderTest {
         idamUserDetailsProvider =
             new IdamUserDetailsProvider(
                 accessTokenProvider,
-                idamApi
+                idamApi,
+                idamService
             );
     }
 
@@ -66,11 +70,11 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
-        when(idamApi.userInfo(expectedAccessToken)).thenReturn(userInfo);
+        when(idamService.getUserInfo(expectedAccessToken)).thenReturn(userInfo);
 
         UserDetails actualUserDetails = idamUserDetailsProvider.getUserDetails();
 
-        verify(idamApi).userInfo(expectedAccessToken);
+        verify(idamService).getUserInfo(expectedAccessToken);
 
         assertEquals(expectedAccessToken, actualUserDetails.getAccessToken());
         assertEquals(expectedId, actualUserDetails.getId());
@@ -96,7 +100,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(accessToken)).thenReturn(userInfo);
+        when(idamService.getUserInfo(accessToken)).thenReturn(userInfo);
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'uid' field")
@@ -119,7 +123,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(accessToken)).thenReturn(userInfo);
+        when(idamService.getUserInfo(accessToken)).thenReturn(userInfo);
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'roles' field")
@@ -142,7 +146,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(accessToken)).thenReturn(userInfo);
+        when(idamService.getUserInfo(accessToken)).thenReturn(userInfo);
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'sub' field")
@@ -165,7 +169,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(accessToken)).thenReturn(userInfo);
+        when(idamService.getUserInfo(accessToken)).thenReturn(userInfo);
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'given_name' field")
@@ -188,7 +192,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(accessToken)).thenReturn(userInfo);
+        when(idamService.getUserInfo(accessToken)).thenReturn(userInfo);
 
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
@@ -205,7 +209,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(anyString())).thenThrow(restClientException);
+        when(idamService.getUserInfo(anyString())).thenThrow(restClientException);
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
@@ -222,7 +226,7 @@ class IdamUserDetailsProviderTest {
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
-        when(idamApi.userInfo(anyString())).thenThrow(restClientException);
+        when(idamService.getUserInfo(anyString())).thenThrow(restClientException);
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
