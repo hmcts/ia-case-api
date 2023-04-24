@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,9 +52,13 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String DEFAULT_LABEL =
         "You will receive an email confirming that this appeal has been submitted successfully.";
+    private static final String ADMIN_LABEL =
+        "A Legal Officer will check the appeal is valid and all parties will be notified of next steps.";
     private static final String OUT_OF_TIME_DEFAULT_LABEL =
         "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
             + "telling you whether your appeal can go ahead.";
+    private static final String OUT_OF_TIME_ADMIN_LABEL =
+            "A Legal Officer will decide if the appeal can proceed.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
     private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
         "\n\nYou can now apply for [interim relief](#).";
@@ -125,7 +130,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                     setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
-                    setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
+                    setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
                 }
                 break;
 
@@ -143,7 +148,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                     setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
-                    setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
+                    setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
                 }
                 break;
 
@@ -152,7 +157,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 break;
 
             default:
-                setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
+                setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
         }
 
         return postSubmitResponse;
@@ -225,14 +230,23 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     }
 
     private void setDefaultConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
-                                        YesOrNo submissionOutOfTime) {
-
-        postSubmitCallbackResponse.setConfirmationBody(
-            submissionOutOfTime == NO
-                ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL
-                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL
-        );
+                                        YesOrNo submissionOutOfTime,
+                                        AsylumCase asylumCase) {
+        if (isInternalCase(asylumCase)) {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + ADMIN_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_ADMIN_LABEL
+            );
+        } else {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL
+            );
+        }
     }
+
 
     private void setAgAppealTypeConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                              YesOrNo submissionOutOfTime) {
