@@ -208,6 +208,7 @@ xui-webapp:
      #SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac-manage-case-assignment
       JURISDICTIONS: IA
+      WA_SUPPORTED_JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
@@ -216,6 +217,9 @@ xui-webapp:
       FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
+      FEATURE_UPDATED_TASK_PERMISSIONS_ENABLED: false
+      FEATURE_WORKALLOCATION_ENABLED: false
+      FEATURE_ACCESS_MANAGEMENT_ENABLED: false
       NOW: false
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
@@ -394,6 +398,7 @@ ccd:
         es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
       livenessProbe:
         initialDelaySeconds: 90
+
   aac-manage-case-assignment:
     enabled: true
     java:
