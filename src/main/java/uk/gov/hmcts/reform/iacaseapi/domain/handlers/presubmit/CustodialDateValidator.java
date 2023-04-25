@@ -5,8 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CustodialSentenceDate;
@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -48,6 +49,11 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        YesOrNo clientInCustody = asylumCase.read(CUSTODIAL_SENTENCE, YesOrNo.class).orElse(YesOrNo.NO);
+        if (clientInCustody.equals(YesOrNo.NO)) {
+            return response;
+        }
+
         AsylumCaseFieldDefinition fieldToBeChecked;
         String appellantQualifier;
 
@@ -59,15 +65,17 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
             appellantQualifier = "Client";
         }
 
-        Optional<CustodialSentenceDate> optionalCustodialSentenceDate = asylumCase
-            .read(fieldToBeChecked, CustodialSentenceDate.class);
+        CustodialSentenceDate custodialSentence = asylumCase.read(fieldToBeChecked, CustodialSentenceDate.class)
+                .orElseThrow(() -> new RequiredFieldMissingException("custodialSentence value indicates " + fieldToBeChecked + " present, but not found"));
 
-        optionalCustodialSentenceDate.ifPresent(custodialSentenceDate -> {
-            LocalDate custodialDate = LocalDate.parse(custodialSentenceDate.getCustodialDate());
-            if (!custodialDate.isAfter(LocalDate.now())) {
-                response.addError(appellantQualifier + "'s release date must be in the future");
-            }
-        });
+        if (custodialSentence.getCustodialDate() == null) {
+            return response;
+        }
+
+        LocalDate custodialDate = LocalDate.parse(custodialSentence.getCustodialDate());
+        if (!custodialDate.isAfter(LocalDate.now())) {
+            response.addError(appellantQualifier + "'s release date must be in the future");
+        }
 
         return response;
     }
