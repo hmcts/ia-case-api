@@ -101,7 +101,7 @@ ia-case-documents-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
 
 ia-case-notifications-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest #pr-724 or relevant PR number to change
