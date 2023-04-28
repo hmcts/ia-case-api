@@ -122,6 +122,25 @@ ia-case-notifications-api:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
+ia-bail-case-api:
+  enabled: true #set to true if testing against a local branch
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-339 #pr-285 or relevant PR number to change
+    releaseNameOverride: ${SERVICE_NAME}-bail-case-api
+    ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
+    environment:
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      PROF_REF_DATA_URL: "http://rd-professional-api-aat.service.core-compute-aat.internal"
+      #IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+      IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+
 ia-home-office-integration-api:
   enabled: false #set to true if testing against a local branch
   java:
