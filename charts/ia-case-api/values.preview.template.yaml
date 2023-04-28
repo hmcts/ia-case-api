@@ -176,10 +176,11 @@ ia-timed-event-service:
       enabled: true
 
 ia-home-office-integration-api:
-  enabled: false
+  enabled: true 
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    # image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+  image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-293
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
