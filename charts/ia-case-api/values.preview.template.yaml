@@ -141,6 +141,37 @@ ia-bail-case-api:
       #IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
 
+ia-timed-event-service:
+  enabled: true #set to true if testing against a local branch
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93 #pr-285 or relevant PR number to change
+    releaseNameOverride: ${SERVICE_NAME}-timed-event-service
+    ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
+    environment:
+      IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+      POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+      POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+      POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+      POSTGRES_CONNECTION_OPTIONS: ""
+   keyVaults:
+    ia:
+      resourceGroup: ia
+      secrets:
+        - idam-client-id
+        - idam-secret
+        - idam-redirect-uri
+        - system-username
+        - system-password
+        - s2s-secret
+        - s2s-microservice
+        - AppInsightsInstrumentationKey
+  postgresql:
+    enabled: true
+    
 ia-home-office-integration-api:
   enabled: false #set to true if testing against a local branch
   java:
