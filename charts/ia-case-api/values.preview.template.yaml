@@ -188,6 +188,13 @@ ia-home-office-integration-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
+ia-case-access-api:
+   enabled: true
+   java:
+     image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
+     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
+
+
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
