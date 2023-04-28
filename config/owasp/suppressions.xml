@@ -118,4 +118,8 @@
         <cve>CVE-2023-20861</cve>
         <cve>CVE-2023-20860</cve>
     </suppress>
+    <suppress>
+        <notes>Temporarily suppress SpEL expression vulnerability</notes>
+        <cve>CVE-2023-20863</cve>
+    </suppress>
 </suppressions>
