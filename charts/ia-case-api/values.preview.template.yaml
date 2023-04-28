@@ -82,7 +82,7 @@ ia-case-payments-api:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
 ia-case-documents-api:
-  enabled: true #set to true if testing against a local branch
+  enabled: false #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     #image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-520 or relevant PR number to change
