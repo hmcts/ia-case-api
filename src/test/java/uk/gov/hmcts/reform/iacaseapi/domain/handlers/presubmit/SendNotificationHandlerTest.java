@@ -129,7 +129,9 @@ class SendNotificationHandlerTest {
             Event.MANAGE_FEE_UPDATE,
             Event.REQUEST_FEE_REMISSION,
             Event.RECORD_OUT_OF_TIME_DECISION,
-            Event.UPDATE_PAYMENT_STATUS
+            Event.UPDATE_PAYMENT_STATUS,
+            Event.CREATE_CASE_LINK,
+            Event.MAINTAIN_CASE_LINKS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -275,7 +277,9 @@ class SendNotificationHandlerTest {
                         Event.MANAGE_FEE_UPDATE,
                         Event.RECORD_OUT_OF_TIME_DECISION,
                         Event.END_APPEAL_AUTOMATICALLY,
-                        Event.UPDATE_PAYMENT_STATUS
+                        Event.UPDATE_PAYMENT_STATUS,
+                        Event.CREATE_CASE_LINK,
+                        Event.MAINTAIN_CASE_LINKS
                     ).contains(event)) {
 
                     assertTrue(canHandle);
