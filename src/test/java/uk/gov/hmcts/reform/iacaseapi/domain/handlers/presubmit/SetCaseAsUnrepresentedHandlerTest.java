@@ -56,7 +56,25 @@ class SetCaseAsUnrepresentedHandlerTest {
         verify(asylumCase).clear(LEGAL_REP_NAME);
         verify(asylumCase).clear(LEGAL_REPRESENTATIVE_NAME);
         verify(asylumCase).clear(LEGAL_REP_REFERENCE_NUMBER);
-        verify(asylumCase).clear(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+    }
+
+    @Test
+    void set_case_as_unrepresented_using_remove_legal_rep_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            setCaseAsUnrepresentedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
+        verify(asylumCase).clear(LEGAL_REP_COMPANY);
+        verify(asylumCase).clear(LEGAL_REP_COMPANY_ADDRESS);
+        verify(asylumCase).clear(LEGAL_REP_NAME);
+        verify(asylumCase).clear(LEGAL_REPRESENTATIVE_NAME);
+        verify(asylumCase).clear(LEGAL_REP_REFERENCE_NUMBER);
     }
 
     @Test
@@ -77,7 +95,8 @@ class SetCaseAsUnrepresentedHandlerTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = setCaseAsUnrepresentedHandler.canHandle(callbackStage, callback);
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && ((callback.getEvent() == Event.REMOVE_REPRESENTATION))) {
+                    && (event == Event.REMOVE_REPRESENTATION
+                        || event == Event.REMOVE_LEGAL_REPRESENTATIVE)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

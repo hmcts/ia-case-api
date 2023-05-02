@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_REPRESENTATION;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -24,7 +24,8 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == REMOVE_REPRESENTATION;
+            && (callback.getEvent() == Event.REMOVE_REPRESENTATION
+                || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
     }
 
     @Override
@@ -50,7 +51,6 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
             asylumCase.clear(LEGAL_REP_NAME);
             asylumCase.clear(LEGAL_REPRESENTATIVE_NAME);
             asylumCase.clear(LEGAL_REP_REFERENCE_NUMBER);
-            asylumCase.clear(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
