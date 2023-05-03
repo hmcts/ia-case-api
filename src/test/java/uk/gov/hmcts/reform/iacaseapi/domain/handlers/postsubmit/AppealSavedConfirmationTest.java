@@ -98,7 +98,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -107,7 +107,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -143,7 +143,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -152,7 +152,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -188,7 +188,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -197,7 +197,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -233,7 +233,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -242,7 +242,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -280,7 +280,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -289,7 +289,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -326,7 +326,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -335,7 +335,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -374,7 +374,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -407,7 +407,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -439,7 +439,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 

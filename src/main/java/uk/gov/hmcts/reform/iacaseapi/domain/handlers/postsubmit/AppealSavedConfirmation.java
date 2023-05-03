@@ -73,28 +73,15 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         }
 
         String submitAppealUrl = "/trigger/submitAppeal";
-        String submitLabel = "submit your appeal";
-        String submitLabelUnrep = "submit the appeal";
 
-        if (HandlerUtils.isInternalCase(asylumCase)) {
-            postSubmitResponse.setConfirmationHeader("# The appeal has been saved\n# You still need to submit it");
-            postSubmitResponse.setConfirmationBody(
-                "### Do this next\n\n"
-                + "If you're ready to proceed [" + submitLabelUnrep + "](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
-                + "#### Not ready to submit yet?\n"
-                + "You can return to the case details to make changes."
-            );
-        } else {
-            postSubmitResponse.setConfirmationHeader("# Your appeal details have been saved\n# You still need to submit it");
-            postSubmitResponse.setConfirmationBody(
-                "### Do this next\n\n"
-                + "If you're ready to proceed [" + submitLabel + "](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
-                + "#### Not ready to submit yet?\n"
-                + "You can return to the case details to make changes."
-            );
-        }
+        postSubmitResponse.setConfirmationHeader("# The appeal has been saved\n# You still need to submit it");
+        postSubmitResponse.setConfirmationBody(
+            "### Do this next\n\n"
+            + "If you're ready to proceed [submit the appeal](/case/IA/Asylum/"
+            + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
+            + "#### Not ready to submit yet?\n"
+            + "You can return to the case details to make changes."
+        );
 
         if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class).isPresent()
             && callback.getEvent() == Event.START_APPEAL
