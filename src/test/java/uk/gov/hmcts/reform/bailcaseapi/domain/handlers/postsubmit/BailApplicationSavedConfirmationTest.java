@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class BailApplicationSavedConfirmationTest {
@@ -23,12 +25,29 @@ public class BailApplicationSavedConfirmationTest {
 
     @Mock private CaseDetails<BailCase> caseDetails;
 
-    private BailApplicationSavedConfirmation bailApplicationSavedConfirmation;
+    @Mock private BailCase bailCase;
+
+    @Mock
+    private CcdSupplementaryUpdater ccdSupplementaryUpdater;
+
+    private BailApplicationSavedConfirmation bailApplicationSavedConfirmation =
+        new BailApplicationSavedConfirmation(ccdSupplementaryUpdater);
 
     @BeforeEach
     public void setUp() {
-        bailApplicationSavedConfirmation = new BailApplicationSavedConfirmation();
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(bailCase);
+        bailApplicationSavedConfirmation = new BailApplicationSavedConfirmation(ccdSupplementaryUpdater);
+    }
+
+    @Test
+    void should_invoke_supplementary_updater() {
+        when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
+
+        bailApplicationSavedConfirmation.handle(callback);
+
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
     }
 
     @Test

@@ -104,6 +104,8 @@ security:
       - "editBailApplicationAfterSubmit"
       - "viewPreviousApplications"
       - "removeBailLegalRepresentative"
+      - "createBailCaseLink"
+      - "maintainBailCaseLinks"
     caseworker-ia-homeofficebail:
       - "startApplication"
       - "uploadBailSummary"
@@ -123,6 +125,8 @@ security:
       - "uploadDocuments"
       - "editBailDocuments"
       - "viewPreviousApplications"
+      - "createBailCaseLink"
+      - "maintainBailCaseLinks"
 
 
 ### dependency configuration
@@ -194,6 +198,9 @@ launchDarkly:
   socketTimeout: 5000
 
 bailRefusalWithInDays: 28
+
+core_case_data_api_supplementary_data_path: "/cases/{caseId}/supplementary-data"
+hmcts_service_id: "BFA1"
 
 core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
 assign_case_access_api_url: ${AAC_URL:http://127.0.0.1:4454}

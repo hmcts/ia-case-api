@@ -1,6 +1,6 @@
 buildscript {
   dependencies {
-    classpath("org.yaml:snakeyaml:1.23")
+    classpath("org.yaml:snakeyaml:1.33")
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
   }
 }
@@ -41,8 +41,8 @@ def versions = [
   springSecurity     : '5.7.1',
   springDoc          : '1.6.8',
   springHystrix      : '2.2.10.RELEASE',
-  pact_version       : '4.1.7'
-
+  pact_version       : '4.1.7',
+  snakeyml           : '1.33'
 ]
 
 ext.libraries = [
@@ -322,7 +322,7 @@ dependencies {
 
   compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.9.0'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.0.0'
 
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
@@ -368,19 +368,19 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
-  testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+  testCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyml) {
     force = true
   }
 
-  integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+  integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyml) {
     force = true
   }
 
-  functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+  functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyml) {
     force = true
   }
 
-  contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+  contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyml) {
     force = true
   }
 

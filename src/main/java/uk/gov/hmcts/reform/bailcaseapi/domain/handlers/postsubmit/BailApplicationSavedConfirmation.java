@@ -6,9 +6,17 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdSupplementaryUpdater;
+
 
 @Component
 public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandler<BailCase> {
+
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+
+    public BailApplicationSavedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+    }
 
     @Override
     public boolean canHandle(Callback<BailCase> callback) {
@@ -23,6 +31,8 @@ public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandl
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
+
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"

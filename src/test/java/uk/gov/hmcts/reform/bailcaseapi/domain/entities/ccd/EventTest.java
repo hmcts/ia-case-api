@@ -30,11 +30,13 @@ public class EventTest {
         assertEquals("updateBailLegalRepDetails", Event.UPDATE_BAIL_LEGAL_REP_DETAILS.toString());
         assertEquals("nocRequestBail", Event.NOC_REQUEST_BAIL.toString());
         assertEquals("clearLegalRepresentativeDetails", Event.CLEAR_LEGAL_REPRESENTATIVE_DETAILS.toString());
+        assertEquals("createBailCaseLink", Event.CREATE_BAIL_CASE_LINK.toString());
+        assertEquals("maintainBailCaseLinks", Event.MAINTAIN_BAIL_CASE_LINKS.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(24, Event.values().length);
+        assertEquals(26, Event.values().length);
     }
 }
