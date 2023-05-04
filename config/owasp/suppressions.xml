@@ -61,18 +61,19 @@
         </notes>
         <cve>CVE-2022-34305</cve>
         <cve>CVE-2022-25857</cve>
-    </suppress>
+    </suppress>   
     <suppress>
         <notes><![CDATA[
             Snakeyaml coming via Launch Darkly transitives
             ]]>
         </notes>
-		<cve>CVE-2021-4235</cve>
-		<cve>CVE-2022-3064</cve>
+	<cve>CVE-2021-4235</cve>
+	<cve>CVE-2022-3064</cve>
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
+	<cve>CVE-2022-25857</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[fasterxml:jackson-databind:2.13.3]]>
@@ -102,7 +103,7 @@
     </suppress>
     <suppress>
         <cve>CVE-2021-37533</cve>
-	      <cve>CVE-2021-4277</cve>		
+	      <cve>CVE-2021-4277</cve>			      
     </suppress>
     <suppress>
         <notes><![CDATA[LatencyUtils-2.0.3.jar vulnerabilities]]>
@@ -113,6 +114,14 @@
         <cve>CVE-2022-45143</cve>
 	      <cve>CVE-2022-31197</cve>
         <cve>CVE-2022-45688</cve>
-        <cve>CVE-2023-24998</cve>
-    </suppress>           
+        <cve>CVE-2023-24998</cve>    
+    </suppress>
+    <suppress>    	    	    	
+	      <cve>CVE-2022-1471</cve>
+	      <cve>CVE-2023-28708</cve>
+	      <cve>CVE-2023-20861</cve>
+    </suppress>
+    <suppress until="2023-04-18">
+        <cve>CVE-2023-20860</cve>
+    </suppress>
 </suppressions>
