@@ -49,7 +49,10 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             + "notified if it can proceed.";
     private static final String OUT_OF_TIME_PNG =
         "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
+    private static final String OUT_OF_TIME_ADMIN_PNG =
+            "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeAdminConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
+    private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL = OUT_OF_TIME_ADMIN_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String DEFAULT_LABEL =
         "You will receive an email confirming that this appeal has been submitted successfully.";
     private static final String ADMIN_LABEL =
@@ -60,6 +63,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String OUT_OF_TIME_ADMIN_LABEL =
             "A Legal Officer will decide if the appeal can proceed.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
+    private static final String ADMIN_HEADER = "# The appeal has been submitted";
     private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
         "\n\nYou can now apply for [interim relief](#).";
 
@@ -108,9 +112,15 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             sendPaymentCallback(callback);
         }
 
-        postSubmitResponse.setConfirmationHeader(
-            submissionOutOfTime == NO ? DEFAULT_HEADER : ""
-        );
+        if (isInternalCase(asylumCase)) {
+            postSubmitResponse.setConfirmationHeader(
+                    submissionOutOfTime == NO ? ADMIN_HEADER : ""
+            );
+        } else {
+            postSubmitResponse.setConfirmationHeader(
+                    submissionOutOfTime == NO ? DEFAULT_HEADER : ""
+            );
+        }
 
         switch (appealType) {
 
@@ -119,7 +129,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             case EU:
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
-                    setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
+                    setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime, asylumCase);
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && !isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
@@ -127,7 +137,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
-                    setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
+                    setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
@@ -137,7 +147,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             case PA:
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
-                    setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
+                    setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime, asylumCase);
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && !isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
@@ -145,7 +155,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
-                    setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
+                    setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
@@ -153,7 +163,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 break;
 
             case AG:
-                setAgAppealTypeConfirmation(postSubmitResponse, submissionOutOfTime);
+                setAgAppealTypeConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
                 break;
 
             default:
@@ -169,12 +179,21 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
             .ifPresent(paymentOption -> {
 
-                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE)) {
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
 
                     postSubmitCallbackResponse.setConfirmationBody(
                         submissionOutOfTime == NO
                             ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
                             : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                }
+
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && isInternalCase(asylumCase)) {
+
+                    postSubmitCallbackResponse.setConfirmationBody(
+                            submissionOutOfTime == NO
+                                    ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
+                                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
                     );
                 }
             });
@@ -193,17 +212,29 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
             .ifPresent(paymentOption -> {
 
-                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE)) {
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
                     postSubmitCallbackResponse.setConfirmationBody(
                         submissionOutOfTime == NO
                             ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
                             : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
                     );
-                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER)) {
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && isInternalCase(asylumCase)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                            submissionOutOfTime == NO
+                                    ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
+                                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER) && !isInternalCase(asylumCase)) {
                     postSubmitCallbackResponse.setConfirmationBody(
                         submissionOutOfTime == NO
                             ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
                             : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel + REVIEW_LABEL
+                    );
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER) && isInternalCase(asylumCase)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                            submissionOutOfTime == NO
+                                    ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + paPayLaterLabel + REVIEW_LABEL
                     );
                 }
             });
@@ -211,21 +242,34 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
     private void setRemissionConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                           RemissionType remissionType,
-                                          YesOrNo submissionOutOfTime) {
+                                          YesOrNo submissionOutOfTime,
+                                          AsylumCase asylumCase) {
 
         if (remissionType == HO_WAIVER_REMISSION
             || remissionType == HELP_WITH_FEES
             || remissionType == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
 
-            postSubmitCallbackResponse.setConfirmationBody(
-                submissionOutOfTime == NO
-                    ? WHAT_HAPPENS_NEXT_LABEL + HO_WAIVER_REMISSION_LABEL
-                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL
-                    + HO_WAIVER_REMISSION_LABEL
-                    +
-                    "\n\n\nA Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if "
-                    + "it can proceed."
-            );
+            if (isInternalCase(asylumCase)) {
+                postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                                ? WHAT_HAPPENS_NEXT_LABEL + HO_WAIVER_REMISSION_LABEL
+                                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL
+                                + HO_WAIVER_REMISSION_LABEL
+                                +
+                                "\n\n\nA Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if "
+                                + "it can proceed."
+                );
+            } else {
+                postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                                ? WHAT_HAPPENS_NEXT_LABEL + HO_WAIVER_REMISSION_LABEL
+                                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL
+                                + HO_WAIVER_REMISSION_LABEL
+                                +
+                                "\n\n\nA Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if "
+                                + "it can proceed."
+                );
+            }
         }
     }
 
@@ -236,7 +280,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             postSubmitCallbackResponse.setConfirmationBody(
                     submissionOutOfTime == NO
                             ? WHAT_HAPPENS_NEXT_LABEL + ADMIN_LABEL
-                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_ADMIN_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + OUT_OF_TIME_ADMIN_LABEL
             );
         } else {
             postSubmitCallbackResponse.setConfirmationBody(
@@ -249,41 +293,69 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
 
     private void setAgAppealTypeConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
-                                             YesOrNo submissionOutOfTime) {
+                                             YesOrNo submissionOutOfTime,
+                                             AsylumCase asylumCase) {
 
-        postSubmitCallbackResponse.setConfirmationBody(
-            submissionOutOfTime == NO
-                ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
-                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
-        );
+        if (isInternalCase(asylumCase)) {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + OUT_OF_TIME_ADMIN_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
+            );
+        } else {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
+            );
+        }
     }
 
     private void setWaysToPayLabelEuHuPa(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                          Callback<AsylumCase> callback,
-                                         YesOrNo submissionOutOfTime) {
+                                         YesOrNo submissionOutOfTime,
+                                         AsylumCase asylumCase) {
 
         String payForAppeal = "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
                                      + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
 
-        postSubmitCallbackResponse.setConfirmationBody(
-            submissionOutOfTime == NO
-            ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
-            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
-        );
+        if (isInternalCase(asylumCase)) {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + payForAppeal + REVIEW_LABEL
+            );
+        } else {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
+            );
+        }
     }
 
     private void setWaysToPayLabelPaPayNowPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                          Callback<AsylumCase> callback,
-                                         YesOrNo submissionOutOfTime) {
+                                         YesOrNo submissionOutOfTime,
+                                         AsylumCase asylumCase) {
 
         String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
                               + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
 
-        postSubmitCallbackResponse.setConfirmationBody(
-            submissionOutOfTime == NO
-                ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
-                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
-        );
+        if (isInternalCase(asylumCase)) {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
+            );
+        } else {
+            postSubmitCallbackResponse.setConfirmationBody(
+                    submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
+            );
+        }
+
     }
 
     private boolean isWaysToPay(boolean isHuOrEaOrPa, boolean isLegalRepJourney) {
