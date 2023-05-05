@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_AIP_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import java.util.Arrays;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -20,8 +22,8 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
         if (event == Event.SEND_DIRECTION) {
             final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-            Parties directionTo = asylumCase.read(SEND_DIRECTION_PARTIES, Parties.class)
-                    .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+            Optional<Parties> directionTo = asylumCase.read(SEND_DIRECTION_PARTIES, Parties.class);
+            Optional<Parties> aipDirectionTo = asylumCase.read(SEND_DIRECTION_AIP_PARTIES, Parties.class);
 
             if (HandlerUtils.isRepJourney(asylumCase) && directionTo == Parties.APPELLANT) {
                 log.error("Cannot send an appellant a direction for a repped case");

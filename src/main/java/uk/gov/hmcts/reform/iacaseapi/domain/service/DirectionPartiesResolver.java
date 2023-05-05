@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_AIP_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import java.util.Optional;
@@ -36,9 +37,20 @@ public class DirectionPartiesResolver {
                         .getCaseDetails()
                         .getCaseData()
                         .read(SEND_DIRECTION_PARTIES);
-                return
-                    sendDirectionParties
-                        .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+
+                Optional<Parties> sendDirectionAipParties = callback
+                        .getCaseDetails()
+                        .getCaseData()
+                        .read(SEND_DIRECTION_AIP_PARTIES);
+
+                if (sendDirectionParties.isPresent()) {
+                    return sendDirectionParties
+                            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present2"));
+                } else if (sendDirectionAipParties.isPresent()) {
+                    return sendDirectionAipParties
+                            .orElseThrow(() -> new IllegalStateException("sendDirectionAipParties is not present"));
+                }
+                throw new IllegalArgumentException("sendDirectionParties/sendDirectionAipParties is not present");
             case REQUEST_REASONS_FOR_APPEAL:
                 return Parties.APPELLANT;
             default:
