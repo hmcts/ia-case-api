@@ -123,15 +123,8 @@
     </suppress>
     <suppress>
         <cve>CVE-2023-20860</cve>
-	<cve>CVE-2023-20862</cve>
-	<cve>CVE-2023-20863</cve>
-	<cve>CVE-2023-20873</cve>
-    </suppress>
-    <suppress until="2023-06-18">
-        <notes><![CDATA[We haven't analysed these yet ]]>
-        </notes>
-        <cve>CVE-2023-20862</cve>
-        <cve>CVE-2023-20863</cve>
-        <cve>CVE-2023-20873</cve>
+	    <cve>CVE-2023-20862</cve>
+	    <cve>CVE-2023-20863</cve>
+	    <cve>CVE-2023-20873</cve>
     </suppress>
 </suppressions>
