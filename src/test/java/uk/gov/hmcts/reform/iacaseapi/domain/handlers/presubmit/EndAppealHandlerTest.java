@@ -170,6 +170,7 @@ class EndAppealHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
     }
+    
     @Test
     void should_handle_pending_payment_appeals() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
