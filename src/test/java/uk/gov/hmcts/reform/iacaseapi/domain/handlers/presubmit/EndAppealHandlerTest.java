@@ -158,19 +158,6 @@ class EndAppealHandlerTest {
     }
 
     @Test
-    void should_handle_pending_payment_appeals() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-    }
-
-    @Test
     void should_handle_paid_appeals() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -179,6 +166,18 @@ class EndAppealHandlerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+    }
+    @Test
+    void should_handle_pending_payment_appeals() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
