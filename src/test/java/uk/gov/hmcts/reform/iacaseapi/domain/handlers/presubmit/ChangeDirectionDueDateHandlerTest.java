@@ -25,16 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PreviousDates;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -125,8 +116,8 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                        newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
-                    Collections.emptyList(),
+                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
+                    newArrayList(new IdValue<>("1", new ClarifyingQuestion("is this a sample question?"))),
                     UUID.randomUUID().toString(),
                     "directionType2"
                 ))
@@ -177,7 +168,6 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals("explanation-2", actualDirections.get(1).getValue().getExplanation());
         assertEquals(Parties.RESPONDENT, actualDirections.get(1).getValue().getParties());
         assertEquals("2222-12-01", actualDirections.get(1).getValue().getDateDue());
-        assertEquals(Collections.emptyList(), actualDirections.get(1).getValue().getClarifyingQuestions());
         assertEquals(dateSent.toString(), actualDirections.get(1).getValue().getDateSent());
         assertEquals(DirectionTag.RESPONDENT_REVIEW, actualDirections.get(1).getValue().getTag());
         assertEquals(2, actualDirections.get(1).getValue().getPreviousDates().size());
@@ -191,6 +181,11 @@ class ChangeDirectionDueDateHandlerTest {
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateDue());
         assertEquals("2018-03-01",
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateSent());
+        assertEquals(1, actualDirections.get(1).getValue().getClarifyingQuestions().size());
+        assertEquals("1", actualDirections.get(1).getValue().getClarifyingQuestions().get(0).getId());
+        assertEquals("is this a sample question?",
+                actualDirections.get(1).getValue().getClarifyingQuestions().get(0).getValue().getQuestion());
+
     }
 
     @Test
