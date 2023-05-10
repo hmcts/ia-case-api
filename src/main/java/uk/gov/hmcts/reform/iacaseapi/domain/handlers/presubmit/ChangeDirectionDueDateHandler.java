@@ -90,7 +90,6 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                                     idValue.getValue().getTag(),
                                     appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent()),
                                     idValue.getValue().getClarifyingQuestions(),
-                                    //Collections.emptyList(),
                                     idValue.getValue().getUniqueId(),
                                     idValue.getValue().getDirectionType()
                                 )
