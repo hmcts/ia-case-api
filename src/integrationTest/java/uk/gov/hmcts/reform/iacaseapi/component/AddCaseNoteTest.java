@@ -49,7 +49,6 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
         CaseNote caseNote = caseNotes.get().get(0).getValue();
 
         assertThat(caseNotes.get().size()).isEqualTo(1);
-       // assertThat(caseNote.getUser()).isEqualTo("Case Officer");
         assertThat(caseNote.getCaseNoteSubject()).isEqualTo("some-subject");
         assertThat(caseNote.getCaseNoteDescription()).isEqualTo("some-description");
     }
