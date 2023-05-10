@@ -52,7 +52,7 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
                 ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE
                 : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class);
 
-        if (HandlerUtils.isAipJourney(asylumCase) && ftpaRjDecisionOutcomeType.isPresent()) {
+        if (!HandlerUtils.isRepJourney(asylumCase) && ftpaRjDecisionOutcomeType.isPresent()) {
             String ftpaRjDecisionOutcomeTypeValue = ftpaRjDecisionOutcomeType.get();
             if (ftpaRjDecisionOutcomeTypeValue.equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())
                 || ftpaRjDecisionOutcomeTypeValue.equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString())
