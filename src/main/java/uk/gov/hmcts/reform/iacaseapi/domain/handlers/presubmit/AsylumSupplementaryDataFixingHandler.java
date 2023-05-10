@@ -40,7 +40,7 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
             Callback<AsylumCase> callback
     ) {
         return !userDetailsProvider.getUserDetails().getRoles().contains(CITIZEN)
-               && !isAipJourney(callback.getCaseDetails().getCaseData());
+               || !isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override

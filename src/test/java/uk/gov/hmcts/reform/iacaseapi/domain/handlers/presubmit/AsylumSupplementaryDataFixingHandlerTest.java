@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.EARLIEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,9 +110,20 @@ class AsylumSupplementaryDataFixingHandlerTest {
 
     @Test
     void should_not_handle_if_citizen_in_aip_journey() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getRoles()).thenReturn(List.of("citizen"));
 
         assertFalse(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
+    }
+
+    @Test
+    void should_handle_if_not_citizen_in_aip_journey() {
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
+
+        assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
     }
 }
