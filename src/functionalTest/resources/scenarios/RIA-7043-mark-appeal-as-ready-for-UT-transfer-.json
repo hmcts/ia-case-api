@@ -1,0 +1,25 @@
+{
+  "description": "RIA 7043 Mark appeal as ready for UT transfer",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "markAsReadyForUtTransfer",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "utAppealReferenceNumber": "UI-2002-123654",
+          "utInstructionDate": "2022-11-21"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "body": "#### What happens next\n\nAll parties have been notified. The Upper Tribunal will transfer the appeal.\n"
+    }
+  }
+}

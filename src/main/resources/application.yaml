@@ -280,6 +280,7 @@ security:
       - "markAppealAsAda"
       - "removeDetainedStatus"
       - "markAppealAsDetained"
+      - "markAsReadyForUtTransfer"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -322,6 +323,7 @@ security:
       - "markAppealAsAda"
       - "removeDetainedStatus"
       - "markAppealAsDetained"
+      - "markAsReadyForUtTransfer"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
