@@ -17,21 +17,19 @@ import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub, WithServiceAuthStub {
+public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void adds_a_case_note(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
 
-        addServiceAuthStub(server);
         addCaseWorkerUserDetailsStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
