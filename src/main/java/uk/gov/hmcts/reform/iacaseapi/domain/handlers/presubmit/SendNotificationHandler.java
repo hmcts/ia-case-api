@@ -134,7 +134,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.MARK_APPEAL_AS_ADA,
             Event.UPDATE_PAYMENT_STATUS,
             Event.REMOVE_DETAINED_STATUS,
-            Event.MARK_APPEAL_AS_DETAINED
+            Event.MARK_APPEAL_AS_DETAINED,
+            Event.CREATE_CASE_LINK,
+            Event.MAINTAIN_CASE_LINKS,
+            Event.UPDATE_PAYMENT_STATUS
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
