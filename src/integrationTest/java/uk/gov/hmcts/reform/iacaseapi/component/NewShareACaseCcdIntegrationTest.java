@@ -72,6 +72,5 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
         assertThat(response).isNotNull();
-        server.stop();
     }
 }
