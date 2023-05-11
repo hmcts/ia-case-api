@@ -210,6 +210,8 @@ security:
       - "requestFeeRemission"
       - "nocRequest"
       - "generateServiceRequest"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "sendDirection"
@@ -281,6 +283,8 @@ security:
       - "removeDetainedStatus"
       - "markAppealAsDetained"
       - "markAsReadyForUtTransfer"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -324,6 +328,8 @@ security:
       - "removeDetainedStatus"
       - "markAppealAsDetained"
       - "markAsReadyForUtTransfer"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -390,6 +396,8 @@ security:
       - "adaSuitabilityReview"
       - "transferOutOfAda"
       - "reviewHearingRequirements"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
