@@ -66,7 +66,7 @@ public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmit
 
             asylumCase.write(SEND_DIRECTION_EXPLANATION, explanation);
 
-            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+            asylumCase.write(DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
 
             asylumCase.write(SEND_DIRECTION_DATE_DUE,
                 dateProvider

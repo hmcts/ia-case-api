@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.MANCHESTER;
 
@@ -159,10 +159,10 @@ class AsylumCaseTest {
     @Test
     void reads_parties() throws IOException {
 
-        String caseData = "{\"sendDirectionParties\": \"both\"}";
+        String caseData = "{\"directionParties\": \"both\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
-        Optional<Parties> maybeParties = asylumCase.read(SEND_DIRECTION_PARTIES, Parties.class);
+        Optional<Parties> maybeParties = asylumCase.read(DIRECTION_PARTIES, Parties.class);
 
         assertThat(maybeParties.get()).isEqualTo(Parties.BOTH);
     }

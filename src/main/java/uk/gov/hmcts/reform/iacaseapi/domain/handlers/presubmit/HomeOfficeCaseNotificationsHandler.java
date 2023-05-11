@@ -167,7 +167,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
     protected boolean isDirectionForRespondentParties(AsylumCase asylumCase) {
 
         Parties parties = asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, Parties.class)
-            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+            .orElseThrow(() -> new IllegalStateException("directionParties is not present"));
 
         return parties.equals(Parties.RESPONDENT);
 

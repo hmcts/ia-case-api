@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_PARTIES;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -185,7 +185,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
 
         verify(asylumCase).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase).clear(SEND_DIRECTION_PARTIES);
+        verify(asylumCase).clear(DIRECTION_PARTIES);
         verify(asylumCase).clear(SEND_DIRECTION_DATE_DUE);
     }
 

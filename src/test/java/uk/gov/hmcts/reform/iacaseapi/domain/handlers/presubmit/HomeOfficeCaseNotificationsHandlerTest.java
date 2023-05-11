@@ -481,7 +481,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void should_return_error_for_missing_direction() {
 
         assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase))
-            .hasMessage("sendDirectionParties is not present")
+            .hasMessage("directionParties is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 

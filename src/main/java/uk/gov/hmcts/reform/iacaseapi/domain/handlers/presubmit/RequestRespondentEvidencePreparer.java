@@ -112,7 +112,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             + "- the notice of any other appealable decision made in relation to the appellant"
         );
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
+        asylumCase.write(DIRECTION_PARTIES, Parties.RESPONDENT);
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE,
             dateProvider

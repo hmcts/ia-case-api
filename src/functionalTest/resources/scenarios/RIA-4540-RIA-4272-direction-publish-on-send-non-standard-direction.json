@@ -12,7 +12,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "sendDirectionExplanation": "Do the non standard thing",
-          "sendDirectionParties": "respondent",
+          "directionParties": "respondent",
           "sendDirectionDateDue": "2022-01-01",
           "notificationsSent": []
         }

@@ -69,7 +69,7 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                         + "If you do not respond in time the Tribunal will decide how the case should proceed."
         );
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
+        asylumCase.write(DIRECTION_PARTIES, Parties.RESPONDENT);
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE,
             dateProvider

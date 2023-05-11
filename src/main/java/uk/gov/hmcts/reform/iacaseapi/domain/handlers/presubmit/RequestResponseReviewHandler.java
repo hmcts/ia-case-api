@@ -53,7 +53,7 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
                        + "If you do not respond by the date indicated below, the case will automatically go to hearing."
         );
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        asylumCase.write(DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE,
                 dateProvider

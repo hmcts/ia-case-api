@@ -126,7 +126,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.write(DIRECTIONS, allDirections);
 
         asylumCase.clear(SEND_DIRECTION_EXPLANATION);
-        asylumCase.clear(SEND_DIRECTION_PARTIES);
+        asylumCase.clear(DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
         asylumCase.clear(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE);
 

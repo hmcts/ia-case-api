@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Parties {
 
-    LEGAL_REPRESENTATIVE("legalRepresentative"),
-    RESPONDENT("respondent"),
-    BOTH("both"),
-    APPELLANT("appellant");
+    LEGAL_REPRESENTATIVE("Legal Representative"),
+    RESPONDENT("Respondent"),
+    BOTH("Both"),
+    RESPONDENT_AND_APPELLANT("Respondent and Appellant"),
+    NONE("None"),
+    APPELLANT("Appellant");
 
     @JsonValue
     private final String id;

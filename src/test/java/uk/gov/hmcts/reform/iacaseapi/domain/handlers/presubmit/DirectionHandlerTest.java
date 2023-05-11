@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_PARTIES;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,7 +132,7 @@ class DirectionHandlerTest {
         verify(directionTagResolver, times(1)).resolve(event);
         verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
+        verify(asylumCase, times(1)).clear(DIRECTION_PARTIES);
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
