@@ -42,8 +42,8 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
     void should_trigger_timed_event_service(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
 
-        addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
+        addCaseWorkerUserDetailsStub(server);
         addTimedEventServiceStub(server);
         addNotificationsApiTransformerStub(server);
 

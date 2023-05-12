@@ -10,7 +10,15 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 
 public interface WithUserDetailsStub {
 
+    default void clearUserDetailsStub(WireMockServer server) {
+        server.getStubMappings().stream()
+                .filter(stubMapping -> stubMapping.getRequest().getUrl().equals("/userAuth/o/userinfo"))
+                .forEach(server::removeStubMapping);
+    }
+
     default void addCaseWorkerUserDetailsStub(WireMockServer server) {
+
+        clearUserDetailsStub(server);
 
         server.addStubMapping(
             new StubMapping(
@@ -27,6 +35,8 @@ public interface WithUserDetailsStub {
     }
 
     default void addLegalRepUserDetailsStub(WireMockServer server) {
+
+        clearUserDetailsStub(server);
 
         server.addStubMapping(
             new StubMapping(
