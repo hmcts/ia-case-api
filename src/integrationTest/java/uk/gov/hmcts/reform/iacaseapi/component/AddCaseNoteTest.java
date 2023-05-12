@@ -35,7 +35,7 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
         printAllStubbedUrls(server);
 
         addServiceAuthStub(server);
-        addCaseWorkerUserDetailsStub(server);
+        //addCaseWorkerUserDetailsStub(server);
 
         System.out.println("Stubbed URLs after config:");
         printAllStubbedUrls(server);
