@@ -30,15 +30,8 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void adds_a_case_note(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
-        System.out.println("Stubbed URLs before config:");
-        printAllStubbedUrls(server);
-
         addServiceAuthStub(server);
         addCaseWorkerUserDetailsStub(server);
-
-        System.out.println("Stubbed URLs after config:");
-        printAllStubbedUrls(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(ADD_CASE_NOTE)
@@ -60,10 +53,4 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
         assertThat(caseNote.getCaseNoteSubject()).isEqualTo("some-subject");
         assertThat(caseNote.getCaseNoteDescription()).isEqualTo("some-description");
     }
-
-    void printAllStubbedUrls(WireMockServer server) {
-        server.getStubMappings().stream()
-            .forEach(stubMapping -> System.out.println("stub -> " + stubMapping.getRequest().getUrl()));
-    }
-
 }
