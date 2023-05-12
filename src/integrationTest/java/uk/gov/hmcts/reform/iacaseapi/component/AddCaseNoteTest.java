@@ -30,10 +30,6 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void adds_a_case_note(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-        server.resetRequests();
-        server.resetAll();
-        server.resetMappings();
-        server.resetScenarios();
         addServiceAuthStub(server);
         addCaseWorkerUserDetailsStub(server);
 
