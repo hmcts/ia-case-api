@@ -7,10 +7,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.MANCHESTER;
 
@@ -159,7 +159,7 @@ class AsylumCaseTest {
     @Test
     void reads_parties() throws IOException {
 
-        String caseData = "{\"directionParties\": \"both\"}";
+        String caseData = "{\"directionParties\": \"Both\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
         Optional<Parties> maybeParties = asylumCase.read(DIRECTION_PARTIES, Parties.class);
