@@ -970,6 +970,9 @@ public enum AsylumCaseFieldDefinition {
     REASON_FOR_LINK_APPEAL(
         "reasonForLinkAppeal", new TypeReference<ReasonForLinkAppealOptions>() {}),
 
+    CASE_LINKS(
+        "caseLinks", new TypeReference<List<IdValue<CaseLink>>>(){}),
+
     HEARING_DECISION_SELECTED(
         "hearingDecisionSelected", new TypeReference<String>(){}),
     IS_FEE_PAYMENT_ENABLED(
