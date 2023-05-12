@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -15,10 +18,15 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpda
 @Component
 public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private static final String CITIZEN = "citizen";
 
-    public AsylumSupplementaryDataFixingHandler(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private final UserDetailsProvider userDetailsProvider;
+
+    public AsylumSupplementaryDataFixingHandler(CcdSupplementaryUpdater ccdSupplementaryUpdater,
+                                                UserDetailsProvider userDetailsProvider) {
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+        this.userDetailsProvider = userDetailsProvider;
     }
 
     @Override
@@ -31,7 +39,8 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
-        return true;
+        return !userDetailsProvider.getUserDetails().getRoles().contains(CITIZEN)
+               || !isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override
