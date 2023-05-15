@@ -68,8 +68,8 @@ ia-case-payments-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-payments-api:latest
-    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-270 
+    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-payments-api:pr-270
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -86,7 +86,8 @@ ia-case-documents-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -106,7 +107,8 @@ ia-case-notifications-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
+    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -127,7 +129,8 @@ ia-bail-case-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-339
+    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
+    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-339
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     environment:
@@ -145,7 +148,8 @@ ia-timed-event-service:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
+    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:
@@ -179,8 +183,8 @@ ia-home-office-integration-api:
   enabled: true 
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-293
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    # image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-293
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
@@ -191,7 +195,8 @@ ia-home-office-integration-api:
 ia-case-access-api:
    enabled: true
    java:
-     image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
+     image: hmctspublic.azurecr.io/ia/case-access-api:latest
+     # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
      ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
 
 
