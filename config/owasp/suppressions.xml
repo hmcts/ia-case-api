@@ -44,25 +44,24 @@
         <cve>CVE-2023-20861</cve>
         <cve>CVE-2023-20860</cve>
     </suppress>
+    <suppress until="2024-06-01">
+    <notes>![CDATA[
+        False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
+
+        We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
+        Try to remove it when a dependencycheck upgrade becomes available.
+        If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
+        ]]</notes>
+        <cve>CVE-2022-45688</cve>
+    </suppress>
 <!-- The following CVEs are suppressed for the purpose of getting the current PR onto the preview environment
-	 They should still be addressed -->
+	 They should still be addressed
     <suppress until="2023-05-27">
 	<notes><![CDATA[
                   file name: json-smart-2.4.8.jar         
 		]]>
         </notes>
-	<cve>CVE-2023-1370</cve>
-	<cve>CVE-2022-45688</cve>
+	    <cve>CVE-2023-1370</cve>
     </suppress>
-     <suppress until="2023-05-27">
-        <notes><![CDATA[
-                  pivotal_software:spring_framework:5.3.22
-                ]]>
-        </notes>
-	<cve>CVE-2023-20863</cve>
-	<cve>CVE-2022-45688</cve>
-	<cve>CVE-2023-20862</cve>
-	<cve>CVE-2023-20873</cve>
-     </suppress>
-     <!-- end of temporary suppressions -->
+      end of temporary suppressions -->
 </suppressions>
