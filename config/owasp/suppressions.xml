@@ -1,75 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-  <suppress until="2030-01-01">
+  <suppress until="2024-06-01">
     <notes><![CDATA[
-             https://nvd.nist.gov/vuln/detail/CVE-2016-1000027
-             Root Cause: spring-web-5.2.3.RELEASE.jar <= org/springframework/remoting/httpinvoker/HttpInvokerServiceExporter.class : [2.5.1,)
-             Pivotal Spring Framework 4.1.4 suffers from a potential remote code execution (RCE) issue if used for Java deserialization of untrusted data. Depending on how the library is implemented within a product, this issue may or not occur, and authentication may be required
-             Note: No java deserialization of untrusted data is happening in this component therefore it is suppressed.
-            ]]>
-    </notes>
+      This vulnerability is about potential Remote Code Execution when serializing and deserializing Java classes
+      using HttpInvokerServiceExport and org.springframework.remoting.
+      As we don't use those constructs, we are not affected by it.
+      The suppression will be a long-term one. An expiry to the suppression is kept to allow re-evaluating whether
+      we're still unaffected by it.
+    ]]></notes>
     <cve>CVE-2016-1000027</cve>
   </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                incorrectly tagging spring-security-crypto, Affects versions prior to 5.3.2
-                ]]>
-    </notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.+?$</packageUrl>
-    <cve>CVE-2020-5408</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <cve>CVE-2022-33915</cve>
-    <cve>CVE-2022-34305</cve>
-    <cve>CVE-2022-31569</cve>
-    <cve>CVE-2018-1258</cve>
-    <cve>CVE-2021-22112</cve>
-    <cve>CVE-2022-22976</cve>
-    <cve>CVE-2022-22978</cve>
-    <cve>CVE-2022-38749</cve>
-    <cve>CVE-2022-38750</cve>
-    <cve>CVE-2022-38751</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2022-38752</cve>    
-    <cve>CVE-2022-25857</cve>
-    <cve>CVE-2022-38752</cve>
-    <cve>CVE-2022-42003</cve>
-    <cve>CVE-2022-42004</cve>
-    <cve>CVE-2022-38751</cve>
-    <cve>CVE-2022-38750</cve>
-    <cve>CVE-2022-38749</cve>
-    <cve>CVE-2022-31690</cve>
-    <cve>CVE-2022-31692</cve>
-    <cve>CVE-2022-42252</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2021-4277</cve>
-    <cve>CVE-2021-37533</cve>
-    <cve>CVE-2021-4235</cve>
-    <cve>CVE-2022-41854</cve>
-    <cve>CVE-2022-3064</cve>
-    <cve>CVE-2022-45143</cve>
-    <cve>CVE-2023-24998</cve>
+  <suppress until="2024-06-01">
+    <notes>![CDATA[
+      False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
+
+      We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
+      Try to remove it when a dependencycheck upgrade becomes available.
+      If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
+    ]]</notes>
     <cve>CVE-2022-45688</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2022-41854</cve>
-    <cve>CVE-2022-31690</cve>
-    <cve>CVE-2022-31692</cve>
-    <cve>CVE-2022-42252</cve>
-    <cve>CVE-2023-24998</cve>
-    <cve>CVE-2022-45688</cve>
-    <cve>CVE-2022-42003</cve>
-    <cve>CVE-2022-42004</cve>
-    <cve>CVE-2022-1471</cve>
-    <cve>CVE-2023-28708</cve>    
-    <cve>CVE-2023-20861</cve>         
-  </suppress>
-  <suppress >
-    <cve>CVE-2023-20860</cve>
-    <cve>CVE-2023-20862</cve>
-    <cve>CVE-2023-20863</cve>
-    <cve>CVE-2023-20873</cve>
   </suppress>
 </suppressions>

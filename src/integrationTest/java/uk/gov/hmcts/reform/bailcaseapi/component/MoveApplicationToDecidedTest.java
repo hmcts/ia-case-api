@@ -11,12 +11,9 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.MOVE_APPLICATION_TO_DECIDED;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.DECISION_CONDITIONAL_BAIL;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.bailcaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.BailCaseForTest;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -28,8 +25,7 @@ public class MoveApplicationToDecidedTest extends SpringBootIntegrationTest impl
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void move_application_to_decided(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void move_application_to_decided() {
 
         addAdminOfficerUserDetailsStub(server);
 

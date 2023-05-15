@@ -11,14 +11,12 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.ADD_CASE_NOTE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.APPLICATION_SUBMITTED;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
+
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.bailcaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.BailCaseForTest;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -30,8 +28,7 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void adds_a_case_note(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void adds_a_case_note() {
 
         addAdminOfficerUserDetailsStub(server);
 
