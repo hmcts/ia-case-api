@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -39,8 +40,10 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
-        return !userDetailsProvider.getUserDetails().getRoles().contains(CITIZEN)
-               || !isAipJourney(callback.getCaseDetails().getCaseData());
+        Event event = callback.getEvent();
+        boolean isCitizen = userDetailsProvider.getUserDetails().getRoles().contains(CITIZEN);
+
+        return event != START_APPEAL || !isCitizen;
     }
 
     @Override
