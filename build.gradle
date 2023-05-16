@@ -18,7 +18,7 @@ plugins {
     id "info.solidsoft.pitest" version '1.5.1'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.flywaydb.flyway' version '5.2.4'
-    id 'org.owasp.dependencycheck' version '8.0.2'
+    id 'org.owasp.dependencycheck' version '8.2.1'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.7.11'
     id 'uk.gov.hmcts.java' version '0.12.5'
@@ -34,8 +34,7 @@ apply plugin: 'idea'
 def versions = [
     reformLogging      : '5.1.7',
     serenity           : '3.1.20',
-    springBoot         : '2.7.11',
-    junit              : '5.6.2'
+    junit              : '5.8.2'
 ]
 
 ext.libraries = [
@@ -249,43 +248,41 @@ dependencyManagement {
 
     dependencies {
 
-        dependencySet(group: 'org.yaml', version: '1.33') {
-            entry 'snakeyaml'
+        dependencySet(group: 'com.google.guava', version: '31.1-jre') {
+            entry 'guava'
         }
 
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.73') {
-            entry 'tomcat-embed-core'
-            entry 'tomcat-embed-el'
-            entry 'tomcat-embed-websocket'
+        dependencySet(group: 'org.yaml', version: '2.0') {
+            entry 'snakeyaml'
         }
 
         dependencySet(group: 'commons-fileupload', version: '1.5') {
             entry 'commons-fileupload'
         }
 
-
-        dependencySet(group: 'org.springframework.security', version: '5.7.8') {
-            entry 'spring-security-crypto'
-            entry 'spring-security-core'
-            entry 'spring-security-config'
-            entry 'spring-security-web'
-            entry 'spring-security-test'
-            entry 'spring-security-oauth2-client'
-            entry 'spring-security-oauth2-core'
-            entry 'spring-security-oauth2-jose'
-            entry 'spring-security-oauth2-resource-server'
-        }
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.1') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.0') {
             entry 'jackson-databind'
             entry 'jackson-core'
+            entry 'jackson-annotations'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.14.1') {
+        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.0') {
             entry 'jackson-dataformat-csv'
+            entry 'jackson-dataformat-yaml'
        }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.14.1') {
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.0') {
             entry 'jackson-datatype-jsr310'
+            entry 'jackson-datatype-jdk8'
+        }
+
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.0') {
+            entry 'jackson-datatype-jsr310'
+            entry 'jackson-datatype-jdk8'
+        }
+
+        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.0') {
+            entry 'jackson-module-parameter-names'
         }
 
         dependencySet(group: 'net.minidev', version: '2.4.10') {
@@ -331,7 +328,7 @@ dependencies {
     compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
     compile group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.0.5'
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
 
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
@@ -367,9 +364,9 @@ dependencies {
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
     //pact contract testing
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
-    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.7'
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.41'
+    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.41'
     contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
 

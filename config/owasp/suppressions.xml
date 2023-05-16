@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2023-05-05">
-        <notes>![CDATA[
-            False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
-            ]]</notes>
-        <cve>CVE-2022-45688</cve>
-    </suppress>
-    <suppress>
-        <notes>False positive spring-security-crypto-5.7.1.jar</notes>
-        <cve>CVE-2020-5408</cve>
-    </suppress>
     <suppress>
         <!-- 2022-09: Not applicable to us. We don't use HTTP Invoker nor do we communicate through native java bean serialization.
         We use JSON instead. Suppressed for a year to allow re-assessing in the unlikely event we decide to introduce it. -->
@@ -17,35 +7,8 @@
             https://github.com/spring-projects/spring-framework/issues/24434#issuecomment-1132113566]]></notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
-    <suppress>
-        <!-- A temp directory creation vulnerability exists in all versions of Guava, allowing an attacker
-        with access to the machine to potentially access data in a temporary directory created by the Guava API
-        com.google.common.io.Files.createTempDir(). By default, on unix-like systems,
-        the created directory is world-readable (readable by an attacker with access to the system). The method in question
-         has been marked @Deprecated in versions 30.0 and later and should not be used. For Android developers,
-          we recommend choosing a temporary directory API provided by Android, such as context.getCacheDir().
-          For other Java developers, we recommend migrating to the Java 7 API java.nio.file.Files.createTempDirectory()
-          which explicitly configures permissions of 700, or configuring the Java runtime's java.io.tmpdir
-          system property to point to a location whose permissions are appropriately configured.-->
-        <notes><![CDATA[
-            This CVE is for an older version of guava which only the checkstyle gradle plugin is currently using.
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com.google.guava/guava@.*$</packageUrl>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-    <suppress until="2023-06-08">
-        <notes><![CDATA[
-                file name: snakeyaml-1.33.jar
-         ]]></notes>
-        <cve>CVE-2022-1471</cve>
-    </suppress>
-    <suppress until="2023-06-08">
-        <notes>pkg:maven/org.springframework/spring-aop@5.3.23</notes>
-        <cve>CVE-2023-20861</cve>
-        <cve>CVE-2023-20860</cve>
-    </suppress>
     <suppress until="2024-06-01">
-    <notes>![CDATA[
+        <notes>![CDATA[
         False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
 
         We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
@@ -54,14 +17,4 @@
         ]]</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-<!-- The following CVEs are suppressed for the purpose of getting the current PR onto the preview environment
-	 They should still be addressed
-    <suppress until="2023-05-27">
-	<notes><![CDATA[
-                  file name: json-smart-2.4.8.jar         
-		]]>
-        </notes>
-	    <cve>CVE-2023-1370</cve>
-    </suppress>
-      end of temporary suppressions -->
 </suppressions>
