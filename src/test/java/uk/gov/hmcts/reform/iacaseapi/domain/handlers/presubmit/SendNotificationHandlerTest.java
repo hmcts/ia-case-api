@@ -141,7 +141,9 @@ class SendNotificationHandlerTest {
             Event.TRANSFER_OUT_OF_ADA,
             Event.MARK_APPEAL_AS_ADA,
             Event.REMOVE_DETAINED_STATUS,
-            Event.MARK_APPEAL_AS_DETAINED
+            Event.MARK_APPEAL_AS_DETAINED,
+            Event.CREATE_CASE_LINK,
+            Event.MAINTAIN_CASE_LINKS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -294,7 +296,9 @@ class SendNotificationHandlerTest {
                         Event.TRANSFER_OUT_OF_ADA,
                         Event.MARK_APPEAL_AS_ADA,
                         Event.REMOVE_DETAINED_STATUS,
-                        Event.MARK_APPEAL_AS_DETAINED
+                        Event.MARK_APPEAL_AS_DETAINED,
+                        Event.CREATE_CASE_LINK,
+                        Event.MAINTAIN_CASE_LINKS
                     ).contains(event)) {
 
                     assertTrue(canHandle);

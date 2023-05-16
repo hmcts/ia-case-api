@@ -1443,6 +1443,9 @@ public enum AsylumCaseFieldDefinition {
     IS_AGE_ASSESSMENT_VISIBLE(
         "isAgeAssessmentVisible", new TypeReference<YesOrNo>() {}),
 
+    IS_NABA_ENABLED(
+            "isNabaEnabled", new TypeReference<YesOrNo>() {}),
+
     HAS_CORRESPONDENCE_ADDRESS(
         "hasCorrespondenceAddress", new TypeReference<YesOrNo>() {}),
 

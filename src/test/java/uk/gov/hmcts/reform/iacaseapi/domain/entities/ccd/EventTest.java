@@ -123,6 +123,8 @@ class EventTest {
         assertEquals("markAppealAsAda", Event.MARK_APPEAL_AS_ADA.toString());
         assertEquals("removeDetainedStatus", Event.REMOVE_DETAINED_STATUS.toString());
         assertEquals("markAppealAsDetained", Event.MARK_APPEAL_AS_DETAINED.toString());
+        assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
+        assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
     }
 
     @Test

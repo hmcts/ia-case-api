@@ -284,6 +284,8 @@ security:
       - "markAppealAsAda"
       - "removeDetainedStatus"
       - "markAppealAsDetained"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -328,6 +330,8 @@ security:
       - "markAppealAsAda"
       - "removeDetainedStatus"
       - "markAppealAsDetained"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -396,6 +400,8 @@ security:
       - "adaSuitabilityReview"
       - "transferOutOfAda"
       - "reviewHearingRequirements"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
