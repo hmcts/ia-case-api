@@ -88,7 +88,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE)).thenReturn(Optional.of(journeyType));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_PARTIES, Parties.class))
             .thenReturn(Optional.of(party));
     }
 }

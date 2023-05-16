@@ -96,7 +96,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         asylumCase.write(DIRECTIONS, allDirections);
         asylumCase.clear(SEND_DIRECTION_EXPLANATION);
-        asylumCase.clear(SEND_DIRECTION_PARTIES);
+        asylumCase.clear(DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         writePreviousHearingsToAsylumCase(asylumCase);

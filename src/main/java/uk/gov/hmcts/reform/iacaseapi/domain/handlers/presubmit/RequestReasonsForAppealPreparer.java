@@ -50,7 +50,7 @@ public class RequestReasonsForAppealPreparer implements PreSubmitCallbackHandler
                 "You must now tell us why you think the Home Office decision to refuse your claim is wrong."
         );
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
+        asylumCase.write(DIRECTION_PARTIES, Parties.APPELLANT);
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE,
                 dateProvider

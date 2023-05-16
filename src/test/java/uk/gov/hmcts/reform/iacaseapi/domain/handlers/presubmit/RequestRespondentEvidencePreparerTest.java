@@ -120,7 +120,7 @@ class RequestRespondentEvidencePreparerTest {
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
             .contains(expectedExplanationContains);
 
-        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
     }

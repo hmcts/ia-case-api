@@ -12,7 +12,7 @@
         "replacements": {
           "sendDirectionExplanation": "Some direction.",
           "sendDirectionDateDue": "{$TODAY+28}",
-          "sendDirectionParties": "appellant",
+          "directionParties": "appellant",
           "notificationsSent": []
         }
       }

@@ -16,7 +16,7 @@
           "homeOfficeNotificationsEligible": "Yes",
           "sendDirectionExplanation": "A notice of appeal has been lodged against this decision.",
           "sendDirectionDateDue": "{$TODAY+28}",
-          "sendDirectionParties": "respondent",
+          "directionParties": "respondent",
           "directions": [
             {
               "id": "1",

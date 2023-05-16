@@ -10,7 +10,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "sendDirectionExplanation": "Do the second thing",
-          "sendDirectionParties": "legalRepresentative",
+          "directionParties": "legalRepresentative",
           "sendDirectionDateDue": "2022-01-01",
           "directions": [
             {

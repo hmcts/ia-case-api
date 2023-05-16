@@ -10,7 +10,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "sendDirectionExplanation": null,
-          "sendDirectionParties": null,
+          "directionParties": null,
           "sendDirectionDateDue": null
         }
       }
@@ -23,7 +23,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "sendDirectionExplanation": null,
-        "sendDirectionParties": "legalRepresentative",
+        "directionParties": "legalRepresentative",
         "sendDirectionDateDue": null
       }
     }

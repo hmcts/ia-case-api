@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "sendDirectionExplanation": "Review the built case",
-          "sendDirectionParties": "respondent",
+          "directionParties": "respondent",
           "sendDirectionDateDue": "2022-01-01",
           "notificationsSent": []
         }

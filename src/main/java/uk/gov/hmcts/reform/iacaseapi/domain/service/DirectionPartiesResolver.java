@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_PARTIES;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -32,13 +32,13 @@ public class DirectionPartiesResolver {
                 return Parties.RESPONDENT;
 
             case SEND_DIRECTION:
-                Optional<Parties> sendDirectionParties = callback
+                Optional<Parties> directionParties = callback
                         .getCaseDetails()
                         .getCaseData()
-                        .read(SEND_DIRECTION_PARTIES);
+                        .read(DIRECTION_PARTIES);
                 return
-                    sendDirectionParties
-                        .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+                    directionParties
+                        .orElseThrow(() -> new IllegalStateException("directionParties is not present"));
             case REQUEST_REASONS_FOR_APPEAL:
                 return Parties.APPELLANT;
             default:

@@ -90,7 +90,7 @@ class RequestResponseReviewHandlerTest {
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
             .contains(expectedDueDate);
 
-        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
     }
 

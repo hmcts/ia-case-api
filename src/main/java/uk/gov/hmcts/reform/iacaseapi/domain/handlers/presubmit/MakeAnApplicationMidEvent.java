@@ -29,7 +29,7 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.MAKE_AN_APPLICATION;
+                && callback.getEvent() == Event.MAKE_AN_APPLICATION;
     }
 
     @Override
