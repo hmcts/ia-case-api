@@ -12,11 +12,6 @@ variable "location" {
   default = "UK South"
 }
 
-variable "deployment_namespace" {
-  type = string
-  default = ""
-}
-
 variable "env" {
 }
 
@@ -28,7 +23,7 @@ variable "ilbIp" {
 }
 
 variable "common_tags" {
-  type = map
+  type = map(string)
 }
 
 variable "capacity" {
