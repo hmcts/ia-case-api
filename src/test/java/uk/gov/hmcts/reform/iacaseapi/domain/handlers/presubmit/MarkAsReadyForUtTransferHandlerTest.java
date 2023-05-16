@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -84,7 +85,7 @@ class MarkAsReadyForUtTransferHandlerTest {
     }
 
     @Test
-    void should_append_notice_of_decision_ut_to_tribunal_documents() {
+    void should_append_notice_of_decision_ut_to_tribunal_documents_and_set_field() {
         allTribunalDocuments = Arrays.asList(
                 new IdValue<>("1", someTribunalMeta)
         );
@@ -101,6 +102,8 @@ class MarkAsReadyForUtTransferHandlerTest {
                 allTribunalDocuments,
                 Arrays.asList(noticeOfDecisionMetaData)
         );
+        verify(mockAsylumCase, times(1)).write(APPEAL_READY_FOR_UT_TRANSFER, YesOrNo.YES);
+        verify(mockAsylumCase, times(1)).write(APPEAL_READY_FOR_UT_TRANSFER_OUTCOME, "Transferred to the Upper Tribunal as an expedited related appeal");
     }
 
 

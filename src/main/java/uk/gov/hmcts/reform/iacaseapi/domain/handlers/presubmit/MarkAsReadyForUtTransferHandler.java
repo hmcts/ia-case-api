@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -78,6 +79,8 @@ public class MarkAsReadyForUtTransferHandler implements PreSubmitCallbackHandler
                     documentsAppender.append(existingTribunalDocuments, Arrays.asList(noticeOfDecisionDocumentWithMetadata));
             asylumCase.write(TRIBUNAL_DOCUMENTS, allTribunalDocuments);
         }
+        asylumCase.write(APPEAL_READY_FOR_UT_TRANSFER, YesOrNo.YES);
+        asylumCase.write(APPEAL_READY_FOR_UT_TRANSFER_OUTCOME, "Transferred to the Upper Tribunal as an expedited related appeal");
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

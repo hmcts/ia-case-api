@@ -1757,7 +1757,11 @@ public enum AsylumCaseFieldDefinition {
     UT_INSTRUCTION_DATE(
             "utInstructionDate", new TypeReference<String>(){}),
     NOTICE_OF_DECISION_UT_TRANSFER_DOCUMENT(
-        "noticeOfDecisionUtTransferDocument", new TypeReference<Document>(){})
+        "noticeOfDecisionUtTransferDocument", new TypeReference<Document>(){}),
+    APPEAL_READY_FOR_UT_TRANSFER(
+            "appealReadyForUtTransfer", new TypeReference<YesOrNo>(){}),
+    APPEAL_READY_FOR_UT_TRANSFER_OUTCOME(
+            "appealReadyForUtTransferOutcome", new TypeReference<String>(){})
     ;
 
     private final String value;
