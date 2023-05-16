@@ -156,7 +156,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private Set<Event> getInternalEventsToHandle(Callback<AsylumCase> callback) {
         Set<Event> eventsToHandle = Sets.newHashSet(
-                //Event.SUBMIT_APPEAL,
                 Event.EDIT_APPEAL_AFTER_SUBMIT,
                 Event.REQUEST_RESPONDENT_EVIDENCE,
                 Event.REQUEST_RESPONDENT_REVIEW,
@@ -168,7 +167,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.REMOVE_DETAINED_STATUS,
                 Event.REINSTATE_APPEAL,
                 Event.END_APPEAL,
-                Event.SUBMIT_APPEAL
+                Event.SUBMIT_APPEAL,
+                Event.UPDATE_HEARING_ADJUSTMENTS
 
         );
         if (!isSaveAndContinueEnabled) {
