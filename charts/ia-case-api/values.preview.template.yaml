@@ -64,7 +64,7 @@ java:
       password: hmcts
 
 ia-case-payments-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest #:pr-259 or relevant PR number to change
@@ -81,7 +81,7 @@ ia-case-payments-api:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
 ia-case-documents-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-520 or relevant PR number to change
@@ -100,7 +100,7 @@ ia-case-documents-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
 
 ia-case-notifications-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest #pr-724 or relevant PR number to change
@@ -120,7 +120,7 @@ ia-case-notifications-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
 ia-home-office-integration-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest #pr-285 or relevant PR number to change
@@ -296,10 +296,54 @@ ccd:
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
-    clusterName: es
-    replicas: 1
-
+    imageTag: "7.17.1"
+    initResources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "25m"
+        memory: "512Mi"
   logstash:
-    image: null
-    tag: ccd-cmc-logstash-latest
+    elasticsearch:
+      host: ${SERVICE_NAME}-es-master
+      port: 9200
+    image: hmctspublic.azurecr.io/ccd/logstash
+    imageTag: "latest"
+    extraEnvs:
+      - name: DATA_STORE_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DATA_STORE_USER
+        value: hmcts
+      - name: DATA_STORE_PASS
+        value: hmcts
+      - name: DB_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DB_USER
+        value: hmcts
+      - name: DB_PWD
+        value: hmcts
+      - name: ES_HOSTS
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ES_DATA_NODES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ELASTIC_SEARCH_DATA_NODES_HOSTS
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1024Mi"
+      limits:
+        cpu: "2500m"
+        memory: "1024Mi"
+    configTpl:
+      xpack.monitoring.enabled: "false"
+      db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      db.user: hmcts
+      db.pwd: hmcts
+      es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
+    livenessProbe:
+      initialDelaySeconds: 90
 
