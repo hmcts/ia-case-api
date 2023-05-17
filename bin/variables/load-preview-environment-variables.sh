@@ -11,4 +11,3 @@ echo "export SERVICE_AUTH_PROVIDER_API_BASE_URL=http://rpe-service-auth-provider
 echo "export IDAM_API_BASE_URL=https://idam-api.aat.platform.hmcts.net"
 echo "export CCD_IDAM_REDIRECT_URL=https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
 echo "export CCD_DEFINITION_STORE_API_BASE_URL=https://ccd-definition-store-ia-case-api-pr-${pr}.preview.platform.hmcts.net"
-
