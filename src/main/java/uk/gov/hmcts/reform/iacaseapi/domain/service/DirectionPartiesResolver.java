@@ -18,6 +18,8 @@ public class DirectionPartiesResolver {
     ) {
         requireNonNull(callback, "callback must not be null");
 
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         switch (callback.getEvent()) {
 
             case REQUEST_CASE_EDIT:
@@ -33,24 +35,9 @@ public class DirectionPartiesResolver {
                 return Parties.RESPONDENT;
 
             case SEND_DIRECTION:
-                Optional<Parties> sendDirectionParties = callback
-                        .getCaseDetails()
-                        .getCaseData()
-                        .read(SEND_DIRECTION_PARTIES);
-
-                Optional<Parties> sendDirectionAipParties = callback
-                        .getCaseDetails()
-                        .getCaseData()
-                        .read(SEND_DIRECTION_AIP_PARTIES);
-
-                if (sendDirectionParties.isPresent()) {
-                    return sendDirectionParties
-                            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present2"));
-                } else if (sendDirectionAipParties.isPresent()) {
-                    return sendDirectionAipParties
-                            .orElseThrow(() -> new IllegalStateException("sendDirectionAipParties is not present"));
-                }
-                throw new IllegalArgumentException("sendDirectionParties/sendDirectionAipParties is not present");
+                return asylumCase.read(SEND_DIRECTION_PARTIES, Parties.class)
+                        .orElseGet(() -> asylumCase.read(SEND_DIRECTION_AIP_PARTIES, Parties.class)
+                                .orElseThrow(() -> new IllegalStateException("sendDirectionAipParties is not present")));
             case REQUEST_REASONS_FOR_APPEAL:
                 return Parties.APPELLANT;
             default:
