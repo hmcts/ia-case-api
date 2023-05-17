@@ -44,7 +44,7 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
 
         boolean isAdmin = HandlerUtils.isInternalCase(asylumCase);
 
-        if (!isAdmin) {
+        if (isInCountryDetainedAppeal(asylumCase) && !isAdmin) {
             asylumCase.write(IS_ADMIN, YesOrNo.YES);
             asylumCase.clear(LEGAL_REP_COMPANY);
             asylumCase.clear(LEGAL_REP_COMPANY_ADDRESS);
@@ -54,5 +54,10 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isInCountryDetainedAppeal(AsylumCase asylumCase) {
+        return (HandlerUtils.isAppellantInDetention(asylumCase)
+            && !asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).equals(YesOrNo.YES));
     }
 }
