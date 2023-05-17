@@ -136,6 +136,9 @@ public enum AsylumCaseFieldDefinition {
     SEND_DIRECTION_PARTIES(
         "sendDirectionParties", new TypeReference<Parties>(){}),
 
+    SEND_DIRECTION_AIP_PARTIES(
+            "sendDirectionAipParties", new TypeReference<Parties>(){}),
+
     SEND_DIRECTION_DATE_DUE(
         "sendDirectionDateDue", new TypeReference<String>(){}),
 
