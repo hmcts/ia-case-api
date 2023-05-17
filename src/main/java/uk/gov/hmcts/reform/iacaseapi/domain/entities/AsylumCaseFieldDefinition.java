@@ -1751,7 +1751,17 @@ public enum AsylumCaseFieldDefinition {
         "reasonAppealMarkedAsAda", new TypeReference<String>(){}),
 
     ADA_HEARING_REQUIREMENTS_SUBMITTED(
-            "adaHearingRequirementsSubmitted", new TypeReference<YesOrNo>(){})
+            "adaHearingRequirementsSubmitted", new TypeReference<YesOrNo>(){}),
+    UT_APPEAL_REFERENCE_NUMBER(
+            "utAppealReferenceNumber", new TypeReference<String>() {}),
+    UT_INSTRUCTION_DATE(
+            "utInstructionDate", new TypeReference<String>(){}),
+    NOTICE_OF_DECISION_UT_TRANSFER_DOCUMENT(
+        "noticeOfDecisionUtTransferDocument", new TypeReference<Document>(){}),
+    APPEAL_READY_FOR_UT_TRANSFER(
+            "appealReadyForUtTransfer", new TypeReference<YesOrNo>(){}),
+    APPEAL_READY_FOR_UT_TRANSFER_OUTCOME(
+            "appealReadyForUtTransferOutcome", new TypeReference<String>(){})
     ;
 
     private final String value;

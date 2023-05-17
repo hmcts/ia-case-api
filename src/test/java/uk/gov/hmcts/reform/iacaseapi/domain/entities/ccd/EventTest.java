@@ -121,12 +121,13 @@ class EventTest {
         assertEquals("markAppealAsAda", Event.MARK_APPEAL_AS_ADA.toString());
         assertEquals("removeDetainedStatus", Event.REMOVE_DETAINED_STATUS.toString());
         assertEquals("markAppealAsDetained", Event.MARK_APPEAL_AS_DETAINED.toString());
+        assertEquals("markAsReadyForUtTransfer", Event.MARK_AS_READY_FOR_UT_TRANSFER.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(120, Event.values().length);
+        assertEquals(121, Event.values().length);
     }
 }

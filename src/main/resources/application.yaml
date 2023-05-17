@@ -282,6 +282,7 @@ security:
       - "markAppealAsAda"
       - "removeDetainedStatus"
       - "markAppealAsDetained"
+      - "markAsReadyForUtTransfer"
       - "createCaseLink"
       - "maintainCaseLinks"
     caseworker-ia-admofficer:
@@ -326,6 +327,7 @@ security:
       - "markAppealAsAda"
       - "removeDetainedStatus"
       - "markAppealAsDetained"
+      - "markAsReadyForUtTransfer"
       - "createCaseLink"
       - "maintainCaseLinks"
     caseworker-ia-homeofficeapc:
