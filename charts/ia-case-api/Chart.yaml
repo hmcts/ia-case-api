@@ -15,7 +15,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: ia-aip-frontend
-    version: 0.0.41:w
+    version: 0.0.41
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
   - name: xui-webapp
