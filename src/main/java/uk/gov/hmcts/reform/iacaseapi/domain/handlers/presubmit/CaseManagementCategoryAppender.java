@@ -29,6 +29,7 @@ public class CaseManagementCategoryAppender implements PreSubmitCallbackHandler<
                && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData())
                && Arrays.asList(
             Event.START_APPEAL,
+            Event.CREATE_DLRM_CASE,
             Event.EDIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
     }

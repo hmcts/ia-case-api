@@ -185,6 +185,7 @@ security:
       - "removeLegalRepresentative"
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
+      - "createDLRMCase"
       - "editAppeal"
       - "submitAppeal"
       - "paymentAppeal"

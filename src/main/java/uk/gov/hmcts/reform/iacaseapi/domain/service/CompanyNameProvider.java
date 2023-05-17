@@ -43,7 +43,7 @@ public class CompanyNameProvider {
             String organisationName = organisationEntityResponse.getName() == null
                 ? "" : organisationEntityResponse.getName();
 
-            if (callback.getEvent() == Event.START_APPEAL) {
+            if (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.CREATE_DLRM_CASE) {
                 asylumCase.write(LEGAL_REP_COMPANY, organisationName);
             } else {
                 asylumCase.write(UPDATE_LEGAL_REP_COMPANY, organisationName);

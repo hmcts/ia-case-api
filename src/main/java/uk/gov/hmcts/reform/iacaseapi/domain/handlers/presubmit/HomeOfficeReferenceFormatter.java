@@ -29,7 +29,8 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && (callback.getEvent() == Event.START_APPEAL
-                   || callback.getEvent() == Event.EDIT_APPEAL)
+                   || callback.getEvent() == Event.EDIT_APPEAL
+                    || callback.getEvent() == Event.CREATE_DLRM_CASE)
                && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData());
     }
 

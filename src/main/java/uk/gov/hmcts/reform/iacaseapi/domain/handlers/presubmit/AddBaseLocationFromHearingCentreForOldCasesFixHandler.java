@@ -39,7 +39,8 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.CHANGE_HEARING_CENTRE,
-            Event.START_APPEAL
+            Event.START_APPEAL,
+            Event.CREATE_DLRM_CASE
         ).contains(callback.getEvent());
     }
 

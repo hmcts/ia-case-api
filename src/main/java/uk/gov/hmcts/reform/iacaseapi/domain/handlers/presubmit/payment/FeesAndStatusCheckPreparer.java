@@ -55,6 +55,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
                && Arrays.asList(
             Event.START_APPEAL,
+            Event.CREATE_DLRM_CASE,
             Event.EDIT_APPEAL,
             PAYMENT_APPEAL)
                    .contains(callback.getEvent())

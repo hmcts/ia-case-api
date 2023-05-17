@@ -45,7 +45,8 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
+        return (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL
+                || callback.getEvent() == Event.CREATE_DLRM_CASE)
                 && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData());
     }
 
@@ -88,7 +89,7 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         );
 
         if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class).isPresent()
-            && callback.getEvent() == Event.START_APPEAL
+            && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.CREATE_DLRM_CASE)
             && featureToggler.getValue("share-case-feature", false)) {
 
             final String organisationIdentifier =

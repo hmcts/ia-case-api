@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Event {
 
     START_APPEAL("startAppeal"),
+    CREATE_DLRM_CASE("createDLRMCase"),
     EDIT_APPEAL("editAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
     SEND_DIRECTION("sendDirection"),

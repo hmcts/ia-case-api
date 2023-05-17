@@ -38,7 +38,8 @@ public class AppealOutOfCountryPreparer implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.START_APPEAL;
+               && (callback.getEvent() == Event.START_APPEAL
+                || callback.getEvent() == Event.CREATE_DLRM_CASE);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
