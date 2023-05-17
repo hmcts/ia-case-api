@@ -38,11 +38,3 @@ dependencies:
     version: 0.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
-  - name: ia-aip-frontend
-    version: 0.0.38
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: ia-aip-frontend.enabled
-  - name: aac-manage-case-assignment
-    version: ~0.2.9
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: aac-manage-case-assignment.enabled

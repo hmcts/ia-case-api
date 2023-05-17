@@ -214,8 +214,6 @@ idam-pr:
       - https://admin-web-${SERVICE_FQDN}/oauth2redirect
     ccd_data_store_api:
       - https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
-    IAC:
-      - https://${SERVICE_FQDN}/redirectUrl
 
 xui-webapp:
   enabled: true
@@ -326,7 +324,6 @@ ccd:
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
-        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: iac,aac_manage_case_assignment
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
         ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
         ELASTIC_SEARCH_ENABLED: true

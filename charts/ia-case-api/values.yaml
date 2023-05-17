@@ -61,13 +61,9 @@ ia-case-notifications-api:
   enabled: false
 ia-home-office-integration-api:
   enabled: false
-ia-aip-frontend:
-  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:
   enabled: false
 ccd:
-  enabled: false
-aac-manage-case-assignment:
   enabled: false
