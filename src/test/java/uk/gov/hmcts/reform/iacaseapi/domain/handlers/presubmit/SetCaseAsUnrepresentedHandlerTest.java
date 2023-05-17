@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +44,8 @@ class SetCaseAsUnrepresentedHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             setCaseAsUnrepresentedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -63,6 +65,8 @@ class SetCaseAsUnrepresentedHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             setCaseAsUnrepresentedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -75,6 +79,47 @@ class SetCaseAsUnrepresentedHandlerTest {
         verify(asylumCase).clear(LEGAL_REP_NAME);
         verify(asylumCase).clear(LEGAL_REPRESENTATIVE_NAME);
         verify(asylumCase).clear(LEGAL_REP_REFERENCE_NUMBER);
+    }
+
+    @Test
+    void should_not_set_case_as_unrepresented_using_remove_legal_rep_event_out_of_country() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            setCaseAsUnrepresentedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).write(IS_ADMIN, YesOrNo.YES);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY_ADDRESS);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_NAME);
+        verify(asylumCase, times(0)).clear(LEGAL_REPRESENTATIVE_NAME);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_REFERENCE_NUMBER);
+    }
+
+    @Test
+    void should_not_set_case_as_unrepresented_using_stop_representing_a_client_not_detained() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            setCaseAsUnrepresentedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).write(IS_ADMIN, YesOrNo.YES);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY_ADDRESS);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_NAME);
+        verify(asylumCase, times(0)).clear(LEGAL_REPRESENTATIVE_NAME);
+        verify(asylumCase, times(0)).clear(LEGAL_REP_REFERENCE_NUMBER);
     }
 
     @Test
