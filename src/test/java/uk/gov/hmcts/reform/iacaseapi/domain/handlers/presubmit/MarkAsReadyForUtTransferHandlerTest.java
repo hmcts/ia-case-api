@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -65,6 +66,8 @@ class MarkAsReadyForUtTransferHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> mockCaseDetails;
     @Mock
+    private CaseDetails<AsylumCase> previousCaseDetails;
+    @Mock
     private AsylumCase mockAsylumCase;
     @Mock
     private DocumentsAppender mockDocumentsAppender;
@@ -73,6 +76,7 @@ class MarkAsReadyForUtTransferHandlerTest {
     @Mock
     private DocumentWithMetadata appealForm1WithMetadata;
     private MarkAsReadyForUtTransferHandler markAsReadyForUtTransferHandler;
+    private State previousState = State.APPEAL_SUBMITTED;
 
     @BeforeEach
     public void setUp() {
@@ -81,7 +85,9 @@ class MarkAsReadyForUtTransferHandlerTest {
 
         when(mockCallback.getCaseDetails()).thenReturn(mockCaseDetails);
         when(mockCallback.getCaseDetails().getCaseData()).thenReturn(mockAsylumCase);
-
+        when(previousCaseDetails.getState()).thenReturn(previousState);
+        when(mockCallback
+            .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
     }
 
     @Test
@@ -104,6 +110,11 @@ class MarkAsReadyForUtTransferHandlerTest {
         );
         verify(mockAsylumCase, times(1)).write(APPEAL_READY_FOR_UT_TRANSFER, YesOrNo.YES);
         verify(mockAsylumCase, times(1)).write(APPEAL_READY_FOR_UT_TRANSFER_OUTCOME, "Transferred to the Upper Tribunal as an expedited related appeal");
+        verify(mockAsylumCase).write(STATE_BEFORE_END_APPEAL, previousState);
+        verify(mockAsylumCase).clear(REINSTATE_APPEAL_REASON);
+        verify(mockAsylumCase).clear(REINSTATED_DECISION_MAKER);
+        verify(mockAsylumCase).clear(APPEAL_STATUS);
+        verify(mockAsylumCase).clear(REINSTATE_APPEAL_DATE);
     }
 
 
