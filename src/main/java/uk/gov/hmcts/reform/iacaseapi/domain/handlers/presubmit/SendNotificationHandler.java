@@ -137,7 +137,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.MARK_APPEAL_AS_DETAINED,
             Event.CREATE_CASE_LINK,
             Event.MAINTAIN_CASE_LINKS,
-            Event.UPDATE_PAYMENT_STATUS
+            Event.UPDATE_PAYMENT_STATUS,
+            Event.MARK_AS_READY_FOR_UT_TRANSFER
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -168,7 +169,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.REINSTATE_APPEAL,
                 Event.END_APPEAL,
                 Event.SUBMIT_APPEAL,
-                Event.UPDATE_HEARING_ADJUSTMENTS
+                Event.UPDATE_HEARING_ADJUSTMENTS,
+                Event.MARK_AS_READY_FOR_UT_TRANSFER
 
         );
         if (!isSaveAndContinueEnabled) {
