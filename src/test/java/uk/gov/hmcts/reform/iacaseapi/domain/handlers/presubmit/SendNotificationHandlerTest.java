@@ -141,7 +141,8 @@ class SendNotificationHandlerTest {
             Event.REMOVE_DETAINED_STATUS,
             Event.MARK_APPEAL_AS_DETAINED,
             Event.CREATE_CASE_LINK,
-            Event.MAINTAIN_CASE_LINKS
+            Event.MAINTAIN_CASE_LINKS,
+            Event.MARK_AS_READY_FOR_UT_TRANSFER
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -294,7 +295,8 @@ class SendNotificationHandlerTest {
                         Event.REMOVE_DETAINED_STATUS,
                         Event.MARK_APPEAL_AS_DETAINED,
                         Event.CREATE_CASE_LINK,
-                        Event.MAINTAIN_CASE_LINKS
+                        Event.MAINTAIN_CASE_LINKS,
+                        Event.MARK_AS_READY_FOR_UT_TRANSFER
                     ).contains(event)) {
 
                     assertTrue(canHandle);
