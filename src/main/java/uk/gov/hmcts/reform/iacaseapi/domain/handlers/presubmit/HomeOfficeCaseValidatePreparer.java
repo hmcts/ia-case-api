@@ -68,10 +68,10 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         boolean isAppealTypeEnabled = HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType);
-        log.info("Case id: {} . Is appeal type enabled for appeal type {}? {}", caseId, appealType, isAppealTypeEnabled);
+        log.info("Case id: {}. Is appeal type enabled for appeal type {}? {}", caseId, appealType, isAppealTypeEnabled);
 
         if (!isAppealTypeEnabled) {
-            log.info("Case id: {} . Appeal type not enabled. Returning without evaluating home office call.", caseId);
+            log.info("Case id: {}. Appeal type not enabled. Returning without evaluating home office call.", caseId);
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
