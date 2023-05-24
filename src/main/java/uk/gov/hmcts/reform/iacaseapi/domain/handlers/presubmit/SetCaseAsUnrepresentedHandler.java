@@ -58,6 +58,6 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
 
     private boolean isInCountryDetainedAppeal(AsylumCase asylumCase) {
         return (HandlerUtils.isAppellantInDetention(asylumCase)
-            && !asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).equals(YesOrNo.YES));
+            && asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).map(value -> value.equals(YesOrNo.YES)).orElse(true));
     }
 }
