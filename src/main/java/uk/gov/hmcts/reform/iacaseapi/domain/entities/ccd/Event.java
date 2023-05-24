@@ -120,10 +120,13 @@ public enum Event {
     MAINTAIN_CASE_LINKS("maintainCaseLinks"),
     TRANSFER_OUT_OF_ADA("transferOutOfAda"),
     MARK_APPEAL_AS_ADA("markAppealAsAda"),
+    CREATE_CASE_LINK("createCaseLink"),
+    MAINTAIN_CASE_LINKS("maintainCaseLinks"),
     PIP_ACTIVATION("pipActivation"),
     ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
     REMOVE_DETAINED_STATUS("removeDetainedStatus"),
     MARK_APPEAL_AS_DETAINED("markAppealAsDetained"),
+    MARK_AS_READY_FOR_UT_TRANSFER("markAsReadyForUtTransfer"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

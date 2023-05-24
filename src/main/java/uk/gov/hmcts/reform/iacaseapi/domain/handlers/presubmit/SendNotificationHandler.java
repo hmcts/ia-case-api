@@ -135,7 +135,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.TRANSFER_OUT_OF_ADA,
             Event.MARK_APPEAL_AS_ADA,
             Event.REMOVE_DETAINED_STATUS,
-            Event.MARK_APPEAL_AS_DETAINED
+            Event.MARK_APPEAL_AS_DETAINED,
+            Event.CREATE_CASE_LINK,
+            Event.MAINTAIN_CASE_LINKS,
+            Event.UPDATE_PAYMENT_STATUS,
+            Event.MARK_AS_READY_FOR_UT_TRANSFER
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -154,7 +158,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private Set<Event> getInternalEventsToHandle(Callback<AsylumCase> callback) {
         Set<Event> eventsToHandle = Sets.newHashSet(
-                //Event.SUBMIT_APPEAL,
                 Event.EDIT_APPEAL_AFTER_SUBMIT,
                 Event.REQUEST_RESPONDENT_EVIDENCE,
                 Event.REQUEST_RESPONDENT_REVIEW,
@@ -166,7 +169,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.REMOVE_DETAINED_STATUS,
                 Event.REINSTATE_APPEAL,
                 Event.END_APPEAL,
-                Event.SUBMIT_APPEAL
+                Event.SUBMIT_APPEAL,
+                Event.UPDATE_HEARING_ADJUSTMENTS,
+                Event.MARK_AS_READY_FOR_UT_TRANSFER
 
         );
         if (!isSaveAndContinueEnabled) {

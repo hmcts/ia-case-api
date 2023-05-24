@@ -71,7 +71,8 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
             asylumCase.write(LETTER_SENT_OR_RECEIVED, "Received");
         } else if ((appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(NO)))
             || (appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(YES))
-            && isAcceleratedDetainedAppeal.equals(Optional.of(NO)))) {
+            && isAcceleratedDetainedAppeal.equals(Optional.of(NO)))
+            || (appellantInUk.equals(YES) && appellantInDetention.isEmpty())) { //when detention question is never answered
             asylumCase.write(LETTER_SENT_OR_RECEIVED, "Sent");
         }
 

@@ -34,6 +34,7 @@ public enum DocumentTag {
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
 
     ADA_SUITABILITY("adaSuitability"),
+    NOTICE_OF_DECISION_UT_TRANSFER("noticeOfDecisionUtTransfer"),
 
 
     @JsonEnumDefaultValue
