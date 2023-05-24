@@ -215,11 +215,14 @@ class DeriveHearingCentreHandlerTest {
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
 
-        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "SUBMIT_APPEAL, NEWPORT, Newport, NEWPORT",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWPORT, Newport, NEWPORT",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
     })
     void should_use_default_hearing_centre_if_sponsor_present_and_no_valid_address(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -257,11 +260,14 @@ class DeriveHearingCentreHandlerTest {
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
 
-        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "SUBMIT_APPEAL, NEWPORT, Newport, NEWPORT",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWPORT, Newport, NEWPORT",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
     })
     void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {

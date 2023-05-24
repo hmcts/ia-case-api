@@ -38,11 +38,13 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appellantInUk": "No",
+        "hearingCentre": "newport",
+        "staffLocation": "Newport",
         "hearingCentre": "taylorHouse",
         "staffLocation": "Taylor House",
         "caseManagementLocation": {
           "region": "1",
-          "baseLocation": "765324"
+          "baseLocation": "227101"
         }
       }
     }
