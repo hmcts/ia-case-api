@@ -1,5 +1,6 @@
 {
   "description": "RIA-7105: Case officer sends non standard direction to appellant (AIP)",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
