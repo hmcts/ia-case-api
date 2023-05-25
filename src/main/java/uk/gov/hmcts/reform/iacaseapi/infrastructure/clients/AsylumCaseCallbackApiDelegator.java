@@ -49,7 +49,8 @@ public class AsylumCaseCallbackApiDelegator {
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
         try {
-            long caseId = Optional.of(callback.getCaseDetails()).map(details -> details.getId()).orElse(0L);
+            Long caseId = callback != null && callback.getCaseDetails() != null
+                    ? callback.getCaseDetails().getId() : 0L;
 
             log.info("Invoking API endpoint: {} for caseID: {}", endpoint, caseId);
 
