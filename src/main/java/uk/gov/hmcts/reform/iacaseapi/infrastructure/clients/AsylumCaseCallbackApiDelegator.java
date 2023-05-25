@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;

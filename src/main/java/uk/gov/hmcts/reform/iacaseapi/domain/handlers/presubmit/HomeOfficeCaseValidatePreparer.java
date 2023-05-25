@@ -81,6 +81,7 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             boolean homeOfficeUanFeature = featureToggler.getValue("home-office-uan-feature", false);
             log.info("Case id: {}. home-office-uan-feature feature flag: {}", caseId, homeOfficeUanFeature);
             asylumCase = homeOfficeUanFeature ? homeOfficeApi.aboutToStart(callback) : asylumCase;
+            log.info("Case id: {}. Asylum case preparation completed.", caseId);
         } else {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
         }
