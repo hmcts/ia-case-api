@@ -66,8 +66,8 @@ public class AsylumCaseCallbackApiDelegator {
                 )
                     .map(response -> {
                         log.info("HTTP Status Response received: {} with value: {} and message: {} for endpoint: {} and caseID: {}",
-                                response.getStatusCode().series().name() ,response.getStatusCode().value() ,response.getStatusCode().getReasonPhrase() ,
-                                endpoint ,caseId);
+                                response.getStatusCode().series().name(), response.getStatusCode().value(), response.getStatusCode().getReasonPhrase(),
+                                endpoint, caseId);
                         return response;
                     })
                 .map(ResponseEntity::getBody)
