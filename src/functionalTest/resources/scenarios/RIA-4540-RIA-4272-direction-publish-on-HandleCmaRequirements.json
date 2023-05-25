@@ -50,7 +50,7 @@
           "tag": "requestCmaRequirements",
           "previousDates": []
         },
-        "sendDirectionActionAvailable": "Yes"
+        "sendDirectionActionAvailable": "No"
       }
     }
   }
