@@ -8,15 +8,12 @@ import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDet
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -41,8 +38,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void sets_flag_to_indicate_the_hearing_details_have_been_recorded(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void sets_flag_to_indicate_the_hearing_details_have_been_recorded() {
 
         addServiceAuthStub(server);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
@@ -65,8 +61,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void returns_confirmation_page_content(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void returns_confirmation_page_content() {
 
         addServiceAuthStub(server);
         PostSubmitCallbackResponseForTest response = iaCaseApiClient.ccdSubmitted(callback()
