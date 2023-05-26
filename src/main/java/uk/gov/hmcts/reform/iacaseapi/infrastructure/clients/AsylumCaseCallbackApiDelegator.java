@@ -49,7 +49,11 @@ public class AsylumCaseCallbackApiDelegator {
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
         try {
-            log.info("Invoking API endpoint: {}", endpoint);
+            Long caseId = callback != null && callback.getCaseDetails() != null
+                    ? callback.getCaseDetails().getId() : 0L;
+
+            log.info("Invoking API endpoint: {} for caseID: {}", endpoint, caseId);
+
             return Optional
                 .of(restTemplate
                     .exchange(
@@ -60,6 +64,12 @@ public class AsylumCaseCallbackApiDelegator {
                         }
                     )
                 )
+                    .map(response -> {
+                        log.info("HTTP Status Response received: {} with value: {} and message: {} for endpoint: {} and caseID: {}",
+                                response.getStatusCode().series().name(), response.getStatusCode().value(), response.getStatusCode().getReasonPhrase(),
+                                endpoint, caseId);
+                        return response;
+                    })
                 .map(ResponseEntity::getBody)
                 .map(PreSubmitCallbackResponse::getData)
                 .orElseGet(() -> {
