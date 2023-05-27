@@ -19,6 +19,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9}))$");
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
+    private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -32,7 +33,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getEvent() == Event.EDIT_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
                && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
-                    || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID));
+                    || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
+                    || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -52,6 +54,12 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YesOrNo.NO);
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        if (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)) {
+            if (!asylumCase.read(DETENTION_FACILITY, String.class).orElse("").equals(DetentionFacility.IRC.toString())) {
+                asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+            }
+        }
 
         if (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
             if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
