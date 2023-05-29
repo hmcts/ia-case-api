@@ -18,7 +18,7 @@ class PreviousHearingTest {
     private final Optional<String> attendingHomeOfficeLegalRepresentative = Optional.of("Mr Cliff Evans");
     private final Optional<HoursAndMinutes> actualCaseHearingLength = Optional.of(new HoursAndMinutes("4", "30"));
     private final String ariaListingReference = "123456";
-    private final HearingCentre listCaseHearingCentre = HearingCentre.NEWPORT;
+    private final HearingCentre listCaseHearingCentre = HearingCentre.TAYLOR_HOUSE;
     private final String listCaseHearingDate = "13/10/2020";
     private final String listCaseHearingLength = "6 hours";
     private final String appealDecision = "Dismissed";

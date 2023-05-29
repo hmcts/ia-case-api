@@ -141,11 +141,11 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
     }
 
     private static Stream<HandleScenario> handleScenarioProvider() {
-        final HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToNewport =
+        final HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse =
             HandleScenario.builder()
                 .asylumCase(new AsylumCase())
-                .expectedBaseLocation(BaseLocation.NEWPORT)
-                .expectedStaffLocation("Newport")
+                .expectedBaseLocation(BaseLocation.TAYLOR_HOUSE)
+                .expectedStaffLocation("Taylor House")
                 .build();
 
         AsylumCase asylumCaseWithHearingCentreOnly = new AsylumCase();
@@ -181,7 +181,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
                 .build();
 
         return Stream.of(
-            givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToNewport,
+            givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre,
             givenCcdCaseHasHearingCentreGlasgowAndDoesHaveCompleteCaseBaseLocationButItIsDeprecated

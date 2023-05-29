@@ -141,7 +141,7 @@ ftpaAppealOutOfTimeDaysOoc: 28
 ftpaAppealOutOfTimeWorkingDaysInternalAdaCases: 7
 ftpaAppealOutOfTimeDaysInternalNonAdaCases: 14
 
-defaultHearingCentre: newport
+defaultHearingCentre: taylorHouse
 
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}

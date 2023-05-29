@@ -69,15 +69,15 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 .getCaseData();
 
         HearingCentre listCaseHearingCentre =
-            asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
+            asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.TAYLOR_HOUSE);
 
         HearingCentre hearingCentre =
-            asylumCase.read(HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
+            asylumCase.read(HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.TAYLOR_HOUSE);
 
         if (!listCaseHearingCentre.equals(HearingCentre.REMOTE_HEARING)) {
             if (!hearingCentreFinder.hearingCentreIsActive(listCaseHearingCentre)) {
-                asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
-                asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
+                asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+                asylumCase.write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
             } else {
                 if (!hearingCentreFinder.isListingOnlyHearingCentre(listCaseHearingCentre)) {
                     //Should also update the designated hearing centre
@@ -86,7 +86,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         } else {
             if (!hearingCentreFinder.hearingCentreIsActive(hearingCentre)) {
-                asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
+                asylumCase.write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
             }
         }
 

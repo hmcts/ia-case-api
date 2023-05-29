@@ -31,7 +31,7 @@
   "legalRepresentativeName": "{$IA_USER_PREFIX}A Legal Rep",
   "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
   "sendDirectionActionAvailable": "Yes",
-  "hearingCentre": "newport",
+  "hearingCentre": "taylorHouse",
   "submissionOutOfTime": "No",
   "uploadAdditionalEvidenceActionAvailable": "No",
   "isOutOfCountryEnabled": "Yes",

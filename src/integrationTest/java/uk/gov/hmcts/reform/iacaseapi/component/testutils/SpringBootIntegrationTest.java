@@ -3,11 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,9 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.Application;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
 
 
 @SpringBootTest(classes = {
@@ -36,9 +33,11 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsA
     "AAC_URL=http://127.0.0.1:8990",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
     "IA_DOCMOSIS_ENABLED=true"})
+@ExtendWith({
+    WiremockResolver.class
+})
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class SpringBootIntegrationTest {
 
     @Autowired
@@ -49,17 +48,6 @@ public abstract class SpringBootIntegrationTest {
 
     @Autowired
     private WebApplicationContext wac;
-
-    protected static WireMockServer server;
-
-    @BeforeAll
-    public void spinUp() {
-        server = new WireMockServer(WireMockConfiguration.options()
-            .notifier(new Slf4jNotifier(true))
-            .extensions(new DocumentsApiCallbackTransformer(), new NotificationsApiCallbackTransformer())
-            .port(8990));
-        server.start();
-    }
 
     @BeforeEach
     void setUp() {
@@ -74,16 +62,6 @@ public abstract class SpringBootIntegrationTest {
     @BeforeEach
     public void setUpApiClient() {
         iaCaseApiClient = new IaCaseApiClient(objectMapper, mockMvc);
-    }
-
-    @AfterEach
-    public void reset() {
-        server.resetAll();
-    }
-
-    @AfterAll
-    public void shutDown() {
-        server.stop();
     }
 
 }
