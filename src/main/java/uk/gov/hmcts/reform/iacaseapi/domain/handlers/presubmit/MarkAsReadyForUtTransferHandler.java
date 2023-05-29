@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -81,6 +83,17 @@ public class MarkAsReadyForUtTransferHandler implements PreSubmitCallbackHandler
         }
         asylumCase.write(APPEAL_READY_FOR_UT_TRANSFER, YesOrNo.YES);
         asylumCase.write(APPEAL_READY_FOR_UT_TRANSFER_OUTCOME, "Transferred to the Upper Tribunal as an expedited related appeal");
+
+        State previousState = callback
+            .getCaseDetailsBefore()
+            .map(CaseDetails::getState)
+            .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
+
+        asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
+        asylumCase.clear(REINSTATE_APPEAL_REASON);
+        asylumCase.clear(REINSTATED_DECISION_MAKER);
+        asylumCase.clear(APPEAL_STATUS);
+        asylumCase.clear(REINSTATE_APPEAL_DATE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
