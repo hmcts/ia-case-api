@@ -91,8 +91,8 @@ class ListEditCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
@@ -158,7 +158,7 @@ class ListEditCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
@@ -186,8 +186,8 @@ class ListEditCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
@@ -216,8 +216,8 @@ class ListEditCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
-        verify(asylumCase, times(0)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(0)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
@@ -247,7 +247,7 @@ class ListEditCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);

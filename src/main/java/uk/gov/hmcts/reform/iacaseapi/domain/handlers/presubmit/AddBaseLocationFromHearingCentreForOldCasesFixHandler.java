@@ -76,7 +76,7 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
 
     private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase) {
         HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
-            .orElse(HearingCentre.TAYLOR_HOUSE);
+            .orElse(HearingCentre.NEWPORT);
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,

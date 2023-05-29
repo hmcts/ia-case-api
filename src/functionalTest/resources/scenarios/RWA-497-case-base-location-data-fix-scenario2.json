@@ -1,5 +1,5 @@
 {
-  "description": "RWA-497 given hearing centre and baseLocation data is missed then default to Taylor house",
+  "description": "RWA-497 given hearing centre and baseLocation data is missed then default to Newport",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -39,9 +39,9 @@
         "hearingCentre": null,
         "caseManagementLocation": {
           "region": "1",
-          "baseLocation": "765324"
+          "baseLocation": "227101"
         },
-        "staffLocation": "Taylor House"
+        "staffLocation": "Newport"
       }
     }
   }

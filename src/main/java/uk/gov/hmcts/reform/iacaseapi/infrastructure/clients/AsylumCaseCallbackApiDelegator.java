@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @Service
+@Slf4j
 public class AsylumCaseCallbackApiDelegator {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -47,6 +49,10 @@ public class AsylumCaseCallbackApiDelegator {
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
         try {
+            Long caseId = callback != null && callback.getCaseDetails() != null
+                    ? callback.getCaseDetails().getId() : 0L;
+
+            log.info("Invoking API endpoint: {} for caseID: {}", endpoint, caseId);
 
             return Optional
                 .of(restTemplate
@@ -58,16 +64,22 @@ public class AsylumCaseCallbackApiDelegator {
                         }
                     )
                 )
+                    .map(response -> {
+                        log.info("HTTP Status Response received: {} with value: {} and message: {} for endpoint: {} and caseID: {}",
+                                response.getStatusCode().series().name(), response.getStatusCode().value(), response.getStatusCode().getReasonPhrase(),
+                                endpoint, caseId);
+                        return response;
+                    })
                 .map(ResponseEntity::getBody)
                 .map(PreSubmitCallbackResponse::getData)
-                .orElse(new AsylumCase());
+                .orElseGet(() -> {
+                    log.info("Rest template body was empty. Returning new AsylumCase.");
+                    return new AsylumCase();
+                });
 
         } catch (RestClientException e) {
-
-            throw new AsylumCaseServiceResponseException(
-                "Couldn't delegate callback to API: " + endpoint,
-                e
-            );
+            log.error("Couldn't delegate callback to API: {}", endpoint, e);
+            throw new AsylumCaseServiceResponseException("Couldn't delegate callback to API: " + endpoint, e);
         }
     }
 
@@ -95,14 +107,14 @@ public class AsylumCaseCallbackApiDelegator {
                     )
                 )
                 .map(ResponseEntity::getBody)
-                .orElse(new PostSubmitCallbackResponse());
+                .orElseGet(() -> {
+                    log.info("Rest template body was empty. Returning new PostSubmitCallbackResponse.");
+                    return new PostSubmitCallbackResponse();
+                });
 
         } catch (RestClientException e) {
-
-            throw new AsylumCaseServiceResponseException(
-                "Couldn't delegate callback to API: " + endpoint,
-                e
-            );
+            log.error("Couldn't delegate (delegatePostSubmit) callback to API: {}", endpoint, e);
+            throw new AsylumCaseServiceResponseException("Couldn't delegate callback to API: " + endpoint, e);
         }
     }
 

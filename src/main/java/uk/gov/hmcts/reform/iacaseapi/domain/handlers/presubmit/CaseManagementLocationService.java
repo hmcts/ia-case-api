@@ -14,7 +14,7 @@ public class CaseManagementLocationService {
         Optional<BaseLocation> baseLocation = getBaseLocation(staffLocationName);
         return baseLocation.map(location ->
             new CaseManagementLocation(Region.NATIONAL, location))
-            .orElseGet(() -> new CaseManagementLocation(Region.NATIONAL, BaseLocation.TAYLOR_HOUSE));
+            .orElseGet(() -> new CaseManagementLocation(Region.NATIONAL, BaseLocation.NEWPORT));
     }
 
     private Optional<BaseLocation> getBaseLocation(String staffLocationName) {
