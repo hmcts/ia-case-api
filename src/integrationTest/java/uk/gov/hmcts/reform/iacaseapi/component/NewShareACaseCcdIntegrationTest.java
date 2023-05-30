@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -48,8 +46,7 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set() {
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
