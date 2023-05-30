@@ -111,8 +111,7 @@ class HearingCentreFinderTest {
                     "Addiewell",
                     "Barlinnie",
                     "Castle Huntly",
-                    "Cornton Vale",
-                    "Larne House"
+                    "Cornton Vale"
             )).put(HearingCentre.HATTON_CROSS, Arrays.asList(
                     "Albany",
                     "Brixton",
@@ -719,7 +718,7 @@ class HearingCentreFinderTest {
     void should_find_glasgow_hearing_centre_with_valid_prison_or_irc() {
 
         List<String> validInputs = Arrays.asList(
-                "Addiewell", "Barlinnie", "Castle Huntly", "Cornton Vale", "Larne House"
+                "Addiewell", "Barlinnie", "Castle Huntly", "Cornton Vale"
         );
 
         for (String valid : validInputs) {
