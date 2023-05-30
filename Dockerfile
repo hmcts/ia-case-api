@@ -1,6 +1,5 @@
  # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
 ARG APP_INSIGHTS_AGENT_VERSION=2.5.1-BETA
-
 # Application image
 FROM hmctspublic.azurecr.io/base/java:11-distroless
 
