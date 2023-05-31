@@ -1,0 +1,43 @@
+{
+  "description": "RIA-7105: Case officer sends non standard direction to respondent (AIP)",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 71053,
+      "eventId": "sendDirection",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "Some direction.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "sendDirectionParties": "respondent",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Some direction.",
+              "parties": "respondent",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}",
+              "tag": ""
+            }
+          }
+        ]
+      }
+    }
+  }
+}

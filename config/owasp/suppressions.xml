@@ -17,4 +17,10 @@
         ]]</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
+    <suppress until="2023-06-18">
+        <notes>Temporarily suppress vulnerability</notes>
+        <cve>CVE-2023-20863</cve>
+        <cve>CVE-2023-20873</cve>
+        <cve>CVE-2023-20862</cve>
+    </suppress>
 </suppressions>
