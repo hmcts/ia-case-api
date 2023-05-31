@@ -33,7 +33,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         HttpServletRequest request,
         RequiredFieldMissingException e
     ) {
-        log.error("Exception for the CCDCaseId: {}",
+        log.error("Exception (RequiredFieldMissingException) for the CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
         ExceptionUtils.printRootCauseStackTrace(e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -44,7 +44,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         HttpServletRequest request,
         ReferenceDataIntegrationException e
     ) {
-        log.error("Exception for the CCDCaseId: {}",
+        log.error("Exception (ReferenceDataIntegrationException) for the CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
         errorResponseLogger.maybeLogException(e.getCause());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -59,7 +59,8 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         HttpServletRequest request,
         Exception ex
     ) {
-        log.error("Exception for the CCDCaseId: {}",
+        log.error("Exception {} for the CCDCaseId: {}",
+            ex.getClass().getSimpleName(),
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
         ExceptionUtils.printRootCauseStackTrace(ex);
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
