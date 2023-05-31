@@ -111,8 +111,8 @@ ia-case-notifications-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-873
+    # image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
