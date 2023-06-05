@@ -12,8 +12,6 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -64,21 +62,6 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Parties.class, names = {
-        "LEGAL_REPRESENTATIVE", "BOTH"
-    })
-    void cannotSendDirectionToLegalRepForAipCase(Parties parties) {
-        setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, parties);
-        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
-
-        assertThat(eventValid).isEqualTo(
-                new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient."));
-
-        Assertions.assertThat(loggingEventListAppender.list)
-                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-                .contains(Tuple.tuple("Cannot send a legal representative a direction for an appellant in person case", Level.ERROR));
-    }
 
     @Test
     void cannotSendDirectionToAppellantForReppedCase() {

@@ -52,11 +52,7 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
             State.LISTING,
             State.PREPARE_FOR_HEARING,
             State.FINAL_BUNDLING,
-            State.PRE_HEARING,
-            State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
-            State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED,
-            State.AWAITING_REASONS_FOR_APPEAL,
-            State.REASONS_FOR_APPEAL_SUBMITTED
+            State.PRE_HEARING
         ).contains(caseDetails.getState())) {
             asylumCase.write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.YES);
         } else {

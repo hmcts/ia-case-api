@@ -12,11 +12,10 @@ class PartiesTest {
         assertEquals("respondent", Parties.RESPONDENT.toString());
         assertEquals("both", Parties.BOTH.toString());
         assertEquals("appellant", Parties.APPELLANT.toString());
-        assertEquals("appellantAndRespondent", Parties.APPELLANT_AND_RESPONDENT.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(5, Parties.values().length);
+        assertEquals(4, Parties.values().length);
     }
 }
