@@ -44,11 +44,16 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    void canSendDirectionForAipCaseToAppellant() {
+    void cannotSendDirectionForAipCaseToAppellant() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
-        assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
+        assertThat(eventValid)
+            .isEqualTo(new EventValid("You cannot use this function to send a direction to an appellant in person."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Cannot send a direction for an AIP case to appellant", Level.ERROR));
     }
 
     @Test
