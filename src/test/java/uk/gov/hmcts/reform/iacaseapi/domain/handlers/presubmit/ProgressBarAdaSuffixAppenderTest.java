@@ -5,17 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_SUFFIX;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQ_SUFFIX;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRANSFER_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -69,6 +67,7 @@ class ProgressBarAdaSuffixAppenderTest {
     void should_write_ada_suffix_if_appeal_is_ada() {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -95,6 +94,7 @@ class ProgressBarAdaSuffixAppenderTest {
     void should_write_blank_ada_suffix_if_appeal_is_not_ada(Optional<YesOrNo> isAcceleratedDetainedAppealOpt, Event event) {
 
         when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(isAcceleratedDetainedAppealOpt);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -114,6 +114,7 @@ class ProgressBarAdaSuffixAppenderTest {
     void should_write_suffix_for_out_of_ada_appeals_after_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(TRANSFER_OUT_OF_ADA);
+        when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -198,6 +199,21 @@ class ProgressBarAdaSuffixAppenderTest {
         assertThatThrownBy(() -> progressBarAdaSuffixAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_not_write_suffices_if_naba_disabled() {
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            progressBarAdaSuffixAppender.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(eq(ADA_SUFFIX), any());
+        verify(asylumCase, never()).write(eq(HEARING_REQ_SUFFIX), any());
     }
 }
 

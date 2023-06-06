@@ -23,5 +23,6 @@
   "ageAssessment": "Yes",
   "organisationOnDecisionLetter": "localAuthority",
   "localAuthority": "localAuth1",
-  "appellantInDetention": "No"
+  "appellantInDetention": "No",
+  "isNabaEnabled": "Yes"
 }
