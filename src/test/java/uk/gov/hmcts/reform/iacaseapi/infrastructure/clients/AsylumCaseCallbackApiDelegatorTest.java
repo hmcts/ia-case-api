@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -114,6 +115,53 @@ class AsylumCaseCallbackApiDelegatorTest {
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);
     }
+
+    @Test
+    void should_return_new_postsubmitcallbackresponse_for_null_body() {
+
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        doReturn(new ResponseEntity<>(null, HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(ENDPOINT),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        final PostSubmitCallbackResponse actualPostSubmitCallbackResponse = asylumCaseCallbackApiDelegator.delegatePostSubmit(callback, ENDPOINT);
+
+        assertThat(actualPostSubmitCallbackResponse).isNotNull();
+    }
+
+    @Test
+    void should_return_new_asylumcase_for_null_body() {
+
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        doReturn(new ResponseEntity<>(null, HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(ENDPOINT),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        final AsylumCase asylumCase = asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT);
+
+        assertThat(asylumCase).isNotNull();
+    }
+
 
     @Test
     void should_call_notifications_api_to_send_notifications_in_ccd_submitted() {

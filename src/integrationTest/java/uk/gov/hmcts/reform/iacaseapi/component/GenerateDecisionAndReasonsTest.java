@@ -10,14 +10,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_D
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithDocumentApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -39,10 +36,10 @@ public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest im
     @Mock
     private UserDetails userDetails;
 
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
-    public void handles_generate_decision_and_reasons_event(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void handles_generate_decision_and_reasons_event() {
 
         addServiceAuthStub(server);
         addDocumentApiTransformerStub(server);
