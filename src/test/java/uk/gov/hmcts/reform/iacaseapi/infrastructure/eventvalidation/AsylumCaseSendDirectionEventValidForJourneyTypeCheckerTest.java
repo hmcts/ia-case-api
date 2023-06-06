@@ -62,6 +62,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
+
     @Test
     void cannotSendDirectionToAppellantForReppedCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.APPELLANT);
