@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_SUFFIX;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQ_SUFFIX;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRANSFER_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getAdaSuffix;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getAfterHearingReqSuffix;
@@ -49,6 +48,11 @@ public class ProgressBarAdaSuffixAppender implements PreSubmitCallbackHandler<As
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        YesOrNo isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class).orElse(NO);
+        if (isNabaEnabled.equals(NO)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
         if (isAcceleratedDetainedAppeal(asylumCase)) {
             asylumCase.write(ADA_SUFFIX, getAdaSuffix());
