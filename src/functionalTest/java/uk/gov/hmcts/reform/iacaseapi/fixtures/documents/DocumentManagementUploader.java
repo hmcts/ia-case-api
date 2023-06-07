@@ -18,8 +18,7 @@ public class DocumentManagementUploader implements DocumentUploader {
     public Document upload(Resource resource, String contentType) {
         if (featureToggler.getValue("use-ccd-document-am", false)) {
             return cdamDocumentManagementUploader.upload(resource, contentType);
-        }
-        else {
+        } else {
             return dmDocumentManagementUploader.upload(resource, contentType);
         }
     }

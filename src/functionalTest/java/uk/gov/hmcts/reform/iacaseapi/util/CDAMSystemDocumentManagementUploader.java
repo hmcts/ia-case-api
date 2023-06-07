@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import com.google.common.io.ByteStreams;
@@ -8,11 +7,9 @@ import lombok.SneakyThrows;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
