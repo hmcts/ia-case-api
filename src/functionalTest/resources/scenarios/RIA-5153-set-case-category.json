@@ -23,7 +23,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "hmctsCaseCategory": "Protection",
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "1",
             "value": {

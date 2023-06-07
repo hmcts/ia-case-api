@@ -21,7 +21,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealType": "revocationOfProtection",
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "1",
             "value": {
