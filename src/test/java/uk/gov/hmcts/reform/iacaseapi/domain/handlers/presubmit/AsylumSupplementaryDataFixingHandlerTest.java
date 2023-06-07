@@ -131,6 +131,6 @@ class AsylumSupplementaryDataFixingHandlerTest {
         when(userDetails.getRoles()).thenReturn(List.of("citizen"));
         when(callback.getEvent()).thenReturn(EDIT_APPEAL);
 
-        assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
+        assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_SUBMIT, callback));
     }
 }
