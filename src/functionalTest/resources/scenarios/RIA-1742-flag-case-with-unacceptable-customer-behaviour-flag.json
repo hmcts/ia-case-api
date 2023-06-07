@@ -22,7 +22,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "1",
             "value": {

@@ -21,7 +21,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealType": "protection",
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "1",
             "value": {

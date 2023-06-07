@@ -23,7 +23,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "hmctsCaseNameInternal": "Talha Awan",
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "1",
             "value": {
