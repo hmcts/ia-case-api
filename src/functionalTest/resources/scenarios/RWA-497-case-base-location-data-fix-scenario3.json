@@ -30,8 +30,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "deport",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "deport",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],

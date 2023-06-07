@@ -15,15 +15,15 @@
             {
               "id": "1",
               "value": {
-                "caseFlagType": "deport",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "deport",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             },
             {
               "id": "2",
               "value": {
-                "caseFlagType": "anonymity",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "anonymity",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             }
           ],
@@ -59,8 +59,8 @@
           {
             "id": "2",
             "value": {
-              "caseFlagType": "anonymity",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "anonymity",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ]

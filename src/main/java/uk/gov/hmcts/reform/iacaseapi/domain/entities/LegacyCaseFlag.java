@@ -4,11 +4,11 @@ import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class CaseFlag {
+public class LegacyCaseFlag {
 
     @NonNull
-    CaseFlagType caseFlagType;
+    CaseFlagType legacyCaseFlagType;
     @NonNull
-    String caseFlagAdditionalInformation;
+    String legacyCaseFlagAdditionalInformation;
 
 }
