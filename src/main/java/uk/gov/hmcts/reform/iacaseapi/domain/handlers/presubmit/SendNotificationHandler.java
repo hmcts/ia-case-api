@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 @Component
@@ -30,11 +33,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private final NotificationSender<AsylumCase> notificationSender;
     @Value("${featureFlag.isSaveAndContinueEnabled}")
     private boolean isSaveAndContinueEnabled;
+    private final FeatureToggler featureToggler;
 
     public SendNotificationHandler(
-        NotificationSender<AsylumCase> notificationSender
+        NotificationSender<AsylumCase> notificationSender,
+        FeatureToggler featureToggler
     ) {
         this.notificationSender = notificationSender;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -74,6 +80,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DRAFT_HEARING_REQUIREMENTS,
             Event.REVIEW_HEARING_REQUIREMENTS,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.DECISION_WITHOUT_HEARING,
             Event.LIST_CASE,
             Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
             Event.EDIT_CASE_LISTING,
@@ -146,8 +153,15 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (!isPaid(callback)) {
             eventsToHandle.add(Event.END_APPEAL_AUTOMATICALLY);
         }
-        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
+        if (isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
             eventsToHandle.add(Event.PAYMENT_APPEAL);
+        }
+
+        if (isAipJourney(callback.getCaseDetails().getCaseData())
+            && !featureToggler.getValue("aip-ftpa-feature", false)) {
+
+            eventsToHandle.remove(Event.APPLY_FOR_FTPA_RESPONDENT);
+            eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
         }
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
