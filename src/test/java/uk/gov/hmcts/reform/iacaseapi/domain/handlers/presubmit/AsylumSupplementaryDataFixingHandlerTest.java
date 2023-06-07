@@ -51,7 +51,7 @@ class AsylumSupplementaryDataFixingHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        asylumSupplementaryDataFixingHandler = new AsylumSupplementaryDataFixingHandler(ccdSupplementaryUpdater, userDetailsProvider);
+        asylumSupplementaryDataFixingHandler = new AsylumSupplementaryDataFixingHandler(ccdSupplementaryUpdater);
     }
 
     @Test
