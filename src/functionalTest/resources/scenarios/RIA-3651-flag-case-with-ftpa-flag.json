@@ -27,8 +27,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "setAsideReheard",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "setAsideReheard",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],

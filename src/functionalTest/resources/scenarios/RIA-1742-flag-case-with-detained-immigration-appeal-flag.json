@@ -26,8 +26,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "detainedImmigrationAppeal",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "detainedImmigrationAppeal",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],
