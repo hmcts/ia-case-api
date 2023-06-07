@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
