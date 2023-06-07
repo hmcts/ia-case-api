@@ -8,7 +8,6 @@ buildscript {
     }
 }
 
-
 plugins {
     id 'application'
     id 'checkstyle'

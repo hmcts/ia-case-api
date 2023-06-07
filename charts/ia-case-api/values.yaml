@@ -52,7 +52,9 @@ java:
         - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS-11
         - AppInsightsInstrumentationKey
-        
+
+ia-aip-frontend:
+  enabled: false        
 ia-case-payments-api:
   enabled: false
 ia-case-documents-api:
