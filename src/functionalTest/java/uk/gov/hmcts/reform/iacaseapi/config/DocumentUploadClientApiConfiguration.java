@@ -8,7 +8,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 
+/**
+ * Superseded. Will need to be removed as soon as the "use-ccd-document-am" feature flag is permanently on
+ */
 @Configuration
+@Deprecated
 public class DocumentUploadClientApiConfiguration {
 
     @Bean
