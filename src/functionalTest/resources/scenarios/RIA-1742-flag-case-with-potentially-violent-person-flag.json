@@ -26,8 +26,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "potentiallyViolentPerson",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "potentiallyViolentPerson",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],

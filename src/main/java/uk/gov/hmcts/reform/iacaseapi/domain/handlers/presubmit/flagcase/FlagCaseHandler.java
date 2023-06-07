@@ -65,16 +65,16 @@ public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(FLAG_CASE_TYPE_OF_FLAG);
         asylumCase.clear(FLAG_CASE_ADDITIONAL_INFORMATION);
 
-        final Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
-        final List<IdValue<CaseFlag>> existingCaseFlags = maybeExistingCaseFlags.orElse(Collections.emptyList());
+        final Optional<List<IdValue<LegacyCaseFlag>>> maybeExistingCaseFlags = asylumCase.read(LEGACY_CASE_FLAGS);
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = maybeExistingCaseFlags.orElse(Collections.emptyList());
 
-        final List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = caseFlagAppender.append(
             existingCaseFlags,
             flagType,
             additionalInformation
         );
 
-        asylumCase.write(CASE_FLAGS, allCaseFlags);
+        asylumCase.write(LEGACY_CASE_FLAGS, allCaseFlags);
 
         switch (flagType) {
             case APPEAL_ON_HOLD:

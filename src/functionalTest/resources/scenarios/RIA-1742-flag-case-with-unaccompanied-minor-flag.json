@@ -26,8 +26,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "unaccompaniedMinor",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "unaccompaniedMinor",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],
