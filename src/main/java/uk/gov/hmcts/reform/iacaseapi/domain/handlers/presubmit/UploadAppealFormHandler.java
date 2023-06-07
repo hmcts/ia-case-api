@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -69,7 +70,7 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
                     asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS);
 
             List<IdValue<DocumentWithDescription>> appealFormDocs =
-                    maybeAppealForm.orElseThrow(() -> new IllegalStateException("appealForm is not present"));
+                    maybeAppealForm.orElseThrow(() -> new RequiredFieldMissingException("appealForm is not present"));
 
             if (maybeAppealForm.isPresent()) {
                 int docNum = 0;
