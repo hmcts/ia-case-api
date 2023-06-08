@@ -16,10 +16,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
@@ -122,6 +125,30 @@ class ReviewDraftHearingRequirementsPreparerTest {
         verify(asylumCase, times(1)).write(
             IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY,
             YesOrNo.NO);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "HU, 120",
+        "EA, 120",
+        "EU, 120",
+        "DC, 180",
+        "PA, 180",
+        "RP, 180",
+    })
+    void should_set_default_length_hearing_for_appeal_type(AppealType appealType, String expectedResult) {
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(
+                LIST_CASE_HEARING_LENGTH,
+                expectedResult);
     }
 
     @Test
