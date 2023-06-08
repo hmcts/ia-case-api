@@ -60,8 +60,9 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
         if (appellantDobAsString != null) {
             return isAppellantDobAValidDate(appellantDobAsString);
+        } else {
+            return false;
         }
-        return false;
     }
 
     private boolean isAppellantDobAValidDate(String appellantDobAsString) {

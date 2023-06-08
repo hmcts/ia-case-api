@@ -68,7 +68,11 @@ class SendDirectionActionAvailableUpdaterTest {
                 State.LISTING,
                 State.PREPARE_FOR_HEARING,
                 State.FINAL_BUNDLING,
-                State.PRE_HEARING
+                State.PRE_HEARING,
+                State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
+                State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED,
+                State.AWAITING_REASONS_FOR_APPEAL,
+                State.REASONS_FOR_APPEAL_SUBMITTED
             ).contains(state)) {
 
                 verify(asylumCase, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.YES);
