@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.fixtures.documents;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import com.google.common.io.ByteStreams;
