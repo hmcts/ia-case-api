@@ -85,7 +85,7 @@ class AutoBuildCaseDirectionHandlerTest {
 
         final String expectedExplanationPart = "build your case";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
-        final String expectedDateDue = "2018-12-25";
+        final String expectedDateDue = "2018-12-24";
         final DirectionTag expectedTag = DirectionTag.BUILD_CASE;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
@@ -128,7 +128,7 @@ class AutoBuildCaseDirectionHandlerTest {
 
         final String expectedExplanationPart = "build your case";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
-        final String expectedDateDue = "2018-12-25";
+        final String expectedDateDue = "2018-12-24";
         final DirectionTag expectedTag = DirectionTag.BUILD_CASE;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
