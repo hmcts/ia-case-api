@@ -1,6 +1,5 @@
 {
   "description": "RIA-7105: Judge sends non standard direction to respondent (AIP)",
-  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
