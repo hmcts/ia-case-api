@@ -33,10 +33,11 @@ public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-                callback,
-                feePaymentApiEndpoint + aboutToStartPath
-        );
+        return callback.getCaseDetails().getCaseData();
+//        return asylumCaseCallbackApiDelegator.delegate(
+//                callback,
+//                feePaymentApiEndpoint + aboutToStartPath
+//        );
     }
 
     public AsylumCase aboutToSubmit(
@@ -44,10 +45,12 @@ public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-                callback,
-                feePaymentApiEndpoint + aboutToSubmitPath
-        );
+        return callback.getCaseDetails().getCaseData();
+
+//        return asylumCaseCallbackApiDelegator.delegate(
+//                callback,
+//                feePaymentApiEndpoint + aboutToSubmitPath
+//        );
     }
 
 }

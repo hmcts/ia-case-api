@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
 @Service
@@ -32,29 +33,35 @@ public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
     public AsylumCase call(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-                callback,
-                homeOfficeApiEndpoint + aboutToSubmitPath
-        );
+        return callback.getCaseDetails().getCaseData();
+
+//        return asylumCaseCallbackApiDelegator.delegate(
+//                callback,
+//                homeOfficeApiEndpoint + aboutToSubmitPath
+//        );
     }
 
     @Override
     public AsylumCase aboutToStart(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-                callback,
-                homeOfficeApiEndpoint + aboutToStartPath
-        );
+        return callback.getCaseDetails().getCaseData();
+
+//        return asylumCaseCallbackApiDelegator.delegate(
+//                callback,
+//                homeOfficeApiEndpoint + aboutToStartPath
+//        );
     }
 
     @Override
     public AsylumCase aboutToSubmit(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-            callback,
-            homeOfficeApiEndpoint + aboutToSubmitPath
-        );
+        return callback.getCaseDetails().getCaseData();
+
+//        return asylumCaseCallbackApiDelegator.delegate(
+//            callback,
+//            homeOfficeApiEndpoint + aboutToSubmitPath
+//        );
     }
 }

@@ -31,10 +31,12 @@ public class AsylumCasePostFeePaymentService implements PostFeePayment<AsylumCas
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegatePostSubmit(
-            callback,
-            feePaymentApiEndpoint + ccdSubmittedPath
-        );
+        return new PostSubmitCallbackResponse();
+
+//        return asylumCaseCallbackApiDelegator.delegatePostSubmit(
+//            callback,
+//            feePaymentApiEndpoint + ccdSubmittedPath
+//        );
     }
 
 }

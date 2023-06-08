@@ -33,10 +33,12 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-            callback,
-            documentsApiEndpoint + aboutToSubmitPath
-        );
+        return callback.getCaseDetails().getCaseData();
+
+//        return asylumCaseCallbackApiDelegator.delegate(
+//            callback,
+//            documentsApiEndpoint + aboutToSubmitPath
+//        );
     }
 
     public AsylumCase aboutToStart(
@@ -44,9 +46,6 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-            callback,
-            documentsApiEndpoint + aboutToStartPath
-        );
+        return callback.getCaseDetails().getCaseData();
     }
 }

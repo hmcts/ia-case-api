@@ -30,9 +30,11 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
-            callback,
-            notificationsApiEndpoint + aboutToSubmitPath
-        );
+        return callback.getCaseDetails().getCaseData();
+
+//        return asylumCaseCallbackApiDelegator.delegate(
+//            callback,
+//            notificationsApiEndpoint + aboutToSubmitPath
+//        );
     }
 }
