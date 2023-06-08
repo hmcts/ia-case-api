@@ -1573,7 +1573,13 @@ public enum AsylumCaseFieldDefinition {
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
+    }),
+
+    CASE_LEVEL_FLAGS(
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){});
 
     private final String value;
     private final TypeReference typeReference;

@@ -72,6 +72,7 @@ class EventTest {
         assertEquals("reviewTimeExtension", Event.REVIEW_TIME_EXTENSION.toString());
         assertEquals("sendDirectionWithQuestions", Event.SEND_DIRECTION_WITH_QUESTIONS.toString());
         assertEquals("flagCase", Event.FLAG_CASE.toString());
+        assertEquals("createFlag", Event.CREATE_FLAG.toString());
         assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("reviewCmaRequirements", Event.REVIEW_CMA_REQUIREMENTS.toString());
@@ -122,6 +123,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(115, Event.values().length);
+        assertEquals(116, Event.values().length);
     }
 }
