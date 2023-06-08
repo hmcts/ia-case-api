@@ -129,12 +129,12 @@ class ReviewDraftHearingRequirementsPreparerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "HU, 120",
-            "EA, 120",
-            "EU, 120",
-            "DC, 180",
-            "PA, 180",
-            "RP, 180",
+        "HU, 120",
+        "EA, 120",
+        "EU, 120",
+        "DC, 180",
+        "PA, 180",
+        "RP, 180",
     })
     void should_set_default_length_hearing_for_appeal_type(AppealType appealType, String expectedResult) {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
