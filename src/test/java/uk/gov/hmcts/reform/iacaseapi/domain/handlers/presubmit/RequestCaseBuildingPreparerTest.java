@@ -78,7 +78,7 @@ class RequestCaseBuildingPreparerTest {
         final String expectedExplanationContains =
             "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
-        final String expectedDueDate = "2019-10-08";
+        final String expectedDueDate = "2019-10-07";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-09-10"));
         when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2019-08-10"));
@@ -176,8 +176,11 @@ class RequestCaseBuildingPreparerTest {
         final LocalDate buildCaseDirectionDueDate = RequestCaseBuildingPreparer
             .getBuildCaseDirectionDueDate(asylumCase, dateProvider, DUE_IN_DAYS_FROM_SUBMISSION_DATE, DUE_IN_DAYS);
 
-        assertThat(buildCaseDirectionDueDate)
-            .isEqualTo(submissionDateWithin42Days.plusDays(DUE_IN_DAYS_FROM_SUBMISSION_DATE));
+        final LocalDate dueDateIncludingSubmissionDay = submissionDateWithin42Days
+                .plusDays(DUE_IN_DAYS_FROM_SUBMISSION_DATE)
+                .minusDays(1);
+
+        assertThat(buildCaseDirectionDueDate).isEqualTo(dueDateIncludingSubmissionDay);
     }
 
     @Test
@@ -193,7 +196,9 @@ class RequestCaseBuildingPreparerTest {
         final LocalDate buildCaseDirectionDueDate = RequestCaseBuildingPreparer
             .getBuildCaseDirectionDueDate(asylumCase, dateProvider, DUE_IN_DAYS_FROM_SUBMISSION_DATE, DUE_IN_DAYS);
 
-        assertThat(buildCaseDirectionDueDate).isEqualTo(LocalDate.now().plusDays(DUE_IN_DAYS));
+        final LocalDate dueDateIncludingSubmissionDay = LocalDate.now().plusDays(DUE_IN_DAYS).minusDays(1);
+
+        assertThat(buildCaseDirectionDueDate).isEqualTo(dueDateIncludingSubmissionDay);
     }
 
     @Test
