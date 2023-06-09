@@ -1,0 +1,30 @@
+{
+  "description": "RIA-7119 Start appeal validation of ADA question based on detention facility - Error thrown when prison and ADA is 'Yes'",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAcceleratedDetainedAppeal": "Yes",
+          "detentionFacility": "prison"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You can only select yes if the appellant is detained in an immigration removal centre"],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAcceleratedDetainedAppeal": "Yes",
+        "detentionFacility": "prison"
+      }
+    }
+  }
+}
