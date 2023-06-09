@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
@@ -65,6 +66,8 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         decorateOutsideEvidenceDefaultsForOldCases(asylumCase);
 
+        setDefaultHearingLengthForAppealType(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -108,6 +111,29 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         if (!isEvidenceFromOutsideUkInCountry.isPresent()) {
             asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.NO);
+        }
+    }
+
+    static void setDefaultHearingLengthForAppealType(AsylumCase asylumCase) {
+        final Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+
+        if (optionalAppealType.isPresent()) {
+            AppealType appealType = optionalAppealType.get();
+
+            switch (appealType) {
+                case HU:
+                case EA:
+                case EU:
+                    asylumCase.write(LIST_CASE_HEARING_LENGTH, "120");
+                    break;
+                case DC:
+                case PA:
+                case RP:
+                    asylumCase.write(LIST_CASE_HEARING_LENGTH, "180");
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
