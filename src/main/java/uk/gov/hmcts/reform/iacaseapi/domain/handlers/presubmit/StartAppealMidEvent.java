@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -55,10 +56,11 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)) {
-            if (!asylumCase.read(DETENTION_FACILITY, String.class).orElse("").equals(DetentionFacility.IRC.toString())) {
-                asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
-            }
+        if (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
+                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+                && !asylumCase.read(DETENTION_FACILITY, String.class).orElse("").equals(DetentionFacility.IRC.toString())
+        ) {
+            asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
         }
 
         if (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {

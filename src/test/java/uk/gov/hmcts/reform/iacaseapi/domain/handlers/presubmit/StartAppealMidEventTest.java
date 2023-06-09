@@ -215,4 +215,19 @@ class StartAppealMidEventTest {
             assertEquals(YesOrNo.NO, callbackResponse.getData().get("isAcceleratedDetainedAppeal"));
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
+    void should_only_set_is_accelerated_detained_if_correct_page_id(String pageId) {
+        when(callback.getPageId()).thenReturn(pageId);
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = startAppealMidEvent.handle(MID_EVENT, callback);
+
+        if (pageId.equals(DETENTION_FACILITY_PAGE_ID)) {
+            verify(asylumCase, times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        } else {
+            verify(asylumCase, never()).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+        }
+    }
 }
