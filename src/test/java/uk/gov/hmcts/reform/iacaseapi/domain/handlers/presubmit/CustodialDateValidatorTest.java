@@ -83,7 +83,8 @@ public class CustodialDateValidatorTest {
                 if (Arrays.asList(Event.START_APPEAL,
                     Event.EDIT_APPEAL,
                     Event.EDIT_APPEAL_AFTER_SUBMIT,
-                    Event.MARK_APPEAL_AS_DETAINED).contains(event)
+                    Event.MARK_APPEAL_AS_DETAINED,
+                    Event.UPDATE_DETENTION_LOCATION).contains(event)
                     && callbackStage == MID_EVENT
                     && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)) {
                     assertTrue(canHandle);
@@ -125,7 +126,8 @@ public class CustodialDateValidatorTest {
         "START_APPEAL",
         "EDIT_APPEAL",
         "EDIT_APPEAL_AFTER_SUBMIT",
-        "MARK_APPEAL_AS_DETAINED"
+        "MARK_APPEAL_AS_DETAINED",
+        "UPDATE_DETENTION_LOCATION"
     })
     void should_error_when_date_is_not_future(Event event) {
         when(callback.getEvent()).thenReturn(event);

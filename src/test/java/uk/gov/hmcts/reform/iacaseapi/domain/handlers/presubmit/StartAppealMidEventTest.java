@@ -58,6 +58,7 @@ class StartAppealMidEventTest {
     private String wrongHomeOfficeReferenceFormat = "A234567";
     private String callbackErrorMessage =
         "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
+    private String detentionFacilityErrorMessage = "You cannot update the detention location to a prison because this is an accelerated detained appeal.";
     private String getCallbackErrorMessageOutOfCountry = "This option is currently unavailable";
     private StartAppealMidEvent startAppealMidEvent;
 
@@ -84,7 +85,8 @@ class StartAppealMidEventTest {
 
                 boolean canHandle = startAppealMidEvent.canHandle(callbackStage, callback);
 
-                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT
+                    || event == Event.UPDATE_DETENTION_LOCATION)
                     && callbackStage == MID_EVENT
                     && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
                         || callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
@@ -229,5 +231,25 @@ class StartAppealMidEventTest {
         } else {
             verify(asylumCase, never()).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
         }
+    }
+
+
+    @Test
+    void should_error_when_detention_facility_for_ada_is_changed() {
+        when(callback.getEvent()).thenReturn(Event.UPDATE_DETENTION_LOCATION);
+        when(callback.getPageId()).thenReturn("detentionFacility");
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("prison"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(detentionFacilityErrorMessage);
     }
 }

@@ -32,7 +32,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
+                    || callback.getEvent() == Event.UPDATE_DETENTION_LOCATION)
                && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
                     || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
                     || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID));
@@ -77,6 +78,12 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         } else if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
             if (isAdmin.equals(YesOrNo.YES) && appellantInUk.equals(YesOrNo.NO)) {
                 response.addError("This option is currently unavailable");
+            }
+        } else if (callback.getEvent() == Event.UPDATE_DETENTION_LOCATION && callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)) {
+            boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+            String detentionFacilityValue = asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class).orElse("");
+            if (isAda && !detentionFacilityValue.equals("immigrationRemovalCentre")) {
+                response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
         }
 
