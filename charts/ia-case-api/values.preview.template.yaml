@@ -10,7 +10,7 @@ java:
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     #IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
-    #IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+    IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: http://ia-timed-event-service-aat.service.core-compute-aat.internal/
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
@@ -112,7 +112,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
     # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-873
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
