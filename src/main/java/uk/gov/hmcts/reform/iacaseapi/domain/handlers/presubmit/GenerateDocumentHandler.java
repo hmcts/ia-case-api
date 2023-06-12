@@ -99,7 +99,9 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
             Event.GENERATE_UPPER_TRIBUNAL_BUNDLE,
-            Event.ADA_SUITABILITY_REVIEW);
+            Event.ADA_SUITABILITY_REVIEW,
+            Event.REQUEST_CASE_BUILDING
+        );
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.SUBMIT_CASE);
             if (!isSaveAndContinueEnabled) {
@@ -230,3 +232,4 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
                 appealDate.plusDays(ftpaAppealOutOfTimeDaysInternalNonAdaCases);
     }
 }
+
