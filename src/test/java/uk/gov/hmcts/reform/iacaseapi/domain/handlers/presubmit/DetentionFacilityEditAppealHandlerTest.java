@@ -120,7 +120,7 @@ public class DetentionFacilityEditAppealHandlerTest {
             for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = detentionFacilityEditAppealHandler.canHandle(stage, callback);
                 if (stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && List.of(EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())) {
+                        && List.of(EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT, UPDATE_DETENTION_LOCATION).contains(callback.getEvent())) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
