@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,18 +14,21 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -42,6 +44,8 @@ class StartAppealMidEventTest {
 
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
+    private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
+
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -54,6 +58,7 @@ class StartAppealMidEventTest {
     private String wrongHomeOfficeReferenceFormat = "A234567";
     private String callbackErrorMessage =
         "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
+    private String detentionFacilityErrorMessage = "You cannot update the detention location to a prison because this is an accelerated detained appeal.";
     private String getCallbackErrorMessageOutOfCountry = "This option is currently unavailable";
     private StartAppealMidEvent startAppealMidEvent;
 
@@ -68,7 +73,7 @@ class StartAppealMidEventTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID,OUT_OF_COUNTRY_PAGE_ID, ""})
+    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -80,9 +85,12 @@ class StartAppealMidEventTest {
 
                 boolean canHandle = startAppealMidEvent.canHandle(callbackStage, callback);
 
-                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT
+                    || event == Event.UPDATE_DETENTION_LOCATION)
                     && callbackStage == MID_EVENT
-                    && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID) || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
+                    && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
+                        || callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
+                        || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -192,5 +200,56 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(any(),any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(DetentionFacility.class)
+    void should_set_is_accelerated_detained_value_to_no_if_prison_or_other_detention_facility(DetentionFacility detentionFacility) {
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        if (Arrays.asList(DetentionFacility.PRISON.toString(), DetentionFacility.PRISON.toString()).contains(detentionFacility)) {
+            assertEquals(YesOrNo.NO, callbackResponse.getData().get("isAcceleratedDetainedAppeal"));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
+    void should_only_set_is_accelerated_detained_if_correct_page_id(String pageId) {
+        when(callback.getPageId()).thenReturn(pageId);
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = startAppealMidEvent.handle(MID_EVENT, callback);
+
+        if (pageId.equals(DETENTION_FACILITY_PAGE_ID)) {
+            verify(asylumCase, times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        } else {
+            verify(asylumCase, never()).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+        }
+    }
+
+
+    @Test
+    void should_error_when_detention_facility_for_ada_is_changed() {
+        when(callback.getEvent()).thenReturn(Event.UPDATE_DETENTION_LOCATION);
+        when(callback.getPageId()).thenReturn("detentionFacility");
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("prison"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(detentionFacilityErrorMessage);
     }
 }

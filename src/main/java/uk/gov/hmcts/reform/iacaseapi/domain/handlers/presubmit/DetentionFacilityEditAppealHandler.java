@@ -39,7 +39,7 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
         Event event = callback.getEvent();
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && List.of(EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(event);
+            && List.of(EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT, UPDATE_DETENTION_LOCATION).contains(event);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

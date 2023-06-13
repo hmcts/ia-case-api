@@ -16,5 +16,6 @@
         If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
         ]]</notes>
         <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-20883</cve>
     </suppress>
 </suppressions>

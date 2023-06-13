@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -19,6 +20,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9}))$");
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
+    private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -30,9 +32,11 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
+                    || callback.getEvent() == Event.UPDATE_DETENTION_LOCATION)
                && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
-                    || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID));
+                    || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
+                    || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -53,6 +57,13 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        if (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
+                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+                && !asylumCase.read(DETENTION_FACILITY, String.class).orElse("").equals(DetentionFacility.IRC.toString())
+        ) {
+            asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        }
+
         if (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
             if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
                     value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
@@ -67,6 +78,12 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         } else if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
             if (isAdmin.equals(YesOrNo.YES) && appellantInUk.equals(YesOrNo.NO)) {
                 response.addError("This option is currently unavailable");
+            }
+        } else if (callback.getEvent() == Event.UPDATE_DETENTION_LOCATION && callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)) {
+            boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+            String detentionFacilityValue = asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class).orElse("");
+            if (isAda && !detentionFacilityValue.equals("immigrationRemovalCentre")) {
+                response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
         }
 

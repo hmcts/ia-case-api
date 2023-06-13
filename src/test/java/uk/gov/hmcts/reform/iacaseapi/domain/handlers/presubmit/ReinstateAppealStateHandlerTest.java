@@ -78,7 +78,7 @@ class ReinstateAppealStateHandlerTest {
 
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
-        verify(asylumCase).write(REINSTATED_DECISION_MAKER, UserRoleLabel.TRIBUNAL_CASEWORKER.toString());
+        verify(asylumCase).write(REINSTATED_DECISION_MAKER, "Legal Officer");
         verify(asylumCase).write(APPEAL_STATUS, AppealStatus.REINSTATED);
         verify(asylumCase).write(REINSTATE_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);

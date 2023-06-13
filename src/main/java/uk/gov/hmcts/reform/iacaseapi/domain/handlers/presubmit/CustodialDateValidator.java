@@ -35,7 +35,8 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
                && Arrays.asList(Event.START_APPEAL,
             Event.EDIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.MARK_APPEAL_AS_DETAINED).contains(callback.getEvent());
+            Event.MARK_APPEAL_AS_DETAINED,
+            Event.UPDATE_DETENTION_LOCATION).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
