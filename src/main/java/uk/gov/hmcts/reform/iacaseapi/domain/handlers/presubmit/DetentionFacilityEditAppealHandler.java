@@ -79,7 +79,7 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
 
             //Clear all 'irc' & 'prison' fields
             if (facility.equals(OTHER.getValue())) {
-                log.info("Clearing IRC details for a Prison Detention Centre");
+                log.info("Clearing IRC and Prison details for Other Detention Centre");
                 asylumCase.clear(IRC_NAME);
                 asylumCase.clear(PRISON_NAME);
                 asylumCase.clear(PRISON_NOMS);
