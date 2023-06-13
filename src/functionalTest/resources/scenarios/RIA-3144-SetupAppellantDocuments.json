@@ -158,7 +158,7 @@
             }
           }
         ],
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }

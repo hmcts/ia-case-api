@@ -1,10 +1,10 @@
 {
-  "description": "RIA-2632: Case officer cannot send direction of an AIP case",
+  "description": "RIA-7105: Case officer sends non standard direction to appellant (AIP)",  
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "id": 1122,
+      "id": 71051,
       "eventId": "sendDirection",
       "state": "appealSubmitted",
       "caseData": {
@@ -20,10 +20,23 @@
   },
   "expectation": {
     "status": 200,
-    "errors": [ "You cannot use this function to send a direction to an appellant in person." ],
+    "errors": [],
     "caseData": {
-      "template": "minimal-aip-appeal-submitted.json"
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Some direction.",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}",
+              "tag": ""
+            }
+          }
+        ]
+      }
     }
   }
 }
-
