@@ -1645,7 +1645,7 @@ public enum AsylumCaseFieldDefinition {
         "prisonName", new TypeReference<String>(){}),
 
     OTHER_DETENTION_FACILITY_NAME(
-        "otherDetentionFacilityName", new TypeReference<String>(){}),
+        "otherDetentionFacilityName", new TypeReference<OtherDetentionFacilityName>(){}),
 
     CUSTODIAL_SENTENCE(
         "custodialSentence", new TypeReference<YesOrNo>(){}),
