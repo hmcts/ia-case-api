@@ -11,7 +11,6 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -89,7 +87,7 @@ public class RoleAssignmentApiConsumerTest {
             .body(new ObjectMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()
-            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
+            //.headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(201)
             .toPact();
     }

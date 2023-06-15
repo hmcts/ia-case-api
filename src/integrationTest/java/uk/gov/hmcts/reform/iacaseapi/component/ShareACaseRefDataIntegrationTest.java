@@ -44,6 +44,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
+    @SneakyThrows
     public void should_get_users_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
@@ -57,6 +58,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
+        Thread.sleep(1000);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(SHARE_A_CASE)
@@ -87,6 +89,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
+    @SneakyThrows
     public void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
 
         String prdResponseJsonNoOrgId =
@@ -100,6 +103,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJsonNoOrgId);
+        Thread.sleep(1000);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(SHARE_A_CASE)
@@ -130,6 +134,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
+    @SneakyThrows
     public void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
@@ -143,6 +148,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
+        Thread.sleep(1000);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(START_APPEAL)
@@ -173,8 +179,11 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
             The result is that its behaviour is somewhat flaky.
 
             The following pause is meant to allow Wiremock time to conclude some operations that
-            we invoke.
+            we invoke. It won't work 100% of the time, but hopefully it will reduce the likelihood
+            of these issues sufficiently.
+
+            It will also slow down the tests considerably...
          */
-        Thread.sleep(1000);
+        Thread.sleep(2000);
     }
 }

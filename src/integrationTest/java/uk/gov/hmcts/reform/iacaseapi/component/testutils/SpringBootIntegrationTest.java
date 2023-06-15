@@ -54,12 +54,14 @@ public abstract class SpringBootIntegrationTest {
     protected static WireMockServer server;
 
     @BeforeAll
+    @SneakyThrows
     public void spinUp() {
         server = new WireMockServer(WireMockConfiguration.options()
             .notifier(new Slf4jNotifier(true))
             .extensions(new DocumentsApiCallbackTransformer(), new NotificationsApiCallbackTransformer())
             .port(8990));
         server.start();
+        Thread.sleep(1000);
     }
 
     @BeforeEach
@@ -98,7 +100,10 @@ public abstract class SpringBootIntegrationTest {
             The result is that its behaviour is somewhat flaky.
 
             The following pause is meant to allow Wiremock time to conclude some operations that
-            we invoke.
+            we invoke. It won't work 100% of the time, but hopefully it will reduce the likelihood
+            of these issues sufficiently.
+
+            It will also slow down the tests considerably...
          */
         Thread.sleep(1000);
     }

@@ -92,9 +92,9 @@ public class RoleAssignmentQueryConsumerTest {
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails, idamService);
     }
 
-
     @Pact(provider = "am_roleAssignment_queryAssignment", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
+    public RequestResponsePact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder)
+        throws JSONException {
         return builder
             .given("A list of role assignments for the search query")
             .uponReceiving("A query request for roles")
