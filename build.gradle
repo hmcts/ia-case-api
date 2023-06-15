@@ -54,8 +54,11 @@ def jarName = 'ia-case-api.jar'
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
@@ -199,7 +202,7 @@ project.ext {
 }
 
 jacoco {
-    toolVersion = "0.8.4"
+    toolVersion = "0.8.10"
 }
 
 jacocoTestReport {
