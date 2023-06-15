@@ -152,8 +152,7 @@ checkstyle {
     maxWarnings = 0
     toolVersion = '10.12.0'
     // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
-    configDirectory = new File(rootDir, 'config/checkstyle/*')
-    ignoreFailures = true
+    configFile(new File(rootDir, 'config/checkstyle/checkstyle.xml'))
 }
 
 pmd {
