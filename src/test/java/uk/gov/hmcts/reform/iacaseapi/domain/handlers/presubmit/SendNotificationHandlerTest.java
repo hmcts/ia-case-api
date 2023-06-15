@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
@@ -46,6 +47,8 @@ class SendNotificationHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private SendNotificationHandler sendNotificationHandler;
 
@@ -53,7 +56,7 @@ class SendNotificationHandlerTest {
     public void setUp() {
 
         sendNotificationHandler =
-            new SendNotificationHandler(notificationSender);
+            new SendNotificationHandler(notificationSender, featureToggler);
 
         ReflectionTestUtils.setField(sendNotificationHandler, "isSaveAndContinueEnabled", true);
 
@@ -77,6 +80,7 @@ class SendNotificationHandlerTest {
             Event.DRAFT_HEARING_REQUIREMENTS,
             Event.REVIEW_HEARING_REQUIREMENTS,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.DECISION_WITHOUT_HEARING,
             Event.LIST_CASE,
             Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
             Event.EDIT_CASE_LISTING,
@@ -140,7 +144,8 @@ class SendNotificationHandlerTest {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+            when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
             when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -204,6 +209,8 @@ class SendNotificationHandlerTest {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+            when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -223,6 +230,7 @@ class SendNotificationHandlerTest {
                         Event.DRAFT_HEARING_REQUIREMENTS,
                         Event.REVIEW_HEARING_REQUIREMENTS,
                         Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                        Event.DECISION_WITHOUT_HEARING,
                         Event.LIST_CASE,
                         Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
                         Event.EDIT_CASE_LISTING,
