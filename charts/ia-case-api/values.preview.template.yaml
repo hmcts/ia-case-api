@@ -179,7 +179,7 @@ ia-timed-event-service:
           - system-password
           - s2s-secret
           - s2s-microservice
-          - AppInsightsInstrumentationKey
+          - app-insights-connection-string
     postgresql:
       enabled: true
 
