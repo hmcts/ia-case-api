@@ -1,0 +1,55 @@
+{
+  "description": "RIA-7120 Update detention location",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7120,
+      "eventId": "updateDetentionLocation",
+      "state": "appealSubmitted",
+      "caseDataBefore": {
+        "template": "minimal-ada-appeal-submitted.json",
+        "replacements": {
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Derwentside",
+          "isAcceleratedDetainedAppeal": "No",
+          "appellantInDetention": "Yes"
+        }
+      },
+      "caseData": {
+        "template": "minimal-ada-appeal-submitted.json",
+        "replacements": {
+          "detentionFacility": "prison",
+          "prisonName": "Aylesbury",
+          "isAcceleratedDetainedAppeal": "No",
+          "appellantInDetention": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ada-appeal-submitted.json",
+      "replacements": {
+        "detentionFacility": "prison",
+        "prisonName": "Aylesbury",
+        "ircName": null,
+        "isAcceleratedDetainedAppeal": "No",
+        "appellantInDetention": "Yes",
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "Updated detention location",
+              "caseNoteDescription": "The detention location for this appellant has changed from: \n\nDerwentside IRC\n\n to: \n\nAylesbury Prison",
+              "user": "{$IA_USER_PREFIX}Case Officer",
+              "dateAdded": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
