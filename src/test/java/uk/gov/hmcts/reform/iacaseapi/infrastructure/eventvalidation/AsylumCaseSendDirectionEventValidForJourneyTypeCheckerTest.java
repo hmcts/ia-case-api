@@ -42,7 +42,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    void cannotSendDirectionForAipCase() {
+    void cannotSendDirectionForAipCaseToAppellant() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
@@ -51,7 +51,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
 
         Assertions.assertThat(loggingEventListAppender.list)
             .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Cannot send a direction for an AIP case", Level.ERROR));
+            .contains(Tuple.tuple("Cannot send a direction for an AIP case to appellant", Level.ERROR));
     }
 
     @Test
@@ -61,6 +61,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
 
         assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
+
 
     @Test
     void cannotSendDirectionToAppellantForReppedCase() {
@@ -87,7 +88,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE)).thenReturn(Optional.of(journeyType));
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
             .thenReturn(Optional.of(party));
     }
