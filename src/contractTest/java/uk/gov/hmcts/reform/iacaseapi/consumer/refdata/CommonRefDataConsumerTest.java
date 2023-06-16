@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.iacaseapi.idam.IdamApiConsumerApplication;
+import uk.gov.hmcts.reform.iacaseapi.consumer.idam.IdamConsumerApplication;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.ResourceLoader;
@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.ResourceLoader;
 @ExtendWith(SpringExtension.class)
 @PactTestFor(providerName = "commonDataRefApi", port = "8899")
 @ContextConfiguration(
-    classes = {CommonRefDataApiConsumerApplication.class, IdamApiConsumerApplication.class}
+    classes = {CommonRefDataApiConsumerApplication.class, IdamConsumerApplication.class}
 )
 @TestPropertySource(
     properties = {"commonData.api.url=http://localhost:8899", "idam.api.url=localhost:5000"}

@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = {
-    "uk.gov.hmcts.reform.prl.clients"
+    "uk.gov.hmcts.reform.iacaseapi.infrastructure.clients"
 })
 public class CommonRefDataApiConsumerApplication {
 }
