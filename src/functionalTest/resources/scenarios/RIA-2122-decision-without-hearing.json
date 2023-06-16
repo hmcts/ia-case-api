@@ -1,5 +1,6 @@
 {
   "description": "RIA-2122 Make decision without hearing",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
