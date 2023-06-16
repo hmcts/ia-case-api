@@ -100,9 +100,11 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
     private void handleAdaAppeal(AsylumCase asylumCase) {
         Optional<String> homeOfficeDecisionLetterDateOptional = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+        if (homeOfficeDecisionLetterDateOptional.isEmpty()) {
+            throw new RequiredFieldMissingException("decisionLetterReceivedDate is not present");
+        }
         LocalDate homeOfficeDecisionDate =
-            parse(homeOfficeDecisionLetterDateOptional
-                .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+            parse(homeOfficeDecisionLetterDateOptional.get());
 
         ZonedDateTime dueDateTime = dueDateService.calculateDueDate(homeOfficeDecisionDate.atStartOfDay(ZoneOffset.UTC), appealOutOfTimeAcceleratedDetainedWorkingDays);
 
