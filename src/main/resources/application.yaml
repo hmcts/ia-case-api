@@ -429,3 +429,7 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+commonData:
+  api:
+    url: ${COMMON_DATA_API:http://rd-commondata-api-aat.service.core-compute-aat.internal}
