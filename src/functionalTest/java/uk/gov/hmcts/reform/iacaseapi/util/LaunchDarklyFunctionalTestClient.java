@@ -18,10 +18,6 @@ public class LaunchDarklyFunctionalTestClient {
     @Autowired private LDClientInterface ldClient;
 
     public boolean getKey(String key, String accessToken) {
-        return getKey(key, accessToken, false);
-    }
-
-    public boolean getKey(String key, String accessToken, boolean defaultValue) {
 
         UserDetails userDetails = getUserDetails(accessToken);
 
@@ -31,7 +27,7 @@ public class LaunchDarklyFunctionalTestClient {
             .email(userDetails.getEmailAddress())
             .build();
 
-        return ldClient.boolVariation(key, ldUser, defaultValue);
+        return ldClient.boolVariation(key, ldUser, false);
     }
 
     private IdamUserDetails getUserDetails(String accessToken) {

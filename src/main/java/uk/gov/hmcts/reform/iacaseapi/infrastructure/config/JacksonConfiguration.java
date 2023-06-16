@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT;
+import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
@@ -30,7 +30,7 @@ public class JacksonConfiguration {
                 READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE,
                 WRITE_ENUMS_USING_TO_STRING,
                 ACCEPT_SINGLE_VALUE_AS_ARRAY,
-                ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
+                ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT,
                 READ_ENUMS_USING_TO_STRING)
             .featuresToDisable(
                 UNWRAP_SINGLE_VALUE_ARRAYS,

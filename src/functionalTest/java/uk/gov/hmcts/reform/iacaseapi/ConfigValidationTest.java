@@ -1,34 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import io.restassured.http.Headers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
-import uk.gov.hmcts.reform.iacaseapi.util.LaunchDarklyFunctionalTestClient;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @SpringBootTest
 @ActiveProfiles("functional")
 class ConfigValidationTest {
 
     @Autowired
-    LaunchDarklyFunctionalTestClient featureToggler;
-
-    @Autowired
-    private AuthorizationHeadersProvider authorizationHeadersProvider;
+    FeatureToggler featureToggler;
 
     @ParameterizedTest
     @CsvSource("use-ccd-document-am")
     void launchDarklyFeatureTogglesPresent(String featureToggleName) {
-
-        final Headers authorizationHeaders = authorizationHeadersProvider.getCaseOfficerAuthorization();
-        final String accessToken = authorizationHeaders.getValue("Authorization");
-
-        boolean value1 = featureToggler.getKey(featureToggleName, accessToken, true);
-        boolean value2 = featureToggler.getKey(featureToggleName, accessToken, false);
+        boolean value1 = featureToggler.getValue(featureToggleName, true);
+        boolean value2 = featureToggler.getValue(featureToggleName, false);
 
         // As a feature toggle cannot be both true and false at the same time, if the values returned don't match
         // it means they are both using their default... which in turn means that the feature toggle is not
