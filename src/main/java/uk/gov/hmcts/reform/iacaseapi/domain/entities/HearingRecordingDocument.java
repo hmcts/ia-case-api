@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HasDocument;
 
-@Data
-@AllArgsConstructor
+@Value
 public class HearingRecordingDocument implements HasDocument {
     Document document;
     String description;
