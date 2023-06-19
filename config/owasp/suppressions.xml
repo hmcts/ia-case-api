@@ -22,6 +22,11 @@
         <cve>CVE-2023-20863</cve>
         <cve>CVE-2023-20873</cve>
         <cve>CVE-2023-20862</cve>
+    </suppress>
+    <suppress until="2024-06-01">
+        <notes>![CDATA[
+            Delaying spring upgrade until later date.
+            ]]</notes>
         <cve>CVE-2023-20883</cve>
     </suppress>
 </suppressions>
