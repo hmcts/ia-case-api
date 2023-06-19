@@ -84,6 +84,7 @@ public class UpdateDetentionLocationCaseNoteHandler implements PreSubmitCallback
             caseNoteAppender.append(newCaseNote, maybeExistingCaseNotes.orElse(emptyList()));
 
         asylumCase.write(CASE_NOTES, allCaseNotes);
+        asylumCase.write(PREVIOUS_DETENTION_LOCATION, getDetentionLocation(caseDataBefore).split(" ")[0]);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
