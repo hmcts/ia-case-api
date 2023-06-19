@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Value
-@RequiredArgsConstructor
+@Data
+@AllArgsConstructor
 public class CaseManagementLocation {
     Region region;
     BaseLocation baseLocation;
