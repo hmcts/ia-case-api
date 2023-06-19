@@ -166,6 +166,8 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
+            log.info("requestBody: \n" + requestBody);
+
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
 
@@ -287,7 +289,6 @@ public class CcdScenarioRunnerTest {
             callback.put("case_details_before", caseDetailsBefore);
         }
 
-        log.info("serializing: \n" + callback);
         return MapSerializer.serialize(callback);
     }
 
