@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
-import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +45,6 @@ import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
-@Slf4j
 public class CcdScenarioRunnerTest {
 
     @Value("${targetInstance}")
@@ -165,8 +163,6 @@ public class CcdScenarioRunnerTest {
                 MapValueExtractor.extract(scenario, "request.input"),
                 templatesByFilename
             );
-
-            log.info("requestBody: \n" + requestBody);
 
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
