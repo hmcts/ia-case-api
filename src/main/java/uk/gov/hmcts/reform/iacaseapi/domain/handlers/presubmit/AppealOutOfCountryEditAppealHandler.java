@@ -1,33 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DEPORTATION_ORDER_OPTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -46,6 +20,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
+/**
+ * This handler ensures stale data is removed
+ * when case data is written to persistent storage.
+ */
 @Slf4j
 @Component
 public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -64,7 +42,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == Event.EDIT_APPEAL
+            && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL
                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
             && featureToggler.getValue("out-of-country-feature", false)
             && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
@@ -95,7 +73,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, NO);
                 asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);
                 asylumCase.clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
-                asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
+                asylumCase.write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
                 clearHumanRightsDecision(asylumCase);
                 clearRefusalOfProtection(asylumCase);
 
@@ -119,6 +97,13 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, YES);
                 asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
                 asylumCase.clear(APPELLANT_ADDRESS);
+                asylumCase.write(APPELLANT_IN_DETENTION, NO);
+                asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
+                asylumCase.clear(DETENTION_FACILITY);
+                asylumCase.clear(DETENTION_STATUS);
+                asylumCase.clear(CUSTODIAL_SENTENCE);
+                asylumCase.clear(IRC_NAME);
+                asylumCase.clear(PRISON_NAME);
                 Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
                 if (optionalHasSponsor.isPresent() && optionalHasSponsor.get().equals(NO)) {
                     clearSponsor(asylumCase);
@@ -137,6 +122,8 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(HOME_OFFICE_DECISION_DATE);
             }
 
+        } else {
+            throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

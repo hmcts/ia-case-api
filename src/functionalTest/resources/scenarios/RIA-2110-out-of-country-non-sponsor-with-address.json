@@ -34,7 +34,10 @@
         "hasSponsor": "No",
         "dateEntryClearanceDecision":"{$TODAY-7}",
         "gwfReferenceNumber": "GWF1234566",
-        "outOfCountryDecisionType":"refusalOfHumanRights"
+        "outOfCountryDecisionType":"refusalOfHumanRights",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null
       }
     }
   }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -53,7 +54,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_in_country_clear_out_of_country_details(Event event) {
 
@@ -73,7 +74,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
         verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
-        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
+        verify(asylumCase, times(1)).write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
         verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
@@ -84,7 +85,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_HO_decision_date_when_switching_to_ada_case(Event event) {
 
@@ -105,7 +106,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
         verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
-        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
+        verify(asylumCase, times(1)).write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
         verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
@@ -116,7 +117,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_refusal_of_hr_clear_in_country_details(Event event) {
 
@@ -148,11 +149,19 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
 
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_refusal_of_protection_clear_in_country_details(Event event) {
 
@@ -180,11 +189,19 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
 
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_removal_of_client_clear_in_country_details(Event event) {
 
@@ -213,11 +230,19 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
 
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_out_of_country_sponsor_mobile_for_change_to_email(Event event) {
 
@@ -248,11 +273,19 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_out_of_country_sponsor_email_for_change_to_phone(Event event) {
 
@@ -283,6 +316,14 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
     }
 
     @Test
@@ -311,7 +352,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
                 boolean canHandle = appealOutOfCountryEditAppealHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
+                    && (event.equals(Event.START_APPEAL) || event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);

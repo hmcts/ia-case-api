@@ -1764,7 +1764,10 @@ public enum AsylumCaseFieldDefinition {
             "appealReadyForUtTransferOutcome", new TypeReference<String>(){}),
 
     PREVIOUS_DETENTION_LOCATION(
-            "previousDetentionLocation", new TypeReference<String>() {})
+            "previousDetentionLocation", new TypeReference<String>() {}),
+
+    SWITCHED_FLOW(
+            "switchedFlow", new TypeReference<YesOrNo>(){})
     ;
 
     private final String value;
