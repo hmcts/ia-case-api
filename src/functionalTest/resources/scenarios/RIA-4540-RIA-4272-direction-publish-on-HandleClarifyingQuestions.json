@@ -72,7 +72,7 @@
           "tag": "requestClarifyingQuestions",
           "previousDates": []
         },
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }
