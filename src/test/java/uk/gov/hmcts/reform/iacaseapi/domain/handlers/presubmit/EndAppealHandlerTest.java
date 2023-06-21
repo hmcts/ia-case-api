@@ -267,5 +267,6 @@ class EndAppealHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase).clear(APPEAL_READY_FOR_UT_TRANSFER);
+        verify(asylumCase).clear(UT_APPEAL_REFERENCE_NUMBER);
     }
 }

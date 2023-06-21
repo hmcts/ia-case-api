@@ -89,6 +89,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         // Prevents data populated in MarkAsReadyForUtTransferHandler being displayed on UI
         asylumCase.clear(APPEAL_READY_FOR_UT_TRANSFER);
+        asylumCase.clear(UT_APPEAL_REFERENCE_NUMBER);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
