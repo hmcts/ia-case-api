@@ -412,3 +412,4 @@ ccd:
   logstash:
     image: null
     tag: ccd-cmc-logstash-latest
+
