@@ -78,7 +78,8 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
-        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+        // If case data has oocDecisionType && ADA=YES, it means appeal was moving from in-country to OOC
+        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase) && outOfCountryDecisionTypeOptional.isEmpty()) {
             handleAdaAppeal(asylumCase);
         } else if (!HandlerUtils.isAipJourney(asylumCase)) {
             boolean isOutOfCountry = outOfCountryDecisionTypeOptional.isPresent();
