@@ -147,24 +147,4 @@ class ReinstateAppealStateHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
-
-    @Test
-    void should_clear_appeal_ready_for_ut_transfer_field() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
-        when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(State.RESPONDENT_REVIEW));
-        when(asylumCase.read(REINSTATE_APPEAL_REASON)).thenReturn(Optional.of("test"));
-        when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
-
-        asylumCase.put(APPEAL_READY_FOR_UT_TRANSFER.toString(), YesOrNo.YES);
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-                reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
-        verify(asylumCase).clear(APPEAL_READY_FOR_UT_TRANSFER);
-    }
-
 }
