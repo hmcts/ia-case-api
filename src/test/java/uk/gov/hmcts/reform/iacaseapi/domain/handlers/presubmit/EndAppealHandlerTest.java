@@ -158,19 +158,17 @@ class EndAppealHandlerTest {
     }
 
     @Test
-    void should_handle_paid_appeals() {
+    void should_not_handle_paid_appeals() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
         when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot auto end appeal as the payment is already made!")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
-    
+
     @Test
     void should_handle_pending_payment_appeals() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
