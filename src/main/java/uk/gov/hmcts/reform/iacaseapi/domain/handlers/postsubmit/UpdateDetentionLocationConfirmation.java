@@ -32,7 +32,7 @@ public class UpdateDetentionLocationConfirmation implements PostSubmitCallbackHa
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have update the detained location");
+        postSubmitResponse.setConfirmationHeader("# You have updated the detained location");
         postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
                         + "The appeal will continue."

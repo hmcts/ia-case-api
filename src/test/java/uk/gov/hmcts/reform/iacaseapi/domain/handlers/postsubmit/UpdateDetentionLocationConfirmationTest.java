@@ -50,7 +50,7 @@ class UpdateDetentionLocationConfirmationTest {
 
         assertThat(
                 callbackResponse.getConfirmationHeader().get())
-                .contains("# You have update the detained location");
+                .contains("# You have updated the detained location");
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())
