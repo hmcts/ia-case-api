@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -59,10 +60,8 @@ public class UpdateDetentionLocationCaseNoteHandler implements PreSubmitCallback
             callback
                 .getCaseDetails()
                 .getCaseData();
-        AsylumCase caseDataBefore =
-            callback
-                .getCaseDetailsBefore()
-                .get().getCaseData();
+        CaseDetails<AsylumCase> mayBePreviousCaseDetails = callback.getCaseDetailsBefore().orElseThrow(() -> new IllegalStateException("cannot find previous Case details"));
+        AsylumCase caseDataBefore = mayBePreviousCaseDetails.getCaseData();
 
         String caseNoteDesc = "The detention location for this appellant has changed from: \n\n"
                 + getDetentionLocation(caseDataBefore)

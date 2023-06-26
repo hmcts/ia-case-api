@@ -76,10 +76,9 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
     }
 
     private boolean isAppellantMinor(AsylumCase asylumCase) {
-        YesOrNo result = YesOrNo.NO;
         if (isAppellantDobValid(asylumCase)) {
-            result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+            return Period.between(appellantDob, LocalDate.now()).getYears() < 18;
         }
-        return result.equals(YesOrNo.YES);
+        return false;
     }
 }
