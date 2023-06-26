@@ -12,6 +12,9 @@ import lombok.Setter;
 public class InterpreterLanguage {
 
     private String language;
+    private DynamicList languages;
     private String languageDialect;
+    private String languageManualEnter;
+    private String languageDescription;
 
 }

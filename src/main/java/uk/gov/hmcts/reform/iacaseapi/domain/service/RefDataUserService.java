@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicListElement;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
@@ -18,11 +18,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @Service
 public class RefDataUserService {
 
-    @Autowired
-    AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
-    CommonDataRefApi commonDataRefApi;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CommonDataRefApi commonDataRefApi;
+    private final UserDetails userDetails;
 
     public static final String SERVICE_ID = "ABA5";
 
@@ -30,15 +29,23 @@ public class RefDataUserService {
 
     private CommonDataResponse commonDataResponse;
 
-    public CommonDataResponse retrieveCategoryValues(String authorization, String categoryId,String isHearingChildRequired) {
+    public RefDataUserService(AuthTokenGenerator authTokenGenerator,
+                              CommonDataRefApi commonDataRefApi,
+                              UserDetails userDetails) {
+        this.authTokenGenerator = authTokenGenerator;
+        this.commonDataRefApi = commonDataRefApi;
+        this.userDetails = userDetails;
+    }
+
+    public CommonDataResponse retrieveCategoryValues(String categoryId,String isHearingChildRequired) {
         log.info("retrieveCategoryValues {}", categoryId);
         try {
             commonDataResponse = commonDataRefApi.getAllCategoryValuesByCategoryId(
-                authorization,
-                authTokenGenerator.generate(),
-                categoryId,
-                SERVICE_ID,
-                isHearingChildRequired
+                    userDetails.getAccessToken(),
+                    authTokenGenerator.generate(),
+                    categoryId,
+                    SERVICE_ID,
+                    isHearingChildRequired
             );
 
         } catch (Exception e) {
