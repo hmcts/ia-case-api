@@ -95,7 +95,7 @@ featureFlag:
   isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
 legalRepresentativeBuildCase.dueInDays: 28
-legalRepresentativeBuildCaseAda.dueInDay: 9
+legalRepresentativeBuildCaseAda.dueInDay: 13
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
 legalRepresentativeHearingRequirements.dueInDays: 5
 legalRepresentativeReview.dueInDays: 5
