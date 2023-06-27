@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @Service
 public class RefDataUserService {
 
-    private final AuthTokenGenerator authTokenGenerator;
-    private final CommonDataRefApi commonDataRefApi;
-    private final UserDetails userDetails;
+    private AuthTokenGenerator authTokenGenerator;
+    private CommonDataRefApi commonDataRefApi;
+    private UserDetails userDetails;
 
     public static final String SERVICE_ID = "BFA1";
 
