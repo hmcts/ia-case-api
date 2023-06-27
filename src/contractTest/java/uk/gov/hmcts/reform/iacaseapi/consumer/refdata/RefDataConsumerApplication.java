@@ -6,11 +6,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 
 @SpringBootApplication
 @EnableFeignClients(clients = {
-    RefDataCaseWorkerApi.class
+    RefDataCaseWorkerApi.class,
+    CommonDataRefApi.class
 })
 @PropertySource("classpath:application.properties")
 public class RefDataConsumerApplication {

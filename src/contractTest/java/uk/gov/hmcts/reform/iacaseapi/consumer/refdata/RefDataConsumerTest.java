@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.consumer.refdata;
 
 import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonArray;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
@@ -22,8 +23,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 
 @ExtendWith(SpringExtension.class)
@@ -42,6 +45,9 @@ public class RefDataConsumerTest {
     @Autowired
     RefDataCaseWorkerApi refDataCaseWorkerApi;
 
+    @Autowired
+    CommonDataRefApi commonDataRefApi;
+
     @Pact(provider = "referenceData_caseworkerRefUsers", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
 
@@ -59,6 +65,23 @@ public class RefDataConsumerTest {
             .toPact();
     }
 
+    @Pact(provider = "commonDataRefApi", consumer = "ia_caseApi")
+    public RequestResponsePact generatePactFragmentForCategoryId(PactDslWithProvider builder) throws Exception {
+        // @formatter:off
+        return builder
+            .given("Common Data")
+            .uponReceiving("A Request for Common Data API")
+            .method("GET")
+            .headers(AUTHORIZATION, AUTH_TOKEN)
+            .headers(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
+            .headers("Content-Type", "application/json")
+            .path("/refdata/commondata/lov/categories/InterpreterLanguage")
+            .query("serviceId=BFA1&isChildRequired=Y")
+            .willRespondWith()
+            .status(200)
+            .toPact();
+    }
+
     @Test
     @PactTestFor(pactMethod = "generatePactFragment")
     public void verifyCaseworkersFetch() {
@@ -69,6 +92,20 @@ public class RefDataConsumerTest {
             getUserIds());
         assertEquals("firstName", caseWorkerProfiles.get(0).getFirstName());
 
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "generatePactFragmentForCategoryId")
+    public void verifyCommonDataDetails() {
+        CommonDataResponse allCategoryValuesByCategoryId = commonDataRefApi.getAllCategoryValuesByCategoryId(
+            AUTH_TOKEN,
+            SERVICE_AUTH_TOKEN,
+            "InterpreterLanguage",
+            "BFA1",
+            "Y"
+        );
+
+        assertNotNull(allCategoryValuesByCategoryId);
     }
 
     @NotNull
