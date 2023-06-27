@@ -1,31 +1,26 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicListElement;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
-
 
 @Slf4j
 @Service
 public class RefDataUserService {
 
-
     private final AuthTokenGenerator authTokenGenerator;
     private final CommonDataRefApi commonDataRefApi;
     private final UserDetails userDetails;
 
-    public static final String SERVICE_ID = "ABA5";
-
-    private  List<DynamicListElement> listOfCategoryValues;
+    public static final String SERVICE_ID = "BFA1";
 
     private CommonDataResponse commonDataResponse;
 
@@ -37,15 +32,15 @@ public class RefDataUserService {
         this.userDetails = userDetails;
     }
 
-    public CommonDataResponse retrieveCategoryValues(String categoryId,String isHearingChildRequired) {
+    public CommonDataResponse retrieveCategoryValues(String categoryId, String isChildRequired) {
         log.info("retrieveCategoryValues {}", categoryId);
         try {
             commonDataResponse = commonDataRefApi.getAllCategoryValuesByCategoryId(
-                    userDetails.getAccessToken(),
-                    authTokenGenerator.generate(),
-                    categoryId,
-                    SERVICE_ID,
-                    isHearingChildRequired
+                userDetails.getAccessToken(),
+                authTokenGenerator.generate(),
+                categoryId,
+                SERVICE_ID,
+                isChildRequired
             );
 
         } catch (Exception e) {
@@ -54,22 +49,25 @@ public class RefDataUserService {
         return commonDataResponse;
     }
 
-    public List<DynamicListElement> filterCategoryValuesByCategoryId(CommonDataResponse commonDataResponse, String categoryId) {
+    public List<CategoryValues> filterCategoryValuesByCategoryId(CommonDataResponse commonDataResponse, String categoryId) {
+        List<CategoryValues> filteredCategoryValues = new ArrayList<>();
+
         if (null != commonDataResponse) {
-            listOfCategoryValues = commonDataResponse.getCategoryValues().stream()
+            filteredCategoryValues = commonDataResponse.getCategoryValues().stream()
                     .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
-                    .map(this::getDisplayCategoryEntry).collect(Collectors.toList());
-            Collections.sort(listOfCategoryValues, (a, b) -> a.getCode().compareToIgnoreCase(b.getCode()));
-            return listOfCategoryValues;
+                    .collect(Collectors.toList());
+
+            filteredCategoryValues.sort((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()));
         }
 
-        return List.of(DynamicListElement.builder().build());
+        return filteredCategoryValues;
     }
 
-    private DynamicListElement getDisplayCategoryEntry(CategoryValues categoryValues) {
-        String value = categoryValues.getValueEn();
-        String key = categoryValues.getKey();
-        return DynamicListElement.builder().code(key).label(value).build();
+    public List<Value> mapCategoryValuesToDynamicListValues(List<CategoryValues> categoryValues) {
+        return categoryValues
+            .stream()
+            .map(categoryValue -> new Value(categoryValue.getKey(), categoryValue.getValueEn()))
+            .collect(Collectors.toList());
     }
 
 }

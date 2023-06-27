@@ -69,8 +69,11 @@ class ReviewDraftHearingRequirementsPreparerTest {
             new IdValue<>("2", new WitnessDetails("Witness2"))
         );
 
+        InterpreterLanguage interpreterLanguageObject = new InterpreterLanguage();
+        interpreterLanguageObject.setLanguage("Irish");
+        interpreterLanguageObject.setLanguageDialect("N/A");
         interpreterLanguage = Arrays.asList(
-            new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
+            new IdValue<>("1", interpreterLanguageObject)
         );
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));

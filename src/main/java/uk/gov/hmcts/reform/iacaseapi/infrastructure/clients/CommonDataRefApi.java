@@ -19,6 +19,5 @@ public interface CommonDataRefApi {
             @PathVariable("categoryId") String categoryId,
             @RequestParam("serviceId") String serviceId,
             @RequestParam("isChildRequired") String isChildRequired
-
     );
 }
