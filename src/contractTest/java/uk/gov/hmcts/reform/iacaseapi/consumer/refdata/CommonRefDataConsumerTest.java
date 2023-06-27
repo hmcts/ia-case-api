@@ -34,28 +34,26 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.ResourceLoader;
 @PactFolder("pacts")
 public class CommonRefDataConsumerTest {
 
+    static final String SERVICE_AUTH_TOKEN = "someServiceAuthToken";
+    static final String AUTHORIZATION_TOKEN = "Bearer some-access-token";
+
     @Autowired
     CommonDataRefApi commonDataRefApi;
 
-    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdeRre";
-    private static final String SERVICE_AUTHORIZATION_HEADER = "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdeRre";
-
     private final String validResponseBody = "commonrefdata/CommonRefData.json";
 
-
-
-    @Pact(provider = "commonDataRefApi", consumer = "prl_cos")
+    @Pact(provider = "commonDataRefApi", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentForCategoryId(PactDslWithProvider builder) throws Exception {
         // @formatter:off
         return builder
             .given("Common Data")
             .uponReceiving("A Request for Common Data API")
             .method("GET")
-            .headers("ServiceAuthorization", SERVICE_AUTHORIZATION_HEADER)
-            .headers("Authorization", BEARER_TOKEN)
+            .headers("ServiceAuthorization", SERVICE_AUTH_TOKEN)
+            .headers("Authorization", AUTHORIZATION_TOKEN)
             .headers("Content-Type", "application/json")
-            .path("/refdata/commondata/lov/categories/hearingType")
-            .query("serviceId=ABA5&isChildRequired=N")
+            .path("/refdata/commondata/lov/categories/InterpreterLanguage")
+            .query("serviceId=BFA1&isChildRequired=Y")
             .willRespondWith()
             .status(200)
             .body(ResourceLoader.loadJson(validResponseBody), "application/json")
@@ -65,11 +63,12 @@ public class CommonRefDataConsumerTest {
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentForCategoryId")
     public void verifyCommonDataDetails() {
-        CommonDataResponse allCategoryValuesByCategoryId = commonDataRefApi.getAllCategoryValuesByCategoryId(BEARER_TOKEN,
-                                                                                                             SERVICE_AUTHORIZATION_HEADER,
-                                                                                                             "hearingType",
-                                                                                                             "ABA5",
-                                                                                                             "N"
+        CommonDataResponse allCategoryValuesByCategoryId = commonDataRefApi.getAllCategoryValuesByCategoryId(
+            AUTHORIZATION_TOKEN,
+            SERVICE_AUTH_TOKEN,
+            "hearingType",
+            "BFA1",
+            "Y"
         );
 
         assertNotNull(allCategoryValuesByCategoryId);
