@@ -59,25 +59,30 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
         }
 
         String company = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY, String.class)
-            .orElse("");
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY, String.class)
+                .orElse("");
         String name = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME, String.class)
-            .orElse("");
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME, String.class)
+                .orElse("");
+        String familyName = asylumCase.read(
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_FAMILY_NAME, String.class)
+                .orElse("");
         String email = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class)
-            .orElse("");
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class)
+                .orElse("");
         String reference = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class)
-            .orElse("");
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class)
+                .orElse("");
 
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME);
+        asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_FAMILY_NAME);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER);
 
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY, company);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_NAME, name);
+        asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_FAMILY_NAME, familyName);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, email);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, reference);
 
