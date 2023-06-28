@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InterpreterLanguage {
 
-    private String language; // legacy field
-    private DynamicList interpreterLanguageRd;
-    private String languageDialect; // legacy field
-    private List<String> languageManualEnter;
-    private String manualLanguageDescription;
+    //legacy object (superseded by InterpreterLanguageRefData)
+    private String language;
+    private String languageDialect;
 
 }

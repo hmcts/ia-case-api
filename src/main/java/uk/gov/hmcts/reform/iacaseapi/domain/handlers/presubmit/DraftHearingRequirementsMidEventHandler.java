@@ -1,16 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_REF_DATA;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -43,7 +45,8 @@ public class DraftHearingRequirementsMidEventHandler implements PreSubmitCallbac
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.DRAFT_HEARING_REQUIREMENTS;
+               && (callback.getEvent() == Event.DRAFT_HEARING_REQUIREMENTS
+                   || callback.getEvent() == Event.UPDATE_HEARING_REQUIREMENTS);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -54,22 +57,35 @@ public class DraftHearingRequirementsMidEventHandler implements PreSubmitCallbac
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        AsylumCase asylumCase =
                 callback
                         .getCaseDetails()
                         .getCaseData();
 
+        AsylumCase asylumCaseBefore =
+            callback
+                .getCaseDetailsBefore()
+                .map(CaseDetails::getCaseData)
+                .orElse(null);
+
         String pageId = callback.getPageId();
 
-        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+        Optional<List<IdValue<InterpreterLanguageRefData>>> optionalInterpreterLanguage =
+            asylumCase.read(INTERPRETER_LANGUAGE_REF_DATA);
+
+        Optional<List<IdValue<InterpreterLanguageRefData>>> optionalInterpreterLanguageBefore =
+            asylumCaseBefore != null
+                ? asylumCaseBefore.read(INTERPRETER_LANGUAGE_REF_DATA)
+                : Optional.empty();
 
         if (Objects.equals(pageId, DRAFT_HEARING_REQUIREMENTS_PAGE_ID)
-            && callback.getEvent() == Event.DRAFT_HEARING_REQUIREMENTS) {
+            && !isDynamicListPopulated(optionalInterpreterLanguage)
+            && !isDynamicListPopulated(optionalInterpreterLanguageBefore)) {
 
             populateDynamicList(asylumCase);
         }
 
-        return response;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private AsylumCase populateDynamicList(AsylumCase asylumCase) {
@@ -91,20 +107,31 @@ public class DraftHearingRequirementsMidEventHandler implements PreSubmitCallbac
             throw new RuntimeException("Couldn't read response by RefData service for InterpreterLanguage(s)", e);
         }
 
-        InterpreterLanguage interpreterLanguageObject = new InterpreterLanguage(
-            "",
+        InterpreterLanguageRefData interpreterLanguageObject = new InterpreterLanguageRefData(
             dynamicListOfLanguages,
-            "",
             Collections.emptyList(),
             "");
 
-        List<IdValue<InterpreterLanguage>> interpreterLanguageCollection = List.of(
+        List<IdValue<InterpreterLanguageRefData>> interpreterLanguageCollection = List.of(
             new IdValue<>("1", interpreterLanguageObject)
         );
 
-        asylumCase.write(INTERPRETER_LANGUAGE, interpreterLanguageCollection);
+        asylumCase.write(INTERPRETER_LANGUAGE_REF_DATA, interpreterLanguageCollection);
 
         return asylumCase;
+    }
+
+    private boolean isDynamicListPopulated(Optional<List<IdValue<InterpreterLanguageRefData>>> optionalInterpreterLanguage) {
+        if (optionalInterpreterLanguage.isPresent() && !optionalInterpreterLanguage.get().isEmpty()) {
+            return !optionalInterpreterLanguage.get()
+                .get(0)
+                .getValue()
+                .getInterpreterLanguageRd()
+                .getListItems()
+                .isEmpty();
+        } else {
+            return false;
+        }
     }
 }
 

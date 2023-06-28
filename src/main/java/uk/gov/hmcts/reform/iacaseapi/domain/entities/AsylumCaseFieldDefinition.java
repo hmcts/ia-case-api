@@ -767,6 +767,9 @@ public enum AsylumCaseFieldDefinition {
     INTERPRETER_LANGUAGE(
         "interpreterLanguage", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
+    INTERPRETER_LANGUAGE_REF_DATA(
+        "interpreterLanguageRefData", new TypeReference<List<IdValue<InterpreterLanguageRefData>>>() {}),
+
     INTERPRETER_LANGUAGE_READONLY(
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
