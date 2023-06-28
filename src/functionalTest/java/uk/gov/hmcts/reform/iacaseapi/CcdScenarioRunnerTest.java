@@ -208,7 +208,7 @@ public class CcdScenarioRunnerTest {
                     .extract()
                     .body()
                     .asString();
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             // shouldn't rethrow exceptions like this... but it helps viewing the logs without the need to inspect the pods.
             String description = MapValueExtractor.extract(scenario, "description");
             throw new RuntimeException("Scenario failure (" + description + "). The HTTP request failed. Request URI: " + requestUri, re);
