@@ -164,25 +164,7 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
-            final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
-            final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
-
-            String actualResponseBody =
-                SerenityRest
-                    .given()
-                    .headers(authorizationHeaders)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .body(requestBody)
-                    .when()
-                    .post(requestUri)
-                    .then()
-                    .log().ifError()
-                    .log().ifValidationFails()
-                    .statusCode(expectedStatus)
-                    .and()
-                    .extract()
-                    .body()
-                    .asString();
+            String actualResponseBody = performRequest(scenario, authorizationHeaders, requestBody);
 
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),
@@ -204,6 +186,34 @@ public class CcdScenarioRunnerTest {
 
         System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
         System.out.println((char) 27 + "[0m");
+    }
+
+    private static String performRequest(Map<String, Object> scenario, Headers authorizationHeaders, String requestBody) {
+        final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
+        try {
+            final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
+
+            return SerenityRest
+                    .given()
+                    .headers(authorizationHeaders)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .body(requestBody)
+                    .when()
+                    .post(requestUri)
+                    .then()
+                    .log().ifError()
+                    .log().ifValidationFails()
+                    .statusCode(expectedStatus)
+                    .and()
+                    .extract()
+                    .body()
+                    .asString();
+        }
+        catch(RuntimeException re) {
+            // shouldn't rethrow exceptions like this... but it helps viewing the logs without the need to inspect the pods.
+            String description = MapValueExtractor.extract(scenario, "description");
+            throw new RuntimeException("Scenario failure (" + description + "). The HTTP request failed. Request URI: " + requestUri, re);
+        }
     }
 
     private void loadPropertiesIntoMapValueExpander() {
