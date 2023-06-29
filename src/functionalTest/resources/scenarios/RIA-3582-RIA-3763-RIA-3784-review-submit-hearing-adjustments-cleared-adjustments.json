@@ -19,7 +19,8 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness"
+                "witnessName": "AWitness",
+                "witnessFamilyName": "Family"
               }
             }
           ],
@@ -142,7 +143,8 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness"
+              "witnessName": "AWitness",
+              "witnessFamilyName": "Family"
             }
           }
         ],
