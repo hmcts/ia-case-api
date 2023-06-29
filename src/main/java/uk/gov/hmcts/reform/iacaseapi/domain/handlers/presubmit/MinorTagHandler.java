@@ -56,29 +56,16 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
     }
 
-    private boolean isAppellantDobValid(AsylumCase asylumCase) {
-        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
-        if (appellantDobAsString != null) {
-            return isAppellantDobAValidDate(appellantDobAsString);
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isAppellantDobAValidDate(String appellantDobAsString) {
-        try {
-            appellantDob = LocalDate.parse(appellantDobAsString);
-        } catch (Exception e) {
-            log.warn("Error when parsing Appellant dob: ", e);
-            return false;
-        }
-        return true;
-    }
-
     private boolean isAppellantMinor(AsylumCase asylumCase) {
         YesOrNo result = YesOrNo.NO;
-        if (isAppellantDobValid(asylumCase)) {
-            result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
+        if (appellantDobAsString != null) {
+            try {
+                appellantDob = LocalDate.parse(appellantDobAsString);
+                result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+            } catch (Exception e) {
+                log.warn("Error when parsing Appellant dob: ", e);
+            }
         }
         return result.equals(YesOrNo.YES);
     }
