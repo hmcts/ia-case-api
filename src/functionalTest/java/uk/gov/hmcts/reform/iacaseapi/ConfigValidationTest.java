@@ -1,16 +1,41 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
+import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("functional")
 class ConfigValidationTest {
+
+    @MockBean
+    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
+
+    @Autowired
+    private AuthorizationHeadersProvider authorizationHeadersProvider;
+
+    @BeforeEach
+    void authenticateMe() {
+        String accessToken = authorizationHeadersProvider.getCaseOfficerAuthorization().getValue("Authorization");
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertNotNull(accessToken);
+        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
+    }
 
     @Autowired
     FeatureToggler featureToggler;
