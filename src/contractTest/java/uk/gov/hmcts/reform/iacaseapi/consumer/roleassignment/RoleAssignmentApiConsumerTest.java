@@ -98,7 +98,6 @@ public class RoleAssignmentApiConsumerTest {
     @Test
     @PactTestFor(pactMethod = "generatePactFragment")
     public void verifyAssignRole() {
-
         roleAssignmentService.assignRole(caseId, assigneeId);
 
     }
