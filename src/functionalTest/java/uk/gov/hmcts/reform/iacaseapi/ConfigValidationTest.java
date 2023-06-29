@@ -57,7 +57,7 @@ class ConfigValidationTest {
 
         Assertions.assertEquals(value1, value2,
             "The feature toggle " + featureToggleName + " may not be present " +
-            "or the connection to LaunchDarkly may not be working. " +
-            "Check the code of the failing test for further information");
+                "or the connection to LaunchDarkly may not be working. " +
+                "Check the code of the failing test for further information");
     }
 }
