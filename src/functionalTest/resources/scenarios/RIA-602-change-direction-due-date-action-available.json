@@ -1,6 +1,5 @@
 {
   "description": "RIA-602 Change direction action due date becomes available in appropriate state when directions exist",
-  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
