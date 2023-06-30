@@ -38,6 +38,7 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
     private final String legalRepCompany = "Amazing Law Firm";
     private final String legalRepName = "John Doe";
     private final String legalRepEmailAddress = "john.doe@example.com";
+    private final String legalRepMobileNumber = "01234123123";
     private final String legalRepReferenceNumber = "ABC-123";
 
     @Mock
@@ -65,6 +66,8 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
         when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of(legalRepName));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class))
             .thenReturn(Optional.of(legalRepEmailAddress));
+        when(asylumCase.read(LEGAL_REP_MOBILE_NUMBER, String.class))
+            .thenReturn(Optional.of(legalRepMobileNumber));
         when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(legalRepReferenceNumber));
     }
@@ -79,16 +82,19 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
 
         verify(asylumCase, times(0)).clear(eq(LEGAL_REP_NAME));
         verify(asylumCase, times(0)).clear(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS));
+        verify(asylumCase, times(0)).clear(eq(LEGAL_REP_MOBILE_NUMBER));
         verify(asylumCase, times(0)).clear(eq(LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase).read(LEGAL_REP_COMPANY, String.class);
         verify(asylumCase).read(LEGAL_REP_NAME, String.class);
         verify(asylumCase).read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class);
+        verify(asylumCase).read(LEGAL_REP_MOBILE_NUMBER, String.class);
         verify(asylumCase).read(LEGAL_REP_REFERENCE_NUMBER, String.class);
 
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_COMPANY), eq(legalRepCompany));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_NAME), eq(legalRepName));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_MOBILE_NUMBER), eq(legalRepMobileNumber));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
 
         verify(companyNameProvider, times(1)).prepareCompanyName(callback);
@@ -108,16 +114,19 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
 
         verify(asylumCase, times(1)).clear(eq(LEGAL_REP_NAME));
         verify(asylumCase, times(1)).clear(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS));
+        verify(asylumCase, times(1)).clear(eq(LEGAL_REP_MOBILE_NUMBER));
         verify(asylumCase, times(1)).clear(eq(LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase).read(LEGAL_REP_COMPANY, String.class);
         verify(asylumCase).read(LEGAL_REP_NAME, String.class);
         verify(asylumCase).read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class);
+        verify(asylumCase).read(LEGAL_REP_MOBILE_NUMBER, String.class);
         verify(asylumCase).read(LEGAL_REP_REFERENCE_NUMBER, String.class);
 
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_COMPANY), eq(legalRepCompany));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_NAME), eq(legalRepName));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_MOBILE_NUMBER), eq(legalRepMobileNumber));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
 
         verify(companyNameProvider, times(1)).prepareCompanyName(callback);

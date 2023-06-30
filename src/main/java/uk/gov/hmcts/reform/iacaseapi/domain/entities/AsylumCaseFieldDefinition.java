@@ -463,6 +463,9 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS(
         "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
 
+    LEGAL_REP_MOBILE_NUMBER(
+            "legalRepMobileNumber", new TypeReference<String>(){}),
+
     CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE(
         "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
 
@@ -939,6 +942,9 @@ public enum AsylumCaseFieldDefinition {
 
     UPDATE_LEGAL_REP_EMAIL_ADDRESS(
         "updateLegalRepEmailAddress", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_MOBILE_NUMBER(
+            "updateLegalRepMobileNumber", new TypeReference<String>() {}),
 
     UPDATE_LEGAL_REP_REFERENCE_NUMBER(
         "updateLegalRepReferenceNumber", new TypeReference<String>() {}),

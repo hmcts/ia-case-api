@@ -64,6 +64,13 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
             );
         }
 
+        if (asylumCase.read(LEGAL_REP_MOBILE_NUMBER).isEmpty()) {
+            asylumCase.write(
+                    LEGAL_REP_MOBILE_NUMBER,
+                    asylumCase.read(LEGAL_REP_MOBILE_NUMBER, String.class).orElse("")
+            );
+        }
+
         if (asylumCase.read(LEGAL_REP_COMPANY).isEmpty()) {
             asylumCase.write(
                 LEGAL_REP_COMPANY,
