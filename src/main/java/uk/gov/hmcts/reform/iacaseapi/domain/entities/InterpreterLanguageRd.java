@@ -9,10 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InterpreterLanguage {
+public class InterpreterLanguageRd {
 
-    //legacy object (superseded by InterpreterLanguageRefData)
-    private String language;
-    private String languageDialect;
+    private String languageCode;
+    private String languageLabel;
 
 }
