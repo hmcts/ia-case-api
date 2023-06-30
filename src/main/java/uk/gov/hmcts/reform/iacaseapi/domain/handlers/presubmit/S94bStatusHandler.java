@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class S94bStatusHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final static String ERROR = "\'Update s94b status\' not available for this appeal type";
+    private static final String ERROR = "\'Update s94b status\' not available for this appeal type";
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -91,7 +91,7 @@ public class S94bStatusHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private boolean eventEnablingFlagToBeSet(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         return callbackStage == ABOUT_TO_SUBMIT
-        && Set.of(START_APPEAL, EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+               && Set.of(START_APPEAL, EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
     }
 
     private boolean errorToBeAdded(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {

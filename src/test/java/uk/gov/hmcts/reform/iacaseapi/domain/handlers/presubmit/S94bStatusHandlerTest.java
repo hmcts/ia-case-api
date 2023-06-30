@@ -53,7 +53,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 public class S94bStatusHandlerTest {
 
-    private final static String ERROR = "\'Update s94b status\' not available for this appeal type";
+    private static final String ERROR = "\'Update s94b status\' not available for this appeal type";
 
     @Mock
     private Callback<AsylumCase> callback;
