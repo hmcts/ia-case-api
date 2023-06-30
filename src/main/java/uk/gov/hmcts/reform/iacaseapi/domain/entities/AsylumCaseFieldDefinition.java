@@ -1572,11 +1572,16 @@ public enum AsylumCaseFieldDefinition {
         "displayMarkAsPaidEventForPartialRemission", new TypeReference<YesOrNo>(){}),
 
     REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST(
-
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    IS_S94B_STATUS_UPDATABLE(
+        "isS94bStatusUpdatable", new TypeReference<YesOrNo>(){}),
+
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
