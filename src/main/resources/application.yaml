@@ -432,4 +432,4 @@ timed-event-service:
 
 commonData:
   api:
-    url: ${COMMON_DATA_API:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+    url: ${COMMON_DATA_API:http://localhost:8991}

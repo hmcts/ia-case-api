@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.FeignClientProperties;
@@ -19,6 +19,5 @@ public interface CommonDataRefApi {
             @PathVariable("categoryId") String categoryId,
             @RequestParam("serviceId") String serviceId,
             @RequestParam("isChildRequired") String isChildRequired
-
     );
 }

@@ -19,6 +19,4 @@ public class CommonDataResponse {
     @JsonProperty("list_of_values")
     private List<CategoryValues> categoryValues;
 
-
-
 }
