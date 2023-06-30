@@ -34,4 +34,8 @@ public class DynamicList {
         return value;
     }
 
+    public void setValue(Value value) {
+        this.value = value;
+    }
+
 }
