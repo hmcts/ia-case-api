@@ -6,11 +6,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @Service
 public class AuthorizationHeadersProvider {
@@ -22,6 +27,9 @@ public class AuthorizationHeadersProvider {
 
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
+
+    @MockBean
+    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
     @Autowired
     private IdamApi idamApi;
@@ -44,6 +52,13 @@ public class AuthorizationHeadersProvider {
             "LegalRepresentative",
             user -> "Bearer " + idamApi.token(tokenRequestForm).getAccessToken()
         );
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertNotNull(accessToken);
+        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
         return new Headers(
             new Header("ServiceAuthorization", serviceToken),
