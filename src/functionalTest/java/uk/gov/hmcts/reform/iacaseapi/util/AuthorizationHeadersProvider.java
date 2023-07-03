@@ -47,7 +47,9 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_A_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
 
+        tokens.clear();
         final String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
+
         String accessToken = tokens.computeIfAbsent(
             "LegalRepresentative",
             user -> "Bearer " + idamApi.token(tokenRequestForm).getAccessToken()
