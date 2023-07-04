@@ -273,6 +273,7 @@ security:
       - "markAppealPaid"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "updateS94bStatus"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
