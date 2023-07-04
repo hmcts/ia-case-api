@@ -55,7 +55,7 @@ public class AuthorizationHeadersProvider {
             user -> "Bearer " + idamApi.token(tokenRequestForm).getAccessToken()
         );
         try {
-            Thread.sleep(500);
+            Thread.sleep(250);
         } catch (Exception e) {
             e.printStackTrace();
         }
