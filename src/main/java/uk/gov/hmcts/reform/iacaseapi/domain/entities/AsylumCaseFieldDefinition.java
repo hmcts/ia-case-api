@@ -454,6 +454,9 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_REP_NAME(
         "legalRepName", new TypeReference<String>(){}),
 
+    LEGAL_REP_FAMILY_NAME(
+            "legalRepFamilyName", new TypeReference<String>(){}),
+
     LEGAL_REP_COMPANY_NAME(
             "legalRepCompanyName", new TypeReference<String>(){}),
 
@@ -942,6 +945,9 @@ public enum AsylumCaseFieldDefinition {
 
     UPDATE_LEGAL_REP_NAME(
         "updateLegalRepName", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_FAMILY_NAME(
+            "updateLegalRepFamilyName", new TypeReference<String>() {}),
 
     UPDATE_LEGAL_REP_EMAIL_ADDRESS(
         "updateLegalRepEmailAddress", new TypeReference<String>() {}),
@@ -1575,11 +1581,16 @@ public enum AsylumCaseFieldDefinition {
         "displayMarkAsPaidEventForPartialRemission", new TypeReference<YesOrNo>(){}),
 
     REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST(
-
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    IS_S94B_STATUS_UPDATABLE(
+        "isS94bStatusUpdatable", new TypeReference<YesOrNo>(){}),
+
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
