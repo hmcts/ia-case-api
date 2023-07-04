@@ -37,7 +37,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppend
 @SuppressWarnings("unchecked")
 class LegalRepresentativeUpdateDetailsHandlerTest {
 
-    private final String legalRepName = "John Doe";
+    private final String legalRepName = "John";
+    private final String legalRepFamilyName = "Doe";
     private final String legalRepEmailAddress = "john.doe@example.com";
     private final String legalRepReferenceNumber = "ABC-123";
     @Mock
@@ -60,6 +61,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(UPDATE_LEGAL_REP_NAME, String.class)).thenReturn(Optional.of(legalRepName));
+        when(asylumCase.read(UPDATE_LEGAL_REP_FAMILY_NAME, String.class)).thenReturn(Optional.of(legalRepFamilyName));
         when(asylumCase.read(UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class))
             .thenReturn(Optional.of(legalRepEmailAddress));
         when(asylumCase.read(UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class))
@@ -75,15 +77,18 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).read(UPDATE_LEGAL_REP_NAME, String.class);
+        verify(asylumCase).read(UPDATE_LEGAL_REP_FAMILY_NAME, String.class);
         verify(asylumCase).read(UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class);
         verify(asylumCase).read(UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class);
 
         verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_COMPANY));
         verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_NAME));
+        verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_FAMILY_NAME));
         verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS));
         verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_NAME), eq(legalRepName));
+        verify(asylumCase, times(1)).write(eq(LEGAL_REP_FAMILY_NAME), eq(legalRepFamilyName));
         verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
 

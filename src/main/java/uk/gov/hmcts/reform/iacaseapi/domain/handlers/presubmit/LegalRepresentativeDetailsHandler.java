@@ -78,6 +78,13 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
             );
         }
 
+        if (asylumCase.read(LEGAL_REP_FAMILY_NAME).isEmpty()) {
+            asylumCase.write(
+                    LEGAL_REP_FAMILY_NAME,
+                    asylumCase.read(LEGAL_REP_FAMILY_NAME, String.class).orElse("")
+            );
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
