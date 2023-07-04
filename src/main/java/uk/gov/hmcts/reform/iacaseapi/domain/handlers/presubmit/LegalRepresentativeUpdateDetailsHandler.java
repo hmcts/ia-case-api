@@ -68,7 +68,7 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
             AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class)
             .orElse("");
         String mobileNumber = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_NUMBER, String.class)
+            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER, String.class)
             .orElse("");
         String reference = asylumCase.read(
             AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class)
@@ -77,13 +77,13 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS);
-        asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_NUMBER);
+        asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER);
 
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY, company);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_NAME, name);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, email);
-        asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_NUMBER, mobileNumber);
+        asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER, mobileNumber);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, reference);
 
         // remove the field which is used to suppress notifications after appeal is transferred to another Legal Rep firm
