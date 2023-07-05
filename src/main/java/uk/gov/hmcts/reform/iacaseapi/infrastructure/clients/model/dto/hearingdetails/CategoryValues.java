@@ -42,4 +42,7 @@ public class CategoryValues {
 
     @JsonProperty("child_nodes")
     private List<CategoryValues> childNodes;
+
+    @JsonProperty("active_flag")
+    private String activeFlag;
 }

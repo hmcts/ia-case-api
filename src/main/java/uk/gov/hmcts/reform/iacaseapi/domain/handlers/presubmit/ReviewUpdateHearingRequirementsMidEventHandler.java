@@ -4,8 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL_IN_ADJUSTMENT;
 
 import java.util.List;
-import java.util.Objects;
-
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -29,7 +28,7 @@ public class ReviewUpdateHearingRequirementsMidEventHandler implements PreSubmit
 
     public static final String HEARING_CHANNEL = "HearingChannel";
     public static final String IS_CHILD_REQUIRED = "N";
-//    public static final String REVIEW_UPDATE_HEARING_REQUIREMENTS_PAGE_ID = "reviewUpdateHearingRequirements";
+    public static final String IS_ACTIVE_FLAG = "Y";
 
     @Override
     public boolean canHandle(
@@ -52,22 +51,11 @@ public class ReviewUpdateHearingRequirementsMidEventHandler implements PreSubmit
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String pageId = callback.getPageId();
+        populateDynamicList(asylumCase);
 
-        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-
-//        if (Objects.equals(pageId, REVIEW_UPDATE_HEARING_REQUIREMENTS_PAGE_ID)
-//                && callback.getEvent() == Event.UPDATE_HEARING_ADJUSTMENTS) {
-            System.out.println("######ReviewUpdateHearingRequirementsMidEventHandler");
-            populateDynamicList(asylumCase);
-//        }
-
-        return response;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private AsylumCase populateDynamicList(AsylumCase asylumCase) {
@@ -79,33 +67,18 @@ public class ReviewUpdateHearingRequirementsMidEventHandler implements PreSubmit
                     HEARING_CHANNEL,
                     IS_CHILD_REQUIRED
             );
-            System.out.println("######commonDataResponse.size:"+commonDataResponse.getCategoryValues().size());
 
-            hearingChannels = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, HEARING_CHANNEL);
+            hearingChannels = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, HEARING_CHANNEL)
+                    .stream().filter(v -> v.getActiveFlag().equals(IS_ACTIVE_FLAG))
+                    .collect(Collectors.toList());
 
             dynamicListOfHearingChannel = new DynamicList(new Value("", ""),
                     refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels));
-
-            System.out.println("######hearingChannels.size:"+hearingChannels.size());
-            System.out.println("######dynamicListOfHearingChannel.getListItems().size:"+dynamicListOfHearingChannel.getListItems().size());
-
 
         } catch (Exception e) {
             throw new RuntimeException("Couldn't read response by RefData service for HearingChannel(s)", e);
         }
 
-//        InterpreterLanguage interpreterLanguageObject = new InterpreterLanguage(
-//                "",
-//                dynamicListOfLanguages,
-//                "",
-//                Collections.emptyList(),
-//                "");
-//
-//        List<IdValue<InterpreterLanguage>> interpreterLanguageCollection = List.of(
-//                new IdValue<>("1", interpreterLanguageObject)
-//        );
-//
-//        asylumCase.write(INTERPRETER_LANGUAGE, interpreterLanguageCollection);
         asylumCase.write(HEARING_CHANNEL_IN_ADJUSTMENT, dynamicListOfHearingChannel);
 
         return asylumCase;
