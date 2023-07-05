@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
+
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,7 @@ public class AuthorizationHeadersProvider {
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
 
     public Headers getLegalRepresentativeAuthorization() {
-
+        int exptime  = (int) (new Date().getTime()/1000) + (15*60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -46,6 +48,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_LAW_FIRM_A_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_A_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(exptime));
 
         tokens.clear();
         final String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
@@ -56,7 +59,7 @@ public class AuthorizationHeadersProvider {
         );
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(250);
         } catch (Exception e) {
             e.printStackTrace();
         }
