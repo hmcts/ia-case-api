@@ -233,7 +233,7 @@ ia-aip-frontend:
       REDIS_URL: redis://{{ .Release.Name }}-redis-master
       PCQ_URL: https://pcq.aat.platform.hmcts.net
       # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
-      PCQ_RETURN_URL: https://${SERVICE_FQDN}/about-appeal
+      PCQ_RETURN_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/about-appeal
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
   redis:
