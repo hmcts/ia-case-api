@@ -111,8 +111,8 @@ ia-case-notifications-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-658
+#    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -184,7 +184,7 @@ ia-timed-event-service:
       enabled: true
 
 ia-home-office-integration-api:
-  enabled: true 
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
