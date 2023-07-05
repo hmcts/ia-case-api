@@ -30,8 +30,8 @@ public class AuthorizationHeadersProvider {
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
 
-    @MockBean
-    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
+    //@MockBean
+    //RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
     @Autowired
     private IdamApi idamApi;
@@ -39,7 +39,7 @@ public class AuthorizationHeadersProvider {
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
 
     public Headers getLegalRepresentativeAuthorization() {
-        int exptime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -48,7 +48,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_LAW_FIRM_A_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_A_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
-        tokenRequestForm.add("exp", Integer.toString(exptime));
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         // tokens.clear();
         final String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
@@ -64,7 +64,7 @@ public class AuthorizationHeadersProvider {
             e.printStackTrace();
         }
         assertNotNull(accessToken);
-        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
+        //when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
         return new Headers(
             new Header("ServiceAuthorization", serviceToken),
@@ -73,7 +73,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getCaseOfficerAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -82,6 +82,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_CASEOFFICER_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_CASEOFFICER_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -96,7 +97,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getAdminOfficerAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -105,6 +106,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_ADMINOFFICER_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_ADMINOFFICER_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -119,7 +121,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficeApcAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -128,6 +130,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_HOMEOFFICE_APC_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_HOMEOFFICE_APC_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -142,7 +145,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficeLartAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -151,6 +154,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_HOMEOFFICE_LART_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_HOMEOFFICE_LART_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -165,7 +169,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficePouAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -174,6 +178,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_HOMEOFFICE_POU_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_HOMEOFFICE_POU_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -188,7 +193,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficeGenericAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -197,6 +202,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_HOMEOFFICE_GENERIC_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_HOMEOFFICE_GENERIC_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -211,7 +217,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getLegalRepresentativeOrgAAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -220,6 +226,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_LAW_FIRM_SHARE_CASE_A_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -234,7 +241,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getLegalRepresentativeOrgSuccessAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -243,6 +250,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_LAW_FIRM_ORG_SUCCESS_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -257,7 +265,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getLegalRepresentativeOrgDeletedAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -266,6 +274,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_LAW_FIRM_ORG_DELETED_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_LAW_FIRM_ORG_DELETED_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -280,7 +289,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getJudgeAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -289,6 +298,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_JUDGE_X_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_JUDGE_X_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
@@ -303,7 +313,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getCitizenAuthorization() {
-
+        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -312,6 +322,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("username", System.getenv("TEST_CITIZEN_USERNAME"));
         tokenRequestForm.add("password", System.getenv("TEST_CITIZEN_PASSWORD"));
         tokenRequestForm.add("scope", userScope);
+        tokenRequestForm.add("exp", Integer.toString(expTime));
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = tokens.computeIfAbsent(
