@@ -50,7 +50,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("scope", userScope);
         tokenRequestForm.add("exp", Integer.toString(exptime));
 
-        tokens.clear();
+        // tokens.clear();
         final String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
 
         String accessToken = tokens.computeIfAbsent(
