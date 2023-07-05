@@ -39,7 +39,7 @@ public class AuthorizationHeadersProvider {
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
 
     public Headers getLegalRepresentativeAuthorization() {
-        int exptime  = (int) (new Date().getTime()/1000) + (15*60);
+        int exptime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
