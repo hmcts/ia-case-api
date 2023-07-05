@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -36,6 +37,8 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
                 .getCaseDetails()
                 .getCaseData();
 
+        formatHearingAdjustmentResponses(asylumCase);
+
         asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS, YesOrNo.YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, callback.getCaseDetails().getState());
         asylumCase.clear(DISABLE_OVERVIEW_PAGE);
@@ -45,5 +48,30 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
         asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void formatHearingAdjustmentResponses(AsylumCase asylumCase) {
+        formatHearingAdjustmentResponse(asylumCase, VULNERABILITIES_TRIBUNAL_RESPONSE, IS_VULNERABILITIES_ALLOWED)
+                .ifPresent(response -> asylumCase.write(VULNERABILITIES_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE, IS_REMOTE_HEARING_ALLOWED)
+                .ifPresent(response -> asylumCase.write(REMOTE_HEARING_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, MULTIMEDIA_TRIBUNAL_RESPONSE, IS_MULTIMEDIA_ALLOWED)
+                .ifPresent(response -> asylumCase.write(MULTIMEDIA_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, SINGLE_SEX_COURT_TRIBUNAL_RESPONSE, IS_SINGLE_SEX_COURT_ALLOWED)
+                .ifPresent(response -> asylumCase.write(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, IN_CAMERA_COURT_TRIBUNAL_RESPONSE, IS_IN_CAMERA_COURT_ALLOWED)
+                .ifPresent(response -> asylumCase.write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, ADDITIONAL_TRIBUNAL_RESPONSE, IS_ADDITIONAL_ADJUSTMENTS_ALLOWED)
+                .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
+    }
+
+    private Optional<String> formatHearingAdjustmentResponse(
+            AsylumCase asylumCase,
+            AsylumCaseFieldDefinition responseDefinition,
+            AsylumCaseFieldDefinition decisionDefinition) {
+        String response = asylumCase.read(responseDefinition, String.class).orElse(null);
+        String decision = asylumCase.read(decisionDefinition, String.class).orElse(null);
+
+        return !(response == null || decision == null) ? Optional.of(decision + " - " + response) : Optional.empty();
     }
 }
