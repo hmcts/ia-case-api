@@ -67,3 +67,5 @@ xui-webapp:
   enabled: false
 ccd:
   enabled: false
+ia-aip-frontend:
+  enabled: false
