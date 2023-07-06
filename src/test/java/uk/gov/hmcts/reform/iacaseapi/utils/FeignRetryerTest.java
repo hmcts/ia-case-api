@@ -2,12 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.utils;
 
 import java.util.Date;
 
-import feign.Request;
 import feign.RetryableException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.FeignRetryer;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
