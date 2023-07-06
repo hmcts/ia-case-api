@@ -1,17 +1,16 @@
 {
-  "description": "RIA-7484 set flag to enable updateS94bStatus",
+  "description": "RIA-7424 set s94bStatus to NO when starting appeal",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "id": 74843,
+      "id": 74241,
       "eventId": "startAppeal",
       "state": "appealStarted",
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "appealType": "refusalOfEu",
-          "appellantInUk": "Yes"
+          "appealType": "refusalOfHumanRights"
         }
       }
     }
@@ -23,9 +22,8 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealType": "refusalOfEu",
-        "appellantInUk": "Yes",
-        "isS94bStatusUpdatable": "No"
+        "appealType": "refusalOfHumanRights",
+        "s94bStatus": "No"
       }
     }
   }
