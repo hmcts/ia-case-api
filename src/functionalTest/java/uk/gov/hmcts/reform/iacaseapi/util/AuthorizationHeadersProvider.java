@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @Service
 public class AuthorizationHeadersProvider {
 
-    final int FIFTEEN_MINUTES = (15 * 60);
+    static final int FIFTEEN_MINUTES = (15 * 60);
     @Value("${idam.redirectUrl}") protected String idamRedirectUrl;
     @Value("${idam.scope}") protected String userScope;
     @Value("${spring.security.oauth2.client.registration.oidc.client-id}") protected String idamClientId;
@@ -38,7 +38,7 @@ public class AuthorizationHeadersProvider {
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
 
     public Headers getLegalRepresentativeAuthorization() {
-        RequestUserAccessTokenProvider requestUserAccessTokenProvider =  Mockito.mock(RequestUserAccessTokenProvider.class);
+
         int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
@@ -63,6 +63,7 @@ public class AuthorizationHeadersProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        RequestUserAccessTokenProvider requestUserAccessTokenProvider =  Mockito.mock(RequestUserAccessTokenProvider.class);
         assertNotNull(accessToken);
         when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
