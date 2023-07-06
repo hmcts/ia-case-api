@@ -98,9 +98,7 @@ public class RoleAssignmentApiConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragment")
-    @SneakyThrows
     public void verifyAssignRole() {
-        Thread.sleep(1000); // trying to fix pact issue
         roleAssignmentService.assignRole(caseId, assigneeId);
 
     }
