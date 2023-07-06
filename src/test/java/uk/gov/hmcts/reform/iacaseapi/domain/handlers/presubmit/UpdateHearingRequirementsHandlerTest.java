@@ -141,7 +141,7 @@ class UpdateHearingRequirementsHandlerTest {
     void should_set_witness_count_and_overview_page_flags() {
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
-            .asList(new IdValue("1", new WitnessDetails("cap")), new IdValue("2", new WitnessDetails("Pan")))));
+            .asList(new IdValue("1", new WitnessDetails("cap", "cap")), new IdValue("2", new WitnessDetails("Pan", "Pan")))));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

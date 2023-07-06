@@ -12,4 +12,9 @@ import lombok.Setter;
 public class WitnessDetails {
 
     private String witnessName;
+    private String witnessFamilyName;
+
+    public WitnessDetails(String witnessName) {
+        this.witnessName = witnessName;
+    }
 }
