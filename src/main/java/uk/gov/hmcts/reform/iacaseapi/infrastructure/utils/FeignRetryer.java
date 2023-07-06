@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.utils;
 
 import java.util.Optional;
 
+import feign.FeignException;
 import feign.RetryableException;
 import feign.Retryer;
 
@@ -19,7 +20,7 @@ public class FeignRetryer extends Retryer.Default {
         if (errorMessage.contains("failed to respond")) {
             super.continueOrPropagate(e);
         } else {
-            throw e;
+            throw new RetryableException(e.status(), "(not retryable) " + e.getMessage(), e.method(), e, e.retryAfter(), e.request());
         }
     }
 
