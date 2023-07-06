@@ -23,6 +23,10 @@ import static org.mockito.Mockito.when;
 @Service
 public class AuthorizationHeadersProvider {
 
+    public AuthorizationHeadersProvider() {
+        requestUserAccessTokenProvider =  Mockito.mock(RequestUserAccessTokenProvider.class);
+    }
+
     static final int FIFTEEN_MINUTES = (15 * 60);
     @Value("${idam.redirectUrl}") protected String idamRedirectUrl;
     @Value("${idam.scope}") protected String userScope;
@@ -31,6 +35,8 @@ public class AuthorizationHeadersProvider {
 
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
+
+    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
     @Autowired
     private IdamApi idamApi;
@@ -63,7 +69,7 @@ public class AuthorizationHeadersProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        RequestUserAccessTokenProvider requestUserAccessTokenProvider =  Mockito.mock(RequestUserAccessTokenProvider.class);
+
         assertNotNull(accessToken);
         when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
