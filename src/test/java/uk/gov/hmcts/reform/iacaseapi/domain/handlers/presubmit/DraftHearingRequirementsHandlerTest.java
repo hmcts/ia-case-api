@@ -132,7 +132,7 @@ class DraftHearingRequirementsHandlerTest {
     void should_set_witness_count_and_available_fields() {
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
-            .asList(new IdValue("1", new WitnessDetails("cap")), new IdValue("2", new WitnessDetails("Pan")))));
+            .asList(new IdValue("1", new WitnessDetails("cap", "cap")), new IdValue("2", new WitnessDetails("Pan", "Pan")))));
         when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
