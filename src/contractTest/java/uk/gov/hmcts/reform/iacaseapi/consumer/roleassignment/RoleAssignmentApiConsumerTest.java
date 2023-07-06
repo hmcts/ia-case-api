@@ -12,6 +12,7 @@ import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import lombok.SneakyThrows;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,8 +98,9 @@ public class RoleAssignmentApiConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragment")
+    @SneakyThrows
     public void verifyAssignRole() {
-
+        Thread.sleep(1000); // trying to fix pact issue
         roleAssignmentService.assignRole(caseId, assigneeId);
 
     }
