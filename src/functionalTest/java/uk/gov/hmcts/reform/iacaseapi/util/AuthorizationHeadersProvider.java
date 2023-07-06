@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 @Service
 public class AuthorizationHeadersProvider {
 
+    final int FIFTEEN_MINUTES = (15 * 60);
     @Value("${idam.redirectUrl}") protected String idamRedirectUrl;
     @Value("${idam.scope}") protected String userScope;
     @Value("${spring.security.oauth2.client.registration.oidc.client-id}") protected String idamClientId;
@@ -38,7 +39,7 @@ public class AuthorizationHeadersProvider {
 
     public Headers getLegalRepresentativeAuthorization() {
         RequestUserAccessTokenProvider requestUserAccessTokenProvider =  Mockito.mock(RequestUserAccessTokenProvider.class);
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -72,7 +73,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getCaseOfficerAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -96,7 +97,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getAdminOfficerAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -120,7 +121,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficeApcAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -144,7 +145,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficeLartAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -168,7 +169,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficePouAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -192,7 +193,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getHomeOfficeGenericAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -216,7 +217,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getLegalRepresentativeOrgAAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -240,7 +241,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getLegalRepresentativeOrgSuccessAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -264,7 +265,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getLegalRepresentativeOrgDeletedAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -288,7 +289,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getJudgeAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
@@ -312,7 +313,7 @@ public class AuthorizationHeadersProvider {
     }
 
     public Headers getCitizenAuthorization() {
-        int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
+        int expTime  = (int) (new Date().getTime() / 1000) + FIFTEEN_MINUTES;
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
