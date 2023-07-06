@@ -18,6 +18,8 @@ public class FeignRetryer extends Retryer.Default {
         String errorMessage = Optional.ofNullable(e.getMessage()).orElse("");
         if (errorMessage.contains("failed to respond")) {
             super.continueOrPropagate(e);
+        } else {
+            throw e;
         }
     }
 
