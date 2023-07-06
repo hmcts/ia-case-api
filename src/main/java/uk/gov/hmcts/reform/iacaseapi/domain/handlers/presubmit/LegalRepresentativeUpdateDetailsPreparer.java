@@ -51,6 +51,7 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
             asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
             asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_FAMILY_NAME);
             asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER);
             asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
         }
 
@@ -66,6 +67,9 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
         String email = asylumCase.read(
             AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class)
             .orElse("");
+        String mobileNumber = asylumCase.read(
+            AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER, String.class)
+            .orElse("");
         String reference = asylumCase.read(
             AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, String.class)
             .orElse("");
@@ -74,6 +78,7 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME, name);
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_FAMILY_NAME, familyName);
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS, email);
+        asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER, mobileNumber);
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, reference);
 
         companyNameProvider.prepareCompanyName(callback);
