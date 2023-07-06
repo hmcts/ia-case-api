@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL_IN_ADJUSTMENT;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -28,7 +27,6 @@ public class ReviewUpdateHearingRequirementsMidEventHandler implements PreSubmit
 
     public static final String HEARING_CHANNEL = "HearingChannel";
     public static final String IS_CHILD_REQUIRED = "N";
-    public static final String IS_ACTIVE_FLAG = "Y";
 
     @Override
     public boolean canHandle(
@@ -68,9 +66,8 @@ public class ReviewUpdateHearingRequirementsMidEventHandler implements PreSubmit
                     IS_CHILD_REQUIRED
             );
 
-            hearingChannels = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, HEARING_CHANNEL)
-                    .stream().filter(v -> v.getActiveFlag().equals(IS_ACTIVE_FLAG))
-                    .collect(Collectors.toList());
+            hearingChannels = refDataUserService
+                    .filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL);
 
             dynamicListOfHearingChannel = new DynamicList(new Value("", ""),
                     refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels));

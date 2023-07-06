@@ -80,6 +80,17 @@ public class RefDataUserServiceTest {
     }
 
     @Test
+    void shouldFilterCategoryValuesByCategoryIdWithActiveFlag() {
+        List<CategoryValues> listOfCategoryValues = List.of(categoryValues);
+        when(commonDataResponse.getCategoryValues()).thenReturn(listOfCategoryValues);
+        when(categoryValues.getCategoryKey()).thenReturn(categoryId);
+        when(categoryValues.getActiveFlag()).thenReturn("Y");
+
+        assertEquals(listOfCategoryValues,
+                refDataUserService.filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, categoryId));
+    }
+
+    @Test
     void shouldMapCategoryValuesToDynamicListValues() {
         List<CategoryValues> listOfCategoryValues = List.of(categoryValues);
         when(categoryValues.getKey()).thenReturn("key");

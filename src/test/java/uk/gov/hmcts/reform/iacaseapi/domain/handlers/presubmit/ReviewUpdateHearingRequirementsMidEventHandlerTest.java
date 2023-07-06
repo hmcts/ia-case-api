@@ -8,9 +8,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL_IN_ADJUSTMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +35,6 @@ class ReviewUpdateHearingRequirementsMidEventHandlerTest {
 
     public static final String HEARING_CHANNEL = "HearingChannel";
     public static final String IS_CHILD_REQUIRED = "N";
-    public static final String IS_ACTIVE_FLAG = "Y";
 
     private ReviewUpdateHearingRequirementsMidEventHandler reviewUpdateHearingRequirementsMidEventHandler;
     @Mock
@@ -50,25 +47,15 @@ class ReviewUpdateHearingRequirementsMidEventHandlerTest {
     private RefDataUserService refDataUserService;
     @Mock
     private CommonDataResponse commonDataResponse;
-    private List<CategoryValues> hearingChannels;
-    private List<Value> values;
+    @Mock
+    private CategoryValues categoryValues;
+    @Mock
+    private Value value;
 
     @BeforeEach
     public void setUp() {
         reviewUpdateHearingRequirementsMidEventHandler =
                 new ReviewUpdateHearingRequirementsMidEventHandler(refDataUserService);
-        hearingChannels = Arrays.asList(
-                new CategoryValues("HearingChannel", "", "", "INTER", 0, "", null, "", "In Person", null, "Y"),
-                new CategoryValues("HearingChannel", "", "", "TEL", 0, "", null, "", "Telephone", null, "Y"),
-                new CategoryValues("HearingChannel", "", "", "VID", 0, "", null, "", "Video", null, "Y"),
-                new CategoryValues("HearingChannel", "", "", "NA", 0, "", null, "", "Not in Attendance", null, "Y")
-        );
-        values = Arrays.asList(
-                new Value("INTER", "In Person"),
-                new Value("TEL", "Telephone"),
-                new Value("VID", "Video"),
-                new Value("NA", "Not in Attendance")
-        );
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_ADJUSTMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -77,11 +64,11 @@ class ReviewUpdateHearingRequirementsMidEventHandlerTest {
 
     @Test
     void should_populate_dynamic_list() {
+        List<CategoryValues> hearingChannels = List.of(categoryValues);
+        List<Value> values = List.of(value);
         when(refDataUserService.retrieveCategoryValues(HEARING_CHANNEL, IS_CHILD_REQUIRED))
                 .thenReturn(commonDataResponse);
-        when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, HEARING_CHANNEL)
-                .stream().filter(item -> item.getActiveFlag().equals(IS_ACTIVE_FLAG))
-                .collect(Collectors.toList()))
+        when(refDataUserService.filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL))
                 .thenReturn(hearingChannels);
         when(refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels)).thenReturn(values);
 
