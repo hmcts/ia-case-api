@@ -20,4 +20,10 @@ public class FeignRetryer extends Retryer.Default {
             super.continueOrPropagate(e);
         }
     }
+
+    @Override
+    @SuppressWarnings({"java:S2975", "java:S1182"}) // we are intentionally deviating from normal clone methods here
+    public Retryer clone() {
+        return new FeignRetryer();
+    }
 }
