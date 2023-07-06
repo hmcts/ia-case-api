@@ -6,6 +6,8 @@ import io.restassured.http.Headers;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,8 +15,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @Service
 public class AuthorizationHeadersProvider {
@@ -27,15 +31,13 @@ public class AuthorizationHeadersProvider {
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
 
-    //@MockBean
-    //RequestUserAccessTokenProvider requestUserAccessTokenProvider;
-
     @Autowired
     private IdamApi idamApi;
 
     private final Map<String, String> tokens = new ConcurrentHashMap<>();
 
     public Headers getLegalRepresentativeAuthorization() {
+        RequestUserAccessTokenProvider requestUserAccessTokenProvider =  Mockito.mock(RequestUserAccessTokenProvider.class);
         int expTime  = (int) (new Date().getTime() / 1000) + (15 * 60);
         MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
         tokenRequestForm.add("grant_type", "password");
@@ -47,7 +49,7 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("scope", userScope);
         tokenRequestForm.add("exp", Integer.toString(expTime));
 
-        // tokens.clear();
+        tokens.clear();
         final String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
 
         String accessToken = tokens.computeIfAbsent(
@@ -61,7 +63,7 @@ public class AuthorizationHeadersProvider {
             e.printStackTrace();
         }
         assertNotNull(accessToken);
-        //when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
+        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
         return new Headers(
             new Header("ServiceAuthorization", serviceToken),
