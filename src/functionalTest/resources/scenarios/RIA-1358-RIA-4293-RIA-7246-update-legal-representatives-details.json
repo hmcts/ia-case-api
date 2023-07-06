@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1358-RIA-4293 Update legal representative's details",
+  "description": "RIA-1358-RIA-4293-RIA-7246 Update legal representative's details",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -16,7 +16,8 @@
           "updateLegalRepCompany": "Amazing Law Firm",
           "updateLegalRepName": "Jane Doe",
           "updateLegalRepEmailAddress": "jane.doe@example.com",
-          "updateLegalRepReferenceNumber": "ABC-JD-001"
+          "updateLegalRepReferenceNumber": "ABC-JD-001",
+          "updateLegalRepMobilePhoneNumber": "01234123123"
         }
       }
     }
@@ -30,7 +31,8 @@
         "legalRepCompany": "Amazing Law Firm",
         "legalRepName": "Jane Doe",
         "legalRepresentativeEmailAddress": "jane.doe@example.com",
-        "legalRepReferenceNumber": "ABC-JD-001"
+        "legalRepReferenceNumber": "ABC-JD-001",
+        "legalRepMobilePhoneNumber": "01234123123"
       }
     }
   }
