@@ -1589,9 +1589,6 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
 
-    IS_S94B_STATUS_UPDATABLE(
-        "isS94bStatusUpdatable", new TypeReference<YesOrNo>(){}),
-
     S94B_STATUS(
         "s94bStatus", new TypeReference<YesOrNo>(){});
 
