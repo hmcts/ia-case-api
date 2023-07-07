@@ -205,7 +205,8 @@ public class CcdScenarioRunnerTest {
                         .extract()
                         .body()
                         .asString();
-            } catch (AssertionError aerr) {
+            }
+            catch(AssertionError aerr) {
                 System.err.println("Assertion error on scenario:" + description);
                 System.err.println("Error message: " + aerr.getMessage());
                 System.err.println("URI: " + requestUri);
