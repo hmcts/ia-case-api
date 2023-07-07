@@ -21,6 +21,7 @@ public class RefDataUserService {
     private UserDetails userDetails;
 
     public static final String SERVICE_ID = "BFA1";
+    public static final String IS_ACTIVE_FLAG = "Y";
 
     private CommonDataResponse commonDataResponse;
 
@@ -68,6 +69,21 @@ public class RefDataUserService {
             .stream()
             .map(categoryValue -> new Value(categoryValue.getKey(), categoryValue.getValueEn()))
             .collect(Collectors.toList());
+    }
+
+    public List<CategoryValues> filterCategoryValuesByCategoryIdWithActiveFlag(CommonDataResponse commonDataResponse, String categoryId) {
+        List<CategoryValues> filteredCategoryValues = new ArrayList<>();
+
+        if (null != commonDataResponse) {
+            filteredCategoryValues = commonDataResponse.getCategoryValues().stream()
+                    .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
+                    .filter(response -> IS_ACTIVE_FLAG.equals(response.getActiveFlag()))
+                    .collect(Collectors.toList());
+
+            filteredCategoryValues.sort((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()));
+        }
+
+        return filteredCategoryValues;
     }
 
 }
