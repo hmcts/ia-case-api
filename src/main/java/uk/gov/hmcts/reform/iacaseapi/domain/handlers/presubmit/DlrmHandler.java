@@ -53,6 +53,6 @@ public class DlrmHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
         System.out.println("=============SET final state======================");
 
-        return new PreSubmitCallbackResponse<>(asylumCase, State.DECIDED);
+        return new PreSubmitCallbackResponse<>(asylumCase, State.DECISION);
     }
 }

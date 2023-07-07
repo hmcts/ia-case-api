@@ -15,6 +15,7 @@ public class Document {
     private String documentUrl;
     private String documentBinaryUrl;
     private String documentFilename;
+    private String documentHash;
 
     private Document() {
         // noop -- for deserializer
@@ -23,7 +24,8 @@ public class Document {
     public Document(
         String documentUrl,
         String documentBinaryUrl,
-        String documentFilename
+        String documentFilename,
+        String documentHash
     ) {
         requireNonNull(documentUrl);
         requireNonNull(documentBinaryUrl);
@@ -32,6 +34,11 @@ public class Document {
         this.documentUrl = documentUrl;
         this.documentBinaryUrl = documentBinaryUrl;
         this.documentFilename = documentFilename;
+        this.documentHash = documentHash;
+    }
+
+    public String getDocumentHash() {
+        return documentHash;
     }
 
     public String getDocumentUrl() {
