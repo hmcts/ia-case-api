@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL_IN_ADJUSTMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -18,14 +18,14 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
 @Component
-public class ListCaseWithoutHearingRequirementsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class HearingChannelsDynamicListUpdater implements PreSubmitCallbackHandler<AsylumCase> {
     RefDataUserService refDataUserService;
 
-    public ListCaseWithoutHearingRequirementsMidEventHandler(RefDataUserService refDataUserService) {
+    public HearingChannelsDynamicListUpdater(RefDataUserService refDataUserService) {
         this.refDataUserService = refDataUserService;
     }
 
-    public static final String HEARING_CHANNEL = "HearingChannel";
+    public static final String HEARING_CHANNEL_CATEGORY = "HearingChannel";
     public static final String IS_CHILD_REQUIRED = "N";
 
     @Override
@@ -36,8 +36,10 @@ public class ListCaseWithoutHearingRequirementsMidEventHandler implements PreSub
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && callback.getEvent() == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT && List.of(
+                Event.UPDATE_HEARING_ADJUSTMENTS,
+                Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+                Event.REVIEW_HEARING_REQUIREMENTS).contains(callback.getEvent());
     }
 
     @Override
@@ -56,18 +58,18 @@ public class ListCaseWithoutHearingRequirementsMidEventHandler implements PreSub
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private AsylumCase populateDynamicList(AsylumCase asylumCase) {
+    private void populateDynamicList(AsylumCase asylumCase) {
         List<CategoryValues> hearingChannels;
         DynamicList dynamicListOfHearingChannel;
 
         try {
             CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
-                    HEARING_CHANNEL,
+                    HEARING_CHANNEL_CATEGORY,
                     IS_CHILD_REQUIRED
             );
 
             hearingChannels = refDataUserService
-                    .filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL);
+                    .filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL_CATEGORY);
 
             dynamicListOfHearingChannel = new DynamicList(new Value("", ""),
                     refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels));
@@ -76,8 +78,6 @@ public class ListCaseWithoutHearingRequirementsMidEventHandler implements PreSub
             throw new RuntimeException("Couldn't read response by RefData service for HearingChannel(s)", e);
         }
 
-        asylumCase.write(HEARING_CHANNEL_IN_ADJUSTMENT, dynamicListOfHearingChannel);
-
-        return asylumCase;
+        asylumCase.write(HEARING_CHANNEL, dynamicListOfHearingChannel);
     }
 }

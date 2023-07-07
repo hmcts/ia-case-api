@@ -36,13 +36,7 @@ public class RefDataUserServiceTest {
 
     private RefDataUserService refDataUserService;
 
-    private String categoryId = "category";
-
-    private String serviceId = "BFA1";
-
-    private String token = "token";
-
-    private String authToken = "authToken";
+    private final String categoryId = "category";
 
     @BeforeEach
     void setup() {
@@ -55,13 +49,16 @@ public class RefDataUserServiceTest {
 
     @Test
     void shouldRetrieveCategoryValues() {
+        String token = "token";
         when(userDetails.getAccessToken()).thenReturn(token);
+        String authToken = "authToken";
         when(authTokenGenerator.generate()).thenReturn(authToken);
+        String serviceId = "BFA1";
         when(commonDataRefApi.getAllCategoryValuesByCategoryId(
-            token,
-            authToken,
+                token,
+                authToken,
             categoryId,
-            serviceId,
+                serviceId,
             "Y"
         )).thenReturn(commonDataResponse);
 

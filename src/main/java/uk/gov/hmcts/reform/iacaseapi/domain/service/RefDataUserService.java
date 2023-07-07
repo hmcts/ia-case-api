@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.CommonDataRe
 @Service
 public class RefDataUserService {
 
-    private AuthTokenGenerator authTokenGenerator;
-    private CommonDataRefApi commonDataRefApi;
-    private UserDetails userDetails;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CommonDataRefApi commonDataRefApi;
+    private final UserDetails userDetails;
 
     public static final String SERVICE_ID = "BFA1";
     public static final String IS_ACTIVE_FLAG = "Y";

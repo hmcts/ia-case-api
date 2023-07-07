@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7353 list case without hearing hequirements for retrieving hearing channel type mid event",
+  "description": "RIA-7353 list case without hearing requirements for retrieving hearing channel type mid event",
   "disabled": true,
   "request": {
     "uri": "/asylum/ccdMidEvent",
@@ -8,29 +8,7 @@
       "eventId": "listCaseWithoutHearingRequirements",
       "state": "submitHearingRequirements",
       "caseData": {
-        "template": "minimal-appeal-submitted.json",
-        "replacements": {
-          "hearingChannelInAdjustment": {
-            "value": {
-              "code": "",
-              "label": ""
-            },
-            "list_items": [{
-                "code": "INTER",
-                "label": "In Person"
-              }, {
-                "code": "NA",
-                "label": "Not in Attendance"
-              }, {
-                "code": "TEL",
-                "label": "Telephone"
-              }, {
-                "code": "VID",
-                "label": "Video"
-              }
-            ]
-          }
-        }
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },
@@ -40,7 +18,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "hearingChannelInAdjustment": {
+        "hearingChannel": {
           "value": {
             "code": "",
             "label": ""
