@@ -1,0 +1,66 @@
+{
+  "description": "RIA-7487 Update hearing adjustments (display decision and tribunal response in hearing tab)",
+  "enabled": "false",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingAdjustments",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "reviewedHearingRequirements": "No",
+          "listCaseHearingLength": "300",
+          "remoteVideoCallTribunalResponse": "remote call reason",
+          "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+          "multimediaTribunalResponse": "multimedia reason",
+          "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourtTribunalResponse": "inCameraCourt reason",
+          "additionalTribunalResponse": "additional reason",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "isRemoteHearingAllowed": "Granted",
+          "isVulnerabilitiesAllowed": "Granted",
+          "isMultimediaAllowed": "Granted",
+          "isSingleSexCourtAllowed": "Refused",
+          "isInCameraCourtAllowed": "Refused",
+          "isAdditionalAdjustmentsAllowed": "Granted",
+          "currentCaseStateVisibleToCaseOfficer": "unknown"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingLength": "300",
+        "remoteVideoCallTribunalResponse": "remote call reason",
+        "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+        "multimediaTribunalResponse": "multimedia reason",
+        "singleSexCourtTribunalResponse": "singleSexCourt reason",
+        "inCameraCourtTribunalResponse": "inCameraCourt reason",
+        "additionalTribunalResponse": "additional reason",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "reviewedHearingRequirements": "Yes",
+        "reviewedUpdatedHearingRequirements": "Yes",
+        "isRemoteHearingAllowed": "Granted",
+        "isVulnerabilitiesAllowed": "Granted",
+        "isMultimediaAllowed": "Granted",
+        "isSingleSexCourtAllowed": "Refused",
+        "isInCameraCourtAllowed": "Refused",
+        "isAdditionalAdjustmentsAllowed": "Granted",
+        "remoteHearingDecisionForDisplay": "Granted - remote call reason",
+        "vulnerabilitiesDecisionForDisplay": "Granted - vulnerabilities reason",
+        "multimediaDecisionForDisplay": "Granted - multimedia reason",
+        "singleSexCourtDecisionForDisplay": "Refused - singleSexCourt reason",
+        "inCameraCourtDecisionForDisplay": "Refused - inCameraCourt reason",
+        "otherDecisionForDisplay": "Granted - additional reason",
+        "currentCaseStateVisibleToCaseOfficer": "prepareForHearing"
+      }
+    }
+  }
+}

@@ -800,6 +800,42 @@ public enum AsylumCaseFieldDefinition {
     ADDITIONAL_TRIBUNAL_RESPONSE(
         "additionalTribunalResponse", new TypeReference<String>() {}),
 
+    IS_REMOTE_HEARING_ALLOWED(
+            "isRemoteHearingAllowed", new TypeReference<String>() {}),
+
+    IS_VULNERABILITIES_ALLOWED(
+            "isVulnerabilitiesAllowed", new TypeReference<String>() {}),
+
+    IS_MULTIMEDIA_ALLOWED(
+            "isMultimediaAllowed", new TypeReference<String>() {}),
+
+    IS_SINGLE_SEX_COURT_ALLOWED(
+            "isSingleSexCourtAllowed", new TypeReference<String>() {}),
+
+    IS_IN_CAMERA_COURT_ALLOWED(
+            "isInCameraCourtAllowed", new TypeReference<String>() {}),
+
+    IS_ADDITIONAL_ADJUSTMENTS_ALLOWED(
+            "isAdditionalAdjustmentsAllowed", new TypeReference<String>() {}),
+
+    REMOTE_HEARING_DECISION_FOR_DISPLAY(
+            "remoteHearingDecisionForDisplay", new TypeReference<String>() {}),
+
+    MULTIMEDIA_DECISION_FOR_DISPLAY(
+            "multimediaDecisionForDisplay", new TypeReference<String>() {}),
+
+    SINGLE_SEX_COURT_DECISION_FOR_DISPLAY(
+            "singleSexCourtDecisionForDisplay", new TypeReference<String>() {}),
+
+    IN_CAMERA_COURT_DECISION_FOR_DISPLAY(
+            "inCameraCourtDecisionForDisplay", new TypeReference<String>() {}),
+
+    VULNERABILITIES_DECISION_FOR_DISPLAY(
+            "vulnerabilitiesDecisionForDisplay", new TypeReference<String>() {}),
+
+    OTHER_DECISION_FOR_DISPLAY(
+            "otherDecisionForDisplay", new TypeReference<String>() {}),
+
     REASON_TO_FORCE_REQUEST_CASE_BUILDING(
         "reasonToForceRequestCaseBuilding", new TypeReference<String>(){}),
 

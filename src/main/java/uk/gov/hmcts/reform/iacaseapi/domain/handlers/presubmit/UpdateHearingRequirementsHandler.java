@@ -84,6 +84,14 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
         asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
         asylumCase.clear(ADDITIONAL_TRIBUNAL_RESPONSE);
 
+        // Clear review decision display fields once the update happens
+        asylumCase.clear(VULNERABILITIES_DECISION_FOR_DISPLAY);
+        asylumCase.clear(REMOTE_HEARING_DECISION_FOR_DISPLAY);
+        asylumCase.clear(MULTIMEDIA_DECISION_FOR_DISPLAY);
+        asylumCase.clear(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY);
+        asylumCase.clear(IN_CAMERA_COURT_DECISION_FOR_DISPLAY);
+        asylumCase.clear(OTHER_DECISION_FOR_DISPLAY);
+
         if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
             && featureToggler.getValue("reheard-feature", false)) {
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);

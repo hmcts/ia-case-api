@@ -11,17 +11,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_TRIBUNAL_RESPONSE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SINGLE_SEX_COURT_TRIBUNAL_RESPONSE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.VULNERABILITIES_TRIBUNAL_RESPONSE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -133,6 +124,14 @@ class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
 
+        // review decision display fields should be cleared
+        verify(asylumCase).clear(VULNERABILITIES_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(REMOTE_HEARING_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(MULTIMEDIA_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(IN_CAMERA_COURT_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(OTHER_DECISION_FOR_DISPLAY);
+
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }
@@ -165,6 +164,14 @@ class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
+
+        // review decision display fields should be cleared
+        verify(asylumCase).clear(VULNERABILITIES_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(REMOTE_HEARING_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(MULTIMEDIA_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(IN_CAMERA_COURT_DECISION_FOR_DISPLAY);
+        verify(asylumCase).clear(OTHER_DECISION_FOR_DISPLAY);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
