@@ -186,35 +186,23 @@ public class CcdScenarioRunnerTest {
 
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
-            String actualResponseBody = null;
 
-            try {
-                actualResponseBody =
-                    SerenityRest
-                        .given()
-                        .headers(authorizationHeaders)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                        .body(requestBody)
-                        .when()
-                        .post(requestUri)
-                        .then()
-                        .log().ifError()
-                        .log().ifValidationFails()
-                        .statusCode(expectedStatus)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-            }
-            catch(AssertionError aerr) {
-                System.err.println("Assertion error on scenario:" + description);
-                System.err.println("Error message: " + aerr.getMessage());
-                System.err.println("URI: " + requestUri);
-                System.err.println("Authorisation headers: " + authorizationHeaders);
-                System.err.println("Request body: " + requestBody);
-
-                throw new AssertionError(aerr.getMessage() + ". URI: " + requestUri + ". Scenario: " + description, aerr);
-            }
+            String actualResponseBody =
+                SerenityRest
+                    .given()
+                    .headers(authorizationHeaders)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .body(requestBody)
+                    .when()
+                    .post(requestUri)
+                    .then()
+                    .log().ifError()
+                    .log().ifValidationFails()
+                    .statusCode(expectedStatus)
+                    .and()
+                    .extract()
+                    .body()
+                    .asString();
 
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),
