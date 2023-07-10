@@ -770,8 +770,8 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_DETAILS_READONLY(
         "witnessDetailsReadonly", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
 
-    HEARING_CHANNEL_IN_ADJUSTMENT(
-            "hearingChannelInAdjustment", new TypeReference<DynamicList>(){}),
+    HEARING_CHANNEL(
+            "hearingChannel", new TypeReference<DynamicList>(){}),
 
     INTERPRETER_LANGUAGE(
         "interpreterLanguage", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),

@@ -2,17 +2,18 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL_IN_ADJUSTMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,12 +33,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class ListCaseWithoutHearingRequirementsMidEventHandlerTest {
+class HearingChannelsDynamicListUpdaterTest {
 
-    public static final String HEARING_CHANNEL = "HearingChannel";
+    public static final String HEARING_CHANNEL_CATEGORY = "HearingChannel";
     public static final String IS_CHILD_REQUIRED = "N";
 
-    private ListCaseWithoutHearingRequirementsMidEventHandler listCaseWithoutHearingRequirementsMidEventHandler;
+    private HearingChannelsDynamicListUpdater hearingChannelsDynamicListUpdater;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -55,40 +56,47 @@ class ListCaseWithoutHearingRequirementsMidEventHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        listCaseWithoutHearingRequirementsMidEventHandler =
-                new ListCaseWithoutHearingRequirementsMidEventHandler(refDataUserService);
+        hearingChannelsDynamicListUpdater =
+                new HearingChannelsDynamicListUpdater(refDataUserService);
 
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void should_populate_dynamic_list() {
-        List<CategoryValues> hearingChannels = List.of(categoryValues);
-        List<Value> values = List.of(value);
-        when(refDataUserService.retrieveCategoryValues(HEARING_CHANNEL, IS_CHILD_REQUIRED))
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "UPDATE_HEARING_ADJUSTMENTS",
+        "REVIEW_HEARING_REQUIREMENTS",
+        "LIST_CASE_WITHOUT_HEARING_REQUIREMENTS"
+    })
+    void should_populate_dynamic_list(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(refDataUserService.retrieveCategoryValues(HEARING_CHANNEL_CATEGORY, IS_CHILD_REQUIRED))
                 .thenReturn(commonDataResponse);
-        when(refDataUserService.filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL))
+        List<CategoryValues> hearingChannels = List.of(categoryValues);
+        when(refDataUserService.filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL_CATEGORY))
                 .thenReturn(hearingChannels);
+        List<Value> values = List.of(value);
         when(refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels)).thenReturn(values);
 
         DynamicList dynamicListOfHearingChannel = new DynamicList(new Value("", ""), values);
 
-        listCaseWithoutHearingRequirementsMidEventHandler.handle(MID_EVENT, callback);
+        hearingChannelsDynamicListUpdater.handle(MID_EVENT, callback);
 
         ArgumentCaptor<DynamicList> argumentCaptor = ArgumentCaptor.forClass(DynamicList.class);
-        verify(asylumCase, times(1)).write(eq(HEARING_CHANNEL_IN_ADJUSTMENT), argumentCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(HEARING_CHANNEL), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).usingRecursiveComparison().isEqualTo(dynamicListOfHearingChannel);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsMidEventHandler.handle(ABOUT_TO_START, callback))
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.handle(MID_EVENT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsMidEventHandler.handle(ABOUT_TO_SUBMIT, callback))
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -102,10 +110,13 @@ class ListCaseWithoutHearingRequirementsMidEventHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = listCaseWithoutHearingRequirementsMidEventHandler.canHandle(callbackStage, callback);
+                boolean canHandle = hearingChannelsDynamicListUpdater.canHandle(callbackStage, callback);
 
-                if ((callback.getEvent() == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS)
-                    && callbackStage == PreSubmitCallbackStage.MID_EVENT) {
+                if ((List.of(
+                        Event.UPDATE_HEARING_ADJUSTMENTS,
+                        Event.REVIEW_HEARING_REQUIREMENTS,
+                        Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS).contains(event))
+                    && callbackStage == MID_EVENT) {
 
                     assertTrue(canHandle);
                 } else {
@@ -119,20 +130,20 @@ class ListCaseWithoutHearingRequirementsMidEventHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsMidEventHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> listCaseWithoutHearingRequirementsMidEventHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+            () -> hearingChannelsDynamicListUpdater.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsMidEventHandler.handle(null, callback))
+        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsMidEventHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.handle(PreSubmitCallbackStage.MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
