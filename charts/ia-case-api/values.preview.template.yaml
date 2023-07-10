@@ -41,6 +41,7 @@ java:
         - docmosis-enabled
         - em-stitching-enabled
         - launch-darkly-sdk-key
+        - app-insights-connection-string
   postgresql:
     enabled: true
     image:
@@ -179,7 +180,7 @@ ia-timed-event-service:
           - system-password
           - s2s-secret
           - s2s-microservice
-          - AppInsightsInstrumentationKey
+          - app-insights-connection-string
     postgresql:
       enabled: true
 
