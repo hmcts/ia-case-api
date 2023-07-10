@@ -2,23 +2,30 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Service
-public class LaunchDarklyFeatureToggler implements FeatureToggler {
+@Primary
+@Profile("functional")
+public class LaunchDarklyTestFeatureToggler implements FeatureToggler {
 
-    private LDClientInterface ldClient;
-    private UserDetails userDetails;
+    private final LDClientInterface ldClient;
+    private final UserDetailsProvider userDetailsProvider;
 
-    public LaunchDarklyFeatureToggler(LDClientInterface ldClient,
-                                      UserDetails userDetails) {
+    public LaunchDarklyTestFeatureToggler(LDClientInterface ldClient,
+                                          UserDetailsProvider userDetailsProvider) {
         this.ldClient = ldClient;
-        this.userDetails = userDetails;
+        this.userDetailsProvider = userDetailsProvider;
     }
 
     public boolean getValue(String key, Boolean defaultValue) {
+
+        UserDetails userDetails = userDetailsProvider.getUserDetails();
 
         return ldClient.boolVariation(
             key,
