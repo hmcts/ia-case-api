@@ -34,3 +34,4 @@ spring:
         launch-darkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
         case-api-POSTGRES-PASS-11: spring.datasource.password
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        app-insights-connection-string: app-insights-connection-string
