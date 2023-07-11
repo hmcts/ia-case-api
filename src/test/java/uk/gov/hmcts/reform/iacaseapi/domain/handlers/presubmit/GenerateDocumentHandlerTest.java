@@ -297,7 +297,8 @@ class GenerateDocumentHandlerTest {
                         GENERATE_UPPER_TRIBUNAL_BUNDLE,
                         SUBMIT_REASONS_FOR_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        REQUEST_CASE_BUILDING
+                        REQUEST_CASE_BUILDING,
+                        REQUEST_RESPONDENT_REVIEW
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -391,7 +392,8 @@ class GenerateDocumentHandlerTest {
                         GENERATE_UPPER_TRIBUNAL_BUNDLE,
                         SUBMIT_REASONS_FOR_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        REQUEST_CASE_BUILDING
+                        REQUEST_CASE_BUILDING,
+                        REQUEST_RESPONDENT_REVIEW
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
