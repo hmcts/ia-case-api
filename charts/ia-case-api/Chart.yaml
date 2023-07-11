@@ -42,3 +42,4 @@ dependencies:
     version: 0.0.43
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
+
