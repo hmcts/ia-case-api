@@ -6,6 +6,7 @@ public enum InterpreterLanguageCategory {
     SIGN_LANGUAGE_INTERPRETER("signLanguageInterpreter");
 
     private final String value;
+
     InterpreterLanguageCategory(String value) {
         this.value = value;
     }

@@ -1635,14 +1635,14 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
 
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
 
     CASE_LEVEL_FLAGS(
-        "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
-
-    S94B_STATUS(
-        "s94bStatus", new TypeReference<YesOrNo>(){});
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){});
 
     private final String value;
     private final TypeReference typeReference;
