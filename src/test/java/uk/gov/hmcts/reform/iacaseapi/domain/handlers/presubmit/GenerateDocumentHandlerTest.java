@@ -147,7 +147,8 @@ class GenerateDocumentHandlerTest {
             GENERATE_UPPER_TRIBUNAL_BUNDLE,
             SUBMIT_REASONS_FOR_APPEAL,
             SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-            REQUEST_CASE_BUILDING
+            REQUEST_CASE_BUILDING,
+            ASYNC_STITCHING_COMPLETE
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -299,6 +300,7 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                         REQUEST_CASE_BUILDING,
                         REQUEST_RESPONDENT_REVIEW,
+                        ASYNC_STITCHING_COMPLETE,
                         UPLOAD_HOME_OFFICE_APPEAL_RESPONSE
                     ).contains(event)) {
 
@@ -395,7 +397,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                         REQUEST_CASE_BUILDING,
                         REQUEST_RESPONDENT_REVIEW,
-                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE
+                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                        ASYNC_STITCHING_COMPLETE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
