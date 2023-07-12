@@ -12,6 +12,8 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,5 +94,39 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
             .thenReturn(Optional.of(party));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Parties.class, names = {
+        "LEGAL_REPRESENTATIVE", "BOTH"
+    })
+    void cannotSendDirectionToLegalRepForInternalCase(Parties party) {
+        setupInternalCaseCallback(party);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(
+                new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+                .contains(Tuple.tuple("Cannot send legal representative a direction for an internal case", Level.ERROR));
+    }
+
+    @Test
+    void canSendDirectionToRespondentForInternalCase() {
+        setupInternalCaseCallback(Parties.RESPONDENT);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
+    }
+
+    private void setupInternalCaseCallback(Parties party) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
+                .thenReturn(Optional.of(party));
     }
 }

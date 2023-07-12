@@ -28,6 +28,9 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
             } else if (HandlerUtils.isRepJourney(asylumCase) && directionTo == Parties.APPELLANT) {
                 log.error("Cannot send an appellant a direction for a repped case");
                 return new EventValid("This is a legally represented case. You cannot select appellant as the recipient.");
+            } else if (HandlerUtils.isInternalCase(asylumCase) && (directionTo == Parties.BOTH || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
+                log.error("Cannot send legal representative a direction for an internal case");
+                return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
             }
         }
 
