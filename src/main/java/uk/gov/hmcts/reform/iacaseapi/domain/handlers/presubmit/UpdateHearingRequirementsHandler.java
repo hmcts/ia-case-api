@@ -3,9 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -57,6 +60,8 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        ensureOnlySelectedLanguageCategoryIsSet(asylumCase);
 
         List<WitnessDetails> witnessDetails = asylumCase.<List<IdValue<WitnessDetails>>>read(WITNESS_DETAILS)
             .orElse(Collections.emptyList())
@@ -125,6 +130,26 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             })
             .collect(Collectors.toList())
         );
+    }
+
+    private void ensureOnlySelectedLanguageCategoryIsSet(AsylumCase asylumCase) {
+        Optional<List<String>> languageCategoriesOptional = asylumCase
+                .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+        if (languageCategoriesOptional.isPresent()) {
+            List<String> languageCategories = languageCategoriesOptional.get();
+            Optional<InterpreterLanguageRefData> appellantInterpreterSpokenLanguage = asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            Optional<InterpreterLanguageRefData> appellantInterpreterSignLanguage = asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+
+            if (appellantInterpreterSpokenLanguage.isPresent()
+                    && !languageCategories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
+                asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            }
+
+            if (appellantInterpreterSignLanguage.isPresent()
+                    && !languageCategories.contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
+                asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            }
+        }
     }
 }
 

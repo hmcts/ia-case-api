@@ -63,23 +63,6 @@ public class RefDataConsumerTest {
             .toPact();
     }
 
-    //@Pact(provider = "commonDataRefApi", consumer = "ia_caseApi")
-    //public RequestResponsePact generatePactFragmentForCategoryId(PactDslWithProvider builder) throws Exception {
-    //    // @formatter:off
-    //    return builder
-    //        .given("Common Data")
-    //        .uponReceiving("A Request for Common Data API")
-    //        .method("GET")
-    //        .headers(AUTHORIZATION, AUTH_TOKEN)
-    //        .headers(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
-    //        .headers("Content-Type", "application/json")
-    //        .path("/refdata/commondata/lov/categories/InterpreterLanguage")
-    //        .query("serviceId=BFA1&isChildRequired=Y")
-    //        .willRespondWith()
-    //        .status(200)
-    //        .toPact();
-    //}
-
     @Test
     @PactTestFor(pactMethod = "generatePactFragment")
     public void verifyCaseworkersFetch() {
@@ -91,20 +74,6 @@ public class RefDataConsumerTest {
         assertEquals("firstName", caseWorkerProfiles.get(0).getFirstName());
 
     }
-
-    //@Test
-    //@PactTestFor(pactMethod = "generatePactFragmentForCategoryId")
-    //public void verifyCommonDataDetails() {
-    //    CommonDataResponse allCategoryValuesByCategoryId = commonDataRefApi.getAllCategoryValuesByCategoryId(
-    //        AUTH_TOKEN,
-    //        SERVICE_AUTH_TOKEN,
-    //        "InterpreterLanguage",
-    //        "BFA1",
-    //        "Y"
-    //    );
-    //
-    //    assertNotNull(allCategoryValuesByCategoryId);
-    //}
 
     @NotNull
     private UserIds getUserIds() {
