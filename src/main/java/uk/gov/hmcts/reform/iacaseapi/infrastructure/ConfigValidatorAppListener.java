@@ -4,11 +4,9 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.S
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,12 +15,8 @@ import org.springframework.stereotype.Component;
 @Setter
 public class ConfigValidatorAppListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
-    Environment env;
-
     @Value("${ia.config.validator.secret}")
     private String iaConfigValidatorSecret;
-
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
