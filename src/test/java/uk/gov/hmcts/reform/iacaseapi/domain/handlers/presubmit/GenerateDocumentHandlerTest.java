@@ -298,7 +298,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_REASONS_FOR_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                         REQUEST_CASE_BUILDING,
-                        REQUEST_RESPONDENT_REVIEW
+                        REQUEST_RESPONDENT_REVIEW,
+                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -393,7 +394,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_REASONS_FOR_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                         REQUEST_CASE_BUILDING,
-                        REQUEST_RESPONDENT_REVIEW
+                        REQUEST_RESPONDENT_REVIEW,
+                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
