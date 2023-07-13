@@ -1,4 +1,3 @@
-
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import org.junit.jupiter.api.Test;
