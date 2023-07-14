@@ -23,6 +23,9 @@ public class LegacyCaseFlagTest {
     @Test
     public void should_check_noargs() {
         LegacyCaseFlag legacyCaseFlag1 = new LegacyCaseFlag();
+        Assert.assertNull(legacyCaseFlag1.getLegacyCaseFlagType());
+        Assert.assertNull(legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
+
         legacyCaseFlag1.setLegacyCaseFlagType(caseFlagType);
         legacyCaseFlag1.setLegacyCaseFlagAdditionalInformation(legacyCaseFlagAdditionalInformation);
         Assert.assertNotNull(legacyCaseFlag1.getLegacyCaseFlagType());
