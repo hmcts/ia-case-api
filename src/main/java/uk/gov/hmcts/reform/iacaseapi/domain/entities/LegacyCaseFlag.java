@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import lombok.*;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.NonNull;
 
 @Getter
 @Setter
