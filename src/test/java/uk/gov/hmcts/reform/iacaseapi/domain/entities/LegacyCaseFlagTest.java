@@ -15,7 +15,10 @@ public class LegacyCaseFlagTest {
 
     @Test
     public void should_hold_onto_values() {
+        Assert.assertNotNull(legacyCaseFlag.getLegacyCaseFlagType());
+        Assert.assertNotNull(legacyCaseFlag.getLegacyCaseFlagAdditionalInformation());
         Assert.assertEquals(caseFlagType, legacyCaseFlag.getLegacyCaseFlagType());
         Assert.assertEquals(legacyCaseFlagAdditionalInformation, legacyCaseFlag.getLegacyCaseFlagAdditionalInformation());
     }
+    
 }
