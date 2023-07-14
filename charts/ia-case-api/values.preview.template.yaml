@@ -92,8 +92,8 @@ ia-case-documents-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -135,8 +135,8 @@ ia-bail-case-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
-    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-339
+    # image: hmctspublic.azurecr.io/ia/bail-case-api:latest
+    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     environment:
@@ -209,7 +209,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     memoryRequests: 256Mi
