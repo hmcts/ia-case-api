@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
+import java.util.Map;
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        printEnvironment();
         breakOnMissingIaConfigValidatorSecret();
     }
 
@@ -30,6 +32,15 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
                 + " This is not allowed and it will break production. This is a secret value stored in a vault"
                 + " (unless running locally). Check application.yaml for further information.");
 
+        }
+    }
+
+    private void printEnvironment() {
+        log.info("Environment variables: ");
+        Map<String, String> environment = System.getenv();
+
+        for (Map.Entry<String, String> entry : environment.entrySet()) {
+            log.info("    {} = {}", entry.getKey(), entry.getValue());
         }
     }
 }
