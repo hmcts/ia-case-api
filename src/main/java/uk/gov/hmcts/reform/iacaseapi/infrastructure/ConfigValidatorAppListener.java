@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
-import java.util.Map;
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 @Setter
 public class ConfigValidatorAppListener implements ApplicationListener<ContextRefreshedEvent> {
 
+    protected static final String CLUSTER_NAME = "CLUSTER_NAME";
+
     @Autowired
     private Environment environment;
 
@@ -30,11 +33,11 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
     }
 
     void breakOnMissingIaConfigValidatorSecret() {
-        String clusterName = environment.getProperty("CLUSTER_NAME");
+        String clusterName = environment.getProperty(CLUSTER_NAME);
         boolean isCluster = true;
-        log.info("CLUSTER_NAME value: {}", clusterName);
+        log.info(CLUSTER_NAME + " value: {}", clusterName);
         if (StringUtils.isBlank(clusterName)) {
-            log.info("CLUSTER_NAME is null or empty. skipping this check.");
+            log.info(CLUSTER_NAME + " is null or empty. skipping this check.");
             isCluster = false;
         }
 
