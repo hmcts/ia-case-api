@@ -29,8 +29,6 @@ public class LegacyCaseFlagTest {
 
         legacyCaseFlag1.setLegacyCaseFlagType(caseFlagType);
         legacyCaseFlag1.setLegacyCaseFlagAdditionalInformation(legacyCaseFlagAdditionalInformation);
-        Assert.assertNotNull(legacyCaseFlag1.getLegacyCaseFlagType());
-        Assert.assertNotNull(legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
         Assert.assertEquals(caseFlagType, legacyCaseFlag1.getLegacyCaseFlagType());
         Assert.assertEquals(legacyCaseFlagAdditionalInformation, legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
     }
