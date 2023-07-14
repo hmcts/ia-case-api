@@ -63,8 +63,9 @@ def secrets = [
         secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
         secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
         secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
-        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW')
+        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
 
+        secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET')
     ],
     's2s-${env}'      : [
         secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -78,9 +79,7 @@ def secrets = [
         secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
         secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
         secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
-        secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
-
-        secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET')
+        secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
     ]
 ]
 

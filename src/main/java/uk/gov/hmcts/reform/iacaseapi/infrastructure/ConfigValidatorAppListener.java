@@ -32,15 +32,14 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
 
     void breakOnMissingIaConfigValidatorSecret() {
         String clusterName = environment.getProperty(CLUSTER_NAME);
-        boolean isCluster = true;
-        log.info(CLUSTER_NAME + " value: {}", clusterName);
+        log.info("{} value: {}", CLUSTER_NAME, clusterName);
         if (StringUtils.isBlank(clusterName)) {
-            log.info(CLUSTER_NAME + " is null or empty. skipping this check.");
-            isCluster = false;
+            log.warn("{} is null or empty. Skipping this check. This is allowed on a developer's local environment "
+                + "but not on a cluster. If you are in a cluster, this warning is going to be a problem.", CLUSTER_NAME);
+            return;
         }
 
-        if (StringUtils.isBlank(iaConfigValidatorSecret) && isCluster) {
-            log.info("IA Config Validator Secret Value: {}", iaConfigValidatorSecret);
+        if (StringUtils.isBlank(iaConfigValidatorSecret)) {
             throw new IllegalArgumentException("ia.config.validator.secret is null or empty."
                 + " This is not allowed and it will break production. This is a secret value stored in a vault"
                 + " (unless running locally). Check application.yaml for further information.");
