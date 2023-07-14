@@ -93,7 +93,7 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     # image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
