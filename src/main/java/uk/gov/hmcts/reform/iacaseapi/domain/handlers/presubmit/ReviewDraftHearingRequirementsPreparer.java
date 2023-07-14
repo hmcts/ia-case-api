@@ -78,7 +78,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         witnessDetails.ifPresent(idValues -> asylumCase.write(WITNESS_DETAILS_READONLY, idValues
             .stream()
-            .map(w -> formatWitnessDetails(w.getValue()))
+            .map(w -> String.format("Name\t\t%s", w.getValue().getWitnessFullName()))
             .collect(Collectors.joining("\n"))));
 
         interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
@@ -134,14 +134,5 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
                     break;
             }
         }
-    }
-
-    private static String formatWitnessDetails(WitnessDetails details) {
-        String givenNames = details.getWitnessName();
-        String familyName = details.getWitnessFamilyName();
-
-        return familyName == null || familyName.isEmpty()
-                ? String.format("Name\t\t%s", givenNames)
-                : String.format("Name\t\t%s %s", givenNames, familyName);
     }
 }

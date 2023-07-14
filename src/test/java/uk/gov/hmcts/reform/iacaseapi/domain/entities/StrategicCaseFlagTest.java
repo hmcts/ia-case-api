@@ -14,13 +14,13 @@ class StrategicCaseFlagTest {
 
     @BeforeEach
     public void setUp() {
-        strategicCaseFlag = new StrategicCaseFlag(appellantName);
+        strategicCaseFlag = new StrategicCaseFlag(appellantName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT);
     }
 
     @Test
     void should_hold_onto_values() {
         assertThat(strategicCaseFlag.getPartyName()).isEqualTo((appellantName));
-        assertThat(strategicCaseFlag.getRoleOnCase()).isEqualTo(("Appellant"));
+        assertThat(strategicCaseFlag.getRoleOnCase()).isEqualTo((StrategicCaseFlag.ROLE_ON_CASE_APPELLANT));
         assertThat(strategicCaseFlag.getDetails()).isEqualTo((Collections.emptyList()));
     }
 }
