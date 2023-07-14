@@ -78,7 +78,9 @@ def secrets = [
         secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
         secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
         secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
-        secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
+        secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
+
+        secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET')
     ]
 ]
 
@@ -106,7 +108,6 @@ withPipeline(type, product, component) {
     env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
-    env.IA_CONFIG_VALIDATOR_SECRET = "secret"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()

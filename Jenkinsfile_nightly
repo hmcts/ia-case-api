@@ -66,7 +66,9 @@ def secrets = [
         secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
         secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
         secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
-        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW')
+        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
+
+        secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET')
 
     ]
 ]
