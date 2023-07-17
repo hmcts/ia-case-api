@@ -767,6 +767,102 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_DETAILS(
         "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
 
+    WHICH_WITNESSES_NEED_INTERPRETER(
+        "whichWitnessesNeedInterpreter", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_1(
+        "witness1", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_2(
+        "witness2", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_3(
+        "witness3", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_4(
+        "witness4", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_5(
+        "witness5", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_6(
+        "witness6", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_7(
+        "witness7", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_8(
+        "witness8", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_9(
+        "witness9", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_10(
+        "witness10", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_LIST_ELEMENT_1(
+        "witnessListElement1", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_2(
+        "witnessListElement2", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_3(
+        "witnessListElement3", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_4(
+        "witnessListElement4", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_5(
+        "witnessListElement5", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_6(
+        "witnessListElement6", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_7(
+        "witnessListElement7", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_8(
+        "witnessListElement8", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_9(
+        "witnessListElement9", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_10(
+        "witnessListElement10", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness1InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_2_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness2InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness3InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_4_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness4InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_5_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness5InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_6_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness6InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_7_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness7InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_8_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness8InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_9_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness9InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness10InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    IS_WITNESS_1_INTERPRETER_NEEDED(
+        "isWitness1InterpreterNeeded", new TypeReference<String>() {}),
+
     WITNESS_DETAILS_READONLY(
         "witnessDetailsReadonly", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
 
