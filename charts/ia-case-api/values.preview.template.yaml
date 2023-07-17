@@ -42,6 +42,7 @@ java:
         - em-stitching-enabled
         - launch-darkly-sdk-key
         - app-insights-connection-string
+        - ia-config-validator-secret
   postgresql:
     enabled: true
     image:
