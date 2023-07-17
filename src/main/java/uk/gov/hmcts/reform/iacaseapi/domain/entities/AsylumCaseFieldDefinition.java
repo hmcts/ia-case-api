@@ -776,8 +776,14 @@ public enum AsylumCaseFieldDefinition {
     INTERPRETER_LANGUAGE(
         "interpreterLanguage", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
-    INTERPRETER_LANGUAGE_REF_DATA(
-        "interpreterLanguageRefData", new TypeReference<List<IdValue<InterpreterLanguageRefData>>>() {}),
+    APPELLANT_INTERPRETER_SPOKEN_LANGUAGE(
+        "appellantInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPELLANT_INTERPRETER_SIGN_LANGUAGE(
+        "appellantInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPELLANT_INTERPRETER_LANGUAGE_CATEGORY(
+        "appellantInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
 
     INTERPRETER_LANGUAGE_READONLY(
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),

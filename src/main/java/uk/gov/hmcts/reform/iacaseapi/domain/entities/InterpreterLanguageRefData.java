@@ -12,8 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InterpreterLanguageRefData {
 
-    private DynamicList interpreterLanguageRd;
-    private List<String> languageManualEnter;
-    private String manualLanguageDescription;
+    private DynamicList languageRefData;
+    private List<String> languageManualEntry;
+    private String languageManualEntryDescription;
 
 }

@@ -11,7 +11,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
@@ -21,20 +22,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
@@ -42,13 +41,13 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class DraftHearingRequirementsMidEventHandlerTest {
+class InterpreterLanguagesDynamicListUpdaterTest {
 
-    public static final String DRAFT_HEARING_REQUIREMENTS_PAGE_ID = "draftHearingRequirements";
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
+    public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String IS_CHILD_REQUIRED = "Y";
 
-    private DraftHearingRequirementsMidEventHandler draftHearingRequirementsMidEventHandler;
+    private InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -70,51 +69,55 @@ class DraftHearingRequirementsMidEventHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        draftHearingRequirementsMidEventHandler =
-            new DraftHearingRequirementsMidEventHandler(refDataUserService);
+        interpreterLanguagesDynamicListUpdater =
+            new InterpreterLanguagesDynamicListUpdater(refDataUserService);
 
         when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void should_populate_dynamic_list() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"DRAFT_HEARING_REQUIREMENTS", "UPDATE_HEARING_REQUIREMENTS"})
+    void should_populate_dynamic_list(Event event) {
         List<CategoryValues> languages = List.of(categoryValues);
         List<Value> values = List.of(value);
 
-        when(callback.getPageId()).thenReturn(DRAFT_HEARING_REQUIREMENTS_PAGE_ID);
+        when(callback.getEvent()).thenReturn(event);
         when(refDataUserService.retrieveCategoryValues(INTERPRETER_LANGUAGES, IS_CHILD_REQUIRED))
             .thenReturn(commonDataResponse);
+        when(refDataUserService.retrieveCategoryValues(SIGN_LANGUAGES, IS_CHILD_REQUIRED))
+                .thenReturn(commonDataResponse);
         when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, INTERPRETER_LANGUAGES))
             .thenReturn(languages);
+        when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, SIGN_LANGUAGES))
+                .thenReturn(languages);
         when(refDataUserService.mapCategoryValuesToDynamicListValues(languages)).thenReturn(values);
 
         DynamicList dynamicListOfLanguages = new DynamicList(new Value("", ""), values);
 
-        InterpreterLanguageRefData interpreterLanguageRefDataObject = new InterpreterLanguageRefData(
+        InterpreterLanguageRefData interpreterLanguageRefData = new InterpreterLanguageRefData(
             dynamicListOfLanguages,
             Collections.emptyList(),
             "");
 
-        List<IdValue<InterpreterLanguageRefData>> interpreterLanguageRefDataCollection = List.of(
-            new IdValue<>("1", interpreterLanguageRefDataObject)
-        );
+        interpreterLanguagesDynamicListUpdater.handle(MID_EVENT, callback);
 
-        draftHearingRequirementsMidEventHandler.handle(MID_EVENT, callback);
+        ArgumentCaptor<InterpreterLanguageRefData>  argumentCaptor = ArgumentCaptor.forClass(InterpreterLanguageRefData.class);
 
-        ArgumentCaptor<List<IdValue<InterpreterLanguageRefData>>>  argumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(asylumCase, times(1)).write(eq(INTERPRETER_LANGUAGE_REF_DATA), argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue()).usingRecursiveComparison().isEqualTo(interpreterLanguageRefDataCollection);
+        verify(asylumCase, times(1)).write(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE), argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).usingRecursiveComparison().isEqualTo(interpreterLanguageRefData);
+
+        verify(asylumCase, times(1)).write(eq(APPELLANT_INTERPRETER_SIGN_LANGUAGE), argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).usingRecursiveComparison().isEqualTo(interpreterLanguageRefData);
     }
 
     @Test
     void should_not_populate_dynamic_list_if_interpreter_language_ref_data_exists() {
-        when(callback.getPageId()).thenReturn(DRAFT_HEARING_REQUIREMENTS_PAGE_ID);
-        when(asylumCase.read(INTERPRETER_LANGUAGE_REF_DATA)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.empty());
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
-        when(asylumCaseBefore.read(INTERPRETER_LANGUAGE_REF_DATA)).thenReturn(Optional.empty());
+        when(asylumCaseBefore.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.empty());
 
         verify(refDataUserService, never()).retrieveCategoryValues(anyString(), anyString());
     }
@@ -123,7 +126,7 @@ class DraftHearingRequirementsMidEventHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
-            () -> draftHearingRequirementsMidEventHandler.handle(ABOUT_TO_SUBMIT, callback))
+            () -> interpreterLanguagesDynamicListUpdater.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -134,14 +137,12 @@ class DraftHearingRequirementsMidEventHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getPageId()).thenReturn(DRAFT_HEARING_REQUIREMENTS_PAGE_ID);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = draftHearingRequirementsMidEventHandler.canHandle(callbackStage, callback);
+                boolean canHandle = interpreterLanguagesDynamicListUpdater.canHandle(callbackStage, callback);
 
-                if ((callback.getEvent() == Event.DRAFT_HEARING_REQUIREMENTS
-                     || callback.getEvent() == Event.UPDATE_HEARING_REQUIREMENTS)
+                if (List.of(Event.DRAFT_HEARING_REQUIREMENTS, Event.UPDATE_HEARING_REQUIREMENTS).contains(event)
                     && callbackStage == PreSubmitCallbackStage.MID_EVENT) {
 
                     assertTrue(canHandle);
@@ -157,20 +158,20 @@ class DraftHearingRequirementsMidEventHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> draftHearingRequirementsMidEventHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> interpreterLanguagesDynamicListUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> draftHearingRequirementsMidEventHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+            () -> interpreterLanguagesDynamicListUpdater.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> draftHearingRequirementsMidEventHandler.handle(null, callback))
+        assertThatThrownBy(() -> interpreterLanguagesDynamicListUpdater.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> draftHearingRequirementsMidEventHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> interpreterLanguagesDynamicListUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
