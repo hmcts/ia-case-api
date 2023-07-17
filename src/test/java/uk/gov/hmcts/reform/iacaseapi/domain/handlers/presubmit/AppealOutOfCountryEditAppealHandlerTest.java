@@ -74,7 +74,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
         verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
-        verify(asylumCase, times(1)).write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
         verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
@@ -106,7 +106,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
         verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
-        verify(asylumCase, times(1)).write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
         verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
@@ -150,7 +150,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
         verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
@@ -190,7 +190,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearHumanRightsDecision(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
         verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
@@ -231,7 +231,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
         verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
@@ -275,7 +275,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
         verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
@@ -318,7 +318,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
         verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
         verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);

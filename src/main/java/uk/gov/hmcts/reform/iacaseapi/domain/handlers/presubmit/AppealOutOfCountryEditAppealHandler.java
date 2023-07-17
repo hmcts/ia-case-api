@@ -73,7 +73,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, NO);
                 asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);
                 asylumCase.clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
-                asylumCase.write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
+                asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
                 clearHumanRightsDecision(asylumCase);
                 clearRefusalOfProtection(asylumCase);
 
@@ -98,7 +98,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
                 asylumCase.clear(APPELLANT_ADDRESS);
                 asylumCase.write(APPELLANT_IN_DETENTION, NO);
-                asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
+                asylumCase.clear(IS_ACCELERATED_DETAINED_APPEAL);
                 asylumCase.clear(DETENTION_FACILITY);
                 asylumCase.clear(DETENTION_STATUS);
                 asylumCase.clear(CUSTODIAL_SENTENCE);

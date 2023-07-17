@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -52,7 +51,7 @@ public class InCountryToOutOfCountryHandler implements PreSubmitCallbackHandler<
                 .orElseThrow(() -> new IllegalStateException("Unable to determine if appeal is in UK or out of country"));
 
         if (ukAppeal.equals(YesOrNo.YES)) {
-            asylumCase.write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
+            asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
 
         } else {
             asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);

@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -129,7 +128,7 @@ public class InCountryToOutOfCountryHandlerTest {
 
         inCountryToOutOfCountryHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(asylumCase, times(1)).write(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.UNKNOWN);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
 
         verify(asylumCase, never()).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase, never()).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
