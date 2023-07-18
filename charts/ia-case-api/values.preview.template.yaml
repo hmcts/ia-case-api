@@ -200,8 +200,8 @@ ia-home-office-integration-api:
 ia-case-access-api:
    enabled: true
    java:
-     image: hmctspublic.azurecr.io/ia/case-access-api:latest
-     # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
+     # image: hmctspublic.azurecr.io/ia/case-access-api:latest
+     image: hmctspublic.azurecr.io/ia/case-access-api:pr-64
      ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
 
 ia-aip-frontend:
