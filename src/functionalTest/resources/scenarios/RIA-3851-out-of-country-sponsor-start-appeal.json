@@ -41,7 +41,10 @@
         "sponsorAddressForDisplay": "line1\r\ntown\r\ncounty\r\nTS1 TST\r\nUK",
         "sponsorContactPreference": "wantsSms",
         "sponsorMobileNumber": "07111111111",
-        "sponsorAuthorisation": "No"
+        "sponsorAuthorisation": "No",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null
       }
     }
   }

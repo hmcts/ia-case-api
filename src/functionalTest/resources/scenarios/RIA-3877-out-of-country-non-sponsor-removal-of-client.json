@@ -32,7 +32,10 @@
         "appellantOutOfCountryAddress": "Kabul, Afghanistan",
         "hasSponsor": "No",
         "decisionLetterReceivedDate":"{$TODAY-7}",
-        "outOfCountryDecisionType":"removalOfClient"
+        "outOfCountryDecisionType":"removalOfClient",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null
       }
     }
   }
