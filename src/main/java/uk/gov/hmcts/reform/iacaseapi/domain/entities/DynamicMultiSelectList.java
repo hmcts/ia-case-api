@@ -12,14 +12,14 @@ import lombok.ToString;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class DynamicMultiSelectList {
 
-    private List<Value> values;
+    private List<Value> value;
     private List<Value> listItems;
 
     public DynamicMultiSelectList(List<String> values) {
-        this.values = values.stream().map(value -> new Value(value, value)).collect(Collectors.toList());
+        this.value = values.stream().map(value -> new Value(value, value)).collect(Collectors.toList());
     }
 
-    private DynamicMultiSelectList() {
+    public DynamicMultiSelectList() {
     }
 
     public List<Value> getListItems() {
@@ -27,16 +27,16 @@ public class DynamicMultiSelectList {
     }
 
     public DynamicMultiSelectList(List<Value> values, List<Value> listItems) {
-        this.values = values;
+        this.value = values;
         this.listItems = listItems;
     }
 
-    public List<Value> getValues() {
-        return values;
+    public List<Value> getValue() {
+        return value;
     }
 
-    public void setValues(List<Value> values) {
-        this.values = values;
+    public void setValue(List<Value> value) {
+        this.value = value;
     }
 
 }

@@ -860,6 +860,66 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY(
         "witness10InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
 
+    WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness1InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_1_INTERPRETER_SIGN_LANGUAGE(
+        "witness1InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness2InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_2_INTERPRETER_SIGN_LANGUAGE(
+        "witness2InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness3InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_3_INTERPRETER_SIGN_LANGUAGE(
+        "witness3InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness4InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_4_INTERPRETER_SIGN_LANGUAGE(
+        "witness4InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness5InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_5_INTERPRETER_SIGN_LANGUAGE(
+        "witness5InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness6InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_6_INTERPRETER_SIGN_LANGUAGE(
+        "witness6InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness7InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_7_INTERPRETER_SIGN_LANGUAGE(
+        "witness7InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness8InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_8_INTERPRETER_SIGN_LANGUAGE(
+        "witness8InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness9InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_9_INTERPRETER_SIGN_LANGUAGE(
+        "witness9InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness10InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_10_INTERPRETER_SIGN_LANGUAGE(
+        "witness10InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
     IS_WITNESS_1_INTERPRETER_NEEDED(
         "isWitness1InterpreterNeeded", new TypeReference<String>() {}),
 
