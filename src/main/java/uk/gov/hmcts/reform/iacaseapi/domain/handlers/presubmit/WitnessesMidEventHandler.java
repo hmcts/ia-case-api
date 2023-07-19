@@ -26,10 +26,9 @@ public class WitnessesMidEventHandler implements PreSubmitCallbackHandler<Asylum
 
     private static final String IS_WITNESSES_ATTENDING_PAGE_ID = "isWitnessesAttending";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
-    //private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
 
-    private static final List<AsylumCaseFieldDefinition> WITNESS_N_FIELD = List.of(
+    protected static final List<AsylumCaseFieldDefinition> WITNESS_N_FIELD = List.of(
         WITNESS_1,
         WITNESS_2,
         WITNESS_3,
@@ -120,7 +119,8 @@ public class WitnessesMidEventHandler implements PreSubmitCallbackHandler<Asylum
                     }
                 });
                 break;
-
+            default:
+                break;
         }
 
         return response;
