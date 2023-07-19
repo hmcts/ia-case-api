@@ -38,7 +38,8 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "isAdmin": "Yes",
-        "detentionStatus": "detainedAccelerated"
+        "detentionStatus": "detainedAccelerated",
+        "homeOfficeDecisionDate": null
       }
     }
   }

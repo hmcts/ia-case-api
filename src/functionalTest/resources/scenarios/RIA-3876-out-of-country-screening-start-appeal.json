@@ -22,7 +22,10 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "appellantInUk": "No",
-        "appealOutOfCountry": "Yes"
+        "appealOutOfCountry": "Yes",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null
       }
     }
   }

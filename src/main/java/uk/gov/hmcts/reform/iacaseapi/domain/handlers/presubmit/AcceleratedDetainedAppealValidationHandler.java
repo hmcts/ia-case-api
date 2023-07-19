@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -56,7 +57,11 @@ public class AcceleratedDetainedAppealValidationHandler implements PreSubmitCall
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (isAda.equals(YES) && adaEnabled.equals(NO)) {
+        YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
+                .orElseThrow(() -> new RequiredFieldMissingException("Unable to determine if in country or out of country appeal"));
+        boolean isUkAppeal = appellantInUk.equals(YES);
+
+        if (isAda.equals(YES) && adaEnabled.equals(NO) && isUkAppeal) {
             response.addError("You can only select yes if the appellant is detained in an immigration removal centre");
         }
 

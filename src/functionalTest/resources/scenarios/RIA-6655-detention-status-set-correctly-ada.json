@@ -24,7 +24,8 @@
       "replacements": {
         "detentionStatus": "detainedAccelerated",
         "appellantInDetention": "Yes",
-        "isAcceleratedDetainedAppeal": "Yes"
+        "isAcceleratedDetainedAppeal": "Yes",
+        "homeOfficeDecisionDate": null
       }
     }
   }
