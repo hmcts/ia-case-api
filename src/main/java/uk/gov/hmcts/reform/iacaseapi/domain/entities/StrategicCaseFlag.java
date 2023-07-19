@@ -31,6 +31,12 @@ public class StrategicCaseFlag {
         this.details = Collections.emptyList();
     }
 
+    public StrategicCaseFlag(String partyNameForDisplay, String roleOnCase, List<CaseFlagDetail> details) {
+        this.partyName = partyNameForDisplay;
+        this.roleOnCase = roleOnCase;
+        this.details = details;
+    }
+
     public StrategicCaseFlag() {
         this.details = Collections.emptyList();
         this.partyName = null;
