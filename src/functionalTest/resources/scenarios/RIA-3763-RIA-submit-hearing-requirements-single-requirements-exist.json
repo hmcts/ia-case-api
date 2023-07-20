@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "appellantNameForDisplay": "Eke Uke",
           "isReheardAppealEnabled": "Yes",
           "caseFlagSetAsideReheardExists": "No",
           "isAppellantAttendTheHearing": "Yes",
