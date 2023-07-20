@@ -72,7 +72,8 @@ public enum Event {
     SUBMIT_TIME_EXTENSION("submitTimeExtension"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
-    FLAG_CASE("flagCase"),
+    FLAG_CASE("flagCase"), // tactical flag
+    CREATE_FLAG("createFlag"), // strategic flag
     REMOVE_FLAG("removeFlag"),
     REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
     EDIT_CMA_REQUIREMENTS("editCmaRequirements"),

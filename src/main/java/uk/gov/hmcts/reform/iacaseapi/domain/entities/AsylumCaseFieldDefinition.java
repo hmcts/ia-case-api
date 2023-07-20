@@ -893,8 +893,8 @@ public enum AsylumCaseFieldDefinition {
     FLAG_CASE_ADDITIONAL_INFORMATION(
         "flagCaseAdditionalInformation", new TypeReference<String>(){}),
 
-    CASE_FLAGS(
-        "caseFlags", new TypeReference<List<IdValue<CaseFlag>>>(){}),
+    LEGACY_CASE_FLAGS(
+        "legacyCaseFlags", new TypeReference<List<IdValue<LegacyCaseFlag>>>(){}),
 
     CASE_FLAG_ANONYMITY_EXISTS(
         "caseFlagAnonymityExists", new TypeReference<YesOrNo>() {}),
@@ -1629,13 +1629,20 @@ public enum AsylumCaseFieldDefinition {
         "displayMarkAsPaidEventForPartialRemission", new TypeReference<YesOrNo>(){}),
 
     REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST(
+
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
 
     S94B_STATUS(
-        "s94bStatus", new TypeReference<YesOrNo>(){});
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
+
+    APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
+    }),
+
+    CASE_LEVEL_FLAGS(
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){});
 
     private final String value;
     private final TypeReference typeReference;

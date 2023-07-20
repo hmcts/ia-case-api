@@ -110,6 +110,7 @@ core_case_data_api_permissions_revoke_path: "/caseworkers/{idamIdOfUserWhoGrants
 
 core_case_data_api_supplementary_data_path: "/cases/{caseId}/supplementary-data"
 hmcts_service_id: "BFA1"
+role_on_case: "Appellant"
 
 core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
 core_case_data_api_assignments_path: "/case-users"
@@ -273,6 +274,7 @@ security:
       - "markAppealPaid"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "createFlag"
       - "updateS94bStatus"
     caseworker-ia-admofficer:
       - "listCma"
@@ -304,6 +306,7 @@ security:
       - "markPaymentRequestSent"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "createFlag"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
