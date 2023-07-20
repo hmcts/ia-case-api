@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import java.util.ArrayList;
@@ -27,10 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> {
-
-    public static final String ANONIMITY_CASE_FLAG_CODE = "CF0012";
-    public static final String ANONIMITY_CASE_FLAG_NAME = "RRO (Restricted Reporting Order / Anonymisation)";
-
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -67,8 +64,8 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
     private void createAnonymityFlag(AsylumCase asylumCase, Optional<StrategicCaseFlag> strategicCaseFlagOptional) {
         if (!hasActiveAnonimityFlag(strategicCaseFlagOptional)) {
             CaseFlagValue caseFlagValue = CaseFlagValue.builder()
-                .name(ANONIMITY_CASE_FLAG_NAME)
-                .flagCode(ANONIMITY_CASE_FLAG_CODE)
+                .name(ANONYMITY.getName())
+                .flagCode(ANONYMITY.getFlagCode())
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .build();
@@ -85,7 +82,7 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
     private boolean hasActiveAnonimityFlag(@NonNull Optional<StrategicCaseFlag> strategicCaseFlag) {
         return strategicCaseFlag.map(caseFlag -> caseFlag.getDetails().stream().anyMatch(flagDetail -> {
             CaseFlagValue value = flagDetail.getCaseFlagValue();
-            return Objects.equals(value.getFlagCode(), ANONIMITY_CASE_FLAG_CODE)
+            return Objects.equals(value.getFlagCode(), ANONYMITY.getFlagCode())
                     && Objects.equals(flagDetail.getCaseFlagValue().getStatus(), "Active");
         })).orElse(false);
     }

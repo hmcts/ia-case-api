@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7507 Update hearing requirements for appellant with spoken language interpreter",
+  "description": "RIA-7337 RIA-7340 Update hearing requirements when hearing loop requests are cancelled",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -42,7 +42,7 @@
             "languageManualEntryDescription": ""
           },
           "isHearingRoomNeeded": "Yes",
-          "isHearingLoopNeeded": "Yes",
+          "isHearingLoopNeeded": "No",
           "physicalOrMentalHealthIssues": "Yes",
           "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
           "pastExperiences": "Yes",
@@ -97,7 +97,31 @@
                 "applicationStatus": "In progress"
               }
             }
-          ]
+          ],
+          "appellantLevelFlags": {
+            "partyName": "Talha Awan",
+            "roleOnCase": "Appellant",
+            "details": [
+              {
+                "id": "7337-7340-ABC",
+                "value": {
+                  "name": "Hearing loop (hearing enhancement system)",
+                  "status": "Active",
+                  "flagCode": "RA0043",
+                  "hearingRelevant": "Yes"
+                }
+              },
+              {
+                "id": "7337-7340-ABC",
+                "value": {
+                  "name": "Step free / wheelchair access",
+                  "status": "Active",
+                  "flagCode": "RA0019",
+                  "hearingRelevant": "Yes"
+                }
+              }
+            ]
+          }
         }
       }
     }
@@ -140,7 +164,7 @@
           "languageManualEntryDescription": ""
         },
         "isHearingRoomNeeded": "Yes",
-        "isHearingLoopNeeded": "Yes",
+        "isHearingLoopNeeded": "No",
         "physicalOrMentalHealthIssues": "Yes",
         "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
         "pastExperiences": "Yes",
@@ -195,7 +219,31 @@
         "multimediaTribunalResponse": null,
         "singleSexCourtTribunalResponse": null,
         "inCameraCourtTribunalResponse": null,
-        "additionalTribunalResponse": null
+        "additionalTribunalResponse": null,
+        "appellantLevelFlags": {
+          "partyName": "Talha Awan",
+          "roleOnCase": "Appellant",
+          "details": [
+            {
+              "id": "7337-7340-ABC",
+              "value": {
+                "name": "Hearing loop (hearing enhancement system)",
+                "status": "Inactive",
+                "flagCode": "RA0043",
+                "hearingRelevant": "Yes"
+              }
+            },
+            {
+              "id": "7337-7340-ABC",
+              "value": {
+                "name": "Step free / wheelchair access",
+                "status": "Active",
+                "flagCode": "RA0019",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
       }
     }
   }
