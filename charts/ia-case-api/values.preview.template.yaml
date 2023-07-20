@@ -9,7 +9,7 @@ java:
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
-    #IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+    IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     #IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: http://ia-timed-event-service-aat.service.core-compute-aat.internal/
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
@@ -91,8 +91,8 @@ ia-case-documents-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
+#    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-592
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
