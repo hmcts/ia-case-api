@@ -1,0 +1,41 @@
+name: Check for Infrastructure changes
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+jobs:
+  check-infra-changes-and-apply-label:
+    name: prevent uncoordinated merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply label if it's an infrastructure change
+        uses: actions/labeler@v4
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/labeler.yml
+      - name: Check for infrastructure change without explicit devops approval
+        if: contains(github.event.*.labels.*.name, 'infrastructure') && !contains(github.event.*.labels.*.name, 'coordinate-deployment')
+        run: |
+          echo ""
+          echo "Infrastructure changes require special coordination as they may have highly disruptive effects"
+          echo "  like taking down the entire application and causing outages, which can easily lead to P1 tickets"
+          echo "  being opened. For this reason, PRs containing such changes need to be explicitly approved by senior"
+          echo "  devs and their release must be carefully coordinated to ensure prompt action in case of disruption."
+          echo ""
+          echo "Once you've done all this, proceed as follows:"
+          echo "  1. mark this PR with the 'coordinate-deployment' label"
+          echo "  2. add an empty commit (git --allow-empty -m \"Re-running build\")"
+          echo "At which point this check will be run again and if all other checks succeed you will be allowed to"
+          echo " merge."
+          echo ""
+          echo "Some random advice on coordinating the effort:"
+          echo "  - make sure your Tech Lead is aware and make sure other potentially impacted Tech Leads are also aware"
+          echo "  - see if the change should be tested on environments other than preview (demo? aat?)"
+          echo "  - verify whether the deployment should be done during business hours or outside business hours"
+          echo "  - make sure you have a PlatOps person available and willing to support you for the next few hours"
+          echo "  - make sure all the appropriate QA tests have been run"
+          exit 1
