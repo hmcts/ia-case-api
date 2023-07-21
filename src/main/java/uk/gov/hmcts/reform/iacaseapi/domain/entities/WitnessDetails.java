@@ -17,4 +17,11 @@ public class WitnessDetails {
     public WitnessDetails(String witnessName) {
         this.witnessName = witnessName;
     }
+
+    public String getWitnessFullName() {
+        String givenNames = witnessName == null ? " " : witnessName;
+        String familyName = witnessFamilyName == null ? " " : witnessFamilyName;
+
+        return !(givenNames.isBlank() || familyName.isBlank()) ? givenNames + " " + familyName : givenNames;
+    }
 }
