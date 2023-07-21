@@ -349,6 +349,7 @@ security:
       - "draftHearingRequirements"
       - "uploadAddendumEvidenceLegalRep"
       - "pipActivation"
+      - "applyForFTPAAppellant"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"

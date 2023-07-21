@@ -1,0 +1,67 @@
+#!/bin/bash
+
+REGEX_ISSUE_ID='^RIA-[0-9]+ .*'
+REGEX_GENERIC_TASK='^RIA-TASK .*'
+REGEX_SNOW_ISSUE_ID='^SNI-[0-9]+ .*'
+REGEX_RENOVATE='^Update .*'
+REGEX_RENOVATE_BRANCH='renovate\/.*'
+REGEX_MERGE='Merge branch .*'
+REGEX_REVERT='Revert .*'
+
+COMMIT_MESSAGE=$(head -n 1 "$1")
+
+
+if [[ $COMMIT_MESSAGE =~ $REGEX_ISSUE_ID ]]; then
+  # This is a RIA-nnnn commit message. All good.
+  exit 0
+fi
+
+if [[ $COMMIT_MESSAGE =~ $REGEX_SNOW_ISSUE_ID ]]; then
+  # This is a SNI-nnnn commit message. All good.
+  exit 0
+fi
+
+
+if [[ $COMMIT_MESSAGE =~ $REGEX_GENERIC_TASK ]]; then
+  # This is a CIV-TASK commit message. All good.
+  exit 0
+fi
+
+if [[ $COMMIT_MESSAGE =~ $REGEX_RENOVATE ]]; then
+  # This is a Renovate commit message. We need to check the branch name
+  BRANCH_NAME=$(git symbolic-ref --short HEAD)
+  if [[ $BRANCH_NAME =~ $REGEX_RENOVATE_BRANCH ]]; then
+    # Renovate commit message in renovate branch. All good.
+    exit 0
+  fi
+fi
+
+if [[ $COMMIT_MESSAGE =~ $REGEX_MERGE ]]; then
+  # This is a merge done locally. All good.
+  exit 0
+fi
+
+if [[ $COMMIT_MESSAGE =~ $REGEX_REVERT ]]; then
+  # This is a revert. All good.
+  exit 0
+fi
+
+
+# We don't recognize this commit message format, so it's invalid to us. We report an error to the user and exit.
+echo "The provided commit message is invalid. Commit messages must start with RIA-nnnn, SNI-nnnn or RIA-TASK"
+echo " (mind the uppercase) and there must be a space afterwards, to separate from the commit title."
+echo "Also be advised that usage of RIA-TASK should be cleared beforehand by a Technical Lead as its use is meant"
+echo " as an exception for corner cases."
+echo ""
+echo "Examples of valid commit messages:"
+echo " RIA-1234 Fixing a bug"
+echo " SNI-1234 Fixing a bug"
+echo " RIA-TASK Fixing an urgent issue in master"
+echo " RIA-TASK DET-1234 Fix from another project's team"
+echo ""
+echo "Examples of invalid commit messages:"
+echo " Fixing a bug"
+echo " DET-1234 Fix from another project's team"
+echo " $COMMIT_MESSAGE"
+
+exit 1
