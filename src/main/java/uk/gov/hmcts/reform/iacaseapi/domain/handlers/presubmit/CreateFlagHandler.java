@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+@Slf4j
 @Component
 class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -61,15 +63,21 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
 
             asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT));
+        } else {
+            log.info("Existing Appellant Level flags: {}", existingAppellantLevelFlags);
         }
 
         if (existingCaseLevelFlags.isEmpty()) {
             asylumCase.write(CASE_LEVEL_FLAGS, new StrategicCaseFlag());
+        } else {
+            log.info("Existing Case Level flags: {}", existingCaseLevelFlags);
         }
 
         if (witnessDetails.isPresent()) {
             if (existingWitnessLevelFlags.isEmpty() || existingWitnessLevelFlags.get().isEmpty()) {
                 asylumCase.write(WITNESS_LEVEL_FLAGS, mapWitnessesToFlag(witnessDetails.get()));
+            } else {
+                log.info("Existing Witness Level flags: {}", existingWitnessLevelFlags);
             }
         }
 
