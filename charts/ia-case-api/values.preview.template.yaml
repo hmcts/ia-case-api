@@ -134,10 +134,6 @@ ia-case-notifications-api:
       ia:
         resourceGroup: ia
         secrets:
-          - name: ia-gov-notify-key
-            alias: IA_GOV_NOTIFY_KEY
-          - name: ia-bail-gov-notify-key
-            alias: IA_BAIL_GOV_NOTIFY_KEY
           - name: admin-office-newport-email
             alias: IA_ADMIN_NEWPORT_EMAIL
           - name: admin-office-taylor-house-email
