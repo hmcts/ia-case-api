@@ -40,6 +40,7 @@ java:
         - docmosis-enabled
         - em-stitching-enabled
         - launch-darkly-sdk-key
+        - app-insights-connection-string
   postgresql:
     enabled: true
     image:
@@ -118,6 +119,60 @@ ia-case-notifications-api:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
+ia-bail-case-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
+    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-339
+    releaseNameOverride: ${SERVICE_NAME}-bail-case-api
+    ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
+    environment:
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+
+ia-timed-event-service:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
+    releaseNameOverride: ${SERVICE_NAME}-timed-event-service
+    ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
+    environment:
+      IDAM_URL: https://idam-web-public.{{ .Values.global.environment
+        }}.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment
+        }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
+        }}.service.core-compute-{{ .Values.global.environment }}.internal
+      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+      POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+      POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+      POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+      POSTGRES_CONNECTION_OPTIONS: ""
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - idam-client-id
+          - idam-secret
+          - idam-redirect-uri
+          - system-username
+          - system-password
+          - s2s-secret
+          - s2s-microservice
+          - app-insights-connection-string
+    postgresql:
+      enabled: true
+
 ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
@@ -129,6 +184,54 @@ ia-home-office-integration-api:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+
+ia-case-access-api:
+   enabled: true
+   java:
+     image: hmctspublic.azurecr.io/ia/case-access-api:latest
+     # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
+     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
+
+ia-aip-frontend:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
+    applicationPort: 3000
+    memoryRequests: 256Mi
+    cpuRequests: 0.2
+    memoryLimits: 512Mi
+    cpuLimits: 1
+    environment:
+      HTTP_PROTOCOL: http
+      NODE_ENV: development
+      S2S_MICROSERVICE_NAME: iac
+      MICROSERVICE: iac
+      CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
+      PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
+      IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
+      # IDAM_WEB_URL: https://xui-ia-case-api-pr-1389.preview.platform.hmcts.net
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      # IDAM_API_URL: http://{{ .Release.Name }}-xui-webapp
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      REDIS_URL: redis://{{ .Release.Name }}-redis-master
+      PCQ_URL: https://pcq.aat.platform.hmcts.net
+      # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
+      PCQ_RETURN_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/about-appeal
+      SECURE_SESSION: false
+      TRACKING_SCRIPTS: false
+  redis:
+    enabled: false
+    architecture: standalone
+    master:
+      persistence:
+        enabled: false
+    auth:
+      enabled: false
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
