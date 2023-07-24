@@ -1,0 +1,435 @@
+{
+  "description": "RIA-7509 Draft and submit hearing requirements for appellant with interpreters for witnesses",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 7509,
+      "eventId": "draftHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAppellantAttendTheHearing": "Yes",
+          "isAppellantGivingOralEvidence": "Yes",
+          "isWitnessesAttending": "Yes",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessName": "witness name one",
+                "witnessFamilyName": "witness last name one"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "witnessName": "witness name two",
+                "witnessFamilyName": "witness last name two"
+              }
+            },
+            {
+              "id": "3",
+              "value": {
+                "witnessName": "witness name three",
+                "witnessFamilyName": "witness last name three"
+              }
+            }
+          ],
+          "isInterpreterServicesNeeded": "Yes",
+          "appellantInterpreterLanguageCategory": [
+            "signLanguageInterpreter"
+          ],
+          "appellantInterpreterSignLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "igbo",
+                "label": "igbo"
+              },
+              "list_items": [
+                {
+                  "code": "igbo",
+                  "label": "igbo"
+                }
+              ]
+            },
+            "languageManualEntry": [],
+            "languageManualEntryDescription": ""
+          },
+          "isAnyWitnessInterpreterRequired": "Yes",
+          "witness1": {
+            "id": "1",
+            "value": {
+              "witnessName": "witness name one",
+              "witnessFamilyName": "witness last name one"
+            }
+          },
+          "witnessListElement1": {
+            "value": [
+              {
+                "code": "witness name one",
+                "label": "witness last name one"
+              }
+            ],
+            "list_items": [
+              {
+                "code": "witness name one",
+                "label": "witness last name one"
+              }
+            ]
+          },
+          "witness1InterpreterSignLanguage": {},
+          "witness1InterpreterSpokenLanguage": {
+            "languageManualEntry": [],
+            "languageRefData": {
+              "value": {
+                "code": "ach",
+                "label": "Acholi"
+              },
+              "list_items": [
+                {
+                  "code": "abr",
+                  "label": "Brong"
+                },
+                {
+                  "code": "ach",
+                  "label": "Acholi"
+                },
+                {
+                  "code": "afr",
+                  "label": "Afrikaans"
+                }
+              ]
+            }
+          },
+          "witness2": {
+            "id": "2",
+            "value": {
+              "witnessName": "witness name two",
+              "witnessFamilyName": "witness last name two"
+            }
+          },
+          "witnessListElement2": {
+            "value": [
+              {
+                "code": "witness name two",
+                "label": "witness last name two"
+              }
+            ],
+            "list_items": [
+              {
+                "code": "witness name two",
+                "label": "witness last name two"
+              }
+            ]
+          },
+          "witness2InterpreterSignLanguage": {},
+          "witness2InterpreterSpokenLanguage": {
+            "languageManualEntry": [],
+            "languageRefData": {
+              "value": {
+                "code": "ach",
+                "label": "Acholi"
+              },
+              "list_items": [
+                {
+                  "code": "abr",
+                  "label": "Brong"
+                },
+                {
+                  "code": "ach",
+                  "label": "Acholi"
+                },
+                {
+                  "code": "afr",
+                  "label": "Afrikaans"
+                }
+              ]
+            }
+          },
+          "witness3": {
+            "id": "3",
+            "value": {
+              "witnessName": "witness name three",
+              "witnessFamilyName": "witness last name three"
+            }
+          },
+          "witnessListElement3": {
+            "value": [
+              {
+                "code": "witness name three",
+                "label": "witness last name three"
+              }
+            ],
+            "list_items": [
+              {
+                "code": "witness name three",
+                "label": "witness last name three"
+              }
+            ]
+          },
+          "witness3InterpreterSignLanguage": {
+            "languageManualEntry": [],
+            "languageRefData": {
+              "value": {
+                "code": "ase",
+                "label": "American Sign Language (ASL)"
+              },
+              "list_items": [
+                {
+                  "code": "ase",
+                  "label": "American Sign Language (ASL)"
+                },
+                {
+                  "code": "bfi",
+                  "label": "British Sign Language (BSL)"
+                }
+              ]
+            }
+          },
+          "witness3InterpreterSpokenLanguage": {},
+          "isHearingRoomNeeded": "Yes",
+          "isHearingLoopNeeded": "Yes",
+          "physicalOrMentalHealthIssues": "Yes",
+          "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+          "pastExperiences": "Yes",
+          "pastExperiencesDescription": "Past experiences",
+          "multimediaEvidence": "Yes",
+          "multimediaEvidenceDescription": "Multimedia evidence",
+          "singleSexCourt": "Yes",
+          "singleSexCourtType": "All female",
+          "singleSexCourtTypeDescription": "Requirement for single sex court",
+          "inCameraCourt": "Yes",
+          "inCameraCourtDescription": "In camera court description",
+          "additionalRequests": "Yes",
+          "additionalRequestsDescription": "Additional requests description",
+          "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "datesToAvoid": [
+            {
+              "id": "1",
+              "value": {
+                "dateToAvoid": "2019-12-25",
+                "dateToAvoidReason": "Xmas"
+              }
+            }
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAppellantAttendTheHearing": "Yes",
+        "isAppellantGivingOralEvidence": "Yes",
+        "isWitnessesAttending": "Yes",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "witnessName": "witness name one",
+              "witnessFamilyName": "witness last name one"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "witnessName": "witness name two",
+              "witnessFamilyName": "witness last name two"
+            }
+          },
+          {
+            "id": "3",
+            "value": {
+              "witnessName": "witness name three",
+              "witnessFamilyName": "witness last name three"
+            }
+          }
+        ],
+        "isInterpreterServicesNeeded": "Yes",
+        "appellantInterpreterLanguageCategory": [
+          "signLanguageInterpreter"
+        ],
+        "appellantInterpreterSignLanguage": {
+          "languageRefData": {
+            "value": {
+              "code": "igbo",
+              "label": "igbo"
+            },
+            "list_items": [
+              {
+                "code": "igbo",
+                "label": "igbo"
+              }
+            ]
+          },
+          "languageManualEntry": [],
+          "languageManualEntryDescription": ""
+        },
+        "isAnyWitnessInterpreterRequired": "Yes",
+        "witness1": {
+          "id": "1",
+          "value": {
+            "witnessName": "witness name one",
+            "witnessFamilyName": "witness last name one"
+          }
+        },
+        "witnessListElement1": {
+          "value": [
+            {
+              "code": "witness name one",
+              "label": "witness last name one"
+            }
+          ],
+          "list_items": [
+            {
+              "code": "witness name one",
+              "label": "witness last name one"
+            }
+          ]
+        },
+        "witness1InterpreterSignLanguage": {},
+        "witness1InterpreterSpokenLanguage": {
+          "languageManualEntry": [],
+          "languageRefData": {
+            "value": {
+              "code": "ach",
+              "label": "Acholi"
+            },
+            "list_items": [
+              {
+                "code": "abr",
+                "label": "Brong"
+              },
+              {
+                "code": "ach",
+                "label": "Acholi"
+              },
+              {
+                "code": "afr",
+                "label": "Afrikaans"
+              }
+            ]
+          }
+        },
+        "witness2": {
+          "id": "2",
+          "value": {
+            "witnessName": "witness name two",
+            "witnessFamilyName": "witness last name two"
+          }
+        },
+        "witnessListElement2": {
+          "value": [
+            {
+              "code": "witness name two",
+              "label": "witness last name two"
+            }
+          ],
+          "list_items": [
+            {
+              "code": "witness name two",
+              "label": "witness last name two"
+            }
+          ]
+        },
+        "witness2InterpreterSignLanguage": {},
+        "witness2InterpreterSpokenLanguage": {
+          "languageManualEntry": [],
+          "languageRefData": {
+            "value": {
+              "code": "ach",
+              "label": "Acholi"
+            },
+            "list_items": [
+              {
+                "code": "abr",
+                "label": "Brong"
+              },
+              {
+                "code": "ach",
+                "label": "Acholi"
+              },
+              {
+                "code": "afr",
+                "label": "Afrikaans"
+              }
+            ]
+          }
+        },
+        "witness3": {
+          "id": "3",
+          "value": {
+            "witnessName": "witness name three",
+            "witnessFamilyName": "witness last name three"
+          }
+        },
+        "witnessListElement3": {
+          "value": [
+            {
+              "code": "witness name three",
+              "label": "witness last name three"
+            }
+          ],
+          "list_items": [
+            {
+              "code": "witness name three",
+              "label": "witness last name three"
+            }
+          ]
+        },
+        "witness3InterpreterSignLanguage": {
+          "languageManualEntry": [],
+          "languageRefData": {
+            "value": {
+              "code": "ase",
+              "label": "American Sign Language (ASL)"
+            },
+            "list_items": [
+              {
+                "code": "ase",
+                "label": "American Sign Language (ASL)"
+              },
+              {
+                "code": "bfi",
+                "label": "British Sign Language (BSL)"
+              }
+            ]
+          }
+        },
+        "witness3InterpreterSpokenLanguage": {},
+        "isHearingRoomNeeded": "Yes",
+        "isHearingLoopNeeded": "Yes",
+        "physicalOrMentalHealthIssues": "Yes",
+        "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+        "pastExperiences": "Yes",
+        "pastExperiencesDescription": "Past experiences",
+        "multimediaEvidence": "Yes",
+        "multimediaEvidenceDescription": "Multimedia evidence",
+        "singleSexCourt": "Yes",
+        "singleSexCourtType": "All female",
+        "singleSexCourtTypeDescription": "Requirement for single sex court",
+        "inCameraCourt": "Yes",
+        "inCameraCourtDescription": "In camera court description",
+        "additionalRequests": "Yes",
+        "additionalRequestsDescription": "Additional requests description",
+        "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+        "datesToAvoid": [
+          {
+            "id": "1",
+            "value": {
+              "dateToAvoid": "2019-12-25",
+              "dateToAvoidReason": "Xmas"
+            }
+          }
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
