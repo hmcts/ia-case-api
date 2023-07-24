@@ -42,6 +42,7 @@ java:
         - em-stitching-enabled
         - launch-darkly-sdk-key
         - app-insights-connection-string
+        - ia-config-validator-secret
   postgresql:
     enabled: true
     image:
@@ -98,6 +99,7 @@ ia-case-payments-api:
           - AppInsightsInstrumentationKey
           - system-username
           - system-password
+          - ia-config-validator-secret
 
 ia-case-documents-api:
   enabled: true
@@ -143,6 +145,7 @@ ia-case-documents-api:
           - hearing-centre-birmingham-email
           - hearing-centre-hatton-cross-email
           - hearing-centre-glasgow-email
+          - ia-config-validator-secret
 
 ia-case-notifications-api:
   enabled: true
@@ -377,6 +380,8 @@ ia-bail-case-api:
             alias: LAUNCH_DARKLY_SDK_KEY
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-timed-event-service:
   enabled: true
@@ -410,6 +415,7 @@ ia-timed-event-service:
           - s2s-secret
           - s2s-microservice
           - app-insights-connection-string
+          - ia-config-validator-secret
     postgresql:
       enabled: true
 
@@ -437,6 +443,7 @@ ia-home-office-integration-api:
           - homeoffice-secret
           - AppInsightsInstrumentationKey
           - launch-darkly-sdk-key
+          - ia-config-validator-secret
 
 ia-case-access-api:
    enabled: true
@@ -456,6 +463,7 @@ ia-case-access-api:
            - s2s-secret
            - s2s-microservice
            - AppInsightsInstrumentationKey
+           - ia-config-validator-secret
 
 ia-aip-frontend:
   enabled: true
@@ -513,6 +521,7 @@ ia-aip-frontend:
           - docmosis-access-key
           - customer-services-telephone
           - customer-services-email
+          - ia-config-validator-secret
   redis:
     enabled: false
     architecture: standalone
