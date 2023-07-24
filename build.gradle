@@ -378,7 +378,6 @@ dependencies {
     testImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
     testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
     testImplementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-    testImplementation group: 'pl.pojo', name: 'pojo-tester', version: '0.7.6'
     //pact contract testing
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.41'
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
