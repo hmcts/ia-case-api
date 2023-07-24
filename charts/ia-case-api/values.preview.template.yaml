@@ -130,6 +130,38 @@ ia-case-notifications-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    keyVaults:
+      ia:
+        secrets:
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: dm-url
+            alias: DM_URL
+          - name: ccd-url
+            alias: CCD_URL
+          - name: idam-url
+            alias: IDAM_URL
+          - name: s2s-url
+            alias: S2S_URL
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+
 
 ia-bail-case-api:
   enabled: true
