@@ -11,7 +11,7 @@
         <notes>![CDATA[
         False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
 
-        We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
+        We do not use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
         Try to remove it when a dependencycheck upgrade becomes available.
         If this still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
         ]]</notes>
