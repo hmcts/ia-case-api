@@ -86,7 +86,7 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private List<IdValue<StrategicCaseFlag>> mapWitnessesToFlag(List<IdValue<WitnessDetails>> witnessDetails) {
         return witnessDetails.stream().map(details -> {
-            String witnessName = details.getValue().getWitnessFullName();
+            String witnessName = details.getValue().buildWitnessFullName();
             if (witnessName.isBlank()) {
                 return null;
             } else {
