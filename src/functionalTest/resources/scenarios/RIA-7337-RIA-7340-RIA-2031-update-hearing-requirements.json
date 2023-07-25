@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2031 Update hearing requirements",
+  "description": "RIA-7337 RIA-7340 RIA-2031 Update hearing requirements",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "caseFlagId": "7337-7340-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -175,7 +176,31 @@
         "multimediaTribunalResponse": null,
         "singleSexCourtTribunalResponse": null,
         "inCameraCourtTribunalResponse": null,
-        "additionalTribunalResponse": null
+        "additionalTribunalResponse": null,
+        "appellantLevelFlags": {
+          "partyName": "Talha Awan",
+          "roleOnCase": "Appellant",
+          "details": [
+            {
+              "id": "7337-7340-ABC",
+              "value": {
+                "name": "Hearing loop (hearing enhancement system)",
+                "status": "Active",
+                "flagCode": "RA0043",
+                "hearingRelevant": "Yes"
+              }
+            },
+            {
+              "id": "7337-7340-ABC",
+              "value": {
+                "name": "Step free / wheelchair access",
+                "status": "Active",
+                "flagCode": "RA0019",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
       }
     }
   }

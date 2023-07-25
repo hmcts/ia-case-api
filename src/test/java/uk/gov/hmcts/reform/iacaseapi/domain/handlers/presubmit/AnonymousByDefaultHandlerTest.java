@@ -13,10 +13,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AnonymousByDefaultHandler.ANONIMITY_CASE_FLAG_CODE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AnonymousByDefaultHandler.ANONIMITY_CASE_FLAG_NAME;
 
 import java.util.List;
 import java.util.Optional;
@@ -94,8 +93,8 @@ public class AnonymousByDefaultHandlerTest {
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
                 .builder()
-                .flagCode(ANONIMITY_CASE_FLAG_CODE)
-                .name(ANONIMITY_CASE_FLAG_NAME)
+                .flagCode(ANONYMITY.getFlagCode())
+                .name(ANONYMITY.getName())
                 .status("Inactive")
                 .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
@@ -149,8 +148,8 @@ public class AnonymousByDefaultHandlerTest {
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
                 .builder()
-                .flagCode(ANONIMITY_CASE_FLAG_CODE)
-                .name(ANONIMITY_CASE_FLAG_NAME)
+                .flagCode(ANONYMITY.getFlagCode())
+                .name(ANONYMITY.getName())
                 .status("Active")
                 .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
