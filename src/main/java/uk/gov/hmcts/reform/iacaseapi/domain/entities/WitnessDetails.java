@@ -18,7 +18,7 @@ public class WitnessDetails {
         this.witnessName = witnessName;
     }
 
-    public String getWitnessFullName() {
+    public String buildWitnessFullName() {
         String givenNames = witnessName == null ? " " : witnessName;
         String familyName = witnessFamilyName == null ? " " : witnessFamilyName;
 

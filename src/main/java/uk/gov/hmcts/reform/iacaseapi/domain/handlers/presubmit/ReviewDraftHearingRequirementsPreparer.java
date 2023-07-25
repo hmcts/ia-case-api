@@ -78,7 +78,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         witnessDetails.ifPresent(idValues -> asylumCase.write(WITNESS_DETAILS_READONLY, idValues
             .stream()
-            .map(w -> String.format("Name\t\t%s", w.getValue().getWitnessFullName()))
+            .map(w -> String.format("Name\t\t%s", w.getValue().buildWitnessFullName()))
             .collect(Collectors.joining("\n"))));
 
         interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
