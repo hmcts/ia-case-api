@@ -22,6 +22,7 @@ def secrets = [
     secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
     secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
     secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+    secret('app-insights-connection-string', 'app-insights-connection-string'),
     secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET'),
 
     secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),

@@ -45,8 +45,8 @@ public class PostSubmitCallbackController {
     @Operation(
         summary = "Handles 'SubmittedEvent' callbacks from CCD",
         security = {
-                @SecurityRequirement(name = "Authorization"),
-                @SecurityRequirement(name = "ServiceAuthorization")},
+            @SecurityRequirement(name = "Authorization"),
+            @SecurityRequirement(name = "ServiceAuthorization")},
         responses = {
             @ApiResponse(
                 responseCode = "200",
