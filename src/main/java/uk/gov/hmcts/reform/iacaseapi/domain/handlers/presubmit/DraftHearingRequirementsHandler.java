@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,6 +104,17 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.clear(HEARING_REQUIREMENTS);
         } else {
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        }
+
+        boolean isInterpreterServicesNeeded = asylumCase
+            .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (!isInterpreterServicesNeeded) {
+            asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+            asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

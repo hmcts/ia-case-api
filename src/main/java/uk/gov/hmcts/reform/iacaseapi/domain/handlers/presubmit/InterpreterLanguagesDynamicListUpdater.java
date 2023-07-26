@@ -97,9 +97,20 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
 
         String pageId = callback.getPageId();
 
+        boolean hasSpokenLang = callback.getCaseDetailsBefore()
+            .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class).isPresent())
+            .orElse(false);
+        boolean hasSignLang = callback.getCaseDetailsBefore()
+            .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class).isPresent())
+            .orElse(false);
+
         if (Objects.equals(pageId, DRAFT_HEARING_REQUIREMENTS_PAGE_ID)) {
-            populateDynamicList(asylumCase, INTERPRETER_LANGUAGES, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
-            populateDynamicList(asylumCase, SIGN_LANGUAGES, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            if (!hasSpokenLang) {
+                populateDynamicList(asylumCase, INTERPRETER_LANGUAGES, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            }
+            if (!hasSignLang) {
+                populateDynamicList(asylumCase, SIGN_LANGUAGES, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            }
         }
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);

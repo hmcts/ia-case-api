@@ -129,6 +129,19 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
+    void should_clear_appellant_language_fields_if_interpreter_services_not_required() {
+
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
     void should_set_witness_count_and_available_fields() {
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
