@@ -42,3 +42,5 @@ java:
           alias: LAUNCH_DARKLY_SDK_KEY
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET

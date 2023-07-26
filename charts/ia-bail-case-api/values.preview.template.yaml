@@ -26,4 +26,4 @@ java:
         - s2s-microservice
         - prof-ref-data-url
         - launch-darkly-sdk-key
-
+        - ia-config-validator-secret
