@@ -542,6 +542,19 @@ idam-pr:
     ccd_data_store_api:
       - https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
 
+ccd-case-document-am-api:
+  enabled: true
+  java:
+    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+    releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
+    environment:
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
+
 xui-webapp:
   enabled: true
   nodejs:
@@ -565,6 +578,7 @@ xui-webapp:
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
+      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
