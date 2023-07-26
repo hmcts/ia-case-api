@@ -69,3 +69,5 @@ ccd:
   enabled: false
 ia-aip-frontend:
   enabled: false
+ccd-case-document-am-api:
+  enabled: false
