@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -25,7 +26,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
             if (HandlerUtils.isAipJourney(asylumCase) && directionTo != Parties.RESPONDENT) {
                 log.error("Cannot send a direction for an AIP case to appellant");
                 return new EventValid("You cannot use this function to send a direction to an appellant in person.");
-            } else if (HandlerUtils.isRepJourney(asylumCase) && directionTo == Parties.APPELLANT) {
+            } else if (HandlerUtils.isRepJourney(asylumCase) && List.of(Parties.APPELLANT_AND_RESPONDENT, Parties.APPELLANT).contains(directionTo)) {
                 log.error("Cannot send an appellant a direction for a repped case");
                 return new EventValid("This is a legally represented case. You cannot select appellant as the recipient.");
             } else if (HandlerUtils.isInternalCase(asylumCase) && (directionTo == Parties.BOTH || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
