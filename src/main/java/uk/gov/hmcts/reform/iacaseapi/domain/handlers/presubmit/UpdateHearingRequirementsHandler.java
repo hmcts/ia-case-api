@@ -6,6 +6,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.Collections;
 import java.util.List;
@@ -107,6 +112,10 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
         }
 
+        if (witnessDetails.isEmpty()) {
+            clearWitnessRelatedFields(asylumCase);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -166,6 +175,15 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
                 }
             }
         }
+    }
+
+    private void clearWitnessRelatedFields(AsylumCase asylumCase) {
+        // to be called if the witness collection is updated to empty
+        WITNESS_N_FIELD.forEach(asylumCase::clear);
+        WITNESS_LIST_ELEMENT_N_FIELD.forEach(asylumCase::clear);
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
     }
 }
 
