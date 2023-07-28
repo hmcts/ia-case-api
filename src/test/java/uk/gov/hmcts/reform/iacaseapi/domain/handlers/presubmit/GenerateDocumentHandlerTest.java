@@ -301,7 +301,8 @@ class GenerateDocumentHandlerTest {
                         REQUEST_CASE_BUILDING,
                         REQUEST_RESPONDENT_REVIEW,
                         UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                        ASYNC_STITCHING_COMPLETE
+                        ASYNC_STITCHING_COMPLETE,
+                        RECORD_OUT_OF_TIME_DECISION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
