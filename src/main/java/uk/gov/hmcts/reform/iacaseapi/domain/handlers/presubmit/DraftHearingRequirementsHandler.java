@@ -4,6 +4,11 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,6 +120,15 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
             asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
             asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+        }
+
+        if (witnessDetails.isEmpty()) {
+            // if no witnesses present clear all witness-related fields
+            WITNESS_N_FIELD.forEach(asylumCase::clear);
+            WITNESS_LIST_ELEMENT_N_FIELD.forEach(asylumCase::clear);
+            WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
+            WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
+            WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

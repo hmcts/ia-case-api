@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesMidEventHandler.WITNESS_LIST_ELEMENT_N_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesMidEventHandler.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,30 +45,6 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String IS_CHILD_REQUIRED = "Y";
     public static final String YES = "Yes";
-    protected static final List<AsylumCaseFieldDefinition> WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE = List.of(
-        WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE,
-        WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE
-        );
-    protected static final List<AsylumCaseFieldDefinition> WITNESS_N_INTERPRETER_SIGN_LANGUAGE = List.of(
-        WITNESS_1_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_2_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_3_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_4_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_5_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_6_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_7_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_8_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_9_INTERPRETER_SIGN_LANGUAGE,
-        WITNESS_10_INTERPRETER_SIGN_LANGUAGE
-    );
     private static final String SPOKEN = "spokenLanguageInterpreter";
     private static final String SIGN = "signLanguageInterpreter";
 
