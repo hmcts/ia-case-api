@@ -103,7 +103,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_CASE_BUILDING,
             Event.REQUEST_RESPONDENT_REVIEW,
             Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-            Event.ASYNC_STITCHING_COMPLETE
+            Event.ASYNC_STITCHING_COMPLETE,
+            Event.RECORD_OUT_OF_TIME_DECISION
         );
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.SUBMIT_CASE);
