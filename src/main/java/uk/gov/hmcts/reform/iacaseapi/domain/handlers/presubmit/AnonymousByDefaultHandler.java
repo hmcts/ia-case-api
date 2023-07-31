@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
@@ -28,6 +29,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final DateProvider systemDateProvider;
+
+    public AnonymousByDefaultHandler(DateProvider systemDateProvider) {
+        this.systemDateProvider = systemDateProvider;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -68,6 +75,7 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 .flagCode(ANONYMITY.getFlagCode())
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
+                .dateTimeCreated(systemDateProvider.nowWithTime().toString())
                 .build();
             List<CaseFlagDetail> caseFlagDetails = new ArrayList<>();
             String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
