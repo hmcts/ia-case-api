@@ -15,6 +15,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -200,6 +205,7 @@ class UpdateHearingRequirementsHandlerTest {
     @Test
     void should_set_appellant_interpreter_sign_language_when_only_sign_language_category_selected() {
 
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
             .thenReturn(Optional.of(List.of(SIGN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
@@ -215,6 +221,7 @@ class UpdateHearingRequirementsHandlerTest {
     @Test
     void should_set_appellant_interpreter_spoken_language_when_only_spoken_language_category_selected() {
 
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
                 .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
@@ -230,6 +237,7 @@ class UpdateHearingRequirementsHandlerTest {
     @Test
     void should_set_appellant_interpreter_spoken_and_sign_language_when_spoken_and_sign_language_categories_selected() {
 
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
                 .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
@@ -240,6 +248,30 @@ class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase, times(0)).clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase, times(0)).clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
 
+    }
+
+    @Test
+    void should_clear_all_appellant_interpreter_fields_if_interprerer_services_not_required() {
+
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_all_witness_related_fields_if_no_witnesses_in_collection() {
+
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.empty());
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        WITNESS_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_LIST_ELEMENT_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
     }
 
     @Test

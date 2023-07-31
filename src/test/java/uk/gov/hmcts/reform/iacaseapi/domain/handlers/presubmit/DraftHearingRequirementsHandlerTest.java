@@ -11,6 +11,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -126,6 +131,32 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(0)).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(0)).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
+    }
+
+    @Test
+    void should_clear_appellant_language_fields_if_interpreter_services_not_required() {
+
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_all_witness_related_fields_if_no_witnesses_in_collection() {
+
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.empty());
+        draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        WITNESS_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_LIST_ELEMENT_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
     }
 
     @Test

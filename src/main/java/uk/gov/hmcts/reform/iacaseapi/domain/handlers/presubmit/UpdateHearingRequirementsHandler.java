@@ -5,13 +5,23 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -71,9 +81,9 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
 
         asylumCase.write(WITNESS_COUNT, witnessDetails.size());
 
-        asylumCase.write(DISABLE_OVERVIEW_PAGE, YesOrNo.YES);
+        asylumCase.write(DISABLE_OVERVIEW_PAGE, YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.UNKNOWN);
-        asylumCase.write(UPDATE_HEARING_REQUIREMENTS_EXISTS, YesOrNo.YES);
+        asylumCase.write(UPDATE_HEARING_REQUIREMENTS_EXISTS, YES);
 
         changeUpdateHearingsApplicationsToCompleted(asylumCase);
         asylumCase.clear(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS);
@@ -97,9 +107,13 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
         asylumCase.clear(IN_CAMERA_COURT_DECISION_FOR_DISPLAY);
         asylumCase.clear(OTHER_DECISION_FOR_DISPLAY);
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)
             && featureToggler.getValue("reheard-feature", false)) {
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
+        }
+
+        if (witnessDetails.isEmpty()) {
+            clearWitnessRelatedFields(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -133,23 +147,43 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
     }
 
     private void ensureOnlySelectedLanguageCategoryIsSet(AsylumCase asylumCase) {
-        Optional<List<String>> languageCategoriesOptional = asylumCase
+        boolean isInterpreterServicesNeeded = asylumCase
+            .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (!isInterpreterServicesNeeded) {
+            asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+            asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+        } else {
+            Optional<List<String>> languageCategoriesOptional = asylumCase
                 .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
-        if (languageCategoriesOptional.isPresent()) {
-            List<String> languageCategories = languageCategoriesOptional.get();
-            Optional<InterpreterLanguageRefData> appellantInterpreterSpokenLanguage = asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
-            Optional<InterpreterLanguageRefData> appellantInterpreterSignLanguage = asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            if (languageCategoriesOptional.isPresent()) {
+                List<String> languageCategories = languageCategoriesOptional.get();
+                Optional<InterpreterLanguageRefData> appellantInterpreterSpokenLanguage = asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+                Optional<InterpreterLanguageRefData> appellantInterpreterSignLanguage = asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
 
-            if (appellantInterpreterSpokenLanguage.isPresent()
+                if (appellantInterpreterSpokenLanguage.isPresent()
                     && !languageCategories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
-                asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
-            }
+                    asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+                }
 
-            if (appellantInterpreterSignLanguage.isPresent()
+                if (appellantInterpreterSignLanguage.isPresent()
                     && !languageCategories.contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
-                asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+                    asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+                }
             }
         }
+    }
+
+    private void clearWitnessRelatedFields(AsylumCase asylumCase) {
+        // to be called if the witness collection is updated to empty
+        WITNESS_N_FIELD.forEach(asylumCase::clear);
+        WITNESS_LIST_ELEMENT_N_FIELD.forEach(asylumCase::clear);
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
     }
 }
 
