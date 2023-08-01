@@ -4,9 +4,12 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -77,6 +80,20 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 }
             }
         } else if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
+            if (callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT) {
+                // Will only happen for LR as Admins are not allowed to make a OOC appeal as of now.
+                CaseDetails<AsylumCase> previousCaseDetails = callback.getCaseDetailsBefore().orElseThrow(() -> new RequiredFieldMissingException("Previous Case Details not found"));
+                AsylumCase previousCaseData = previousCaseDetails.getCaseData();
+                System.out.println("OOC to in country log before");
+                if (previousCaseData.read(APPELLANT_IN_UK, YesOrNo.class).equals(Optional.of(YesOrNo.NO)) && appellantInUk.equals(YesOrNo.YES)) {
+                    System.out.println("OOC to in country log after");
+                    asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
+                    //asylumCase.clear(GWF_REFERENCE_NUMBER);
+                    //asylumCase.clear(DATE_ENTRY_CLEARANCE_DECISION);
+                    //asylumCase.clear(DATE_CLIENT_LEAVE_UK);
+                    //asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                }
+            }
             if (isAdmin.equals(YesOrNo.YES) && appellantInUk.equals(YesOrNo.NO)) {
                 response.addError("This option is currently unavailable");
             }
