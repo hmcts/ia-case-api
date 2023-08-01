@@ -45,7 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class WitnessesMidEventHandlerTest {
+public class WitnessesDraftMidEventHandlerTest {
 
     private static final String IS_WITNESSES_ATTENDING = "isWitnessesAttending";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
@@ -62,11 +62,11 @@ public class WitnessesMidEventHandlerTest {
     private String witnessName = "name";
     private String witnessFamilyName = "lastName";
 
-    private WitnessesMidEventHandler witnessesMidEventHandler;
+    private WitnessesDraftMidEventHandler witnessesDraftMidEventHandler;
 
     @BeforeEach
     public void setup() {
-        witnessesMidEventHandler = new WitnessesMidEventHandler();
+        witnessesDraftMidEventHandler = new WitnessesDraftMidEventHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(witnessDetails.getWitnessName()).thenReturn(witnessName);
@@ -82,7 +82,7 @@ public class WitnessesMidEventHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesMidEventHandler.handle(MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         assertEquals(1, response.getErrors().size());
         assertTrue(response.getErrors().contains(WITNESSES_NUMBER_EXCEEDED_ERROR));
@@ -96,7 +96,7 @@ public class WitnessesMidEventHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesMidEventHandler.handle(MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         assertTrue(response.getErrors().isEmpty());
     }
@@ -111,7 +111,7 @@ public class WitnessesMidEventHandlerTest {
         when(callback.getPageId()).thenReturn(IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesMidEventHandler.handle(MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         DynamicMultiSelectList dynamicMultiSelectListEmpty = new DynamicMultiSelectList();
         DynamicMultiSelectList dynamicMultiSelectList = new DynamicMultiSelectList(Collections.emptyList(),
@@ -154,13 +154,13 @@ public class WitnessesMidEventHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
-            () -> witnessesMidEventHandler.handle(ABOUT_TO_START, callback))
+            () -> witnessesDraftMidEventHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(SEND_DIRECTION);
         assertThatThrownBy(
-            () -> witnessesMidEventHandler.handle(ABOUT_TO_START, callback))
+            () -> witnessesDraftMidEventHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -175,7 +175,7 @@ public class WitnessesMidEventHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
-                boolean canHandle = witnessesMidEventHandler.canHandle(callbackStage, callback);
+                boolean canHandle = witnessesDraftMidEventHandler.canHandle(callbackStage, callback);
 
                 if (Set.of(DRAFT_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS).contains(event)
                     && callbackStage == MID_EVENT

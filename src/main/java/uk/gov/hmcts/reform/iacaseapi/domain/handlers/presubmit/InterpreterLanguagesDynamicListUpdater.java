@@ -32,21 +32,21 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @Component
 public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallbackHandler<AsylumCase> {
 
-    RefDataUserService refDataUserService;
+    static RefDataUserService refDataUserService;
 
     public InterpreterLanguagesDynamicListUpdater(RefDataUserService refDataUserService) {
         this.refDataUserService = refDataUserService;
     }
 
-    private static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
     private static final String DRAFT_HEARING_REQUIREMENTS_PAGE_ID = "draftHearingRequirements";
     private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String IS_CHILD_REQUIRED = "Y";
     public static final String YES = "Yes";
-    private static final String SPOKEN = "spokenLanguageInterpreter";
-    private static final String SIGN = "signLanguageInterpreter";
+    protected static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
+    protected static final String SPOKEN = "spokenLanguageInterpreter";
+    protected static final String SIGN = "signLanguageInterpreter";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -56,7 +56,7 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && List.of(Event.DRAFT_HEARING_REQUIREMENTS, Event.UPDATE_HEARING_REQUIREMENTS)
+            && List.of(Event.DRAFT_HEARING_REQUIREMENTS)
                 .contains(callback.getEvent());
     }
 
@@ -149,7 +149,7 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         asylumCase.write(languageCategoryDefinition, interpreterLanguage);
     }
 
-    private InterpreterLanguageRefData generateDynamicList(String languageCategory) {
+    protected static InterpreterLanguageRefData generateDynamicList(String languageCategory) {
         List<CategoryValues> languages;
         DynamicList dynamicListOfLanguages;
 

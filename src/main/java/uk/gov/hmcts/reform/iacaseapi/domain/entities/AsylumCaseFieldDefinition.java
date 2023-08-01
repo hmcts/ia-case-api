@@ -764,8 +764,14 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_COUNT(
         "witnessCount", new TypeReference<String>() {}),
 
+    IS_WITNESSES_ATTENDING(
+        "isWitnessesAttending", new TypeReference<YesOrNo>() {}),
+
     IS_INTERPRETER_SERVICES_NEEDED(
         "isInterpreterServicesNeeded", new TypeReference<YesOrNo>(){}),
+
+    IS_ANY_WITNESS_INTERPRETER_REQUIRED(
+        "isAnyWitnessInterpreterRequired", new TypeReference<YesOrNo>(){}),
 
     WITNESS_DETAILS(
         "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
