@@ -1812,6 +1812,8 @@ public enum AsylumCaseFieldDefinition {
     IS_HEARING_LOOP_NEEDED(
             "isHearingLoopNeeded", new TypeReference<YesOrNo>(){}),
 
+    IN_CAMERA_COURT("inCameraCourt", new TypeReference<YesOrNo>(){}),
+
     // This is not actually a real case field. It is used to determine
     // the case flag id for the purpose of functional test
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){});
