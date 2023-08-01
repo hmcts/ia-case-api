@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
@@ -36,6 +37,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 class HearingRequirementsAppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final DateProvider systemDateProvider;
+
+    public HearingRequirementsAppellantCaseFlagsHandler(DateProvider systemDateProvider) {
+        this.systemDateProvider = systemDateProvider;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -109,6 +116,7 @@ class HearingRequirementsAppellantCaseFlagsHandler implements PreSubmitCallbackH
                 .name(caseFlagType.getName())
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
+                .dateTimeCreated(systemDateProvider.nowWithTime().toString())
                 .build();
         String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
         List<CaseFlagDetail> caseFlagDetails = existingCaseFlagDetails.isEmpty()
@@ -131,6 +139,7 @@ class HearingRequirementsAppellantCaseFlagsHandler implements PreSubmitCallbackH
                         .name(value.getName())
                         .status("Inactive")
                         .hearingRelevant(value.getHearingRelevant())
+                        .dateTimeModified(systemDateProvider.nowWithTime().toString())
                         .build());
                 } else {
                     return detail;
