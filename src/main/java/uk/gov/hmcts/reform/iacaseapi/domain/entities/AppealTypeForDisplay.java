@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public enum AppealTypeForDisplay {
 
-    RP("revocationOfProtection", "Revocation of a protection status"),
+    RP("revocationOfProtection", " of a protection status"),
     PA("protection", "Refusal of protection claim"),
     EA("refusalOfEu", "Refusal of application under the EEA regulations"),
     HU("refusalOfHumanRights", "Refusal of a human rights claim"),
