@@ -260,7 +260,7 @@ dependencyManagement {
 
     dependencies {
 
-        dependencySet(group: 'com.google.guava', version: '31.1-jre') {
+        dependencySet(group: 'com.google.guava', version: '32.1.2-jre') {
             entry 'guava'
         }
 
