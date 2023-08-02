@@ -20,10 +20,7 @@
     ]]</notes>
     <cve>CVE-2022-45688</cve>
   </suppress>
-  <suppress until="2023-07-30">
-    <cve>CVE-2023-20883</cve>
-    <cve>CVE-2023-35116</cve>
-    <cve>CVE-2023-2976</cve>
-    <cve>CVE-2023-34981</cve>
+  <suppress until="2023-08-31">
+    <cve>CVE-2023-35116</cve><!-- 2023-08-02 latest version is 2.15.2 and is still vulnerable -->
   </suppress>
 </suppressions>
