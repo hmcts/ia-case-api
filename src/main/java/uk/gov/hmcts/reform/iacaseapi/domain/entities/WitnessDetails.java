@@ -19,8 +19,8 @@ public class WitnessDetails {
     }
 
     public String buildWitnessFullName() {
-        String givenNames = witnessName == null ? " " : witnessName;
-        String familyName = witnessFamilyName == null ? " " : witnessFamilyName;
+        String givenNames = getWitnessName() == null ? " " : getWitnessName();
+        String familyName = getWitnessFamilyName() == null ? " " : getWitnessFamilyName();
 
         return !(givenNames.isBlank() || familyName.isBlank()) ? givenNames + " " + familyName : givenNames;
     }

@@ -6,7 +6,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_WITNESSES_ATTENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
@@ -22,7 +23,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.Interprete
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SIGN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SPOKEN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.generateDynamicList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,9 +58,13 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
     private static final String APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID = "appellantInterpreterSignLanguage";
     private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
-    private static final String ADDITIONAL_INSTRUCTIONS_PAGE_ID = "additionalInstructions";
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
     private List<AsylumCaseFieldDefinition> fieldsToBeCleared = new ArrayList<>();
+    private InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater;
+
+    public WitnessesUpdateMidEventHandler(InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater) {
+        this.interpreterLanguagesDynamicListUpdater = interpreterLanguagesDynamicListUpdater;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -79,6 +83,8 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
             IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID).contains(pageId))
                || (callbackStage == ABOUT_TO_SUBMIT
                    && callback.getEvent().equals(UPDATE_HEARING_REQUIREMENTS));
+        // using this handler at the ABOUT_TO_SUBMIT stage as well is necessary in order to clear
+        // the unnecessary fields collected in this class (fieldsToBeCleared) throughout the event
     }
 
     @Override
@@ -165,8 +171,10 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
 
             case WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID:
 
-                InterpreterLanguageRefData spokenLanguages = generateDynamicList(INTERPRETER_LANGUAGES);
-                InterpreterLanguageRefData signLanguages = generateDynamicList(SIGN_LANGUAGES);
+                InterpreterLanguageRefData spokenLanguages = interpreterLanguagesDynamicListUpdater
+                    .generateDynamicList(INTERPRETER_LANGUAGES);
+                InterpreterLanguageRefData signLanguages = interpreterLanguagesDynamicListUpdater
+                    .generateDynamicList(SIGN_LANGUAGES);
 
                 Map<Integer,List<String>> witnessIndexToInterpreterNeeded = new HashMap<>();
 
@@ -245,14 +253,12 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                         }
                         if (!witnessIndexToInterpreterNeeded.get(j).contains(SIGN)) {
                             asylumCase.clear(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(j));
-                            fieldsToBeCleared.add(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(j));
+                            fieldsToBeCleared.add(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(j));
                         }
                     }
                     j++;
                 }
-            //
-            //case ADDITIONAL_INSTRUCTIONS_PAGE_ID:
-            //    fieldsToBeCleared.forEach(asylumCase::clear);
+
             default:
                 break;
         }
@@ -359,4 +365,11 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
         return asylumCase;
     }
 
+    public List<AsylumCaseFieldDefinition> getFieldsToBeCleared() {
+        return fieldsToBeCleared;
+    }
+
+    public void setFieldsToBeCleared(List<AsylumCaseFieldDefinition> fieldsToBeCleared) {
+        this.fieldsToBeCleared = fieldsToBeCleared;
+    }
 }

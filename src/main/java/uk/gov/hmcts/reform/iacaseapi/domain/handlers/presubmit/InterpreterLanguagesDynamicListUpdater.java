@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @Component
 public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallbackHandler<AsylumCase> {
 
-    static RefDataUserService refDataUserService;
+    private final RefDataUserService refDataUserService;
 
     public InterpreterLanguagesDynamicListUpdater(RefDataUserService refDataUserService) {
         this.refDataUserService = refDataUserService;
@@ -149,7 +149,7 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         asylumCase.write(languageCategoryDefinition, interpreterLanguage);
     }
 
-    protected static InterpreterLanguageRefData generateDynamicList(String languageCategory) {
+    public InterpreterLanguageRefData generateDynamicList(String languageCategory) {
         List<CategoryValues> languages;
         DynamicList dynamicListOfLanguages;
 

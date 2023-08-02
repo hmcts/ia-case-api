@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LIST_ELEMENT_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LIST_ELEMENT_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
@@ -30,8 +32,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,7 +64,6 @@ class InterpreterLanguagesDynamicListUpdaterTest {
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String IS_CHILD_REQUIRED = "Y";
 
-    private InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -75,8 +74,6 @@ class InterpreterLanguagesDynamicListUpdaterTest {
     private AsylumCase asylumCase;
     @Mock
     private AsylumCase asylumCaseBefore;
-    @Mock
-    private RefDataUserService refDataUserService;
     @Mock
     private CommonDataResponse commonDataResponse;
     @Mock
@@ -92,23 +89,26 @@ class InterpreterLanguagesDynamicListUpdaterTest {
     @Mock
     private DynamicMultiSelectList witnessListElement2;
 
+    private RefDataUserService refDataUserService;
+    private InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater;
+
     @BeforeEach
-    public void setUp() {
+    void setup() {
+        refDataUserService = mock(RefDataUserService.class);
         interpreterLanguagesDynamicListUpdater =
             new InterpreterLanguagesDynamicListUpdater(refDataUserService);
 
-        when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"DRAFT_HEARING_REQUIREMENTS", "UPDATE_HEARING_REQUIREMENTS"})
-    void should_populate_dynamic_list(Event event) {
+    @Test
+    void should_populate_dynamic_list() {
         List<CategoryValues> languages = List.of(categoryValues);
         List<Value> values = List.of(value);
 
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(DRAFT_HEARING_REQUIREMENTS_PAGE_ID);
         when(refDataUserService.retrieveCategoryValues(INTERPRETER_LANGUAGES, IS_CHILD_REQUIRED))
             .thenReturn(commonDataResponse);
@@ -211,7 +211,7 @@ class InterpreterLanguagesDynamicListUpdaterTest {
 
                 boolean canHandle = interpreterLanguagesDynamicListUpdater.canHandle(callbackStage, callback);
 
-                if (List.of(Event.DRAFT_HEARING_REQUIREMENTS, Event.UPDATE_HEARING_REQUIREMENTS).contains(event)
+                if (event.equals(DRAFT_HEARING_REQUIREMENTS)
                     && callbackStage == PreSubmitCallbackStage.MID_EVENT) {
 
                     assertTrue(canHandle);
