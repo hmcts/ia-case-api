@@ -20,7 +20,6 @@
     <suppress until="2023-07-27">
         <notes>Temporarily suppress vulnerability</notes>
         <cve>CVE-2023-20862</cve><!-- spring-security -->
-        <cve>CVE-2023-20883</cve><!-- spring-boot -->
         <cve>CVE-2023-35116</cve><!-- jackson-databind -->
         <cve>CVE-2023-2976</cve><!-- guava -->
         <cve>CVE-2023-34981</cve><!-- tomcat -->
