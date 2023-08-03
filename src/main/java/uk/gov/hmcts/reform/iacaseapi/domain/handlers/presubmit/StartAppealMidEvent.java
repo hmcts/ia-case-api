@@ -84,14 +84,13 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 // Will only happen for LR as Admins are not allowed to make a OOC appeal as of now.
                 CaseDetails<AsylumCase> previousCaseDetails = callback.getCaseDetailsBefore().orElseThrow(() -> new RequiredFieldMissingException("Previous Case Details not found"));
                 AsylumCase previousCaseData = previousCaseDetails.getCaseData();
-                System.out.println("OOC to in country log before");
                 if (previousCaseData.read(APPELLANT_IN_UK, YesOrNo.class).equals(Optional.of(YesOrNo.NO)) && appellantInUk.equals(YesOrNo.YES)) {
-                    System.out.println("OOC to in country log after");
+                    // Clear out the OOC data
                     asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
-                    //asylumCase.clear(GWF_REFERENCE_NUMBER);
-                    //asylumCase.clear(DATE_ENTRY_CLEARANCE_DECISION);
-                    //asylumCase.clear(DATE_CLIENT_LEAVE_UK);
-                    //asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                    asylumCase.clear(GWF_REFERENCE_NUMBER);
+                    asylumCase.clear(DATE_ENTRY_CLEARANCE_DECISION);
+                    asylumCase.clear(DATE_CLIENT_LEAVE_UK);
+                    clearSponsorDetails(asylumCase);
                 }
             }
             if (isAdmin.equals(YesOrNo.YES) && appellantInUk.equals(YesOrNo.NO)) {
@@ -106,5 +105,16 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         return response;
+    }
+
+    private void clearSponsorDetails(AsylumCase asylumCase) {
+        asylumCase.clear(HAS_SPONSOR);
+        asylumCase.clear(SPONSOR_GIVEN_NAMES);
+        asylumCase.clear(SPONSOR_FAMILY_NAME);
+        asylumCase.clear(SPONSOR_ADDRESS);
+        asylumCase.clear(SPONSOR_CONTACT_PREFERENCE);
+        asylumCase.clear(SPONSOR_EMAIL);
+        asylumCase.clear(SPONSOR_MOBILE_NUMBER);
+        asylumCase.clear(SPONSOR_AUTHORISATION);
     }
 }
