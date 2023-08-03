@@ -202,6 +202,22 @@ class StartAppealMidEventTest {
         verify(asylumCase, never()).write(any(),any());
     }
 
+    @Test
+    void should_not_touch_home_office_reference_numbers_when_ooc_and_refuse_Permit_is_decided() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+                .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSE_PERMIT));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(any(),any());
+    }
+
     @ParameterizedTest
     @EnumSource(DetentionFacility.class)
     void should_set_is_accelerated_detained_value_to_no_if_prison_or_other_detention_facility(DetentionFacility detentionFacility) {

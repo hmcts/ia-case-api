@@ -41,3 +41,20 @@ resource "azurerm_key_vault_secret" "POSTGRES-PASS-11" {
   value        = module.ia_case_api_database_11.postgresql_password
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
+
+data "azurerm_key_vault_secret" "app_insights_connection_string" {
+  name      = "ia-app-insights-connection-string"
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "local_app_insights_connection_string" {
+  name         = "app-insights-connection-string"
+  value        = data.azurerm_key_vault_secret.app_insights_connection_string.value
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "local_ia_config_validator_secret" {
+  name         = "ia-config-validator-secret"
+  value        = "ok"
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}

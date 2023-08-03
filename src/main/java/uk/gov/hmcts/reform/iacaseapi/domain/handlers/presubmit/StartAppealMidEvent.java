@@ -66,7 +66,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
 
         if (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
             if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
-                    value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+                value -> (OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)
+                    || OutOfCountryDecisionType.REFUSE_PERMIT.equals(value))).orElse(false)) {
                 String homeOfficeReferenceNumber = asylumCase
                         .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                         .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
