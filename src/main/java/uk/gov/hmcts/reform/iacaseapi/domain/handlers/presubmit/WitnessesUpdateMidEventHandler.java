@@ -119,6 +119,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
 
         Map<Integer,Integer> newToOldWitnessesIndexes = newWitnessesToOldWitnessesIndexes(callback);
 
+        // CODE REPETITION IN THIS STATEMENT IS DUE TO CHECKSTYLE NOT PERMITTING FALLTHROUGH
         switch (pageId) {
             case IS_WITNESSES_ATTENDING_PAGE_ID:
 
@@ -140,21 +141,51 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 YesOrNo isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                     .orElse(NO);
-                if (isInterpreterServicesNeeded.equals(YES)) {
-                    break;
+                if (!isInterpreterServicesNeeded.equals(YES)) {
+                    if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                        // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
+                        clearWitnessIndividualFields(asylumCase);
+                        clearWitnessInterpreterLanguageFields(asylumCase);
+
+                    } else {
+                        optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
+                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                    }
                 }
+
+                break;
 
             case APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID:
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
-                if (appellantInterpreterLanguageCategory.contains(SPOKEN)) {
-                    break;
+                if (!appellantInterpreterLanguageCategory.contains(SPOKEN)) {
+                    if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                        // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
+                        clearWitnessIndividualFields(asylumCase);
+                        clearWitnessInterpreterLanguageFields(asylumCase);
+
+                    } else {
+                        optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
+                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                    }
                 }
+
+                break;
 
             case APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID:
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
-                if (appellantInterpreterLanguageCategory.contains(SIGN)) {
-                    break;
+                if (!appellantInterpreterLanguageCategory.contains(SIGN)) {
+                    if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                        // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
+                        clearWitnessIndividualFields(asylumCase);
+                        clearWitnessInterpreterLanguageFields(asylumCase);
+
+                    } else {
+                        optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
+                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                    }
                 }
+
+                break;
 
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID:
 
@@ -171,17 +202,11 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
 
             case WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID:
 
-                InterpreterLanguageRefData spokenLanguages = interpreterLanguagesDynamicListUpdater
-                    .generateDynamicList(INTERPRETER_LANGUAGES);
-                InterpreterLanguageRefData signLanguages = interpreterLanguagesDynamicListUpdater
-                    .generateDynamicList(SIGN_LANGUAGES);
-
-                Map<Integer,List<String>> witnessIndexToInterpreterNeeded = new HashMap<>();
-
-                int numberOfWitnesses = optionalWitnesses.map(List::size).orElse(0);
-
                 Map<Integer, InterpreterLanguageRefData> existingSpokenSelections = new HashMap<>();
                 Map<Integer, InterpreterLanguageRefData> existingSignSelections = new HashMap<>();
+
+                Map<Integer,List<String>> witnessIndexToInterpreterNeeded = new HashMap<>();
+                int numberOfWitnesses = optionalWitnesses.map(List::size).orElse(0);
 
                 newToOldWitnessesIndexes.forEach((n,o) -> {
                     oldAsylumCase
@@ -217,6 +242,11 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                 if (witnessIndexToInterpreterNeeded.isEmpty()) {
                     response.addError(NO_WITNESSES_SELECTED_ERROR);
                 }
+
+                InterpreterLanguageRefData spokenLanguages = interpreterLanguagesDynamicListUpdater
+                    .generateDynamicList(INTERPRETER_LANGUAGES);
+                InterpreterLanguageRefData signLanguages = interpreterLanguagesDynamicListUpdater
+                    .generateDynamicList(SIGN_LANGUAGES);
 
                 witnessIndexToInterpreterNeeded.forEach((index, interpretersNeeded) -> {
                     interpretersNeeded.forEach(interpreterCategory -> {
@@ -258,6 +288,8 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                     }
                     j++;
                 }
+
+                break;
 
             default:
                 break;

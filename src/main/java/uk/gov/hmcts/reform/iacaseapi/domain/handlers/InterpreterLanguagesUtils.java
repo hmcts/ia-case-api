@@ -87,7 +87,7 @@ public final class InterpreterLanguagesUtils {
     );
 
     /**
-     * Method to generate the structure of these five fields for the first time (draftHearingRequirements)
+     * Method to generate the structure of these five fields for the first time (draftHearingRequirements).
      * @param asylumCase The asylum case before the draftHearingRequirements event
      * @return           The asylum case enriched with the witness individual fields and the witness individual lists.
      */
@@ -124,17 +124,6 @@ public final class InterpreterLanguagesUtils {
         }
 
         return asylumCase;
-    }
-
-    private void nullifyAllWitnessFields(AsylumCase asylumCase) {
-        WITNESS_N_FIELD.forEach(field -> asylumCase.write(field, new WitnessDetails("", "")));
-        WITNESS_LIST_ELEMENT_N_FIELD.forEach(field -> asylumCase.write(field, new DynamicMultiSelectList()));
-        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> asylumCase.write(field, Collections.emptyList()));
-        DynamicList dummyDynamicList = new DynamicList("");
-        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field ->
-            asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
-        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field ->
-            asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
     }
 
     private static void clearAllWitnessFields(AsylumCase asylumCase) {
