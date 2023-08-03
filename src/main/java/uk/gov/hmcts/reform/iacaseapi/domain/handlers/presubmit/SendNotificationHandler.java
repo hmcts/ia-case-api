@@ -181,6 +181,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.APPLY_FOR_FTPA_RESPONDENT,
                 Event.REMOVE_DETAINED_STATUS,
                 Event.REINSTATE_APPEAL,
+                Event.RECORD_OUT_OF_TIME_DECISION,
                 Event.END_APPEAL,
                 Event.SUBMIT_APPEAL,
                 Event.UPDATE_HEARING_ADJUSTMENTS,

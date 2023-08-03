@@ -80,6 +80,19 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
+    void cannotSendDirectionToAppellantAndRespondentForReppedCase() {
+        setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.APPELLANT_AND_RESPONDENT);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(
+                new EventValid("This is a legally represented case. You cannot select appellant as the recipient."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+                .contains(Tuple.tuple("Cannot send an appellant a direction for a repped case", Level.ERROR));
+    }
+
+    @Test
     void canSendDirectionToLegalRepForReppedCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.LEGAL_REPRESENTATIVE);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
