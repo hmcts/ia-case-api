@@ -47,12 +47,9 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
     @Mock
     private DateProvider systemDateProvider;
-    
     private EvidenceInPrivateCaseFlagsHandler evidenceInPrivateCaseFlagsHandler;
-    
     private final String appellantDisplayName = "Test User";
 
     @BeforeEach
