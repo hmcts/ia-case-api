@@ -328,6 +328,7 @@ public class WitnessesUpdateMidEventHandlerTest {
 
         witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
 
+
         verify(asylumCase).write(WITNESS_1_INTERPRETER_SIGN_LANGUAGE, witness1SignLanguages);
         verify(asylumCase).write(WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE, spokenLanguages);
         verify(asylumCase).write(WITNESS_4_INTERPRETER_SIGN_LANGUAGE, signLanguages);
@@ -359,53 +360,6 @@ public class WitnessesUpdateMidEventHandlerTest {
         assertEquals(17, witnessesUpdateMidEventHandler.getFieldsToBeCleared().size());
     }
 
-    //@Test
-    //void should_fill_witness_list_elements() {
-    //    List<IdValue<WitnessDetails>> witnesses = Collections
-    //        .nCopies(10, new IdValue<>("1", witnessDetails));
-    //
-    //    when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
-    //    when(callback.getPageId()).thenReturn(IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID);
-    //    when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnesses));
-    //
-    //    PreSubmitCallbackResponse<AsylumCase> response = witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
-    //
-    //    DynamicMultiSelectList dynamicMultiSelectListEmpty = new DynamicMultiSelectList();
-    //    DynamicMultiSelectList dynamicMultiSelectList = new DynamicMultiSelectList(Collections.emptyList(),
-    //        List.of(new Value("name lastName", "name lastName"))
-    //    );
-    //
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_1), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_1), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_1), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_2), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_2), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_2), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_3), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_3), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_3), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_4), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_4), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_4), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_5), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_5), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_5), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_6), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_6), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_6), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_7), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_7), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_7), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_8), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_8), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_8), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_9), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_9), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_9), eq(dynamicMultiSelectList));
-    //    verify(asylumCase, times(2)).write(eq(WITNESS_10), any(WitnessDetails.class));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_10), eq(dynamicMultiSelectListEmpty));
-    //    verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_10), eq(dynamicMultiSelectList));
-    //}
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {

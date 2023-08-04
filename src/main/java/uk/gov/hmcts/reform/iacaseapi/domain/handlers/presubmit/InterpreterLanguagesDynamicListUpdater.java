@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
@@ -13,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -20,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -38,7 +44,7 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         this.refDataUserService = refDataUserService;
     }
 
-    private static final String DRAFT_HEARING_REQUIREMENTS_PAGE_ID = "draftHearingRequirements";
+    private static final String APPELLANT_INTERPRETER_LANGUAGE_CATEGORY = "appellantInterpreterLanguageCategory";
     private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
     public static final String SIGN_LANGUAGES = "SignLanguage";
@@ -56,8 +62,9 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && List.of(Event.DRAFT_HEARING_REQUIREMENTS)
-                .contains(callback.getEvent());
+               && Set.of(DRAFT_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS).contains(callback.getEvent())
+               && Set.of(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID)
+                   .contains(callback.getPageId());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -73,21 +80,56 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
                         .getCaseDetails()
                         .getCaseData();
 
+        AsylumCase asylumCaseBefore = callback.getCaseDetailsBefore()
+            .map(CaseDetails::getCaseData)
+            .orElse(asylumCase);
+
         String pageId = callback.getPageId();
+        Event event = callback.getEvent();
 
-        boolean hasSpokenLang = callback.getCaseDetailsBefore()
-            .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class).isPresent())
-            .orElse(false);
-        boolean hasSignLang = callback.getCaseDetailsBefore()
-            .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class).isPresent())
-            .orElse(false);
+        Optional<CaseDetails<AsylumCase>> optionalCaseDetailsBefore = callback.getCaseDetailsBefore();
 
-        if (Objects.equals(pageId, DRAFT_HEARING_REQUIREMENTS_PAGE_ID)) {
-            if (!hasSpokenLang) {
-                populateDynamicList(asylumCase, INTERPRETER_LANGUAGES, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        Optional<InterpreterLanguageRefData> appellantSpokenLanguage = optionalCaseDetailsBefore
+            .flatMap(caseDetailsBefore ->
+                caseDetailsBefore.getCaseData()
+                    .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class));
+
+        Optional<InterpreterLanguageRefData> appellantSignLanguage = optionalCaseDetailsBefore
+            .flatMap(caseDetailsBefore ->
+                caseDetailsBefore.getCaseData()
+                    .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class));
+
+        boolean shouldPopulateSpokenLanguage = appellantSpokenLanguage
+            .map(appellantSpoken -> appellantSpoken.getLanguageRefData() == null)
+            .orElse(true);
+
+        boolean shouldPopulateSignLanguage = appellantSignLanguage
+            .map(appellantSign -> appellantSign.getLanguageRefData() == null)
+            .orElse(true);
+
+        // POPULATE APPELLANT INTERPRETER LANGUAGE DYNAMIC LIST IF NECESSARY
+        // TO BE RUN FOR: 1) DRAFT_HEARING_REQUIREMENTS 2) UPDATE_HEARING_REQUIREMENTS
+
+        //boolean hasRefDataSpokenLangPopulated = callback.getCaseDetailsBefore()
+        //    .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
+        //        .orElse(new InterpreterLanguageRefData(new DynamicList(null, Collections.emptyList()), Collections.emptyList(), null))
+        //        .getLanguageRefData() != null)
+        //    .orElse(false);
+        //
+        //
+        //boolean hasRefDataSignLangPopulated = callback.getCaseDetailsBefore()
+        //    .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
+        //        .orElse(new InterpreterLanguageRefData(new DynamicList(null, Collections.emptyList()), Collections.emptyList(), null))
+        //        .getLanguageRefData() != null)
+        //    .orElse(false);
+
+
+        if (Objects.equals(pageId, APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)) {
+            if (shouldPopulateSpokenLanguage) {
+                populateDynamicList(asylumCase, asylumCaseBefore, INTERPRETER_LANGUAGES, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
             }
-            if (!hasSignLang) {
-                populateDynamicList(asylumCase, SIGN_LANGUAGES, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            if (shouldPopulateSignLanguage) {
+                populateDynamicList(asylumCase, asylumCaseBefore, SIGN_LANGUAGES, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
             }
         }
 
@@ -95,7 +137,11 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
 
         int numberOfWitnesses = asylumCase.read(WITNESS_DETAILS, List.class).orElse(Collections.emptyList()).size();
 
-        if (Objects.equals(pageId, WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID)) {
+        // ONLY RUN THIS FOR DRAFT_HEARING_REQUIREMENTS
+        // UPDATE_HEARING_REQUIREMENTS TAKES CARE OF WITNESS INTERPRETERS IN WitnessUpdateMidEventHandler
+
+        if (event.equals(DRAFT_HEARING_REQUIREMENTS)
+            && Objects.equals(pageId, WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID)) {
 
             InterpreterLanguageRefData spokenLanguages = generateDynamicList(INTERPRETER_LANGUAGES);
             InterpreterLanguageRefData signLanguages = generateDynamicList(SIGN_LANGUAGES);
@@ -143,8 +189,15 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         return response;
     }
 
-    private void populateDynamicList(AsylumCase asylumCase, String languageCategory, AsylumCaseFieldDefinition languageCategoryDefinition) {
+    private void populateDynamicList(AsylumCase asylumCase, AsylumCase asylumCaseBefore, String languageCategory, AsylumCaseFieldDefinition languageCategoryDefinition) {
         InterpreterLanguageRefData interpreterLanguage = generateDynamicList(languageCategory);
+
+        Optional<InterpreterLanguageRefData> optionalExistingInterpreterLanguageRefData = asylumCaseBefore.read(languageCategoryDefinition);
+
+        optionalExistingInterpreterLanguageRefData.ifPresent(existing -> {
+            interpreterLanguage.setLanguageManualEntry(existing.getLanguageManualEntry());
+            interpreterLanguage.setLanguageManualEntryDescription(existing.getLanguageManualEntryDescription());
+        });
 
         asylumCase.write(languageCategoryDefinition, interpreterLanguage);
     }

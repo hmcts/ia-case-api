@@ -254,12 +254,22 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                             InterpreterLanguageRefData selection = existingSpokenSelections.get(index) != null
                                 ? existingSpokenSelections.get(index)
                                 : spokenLanguages;
+
+                            // necessary to fill the dynamic dropdown list when the selection was manually entered
+                            if (selection.getLanguageRefData() == null || selection.getLanguageRefData().getListItems() == null) {
+                                selection.setLanguageRefData(spokenLanguages.getLanguageRefData());
+                            }
                             asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(index), selection);
                         }
                         if (Objects.equals(interpreterCategory, SIGN)) {
                             InterpreterLanguageRefData selection = existingSignSelections.get(index) != null
                                 ? existingSignSelections.get(index)
                                 : signLanguages;
+
+                            // necessary to fill the dynamic dropdown list when the selection was manually entered
+                            if (selection.getLanguageRefData() == null || selection.getLanguageRefData().getListItems() == null) {
+                                selection.setLanguageRefData(signLanguages.getLanguageRefData());
+                            }
                             asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(index), selection);
                         }
                     });

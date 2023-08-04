@@ -23,15 +23,19 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LIST_ELEMENT_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LIST_ELEMENT_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -60,6 +64,7 @@ class InterpreterLanguagesDynamicListUpdaterTest {
     private static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
     private static final String DRAFT_HEARING_REQUIREMENTS_PAGE_ID = "draftHearingRequirements";
     private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
+    private static final String APPELLANT_INTERPRETER_LANGUAGE_CATEGORY = "appellantInterpreterLanguageCategory";
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String IS_CHILD_REQUIRED = "Y";
@@ -109,7 +114,7 @@ class InterpreterLanguagesDynamicListUpdaterTest {
         List<Value> values = List.of(value);
 
         when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
-        when(callback.getPageId()).thenReturn(DRAFT_HEARING_REQUIREMENTS_PAGE_ID);
+        when(callback.getPageId()).thenReturn(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
         when(refDataUserService.retrieveCategoryValues(INTERPRETER_LANGUAGES, IS_CHILD_REQUIRED))
             .thenReturn(commonDataResponse);
         when(refDataUserService.retrieveCategoryValues(SIGN_LANGUAGES, IS_CHILD_REQUIRED))
@@ -200,19 +205,23 @@ class InterpreterLanguagesDynamicListUpdaterTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @ValueSource(strings = {"whichWitnessRequiresInterpreter", "appellantInterpreterLanguageCategory"})
+    void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getPageId()).thenReturn(pageId);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = interpreterLanguagesDynamicListUpdater.canHandle(callbackStage, callback);
 
-                if (event.equals(DRAFT_HEARING_REQUIREMENTS)
-                    && callbackStage == PreSubmitCallbackStage.MID_EVENT) {
+                if (callbackStage == PreSubmitCallbackStage.MID_EVENT
+                    && Set.of(DRAFT_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS).contains(callback.getEvent())
+                    && Set.of(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID)
+                        .contains(callback.getPageId())) {
 
                     assertTrue(canHandle);
                 } else {
