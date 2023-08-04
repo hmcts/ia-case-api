@@ -20,7 +20,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '8.2.1'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.7.11'
+    id 'org.springframework.boot' version '2.7.14'
     id 'uk.gov.hmcts.java' version '0.12.43'
     id 'au.com.dius.pact' version '4.1.0'
     id "io.freefair.lombok" version "6.2.0"
@@ -261,7 +261,7 @@ dependencyManagement {
 
     dependencies {
 
-        dependencySet(group: 'com.google.guava', version: '31.1-jre') {
+        dependencySet(group: 'com.google.guava', version: '32.1.2-jre') {
             entry 'guava'
         }
 
@@ -273,28 +273,23 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.0') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.2') {
             entry 'jackson-databind'
             entry 'jackson-core'
             entry 'jackson-annotations'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.0') {
+        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.2') {
             entry 'jackson-dataformat-csv'
             entry 'jackson-dataformat-yaml'
        }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.0') {
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.2') {
             entry 'jackson-datatype-jsr310'
             entry 'jackson-datatype-jdk8'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.0') {
-            entry 'jackson-datatype-jsr310'
-            entry 'jackson-datatype-jdk8'
-        }
-
-        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.0') {
+        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.2') {
             entry 'jackson-module-parameter-names'
         }
 
@@ -342,8 +337,8 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.3'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
+    implementation group: 'com.google.guava', name: 'guava'
+    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
