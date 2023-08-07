@@ -60,10 +60,11 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
         evidenceInPrivateCaseFlagsHandler = new EvidenceInPrivateCaseFlagsHandler(systemDateProvider);
     }
+
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_evidence_in_private_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -81,8 +82,8 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
 
     void should_not_set_evidence_in_private_flag(Event event) {
@@ -166,8 +167,8 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -195,8 +196,8 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -245,8 +246,8 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);
