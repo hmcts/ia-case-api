@@ -57,7 +57,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         HearingCentre hearingCentre =
             asylumCase.read(HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
 
-        if (!listCaseHearingCentre.equals(HearingCentre.REMOTE_HEARING)) {
+        if (!listCaseHearingCentre.equals(HearingCentre.REMOTE_HEARING)
+                || !listCaseHearingCentre.equals(HearingCentre.DECISION_WITHOUT_HEARING)) {
             if (!hearingCentreFinder.hearingCentreIsActive(listCaseHearingCentre)) {
                 asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
                 asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
