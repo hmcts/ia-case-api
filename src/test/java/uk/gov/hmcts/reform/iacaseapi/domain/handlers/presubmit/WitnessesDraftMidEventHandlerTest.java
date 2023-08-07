@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
@@ -21,12 +20,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -45,7 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class WitnessesMidEventHandlerTest {
+public class WitnessesDraftMidEventHandlerTest {
 
     private static final String IS_WITNESSES_ATTENDING = "isWitnessesAttending";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
@@ -62,11 +58,11 @@ public class WitnessesMidEventHandlerTest {
     private String witnessName = "name";
     private String witnessFamilyName = "lastName";
 
-    private WitnessesMidEventHandler witnessesMidEventHandler;
+    private WitnessesDraftMidEventHandler witnessesDraftMidEventHandler;
 
     @BeforeEach
     public void setup() {
-        witnessesMidEventHandler = new WitnessesMidEventHandler();
+        witnessesDraftMidEventHandler = new WitnessesDraftMidEventHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(witnessDetails.getWitnessName()).thenReturn(witnessName);
@@ -74,44 +70,41 @@ public class WitnessesMidEventHandlerTest {
         when(callback.getPageId()).thenReturn(IS_WITNESSES_ATTENDING);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "DRAFT_HEARING_REQUIREMENTS", "UPDATE_HEARING_REQUIREMENTS"})
-    void should_add_error_when_witnesses_more_than_ten(Event event) {
+    @Test
+    void should_add_error_when_witnesses_more_than_ten() {
         List<WitnessDetails> elevenWitnesses = Collections.nCopies(11, witnessDetails);
 
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesMidEventHandler.handle(MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         assertEquals(1, response.getErrors().size());
         assertTrue(response.getErrors().contains(WITNESSES_NUMBER_EXCEEDED_ERROR));
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "DRAFT_HEARING_REQUIREMENTS", "UPDATE_HEARING_REQUIREMENTS"})
-    void should_not_add_error_when_witnesses_are_ten_or_less(Event event) {
+    @Test
+    void should_not_add_error_when_witnesses_are_ten_or_less() {
         List<WitnessDetails> elevenWitnesses = Collections.nCopies(10, witnessDetails);
 
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesMidEventHandler.handle(MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         assertTrue(response.getErrors().isEmpty());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "DRAFT_HEARING_REQUIREMENTS", "UPDATE_HEARING_REQUIREMENTS"})
-    void should_fill_witness_list_elements(Event event) {
+    @Test
+    void should_fill_witness_list_elements() {
         List<IdValue<WitnessDetails>> witnesses = Collections
             .nCopies(10, new IdValue<>("1", witnessDetails));
 
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesMidEventHandler.handle(MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         DynamicMultiSelectList dynamicMultiSelectListEmpty = new DynamicMultiSelectList();
         DynamicMultiSelectList dynamicMultiSelectList = new DynamicMultiSelectList(Collections.emptyList(),
@@ -154,13 +147,13 @@ public class WitnessesMidEventHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
-            () -> witnessesMidEventHandler.handle(ABOUT_TO_START, callback))
+            () -> witnessesDraftMidEventHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(SEND_DIRECTION);
         assertThatThrownBy(
-            () -> witnessesMidEventHandler.handle(ABOUT_TO_START, callback))
+            () -> witnessesDraftMidEventHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -175,9 +168,9 @@ public class WitnessesMidEventHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
-                boolean canHandle = witnessesMidEventHandler.canHandle(callbackStage, callback);
+                boolean canHandle = witnessesDraftMidEventHandler.canHandle(callbackStage, callback);
 
-                if (Set.of(DRAFT_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS).contains(event)
+                if (event.equals(DRAFT_HEARING_REQUIREMENTS)
                     && callbackStage == MID_EVENT
                     && callback.getPageId().equals(IS_WITNESSES_ATTENDING)) {
 

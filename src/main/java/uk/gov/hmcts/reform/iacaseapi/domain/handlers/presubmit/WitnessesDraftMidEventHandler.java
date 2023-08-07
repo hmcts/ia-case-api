@@ -3,12 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessIndividualFields;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,9 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -28,9 +25,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class WitnessesMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String IS_WITNESSES_ATTENDING_PAGE_ID = "isWitnessesAttending";
+    private static final String IS_INTERPRETER_SERVICES_NEEDED = "isInterpreterServicesNeeded";
+    private static final String APPELLANT_INTERPRETER_SPOKEN_LANGUAGE = "appellantInterpreterSpokenLanguage";
+    private static final String APPELLANT_INTERPRETER_SIGN_LANGUAGE = "appellantInterpreterSignLanguage";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
 
@@ -42,7 +42,7 @@ public class WitnessesMidEventHandler implements PreSubmitCallbackHandler<Asylum
         String pageId = callback.getPageId();
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && Set.of(DRAFT_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS).contains(callback.getEvent())
+               && callback.getEvent().equals(DRAFT_HEARING_REQUIREMENTS)
                && Set.of(IS_WITNESSES_ATTENDING_PAGE_ID, IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID).contains(pageId);
     }
 
@@ -61,36 +61,23 @@ public class WitnessesMidEventHandler implements PreSubmitCallbackHandler<Asylum
         switch (pageId) {
             case IS_WITNESSES_ATTENDING_PAGE_ID:
 
+                // cannot add more than 10 witnesses to the collection
                 optionalWitnesses.ifPresentOrElse(witnesses -> {
                     if (witnesses.size() > WITNESS_N_FIELD.size()) {        // 10
                         response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
                     }
                 }, () -> {
                     // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
-                    clearWitnessFieldsPreemptively(asylumCase);
+                    clearWitnessIndividualFields(asylumCase);
                     clearWitnessInterpreterLanguageFields(asylumCase);
                 });
                 break;
 
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID:
 
-                clearWitnessFieldsPreemptively(asylumCase);
+                clearWitnessIndividualFields(asylumCase);
 
-                optionalWitnesses.ifPresent(witnesses -> {
-                    int i = 0;
-                    while (i < witnesses.size()) {
-
-                        String fullName = buildWitnessFullName(witnesses.get(i).getValue());
-
-                        asylumCase.write(WITNESS_N_FIELD.get(i), witnesses.get(i).getValue());
-                        asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i),
-                            new DynamicMultiSelectList(
-                                Collections.emptyList(),
-                                List.of(new Value(fullName, fullName))
-                            ));
-                        i++;
-                    }
-                });
+                optionalWitnesses.ifPresent(witnesses -> decentralizeWitnessCollection(asylumCase, witnesses));
                 break;
             default:
                 break;
@@ -99,22 +86,29 @@ public class WitnessesMidEventHandler implements PreSubmitCallbackHandler<Asylum
         return response;
     }
 
-    private String buildWitnessFullName(WitnessDetails witnessDetails) {
-        return (witnessDetails.getWitnessName() + " " + witnessDetails.getWitnessFamilyName()).trim();
-    }
+    /**
+     * Breaks witnessDetails collection down into individual witness fields (witness1, witness2 etc.) and generates the
+     * individual dynamicMultiSelectList fields for each witness (witnessListElement1, witnessListElement2 etc.)
+     * @param asylumCase The asylum case
+     * @param witnesses  The value of the witnessDetails field (collection)
+     * @return           The asylum case enriched with the generated fields
+     */
+    protected AsylumCase decentralizeWitnessCollection(AsylumCase asylumCase,
+                                                       List<IdValue<WitnessDetails>> witnesses) {
+        int i = 0;
+        while (i < witnesses.size()) {
 
-    private void clearWitnessFieldsPreemptively(AsylumCase asylumCase) {
-        WITNESS_N_FIELD.forEach(field -> asylumCase.write(field, new WitnessDetails("", "")));
-        WITNESS_LIST_ELEMENT_N_FIELD.forEach(field -> asylumCase.write(field, new DynamicMultiSelectList()));
-        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> asylumCase.write(field, Collections.emptyList()));
-    }
+            String fullName = buildWitnessFullName(witnesses.get(i).getValue());
 
-    private void clearWitnessInterpreterLanguageFields(AsylumCase asylumCase) {
-        DynamicList dummyDynamicList = new DynamicList("");
-        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field ->
-                asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
-        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field ->
-            asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
+            asylumCase.write(WITNESS_N_FIELD.get(i), witnesses.get(i).getValue());
+            asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i),
+                new DynamicMultiSelectList(
+                    Collections.emptyList(),
+                    List.of(new Value(fullName, fullName))
+                ));
+            i++;
+        }
+        return asylumCase;
     }
 
 }

@@ -1,19 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_4_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_5_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_6_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_7_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_8_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_9_INTERPRETER_LANGUAGE_CATEGORY;
 
+import java.util.Collections;
 import java.util.List;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 
 public final class InterpreterLanguagesUtils {
 
@@ -84,5 +80,23 @@ public final class InterpreterLanguagesUtils {
         WITNESS_9_INTERPRETER_SIGN_LANGUAGE,
         WITNESS_10_INTERPRETER_SIGN_LANGUAGE
     );
+
+    public static String buildWitnessFullName(WitnessDetails witnessDetails) {
+        return (witnessDetails.getWitnessName() + " " + witnessDetails.getWitnessFamilyName()).trim();
+    }
+
+    public static void clearWitnessIndividualFields(AsylumCase asylumCase) {
+        WITNESS_N_FIELD.forEach(field -> asylumCase.write(field, new WitnessDetails("", "")));
+        WITNESS_LIST_ELEMENT_N_FIELD.forEach(field -> asylumCase.write(field, new DynamicMultiSelectList()));
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> asylumCase.write(field, Collections.emptyList()));
+    }
+
+    public static void clearWitnessInterpreterLanguageFields(AsylumCase asylumCase) {
+        DynamicList dummyDynamicList = new DynamicList("");
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field ->
+            asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field ->
+            asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
+    }
 
 }
