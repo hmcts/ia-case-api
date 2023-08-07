@@ -110,20 +110,6 @@ public class InterpreterLanguagesDynamicListUpdater implements PreSubmitCallback
         // POPULATE APPELLANT INTERPRETER LANGUAGE DYNAMIC LIST IF NECESSARY
         // TO BE RUN FOR: 1) DRAFT_HEARING_REQUIREMENTS 2) UPDATE_HEARING_REQUIREMENTS
 
-        //boolean hasRefDataSpokenLangPopulated = callback.getCaseDetailsBefore()
-        //    .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
-        //        .orElse(new InterpreterLanguageRefData(new DynamicList(null, Collections.emptyList()), Collections.emptyList(), null))
-        //        .getLanguageRefData() != null)
-        //    .orElse(false);
-        //
-        //
-        //boolean hasRefDataSignLangPopulated = callback.getCaseDetailsBefore()
-        //    .map(caseDetails -> caseDetails.getCaseData().read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
-        //        .orElse(new InterpreterLanguageRefData(new DynamicList(null, Collections.emptyList()), Collections.emptyList(), null))
-        //        .getLanguageRefData() != null)
-        //    .orElse(false);
-
-
         if (Objects.equals(pageId, APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)) {
             if (shouldPopulateSpokenLanguage) {
                 populateDynamicList(asylumCase, asylumCaseBefore, INTERPRETER_LANGUAGES, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
