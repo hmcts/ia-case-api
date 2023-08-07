@@ -4,17 +4,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public final class InterpreterLanguagesUtils {
 
@@ -85,54 +80,6 @@ public final class InterpreterLanguagesUtils {
         WITNESS_9_INTERPRETER_SIGN_LANGUAGE,
         WITNESS_10_INTERPRETER_SIGN_LANGUAGE
     );
-
-    /**
-     * Method to generate the structure of these five fields for the first time (draftHearingRequirements).
-     * @param asylumCase The asylum case before the draftHearingRequirements event
-     * @return           The asylum case enriched with the witness individual fields and the witness individual lists.
-     */
-    public static AsylumCase decentralizeWitnessesFromCollection(AsylumCase asylumCase) {
-
-        boolean isWitnessAttending = asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class)
-            .map(yesOrNo -> yesOrNo.equals(YesOrNo.YES))
-            .orElse(false);
-
-        Optional<List<IdValue<WitnessDetails>>> optionalWitnessDetailsCollection = asylumCase.read(WITNESS_DETAILS);
-        List<IdValue<WitnessDetails>> witnessDetailsIdValues = optionalWitnessDetailsCollection.orElse(Collections.emptyList());
-        List<WitnessDetails> witnesses = witnessDetailsIdValues.stream()
-            .map(IdValue::getValue).collect(Collectors.toList());
-
-        // on "isWitnessAttending" page
-        // on "isAnyWitnessInterpreterRequired" page (shown when "isWitnessAttending=Yes")
-        clearAllWitnessFields(asylumCase);
-
-        // on "isAnyWitnessInterpreterRequired" page (shown when "isWitnessAttending=Yes")
-        if (isWitnessAttending) {
-            int i = 0;
-            while (i < witnesses.size()) {
-
-                String fullName = buildWitnessFullName(witnesses.get(i));
-
-                asylumCase.write(WITNESS_N_FIELD.get(i), witnesses.get(i));
-                asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i),
-                    new DynamicMultiSelectList(
-                        Collections.emptyList(),
-                        List.of(new Value(fullName, fullName))
-                    ));
-                i++;
-            }
-        }
-
-        return asylumCase;
-    }
-
-    private static void clearAllWitnessFields(AsylumCase asylumCase) {
-        WITNESS_N_FIELD.forEach(asylumCase::clear);
-        WITNESS_LIST_ELEMENT_N_FIELD.forEach(asylumCase::clear);
-        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
-        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
-        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
-    }
 
     public static String buildWitnessFullName(WitnessDetails witnessDetails) {
         return (witnessDetails.getWitnessName() + " " + witnessDetails.getWitnessFamilyName()).trim();
