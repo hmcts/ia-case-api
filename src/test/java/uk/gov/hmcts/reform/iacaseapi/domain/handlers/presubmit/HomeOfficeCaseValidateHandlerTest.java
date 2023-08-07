@@ -136,7 +136,7 @@ class HomeOfficeCaseValidateHandlerTest {
         verify(asylumCase, times(1)).write(
             APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
         verify(asylumCase, times(1)).write(
-            APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+            APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
         verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
         verify(asylumCase, times(1)).write(
             HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -185,7 +185,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(1)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(1)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(1)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -202,7 +202,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(0)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(0)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(0)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -252,7 +252,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(1)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(1)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(1)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -269,7 +269,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(0)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(0)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(0)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
