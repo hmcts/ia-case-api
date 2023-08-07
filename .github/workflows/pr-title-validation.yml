@@ -1,0 +1,18 @@
+name: Does PR title match RIA-nnnn or SNI-nnnn?
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+jobs:
+  lint:
+    if: "!contains(github.event.pull_request.head.ref, 'renovate') && !contains(github.event.pull_request.head.ref, 'dependabot')"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: deepakputhraya/action-pr-title@master
+      with:
+        regex: '^(RIA-[0-9]{3,4} [a-zA-Z0-9._\- ]+)|(SNI-[0-9]{3,4} [a-zA-Z0-9._\- ]+)|(RIA-TASK [a-zA-Z0-9._\- ]+)|(\[Snyk\].+)$' # Regex the title should match.
+        prefix_case_sensitive: true # title prefix are case insensitive:

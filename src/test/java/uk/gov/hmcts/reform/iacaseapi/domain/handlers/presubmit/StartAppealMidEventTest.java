@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -49,7 +50,11 @@ class StartAppealMidEventTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
+    private AsylumCase asylumCaseBefore;
+    @Mock
     private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
     private AsylumCase asylumCase;
 
@@ -190,11 +195,27 @@ class StartAppealMidEventTest {
     void should_not_touch_home_office_reference_numbers_when_ooc_and_refusal_of_human_rights_is_decided() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+            .thenReturn(Optional.of(REFUSAL_OF_HUMAN_RIGHTS));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(any(),any());
+    }
+
+    @Test
+    void should_not_touch_home_office_reference_numbers_when_ooc_and_refuse_Permit_is_decided() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+                .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSE_PERMIT));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -251,5 +272,36 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(1).containsOnly(detentionFacilityErrorMessage);
+    }
+
+    @Test
+    void should_clear_out_of_country_fields_when_switched_to_in_country() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
+        when(callback.getPageId()).thenReturn(OUT_OF_COUNTRY_PAGE_ID);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        when(asylumCaseBefore.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
+        verify(asylumCase, times(1)).clear(GWF_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(DATE_ENTRY_CLEARANCE_DECISION);
+        verify(asylumCase, times(1)).clear(DATE_CLIENT_LEAVE_UK);
+        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
+        verify(asylumCase, times(1)).clear(SPONSOR_GIVEN_NAMES);
+        verify(asylumCase, times(1)).clear(SPONSOR_FAMILY_NAME);
+        verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS);
+        verify(asylumCase, times(1)).clear(SPONSOR_CONTACT_PREFERENCE);
+        verify(asylumCase, times(1)).clear(SPONSOR_EMAIL);
+        verify(asylumCase, times(1)).clear(SPONSOR_MOBILE_NUMBER);
+        verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
+
+
     }
 }
