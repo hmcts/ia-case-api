@@ -42,8 +42,6 @@
             "languageManualEntry": [],
             "languageManualEntryDescription": ""
           },
-          "isHearingRoomNeeded": "Yes",
-          "isHearingLoopNeeded": "Yes",
           "physicalOrMentalHealthIssues": "Yes",
           "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
           "pastExperiences": "Yes",
@@ -110,8 +108,6 @@
           "languageManualEntry": [],
           "languageManualEntryDescription": ""
         },
-        "isHearingRoomNeeded": "Yes",
-        "isHearingLoopNeeded": "Yes",
         "physicalOrMentalHealthIssues": "Yes",
         "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
         "pastExperiences": "Yes",
