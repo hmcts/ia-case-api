@@ -51,7 +51,7 @@ java:
         - em-stitching-enabled
         - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS-11
-        - AppInsightsInstrumentationKey
+        - app-insights-connection-string
         
 ia-case-payments-api:
   enabled: false
@@ -66,4 +66,8 @@ idam-pr:
 xui-webapp:
   enabled: false
 ccd:
+  enabled: false
+ia-aip-frontend:
+  enabled: false
+ccd-case-document-am-api:
   enabled: false
