@@ -15,8 +15,6 @@
           "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
           "multimediaTribunalResponse": "multimedia reason",
           "singleSexCourtTribunalResponse": "singleSexCourt reason",
-          "inCameraCourt": "Yes",
-          "isInCameraCourtAllowed": "Granted",
           "inCameraCourtTribunalResponse": "inCameraCourt reason",
           "additionalTribunalResponse": "additional reason",
           "uploadAdditionalEvidenceActionAvailable": "Yes"
