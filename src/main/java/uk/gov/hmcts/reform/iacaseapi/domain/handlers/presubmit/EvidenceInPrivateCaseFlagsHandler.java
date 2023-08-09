@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -17,9 +18,9 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
+@Component
 public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider systemDateProvider;
@@ -37,7 +38,7 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        List<Event> targetEvents = List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS);
+        List<Event> targetEvents = List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_ADJUSTMENTS);
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && targetEvents.contains(callback.getEvent());
     }
 
@@ -57,7 +58,6 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
                 .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
         String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
 
-        // new changes
         boolean inCameraCourt = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
                 .map(cameraCourtNeeded -> YesOrNo.YES == cameraCourtNeeded).orElse(false);
         String isInCameraCourtAllowed = asylumCase
@@ -84,7 +84,6 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
             caseDataUpdated = true;
         }
 
-
         if (caseDataUpdated) {
             if (appellantDisplayName == null) {
                 throw new IllegalStateException("Appellant full name is not present");
@@ -93,7 +92,6 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
             asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(
                     appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
         }
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

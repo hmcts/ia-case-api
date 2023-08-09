@@ -1,6 +1,6 @@
 {
-  "description": "RIA-7480 update hearing requirements when LO approves in camera hearing request",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "description": "RIA-7480 update hearing adjustments when LO approves in camera hearing request",
+  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
           "caseFlagId": "7480-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
@@ -67,8 +68,7 @@
                 "dateToAvoidReason": "Xmas"
               }
             }
-          ],
-          "uploadAdditionalEvidenceActionAvailable": "Yes"
+          ]
         }
       }
     }
@@ -79,6 +79,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
         "isAppellantAttendTheHearing": "Yes",
         "isAppellantGivingOralEvidence": "Yes",
         "isWitnessesAttending": "Yes",
@@ -150,8 +151,7 @@
               }
             }
           ]
-        },
-        "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
       }
     }
   }

@@ -1,6 +1,6 @@
 {
   "description": "RIA-7480 review hearing requirements when LO approves in camera hearing request",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
           "caseFlagId": "7480-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
@@ -42,6 +43,8 @@
             "languageManualEntry": [],
             "languageManualEntryDescription": ""
           },
+          "isHearingRoomNeeded": "No",
+          "isHearingLoopNeeded": "No",
           "physicalOrMentalHealthIssues": "Yes",
           "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
           "pastExperiences": "Yes",
@@ -77,6 +80,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
         "isAppellantAttendTheHearing": "Yes",
         "isAppellantGivingOralEvidence": "Yes",
         "isWitnessesAttending": "Yes",
@@ -108,6 +112,8 @@
           "languageManualEntry": [],
           "languageManualEntryDescription": ""
         },
+        "isHearingRoomNeeded": "No",
+        "isHearingLoopNeeded": "No",
         "physicalOrMentalHealthIssues": "Yes",
         "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
         "pastExperiences": "Yes",
@@ -142,7 +148,7 @@
                 "name": "Evidence given in private",
                 "status": "Active",
                 "flagCode": "SM0004",
-                "hearingRelevant": "Yes"
+                "hearingRelevant": "No"
               }
             }
           ]
