@@ -1,6 +1,6 @@
 {
   "description": "RIA-2022 Draft and submit hearing requirements",
-  "enabled": "false",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -15,6 +15,8 @@
           "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
           "multimediaTribunalResponse": "multimedia reason",
           "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
           "inCameraCourtTribunalResponse": "inCameraCourt reason",
           "additionalTribunalResponse": "additional reason",
           "uploadAdditionalEvidenceActionAvailable": "Yes"
