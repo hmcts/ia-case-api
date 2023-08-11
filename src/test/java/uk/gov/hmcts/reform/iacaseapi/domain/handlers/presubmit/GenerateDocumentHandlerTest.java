@@ -304,8 +304,8 @@ class GenerateDocumentHandlerTest {
                         ASYNC_STITCHING_COMPLETE,
                         RECORD_OUT_OF_TIME_DECISION,
                         REQUEST_RESPONDENT_EVIDENCE,
-                        RECORD_REMISSION_DECISION
-
+                        RECORD_REMISSION_DECISION,
+                        MARK_APPEAL_PAID
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -405,7 +405,8 @@ class GenerateDocumentHandlerTest {
                         ASYNC_STITCHING_COMPLETE,
                         RECORD_OUT_OF_TIME_DECISION,
                         REQUEST_RESPONDENT_EVIDENCE,
-                        RECORD_REMISSION_DECISION
+                        RECORD_REMISSION_DECISION,
+                        MARK_APPEAL_PAID
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
