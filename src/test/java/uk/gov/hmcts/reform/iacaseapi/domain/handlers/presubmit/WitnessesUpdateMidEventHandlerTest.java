@@ -18,12 +18,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SIGN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SPOKEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +65,7 @@ public class WitnessesUpdateMidEventHandlerTest {
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
 
     @Mock
-    private InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater;
+    private WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -111,7 +110,7 @@ public class WitnessesUpdateMidEventHandlerTest {
     @BeforeEach
     public void setup() {
         interpreterLanguagesUtils = mockStatic(InterpreterLanguagesUtils.class);
-        witnessesUpdateMidEventHandler = new WitnessesUpdateMidEventHandler(interpreterLanguagesDynamicListUpdater);
+        witnessesUpdateMidEventHandler = new WitnessesUpdateMidEventHandler(witnessInterpreterLanguagesDynamicListUpdater);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
@@ -193,23 +192,6 @@ public class WitnessesUpdateMidEventHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response = witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
 
         assertTrue(response.getErrors().isEmpty());
-    }
-
-    @Test
-    void should_clear_fields_if_no_witnesses_attending() {
-        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
-            .nCopies(10, new IdValue<>("1", witnessDetails1));
-
-        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(callback.getPageId()).thenReturn(IS_WITNESSES_ATTENDING_PAGE_ID);
-        when(oldAsylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
-        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.empty());
-        when(asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(NO));
-
-        witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
-
-        interpreterLanguagesUtils.verify(() -> InterpreterLanguagesUtils.clearWitnessIndividualFields(asylumCase));
-        interpreterLanguagesUtils.verify(() -> InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields(asylumCase));
     }
 
     @Test
@@ -306,9 +288,9 @@ public class WitnessesUpdateMidEventHandlerTest {
         when(oldAsylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(oldWitnesses));
         when(asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        when(interpreterLanguagesDynamicListUpdater.generateDynamicList(INTERPRETER_LANGUAGES))
+        when(witnessInterpreterLanguagesDynamicListUpdater.generateDynamicList(INTERPRETER_LANGUAGES))
                 .thenReturn(spokenLanguages);
-        when(interpreterLanguagesDynamicListUpdater.generateDynamicList(SIGN_LANGUAGES))
+        when(witnessInterpreterLanguagesDynamicListUpdater.generateDynamicList(SIGN_LANGUAGES))
             .thenReturn(signLanguages);
 
         when(oldAsylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))

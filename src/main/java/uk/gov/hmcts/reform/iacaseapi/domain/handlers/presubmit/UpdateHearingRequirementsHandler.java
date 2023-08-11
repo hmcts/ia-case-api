@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
@@ -112,7 +113,9 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
         }
 
-        if (witnessDetails.isEmpty()) {
+        YesOrNo isWitnessAttending = asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class).orElse(NO);
+
+        if (witnessDetails.isEmpty() || isWitnessAttending.equals(NO)) {
             clearWitnessRelatedFields(asylumCase);
         }
 
