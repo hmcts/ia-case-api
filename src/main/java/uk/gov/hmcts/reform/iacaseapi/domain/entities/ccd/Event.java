@@ -24,6 +24,7 @@ public enum Event {
     DRAFT_HEARING_REQUIREMENTS("draftHearingRequirements"),
     UPDATE_HEARING_REQUIREMENTS("updateHearingRequirements"),
     UPDATE_HEARING_ADJUSTMENTS("updateHearingAdjustments"),
+    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
     UPLOAD_ADDENDUM_EVIDENCE("uploadAddendumEvidence"),
