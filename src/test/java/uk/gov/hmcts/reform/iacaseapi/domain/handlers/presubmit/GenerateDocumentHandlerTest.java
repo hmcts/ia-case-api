@@ -304,6 +304,7 @@ class GenerateDocumentHandlerTest {
                         ASYNC_STITCHING_COMPLETE,
                         RECORD_OUT_OF_TIME_DECISION,
                         REQUEST_RESPONDENT_EVIDENCE,
+                        RECORD_REMISSION_DECISION,
                         MARK_APPEAL_PAID,
                         REQUEST_RESPONSE_REVIEW
                     ).contains(event)) {
@@ -405,6 +406,7 @@ class GenerateDocumentHandlerTest {
                         ASYNC_STITCHING_COMPLETE,
                         RECORD_OUT_OF_TIME_DECISION,
                         REQUEST_RESPONDENT_EVIDENCE,
+                        RECORD_REMISSION_DECISION,
                         MARK_APPEAL_PAID,
                         REQUEST_RESPONSE_REVIEW
                     );
