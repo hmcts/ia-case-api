@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,8 +42,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @SuppressWarnings("unchecked")
 class AppellantInterpreterLanguagesDynamicListUpdaterTest {
 
-    private static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
-    private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String IS_CHILD_REQUIRED = "Y";
@@ -83,6 +82,11 @@ class AppellantInterpreterLanguagesDynamicListUpdaterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         interpreterLanguagesUtils = mockStatic(InterpreterLanguagesUtils.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        interpreterLanguagesUtils.close();
     }
 
     @Test
