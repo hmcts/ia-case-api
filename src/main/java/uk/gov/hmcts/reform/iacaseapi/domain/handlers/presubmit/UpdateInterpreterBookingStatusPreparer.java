@@ -14,15 +14,25 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_4_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_5_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_6_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_7_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_8_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_9_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_10;
@@ -44,9 +54,29 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_7;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_8;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_9;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_10;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_5;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_6;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_7;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_8;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_9;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_10;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_5;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_6;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_8;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_9;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingStatus.NOT_REQUESTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -67,6 +97,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     public static String APPELLANT = "Appellant";
     public static String WITNESS = "Witness";
     private AsylumCase asylumCase;
+    private String witnessName;
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -86,138 +117,228 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
 
         asylumCase = callback.getCaseDetails().getCaseData();
 
-        Optional<List<String>> optionalTypeOfInterpreterAppellantNeed = asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
-        List<String> typeOfInterpreterAppellantNeed = optionalTypeOfInterpreterAppellantNeed
-            .orElse(Collections.emptyList());
-
-        if (typeOfInterpreterAppellantNeed.contains(InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
-            InterpreterBookingDetails bookingDetails = new InterpreterBookingDetails(
-                NOT_REQUESTED,
-                formatBookingDetails(
-                    (String) asylumCase.read(APPELLANT_NAME_FOR_DISPLAY).get(),
-                    APPELLANT,
-                    getLanguage(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)));
-
-            asylumCase.write(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING, bookingDetails);
-
-            asylumCase.write(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS, NOT_REQUESTED);
+        if (asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE).isPresent()) {
+            populateBookingStatusFieldsForAppellant(
+                APPELLANT_INTERPRETER_SPOKEN_LANGUAGE,
+                APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
+                APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
         }
 
-        if (typeOfInterpreterAppellantNeed.contains(InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER.getValue())) {
-            InterpreterBookingDetails bookingDetails = new InterpreterBookingDetails(
-                NOT_REQUESTED,
-                formatBookingDetails(
-                    (String) asylumCase.read(APPELLANT_NAME_FOR_DISPLAY).get(),
-                    APPELLANT,
-                    getLanguage(APPELLANT_INTERPRETER_SIGN_LANGUAGE)));
-
-            asylumCase.write(APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING, bookingDetails);
-
-            asylumCase.write(APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS, NOT_REQUESTED);
+        if (asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE).isPresent()) {
+            populateBookingStatusFieldsForAppellant(
+                APPELLANT_INTERPRETER_SIGN_LANGUAGE,
+                APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING,
+                APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS);
         }
+
+        Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
+        List<IdValue<WitnessDetails>> witnessesDetails = optionalWitnesses.orElse(Collections.emptyList());
+
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(w -> {
+            if (!asylumCase.read(w).isPresent()) {
+                return;
+            }
+            populateSpokenLanguageBookingStatusFieldsForWitness(w, witnessesDetails);
+        });
 
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(w -> {
             if (!asylumCase.read(w).isPresent()) {
                 return;
             }
-            Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
-            List<IdValue<WitnessDetails>> witnesses = optionalWitnesses.orElse(Collections.emptyList());
-            String witnessName;
-
-            switch (w) {
-                case WITNESS_1_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(0).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_1_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1);
-                    break;
-
-                case WITNESS_2_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(1).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_2_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2);
-                    break;
-
-                case WITNESS_3_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(2).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_3_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3);
-                    break;
-
-                case WITNESS_4_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(3).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_4_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4);
-                    break;
-
-                case WITNESS_5_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(4).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_5_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_5,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_5);
-                    break;
-
-                case WITNESS_6_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(5).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_6_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_6,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_6);
-                    break;
-
-                case WITNESS_7_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(6).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_7_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_7,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_7);
-                    break;
-
-                case WITNESS_8_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(7).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_8_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_8,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_8);
-                    break;
-
-                case WITNESS_9_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(8).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_9_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_9,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_9);
-                    break;
-
-                case WITNESS_10_INTERPRETER_SIGN_LANGUAGE:
-                    witnessName = buildWitnessFullName(witnesses.get(9).getValue());
-                    assignBookingStatus(
-                        witnessName,
-                        WITNESS_10_INTERPRETER_SIGN_LANGUAGE,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_10,
-                        WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_10);
-                    break;
-            }
+            populateSignLanguageBookingStatusFieldsForWitness(w, witnessesDetails);
         });
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void populateBookingStatusFieldsForAppellant(AsylumCaseFieldDefinition language,
+                                                         AsylumCaseFieldDefinition booking,
+                                                         AsylumCaseFieldDefinition bookingStatus) {
+
+        // TODO - change this field to a String type to only hold the formatBookingDetails
+        InterpreterBookingDetails bookingDetails = new InterpreterBookingDetails(
+            NOT_REQUESTED,
+            formatBookingDetails(
+                (String) asylumCase.read(APPELLANT_NAME_FOR_DISPLAY).get(),
+                APPELLANT,
+                getLanguage(language)));
+
+        asylumCase.write(booking, bookingDetails);
+
+        // TODO - if bookingStatus is not set then set as not requested
+        asylumCase.write(bookingStatus, NOT_REQUESTED);
+    }
+
+    private void populateSpokenLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness,
+                                                                   List<IdValue<WitnessDetails>> witnesses) {
+        switch (witness) {
+            case WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(0).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1);
+            }
+            case WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(1).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2);
+            }
+            case WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(2).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3);
+            }
+            case WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(3).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4);
+            }
+            case WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(4).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_5,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_5);
+            }
+            case WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(5).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_6,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_6);
+            }
+            case WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(6).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_7,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_7);
+            }
+            case WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(7).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_8,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_8);
+            }
+            case WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(8).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_9,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_9);
+            }
+            case WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(9).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_10,
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_10);
+            }
+        }
+    }
+
+    private void populateSignLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness,
+                                                                   List<IdValue<WitnessDetails>> witnesses) {
+        switch (witness) {
+            case WITNESS_1_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(0).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_1_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1);
+            }
+            case WITNESS_2_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(1).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_2_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2);
+            }
+            case WITNESS_3_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(2).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_3_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3);
+            }
+            case WITNESS_4_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(3).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_4_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4);
+            }
+            case WITNESS_5_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(4).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_5_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_5,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_5);
+            }
+            case WITNESS_6_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(5).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_6_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_6,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_6);
+            }
+            case WITNESS_7_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(6).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_7_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_7,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_7);
+            }
+            case WITNESS_8_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(7).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_8_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_8,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_8);
+            }
+            case WITNESS_9_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(8).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_9_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_9,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_9);
+            }
+            case WITNESS_10_INTERPRETER_SIGN_LANGUAGE -> {
+                witnessName = buildWitnessFullName(witnesses.get(9).getValue());
+                assignBookingStatus(
+                    witnessName,
+                    WITNESS_10_INTERPRETER_SIGN_LANGUAGE,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_10,
+                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_10);
+            }
+        }
     }
 
     private void assignBookingStatus(String witnessName,
