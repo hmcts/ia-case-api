@@ -34,6 +34,7 @@ public class AcceleratedDetainedAppealValidationHandler implements PreSubmitCall
                 Event.START_APPEAL,
                 Event.EDIT_APPEAL
         ).contains(callback.getEvent());
+
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
