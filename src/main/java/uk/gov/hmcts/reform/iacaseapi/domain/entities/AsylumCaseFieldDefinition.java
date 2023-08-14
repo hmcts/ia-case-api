@@ -1819,46 +1819,46 @@ public enum AsylumCaseFieldDefinition {
             "isHearingLoopNeeded", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
-        "appellantInterpreterSpokenLanguageBooking", new TypeReference<InterpreterBookingDetails>() {}),
+        "appellantInterpreterSpokenLanguageBooking", new TypeReference<String>() {}),
 
     APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS(
         "appellantInterpreterSpokenLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
 
     APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING(
-        "appellantInterpreterSignLanguageBooking", new TypeReference<InterpreterBookingDetails>() {}),
+        "appellantInterpreterSignLanguageBooking", new TypeReference<String>() {}),
 
     APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS(
         "appellantInterpreterSignLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1(
-        "witnessInterpreterSpokenLanguageBooking1", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking1", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2(
-        "witnessInterpreterSpokenLanguageBooking2", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking2", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3(
-        "witnessInterpreterSpokenLanguageBooking3", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking3", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4(
-        "witnessInterpreterSpokenLanguageBooking4", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking4", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_5(
-        "witnessInterpreterSpokenLanguageBooking5", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking5", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_6(
-        "witnessInterpreterSpokenLanguageBooking6", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking6", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_7(
-        "witnessInterpreterSpokenLanguageBooking7", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking7", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_8(
-        "witnessInterpreterSpokenLanguageBooking8", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking8", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_9(
-        "witnessInterpreterSpokenLanguageBooking9", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking9", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_10(
-        "witnessInterpreterSpokenLanguageBooking10", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSpokenLanguageBooking10", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1(
         "witnessInterpreterSpokenLanguageBookingStatus1", new TypeReference<InterpreterBookingStatus>() {}),
@@ -1891,34 +1891,34 @@ public enum AsylumCaseFieldDefinition {
         "witnessInterpreterSpokenLanguageBookingStatus10", new TypeReference<InterpreterBookingStatus>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1(
-        "witnessInterpreterSignLanguageBooking1", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking1", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2(
-        "witnessInterpreterSignLanguageBooking2", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking2", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3(
-        "witnessInterpreterSignLanguageBooking3", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking3", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4(
-        "witnessInterpreterSignLanguageBooking4", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking4", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_5(
-        "witnessInterpreterSignLanguageBooking5", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking5", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_6(
-        "witnessInterpreterSignLanguageBooking6", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking6", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_7(
-        "witnessInterpreterSignLanguageBooking7", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking7", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_8(
-        "witnessInterpreterSignLanguageBooking8", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking8", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_9(
-        "witnessInterpreterSignLanguageBooking9", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking9", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_10(
-        "witnessInterpreterSignLanguageBooking10", new TypeReference<InterpreterBookingDetails>() {}),
+        "witnessInterpreterSignLanguageBooking10", new TypeReference<String>() {}),
 
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1(
         "witnessInterpreterSignLanguageBookingStatus1", new TypeReference<InterpreterBookingStatus>() {}),
