@@ -110,6 +110,8 @@ public class ShowPreviousApplicationServiceTest {
     private DocumentWithMetadata document2WithMetadata;
     @Mock
     private CaseNote caseNote;
+    @Mock
+    private CaseNote caseNoteWithoutDocument;
 
 
     @BeforeEach
@@ -161,7 +163,7 @@ public class ShowPreviousApplicationServiceTest {
                 new IdValue<>("2", new InterpreterLanguage("African", "NA")));
 
         List<IdValue<CaseNote>> existingCaseNotes =
-            List.of(new IdValue<>("1", caseNote));
+            List.of(new IdValue<>("1", caseNote), new IdValue<>("2", caseNoteWithoutDocument));
 
         List<IdValue<NationalityFieldValue>> nationalities =
             List.of(new IdValue<>("1", new NationalityFieldValue("American")));
@@ -214,6 +216,10 @@ public class ShowPreviousApplicationServiceTest {
         when(caseNote.getCaseNoteDescription()).thenReturn("description");
         when(caseNote.getUser()).thenReturn("admin-user");
         when(caseNote.getDateAdded()).thenReturn("2022-06-23");
+        when(caseNoteWithoutDocument.getCaseNoteSubject()).thenReturn("subject2");
+        when(caseNoteWithoutDocument.getCaseNoteDescription()).thenReturn("description2");
+        when(caseNoteWithoutDocument.getUser()).thenReturn("admin-user2");
+        when(caseNoteWithoutDocument.getDateAdded()).thenReturn("2022-06-22");
 
         when(bailCase.read(INTERPRETER_YESNO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(INTERPRETER_LANGUAGES)).thenReturn(Optional.of(interpreterLanguages));
@@ -333,7 +339,9 @@ public class ShowPreviousApplicationServiceTest {
         String label = showPreviousApplicationService.getCaseNoteLabel(bailCase);
         assertTrue(label.contains("|Case notes 1<br>*Subject:* subject<br>*Case note:* description<br>*Document:*"
                                       + " <a href=\"/documents/document1BinaryUrl\">document1FileName</a><br>"
-                                      + "*Added by:* admin-user<br>*Date added:* 23 Jun 2022<br>"));
+                                      + "*Added by:* admin-user<br>*Date added:* 23 Jun 2022<br>"
+                                      + "<br>Case notes 2<br>*Subject:* subject2<br>*Case note:* description2<br>"
+                                      + "*Document:* N/A<br>*Added by:* admin-user2<br>*Date added:* 22 Jun 2022<br>"));
     }
 
 

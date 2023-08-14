@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.service;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.AGREES_TO_BOUND_BY_FINANCIAL_COND;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_ADDRESS;
@@ -142,7 +143,9 @@ public class ShowPreviousApplicationService {
                 .map((idValue) -> "Case notes " + index.incrementAndGet()
                     + "<br>*Subject:* " + idValue.getValue().getCaseNoteSubject()
                     + "<br>*Case note:* " + idValue.getValue().getCaseNoteDescription()
-                    + "<br>*Document:* " + createDocumentLabel(idValue.getValue().getCaseNoteDocument())
+                    + "<br>*Document:* "
+                    + (isNull(idValue.getValue().getCaseNoteDocument()) ? "N/A"
+                    : createDocumentLabel(idValue.getValue().getCaseNoteDocument()))
                     + "<br>*Added by:* " + idValue.getValue().getUser()
                     + "<br>*Date added:* " + formatDate(idValue.getValue().getDateAdded())
                     + "<br>")
