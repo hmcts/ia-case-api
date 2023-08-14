@@ -305,7 +305,8 @@ class GenerateDocumentHandlerTest {
                         RECORD_OUT_OF_TIME_DECISION,
                         REQUEST_RESPONDENT_EVIDENCE,
                         RECORD_REMISSION_DECISION,
-                        MARK_APPEAL_PAID
+                        MARK_APPEAL_PAID,
+                            Event.REQUEST_RESPONSE_REVIEW
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -406,7 +407,8 @@ class GenerateDocumentHandlerTest {
                         RECORD_OUT_OF_TIME_DECISION,
                         REQUEST_RESPONDENT_EVIDENCE,
                         RECORD_REMISSION_DECISION,
-                        MARK_APPEAL_PAID
+                        MARK_APPEAL_PAID,
+                            Event.REQUEST_RESPONSE_REVIEW
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
