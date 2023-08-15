@@ -17,6 +17,8 @@
           "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
           "multimediaTribunalResponse": "multimedia reason",
           "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
           "inCameraCourtTribunalResponse": "inCameraCourt reason",
           "additionalTribunalResponse": "additional reason",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
@@ -57,6 +59,8 @@
         "vulnerabilitiesDecisionForDisplay": "Granted - vulnerabilities reason",
         "multimediaDecisionForDisplay": "Granted - multimedia reason",
         "singleSexCourtDecisionForDisplay": "Refused - singleSexCourt reason",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
         "inCameraCourtDecisionForDisplay": "Refused - inCameraCourt reason",
         "otherDecisionForDisplay": "Granted - additional reason",
         "currentCaseStateVisibleToCaseOfficer": "prepareForHearing"

@@ -9,9 +9,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
 public final class InterpreterLanguagesUtils {
+
+    public static final String IS_CHILD_REQUIRED = "Y";
 
     private InterpreterLanguagesUtils() {
         // Utils classes should not have public or default constructors
@@ -149,6 +155,31 @@ public final class InterpreterLanguagesUtils {
             asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field ->
             asylumCase.write(field, new InterpreterLanguageRefData(dummyDynamicList, Collections.emptyList(), "")));
+    }
+
+    public static InterpreterLanguageRefData generateDynamicList(RefDataUserService refDataUserService, String languageCategory) {
+        List<CategoryValues> languages;
+        DynamicList dynamicListOfLanguages;
+
+        try {
+            CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
+                languageCategory,
+                IS_CHILD_REQUIRED
+            );
+
+            languages = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, languageCategory);
+
+            dynamicListOfLanguages = new DynamicList(new Value("", ""),
+                refDataUserService.mapCategoryValuesToDynamicListValues(languages));
+
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Could not read response by RefData service for %s(s)", languageCategory), e);
+        }
+
+        return new InterpreterLanguageRefData(
+            dynamicListOfLanguages,
+            Collections.emptyList(),
+            "");
     }
 
 }

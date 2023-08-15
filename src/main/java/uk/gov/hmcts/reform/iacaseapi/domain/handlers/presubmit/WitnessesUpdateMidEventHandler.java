@@ -18,11 +18,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessIndividualFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.NO_WITNESSES_SELECTED_ERROR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SIGN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.InterpreterLanguagesDynamicListUpdater.SPOKEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.NO_WITNESSES_SELECTED_ERROR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,10 +60,10 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
     private List<AsylumCaseFieldDefinition> fieldsToBeCleared = new ArrayList<>();
-    private InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater;
+    private WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater;
 
-    public WitnessesUpdateMidEventHandler(InterpreterLanguagesDynamicListUpdater interpreterLanguagesDynamicListUpdater) {
-        this.interpreterLanguagesDynamicListUpdater = interpreterLanguagesDynamicListUpdater;
+    public WitnessesUpdateMidEventHandler(WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater) {
+        this.witnessInterpreterLanguagesDynamicListUpdater = witnessInterpreterLanguagesDynamicListUpdater;
     }
 
     @Override
@@ -130,11 +130,6 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                     }
                 });
 
-                if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
-                    // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
-                    clearWitnessIndividualFields(asylumCase);
-                    clearWitnessInterpreterLanguageFields(asylumCase);
-                }
                 break;
 
             case IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID:
@@ -243,9 +238,9 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                     response.addError(NO_WITNESSES_SELECTED_ERROR);
                 }
 
-                InterpreterLanguageRefData spokenLanguages = interpreterLanguagesDynamicListUpdater
+                InterpreterLanguageRefData spokenLanguages = witnessInterpreterLanguagesDynamicListUpdater
                     .generateDynamicList(INTERPRETER_LANGUAGES);
-                InterpreterLanguageRefData signLanguages = interpreterLanguagesDynamicListUpdater
+                InterpreterLanguageRefData signLanguages = witnessInterpreterLanguagesDynamicListUpdater
                     .generateDynamicList(SIGN_LANGUAGES);
 
                 witnessIndexToInterpreterNeeded.forEach((index, interpretersNeeded) -> {

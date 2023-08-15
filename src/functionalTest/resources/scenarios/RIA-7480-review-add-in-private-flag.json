@@ -1,6 +1,6 @@
 {
-  "description": "RIA-7337 RIA-7340 Review hearing requirements when hearing loop and wheelchair access are requested",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "description": "RIA-7480 review hearing requirements when LO approves in camera hearing request",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,7 +10,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseFlagId": "7337-7340-ABC",
+          "listCaseHearingCentre": "taylorHouse",
+          "caseFlagId": "7480-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -18,7 +19,7 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness"
+                "witnessName": "TestWitness"
               }
             }
           ],
@@ -42,8 +43,8 @@
             "languageManualEntry": [],
             "languageManualEntryDescription": ""
           },
-          "isHearingRoomNeeded": "Yes",
-          "isHearingLoopNeeded": "Yes",
+          "isHearingRoomNeeded": "No",
+          "isHearingLoopNeeded": "No",
           "physicalOrMentalHealthIssues": "Yes",
           "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
           "pastExperiences": "Yes",
@@ -53,8 +54,8 @@
           "singleSexCourt": "Yes",
           "singleSexCourtType": "All female",
           "singleSexCourtTypeDescription": "Requirement for single sex court",
-          "inCameraCourt": "No",
-          "isInCameraCourtAllowed": "Refused",
+          "inCameraCourt": "Yes",
+          "isInCameraCourtAllowed": "Granted",
           "inCameraCourtDescription": "In camera court description",
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
@@ -79,6 +80,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
         "isAppellantAttendTheHearing": "Yes",
         "isAppellantGivingOralEvidence": "Yes",
         "isWitnessesAttending": "Yes",
@@ -86,7 +88,7 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness"
+              "witnessName": "TestWitness"
             }
           }
         ],
@@ -110,8 +112,8 @@
           "languageManualEntry": [],
           "languageManualEntryDescription": ""
         },
-        "isHearingRoomNeeded": "Yes",
-        "isHearingLoopNeeded": "Yes",
+        "isHearingRoomNeeded": "No",
+        "isHearingLoopNeeded": "No",
         "physicalOrMentalHealthIssues": "Yes",
         "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
         "pastExperiences": "Yes",
@@ -121,8 +123,8 @@
         "singleSexCourt": "Yes",
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
-        "inCameraCourt": "No",
-        "isInCameraCourtAllowed": "Refused",
+        "inCameraCourt": "Yes",
+        "isInCameraCourtAllowed": "Granted",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",
@@ -141,21 +143,12 @@
           "roleOnCase": "Appellant",
           "details": [
             {
-              "id": "7337-7340-ABC",
+              "id": "7480-ABC",
               "value": {
-                "name": "Hearing loop (hearing enhancement system)",
+                "name": "Evidence given in private",
                 "status": "Active",
-                "flagCode": "RA0043",
-                "hearingRelevant": "Yes"
-              }
-            },
-            {
-              "id": "7337-7340-ABC",
-              "value": {
-                "name": "Step free / wheelchair access",
-                "status": "Active",
-                "flagCode": "RA0019",
-                "hearingRelevant": "Yes"
+                "flagCode": "SM0004",
+                "hearingRelevant": "No"
               }
             }
           ]
