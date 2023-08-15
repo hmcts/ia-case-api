@@ -125,20 +125,20 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
         List<IdValue<WitnessDetails>> witnessesDetails = optionalWitnesses.orElse(Collections.emptyList());
 
-        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(w -> {
-            if (!asylumCase.read(w).isPresent()) {
-                clearSpokenLanguageBookingStatusFieldsForWitness(w);
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(language -> {
+            if (!asylumCase.read(language).isPresent()) {
+                clearSpokenLanguageBookingStatusFieldsForWitness(language);
                 return;
             }
-            populateSpokenLanguageBookingStatusFieldsForWitness(w, witnessesDetails);
+            populateSpokenLanguageBookingStatusFieldsForWitness(language, witnessesDetails);
         });
 
-        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(w -> {
-            if (!asylumCase.read(w).isPresent()) {
-                clearSignLanguageBookingStatusFieldsForWitness(w);
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(language -> {
+            if (!asylumCase.read(language).isPresent()) {
+                clearSignLanguageBookingStatusFieldsForWitness(language);
                 return;
             }
-            populateSignLanguageBookingStatusFieldsForWitness(w, witnessesDetails);
+            populateSignLanguageBookingStatusFieldsForWitness(language, witnessesDetails);
         });
     }
 
@@ -161,8 +161,8 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS);
         } else {
             clearBookingStatusFields(
-                APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
-                APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
+                APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING,
+                APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS);
         }
     }
 
@@ -236,7 +236,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
                     witnessName,
                     WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE,
                     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_7,
-                    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_7);
+                    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_7);
             }
             case WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE -> {
                 witnessName = buildWitnessFullName(witnesses.get(7).getValue());
@@ -268,8 +268,8 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         }
     }
 
-    private void clearSpokenLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness) {
-        switch (witness) {
+    private void clearSpokenLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition language) {
+        switch (language) {
             case WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE -> {
                 clearBookingStatusFields(
                     WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1,
@@ -326,9 +326,9 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         }
     }
 
-    private void populateSignLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness,
+    private void populateSignLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition language,
                                                                    List<IdValue<WitnessDetails>> witnesses) {
-        switch (witness) {
+        switch (language) {
             case WITNESS_1_INTERPRETER_SIGN_LANGUAGE -> {
                 witnessName = buildWitnessFullName(witnesses.get(0).getValue());
                 assignBookingStatus(
@@ -415,8 +415,8 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         }
     }
 
-    private void clearSignLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness) {
-        switch (witness) {
+    private void clearSignLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition language) {
+        switch (language) {
             case WITNESS_1_INTERPRETER_SIGN_LANGUAGE -> {
                 clearBookingStatusFields(
                     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1,
@@ -489,7 +489,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
 
     private String getLanguage(AsylumCaseFieldDefinition fieldDefinition) {
         Optional<InterpreterLanguageRefData> languageRefData = asylumCase.read(
-            fieldDefinition, InterpreterLanguageRefData.class);
+            fieldDefinition);
 
         String language = isEmpty(languageRefData.get().getLanguageManualEntryDescription()) ?
             languageRefData.get().getLanguageRefData().getValue().getLabel() :
