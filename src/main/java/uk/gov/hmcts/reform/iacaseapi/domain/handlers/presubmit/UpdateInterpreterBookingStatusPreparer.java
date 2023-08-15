@@ -94,7 +94,6 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     public static String APPELLANT = "Appellant";
     public static String WITNESS = "Witness";
     private AsylumCase asylumCase;
-    private String witnessName;
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -112,7 +111,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        asylumCase = callback.getCaseDetails().getCaseData();
+        this.asylumCase = callback.getCaseDetails().getCaseData();
 
         populateOrClearAppellantSignAndSpokenInterpreterBookingFields();
 
@@ -181,6 +180,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
 
     private void populateSpokenLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness,
                                                                    List<IdValue<WitnessDetails>> witnesses) {
+        String witnessName = "";
         switch (witness) {
             case WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE -> {
                 witnessName = buildWitnessFullName(witnesses.get(0).getValue());
@@ -328,6 +328,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
 
     private void populateSignLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition language,
                                                                    List<IdValue<WitnessDetails>> witnesses) {
+        String witnessName = "";
         switch (language) {
             case WITNESS_1_INTERPRETER_SIGN_LANGUAGE -> {
                 witnessName = buildWitnessFullName(witnesses.get(0).getValue());

@@ -119,6 +119,7 @@ class EventTest {
         assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
+        assertEquals("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString());
     }
 
     @Test
