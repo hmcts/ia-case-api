@@ -12,7 +12,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_FLAG_TYPE_OF_FLAG;
 
 import java.util.Collections;
@@ -27,9 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -42,15 +42,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @ExtendWith(MockitoExtension.class)
 class RemoveFlagPreparerTest {
 
-    private final CaseFlag expectedCaseFlag =
-        new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
+    private final LegacyCaseFlag expectedCaseFlag =
+        new LegacyCaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private List<IdValue<CaseFlag>> expectedList;
+    private List<IdValue<LegacyCaseFlag>> expectedList;
     private RemoveFlagPreparer removeFlagPreparer;
 
     @BeforeEach
@@ -62,7 +62,7 @@ class RemoveFlagPreparerTest {
         removeFlagPreparer = spy(RemoveFlagPreparer.class);
         expectedList = Collections.singletonList(new IdValue<>("1", expectedCaseFlag));
 
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(expectedList));
+        when(asylumCase.read(LEGACY_CASE_FLAGS)).thenReturn(Optional.of(expectedList));
     }
 
     @Test
@@ -71,7 +71,7 @@ class RemoveFlagPreparerTest {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
-            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getCaseFlagType().getReadableText()))
+            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
         final DynamicList dynamicList = new DynamicList(expectedElements.get(0), expectedElements);
@@ -94,12 +94,12 @@ class RemoveFlagPreparerTest {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
-            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getCaseFlagType().getReadableText()))
+            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
         final DynamicList dynamicList = new DynamicList(expectedElements.get(0), expectedElements);
 
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(LEGACY_CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             removeFlagPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -115,7 +115,7 @@ class RemoveFlagPreparerTest {
 
         final List<Value> actualList = removeFlagPreparer.getExistingCaseFlagListElements(expectedList);
         assertEquals(1, actualList.size());
-        assertEquals(expectedCaseFlag.getCaseFlagType().getReadableText(), actualList.get(0).getLabel());
+        assertEquals(expectedCaseFlag.getLegacyCaseFlagType().getReadableText(), actualList.get(0).getLabel());
     }
 
     @Test
@@ -123,13 +123,13 @@ class RemoveFlagPreparerTest {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
-            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getCaseFlagType().getReadableText()))
+            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
         final DynamicList actualDynamicList = removeFlagPreparer.createDynamicList(expectedElements);
 
         assertEquals(1, actualDynamicList.getListItems().size());
-        assertEquals(expectedCaseFlag.getCaseFlagType().getReadableText(), actualDynamicList.getValue().getLabel());
+        assertEquals(expectedCaseFlag.getLegacyCaseFlagType().getReadableText(), actualDynamicList.getValue().getLabel());
     }
 
     @Test
