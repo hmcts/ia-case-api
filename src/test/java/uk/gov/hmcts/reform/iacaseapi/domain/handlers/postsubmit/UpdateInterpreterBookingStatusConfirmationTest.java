@@ -34,6 +34,7 @@ class UpdateInterpreterBookingStatusConfirmationTest {
         + " to ensure the update is displayed in List Assist."
         + "\n\nIf an interpreter status has been moved to booked, or has been cancelled,"
         + " ensure that the interpreter details are up to date before updating the hearing.";
+
     @Test
     void should_return_confirmation() {
 
