@@ -1,30 +1,31 @@
-"description": "RIA-7507 About to start Update interpreter booking status",
+{
+  "description": "RIA-7507 About to start Update interpreter booking status",
   "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "draftHearingRequirements",
+      "eventId": "updateInterpreterBookingStatus",
       "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-           "appellantInterpreterSignLanguage": {
-                      "languageRefData": {
-                        "value": {
-                          "code": "signB",
-                          "label": "signB"
-                        },
-                        "list_items": [
-                          {
-                            "code": "signB",
-                            "label": "signB"
-                          }
-                        ]
-                      },
-                      "languageManualEntry": [],
-                      "languageManualEntryDescription": ""
-                    },
+          "appellantInterpreterSignLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "signB",
+                "label": "signB"
+              },
+              "list_items": [
+                {
+                  "code": "signB",
+                  "label": "signB"
+                }
+              ]
+            },
+            "languageManualEntry": [],
+            "languageManualEntryDescription": ""
+          }
         }
       }
     }
@@ -35,22 +36,49 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "staffLocation": "Newport",
+        "currentCaseStateVisibleToHomeOfficeAll": "listing",
+        "uploadAddendumEvidenceLegalRepActionAvailable": "No",
+        "haveHearingAttendeesAndDurationBeenRecorded": "No",
+        "uploadAddendumEvidenceActionAvailable": "No",
         "appellantInterpreterSignLanguage": {
           "languageRefData": {
             "value": {
-              "code": "igbo",
-              "label": "igbo"
+              "code": "signB",
+              "label": "signB"
             },
             "list_items": [
               {
-                "code": "igbo",
-                "label": "igbo"
+                "code": "signB",
+                "label": "signB"
               }
             ]
           },
           "languageManualEntry": [],
           "languageManualEntryDescription": ""
-        }
+        },
+        "uploadAddendumEvidenceHomeOfficeActionAvailable": "No",
+        "markAddendumEvidenceAsReviewedActionAvailable": "No",
+        "currentCaseStateVisibleToHomeOfficeGeneric": "listing",
+        "currentCaseStateVisibleToHomeOfficePou": "listing",
+        "hmctsCaseNameInternal": "Talha Awan",
+        "currentCaseStateVisibleToAdminOfficer": "listing",
+        "hmctsCaseCategory": "Protection",
+        "uploadAddendumEvidenceAdminOfficerActionAvailable": "No",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "227101"
+        },
+        "currentCaseStateVisibleToLegalRepresentative": "listing",
+        "currentCaseStateVisibleToHomeOfficeLart": "listing",
+        "markEvidenceAsReviewedActionAvailable": "Yes",
+        "changeDirectionDueDateActionAvailable": "No",
+        "currentCaseStateVisibleToJudge": "listing",
+        "uploadAdditionalEvidenceHomeOfficeActionAvailable": "Yes",
+        "caseNameHmctsInternal": "Talha Awan",
+        "currentCaseStateVisibleToCaseOfficer": "listing",
+        "currentCaseStateVisibleToHomeOfficeApc": "listing",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }
