@@ -61,7 +61,7 @@ class ForceCaseProgressionToCaseUnderReviewConfirmationTest {
     }
 
     @Test
-    void should_return_AIP_confirmation() {
+    void should_return_AiP_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_CASE_UNDER_REVIEW);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
