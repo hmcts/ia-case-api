@@ -65,8 +65,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_interpreter_language_flag(Event event) {
 
@@ -86,8 +86,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_interpreter_language_flag(Event event) {
 
@@ -180,8 +180,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
@@ -212,8 +212,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
@@ -244,9 +244,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     }
 
 
-    private InterpreterLanguageRefData mockLanguageRefData(Optional<String> languageCode, Optional<String>  languageValue, Optional<String> manualLanguage){
+    private InterpreterLanguageRefData mockLanguageRefData(Optional<String> languageCode, Optional<String>  languageValue, Optional<String> manualLanguage) {
         List<String> manualLangList = new ArrayList<>();
-        if(languageCode.isPresent() && languageValue.isPresent()) {
+        if (languageCode.isPresent() && languageValue.isPresent()) {
             Value value = new Value(languageCode.get(), languageValue.get());
             List<Value> values = new ArrayList<>();
             values.add(value);
@@ -254,7 +254,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
             return new InterpreterLanguageRefData(dynamicList, null, null);
         }
 
-        if (manualLanguage.isPresent()){
+        if (manualLanguage.isPresent()) {
             manualLangList.add(manualLanguage.get());
         }
         return new InterpreterLanguageRefData(null, manualLangList, "test description");
@@ -283,8 +283,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);
