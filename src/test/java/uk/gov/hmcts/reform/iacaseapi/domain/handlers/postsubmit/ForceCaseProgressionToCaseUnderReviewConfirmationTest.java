@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -31,6 +32,7 @@ class ForceCaseProgressionToCaseUnderReviewConfirmationTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock private AsylumCase asylumCase;
+    @Mock private CaseDetails caseDetails;
 
     private ForceCaseProgressionToCaseUnderReviewConfirmation forceCaseProgressionToCaseUnderReviewConfirmation =
         new ForceCaseProgressionToCaseUnderReviewConfirmation();
@@ -39,6 +41,8 @@ class ForceCaseProgressionToCaseUnderReviewConfirmationTest {
     void should_return_LR_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_CASE_UNDER_REVIEW);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(REP));
         PostSubmitCallbackResponse callbackResponse =
             forceCaseProgressionToCaseUnderReviewConfirmation.handle(callback);
@@ -60,6 +64,8 @@ class ForceCaseProgressionToCaseUnderReviewConfirmationTest {
     void should_return_AIP_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_CASE_UNDER_REVIEW);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
         PostSubmitCallbackResponse callbackResponse =
                 forceCaseProgressionToCaseUnderReviewConfirmation.handle(callback);
