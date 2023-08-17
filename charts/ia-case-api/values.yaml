@@ -52,6 +52,7 @@ java:
         - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS-11
         - app-insights-connection-string
+        - ia-config-validator-secret
         
 ia-case-payments-api:
   enabled: false

@@ -32,6 +32,7 @@ spring:
         hearing-centre-activation-date-hatton-cross: IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS
         hearing-centre-activation-date-glasgow: IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW
         launch-darkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
+        ia-config-validator-secret: IA_CONFIG_VALIDATOR_SECRET
         case-api-POSTGRES-PASS-11: spring.datasource.password
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         app-insights-connection-string: app-insights-connection-string
