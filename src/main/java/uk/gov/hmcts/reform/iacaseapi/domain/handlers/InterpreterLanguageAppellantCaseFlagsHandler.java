@@ -65,7 +65,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         if (isInterpreterServicesNeeded) {
             InterpreterLanguageRefData appellantSpokenLanguage = asylumCase
                     .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
-                    .orElseThrow(() -> new IllegalStateException("appellantSpokenLanguage is not present"));
+                    .orElseThrow(() -> new IllegalStateException("appellantInterpreterSignLanguage is not present"));
 
             if (activeFlag.isPresent() && activeFlagDiffers(activeFlag.get(), appellantSpokenLanguage)) {
                 existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
