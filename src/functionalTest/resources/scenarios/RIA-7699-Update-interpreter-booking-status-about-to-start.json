@@ -223,7 +223,7 @@
           "baseLocation": "227101"
         },
         "legalRepresentativeName": "A Test Legal Rep",
-        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
         "hasOtherAppeals": "No",
         "appealReferenceNumber": "PA/12345/2018",
         "appealType": "protection",
