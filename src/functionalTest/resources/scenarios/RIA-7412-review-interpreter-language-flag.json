@@ -5,13 +5,13 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "updateHearingRequirements",
-      "state": "preHearing",
+      "eventId": "reviewHearingRequirements",
+      "state": "submitHearingRequirements",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "taylorHouse",
-          "caseFlagId": "7412-ABC",
+          "caseFlagId": "7480-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -68,7 +68,8 @@
                 "dateToAvoidReason": "Xmas"
               }
             }
-          ]
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -122,8 +123,8 @@
         "singleSexCourt": "Yes",
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
-        "inCameraCourt": "Yes",
-        "isInCameraCourtAllowed": "Granted",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",
