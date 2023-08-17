@@ -23,14 +23,8 @@
             }
           ],
           "isInterpreterServicesNeeded": "Yes",
-          "interpreterLanguage": [
-            {
-              "id": "1",
-              "value": {
-                "language": "zu",
-                "languageDialect": "opt"
-              }
-            }
+          "appellantInterpreterLanguageCategory": [
+            "signLanguageInterpreter"
           ],
           "appellantInterpreterSignLanguage": {
             "languageRefData": {
