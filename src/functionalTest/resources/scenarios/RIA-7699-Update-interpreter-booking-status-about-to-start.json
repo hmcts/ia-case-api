@@ -223,7 +223,7 @@
           "baseLocation": "227101"
         },
         "legalRepresentativeName": "A Test Legal Rep",
-        "legalRepresentativeEmailAddress": "ia-law-firm-a@fake.hmcts.net",
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
         "hasOtherAppeals": "No",
         "appealReferenceNumber": "PA/12345/2018",
         "appealType": "protection",
