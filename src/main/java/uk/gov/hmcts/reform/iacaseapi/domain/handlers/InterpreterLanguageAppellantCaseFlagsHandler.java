@@ -55,10 +55,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                 .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
 
-        InterpreterLanguageRefData appellantSpokenLanguage = asylumCase
-                .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
-                .orElseThrow(() -> new IllegalStateException("appellantSpokenLanguage is not present"));
-
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
 
@@ -67,6 +63,10 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
 
         if (isInterpreterServicesNeeded) {
+            InterpreterLanguageRefData appellantSpokenLanguage = asylumCase
+                    .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
+                    .orElseThrow(() -> new IllegalStateException("appellantSpokenLanguage is not present"));
+
             if (activeFlag.isPresent() && activeFlagDiffers(activeFlag.get(), appellantSpokenLanguage)) {
                 existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                 existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, appellantSpokenLanguage);
