@@ -303,8 +303,11 @@ class GenerateDocumentHandlerTest {
                         UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
                         ASYNC_STITCHING_COMPLETE,
                         RECORD_OUT_OF_TIME_DECISION,
-                        REQUEST_RESPONDENT_EVIDENCE
-
+                        REQUEST_RESPONDENT_EVIDENCE,
+                        RECORD_REMISSION_DECISION,
+                        MARK_APPEAL_PAID,
+                        REQUEST_RESPONSE_REVIEW,
+                        REQUEST_HEARING_REQUIREMENTS_FEATURE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -403,7 +406,11 @@ class GenerateDocumentHandlerTest {
                         UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
                         ASYNC_STITCHING_COMPLETE,
                         RECORD_OUT_OF_TIME_DECISION,
-                        REQUEST_RESPONDENT_EVIDENCE
+                        REQUEST_RESPONDENT_EVIDENCE,
+                        RECORD_REMISSION_DECISION,
+                        MARK_APPEAL_PAID,
+                        REQUEST_RESPONSE_REVIEW,
+                        REQUEST_HEARING_REQUIREMENTS_FEATURE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

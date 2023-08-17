@@ -45,16 +45,11 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    void cannotSendDirectionForAipCaseToAppellant() {
+    void canSendDirectionForAipCaseToAppellant() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
-        assertThat(eventValid)
-            .isEqualTo(new EventValid("You cannot use this function to send a direction to an appellant in person."));
-
-        Assertions.assertThat(loggingEventListAppender.list)
-            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Cannot send a direction for an AIP case to appellant", Level.ERROR));
+        assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
     @Test
@@ -65,6 +60,21 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Parties.class, names = {
+        "LEGAL_REPRESENTATIVE", "BOTH"
+    })
+    void cannotSendDirectionToLegalRepForAipCase(Parties parties) {
+        setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, parties);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(
+                new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+                .contains(Tuple.tuple("Cannot send a legal representative a direction for an appellant in person case", Level.ERROR));
+    }
 
     @Test
     void cannotSendDirectionToAppellantForReppedCase() {
