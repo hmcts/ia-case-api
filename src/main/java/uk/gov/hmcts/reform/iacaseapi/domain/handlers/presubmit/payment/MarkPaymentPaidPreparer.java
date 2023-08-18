@@ -89,11 +89,11 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 boolean isEaHuEu = List.of(EA, HU, EU).contains(appealType);
                 // old cases
                 if ((appealType == PA && remissionType.isEmpty() && paPaymentType.isEmpty())
-                        || (!isAipJourney && isEaHuEu && remissionType.isEmpty()
-                        && eaHuPaymentType.isEmpty())) {
+                        || (isEaHuEu && remissionType.isEmpty() && eaHuPaymentType.isEmpty())) {
+
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
                 }
-                if (!isAipJourney && isEaHuEu && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
+                if (isEaHuEu && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
                         && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payNow")
                         && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
