@@ -9,10 +9,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -86,8 +86,8 @@ class FlagCaseHandlerTest {
     void given_flag_type_should_set_correct_flag(CaseFlagType caseFlagType,
                                                         AsylumCaseFieldDefinition caseFlagExists,
                                                         AsylumCaseFieldDefinition caseFlagAdditionalInformation) {
-        final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
-        final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = new ArrayList<>();
 
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
 
@@ -102,7 +102,7 @@ class FlagCaseHandlerTest {
         verify(caseFlagAppender, times(1))
             .append(existingCaseFlags, caseFlagType, additionalInformation);
 
-        verify(asylumCase, times(1)).write(CASE_FLAGS, allCaseFlags);
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, allCaseFlags);
         verify(asylumCase, times(1)).write(caseFlagExists, YesOrNo.YES);
         verify(asylumCase, times(1)).write(caseFlagAdditionalInformation, additionalInformation);
     }
@@ -110,8 +110,8 @@ class FlagCaseHandlerTest {
     @Test
     void does_not_set_any_flags_when_bad_flag_given() {
 
-        final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
-        final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = new ArrayList<>();
         final CaseFlagType caseFlagType = CaseFlagType.UNKNOWN;
 
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
@@ -130,15 +130,15 @@ class FlagCaseHandlerTest {
             additionalInformation
         );
 
-        verify(asylumCase, times(1)).write(CASE_FLAGS, allCaseFlags);
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, allCaseFlags);
         verify(asylumCase, never()).write(any(AsylumCaseFieldDefinition.class), eq(YesOrNo.YES));
     }
 
     @Test
     void should_set_feature_flag_to_yes_when_set_aside_reheard_flag_given() {
 
-        final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
-        final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = new ArrayList<>();
         final CaseFlagType caseFlagType = CaseFlagType.SET_ASIDE_REHEARD;
 
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
@@ -158,15 +158,15 @@ class FlagCaseHandlerTest {
             additionalInformation
         );
 
-        verify(asylumCase, times(1)).write(CASE_FLAGS, allCaseFlags);
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, allCaseFlags);
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
     }
 
     @Test
     void should_set_feature_flag_to_no_when_set_aside_reheard_flag_given() {
 
-        final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
-        final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = new ArrayList<>();
         final CaseFlagType caseFlagType = CaseFlagType.SET_ASIDE_REHEARD;
 
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
@@ -186,7 +186,7 @@ class FlagCaseHandlerTest {
             additionalInformation
         );
 
-        verify(asylumCase, times(1)).write(CASE_FLAGS, allCaseFlags);
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, allCaseFlags);
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.NO);
     }
 

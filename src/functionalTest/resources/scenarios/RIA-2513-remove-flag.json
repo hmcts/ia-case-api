@@ -10,19 +10,19 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseFlags": [
+          "legacyCaseFlags": [
             {
               "id": "1",
               "value": {
-                "caseFlagType": "complexCase",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "complexCase",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             },
             {
               "id": "2",
               "value": {
-                "caseFlagType": "anonymity",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "anonymity",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             }
           ],
@@ -54,12 +54,12 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "2",
             "value": {
-              "caseFlagType": "anonymity",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "anonymity",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ]
