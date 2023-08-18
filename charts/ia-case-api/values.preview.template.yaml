@@ -116,7 +116,7 @@ ia-case-documents-api:
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      EM_BUNDLER_URL: http://em-ccd-orchestrator-aat.service.core-compute-aat.internal
+      EM_BUNDLER_URL: http://em-ccdorc-${SERVICE_FQDN}
       EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment
         }}.platform.hmcts.net/
