@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7507 About to start Update interpreter booking status",
+  "description": "RIA-7699 About to start Update interpreter booking status",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
@@ -236,7 +236,7 @@
             }
           }
         ],
-        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "homeOfficeDecisionDate": "{$TODAY}",
         "appellantInterpreterSpokenLanguageBookingStatus": "notRequested",
         "contactPreference": "wantsSms",
         "appealGroundsProtection": {

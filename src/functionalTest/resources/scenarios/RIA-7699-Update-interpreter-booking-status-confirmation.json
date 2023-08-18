@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7507 About to start Update interpreter booking status",
+  "description": "RIA-7699 Update interpreter booking status confirmation",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
