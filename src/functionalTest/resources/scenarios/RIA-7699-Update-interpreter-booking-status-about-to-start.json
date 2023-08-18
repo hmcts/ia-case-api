@@ -244,7 +244,7 @@
             "refugeeConvention"
           ]
         },
-        "appellantDateOfBirth": "2003-08-22",
+        "appellantDateOfBirth": "{$TODAY-7300}",
         "witness1InterpreterSpokenLanguage": {
           "languageRefData": {
             "value": {
