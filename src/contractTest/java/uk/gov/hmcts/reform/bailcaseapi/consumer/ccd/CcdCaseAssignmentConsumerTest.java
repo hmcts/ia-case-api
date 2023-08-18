@@ -5,8 +5,11 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.io.IOException;
+
+import com.google.common.collect.ImmutableMap;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 
 @PactTestFor(providerName = "ccdDataStoreAPI_caseAssignedUserRoles", port = "8871")
@@ -26,6 +29,7 @@ public class CcdCaseAssignmentConsumerTest extends CcdCaseAssignmentProviderBase
             .body(createJsonObject(ccdCaseAssignment.buildRevokeAccessPayload("some-org-identifier",
                                                                               CASE_ID, IDAM_ID_OF_USER_CREATING_CASE)))
             .willRespondWith()
+            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(HttpStatus.SC_OK)
             .toPact();
     }

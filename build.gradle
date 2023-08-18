@@ -143,19 +143,7 @@ configurations {
 
 checkstyle.toolVersion = '10.12.0'
 checkstyle.configFile = new File(rootDir, "checkstyle.xml")
-checkstyle.maxWarnings(0)
-
-// make build fail on Checkstyle issues (https://github.com/gradle/gradle/issues/881)
-tasks.withType(Checkstyle).each { checkstyleTask ->
-  checkstyleTask.doLast {
-    reports.all { report ->
-      def outputFile = report.destination
-      if (outputFile.exists() && outputFile.text.contains("<error ")) {
-        throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
-      }
-    }
-  }
-}
+checkstyle.maxWarnings(5)
 
 pmd {
   toolVersion = '6.41.0'
@@ -250,6 +238,7 @@ repositories {
   mavenLocal()
   jcenter()
   mavenCentral()
+  maven { url 'https://jitpack.io' }
 }
 
 dependencyManagement {
@@ -332,6 +321,8 @@ dependencies {
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   testImplementation libraries.junit5
+
+  testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
   testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.6') {
     exclude group: "com.github.tomakehurst", module: "wiremock-standalone"

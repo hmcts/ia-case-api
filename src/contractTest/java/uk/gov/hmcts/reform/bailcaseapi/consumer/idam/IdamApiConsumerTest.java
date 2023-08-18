@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.bailcaseapi.consumer.idam;
 
-import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
@@ -11,10 +10,12 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
 import org.json.JSONException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +28,6 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.UserInf
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 
@@ -56,6 +56,7 @@ public class IdamApiConsumerTest {
             .matchHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .willRespondWith()
             .status(200)
+            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .body(createUserDetailsResponse())
             .toPact();
     }
@@ -90,7 +91,7 @@ public class IdamApiConsumerTest {
     @PactTestFor(pactMethod = "generatePactFragmentUserInfo")
     public void verifyIdamUserDetailsRolesPactUserInfo() {
         UserInfo userInfo = idamApi.userInfo(AUTH_TOKEN);
-        assertEquals("User is not Case Officer", "ia-caseofficer@fake.hmcts.net", userInfo.getEmail());
+        Assertions.assertEquals("ia-caseofficer@fake.hmcts.net", userInfo.getEmail(), "User is not Case Officer");
     }
 
     @Test
@@ -99,11 +100,13 @@ public class IdamApiConsumerTest {
 
         Map<String, String> tokenRequestMap = buildTokenRequestMap();
         Token token = idamApi.token(tokenRequestMap);
-        assertEquals("Token is not expected", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre", token.getAccessToken());
+        Assertions.assertEquals("eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre",
+                                token.getAccessToken(),
+                                "Token is not expected");
     }
 
     private Map<String, String> buildTokenRequestMap() {
-        Map<String, String> tokenRequestMap = ImmutableMap.<String, String>builder()
+        return ImmutableMap.<String, String>builder()
             .put("redirect_uri", "http://www.dummy-pact-service.com/callback")
             .put("client_id", "pact")
             .put("grant_type", "password")
@@ -112,13 +115,10 @@ public class IdamApiConsumerTest {
             .put("client_secret", "pactsecret")
             .put("scope", "openid profile roles")
             .build();
-        return tokenRequestMap;
     }
 
 
     private PactDslJsonBody createUserDetailsResponse() {
-        PactDslJsonArray array = new PactDslJsonArray().stringValue("caseofficer-ia");
-
         return new PactDslJsonBody()
             .stringType("uid", "1111-2222-3333-4567")
             .stringValue("sub", "ia-caseofficer@fake.hmcts.net")

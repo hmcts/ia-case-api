@@ -8,9 +8,12 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.io.IOException;
+
+import com.google.common.collect.ImmutableMap;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 
 @PactTestFor(providerName = "acc_manageCaseAssignment", port = "8872")
@@ -21,6 +24,7 @@ public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseT
     @Pact(provider = "acc_manageCaseAssignment", consumer = "bail_caseApi")
     public RequestResponsePact generatePactFragmentForAssign(PactDslWithProvider builder)
         throws JSONException, IOException {
+
         return builder
             .given("Assign a user to a case")
             .uponReceiving("A request for that case to be assigned")
@@ -33,6 +37,7 @@ public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseT
             .path("/case-assignments")
             .willRespondWith()
             .body(buildAssignCasesResponseDsl())
+            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(HttpStatus.SC_CREATED)
             .toPact();
     }
@@ -46,11 +51,11 @@ public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseT
     }
 
     private DslPart buildAssignCasesResponseDsl() {
-        return newJsonBody((o) -> {
+        return newJsonBody(o ->
             o.stringType(
                 "status_message",
                 "Roles Role1,Role2 from the organisation policies successfully assigned to the assignee."
-            );
-        }).build();
+            )
+        ).build();
     }
 }

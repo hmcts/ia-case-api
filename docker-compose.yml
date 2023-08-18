@@ -35,6 +35,7 @@ services:
       DM_URL: http://dm-store:8080
       IA_CASE_DOCUMENTS_API_URL: http://ia-case-documents-api:8092
       IA_CASE_NOTIFICATIONS_API_URL: http://ia-case-notifications-api:8093
+      CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api:4455
       IA_IDAM_CLIENT_ID:
       IA_IDAM_SECRET:
       IA_S2S_MICROSERVICE:
