@@ -23,6 +23,8 @@
           "listCaseHearingCentre": "taylorHouse",
           "listCaseHearingLength": "360",
           "attendingJudge": "Judge Fudge",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
           "attendingAppellant": "José González",
           "attendingHomeOfficeLegalRepresentative": "Perry Mason",
           "actualCaseHearingLength": {
@@ -59,6 +61,8 @@
         "isReheardAppealEnabled": "Yes",
         "attendingJudge": "Judge Fudge",
         "attendingAppellant": "José González",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
         "attendingHomeOfficeLegalRepresentative": "Perry Mason",
         "hearingRequirements": [
           {
