@@ -95,7 +95,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
     }
 
     private boolean activeFlagDiffers(CaseFlagDetail caseFlagDetail, InterpreterLanguageRefData appellantSpokenLanguage) {
-        return caseFlagDetail.getCaseFlagValue().getAppelantSpokenLanguage() != appellantSpokenLanguage;
+        return caseFlagDetail.getCaseFlagValue().getAppellantInterpreterSignLanguage() != appellantSpokenLanguage;
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
@@ -110,7 +110,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
-                .appelantSpokenLanguage(appelantSpokenLanguage)
+                .appellantInterpreterSignLanguage(appelantSpokenLanguage)
                 .build();
         String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
         List<CaseFlagDetail> caseFlagDetails = existingCaseFlagDetails.isEmpty()
@@ -134,7 +134,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
                             .hearingRelevant(value.getHearingRelevant())
-                            .appelantSpokenLanguage(value.getAppelantSpokenLanguage())
+                            .appellantInterpreterSignLanguage(value.getAppellantInterpreterSignLanguage())
                             .build());
                 } else {
                     return detail;

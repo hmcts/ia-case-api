@@ -32,7 +32,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -118,7 +117,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Active")
-                .appelantSpokenLanguage(refData)
+                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -163,7 +162,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Inactive")
-                .appelantSpokenLanguage(refData)
+                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -195,7 +194,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Inactive")
-                .appelantSpokenLanguage(refData)
+                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -228,7 +227,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Active")
-                .appelantSpokenLanguage(refData)
+                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
