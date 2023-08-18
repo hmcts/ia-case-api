@@ -25,6 +25,7 @@ java:
     S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+    CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
   keyVaults:
     ia:
       secrets:
@@ -106,7 +107,7 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-564
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -342,7 +343,7 @@ ia-bail-case-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
-    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-339
+    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     environment:
@@ -470,6 +471,7 @@ ia-aip-frontend:
   nodejs:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     memoryRequests: 256Mi
