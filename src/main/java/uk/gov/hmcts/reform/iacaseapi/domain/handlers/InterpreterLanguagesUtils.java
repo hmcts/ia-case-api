@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -128,6 +132,55 @@ public final class InterpreterLanguagesUtils {
             dynamicListOfLanguages,
             Collections.emptyList(),
             "");
+    }
+
+    // witness1interpreterCategoryField, witness2interpreterCategoryField ... witness10interpreterCategoryField
+    // these fields are dynamically populated through a midEvent, and therefore become fleeting after the page where
+    // they're set. To circumvent this shortcoming of ccd it's necessary to deduce their value and write them in this
+    // aboutToSubmit handler
+
+    public static void persistWitnessInterpreterCategoryField(AsylumCase asylumCase) {
+
+        int i = 0;
+        while (i < 10) {
+            Optional<InterpreterLanguageRefData> optionalSpoken = asylumCase
+                .read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
+
+            Optional<InterpreterLanguageRefData> optionalSign = asylumCase
+                .read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
+
+            boolean spokenIsChosen = optionalSpoken.isPresent()
+                                     && isInterpreterLanguagePopulated(optionalSpoken.get());
+
+            boolean signIsChosen = optionalSign.isPresent()
+                                   && isInterpreterLanguagePopulated(optionalSign.get());
+
+            List<String> chosen = new ArrayList<>();
+            if (spokenIsChosen) {
+                chosen.add(SPOKEN);
+            }
+            if (signIsChosen) {
+                chosen.add(SIGN);
+            }
+
+            if (!chosen.isEmpty()) {
+                asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i), chosen);
+            }
+
+            i++;
+        }
+    }
+
+    private static boolean isInterpreterLanguagePopulated(InterpreterLanguageRefData interpreterLanguageRefData) {
+        boolean dynamicListValueSelected = interpreterLanguageRefData.getLanguageRefData() != null
+                                           && interpreterLanguageRefData.getLanguageRefData().getValue() != null
+                                           && interpreterLanguageRefData.getLanguageRefData().getValue().getLabel() != null
+                                           && !interpreterLanguageRefData.getLanguageRefData().getValue().getLabel().isEmpty();
+
+        boolean manualLanguageSelected = !interpreterLanguageRefData.getLanguageManualEntry().isEmpty()
+                                         && !interpreterLanguageRefData.getLanguageManualEntryDescription().isEmpty();
+
+        return dynamicListValueSelected || manualLanguageSelected;
     }
 
 }

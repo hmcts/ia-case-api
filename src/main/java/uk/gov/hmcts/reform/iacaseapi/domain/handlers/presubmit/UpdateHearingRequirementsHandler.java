@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.persistWitnessInterpreterCategoryField;
 
 import java.util.Collections;
 import java.util.List;
@@ -117,6 +118,8 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
 
         if (witnessDetails.isEmpty() || isWitnessAttending.equals(NO)) {
             clearWitnessRelatedFields(asylumCase);
+        } else {
+            persistWitnessInterpreterCategoryField(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

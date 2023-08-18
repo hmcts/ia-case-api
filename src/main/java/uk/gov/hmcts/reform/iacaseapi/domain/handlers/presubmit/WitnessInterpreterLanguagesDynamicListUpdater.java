@@ -39,8 +39,8 @@ public class WitnessInterpreterLanguagesDynamicListUpdater implements PreSubmitC
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String YES = "Yes";
     protected static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
-    protected static final String SPOKEN = "spokenLanguageInterpreter";
-    protected static final String SIGN = "signLanguageInterpreter";
+    public static final String SPOKEN = "spokenLanguageInterpreter";
+    public static final String SIGN = "signLanguageInterpreter";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
