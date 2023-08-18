@@ -122,6 +122,12 @@ withPipeline(type, product, component) {
     """
     }
 
+    afterSuccess('akschartsinstall') {
+        onPR {
+            githubUpdateDeploymentStatus(githubCreateDeployment(), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+            githubUpdateDeploymentStatus(githubCreateDeployment(), "https://xui-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net")
+        }
+    }
 
     afterAlways('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
