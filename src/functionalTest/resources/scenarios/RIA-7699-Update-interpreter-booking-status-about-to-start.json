@@ -236,7 +236,7 @@
             }
           }
         ],
-        "homeOfficeDecisionDate": "2023-08-17",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
         "appellantInterpreterSpokenLanguageBookingStatus": "notRequested",
         "contactPreference": "wantsSms",
         "appealGroundsProtection": {
