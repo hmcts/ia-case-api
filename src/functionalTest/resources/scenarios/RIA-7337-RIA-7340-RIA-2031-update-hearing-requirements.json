@@ -121,14 +121,9 @@
           }
         ],
         "isInterpreterServicesNeeded": "Yes",
-        "interpreterLanguage": [
-          {
-            "id": "1",
-            "value": {
-              "language": "zu",
-              "languageDialect": "opt"
-            }
-          }
+        "isInterpreterServicesNeeded": "Yes",
+        "appellantInterpreterLanguageCategory": [
+          "signLanguageInterpreter"
         ],
         "appellantInterpreterSignLanguage": {
           "languageRefData": {
