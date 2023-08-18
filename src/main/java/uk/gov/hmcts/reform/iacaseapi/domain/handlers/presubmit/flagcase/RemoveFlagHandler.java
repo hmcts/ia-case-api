@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.flagcase;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_FLAG_TYPE_OF_FLAG;
 
 import java.util.ArrayList;
@@ -48,20 +48,20 @@ public class RemoveFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         final DynamicList flagType = asylumCase.read(REMOVE_FLAG_TYPE_OF_FLAG, DynamicList.class)
             .orElseThrow(() -> new IllegalStateException("removeFlagTypeOfFlag is missing"));
 
-        final Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
-        final List<IdValue<CaseFlag>> existingCaseFlags = maybeExistingCaseFlags.orElse(Collections.emptyList());
+        final Optional<List<IdValue<LegacyCaseFlag>>> maybeExistingCaseFlags = asylumCase.read(LEGACY_CASE_FLAGS);
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = maybeExistingCaseFlags.orElse(Collections.emptyList());
 
-        final List<IdValue<CaseFlag>> newCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> newCaseFlags = new ArrayList<>();
 
-        for (IdValue<CaseFlag> idValue : existingCaseFlags) {
+        for (IdValue<LegacyCaseFlag> idValue : existingCaseFlags) {
             if (!idValue.getId().equals(flagType.getValue().getCode())) {
                 newCaseFlags.add(idValue);
             } else {
-                clearDisplayFlags(idValue.getValue().getCaseFlagType(), asylumCase);
+                clearDisplayFlags(idValue.getValue().getLegacyCaseFlagType(), asylumCase);
             }
         }
 
-        asylumCase.write(CASE_FLAGS, newCaseFlags);
+        asylumCase.write(LEGACY_CASE_FLAGS, newCaseFlags);
         asylumCase.clear(REMOVE_FLAG_TYPE_OF_FLAG);
 
         return new PreSubmitCallbackResponse<>(asylumCase);

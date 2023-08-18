@@ -47,7 +47,7 @@ public class RemoveFlagPreparer implements PreSubmitCallbackHandler<AsylumCase> 
                 .getCaseDetails()
                 .getCaseData();
 
-        final Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
+        final Optional<List<IdValue<LegacyCaseFlag>>> maybeExistingCaseFlags = asylumCase.read(LEGACY_CASE_FLAGS);
 
         final List<Value> existingCaseFlagListElements =
             getExistingCaseFlagListElements(maybeExistingCaseFlags.orElse(Collections.emptyList()));
@@ -65,11 +65,11 @@ public class RemoveFlagPreparer implements PreSubmitCallbackHandler<AsylumCase> 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    public List<Value> getExistingCaseFlagListElements(List<IdValue<CaseFlag>> existingCaseFlags) {
+    public List<Value> getExistingCaseFlagListElements(List<IdValue<LegacyCaseFlag>> existingCaseFlags) {
         requireNonNull(existingCaseFlags, "existingCaseFlags must not be null");
         return existingCaseFlags
             .stream()
-            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getCaseFlagType().getReadableText()))
+            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
     }
 
