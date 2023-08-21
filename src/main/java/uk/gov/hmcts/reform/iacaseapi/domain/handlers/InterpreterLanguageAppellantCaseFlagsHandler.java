@@ -71,8 +71,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                     .read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)
                     .orElseThrow(() -> new IllegalStateException("interpreterLangugageRd is not present"));
 
-            if (activeFlag.isPresent() && asylumCaseBefore.isPresent()){
-                if (selectedLanguageDiffers(appellantSpokenLanguage, asylumCaseBefore.get().getCaseData()) || manualLanguageDiffers(languageManualEnter, asylumCaseBefore.get().getCaseData())){
+            if (activeFlag.isPresent() && asylumCaseBefore.isPresent()) {
+                if (selectedLanguageDiffers(appellantSpokenLanguage, asylumCaseBefore.get().getCaseData()) || manualLanguageDiffers(languageManualEnter, asylumCaseBefore.get().getCaseData())) {
                     existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                     existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                     caseDataUpdated = true;
@@ -107,7 +107,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         return ! appellantSpokenLanguage.getLanguageCode().equals(appellantSpokenLanguageBefore);
     }
 
-    private boolean manualLanguageDiffers(Optional<String> manualLanguage, AsylumCase asylumCaseBefore){
+    private boolean manualLanguageDiffers(Optional<String> manualLanguage, AsylumCase asylumCaseBefore) {
         Optional<String> languageManualEnterBefore = asylumCaseBefore.read(LANGUAGE_MANUAL_ENTER, String.class);
         return manualLanguage.equals(languageManualEnterBefore);
     }
@@ -116,7 +116,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
             StrategicCaseFlagType caseFlagType
-            ) {
+    ) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
                 .flagCode(caseFlagType.getFlagCode())
