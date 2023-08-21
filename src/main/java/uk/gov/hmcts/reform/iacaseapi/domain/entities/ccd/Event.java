@@ -121,6 +121,7 @@ public enum Event {
     MAINTAIN_CASE_LINKS("maintainCaseLinks"),
     PIP_ACTIVATION("pipActivation"),
     UPDATE_S94B_STATUS("updateS94bStatus"),
+    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
