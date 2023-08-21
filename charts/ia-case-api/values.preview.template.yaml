@@ -779,4 +779,4 @@ em-stitching:
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CDAM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+      CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
