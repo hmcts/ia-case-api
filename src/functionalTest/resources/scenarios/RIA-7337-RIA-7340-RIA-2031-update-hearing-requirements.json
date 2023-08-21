@@ -23,8 +23,14 @@
             }
           ],
           "isInterpreterServicesNeeded": "Yes",
-          "appellantInterpreterLanguageCategory": [
-            "signLanguageInterpreter"
+          "interpreterLanguage": [
+            {
+              "id": "1",
+              "value": {
+                "language": "zu",
+                "languageDialect": "opt"
+              }
+            }
           ],
           "appellantInterpreterSignLanguage": {
             "languageRefData": {
@@ -53,8 +59,7 @@
           "singleSexCourt": "Yes",
           "singleSexCourtType": "All female",
           "singleSexCourtTypeDescription": "Requirement for single sex court",
-          "inCameraCourt": "No",
-          "isInCameraCourtAllowed": "Refused",
+          "inCameraCourt": "Yes",
           "inCameraCourtDescription": "In camera court description",
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
@@ -122,8 +127,14 @@
           }
         ],
         "isInterpreterServicesNeeded": "Yes",
-        "appellantInterpreterLanguageCategory": [
-          "signLanguageInterpreter"
+        "interpreterLanguage": [
+          {
+            "id": "1",
+            "value": {
+              "language": "zu",
+              "languageDialect": "opt"
+            }
+          }
         ],
         "appellantInterpreterSignLanguage": {
           "languageRefData": {
@@ -152,8 +163,7 @@
         "singleSexCourt": "Yes",
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
-        "inCameraCourt": "No",
-        "isInCameraCourtAllowed": "Refused",
+        "inCameraCourt": "Yes",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",
