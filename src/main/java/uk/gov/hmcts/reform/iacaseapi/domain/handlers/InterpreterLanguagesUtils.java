@@ -229,8 +229,10 @@ public final class InterpreterLanguagesUtils {
                                            && interpreterLanguageRefData.getLanguageRefData().getValue().getLabel() != null
                                            && !interpreterLanguageRefData.getLanguageRefData().getValue().getLabel().isEmpty();
 
-        boolean manualLanguageSelected = !interpreterLanguageRefData.getLanguageManualEntry().isEmpty()
-                                         && !interpreterLanguageRefData.getLanguageManualEntryDescription().isEmpty();
+        boolean manualLanguageSelected = interpreterLanguageRefData.getLanguageManualEntry() != null &&
+                interpreterLanguageRefData.getLanguageManualEntryDescription() != null &&
+                !interpreterLanguageRefData.getLanguageManualEntry().isEmpty() &&
+                !interpreterLanguageRefData.getLanguageManualEntryDescription().isEmpty();
 
         return dynamicListValueSelected || manualLanguageSelected;
     }
