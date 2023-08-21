@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.persistWitnessInterpreterCategoryField;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,9 +130,13 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
             WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
             WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
+        } else {
+            persistWitnessInterpreterCategoryField(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
+
 }
 
