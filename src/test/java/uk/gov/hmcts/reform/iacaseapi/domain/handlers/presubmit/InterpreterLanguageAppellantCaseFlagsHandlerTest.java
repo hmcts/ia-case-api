@@ -68,12 +68,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_interpreter_language_flag(Event event) {
-
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
-
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -89,12 +86,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_interpreter_language_flag(Event event) {
-
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
-
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -106,10 +100,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @Test
     void should_deactivate_interpreter_language_flag() {
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -117,7 +110,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Active")
-                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -134,10 +126,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @Test
     void should_not_deactivate_flag_when_non_exists() {
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -151,10 +142,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
 
     @Test
     void should_not_deactivate_flag_when_an_inactive_one_exists() {
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -162,7 +152,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Inactive")
-                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -183,10 +172,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -194,7 +182,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Inactive")
-                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -215,10 +202,9 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
-        InterpreterLanguageRefData refData = mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null);
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(refData));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         
@@ -227,7 +213,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
                 .status("Active")
-                .appellantInterpreterSignLanguage(refData)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -240,23 +225,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(eq(APPELLANT_LEVEL_FLAGS), any());
-    }
-
-
-    private InterpreterLanguageRefData mockLanguageRefData(Optional<String> languageCode, Optional<String>  languageValue, Optional<String> manualLanguage) {
-        List<String> manualLangList = new ArrayList<>();
-        if (languageCode.isPresent() && languageValue.isPresent()) {
-            Value value = new Value(languageCode.get(), languageValue.get());
-            List<Value> values = new ArrayList<>();
-            values.add(value);
-            DynamicList dynamicList = new DynamicList(value, values);
-            return new InterpreterLanguageRefData(dynamicList, null, null);
-        }
-
-        if (manualLanguage.isPresent()) {
-            manualLangList.add(manualLanguage.get());
-        }
-        return new InterpreterLanguageRefData(null, manualLangList, "test description");
     }
 
     @Test
@@ -288,7 +256,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(mockLanguageRefData(Optional.of("SPN"), Optional.of("Spanish"), null)));
+        when(asylumCase.read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)).thenReturn(Optional.of(new InterpreterLanguageRd("SPN", "Spanish")));
 
         assertThatThrownBy(() ->
                 interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))

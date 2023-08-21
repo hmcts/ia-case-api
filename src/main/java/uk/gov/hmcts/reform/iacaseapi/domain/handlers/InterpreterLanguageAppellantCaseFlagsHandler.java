@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
@@ -48,12 +49,15 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        Optional<CaseDetails<AsylumCase>> asylumCaseBefore = callback.getCaseDetailsBefore();
         Optional<StrategicCaseFlag> existingCaseflags = asylumCase
                 .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
         String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
 
         boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                 .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
+
+        Optional<String> languageManualEnter = asylumCase.read(LANGUAGE_MANUAL_ENTER, String.class);
 
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
@@ -63,18 +67,20 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
 
         if (isInterpreterServicesNeeded) {
-            InterpreterLanguageRefData appellantSpokenLanguage = asylumCase
-                    .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
-                    .orElseThrow(() -> new IllegalStateException("appellantInterpreterSignLanguage is not present"));
+            InterpreterLanguageRd appellantSpokenLanguage = asylumCase
+                    .read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)
+                    .orElseThrow(() -> new IllegalStateException("interpreterLangugageRd is not present"));
 
-            if (activeFlag.isPresent() && activeFlagDiffers(activeFlag.get(), appellantSpokenLanguage)) {
-                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, appellantSpokenLanguage);
-                caseDataUpdated = true;
+            if (activeFlag.isPresent() && asylumCaseBefore.isPresent()){
+                if (selectedLanguageDiffers(appellantSpokenLanguage, asylumCaseBefore.get().getCaseData()) || manualLanguageDiffers(languageManualEnter, asylumCaseBefore.get().getCaseData())){
+                    existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                    caseDataUpdated = true;
+                }
             }
 
             if (!activeFlag.isPresent()) {
-                existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, appellantSpokenLanguage);
+                existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                 caseDataUpdated = true;
             }
         } else {
@@ -94,15 +100,23 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean activeFlagDiffers(CaseFlagDetail caseFlagDetail, InterpreterLanguageRefData appellantSpokenLanguage) {
-        return caseFlagDetail.getCaseFlagValue().getAppellantInterpreterSignLanguage() != appellantSpokenLanguage;
+    private boolean selectedLanguageDiffers(InterpreterLanguageRd appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
+        Optional<InterpreterLanguageRd> appellantSpokenLanguageBefore = asylumCaseBefore
+                        .read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class);
+
+        return ! appellantSpokenLanguage.getLanguageCode().equals(appellantSpokenLanguageBefore);
+    }
+
+    private boolean manualLanguageDiffers(Optional<String> manualLanguage, AsylumCase asylumCaseBefore){
+        Optional<String> languageManualEnterBefore = asylumCaseBefore.read(LANGUAGE_MANUAL_ENTER, String.class);
+        return manualLanguage.equals(languageManualEnterBefore);
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
-            StrategicCaseFlagType caseFlagType,
-            InterpreterLanguageRefData appelantSpokenLanguage) {
+            StrategicCaseFlagType caseFlagType
+            ) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
                 .flagCode(caseFlagType.getFlagCode())
@@ -110,7 +124,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
-                .appellantInterpreterSignLanguage(appelantSpokenLanguage)
                 .build();
         String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
         List<CaseFlagDetail> caseFlagDetails = existingCaseFlagDetails.isEmpty()
@@ -134,7 +147,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
                             .hearingRelevant(value.getHearingRelevant())
-                            .appellantInterpreterSignLanguage(value.getAppellantInterpreterSignLanguage())
                             .build());
                 } else {
                     return detail;

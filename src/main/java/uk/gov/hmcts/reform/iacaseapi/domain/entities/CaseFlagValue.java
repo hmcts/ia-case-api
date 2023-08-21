@@ -16,6 +16,5 @@ public class CaseFlagValue {
     YesOrNo hearingRelevant;
     String dateTimeCreated;
     String dateTimeModified;
-    InterpreterLanguageRefData appellantInterpreterSignLanguage;
 
 }
