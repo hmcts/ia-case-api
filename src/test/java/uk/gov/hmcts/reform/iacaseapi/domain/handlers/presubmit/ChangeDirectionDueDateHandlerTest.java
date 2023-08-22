@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -125,8 +126,8 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                        newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
-                    Collections.emptyList(),
+                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
+                    newArrayList(new IdValue<>("1", new ClarifyingQuestion("is this a sample question?"))),
                     UUID.randomUUID().toString(),
                     "directionType2"
                 ))
@@ -169,6 +170,7 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals(Parties.LEGAL_REPRESENTATIVE, actualDirections.get(0).getValue().getParties());
         assertEquals("2020-12-01", actualDirections.get(0).getValue().getDateDue());
         assertEquals("2019-12-01", actualDirections.get(0).getValue().getDateSent());
+        assertEquals(Collections.emptyList(), actualDirections.get(0).getValue().getClarifyingQuestions());
         assertEquals(DirectionTag.LEGAL_REPRESENTATIVE_REVIEW, actualDirections.get(0).getValue().getTag());
 
         // "Direction 1" in UI is equivalent of Direction with IdValue "2" in backend
@@ -189,6 +191,11 @@ class ChangeDirectionDueDateHandlerTest {
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateDue());
         assertEquals("2018-03-01",
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateSent());
+        assertEquals(1, actualDirections.get(1).getValue().getClarifyingQuestions().size());
+        assertEquals("1", actualDirections.get(1).getValue().getClarifyingQuestions().get(0).getId());
+        assertEquals("is this a sample question?",
+                actualDirections.get(1).getValue().getClarifyingQuestions().get(0).getValue().getQuestion());
+
     }
 
     @Test
