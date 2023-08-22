@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -52,17 +51,13 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
     }
 
     private static List<IdValue<InterpreterDetails>> generateInterpreterDetailsWithId(
-        Optional<List<IdValue<InterpreterDetails>>> maybeInterpreterDetailsList) {
-        List<IdValue<InterpreterDetails>> interpreterDetailsList =
-            maybeInterpreterDetailsList
-                .get().stream().collect(toList());
-
-        interpreterDetailsList.stream().map(IdValue::getValue).forEach(details -> {
+        Optional<List<IdValue<InterpreterDetails>>> interpreterDetailsList) {
+        interpreterDetailsList.get().stream().map(IdValue::getValue).forEach(details -> {
             if (details.getInterpreterId() == null) {
                 details.setInterpreterId(UUID.randomUUID().toString());
             }
         });
 
-        return interpreterDetailsList;
+        return interpreterDetailsList.get();
     }
 }
