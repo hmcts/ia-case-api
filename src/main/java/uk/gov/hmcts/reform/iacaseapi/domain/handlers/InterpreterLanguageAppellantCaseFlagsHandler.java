@@ -57,8 +57,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                 .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
 
-        Optional<String> languageManualEnter = asylumCase.read(LANGUAGE_MANUAL_ENTER, String.class);
-
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
 
@@ -67,19 +65,16 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
 
         if (isInterpreterServicesNeeded) {
-            InterpreterLanguageRd appellantSpokenLanguage = asylumCase
-                    .read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class)
-                    .orElseThrow(() -> new IllegalStateException("interpreterLangugageRd is not present"));
-
-            if (activeFlag.isPresent() && asylumCaseBefore.isPresent()) {
-                if (selectedLanguageDiffers(appellantSpokenLanguage, asylumCaseBefore.get().getCaseData()) || manualLanguageDiffers(languageManualEnter, asylumCaseBefore.get().getCaseData())) {
-                    existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    caseDataUpdated = true;
-                }
-            }
+            InterpreterLanguageRefData appellantSpokenLanguage = asylumCase
+                    .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
+                    .orElseThrow(() -> new IllegalStateException("appellantInterpreterSpokenLanguage is not present"));
 
             if (!activeFlag.isPresent()) {
+                existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                caseDataUpdated = true;
+            } else if (asylumCaseBefore.isPresent() &&
+                    selectedLanguageDiffers(appellantSpokenLanguage, asylumCaseBefore.get().getCaseData())) {
+                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                 existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                 caseDataUpdated = true;
             }
@@ -100,16 +95,11 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean selectedLanguageDiffers(InterpreterLanguageRd appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
-        Optional<InterpreterLanguageRd> appellantSpokenLanguageBefore = asylumCaseBefore
-                        .read(INTERPRETER_LANGUAGE_RD, InterpreterLanguageRd.class);
+    private boolean selectedLanguageDiffers(InterpreterLanguageRefData appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
+        Optional<InterpreterLanguageRefData> appellantSpokenLanguageBefore = asylumCaseBefore
+                .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
 
-        return ! appellantSpokenLanguage.getLanguageCode().equals(appellantSpokenLanguageBefore);
-    }
-
-    private boolean manualLanguageDiffers(Optional<String> manualLanguage, AsylumCase asylumCaseBefore) {
-        Optional<String> languageManualEnterBefore = asylumCaseBefore.read(LANGUAGE_MANUAL_ENTER, String.class);
-        return manualLanguage.equals(languageManualEnterBefore);
+        return !appellantSpokenLanguage.getLanguageRefData().equals(appellantSpokenLanguageBefore);
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
