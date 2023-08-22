@@ -120,6 +120,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
 
                 clearOutOfCountryDecision(asylumCase);
                 asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+                clearAdaSuitabilityFields(asylumCase);
             }
 
         } else {
@@ -179,6 +180,14 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
 
     private void clearRefusalOfProtection(AsylumCase asylumCase) {
         asylumCase.clear(DATE_CLIENT_LEAVE_UK);
+    }
+
+    private void clearAdaSuitabilityFields(AsylumCase asylumCase) {
+        asylumCase.clear(SUITABILITY_HEARING_TYPE_YES_OR_NO);
+        asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+        asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
     }
 
 }
