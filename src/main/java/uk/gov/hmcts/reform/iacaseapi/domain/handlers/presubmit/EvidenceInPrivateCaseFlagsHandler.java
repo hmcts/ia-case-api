@@ -60,9 +60,10 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
 
         boolean inCameraCourt = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
                 .map(cameraCourtNeeded -> YesOrNo.YES == cameraCourtNeeded).orElse(false);
-        String isInCameraCourtAllowed = inCameraCourt  ? asylumCase
+
+        String isInCameraCourtAllowed = asylumCase
                 .read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
-                .orElseThrow(() -> new IllegalStateException("isInCameraCourtAllowed is not present")) : CASE_REFUSED;
+                .orElse(CASE_REFUSED);
 
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());

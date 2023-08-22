@@ -88,8 +88,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     void should_not_set_evidence_in_private_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)).thenReturn(Optional.of(EvidenceInPrivateCaseFlagsHandler.CASE_REFUSED));
+        when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 evidenceInPrivateCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
