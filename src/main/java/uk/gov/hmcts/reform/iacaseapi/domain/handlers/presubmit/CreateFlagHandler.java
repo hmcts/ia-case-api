@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+@Slf4j
 @Component
 class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -56,11 +58,16 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     .read(APPELLANT_NAME_FOR_DISPLAY, String.class)
                     .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
 
-            asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay));
+            asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT));
+        } else {
+            log.info("Existing Appellant Level flags: {}", existingAppellantLevelFlags);
         }
+
 
         if (existingCaseLevelFlags.isEmpty()) {
             asylumCase.write(CASE_LEVEL_FLAGS, new StrategicCaseFlag());
+        } else {
+            log.info("Existing Case Level flags: {}", existingCaseLevelFlags);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

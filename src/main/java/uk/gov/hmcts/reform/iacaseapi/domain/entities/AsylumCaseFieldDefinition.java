@@ -1579,7 +1579,13 @@ public enum AsylumCaseFieldDefinition {
     }),
 
     CASE_LEVEL_FLAGS(
-        "caseFlags", new TypeReference<StrategicCaseFlag>(){});
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
+    // This is not actually a real case field. It is used to determine
+    // the case flag id for the purpose of functional test
+    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
+
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
