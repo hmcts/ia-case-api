@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -156,5 +159,22 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         Optional<OrganisationPolicy> organisationPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
         assertThat(organisationPolicy.isPresent());
 
+    }
+
+    @BeforeEach
+    @SneakyThrows
+    @SuppressWarnings("java:S2925")
+    public void makeAPause() {
+        /*
+            We are not using Wiremock the way it's intended to be used. It should be used by
+            starting a webserver at the beginning of all tests and taking it down at the end, but
+            what we do is spinning up and down the server all the time and change its mappings
+            all the time.
+            The result is that its behaviour is somewhat flaky.
+
+            The following pause is meant to allow Wiremock time to conclude some operations that
+            we invoke.
+         */
+        Thread.sleep(1000);
     }
 }

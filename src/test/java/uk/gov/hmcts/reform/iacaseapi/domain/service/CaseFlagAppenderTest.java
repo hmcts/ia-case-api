@@ -17,8 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -27,19 +27,19 @@ class CaseFlagAppenderTest {
 
     private final CaseFlagType newCaseFlagType = CaseFlagType.ANONYMITY;
     private final String newCaseFlagAdditionalInformation = "some additional information";
-    private CaseFlag caseFlag1;
-    private CaseFlag caseFlag2;
+    private LegacyCaseFlag caseFlag1;
+    private LegacyCaseFlag caseFlag2;
     @Mock
-    private IdValue<CaseFlag> existingCaseFlagById1;
+    private IdValue<LegacyCaseFlag> existingCaseFlagById1;
     @Mock
-    private IdValue<CaseFlag> existingCaseFlagById2;
+    private IdValue<LegacyCaseFlag> existingCaseFlagById2;
     private CaseFlagAppender caseFlagAppender;
 
     @BeforeEach
     public void setUp() {
         caseFlagAppender = new CaseFlagAppender();
-        caseFlag1 = new CaseFlag(CaseFlagType.COMPLEX_CASE, "some info");
-        caseFlag2 = new CaseFlag(CaseFlagType.UNACCOMPANIED_MINOR, "some info");
+        caseFlag1 = new LegacyCaseFlag(CaseFlagType.POTENTIALLY_VIOLENT_PERSON, "some info");
+        caseFlag2 = new LegacyCaseFlag(CaseFlagType.UNACCOMPANIED_MINOR, "some info");
     }
 
     @Test
@@ -48,9 +48,9 @@ class CaseFlagAppenderTest {
         when(existingCaseFlagById1.getValue()).thenReturn(caseFlag1);
         when(existingCaseFlagById2.getValue()).thenReturn(caseFlag2);
 
-        List<IdValue<CaseFlag>> existingCaseFlags = Arrays.asList(existingCaseFlagById1, existingCaseFlagById2);
+        List<IdValue<LegacyCaseFlag>> existingCaseFlags = Arrays.asList(existingCaseFlagById1, existingCaseFlagById2);
 
-        List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
+        List<IdValue<LegacyCaseFlag>> allCaseFlags = caseFlagAppender.append(
             existingCaseFlags,
             newCaseFlagType,
             newCaseFlagAdditionalInformation
@@ -64,9 +64,9 @@ class CaseFlagAppenderTest {
 
         assertEquals("1", allCaseFlags.get(2).getId());
 
-        assertEquals(newCaseFlagType, allCaseFlags.get(2).getValue().getCaseFlagType());
+        assertEquals(newCaseFlagType, allCaseFlags.get(2).getValue().getLegacyCaseFlagType());
         assertEquals(newCaseFlagAdditionalInformation,
-            allCaseFlags.get(2).getValue().getCaseFlagAdditionalInformation());
+            allCaseFlags.get(2).getValue().getLegacyCaseFlagAdditionalInformation());
 
         assertEquals("2", allCaseFlags.get(1).getId());
         assertEquals(caseFlag2, allCaseFlags.get(1).getValue());
@@ -77,9 +77,9 @@ class CaseFlagAppenderTest {
 
     @Test
     void should_return_new_case_flags_if_no_existing_case_flags_present() {
-        List<IdValue<CaseFlag>> existingCaseFlags = Collections.emptyList();
+        List<IdValue<LegacyCaseFlag>> existingCaseFlags = Collections.emptyList();
 
-        List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
+        List<IdValue<LegacyCaseFlag>> allCaseFlags = caseFlagAppender.append(
             existingCaseFlags,
             newCaseFlagType,
             newCaseFlagAdditionalInformation
@@ -89,14 +89,14 @@ class CaseFlagAppenderTest {
         assertEquals(1, allCaseFlags.size());
 
         assertEquals("1", allCaseFlags.get(0).getId());
-        assertEquals(newCaseFlagType, allCaseFlags.get(0).getValue().getCaseFlagType());
+        assertEquals(newCaseFlagType, allCaseFlags.get(0).getValue().getLegacyCaseFlagType());
         assertEquals(newCaseFlagAdditionalInformation,
-            allCaseFlags.get(0).getValue().getCaseFlagAdditionalInformation());
+            allCaseFlags.get(0).getValue().getLegacyCaseFlagAdditionalInformation());
     }
 
     @Test
     void should_not_allow_null_arguments() {
-        List<IdValue<CaseFlag>> existingCaseFlags = Collections.singletonList(existingCaseFlagById1);
+        List<IdValue<LegacyCaseFlag>> existingCaseFlags = Collections.singletonList(existingCaseFlagById1);
 
         assertThatThrownBy(() ->
             caseFlagAppender.append(
