@@ -197,7 +197,7 @@ task contract(type: Test) {
 
 task fortifyScan(type: JavaExec, description: 'Run fortify scan.')  {
     getMainClass().set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
-    classpath += sourceSets.tests.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
