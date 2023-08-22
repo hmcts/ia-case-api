@@ -45,7 +45,7 @@ class CreateFlagHandlerTest {
 
     private final String appellantNameForDisplay = "some-name";
 
-    private final StrategicCaseFlag strategicCaseFlag = new StrategicCaseFlag(appellantNameForDisplay);
+    private final StrategicCaseFlag appellantCaseFlag = new StrategicCaseFlag(appellantNameForDisplay, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT);
     private final StrategicCaseFlag strategicCaseFlagEmpty = new StrategicCaseFlag();
 
     @BeforeEach
@@ -65,7 +65,7 @@ class CreateFlagHandlerTest {
             createFlagHandler.handle(ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1))
-            .write(APPELLANT_LEVEL_FLAGS, strategicCaseFlag);
+            .write(APPELLANT_LEVEL_FLAGS, appellantCaseFlag);
         verify(asylumCase, times(1))
             .write(CASE_LEVEL_FLAGS, strategicCaseFlagEmpty);
     }
