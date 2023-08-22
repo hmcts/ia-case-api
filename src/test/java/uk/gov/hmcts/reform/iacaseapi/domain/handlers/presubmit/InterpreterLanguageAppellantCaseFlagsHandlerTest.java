@@ -80,8 +80,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
     }
 
-    private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry){
-        if(manualEntry){
+    private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry) {
+        if (manualEntry) {
             List<String> list = new ArrayList<>();
             list.add("Spanish");
             return new InterpreterLanguageRefData(null, list, "test description");
