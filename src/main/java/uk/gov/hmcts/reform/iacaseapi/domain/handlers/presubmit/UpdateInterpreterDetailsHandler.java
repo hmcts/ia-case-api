@@ -31,6 +31,9 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
             && callback.getEvent() == Event.UPDATE_INTERPRETER_DETAILS;
     }
 
+    /**
+     * Add a unique id to each interpreter if it doesn't already have one.
+     */
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
