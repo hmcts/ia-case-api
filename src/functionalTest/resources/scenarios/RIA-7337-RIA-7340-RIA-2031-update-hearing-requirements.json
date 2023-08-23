@@ -32,6 +32,9 @@
               }
             }
           ],
+          "appellantInterpreterLanguageCategory": [
+            "spokenLanguageInterpreter"
+          ],
           "appellantInterpreterSpokenLanguage": {
             "languageRefData": {
               "value": {
@@ -136,6 +139,9 @@
               "languageDialect": "opt"
             }
           }
+        ],
+        "appellantInterpreterLanguageCategory": [
+          "spokenLanguageInterpreter"
         ],
         "appellantInterpreterSpokenLanguage": {
           "languageRefData": {
