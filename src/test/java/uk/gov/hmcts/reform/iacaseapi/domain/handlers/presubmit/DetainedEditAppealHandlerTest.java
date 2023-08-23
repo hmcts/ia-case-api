@@ -1,16 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -43,7 +46,7 @@ public class DetainedEditAppealHandlerTest {
     @Test
     void should_remove_appellant_address_and_contact_info() {
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+                .thenReturn(Optional.of(YES));
         PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
         verify(asylumCase, times(1))
@@ -81,7 +84,11 @@ public class DetainedEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.REMOVAL_ORDER_OPTIONS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.REMOVAL_ORDER_DATE);
-
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_HEARING_TYPE_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
     }
 
     @Test
@@ -122,4 +129,51 @@ public class DetainedEditAppealHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void should_remove_ada_suitability_fields_when_editing_to_detained_non_ada() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_HEARING_TYPE_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(YesOrNo.class)
+    void should_remove_ada_suitability_appellant_attendance_fields_when_editing_hearing_type(YesOrNo yesOrNo) {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+        PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        if (yesOrNo.equals(YES)) {
+            verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        } else {
+            verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        }
+    }
+
+    @Test
+    void should_remove_ada_suitability_interpreter_services_fields_when_attendance_are_both_no() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.class)).thenReturn(Optional.of(NO));
+        PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+    }
 }
