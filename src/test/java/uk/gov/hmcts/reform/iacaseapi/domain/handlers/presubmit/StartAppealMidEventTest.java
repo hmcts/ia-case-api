@@ -46,6 +46,7 @@ class StartAppealMidEventTest {
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
+    private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -303,5 +304,37 @@ class StartAppealMidEventTest {
         verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
 
 
+    }
+
+    @Test
+    void should_write_no_value_for_appellant_attendance_2_field_when_hearing_type_is_yes() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getPageId()).thenReturn(SUITABILITY_ATTENDANCE_PAGE_ID);
+
+        when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.NO);
+    }
+
+    @Test
+    void should_write_no_value_for_appellant_attendance_1_field_when_hearing_type_is_no() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getPageId()).thenReturn(SUITABILITY_ATTENDANCE_PAGE_ID);
+
+        when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.NO);
     }
 }

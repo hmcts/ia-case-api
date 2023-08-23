@@ -24,6 +24,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
+    private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
+
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -39,7 +41,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getEvent() == Event.UPDATE_DETENTION_LOCATION)
                && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
                     || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
-                    || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID));
+                    || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
+                    || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -102,6 +105,17 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             if (isAda && !detentionFacilityValue.equals("immigrationRemovalCentre")) {
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
+        }
+
+        if (callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID) && callback.getEvent() == Event.EDIT_APPEAL) {
+            boolean suitabilityHearingType = asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+
+            if (suitabilityHearingType) {
+                asylumCase.write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.NO);
+            } else {
+                asylumCase.write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.NO);
+            }
+
         }
 
         return response;
