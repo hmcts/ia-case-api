@@ -38,7 +38,7 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        List<Event> targetEvents = List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS);
+        List<Event> targetEvents = List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_ADJUSTMENTS);
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && targetEvents.contains(callback.getEvent());
     }
 
@@ -60,9 +60,10 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
 
         boolean inCameraCourt = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
                 .map(cameraCourtNeeded -> YesOrNo.YES == cameraCourtNeeded).orElse(false);
-        String isInCameraCourtAllowed = inCameraCourt  ? asylumCase
+
+        String isInCameraCourtAllowed = asylumCase
                 .read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
-                .orElseThrow(() -> new IllegalStateException("isInCameraCourtAllowed is not present")) : CASE_REFUSED;
+                .orElse(CASE_REFUSED);
 
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
