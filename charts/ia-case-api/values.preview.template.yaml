@@ -764,7 +764,7 @@ em-ccdorc:
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_API_URL: https://{{ .Release.Name }}-ccd-data-store-api
+      CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
 
