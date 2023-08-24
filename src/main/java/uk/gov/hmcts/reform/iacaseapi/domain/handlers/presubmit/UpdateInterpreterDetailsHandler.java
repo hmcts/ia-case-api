@@ -20,10 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Override
-    public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
+    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -35,9 +32,8 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
      * Add a unique id to each interpreter if it doesn't already have one.
      */
     @Override
-    public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback) {
+    public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
+                                                        Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");

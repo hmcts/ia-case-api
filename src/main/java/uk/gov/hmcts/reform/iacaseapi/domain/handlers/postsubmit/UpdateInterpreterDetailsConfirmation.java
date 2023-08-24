@@ -11,28 +11,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 @Component
 public class UpdateInterpreterDetailsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    public boolean canHandle(
-        Callback<AsylumCase> callback
-    ) {
+    public boolean canHandle(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
-
         return callback.getEvent() == Event.UPDATE_INTERPRETER_DETAILS;
     }
 
-    public PostSubmitCallbackResponse handle(
-        Callback<AsylumCase> callback
-    ) {
+    public PostSubmitCallbackResponse handle(Callback<AsylumCase> callback) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        PostSubmitCallbackResponse postSubmitResponse =
-            new PostSubmitCallbackResponse();
+        PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
 
-        String hearingsTabUrl =
-            "/case/IA/Asylum/"
-                + callback.getCaseDetails().getId()
-                + "#hearing";
+        String hearingsTabUrl = "/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#hearing";
 
         postSubmitResponse.setConfirmationHeader("# Interpreter details have been updated");
         postSubmitResponse.setConfirmationBody(
