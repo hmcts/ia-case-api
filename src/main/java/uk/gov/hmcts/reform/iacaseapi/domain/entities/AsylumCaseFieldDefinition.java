@@ -1952,6 +1952,10 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_10(
         "witnessInterpreterSignLanguageBookingStatus10", new TypeReference<InterpreterBookingStatus>() {}),
 
+    INTERPRETER_DETAILS(
+        "interpreterDetails", new TypeReference<List<IdValue<InterpreterDetails>>>() {}),
+
+
     // This is not actually a real case field. It is used to determine
     // the case flag id for the purpose of functional test
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){});

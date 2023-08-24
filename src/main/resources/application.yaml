@@ -277,6 +277,7 @@ security:
       - "createFlag"
       - "updateS94bStatus"
       - "updateInterpreterBookingStatus"
+      - "updateInterpreterDetails"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -309,6 +310,7 @@ security:
       - "maintainCaseLinks"
       - "createFlag"
       - "updateInterpreterBookingStatus"
+      - "updateInterpreterDetails"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -383,7 +385,6 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
-      - "updateInterpreterBookingStatus"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
