@@ -757,6 +757,7 @@ em-ccdorc:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
     image: hmctspublic.azurecr.io/em/ccdorc:latest
+    ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
@@ -772,6 +773,7 @@ em-stitching:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
+    ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
