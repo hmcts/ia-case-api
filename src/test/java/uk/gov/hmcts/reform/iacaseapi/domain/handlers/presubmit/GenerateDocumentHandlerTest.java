@@ -308,7 +308,8 @@ class GenerateDocumentHandlerTest {
                         MARK_APPEAL_PAID,
                         REQUEST_RESPONSE_REVIEW,
                         REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                        MARK_APPEAL_AS_ADA
+                        MARK_APPEAL_AS_ADA,
+                        DECIDE_AN_APPLICATION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -412,7 +413,8 @@ class GenerateDocumentHandlerTest {
                         MARK_APPEAL_PAID,
                         REQUEST_RESPONSE_REVIEW,
                         REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                        MARK_APPEAL_AS_ADA
+                        MARK_APPEAL_AS_ADA,
+                        DECIDE_AN_APPLICATION
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

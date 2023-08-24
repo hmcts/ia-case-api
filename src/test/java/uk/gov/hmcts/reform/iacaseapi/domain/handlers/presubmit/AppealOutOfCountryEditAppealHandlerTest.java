@@ -156,7 +156,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
         verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
         verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
-
+        clearAdaSuitabilityFields(asylumCase);
     }
 
     @ParameterizedTest
@@ -188,6 +188,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).read(
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
@@ -229,6 +230,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
@@ -273,6 +275,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
@@ -316,6 +319,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
@@ -404,6 +408,14 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
         verify(asylumCase, times(1)).clear(SPONSOR_NAME_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS_FOR_DISPLAY);
+    }
+
+    private void clearAdaSuitabilityFields(AsylumCase asylumCase) {
+        verify(asylumCase, times(1)).clear(SUITABILITY_HEARING_TYPE_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        verify(asylumCase, times(1)).clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        verify(asylumCase, times(1)).clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
     }
 
 }
