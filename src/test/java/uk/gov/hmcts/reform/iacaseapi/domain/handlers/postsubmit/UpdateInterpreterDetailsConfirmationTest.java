@@ -58,7 +58,6 @@ class UpdateInterpreterDetailsConfirmationTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-
         assertThatThrownBy(() -> interpreterDetailsConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -66,15 +65,11 @@ class UpdateInterpreterDetailsConfirmationTest {
 
     @Test
     void it_can_handle_callback() {
-
         for (Event event : Event.values()) {
-
             when(callback.getEvent()).thenReturn(event);
-
             boolean canHandle = interpreterDetailsConfirmation.canHandle(callback);
 
             if (event == Event.UPDATE_INTERPRETER_DETAILS) {
-
                 assertTrue(canHandle);
             } else {
                 assertFalse(canHandle);
@@ -86,7 +81,6 @@ class UpdateInterpreterDetailsConfirmationTest {
 
     @Test
     void should_not_allow_null_arguments() {
-
         assertThatThrownBy(() -> interpreterDetailsConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
