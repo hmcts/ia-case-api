@@ -47,7 +47,7 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
         Event event = callback.getEvent();
         boolean isCitizen = userDetailsProvider.getUserDetails().getRoles().contains(CITIZEN);
 
-        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && event != START_APPEAL) || !isCitizen;
+        return event != START_APPEAL && !isCitizen;
     }
 
     @Override

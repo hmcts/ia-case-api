@@ -309,6 +309,7 @@ class GenerateDocumentHandlerTest {
                         REQUEST_RESPONSE_REVIEW,
                         REQUEST_HEARING_REQUIREMENTS_FEATURE,
                         MARK_APPEAL_AS_ADA,
+                        DECIDE_AN_APPLICATION,
                         APPLY_FOR_FTPA_RESPONDENT
                     ).contains(event)) {
 
@@ -414,6 +415,7 @@ class GenerateDocumentHandlerTest {
                         REQUEST_RESPONSE_REVIEW,
                         REQUEST_HEARING_REQUIREMENTS_FEATURE,
                         MARK_APPEAL_AS_ADA,
+                        DECIDE_AN_APPLICATION,
                         APPLY_FOR_FTPA_RESPONDENT
                     );
 

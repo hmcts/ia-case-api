@@ -43,6 +43,10 @@ public class DetainedEditAppealHandler implements PreSubmitCallbackHandler<Asylu
                 .getCaseData();
 
         YesOrNo appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
+        YesOrNo isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO);
+        YesOrNo adaSuitabilityHearingType = asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class).orElse(NO);
+        YesOrNo suitabilityAppellantAttendanceYesOrNo1 = asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.class).orElse(NO);
+        YesOrNo suitabilityAppellantAttendanceYesOrNo2 = asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.class).orElse(NO);
 
         if (appellantInDetention.equals(YES)) {
             //Clear all 'non-detained' fields when switching to a detained case
@@ -56,6 +60,29 @@ public class DetainedEditAppealHandler implements PreSubmitCallbackHandler<Asylu
             asylumCase.clear(CONTACT_PREFERENCE);
             asylumCase.clear(EMAIL);
             asylumCase.clear(MOBILE_NUMBER);
+
+            // For ADA cases, clear unused suitability attendance value after editing hearing type value
+            if (isAda.equals(YES)) {
+                if (adaSuitabilityHearingType.equals(YES)) {
+                    asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+                } else {
+                    asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+                }
+
+                // For either attendance value edited to 'No', clear interpreter screen fields
+                // Midevent will write old value to No by default
+                if ((suitabilityAppellantAttendanceYesOrNo1.equals(NO) && suitabilityAppellantAttendanceYesOrNo2.equals(NO))) {
+                    asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+                    asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+                }
+            } else {
+                asylumCase.clear(SUITABILITY_HEARING_TYPE_YES_OR_NO);
+                asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+                asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+                asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+                asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+            }
+
         } else if (appellantInDetention.equals(NO)) {
             // Clear all 'detained' fields when switching to non-detained case
             asylumCase.clear(DETENTION_STATUS);
@@ -76,6 +103,12 @@ public class DetainedEditAppealHandler implements PreSubmitCallbackHandler<Asylu
             asylumCase.clear(IS_ACCELERATED_DETAINED_APPEAL);
             asylumCase.clear(REMOVAL_ORDER_OPTIONS);
             asylumCase.clear(REMOVAL_ORDER_DATE);
+
+            asylumCase.clear(SUITABILITY_HEARING_TYPE_YES_OR_NO);
+            asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+            asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+            asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+            asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
