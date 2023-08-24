@@ -78,6 +78,7 @@ class UpdateInterpreterDetailsHandlerTest {
         interpreterDetailsList.add(new IdValue<>("1", interpreterWithId));
         interpreterDetailsList.add(new IdValue<>("2", interpreterWithoutId));
 
+        // Given that the case has interpreter details, one with an id and one without
         when(asylumCase.read(eq(INTERPRETER_DETAILS))).thenReturn(Optional.of(interpreterDetailsList));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -87,6 +88,7 @@ class UpdateInterpreterDetailsHandlerTest {
             ((List<IdValue<InterpreterDetails>>) response.getData().read(INTERPRETER_DETAILS)
                 .orElse(Collections.emptyList()));
 
+        // Verify that all the interpreter have an id
         assertTrue(updatedInterpreterDetails.stream()
             .noneMatch(idValue -> isEmpty(idValue.getValue().getInterpreterId())));
     }
