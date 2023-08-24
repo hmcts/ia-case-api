@@ -6,8 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.EARLIEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -21,6 +20,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @ExtendWith(MockitoExtension.class)
@@ -117,20 +119,23 @@ class AsylumSupplementaryDataFixingHandlerTest {
     }
 
     @Test
-    void should_handle_if_not_citizen_starts_case() {
+    void should_handle_if_not_citizen_starts_case_and_not_start_appeal() {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
-        when(callback.getEvent()).thenReturn(START_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
     }
 
-    @Test
-    void should_handle_if_citizen_triggers_events_other_than_start_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {
+        "ABOUT_TO_START", "ABOUT_TO_SUBMIT", "MID_EVENT"
+    })
+    void should_not_handle_if_event_is_start_appeal_for_any_callback_stage(PreSubmitCallbackStage callbackStage) {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getRoles()).thenReturn(List.of("citizen"));
-        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
+        when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
+        when(callback.getEvent()).thenReturn(START_APPEAL);
 
-        assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+        assertFalse(asylumSupplementaryDataFixingHandler.canHandle(callbackStage, callback));
     }
 }
