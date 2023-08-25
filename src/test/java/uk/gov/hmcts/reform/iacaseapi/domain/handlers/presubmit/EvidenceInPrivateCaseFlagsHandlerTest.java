@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,7 +64,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
         "REVIEW_HEARING_REQUIREMENTS",
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
     void should_set_evidence_in_private_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -83,13 +83,12 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
         "REVIEW_HEARING_REQUIREMENTS",
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
 
     void should_not_set_evidence_in_private_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)).thenReturn(Optional.of(EvidenceInPrivateCaseFlagsHandler.CASE_REFUSED));
+        when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 evidenceInPrivateCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -102,7 +101,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @Test
     void should_deactivate_evidence_in_private_flag() {
-        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(UPDATE_HEARING_ADJUSTMENTS);
         when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)).thenReturn(Optional.of(EvidenceInPrivateCaseFlagsHandler.CASE_REFUSED));
 
@@ -127,7 +126,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @Test
     void should_not_deactivate_flag_when_non_exists() {
-        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(UPDATE_HEARING_ADJUSTMENTS);
         when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)).thenReturn(Optional.of(EvidenceInPrivateCaseFlagsHandler.CASE_REFUSED));
 
@@ -142,7 +141,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
 
     @Test
     void should_not_deactivate_flag_when_an_inactive_one_exists() {
-        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(UPDATE_HEARING_ADJUSTMENTS);
         when(asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)).thenReturn(Optional.of(EvidenceInPrivateCaseFlagsHandler.CASE_REFUSED));
 
@@ -168,7 +167,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
         "REVIEW_HEARING_REQUIREMENTS",
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -197,7 +196,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
         "REVIEW_HEARING_REQUIREMENTS",
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -234,7 +233,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
                 boolean canHandle = evidenceInPrivateCaseFlagsHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS)
+                        && List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_ADJUSTMENTS)
                         .contains(callback.getEvent())) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
@@ -247,7 +246,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
         "REVIEW_HEARING_REQUIREMENTS",
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);

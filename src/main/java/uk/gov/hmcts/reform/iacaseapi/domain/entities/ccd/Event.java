@@ -122,6 +122,7 @@ public enum Event {
     PIP_ACTIVATION("pipActivation"),
     UPDATE_S94B_STATUS("updateS94bStatus"),
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
+    UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

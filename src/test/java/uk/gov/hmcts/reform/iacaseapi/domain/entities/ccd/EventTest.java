@@ -120,10 +120,11 @@ class EventTest {
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
         assertEquals("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString());
+        assertEquals("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(118, Event.values().length);
+        assertEquals(119, Event.values().length);
     }
 }
