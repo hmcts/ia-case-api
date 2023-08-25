@@ -38,13 +38,13 @@
           "appellantInterpreterSpokenLanguage": {
             "languageRefData": {
               "value": {
-                "code": "igbo",
-                "label": "igbo"
+                "code": "igboo",
+                "label": "igboo"
               },
               "list_items": [
                 {
-                  "code": "igbo",
-                  "label": "igbo"
+                  "code": "igboo",
+                  "label": "igboo"
                 }
               ]
             },
@@ -146,13 +146,13 @@
         "appellantInterpreterSpokenLanguage": {
           "languageRefData": {
             "value": {
-              "code": "igbo",
-              "label": "igbo"
+              "code": "igboo",
+              "label": "igboo"
             },
             "list_items": [
               {
-                "code": "igbo",
-                "label": "igbo"
+                "code": "igboo",
+                "label": "igboo"
               }
             ]
           },
