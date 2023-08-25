@@ -275,6 +275,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "updateS94bStatus"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"

@@ -7,32 +7,25 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.S94B_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class CreateFlagHandlerTest {
+public class S94bStatusHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -41,39 +34,29 @@ class CreateFlagHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private CreateFlagHandler createFlagHandler;
-
-    private final String appellantNameForDisplay = "some-name";
-
-    private final StrategicCaseFlag appellantCaseFlag = new StrategicCaseFlag(appellantNameForDisplay, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT);
-    private final StrategicCaseFlag strategicCaseFlagEmpty = new StrategicCaseFlag();
+    private S94bStatusHandler s94bStatusHandler;
 
     @BeforeEach
-    public void setUp() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantNameForDisplay));
-
-        createFlagHandler = new CreateFlagHandler();
+    void setUp() {
+        s94bStatusHandler = new S94bStatusHandler();
     }
 
     @Test
-    void should_write_to_case_flag_fields() {
+    void should_write_s94bStatus() {
+        when(callback.getEvent()).thenReturn(START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            createFlagHandler.handle(ABOUT_TO_START, callback);
+        s94bStatusHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase, times(1))
-            .write(APPELLANT_LEVEL_FLAGS, appellantCaseFlag);
-        verify(asylumCase, times(1))
-            .write(CASE_LEVEL_FLAGS, strategicCaseFlagEmpty);
+        verify(asylumCase, times(1)).write(S94B_STATUS, NO);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> createFlagHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> s94bStatusHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -82,15 +65,13 @@ class CreateFlagHandlerTest {
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
-
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                boolean canHandle = s94bStatusHandler.canHandle(callbackStage, callback);
 
-                boolean canHandle = createFlagHandler.canHandle(callbackStage, callback);
-
-                if (event == Event.CREATE_FLAG
-                    && callbackStage == ABOUT_TO_START) {
+                if (callbackStage == ABOUT_TO_SUBMIT
+                    && callback.getEvent() == START_APPEAL) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -104,8 +85,12 @@ class CreateFlagHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> createFlagHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> s94bStatusHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> s94bStatusHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+            .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 }
