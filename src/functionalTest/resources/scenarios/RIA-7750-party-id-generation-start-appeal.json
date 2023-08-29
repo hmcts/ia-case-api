@@ -9,10 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "appellantInUk": "Yes",
-          "appellantPartyId": "randomAppellantPartyId",
-          "legalRepIndividualPartyId": "randomLegalRepIndividualPartyId",
-          "legalRepOrganisationPartyId": "randomLegalRepOrganisationPartyId"
+          "appellantInUk": "Yes"
         }
       }
     }
@@ -24,9 +21,9 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "appellantInUk": "Yes",
-        "appellantPartyId": "randomAppellantPartyId",
-        "legalRepIndividualPartyId": "randomLegalRepIndividualPartyId",
-        "legalRepOrganisationPartyId": "randomLegalRepOrganisationPartyId"
+        "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepIndividualPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepOrganisationPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/"
       }
     }
   }
