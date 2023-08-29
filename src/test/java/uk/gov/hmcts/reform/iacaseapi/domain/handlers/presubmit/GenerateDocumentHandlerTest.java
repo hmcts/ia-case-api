@@ -309,7 +309,7 @@ class GenerateDocumentHandlerTest {
                         REQUEST_RESPONSE_REVIEW,
                         REQUEST_HEARING_REQUIREMENTS_FEATURE,
                         MARK_APPEAL_AS_ADA,
-                        DECIDE_AN_APPLICATION
+                        APPLY_FOR_FTPA_RESPONDENT
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -414,7 +414,7 @@ class GenerateDocumentHandlerTest {
                         REQUEST_RESPONSE_REVIEW,
                         REQUEST_HEARING_REQUIREMENTS_FEATURE,
                         MARK_APPEAL_AS_ADA,
-                        DECIDE_AN_APPLICATION
+                        APPLY_FOR_FTPA_RESPONDENT
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
