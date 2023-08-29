@@ -58,7 +58,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
 
         Optional<String> languageCategory = asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class);
 
-        if (languageCategory.equals(SPOKEN_INTERPRETER_CATEGORY)) {
+        if (languageCategory.isPresent() && languageCategory.get().equals(SPOKEN_INTERPRETER_CATEGORY)) {
 
             boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                     .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
