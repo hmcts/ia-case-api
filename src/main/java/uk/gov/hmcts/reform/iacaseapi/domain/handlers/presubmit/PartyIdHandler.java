@@ -13,11 +13,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
 
 @Slf4j
 @Component
@@ -58,13 +60,13 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 String legalRepIndividualPartyId = asylumCase.read(LEGAL_REP_INDIVIDUAL_PARTY_ID, String.class).orElse("");
                 String legalRepOrganisationPartyId = asylumCase.read(LEGAL_REP_ORGANISATION_PARTY_ID, String.class).orElse("");
 
-                boolean isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)
+                AtomicReference<YesOrNo> outOfCountry = new AtomicReference<>(NO);
+                asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).ifPresent(
+                        appellantInUk -> outOfCountry.set(appellantInUk.equals(NO) ? YES : NO)
+                );
+                boolean isHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
                         .map(flag -> flag == YES)
                         .orElse(false);
-                boolean isHasSponse = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
-                        .map(flag -> flag == YES)
-                        .orElse(false);
-                ;
 
                 if (appellantPartyId.isEmpty()) {
                     asylumCase.write(APPELLANT_PARTY_ID, getPartyId());
@@ -78,7 +80,7 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, getPartyId());
                 }
 
-                if (isAppealOutOfCountry && isHasSponse) {
+                if (outOfCountry.get().equals(YES) && isHasSponsor) {
                     String sponsorPartyId = asylumCase.read(SPONSOR_PARTY_ID, String.class).orElse("");
                     if (sponsorPartyId.isEmpty()) {
                         asylumCase.write(SPONSOR_PARTY_ID, getPartyId());
@@ -92,7 +94,17 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 if (witnessDetails.isPresent() && witnessDetails.get().size() > 0) {
 
                     for (int i = 0; i < witnessDetails.get().size(); i++) {
-                        witnessDetails.get().get(i).getValue().setWitnessPartyId(getPartyId());
+                        String witnessPartyId = getPartyId();
+
+                        if (witnessDetails.get().get(i).getValue().getWitnessPartyId() == null) {
+                            witnessDetails.get().get(i).getValue().setWitnessPartyId(witnessPartyId);
+                        }
+
+                        WitnessDetails witness = asylumCase.read(WITNESS_N_FIELD.get(i), WitnessDetails.class).orElse(null);
+                        if (witness != null && witness.getWitnessPartyId() == null) {
+                            witness.setWitnessPartyId(witnessPartyId);
+                            asylumCase.write(WITNESS_N_FIELD.get(i), witness);
+                        }
                     }
                     asylumCase.write(WITNESS_DETAILS, witnessDetails);
                 }
