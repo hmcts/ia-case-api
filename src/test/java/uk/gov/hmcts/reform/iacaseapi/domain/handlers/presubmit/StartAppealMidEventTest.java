@@ -322,9 +322,12 @@ class StartAppealMidEventTest {
         verify(asylumCase, times(1)).write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.NO);
     }
 
-    @Test
-    void should_write_no_value_for_appellant_attendance_1_field_when_hearing_type_is_no() {
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_write_no_value_for_appellant_attendance_1_field_when_hearing_type_is_no(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(SUITABILITY_ATTENDANCE_PAGE_ID);
 
         when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class))
