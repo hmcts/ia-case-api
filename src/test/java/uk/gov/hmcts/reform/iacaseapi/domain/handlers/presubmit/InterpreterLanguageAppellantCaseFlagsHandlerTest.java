@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguageAppellantCaseFlagsHandler.SPOKEN_INTERPRETER_CATEGORY;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -69,7 +70,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     })
     void should_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -97,7 +98,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     })
     void should_not_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -112,7 +113,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     @Test
     void should_deactivate_interpreter_language_flag() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -139,7 +140,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     @Test
     void should_not_deactivate_flag_when_non_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -156,7 +157,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     @Test
     void should_not_deactivate_flag_when_an_inactive_one_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -187,7 +188,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -218,7 +219,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
@@ -271,7 +272,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     })
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of("spokenLanguageInterpreter"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, String.class)).thenReturn(Optional.of(SPOKEN_INTERPRETER_CATEGORY));
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
 

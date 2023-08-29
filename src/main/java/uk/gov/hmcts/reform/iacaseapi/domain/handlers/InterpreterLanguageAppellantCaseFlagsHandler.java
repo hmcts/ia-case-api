@@ -24,7 +24,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
 
     private final DateProvider systemDateProvider;
 
-    private final static String SPOKEN_INTERPRETER_CATEGORY = "spokenLanguageInterpreter";
+    public static String SPOKEN_INTERPRETER_CATEGORY = "spokenLanguageInterpreter";
 
     public InterpreterLanguageAppellantCaseFlagsHandler(DateProvider systemDateProvider) {
         this.systemDateProvider = systemDateProvider;
