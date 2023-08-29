@@ -56,12 +56,11 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                 .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
         String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
 
-        Optional<List<String>> languageCategory = asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
-
-        if (languageCategory.isPresent() && languageCategory.get().contains(SPOKEN_INTERPRETER_CATEGORY)) {
-
             boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                     .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
+
+            Optional<InterpreterLanguageRefData> appellantSpokenLanguage = asylumCase
+                .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
 
             List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                     .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
@@ -71,18 +70,16 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
             Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
 
             if (isInterpreterServicesNeeded) {
-                InterpreterLanguageRefData appellantSpokenLanguage = asylumCase
-                        .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
-                        .orElseThrow(() -> new IllegalStateException("appellantInterpreterSpokenLanguage is not present"));
-
-                if (!activeFlag.isPresent()) {
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    caseDataUpdated = true;
-                } else if (asylumCaseBefore.isPresent() &&
-                        selectedLanguageDiffers(appellantSpokenLanguage, asylumCaseBefore.get().getCaseData())) {
-                    existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    caseDataUpdated = true;
+                if (appellantSpokenLanguage.isPresent()) {
+                    if (!activeFlag.isPresent()) {
+                        existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                        caseDataUpdated = true;
+                    } else if (asylumCaseBefore.isPresent() &&
+                            selectedLanguageDiffers(appellantSpokenLanguage.get(), asylumCaseBefore.get().getCaseData())) {
+                        existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                        existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                        caseDataUpdated = true;
+                    }
                 }
             } else {
                 if (activeFlag.isPresent()) {
@@ -98,7 +95,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                 asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(
                         appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
             }
-        }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
