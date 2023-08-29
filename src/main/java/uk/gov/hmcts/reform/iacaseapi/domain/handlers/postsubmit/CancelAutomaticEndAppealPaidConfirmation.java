@@ -7,6 +7,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Component
+@Slf4j
 public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private final boolean timedEventServiceEnabled;
@@ -74,19 +77,14 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
         Optional<String> timeEventId = asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID);
 
         if (timeEventId.isPresent()) {
-            int scheduleDelayInMinutes = 52560000;
-            ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
-
-            scheduler.schedule(
-                    new TimedEvent(
-                            timeEventId.get(),
-                            Event.END_APPEAL_AUTOMATICALLY,
-                            scheduledDate,
-                            "IA",
-                            "Asylum",
-                            callback.getCaseDetails().getId()
-                    )
-            );
+            boolean result = scheduler.deleteSchedule(timeEventId.get());
+            if (!result) {
+                log.warn("Could not delete the outdated payments schedule for case id {}. " +
+                        "If the scheduled task is still present, this will result in a fail-safe triggering in the " +
+                        "EndAppealHandler class, which will produce an exception. " +
+                        "Do not touch the fail-safe! Look into the reason of this failure instead.",
+                    callback.getCaseDetails().getId());
+            }
         }
 
         return new PostSubmitCallbackResponse();
