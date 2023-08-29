@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,9 +11,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,15 +28,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CancelAutomaticEndAppealPaidConfirmationTest {
+class CancelAutomaticEndAppealPaidConfirmationTest {
 
 
     @Mock
@@ -55,27 +50,19 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Captor
-    private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
+    private ArgumentCaptor<String> stringArgumentCaptor;
 
-    private boolean timedEventServiceEnabled = true;
-    private LocalDateTime now = LocalDateTime.now();
-    private String id = "someId";
-    private String timedEventId = "1234567";
-    private long caseId = 12345;
-    private String jurisdiction = "IA";
-    private String caseType = "Asylum";
+    private final boolean timedEventServiceEnabled = true;
 
     private CancelAutomaticEndAppealPaidConfirmation cancelAutomaticEndAppealHandler;
 
     @BeforeEach
     public void setUp() {
 
-        cancelAutomaticEndAppealHandler =
-                new CancelAutomaticEndAppealPaidConfirmation(
-                        timedEventServiceEnabled,
-                        dateProvider,
-                        scheduler
-                );
+        cancelAutomaticEndAppealHandler = new CancelAutomaticEndAppealPaidConfirmation(
+            timedEventServiceEnabled,
+            scheduler
+        );
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
@@ -89,40 +76,23 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
 
     @ParameterizedTest
     @MethodSource("qualifyingEvent")
-    void should_schedule_automatic_end_appeal_100_years_from_now(Optional<JourneyType> journeyType, Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(journeyType);
+    void should_call_delete_schedule_automatic_end_appeal(Optional<JourneyType> journeyType, Event event) {
+        // Given: a paid asylum case
+        given(callback.getEvent()).willReturn(event);
+        given(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).willReturn(journeyType);
 
-        TimedEvent timedEvent = new TimedEvent(
-                timedEventId,
-                Event.END_APPEAL_AUTOMATICALLY,
-                ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(52560000),
-                jurisdiction,
-                caseType,
-                caseId
-        );
-        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID))
-                .thenReturn(Optional.of(timedEventId));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        String timedEventId = "1234567";
+        given(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).willReturn(Optional.of(timedEventId));
+        given(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).willReturn(Optional.of(PaymentStatus.PAID));
 
-        when(dateProvider.nowWithTime()).thenReturn(now);
-        when(callback.getCaseDetails().getId()).thenReturn(caseId);
+        // When: the handler is called
+        when(scheduler.deleteSchedule(timedEventId)).thenReturn(true);
+        cancelAutomaticEndAppealHandler.handle(callback);
 
-        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
-
-        PostSubmitCallbackResponse callbackResponse =
-                cancelAutomaticEndAppealHandler.handle(callback);
-
-        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
-
-        TimedEvent result = timedEventArgumentCaptor.getValue();
-
-        assertEquals(timedEvent.getCaseId(), result.getCaseId());
-        assertEquals(timedEvent.getJurisdiction(), result.getJurisdiction());
-        assertEquals(timedEvent.getCaseType(), result.getCaseType());
-        assertEquals(timedEvent.getEvent(), result.getEvent());
-        assertEquals(timedEvent.getId(), result.getId());
-        assertEquals(timedEvent.getScheduledDateTime(), result.getScheduledDateTime());
+        // Then: the deleteSchedule method is called with correct arguments
+        verify(scheduler).deleteSchedule(stringArgumentCaptor.capture());
+        String arg = stringArgumentCaptor.getValue();
+        assertEquals(timedEventId, arg);
     }
 
     @Test
@@ -166,11 +136,10 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
 
                 if (timedEventServiceEnabled
                         && event == qualifyingEvent
-                        && paymentStatus == PaymentStatus.PAID
-                        && !timedEventId.isEmpty() && timedEventId != null) {
-                    assertThat(canHandle).isEqualTo(true);
+                        && paymentStatus == PaymentStatus.PAID) {
+                    assertThat(canHandle).isTrue();
                 } else {
-                    assertThat(canHandle).isEqualTo(false);
+                    assertThat(canHandle).isFalse();
                 }
 
                 reset(callback);
