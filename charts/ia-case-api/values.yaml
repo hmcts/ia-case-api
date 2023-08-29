@@ -72,3 +72,7 @@ ia-aip-frontend:
   enabled: false
 ccd-case-document-am-api:
   enabled: false
+em-ccdorc:
+  enabled: false
+em-stitching:
+  enabled: false
