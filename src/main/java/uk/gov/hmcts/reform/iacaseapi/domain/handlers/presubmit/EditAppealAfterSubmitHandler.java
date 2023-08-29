@@ -89,6 +89,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(NO) == YES) {
 
             handleAccelaratedDetainedAppeal(asylumCase);
+            handleAdaSuitabilityFields(asylumCase);
         } else if (outOfCountryDecisionTypeOptional.isPresent()) {
 
             handleOutOfCountryAppeal(asylumCase, outOfCountryDecisionTypeOptional.get());
@@ -255,6 +256,26 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
             asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
             asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+        }
+    }
+
+    private void handleAdaSuitabilityFields(AsylumCase asylumCase) {
+
+        YesOrNo adaSuitabilityHearingType = asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class).orElse(NO);
+        YesOrNo suitabilityAppellantAttendanceYesOrNo1 = asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.class).orElse(NO);
+        YesOrNo suitabilityAppellantAttendanceYesOrNo2 = asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.class).orElse(NO);
+
+        if (adaSuitabilityHearingType.equals(YES)) {
+            asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        } else {
+            asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        }
+
+        // For either attendance value edited to 'No', clear interpreter screen fields
+        // Midevent will write old value to No by default
+        if ((suitabilityAppellantAttendanceYesOrNo1.equals(NO) && suitabilityAppellantAttendanceYesOrNo2.equals(NO))) {
+            asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+            asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
         }
     }
 }
