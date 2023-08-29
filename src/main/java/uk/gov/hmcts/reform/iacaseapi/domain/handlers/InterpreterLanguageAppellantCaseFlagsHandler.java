@@ -102,7 +102,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         Optional<InterpreterLanguageRefData> appellantSpokenLanguageBefore = asylumCaseBefore
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
 
-        return !appellantSpokenLanguage.getLanguageRefData().equals(appellantSpokenLanguageBefore);
+        return !appellantSpokenLanguage.equals(appellantSpokenLanguageBefore.get());
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
