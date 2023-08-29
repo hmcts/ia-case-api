@@ -1,4 +1,3 @@
----
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
@@ -11,20 +10,20 @@ java:
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    IA_TIMED_EVENT_SERVICE_URL: http://ia-timed-event-service-aat.service.core-compute-aat.internal/
-    IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
+    IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+    IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
-    IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
-    CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-    CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
-    DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-    IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-    OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-    S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+    CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+    CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+    DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+    IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
-    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+    ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
   keyVaults:
     ia:
       secrets:
@@ -46,7 +45,7 @@ java:
   postgresql:
     enabled: true
     image:
-      tag: 11.6.0
+      tag: '11.6.0'
     primary:
       persistence:
         enabled: false
@@ -55,23 +54,18 @@ java:
           cpu: 25m
       initdb:
         scripts:
-          init.sql: >
-            CREATE DATABASE "ia-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8'
-            CONNECTION LIMIT = -1;
-
+          init.sql: |
+            CREATE DATABASE "ia-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-
             CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-
             CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-
             CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       username: hmcts
       password: hmcts
 
 ia-case-payments-api:
-  enabled: true
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
@@ -102,7 +96,7 @@ ia-case-payments-api:
           - ia-config-validator-secret
 
 ia-case-documents-api:
-  enabled: true
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest
@@ -148,7 +142,7 @@ ia-case-documents-api:
           - ia-config-validator-secret
 
 ia-case-notifications-api:
-  enabled: true
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
@@ -422,7 +416,7 @@ ia-timed-event-service:
       enabled: true
 
 ia-home-office-integration-api:
-  enabled: true 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
@@ -603,6 +597,7 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
+
 ccd:
   enabled: true
   ccd:
