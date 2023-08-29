@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 @ExtendWith(MockitoExtension.class)
 class CancelAutomaticEndAppealPaidConfirmationTest {
 
-    private final static String timedEventId = "1234567";
+    private static final String timedEventId = "1234567";
 
     @Mock
     private Scheduler scheduler;
