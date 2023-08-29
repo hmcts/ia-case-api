@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 @ExtendWith(MockitoExtension.class)
 class CancelAutomaticEndAppealPaidConfirmationTest {
 
-    private final String timedEventId = "1234567";
+    private final static String timedEventId = "1234567";
 
     @Mock
     private Scheduler scheduler;
@@ -107,11 +107,17 @@ class CancelAutomaticEndAppealPaidConfirmationTest {
 
     private static Stream<Arguments> qualifyingEventCombinations() {
         List<Arguments> argumentsList = new ArrayList<>();
+
+        List<String> timedEventIdValues = new ArrayList<>();
+        timedEventIdValues.add(timedEventId);
+        timedEventIdValues.add(null);
+
         for (Event currentEvent : Event.values()) {
             for (PaymentStatus paymentStatus : PaymentStatus.values()) {
-                argumentsList.add(Arguments.of(JourneyType.AIP, Event.PAYMENT_APPEAL, currentEvent, paymentStatus));
-                argumentsList.add(Arguments.of(null, Event.UPDATE_PAYMENT_STATUS, currentEvent, paymentStatus));
-
+                for (String timedEventIdValue : timedEventIdValues) {
+                    argumentsList.add(Arguments.of(JourneyType.AIP, Event.PAYMENT_APPEAL, currentEvent, paymentStatus, timedEventIdValue));
+                    argumentsList.add(Arguments.of(null, Event.UPDATE_PAYMENT_STATUS, currentEvent, paymentStatus, timedEventIdValue));
+                }
             }
         }
         return argumentsList.stream();
@@ -120,18 +126,19 @@ class CancelAutomaticEndAppealPaidConfirmationTest {
 
     @ParameterizedTest
     @MethodSource("qualifyingEventCombinations")
-    void it_can_handle_callback(JourneyType journeyType, Event qualifyingEvent, Event currentEvent, PaymentStatus paymentStatus) {
+    void it_can_handle_callback(JourneyType journeyType, Event qualifyingEvent, Event currentEvent, PaymentStatus paymentStatus, String timedEventIdValue) {
         // Given
         given(callback.getEvent()).willReturn(currentEvent);
         given(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).willReturn(Optional.of(paymentStatus));
         given(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).willReturn(Optional.ofNullable(journeyType));
-        given(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).willReturn(Optional.of(timedEventId));
+        given(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).willReturn(Optional.ofNullable(timedEventIdValue));
 
         // When
         boolean canHandle = cancelAutomaticEndAppealHandler.canHandle(callback);
 
         // Then
-        if (currentEvent == qualifyingEvent && paymentStatus == PaymentStatus.PAID) {
+        if (currentEvent == qualifyingEvent && paymentStatus == PaymentStatus.PAID
+            && timedEventIdValue != null) {
             assertThat(canHandle).isTrue();
         } else {
             assertThat(canHandle).isFalse();
