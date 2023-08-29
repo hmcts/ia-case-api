@@ -5,7 +5,7 @@ properties([
 ])
 
 
-@Library('Infrastructure @RIA-7777-PRChanges')
+@Library('Infrastructure@RIA-7777-PRChanges')
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
