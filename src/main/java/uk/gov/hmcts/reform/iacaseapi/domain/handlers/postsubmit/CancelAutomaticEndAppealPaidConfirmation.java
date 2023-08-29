@@ -27,17 +27,14 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private final boolean timedEventServiceEnabled;
-    private final DateProvider dateProvider;
     private final Scheduler scheduler;
 
 
     public CancelAutomaticEndAppealPaidConfirmation(
             @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
-            DateProvider dateProvider,
             Scheduler scheduler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
-        this.dateProvider = dateProvider;
         this.scheduler = scheduler;
     }
 
