@@ -13,11 +13,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AnonymousByDefaultHandler.ANONIMITY_CASE_FLAG_CODE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AnonymousByDefaultHandler.ANONIMITY_CASE_FLAG_NAME;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
@@ -48,6 +49,8 @@ public class AnonymousByDefaultHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private DateProvider systemDateProvider;
 
     private AnonymousByDefaultHandler anonymousByDefaultHandler;
 
@@ -56,8 +59,9 @@ public class AnonymousByDefaultHandlerTest {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
-        anonymousByDefaultHandler = new AnonymousByDefaultHandler();
+        anonymousByDefaultHandler = new AnonymousByDefaultHandler(systemDateProvider);
     }
 
     @Test
@@ -94,8 +98,8 @@ public class AnonymousByDefaultHandlerTest {
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
-            .flagCode(ANONIMITY_CASE_FLAG_CODE)
-            .name(ANONIMITY_CASE_FLAG_NAME)
+            .flagCode(ANONYMITY.getFlagCode())
+            .name(ANONYMITY.getName())
             .status("Inactive")
             .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
@@ -149,8 +153,8 @@ public class AnonymousByDefaultHandlerTest {
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
-            .flagCode(ANONIMITY_CASE_FLAG_CODE)
-            .name(ANONIMITY_CASE_FLAG_NAME)
+            .flagCode(ANONYMITY.getFlagCode())
+            .name(ANONYMITY.getName())
             .status("Active")
             .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
