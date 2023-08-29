@@ -20,13 +20,18 @@ public class InterpreterLanguageRefData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof InterpreterLanguageRefData refData)) return false;
-
-        if (!Objects.equals(languageRefData, refData.languageRefData))
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof InterpreterLanguageRefData refData)) {
             return false;
-        if (!Objects.equals(languageManualEntry, refData.languageManualEntry))
+        }
+        if (!Objects.equals(languageRefData, refData.languageRefData)) {
             return false;
+        }
+        if (!Objects.equals(languageManualEntry, refData.languageManualEntry)) {
+            return false;
+        }
         return Objects.equals(languageManualEntryDescription, refData.languageManualEntryDescription);
     }
 

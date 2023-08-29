@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,45 +57,51 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
                 .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
         String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
 
-            boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
-                    .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
+        boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+                .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
 
-            Optional<InterpreterLanguageRefData> appellantSpokenLanguage = asylumCase
+        boolean isSignServicesNeeded = asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)
+                .map(signNeeded -> YesOrNo.YES == signNeeded).orElse(false);
+
+        Optional<InterpreterLanguageRefData> appellantSpokenLanguage = asylumCase
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
 
-            List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
-                    .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
+        Optional<InterpreterLanguageRefData> appellantSignLanguage = asylumCase
+                .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class);
 
-            boolean caseDataUpdated = false;
+        List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
+                .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
 
-            Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+        boolean caseDataUpdated = false;
 
-            if (isInterpreterServicesNeeded) {
-                if (appellantSpokenLanguage.isPresent()) {
-                    if (!activeFlag.isPresent()) {
-                        existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                        caseDataUpdated = true;
-                    } else if (asylumCaseBefore.isPresent() &&
-                            selectedLanguageDiffers(appellantSpokenLanguage.get(), asylumCaseBefore.get().getCaseData())) {
-                        existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                        existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                        caseDataUpdated = true;
-                    }
-                }
-            } else {
-                if (activeFlag.isPresent()) {
+        Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+
+        if (isInterpreterServicesNeeded) {
+            if (appellantSpokenLanguage.isPresent()) {
+                if (!activeFlag.isPresent()) {
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                    caseDataUpdated = true;
+                } else if (asylumCaseBefore.isPresent() &&
+                        selectedLanguageDiffers(appellantSpokenLanguage.get(), asylumCaseBefore.get().getCaseData())) {
                     existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
                     caseDataUpdated = true;
                 }
             }
-
-            if (caseDataUpdated) {
-                if (appellantDisplayName == null) {
-                    throw new IllegalStateException("Appellant full name is not present");
-                }
-                asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(
-                        appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
+        } else {
+            if (activeFlag.isPresent()) {
+                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                caseDataUpdated = true;
             }
+        }
+
+        if (caseDataUpdated) {
+            if (appellantDisplayName == null) {
+                throw new IllegalStateException("Appellant full name is not present");
+            }
+            asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(
+                    appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
+        }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
