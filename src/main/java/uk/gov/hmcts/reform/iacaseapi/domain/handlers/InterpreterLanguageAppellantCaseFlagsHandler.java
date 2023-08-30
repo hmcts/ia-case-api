@@ -25,8 +25,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
 
     private final DateProvider systemDateProvider;
 
-    public static String SPOKEN_INTERPRETER_CATEGORY = "spokenLanguageInterpreter";
-
     public InterpreterLanguageAppellantCaseFlagsHandler(DateProvider systemDateProvider) {
         this.systemDateProvider = systemDateProvider;
     }
@@ -60,14 +58,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                 .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
 
-        boolean isSignServicesNeeded = asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)
-                .map(signNeeded -> YesOrNo.YES == signNeeded).orElse(false);
-
         Optional<InterpreterLanguageRefData> appellantSpokenLanguage = asylumCase
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
-
-        Optional<InterpreterLanguageRefData> appellantSignLanguage = asylumCase
-                .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class);
 
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
