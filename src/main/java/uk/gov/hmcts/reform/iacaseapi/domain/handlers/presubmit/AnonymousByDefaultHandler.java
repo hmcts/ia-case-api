@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ANONYMITY_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import java.util.Collections;
@@ -10,8 +12,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -61,13 +63,13 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 || appealType == AppealType.RP);
     }
 
-    private List<IdValue<CaseFlag>> getExistingCaseFlags(AsylumCase asylumCase) {
-        Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
+    private List<IdValue<LegacyCaseFlag>> getExistingCaseFlags(AsylumCase asylumCase) {
+        Optional<List<IdValue<LegacyCaseFlag>>> maybeExistingCaseFlags = asylumCase.read(LEGACY_CASE_FLAGS);
         return maybeExistingCaseFlags.orElse(Collections.emptyList());
     }
 
     private void setAnonymityFlag(AsylumCase asylumCase) {
-        asylumCase.write(CASE_FLAGS, caseFlagAppender.append(
+        asylumCase.write(LEGACY_CASE_FLAGS, caseFlagAppender.append(
                 getExistingCaseFlags(asylumCase),
                 CaseFlagType.ANONYMITY, ""
         ));
