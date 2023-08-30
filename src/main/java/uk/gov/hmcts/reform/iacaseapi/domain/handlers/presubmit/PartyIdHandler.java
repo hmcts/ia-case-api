@@ -59,17 +59,17 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
                 String appellantPartyId = asylumCase.read(APPELLANT_PARTY_ID, String.class).orElse("");
                 if (appellantPartyId.isEmpty()) {
-                    asylumCase.write(APPELLANT_PARTY_ID, getPartyId());
+                    asylumCase.write(APPELLANT_PARTY_ID, generatePartyId());
                 }
 
                 String legalRepIndividualPartyId = asylumCase.read(LEGAL_REP_INDIVIDUAL_PARTY_ID, String.class).orElse("");
                 if (legalRepIndividualPartyId.isEmpty()) {
-                    asylumCase.write(LEGAL_REP_INDIVIDUAL_PARTY_ID, getPartyId());
+                    asylumCase.write(LEGAL_REP_INDIVIDUAL_PARTY_ID, generatePartyId());
                 }
 
                 String legalRepOrganisationPartyId = asylumCase.read(LEGAL_REP_ORGANISATION_PARTY_ID, String.class).orElse("");
                 if (legalRepOrganisationPartyId.isEmpty()) {
-                    asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, getPartyId());
+                    asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, generatePartyId());
                 }
 
                 AtomicReference<YesOrNo> outOfCountry = new AtomicReference<>(NO);
@@ -82,7 +82,7 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 if (outOfCountry.get().equals(YES) && isHasSponsor) {
                     String sponsorPartyId = asylumCase.read(SPONSOR_PARTY_ID, String.class).orElse("");
                     if (sponsorPartyId.isEmpty()) {
-                        asylumCase.write(SPONSOR_PARTY_ID, getPartyId());
+                        asylumCase.write(SPONSOR_PARTY_ID, generatePartyId());
                     }
                 }
                 break;
@@ -93,7 +93,7 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 if (witnessDetails.isPresent() && witnessDetails.get().size() > 0) {
 
                     for (int i = 0; i < witnessDetails.get().size(); i++) {
-                        String witnessPartyId = getPartyId();
+                        String witnessPartyId = generatePartyId();
 
                         if (witnessDetails.get().get(i).getValue().getWitnessPartyId() == null) {
                             witnessDetails.get().get(i).getValue().setWitnessPartyId(witnessPartyId);
@@ -116,7 +116,7 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private String getPartyId() {
+    private String generatePartyId() {
         return UUID.randomUUID().toString();
     }
 
