@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "taylorHouse",
-          "caseFlagId": "7480-ABC",
+          "caseFlagId": "7412-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
