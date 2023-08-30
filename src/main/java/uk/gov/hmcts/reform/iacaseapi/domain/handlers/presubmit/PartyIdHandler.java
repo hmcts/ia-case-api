@@ -56,9 +56,21 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
             case START_APPEAL:
             case EDIT_APPEAL:
+
                 String appellantPartyId = asylumCase.read(APPELLANT_PARTY_ID, String.class).orElse("");
+                if (appellantPartyId.isEmpty()) {
+                    asylumCase.write(APPELLANT_PARTY_ID, getPartyId());
+                }
+
                 String legalRepIndividualPartyId = asylumCase.read(LEGAL_REP_INDIVIDUAL_PARTY_ID, String.class).orElse("");
+                if (legalRepIndividualPartyId.isEmpty()) {
+                    asylumCase.write(LEGAL_REP_INDIVIDUAL_PARTY_ID, getPartyId());
+                }
+
                 String legalRepOrganisationPartyId = asylumCase.read(LEGAL_REP_ORGANISATION_PARTY_ID, String.class).orElse("");
+                if (legalRepOrganisationPartyId.isEmpty()) {
+                    asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, getPartyId());
+                }
 
                 AtomicReference<YesOrNo> outOfCountry = new AtomicReference<>(NO);
                 asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).ifPresent(
@@ -67,19 +79,6 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 boolean isHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
                         .map(flag -> flag == YES)
                         .orElse(false);
-
-                if (appellantPartyId.isEmpty()) {
-                    asylumCase.write(APPELLANT_PARTY_ID, getPartyId());
-                }
-
-                if (legalRepIndividualPartyId.isEmpty()) {
-                    asylumCase.write(LEGAL_REP_INDIVIDUAL_PARTY_ID, getPartyId());
-                }
-
-                if (legalRepOrganisationPartyId.isEmpty()) {
-                    asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, getPartyId());
-                }
-
                 if (outOfCountry.get().equals(YES) && isHasSponsor) {
                     String sponsorPartyId = asylumCase.read(SPONSOR_PARTY_ID, String.class).orElse("");
                     if (sponsorPartyId.isEmpty()) {
@@ -108,6 +107,9 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     }
                     asylumCase.write(WITNESS_DETAILS, witnessDetails);
                 }
+                break;
+
+            default:
                 break;
         }
 
