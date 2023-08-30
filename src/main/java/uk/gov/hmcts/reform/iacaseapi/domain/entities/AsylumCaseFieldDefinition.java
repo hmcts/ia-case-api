@@ -770,6 +770,9 @@ public enum AsylumCaseFieldDefinition {
     IS_INTERPRETER_SERVICES_NEEDED(
         "isInterpreterServicesNeeded", new TypeReference<YesOrNo>(){}),
 
+    IS_SIGN_SERVICES_NEEDED(
+            "isSignServicesNeeded", new TypeReference<YesOrNo>(){}),
+
     IS_ANY_WITNESS_INTERPRETER_REQUIRED(
         "isAnyWitnessInterpreterRequired", new TypeReference<YesOrNo>(){}),
 
