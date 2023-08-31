@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7412 update language requirements for legal rep",
+  "description": "RIA-7412 review language requirements for legal rep",
   "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

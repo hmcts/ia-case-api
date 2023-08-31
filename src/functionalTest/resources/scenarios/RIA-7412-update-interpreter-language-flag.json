@@ -147,7 +147,7 @@
                 "name": "Interpreter Language",
                 "status": "Active",
                 "flagCode": "PF0015",
-                "hearingRelevant": "No"
+                "hearingRelevant": "Yes"
               }
             }
           ]
