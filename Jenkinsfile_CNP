@@ -124,8 +124,8 @@ withPipeline(type, product, component) {
 
     afterSuccess('akschartsinstall') {
         onPR {
-            githubUpdateDeploymentStatus(githubCreateDeployment(), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
-            githubUpdateDeploymentStatus(githubCreateDeployment("-PR-${CHANGE_ID}"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+            githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
         }
     }
 
