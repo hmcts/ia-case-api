@@ -494,6 +494,7 @@ ia-aip-frontend:
       PCQ_URL: https://pcq.aat.platform.hmcts.net
       # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
       PCQ_RETURN_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/about-appeal
+      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
     keyVaults:
@@ -665,7 +666,7 @@ ccd:
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
-        CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+        CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
         ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
