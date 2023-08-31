@@ -1,5 +1,6 @@
 {
   "description": "RIA-7750 witness party ID generation when the event is draftHearingRequirement",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
