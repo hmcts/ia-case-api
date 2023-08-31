@@ -1,5 +1,6 @@
 {
   "description": "RIA-7507 Draft and submit hearing requirements for appellant with sign language interpreter",
+  "disabled": "true",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -17,8 +18,7 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness",
-                "witnessPartyId": "randomWitnessPartyId"
+                "witnessName": "AWitness"
               }
             }
           ],
@@ -86,8 +86,7 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness",
-              "witnessPartyId": "randomWitnessPartyId"
+              "witnessName": "AWitness"
             }
           }
         ],
