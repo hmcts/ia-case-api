@@ -17,7 +17,8 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness"
+                "witnessName": "AWitness",
+                "witnessPartyId": "randomWitnessPartyId"
               }
             }
           ],
@@ -85,7 +86,8 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness"
+              "witnessName": "AWitness",
+              "witnessPartyId": "randomWitnessPartyId"
             }
           }
         ],

@@ -1,6 +1,5 @@
 {
   "description": "RIA-3763 single hearing requirements copied to previous hearing requirements - feature flag on - not FTPA reheard",
-  "disabled": "true",
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -21,7 +20,8 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness"
+                "witnessName": "AWitness",
+                "witnessPartyId": "randomWitnessPartyId"
               }
             }
           ],
@@ -98,7 +98,8 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness"
+              "witnessName": "AWitness",
+              "witnessPartyId": "randomWitnessPartyId"
             }
           }
         ],
