@@ -17,15 +17,8 @@
         ]]</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
-    <suppress until="2023-08-31">
-        <notes>Temporarily suppress vulnerability</notes>
-        <cve>CVE-2023-20863</cve>
-        <cve>CVE-2023-20873</cve>
-        <cve>CVE-2023-20862</cve>
-        <cve>CVE-2023-20883</cve>
+    <suppress until="2023-09-30">
+        <notes>Temporarily suppress vulnerability as no current fix</notes>
         <cve>CVE-2023-35116</cve>
-        <cve>CVE-2023-2976</cve>
-        <cve>CVE-2023-34981</cve>
-        <cve>CVE-2023-34034</cve>
     </suppress>
 </suppressions>
