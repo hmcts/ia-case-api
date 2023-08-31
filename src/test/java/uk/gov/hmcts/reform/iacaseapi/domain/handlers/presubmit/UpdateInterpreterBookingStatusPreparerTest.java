@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS;
@@ -78,6 +81,9 @@ class UpdateInterpreterBookingStatusPreparerTest {
             Collections.emptyList(),
             "test manual language");
 
+        List<String> languageCategories = Arrays.asList("spokenLanguageInterpreter", "signLanguageInterpreter");
+
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(languageCategories));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(appellantSpokenRefData));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(appellantSignRefData));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("Test Appellant"));
@@ -112,6 +118,8 @@ class UpdateInterpreterBookingStatusPreparerTest {
 
     @Test
     void should_clear_appellant_interpreter_booking_status_fields_if_language_fields_not_set() {
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(new ArrayList<>()));
+
         updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
 
         verify(asylumCase).clear(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING));
