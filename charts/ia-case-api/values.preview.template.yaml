@@ -494,6 +494,7 @@ ia-aip-frontend:
       PCQ_URL: https://pcq.aat.platform.hmcts.net
       # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
       PCQ_RETURN_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/about-appeal
+      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
     keyVaults:
