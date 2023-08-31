@@ -1,0 +1,33 @@
+{
+  "description": "RIA-7750 party ID generation for edit appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInUk": "Yes",
+          "appellantPartyId": "randomAppellantPartyId",
+          "legalRepIndividualPartyId": "randomLegalRepIndividualPartyId",
+          "legalRepOrganisationPartyId": "randomLegalRepOrganisationPartyId"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantInUk": "Yes",
+        "appellantPartyId": "randomAppellantPartyId",
+        "legalRepIndividualPartyId": "randomLegalRepIndividualPartyId",
+        "legalRepOrganisationPartyId": "randomLegalRepOrganisationPartyId"
+      }
+    }
+  }
+}

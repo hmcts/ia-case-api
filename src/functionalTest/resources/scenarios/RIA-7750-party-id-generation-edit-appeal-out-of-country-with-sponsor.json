@@ -1,0 +1,43 @@
+{
+  "description": "RIA-7750 party ID generation when appeal is out of country with sponsor for edit appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInUk": "No",
+          "hasSponsor": "Yes",
+          "sponsorGivenNames": "test",
+          "sponsorFamilyName": "some-name",
+          "appellantPartyId": "randomAppellantPartyId",
+          "legalRepIndividualPartyId": "randomLegalRepIndividualPartyId",
+          "legalRepOrganisationPartyId": "randomLegalRepOrganisationPartyId",
+          "sponsorPartyId": "randomSponsorPartyId"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantInUk": "No",
+        "hasSponsor": "Yes",
+        "sponsorGivenNames": "test",
+        "sponsorFamilyName": "some-name",
+        "appellantPartyId": "randomAppellantPartyId",
+        "legalRepIndividualPartyId": "randomLegalRepIndividualPartyId",
+        "legalRepOrganisationPartyId": "randomLegalRepOrganisationPartyId",
+        "sponsorPartyId": "randomSponsorPartyId",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null
+      }
+    }
+  }
+}
