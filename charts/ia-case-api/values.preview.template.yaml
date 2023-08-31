@@ -17,7 +17,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: https://{{ .Release.Name }}.preview.platform.hmcts.net/oauth2/callback
     CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-    CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+    CCD_GW_URL: "https://gateway-ia-case-api-pr-1603.preview.platform.hmcts.net"
     DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
     OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
@@ -529,9 +529,12 @@ ia-aip-frontend:
     auth:
       enabled: false
 
+tags:
+  idam-pr: true
+
 idam-pr:
-  releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
+  releaseNameOverride: ${SERVICE_NAME}-idam-pr
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
