@@ -64,6 +64,8 @@ ia-home-office-integration-api:
   enabled: false
 idam-pr:
   enabled: false
+ccd-idam-pr:
+  enabled: false
 xui-webapp:
   enabled: false
 ccd:
