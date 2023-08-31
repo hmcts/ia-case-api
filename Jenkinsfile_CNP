@@ -4,8 +4,7 @@ properties([
     pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
-
-@Library('Infrastructure@RIA-7777-PRChanges')
+@Library('Infrastructure')
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
