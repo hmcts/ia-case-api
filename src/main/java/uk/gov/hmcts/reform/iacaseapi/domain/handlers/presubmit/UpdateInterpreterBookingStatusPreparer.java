@@ -161,11 +161,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         Optional<List<String>> languageCategoriesOptional = asylumCase
             .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
 
-        if (!languageCategoriesOptional.isPresent()) {
-            return;
-        }
-
-        if (languageCategoriesOptional.get().contains(SPOKEN_LANGUAGE_INTERPRETER)) {
+        if (languageCategoriesOptional.isPresent() && languageCategoriesOptional.get().contains(SPOKEN_LANGUAGE_INTERPRETER)) {
             populateBookingStatusFieldsForAppellant(
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE,
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
@@ -176,7 +172,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
         }
 
-        if (languageCategoriesOptional.get().contains(SIGN_LANGUAGE_INTERPRETER)) {
+        if (languageCategoriesOptional.isPresent() && languageCategoriesOptional.get().contains(SIGN_LANGUAGE_INTERPRETER)) {
             populateBookingStatusFieldsForAppellant(
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE,
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING,
