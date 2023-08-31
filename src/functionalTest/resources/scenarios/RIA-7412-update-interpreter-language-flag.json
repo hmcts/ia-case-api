@@ -58,6 +58,7 @@
           "isInCameraCourtAllowed": "Refused",
           "inCameraCourtDescription": "In camera court description",
           "additionalRequests": "Yes",
+          "uploadAdditionalEvidenceActionAvailable": "No",
           "additionalRequestsDescription": "Additional requests description",
           "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
           "datesToAvoid": [
@@ -126,6 +127,7 @@
         "isInCameraCourtAllowed": "Granted",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
+        "uploadAdditionalEvidenceActionAvailable": "No",
         "additionalRequestsDescription": "Additional requests description",
         "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
         "datesToAvoid": [
