@@ -32,6 +32,25 @@
               }
             }
           ],
+          "appellantInterpreterLanguageCategory": [
+            "spokenLanguageInterpreter"
+          ],
+          "appellantInterpreterSpokenLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "igboo",
+                "label": "igboo"
+              },
+              "list_items": [
+                {
+                  "code": "igboo",
+                  "label": "igboo"
+                }
+              ]
+            },
+            "languageManualEntry": [],
+            "languageManualEntryDescription": ""
+          },
           "isHearingRoomNeeded": "Yes",
           "isHearingLoopNeeded": "Yes",
           "physicalOrMentalHealthIssues": "Yes",
@@ -121,6 +140,25 @@
             }
           }
         ],
+        "appellantInterpreterLanguageCategory": [
+          "spokenLanguageInterpreter"
+        ],
+        "appellantInterpreterSpokenLanguage": {
+          "languageRefData": {
+            "value": {
+              "code": "igboo",
+              "label": "igboo"
+            },
+            "list_items": [
+              {
+                "code": "igboo",
+                "label": "igboo"
+              }
+            ]
+          },
+          "languageManualEntry": [],
+          "languageManualEntryDescription": ""
+        },
         "isHearingRoomNeeded": "Yes",
         "isHearingLoopNeeded": "Yes",
         "physicalOrMentalHealthIssues": "Yes",
