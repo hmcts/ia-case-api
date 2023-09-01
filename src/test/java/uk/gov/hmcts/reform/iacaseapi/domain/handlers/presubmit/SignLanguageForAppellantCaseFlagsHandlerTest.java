@@ -64,10 +64,10 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
-    void should_set_SIGN_LANGUAGE(Event event) {
+    void should_set_sign_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
@@ -91,10 +91,10 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
-    void should_not_set_SIGN_LANGUAGE(Event event) {
+    void should_not_set_sign_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
@@ -108,7 +108,7 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     }
 
     @Test
-    void should_deactivate_SIGN_LANGUAGE() {
+    void should_deactivate_sign_language_flag() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
@@ -177,8 +177,8 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -207,8 +207,8 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -259,8 +259,8 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);
