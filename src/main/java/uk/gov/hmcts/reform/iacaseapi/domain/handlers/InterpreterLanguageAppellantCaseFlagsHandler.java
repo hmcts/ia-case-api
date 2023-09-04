@@ -70,13 +70,14 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
 
         if (isInterpreterServicesNeeded) {
             if (appellantSpokenLanguage.isPresent()) {
+                String chosenLanguage = getChosenSpokenLanguage(appellantSpokenLanguage.get());
                 if (!activeFlag.isPresent()) {
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, chosenLanguage);
                     caseDataUpdated = true;
                 } else if (asylumCaseBefore.isPresent() &&
                         selectedLanguageDiffers(appellantSpokenLanguage.get(), asylumCaseBefore.get().getCaseData())) {
                     existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, chosenLanguage);
                     caseDataUpdated = true;
                 }
             }
@@ -97,6 +98,11 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private String getChosenSpokenLanguage(InterpreterLanguageRefData appellantSpokenLanguage) {
+        return appellantSpokenLanguage.getLanguageRefData() != null ? appellantSpokenLanguage.getLanguageRefData().getValue().getLabel()
+                    : appellantSpokenLanguage.getLanguageManualEntryDescription();
+    }
+
     private boolean selectedLanguageDiffers(InterpreterLanguageRefData appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
         Optional<InterpreterLanguageRefData> appellantSpokenLanguageBefore = asylumCaseBefore
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
@@ -107,12 +113,13 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
     private List<CaseFlagDetail> activateCaseFlag(
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
-            StrategicCaseFlagType caseFlagType
+            StrategicCaseFlagType caseFlagType,
+            String language
     ) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
                 .flagCode(caseFlagType.getFlagCode())
-                .name(caseFlagType.getName())
+                .name(caseFlagType.getName().concat(" " + language))
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
