@@ -878,8 +878,8 @@ public enum AsylumCaseFieldDefinition {
     FLAG_CASE_ADDITIONAL_INFORMATION(
         "flagCaseAdditionalInformation", new TypeReference<String>(){}),
 
-    CASE_FLAGS(
-        "caseFlags", new TypeReference<List<IdValue<CaseFlag>>>(){}),
+    LEGACY_CASE_FLAGS(
+        "legacyCaseFlags", new TypeReference<List<IdValue<LegacyCaseFlag>>>(){}),
 
     CASE_FLAG_ANONYMITY_EXISTS(
         "caseFlagAnonymityExists", new TypeReference<YesOrNo>() {}),
