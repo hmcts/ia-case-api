@@ -471,7 +471,7 @@ ia-aip-frontend:
       NODE_ENV: development
       S2S_MICROSERVICE_NAME: iac
       MICROSERVICE: iac
-      CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
       #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
