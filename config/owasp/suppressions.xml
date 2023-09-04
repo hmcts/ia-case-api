@@ -55,4 +55,8 @@
         <cve>CVE-2023-34981</cve>
         <cve>CVE-2023-34034</cve>
     </suppress>
+    <suppress until="2023-09-30">
+        <notes>Temporarily suppress vulnerability as no current fix</notes>
+        <cve>CVE-2023-35116</cve>
+    </suppress>
 </suppressions>
