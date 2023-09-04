@@ -32,6 +32,7 @@
         <cve>CVE-2023-2976</cve>
         <cve>CVE-2023-34034</cve>
         <cve>CVE-2020-8908</cve>
+        <cve>CVE-2023-41080</cve>
     </suppress>
     <suppress until="2023-07-27">
         <notes>Temporarily suppress vulnerability</notes>
