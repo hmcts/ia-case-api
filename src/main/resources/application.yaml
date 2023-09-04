@@ -373,6 +373,7 @@ security:
       - "markAddendumEvidenceAsReviewed"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "createFlag"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
