@@ -1,11 +1,11 @@
 {
   "description": "RIA-7338 update sign language choice - legal rep",
-  "enabled": "false",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "updateHearingAdjustments",
+      "eventId": "updateHearingRequirements",
       "state": "preHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
