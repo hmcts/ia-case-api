@@ -1,6 +1,5 @@
 {
   "description": "RIA-5184 RIA-7335 Sets Anonymity flag for PA (Refusal of protection claim) appeal on submitAppeal event",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
