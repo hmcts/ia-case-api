@@ -69,8 +69,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-payments-api:pr-270
+    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-259 #:pr-259 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -100,8 +99,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-520 #pr-520 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -113,8 +111,7 @@ ia-case-documents-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       EM_BUNDLER_URL: https://em-ccdorc-${SERVICE_FQDN}
       EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
-      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment
-        }}.platform.hmcts.net/
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
@@ -147,8 +144,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-724 #pr-724 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -156,8 +152,7 @@ ia-case-notifications-api:
       IA_GOV_NOTIFY_KEY: "test_key-7f72d0fb-2bc4-421b-bceb-1bf5bf350ff9-3df5a74b-f25b-4052-b00f-3f71d33cd0eb"
       IA_BAIL_GOV_NOTIFY_KEY: "testkey-b9593914-99e1-484e-ad63-a51d7b4c164f-b817a2e5-7a30-4938-98f0-6099110c2879"
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
-      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment
-        }}.platform.hmcts.net/
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -421,8 +416,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
-    # image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-293
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-285 #pr-285 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
