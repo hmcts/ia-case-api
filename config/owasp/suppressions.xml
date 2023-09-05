@@ -26,6 +26,7 @@
         <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-2976</cve>
         <cve>CVE-2023-34981</cve>
+        <cve>CVE-2023-41080</cve>
     </suppress>
     <suppress>
         <cve>CVE-2023-20883</cve>
