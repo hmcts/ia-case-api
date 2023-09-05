@@ -1,5 +1,6 @@
 {
   "description": "RIA-5184 RIA-7335 Sets Anonymity flag for RP (Revocation of a protection status) appeal on submitAppeal event",
+  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
