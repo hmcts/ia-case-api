@@ -9,12 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_PARTY_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 
@@ -37,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -177,6 +173,57 @@ class PartyIdHandlerTest {
         verify(asylumCase, never()).write(eq(LEGAL_REP_ORGANISATION_PARTY_ID), anyString());
         verify(asylumCase, never()).write(eq(SPONSOR_PARTY_ID), anyString());
 
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL",
+        "EDIT_APPEAL"
+    })
+    void should_set_appellant_sponsor_party_id_for_aip_journey_with_out_of_country_appeals(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                partyIdHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(APPELLANT_PARTY_ID), partyId.capture());
+        assertNotNull(partyId.getValue());
+        verify(asylumCase, times(1)).write(eq(SPONSOR_PARTY_ID), partyId.capture());
+        assertNotNull(partyId.getValue());
+
+        verify(asylumCase, never()).write(eq(LEGAL_REP_INDIVIDUAL_PARTY_ID), anyString());
+        verify(asylumCase, never()).write(eq(LEGAL_REP_ORGANISATION_PARTY_ID), anyString());
+
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL",
+        "EDIT_APPEAL"
+    })
+    void should_not_set_legal_rep_party_id_for_aip_journey(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                partyIdHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(APPELLANT_PARTY_ID), partyId.capture());
+        assertNotNull(partyId.getValue());
+
+        verify(asylumCase, never()).write(eq(LEGAL_REP_INDIVIDUAL_PARTY_ID), anyString());
+        verify(asylumCase, never()).write(eq(LEGAL_REP_ORGANISATION_PARTY_ID), anyString());
+        verify(asylumCase, never()).write(eq(SPONSOR_PARTY_ID), anyString());
     }
 
     @Test
