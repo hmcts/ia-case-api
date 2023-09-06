@@ -20,9 +20,10 @@
     ]]</notes>
     <cve>CVE-2022-45688</cve>
   </suppress>
-  <suppress until="2023-08-31">
-    <cve>CVE-2023-35116</cve><!-- 2023-08-02 latest version is 2.15.2 and is still vulnerable -->
+  <suppress until="2023-09-30">
     <cve>CVE-2023-34034</cve>
     <cve>CVE-2020-8908</cve>
+    <cve>CVE-2023-35116</cve><!-- 2023-09-04 latest version is 2.15.2 and is still vulnerable -->
+    <cve>CVE-2023-41080</cve><!-- 2023-09-05 apache tomcat vulnerability -->
   </suppress>
 </suppressions>
