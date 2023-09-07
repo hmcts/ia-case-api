@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -65,14 +64,11 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
                 .orElse(PaymentStatus.PAYMENT_PENDING);
-        final Optional<State> stateBeforeEndAppeal = asylumCase.read(STATE_BEFORE_END_APPEAL, State.class);
 
         if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY) {
             if (paymentStatus == PaymentStatus.PAID) {
                 throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
-            } else if (stateBeforeEndAppeal.isPresent()
-                    && stateBeforeEndAppeal.get() == State.PENDING_PAYMENT
-                    && callback.getCaseDetails().getState() == State.ENDED) {
+            } else if(callback.getCaseDetails().getState() == State.ENDED) {
                 throw new IllegalStateException("Appeal has already been ended!");
             }
         }
