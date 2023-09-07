@@ -1,6 +1,5 @@
 {
   "description": "RIA-7750 party ID generation for edit appeal",
-  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
