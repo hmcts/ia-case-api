@@ -148,7 +148,7 @@
                 "name": "Evidence given in private",
                 "status": "Active",
                 "flagCode": "SM0004",
-                "hearingRelevant": "No"
+                "hearingRelevant": "Yes"
               }
             }
           ]
