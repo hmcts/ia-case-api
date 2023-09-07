@@ -16,8 +16,58 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness",
-                "witnessFamilyName": "AFamilyName"
+                "witnessPartyId": "partyId1",
+                "witnessName": "AWitness1",
+                "witnessFamilyName": "AFamilyName1"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "witnessPartyId": "partyId2",
+                "witnessName": "AWitness2",
+                "witnessFamilyName": "AFamilyName2"
+              }
+            },
+            {
+              "id": "3",
+              "value": {
+                "witnessPartyId": "partyId3",
+                "witnessName": "AWitness3",
+                "witnessFamilyName": "AFamilyName3"
+              }
+            },
+            {
+              "id": "4",
+              "value": {
+                "witnessName": "AWitness4",
+                "witnessFamilyName": "AFamilyName4"
+              }
+            }
+          ],
+          "witnessLevelFlags": [
+            {
+              "id": "partyId1",
+              "value": {
+                "partyName": "AWitness1 AFamilyName1",
+                "roleOnCase": "Witness",
+                "details": []
+              }
+            },
+            {
+              "id": "partyId2",
+              "value": {
+                "partyName": "OldFirstName OldFamilyName",
+                "roleOnCase": "Witness",
+                "details": []
+              }
+            },
+            {
+              "id": "partyId0",
+              "value": {
+                "partyName": "AWitness0 AFamilyName0",
+                "roleOnCase": "Witness",
+                "details": []
               }
             }
           ]
@@ -37,8 +87,32 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness",
-              "witnessFamilyName": "AFamilyName"
+              "witnessPartyId": "partyId1",
+              "witnessName": "AWitness1",
+              "witnessFamilyName": "AFamilyName1"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "witnessPartyId": "partyId2",
+              "witnessName": "AWitness2",
+              "witnessFamilyName": "AFamilyName2"
+            }
+          },
+          {
+            "id": "3",
+            "value": {
+              "witnessPartyId": "partyId3",
+              "witnessName": "AWitness3",
+              "witnessFamilyName": "AFamilyName3"
+            }
+          },
+          {
+            "id": "4",
+            "value": {
+              "witnessName": "AWitness4",
+              "witnessFamilyName": "AFamilyName4"
             }
           }
         ],
@@ -49,9 +123,25 @@
         },
         "witnessLevelFlags": [
           {
-            "id": "AWitness AFamilyName",
+            "id": "partyId1",
             "value": {
-              "partyName": "AWitness AFamilyName",
+              "partyName": "AWitness1 AFamilyName1",
+              "roleOnCase": "Witness",
+              "details": []
+            }
+          },
+          {
+            "id": "partyId2",
+            "value": {
+              "partyName": "AWitness2 AFamilyName2",
+              "roleOnCase": "Witness",
+              "details": []
+            }
+          },
+          {
+            "id": "partyId3",
+            "value": {
+              "partyName": "AWitness3 AFamilyName3",
               "roleOnCase": "Witness",
               "details": []
             }
