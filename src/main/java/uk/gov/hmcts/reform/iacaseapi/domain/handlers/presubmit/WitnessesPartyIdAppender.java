@@ -58,7 +58,7 @@ public class WitnessesPartyIdAppender implements PreSubmitCallbackHandler<Asylum
 
         Optional<List<IdValue<WitnessDetails>>> witnessDetailsOptional = asylumCase.read(WITNESS_DETAILS);
 
-        AtomicInteger index = new AtomicInteger(0);
+        AtomicInteger index = new AtomicInteger(1);
         List<IdValue<WitnessDetails>> newWitnessDetails =
             witnessDetailsOptional.orElse(emptyList())
                 .stream()
