@@ -155,7 +155,7 @@ class EndAppealHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
         when(caseDetails.getState()).thenReturn(State.ENDED);
 
         assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
