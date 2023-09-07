@@ -1,18 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class HandlerUtilsTest {
 
     @Mock
@@ -46,5 +50,46 @@ class HandlerUtilsTest {
     void given_rep_journey_aip_test_should_fail() {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
         assertFalse(HandlerUtils.isAipJourney(asylumCase));
+    }
+
+    @Test
+    void get_appellant_full_name_should_return_appellant_display_name() {
+        String appellantDisplayName = "FirstName FamilyName";
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+
+        assertEquals(appellantDisplayName, HandlerUtils.getAppellantFullName(asylumCase));
+    }
+
+    @Test
+    void get_appellant_full_name_should_return_appellant_given_names_and_family_name() {
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("FirstName SecondName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("FamilyName"));
+
+        assertEquals("FirstName SecondName FamilyName", HandlerUtils.getAppellantFullName(asylumCase));
+    }
+
+    @Test
+    void get_appellant_full_name_should_throw_exception() {
+        assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
+            .hasMessage("Appellant given names required")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("FirstName SecondName"));
+
+        assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
+            .hasMessage("Appellant family name required")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("FamilyName"));
+
+        assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
+            .hasMessage("Appellant given names required")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 }

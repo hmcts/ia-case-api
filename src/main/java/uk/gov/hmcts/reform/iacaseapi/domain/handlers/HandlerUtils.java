@@ -50,6 +50,18 @@ public class HandlerUtils {
                 .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
     }
 
+    public static String getAppellantFullName(AsylumCase asylumCase) {
+        return asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElseGet(() -> {
+            final String appellantGivenNames = asylumCase
+                    .read(APPELLANT_GIVEN_NAMES, String.class)
+                    .orElseThrow(() -> new IllegalStateException("Appellant given names required"));
+            final String appellantFamilyName = asylumCase
+                    .read(APPELLANT_FAMILY_NAME, String.class)
+                    .orElseThrow(() -> new IllegalStateException("Appellant family name required"));
+            return appellantGivenNames + " " + appellantFamilyName;
+        });
+    }
+
     private static Optional<String> formatHearingAdjustmentResponse(
             AsylumCase asylumCase,
             AsylumCaseFieldDefinition responseDefinition,
