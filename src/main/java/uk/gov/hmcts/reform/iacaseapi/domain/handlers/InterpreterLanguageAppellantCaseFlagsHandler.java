@@ -99,8 +99,10 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
     }
 
     private String getChosenSpokenLanguage(InterpreterLanguageRefData appellantSpokenLanguage) {
-        return appellantSpokenLanguage.getLanguageRefData() != null ? appellantSpokenLanguage.getLanguageRefData().getValue().getLabel()
-                    : appellantSpokenLanguage.getLanguageManualEntryDescription();
+        if (appellantSpokenLanguage.getLanguageManualEntry().isEmpty()){
+            return appellantSpokenLanguage.getLanguageRefData().getValue().getLabel();
+        }
+        return appellantSpokenLanguage.getLanguageManualEntryDescription();
     }
 
     private boolean selectedLanguageDiffers(InterpreterLanguageRefData appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
