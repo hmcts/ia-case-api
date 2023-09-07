@@ -1,5 +1,6 @@
 {
   "description": "RIA-7751 generate sponsor's party ID on editAppealAfterSubmit event for out of country appeal",
+  "enabled": "false",
   "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
