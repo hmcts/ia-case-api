@@ -309,6 +309,8 @@ dependencies {
 
   implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.80'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.80'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
