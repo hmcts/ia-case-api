@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -33,10 +35,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
 class WitnessesPartyIdAppenderTest {
 
     private static final String WITNESS_1_PARTY_ID = "111222333";
     private static final String WITNESS_2_PARTY_ID = "222111333";
+
+    @Captor
+    private ArgumentCaptor<List<IdValue<WitnessDetails>>> witnessDetailsCaptor;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -79,8 +85,9 @@ class WitnessesPartyIdAppenderTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        assertNotNull(witnessDetails.get(0).getValue().getWitnessPartyId());
-        assertNotNull(witnessDetails.get(1).getValue().getWitnessPartyId());
+        verify(asylumCase).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
+        assertNotNull(witnessDetailsCaptor.getValue().get(0).getValue().getWitnessPartyId());
+        assertNotNull(witnessDetailsCaptor.getValue().get(1).getValue().getWitnessPartyId());
 
         verify(asylumCase, times(1)).write(eq(WITNESS_DETAILS), any());
 
@@ -92,10 +99,8 @@ class WitnessesPartyIdAppenderTest {
         "DRAFT_HEARING_REQUIREMENTS"
     })
     void should_not_append_witnesses_party_id(Event event) {
-        WitnessDetails witnessDetails1 = new WitnessDetails("witness1", "family1");
-        witnessDetails1.setWitnessPartyId(WITNESS_1_PARTY_ID);
-        WitnessDetails witnessDetails2 = new WitnessDetails("witness2", "family2");
-        witnessDetails1.setWitnessPartyId(WITNESS_2_PARTY_ID);
+        WitnessDetails witnessDetails1 = new WitnessDetails(WITNESS_1_PARTY_ID, "witness1", "family1");
+        WitnessDetails witnessDetails2 = new WitnessDetails(WITNESS_2_PARTY_ID, "witness2", "family2");
         witnessDetails = Arrays.asList(
             new IdValue<>("1", witnessDetails1),
             new IdValue<>("2", witnessDetails2)
@@ -110,8 +115,9 @@ class WitnessesPartyIdAppenderTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(WITNESS_DETAILS, Optional.of(witnessDetails));
-
+        verify(asylumCase).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
+        assertEquals(WITNESS_1_PARTY_ID, witnessDetailsCaptor.getValue().get(0).getValue().getWitnessPartyId());
+        assertEquals(WITNESS_2_PARTY_ID, witnessDetailsCaptor.getValue().get(1).getValue().getWitnessPartyId());
     }
 
     @Test
