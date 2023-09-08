@@ -296,7 +296,7 @@ dependencyManagement {
         dependencySet(group: 'net.minidev', version: '2.4.10') {
             entry 'json-smart'
         }
-        
+
     }
 }
 
