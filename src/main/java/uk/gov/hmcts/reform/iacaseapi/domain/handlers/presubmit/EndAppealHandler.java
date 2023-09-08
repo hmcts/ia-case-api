@@ -72,8 +72,6 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             throw new IllegalStateException("Appeal has already been ended!");
         }
 
-        }
-
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
 
