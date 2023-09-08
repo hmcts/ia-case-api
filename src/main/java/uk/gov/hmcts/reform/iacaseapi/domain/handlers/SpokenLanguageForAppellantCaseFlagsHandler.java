@@ -21,11 +21,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 @Component
-public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider systemDateProvider;
 
-    public InterpreterLanguageAppellantCaseFlagsHandler(DateProvider systemDateProvider) {
+    public SpokenLanguageForAppellantCaseFlagsHandler(DateProvider systemDateProvider) {
         this.systemDateProvider = systemDateProvider;
     }
 
@@ -53,7 +53,6 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         Optional<CaseDetails<AsylumCase>> asylumCaseBefore = callback.getCaseDetailsBefore();
         Optional<StrategicCaseFlag> existingCaseflags = asylumCase
                 .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
-        String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
 
         boolean isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                 .map(interpreterNeeded -> YesOrNo.YES == interpreterNeeded).orElse(false);
@@ -89,6 +88,8 @@ public class InterpreterLanguageAppellantCaseFlagsHandler implements PreSubmitCa
         }
 
         if (caseDataUpdated) {
+            String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
+
             if (appellantDisplayName == null) {
                 throw new IllegalStateException("Appellant full name is not present");
             }

@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguageAppellantCaseFlagsHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.SpokenLanguageForAppellantCaseFlagsHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
+public class SpokenLanguageForAppellantCaseFlagsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -48,7 +48,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
     @Mock
     private DateProvider systemDateProvider;
 
-    private InterpreterLanguageAppellantCaseFlagsHandler interpreterLanguageHandler;
+    private SpokenLanguageForAppellantCaseFlagsHandler interpreterLanguageHandler;
 
     private final String appellantDisplayName = "Eke Uke";
 
@@ -59,7 +59,7 @@ public class InterpreterLanguageAppellantCaseFlagsHandlerTest {
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
         interpreterLanguageHandler =
-                new InterpreterLanguageAppellantCaseFlagsHandler(systemDateProvider);
+                new SpokenLanguageForAppellantCaseFlagsHandler(systemDateProvider);
     }
 
     @ParameterizedTest
