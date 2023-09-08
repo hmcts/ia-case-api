@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
@@ -55,15 +58,24 @@ public class WitnessesPartyIdAppender implements PreSubmitCallbackHandler<Asylum
 
         Optional<List<IdValue<WitnessDetails>>> witnessDetailsOptional = asylumCase.read(WITNESS_DETAILS);
 
-        witnessDetailsOptional.ifPresent(witnessDetailsList -> {
-            witnessDetailsList.stream().filter(Objects::nonNull).forEach(witnessDetails -> {
-                if (witnessDetails.getValue().getWitnessPartyId() == null) {
-                    witnessDetails.getValue().setWitnessPartyId(HearingPartyIdGenerator.generate());
-                }
-            });
+        AtomicInteger index = new AtomicInteger(1);
+        List<IdValue<WitnessDetails>> newWitnessDetails =
+            witnessDetailsOptional.orElse(emptyList())
+                .stream()
+                .map(idValue -> {
+                    return new IdValue<>(
+                        String.valueOf(index.getAndIncrement()),
+                        new WitnessDetails(
+                            defaultIfNull(idValue.getValue().getWitnessPartyId(), HearingPartyIdGenerator.generate()),
+                            idValue.getValue().getWitnessName(),
+                            idValue.getValue().getWitnessFamilyName()
+                        )
+                    );
+                })
+                .collect(toList());
 
-            asylumCase.write(WITNESS_DETAILS, Optional.of(witnessDetailsList));
-        });
+
+        asylumCase.write(WITNESS_DETAILS, newWitnessDetails);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
