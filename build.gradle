@@ -297,6 +297,7 @@ dependencyManagement {
             entry 'json-smart'
         }
     }
+
 }
 
 dependencies {
