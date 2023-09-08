@@ -54,7 +54,6 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
         Optional<CaseDetails<AsylumCase>> asylumCaseBefore = callback.getCaseDetailsBefore();
         Optional<StrategicCaseFlag> existingCaseflags = asylumCase
                 .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
-        String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
 
         Optional<InterpreterLanguageRefData> appellantSignLanguage = asylumCase
                 .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class);
@@ -89,6 +88,8 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
         }
 
         if (caseDataUpdated) {
+            String appellantDisplayName = getAppellantDisplayName(existingCaseflags, asylumCase);
+
             if (appellantDisplayName == null) {
                 throw new IllegalStateException("Appellant full name is not present");
             }
