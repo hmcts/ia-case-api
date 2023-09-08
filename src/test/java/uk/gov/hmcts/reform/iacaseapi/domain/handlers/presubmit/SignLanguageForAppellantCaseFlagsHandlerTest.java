@@ -16,8 +16,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,7 +67,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     })
     void should_set_sign_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -96,8 +93,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     })
     void should_not_set_sign_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 signLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -110,8 +105,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     @Test
     void should_deactivate_sign_language_flag() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -136,8 +129,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     @Test
     void should_not_deactivate_flag_when_non_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -152,8 +143,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     @Test
     void should_not_deactivate_flag_when_an_inactive_one_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -182,7 +171,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
@@ -212,10 +200,8 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
-
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
                 .builder()
@@ -264,7 +250,6 @@ public class SignLanguageForAppellantCaseFlagsHandlerTest {
     })
     void should_throw_exception_when_appellant_name_is_missing(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_SIGN_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
 
         assertThatThrownBy(() ->
