@@ -1,6 +1,6 @@
 {
   "description": "RIA-7412 review language requirements for legal rep",
-  "enabled": "true",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -146,7 +146,7 @@
             {
               "id": "7412-ABC",
               "value": {
-                "name": "Language Interpreter",
+                "name": "Language Interpreter igbo",
                 "status": "Active",
                 "flagCode": "PF0015",
                 "hearingRelevant": "Yes"

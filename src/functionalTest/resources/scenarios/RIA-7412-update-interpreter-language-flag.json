@@ -94,7 +94,7 @@
         ],
         "isInterpreterServicesNeeded": "Yes",
         "appellantInterpreterLanguageCategory": [
-          "signLanguageInterpreter"
+          "spokenLanguageInterpreter"
         ],
         "appellantInterpreterSpokenLanguage": {
           "languageRefData": {
@@ -123,8 +123,8 @@
         "singleSexCourt": "Yes",
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
-        "inCameraCourt": "Yes",
-        "isInCameraCourtAllowed": "Granted",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
@@ -146,7 +146,7 @@
             {
               "id": "7412-ABC",
               "value": {
-                "name": "Language Interpreter",
+                "name": "Language Interpreter igbo",
                 "status": "Active",
                 "flagCode": "PF0015",
                 "hearingRelevant": "Yes"

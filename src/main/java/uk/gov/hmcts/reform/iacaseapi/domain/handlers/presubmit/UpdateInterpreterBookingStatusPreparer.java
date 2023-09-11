@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS;
@@ -91,6 +92,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+    public static final String SPOKEN_LANGUAGE_INTERPRETER = "spokenLanguageInterpreter";
+    public static final String SIGN_LANGUAGE_INTERPRETER = "signLanguageInterpreter";
     public static String APPELLANT = "Appellant";
     public static String WITNESS = "Witness";
     private AsylumCase asylumCase;
@@ -125,24 +128,40 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         List<IdValue<WitnessDetails>> witnessesDetails = optionalWitnesses.orElse(Collections.emptyList());
 
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(language -> {
-            if (!asylumCase.read(language).isPresent()) {
+            if (isInterpreterPresent(language)) {
+                populateSpokenLanguageBookingStatusFieldsForWitness(language, witnessesDetails);
+            } else {
                 clearSpokenLanguageBookingStatusFieldsForWitness(language);
-                return;
             }
-            populateSpokenLanguageBookingStatusFieldsForWitness(language, witnessesDetails);
+
         });
 
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(language -> {
-            if (!asylumCase.read(language).isPresent()) {
+            if (isInterpreterPresent(language)) {
+                populateSignLanguageBookingStatusFieldsForWitness(language, witnessesDetails);
+            } else {
                 clearSignLanguageBookingStatusFieldsForWitness(language);
-                return;
             }
-            populateSignLanguageBookingStatusFieldsForWitness(language, witnessesDetails);
+
         });
     }
 
+    /**
+     * It is required to do null checks for the inner fields (languageRefData and languageManualEntryDescription) as well,
+     * as there appears to be a CCD bug where it creates empty interpreter language fields in the Review Hearing Requirements
+     * event which caused by COMPLEX type fields being set as READONLY.
+     */
+    private boolean isInterpreterPresent(AsylumCaseFieldDefinition language) {
+        return asylumCase.read(language).isPresent()
+            && (((InterpreterLanguageRefData) asylumCase.read(language).get()).getLanguageRefData() != null
+            || ((InterpreterLanguageRefData) asylumCase.read(language).get()).getLanguageManualEntryDescription() != null);
+    }
+
     private void populateOrClearAppellantSignAndSpokenInterpreterBookingFields() {
-        if (asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE).isPresent()) {
+        Optional<List<String>> languageCategoriesOptional = asylumCase
+            .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+
+        if (languageCategoriesOptional.isPresent() && languageCategoriesOptional.get().contains(SPOKEN_LANGUAGE_INTERPRETER)) {
             populateBookingStatusFieldsForAppellant(
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE,
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
@@ -153,7 +172,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
         }
 
-        if (asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE).isPresent()) {
+        if (languageCategoriesOptional.isPresent() && languageCategoriesOptional.get().contains(SIGN_LANGUAGE_INTERPRETER)) {
             populateBookingStatusFieldsForAppellant(
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE,
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING,
