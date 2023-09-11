@@ -1,6 +1,6 @@
 {
   "description": "RIA-7338 update sign language choice - legal rep",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -44,8 +44,8 @@
             "languageManualEntry": [],
             "languageManualEntryDescription": ""
           },
-          "isHearingRoomNeeded": "Yes",
-          "isHearingLoopNeeded": "Yes",
+          "isHearingRoomNeeded": "No",
+          "isHearingLoopNeeded": "No",
           "physicalOrMentalHealthIssues": "Yes",
           "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
           "pastExperiences": "Yes",
@@ -113,8 +113,8 @@
           "languageManualEntry": [],
           "languageManualEntryDescription": ""
         },
-        "isHearingRoomNeeded": "Yes",
-        "isHearingLoopNeeded": "Yes",
+        "isHearingRoomNeeded": "No",
+        "isHearingLoopNeeded": "No",
         "physicalOrMentalHealthIssues": "Yes",
         "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
         "pastExperiences": "Yes",
