@@ -198,7 +198,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.REQUEST_RESPONSE_REVIEW,
                 Event.MARK_APPEAL_AS_ADA,
                 Event.EDIT_CASE_LISTING,
-                Event.TRANSFER_OUT_OF_ADA
+                Event.TRANSFER_OUT_OF_ADA,
+                Event.SEND_DIRECTION
         );
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
