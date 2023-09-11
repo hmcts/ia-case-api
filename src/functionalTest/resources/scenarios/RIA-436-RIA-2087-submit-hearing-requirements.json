@@ -1,6 +1,5 @@
 {
   "description": "RIA-436 RIA-2087 Draft and submit hearing requirements",
-  "disabled": "true",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
