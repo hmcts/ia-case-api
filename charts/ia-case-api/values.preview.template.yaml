@@ -10,8 +10,8 @@ java:
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
-    IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
+    #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
+    #IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
@@ -100,8 +100,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
+    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-609
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -147,8 +147,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-907
+    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -467,8 +467,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
+    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     memoryRequests: 256Mi
