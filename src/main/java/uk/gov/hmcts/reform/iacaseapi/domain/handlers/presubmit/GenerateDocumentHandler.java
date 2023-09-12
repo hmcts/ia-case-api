@@ -3,18 +3,22 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
-import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -166,7 +170,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
 
         LocalDate appealDate = dateProvider.now();
         asylumCase.write(APPEAL_DATE, appealDate.toString());
-        asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
+        asylumCase.write(APPEAL_DECISION_AVAILABLE, YES);
         asylumCase.write(FTPA_APPLICATION_DEADLINE, getFtpaApplicationDeadline(asylumCase, appealDate));
     }
 
@@ -221,14 +225,16 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
 
     private String getFtpaApplicationDeadline(AsylumCase asylumCase, LocalDate appealDate) {
         boolean isInternalCase = isInternalCase(asylumCase);
-        boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+        boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YES);
 
         if (isInternalCase) {
             return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).toString();
         }
 
         LocalDate ftpaApplicationDeadline;
-        boolean isOoc = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).isPresent();
+
+        // APPEAL_OUT_OF_COUNTRY used instead of previous OUT_OF_COUNTRY_DECISION_TYPE because in AiP UI screen with OUT_OF_COUNTRY_DECISION_TYPE is not implemented yet
+        boolean isOoc = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> YES == ooc).orElse(false);
 
         if (isAda) {
             ftpaApplicationDeadline = dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC), ftpaAppealOutOfTimeWorkingDaysAdaAppeal).toLocalDate();
