@@ -4,8 +4,7 @@ properties([
     pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
-
-@Library("Infrastructure")
+@Library('Infrastructure')
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
@@ -106,6 +105,10 @@ withPipeline(type, product, component) {
     env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
+    env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+    env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
+    env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
+    env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()
@@ -118,6 +121,12 @@ withPipeline(type, product, component) {
     """
     }
 
+    afterSuccess('akschartsinstall') {
+        onPR {
+            githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+        }
+    }
 
     afterAlways('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'

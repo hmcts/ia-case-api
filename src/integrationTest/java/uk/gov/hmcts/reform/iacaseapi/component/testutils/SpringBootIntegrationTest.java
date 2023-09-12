@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -78,12 +79,28 @@ public abstract class SpringBootIntegrationTest {
 
     @AfterEach
     public void reset() {
+        server.resetMappings();
+        server.resetRequests();
+        server.resetScenarios();
         server.resetAll();
     }
 
     @AfterAll
+    @SneakyThrows
+    @SuppressWarnings("java:S2925")
     public void shutDown() {
         server.stop();
+        /*
+            We are not using Wiremock the way it's intended to be used. It should be used by
+            starting a webserver at the beginning of all tests and taking it down at the end, but
+            what we do is spinning up and down the server all the time and change its mappings
+            all the time.
+            The result is that its behaviour is somewhat flaky.
+
+            The following pause is meant to allow Wiremock time to conclude some operations that
+            we invoke.
+         */
+        Thread.sleep(1000);
     }
 
 }

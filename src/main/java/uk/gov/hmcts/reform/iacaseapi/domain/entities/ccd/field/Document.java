@@ -17,6 +17,7 @@ public class Document {
     private String documentFilename;
 
     private Document() {
+        super();
         // noop -- for deserializer
     }
 
