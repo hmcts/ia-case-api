@@ -20,5 +20,6 @@
     <suppress until="2023-09-30">
         <notes>Temporarily suppress vulnerability as no current fix</notes>
         <cve>CVE-2023-35116</cve>
+        <cve>CVE-2023-41080</cve>
     </suppress>
 </suppressions>
