@@ -1,6 +1,5 @@
 {
   "description": "RIA-7507 Draft and submit hearing requirements for appellant with spoken language interpreter",
-  "disabled": "true",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

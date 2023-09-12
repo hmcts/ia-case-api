@@ -1,6 +1,5 @@
 {
   "description": "RIA-3763 FTPA Reheard - single hearing requirements copied to previous hearing requirements - feature flag enabled",
-  "disabled": "true",
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
