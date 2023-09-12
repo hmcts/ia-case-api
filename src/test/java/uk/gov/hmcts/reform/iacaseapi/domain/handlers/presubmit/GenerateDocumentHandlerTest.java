@@ -120,7 +120,7 @@ class GenerateDocumentHandlerTest {
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
                 .thenReturn(Optional.empty());
         when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
     }
@@ -491,8 +491,8 @@ class GenerateDocumentHandlerTest {
         AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
         setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
 
-        when(expectedUpdatedCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-                .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        when(expectedUpdatedCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
