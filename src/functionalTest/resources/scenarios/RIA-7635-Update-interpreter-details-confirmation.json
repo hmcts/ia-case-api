@@ -45,7 +45,7 @@
     "status": 200,
     "confirmation": {
       "header": "# Interpreter details have been updated",
-      "body": "#### What happens next\n\nYou now need to update the hearing in the [Hearings tab](/case/IA/Asylum/7635#hearing) to ensure the new interpreter information is displayed in List Assist.\n\nIf updates need to be made to the interpreter booking status this should be completed before updating the hearing."
+      "body": "#### What happens next\n\nYou now need to update the hearing in the [Hearings tab](/case/IA/Asylum/7635#Hearing%20and%20appointment) to ensure the new interpreter information is displayed in List Assist.\n\nIf updates need to be made to the interpreter booking status this should be completed before updating the hearing."
     }
   }
 }
