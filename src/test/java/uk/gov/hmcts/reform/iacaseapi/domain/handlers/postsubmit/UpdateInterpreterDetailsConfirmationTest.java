@@ -28,7 +28,7 @@ class UpdateInterpreterDetailsConfirmationTest {
     private static final long caseId = 12345;
     private static final String confirmationText = "#### What happens next\n\n"
         + "You now need to update the hearing in the "
-        + "[Hearings tab](/case/IA/Asylum/" + caseId + "#hearing)"
+        + "[Hearings tab](/case/IA/Asylum/" + caseId + "#Hearing%20and%20appointment)"
         + " to ensure the new interpreter information is displayed in List Assist."
         + "\n\nIf updates need to be made to the interpreter booking status this should be completed"
         + " before updating the hearing.";
