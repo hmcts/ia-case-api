@@ -911,7 +911,7 @@ wa:
       releaseNameOverride: ${SERVICE_NAME}-wa-case-event-handler
       secrets:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: ia-servicebus-preview
+          secretRef: ia-sb-preview
           key: connectionString
       keyVaults:
         wa:
@@ -953,16 +953,12 @@ servicebus:
   enabled: true
   releaseNameOverride: ${SERVICE_NAME}
   resourceGroup: ia-preview
-  sbNamespace: ia-servicebus-preview
+  sbNamespace: ia-sb-preview
   setup:
     topics:
       - name: ccd-case-events
         subscriptionNeeded: yes
         requiresSession: true
-      - name: crd-topic
-        subscriptionNeeded: yes
-      - name: jrd-topic
-        subscriptionNeeded: yes
 
 ccd-message-publisher:
   enabled: true
@@ -985,5 +981,5 @@ ccd-message-publisher:
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
-        secretRef: ia-servicebus-preview
+        secretRef: ia-sb-preview
         key: connectionString
