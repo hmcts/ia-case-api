@@ -903,6 +903,7 @@ wa:
         ALLOWED_CASE_TYPES: asylum
         REPLICATION_USERNAME: hmcts
         REPLICATION_PASSWORD: hmcts
+        DB_READER_USERNAME: hmcts
         POSTGRES_CONNECTION_OPTIONS: ""
         SPRING_PROFILES_ACTIVE: "preview,replica"
   wa-case-event-handler:
