@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.STEP_FREE_WHEELCHAIR_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDateTime;
@@ -67,6 +68,8 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(appellantDisplayName));
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
         hearingRequirementsAppellantCaseFlagsHandler =
@@ -158,7 +161,7 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -230,7 +233,7 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -243,7 +246,7 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(IS_HEARING_LOOP_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -257,17 +260,17 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode())
-                .name(STEP_FREE_WHEELCHAIR_ACCESS.getName())
-                .status("Inactive")
-                .build()));
+            .builder()
+            .flagCode(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode())
+            .name(STEP_FREE_WHEELCHAIR_ACCESS.getName())
+            .status("Inactive")
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
                 appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -285,17 +288,17 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode())
-                .name(STEP_FREE_WHEELCHAIR_ACCESS.getName())
-                .status("Inactive")
-                .build()));
+            .builder()
+            .flagCode(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode())
+            .name(STEP_FREE_WHEELCHAIR_ACCESS.getName())
+            .status("Inactive")
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
                 appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -313,17 +316,17 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(asylumCase.read(IS_HEARING_LOOP_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(HEARING_LOOP.getFlagCode())
-                .name(HEARING_LOOP.getName())
-                .status("Active")
-                .build()));
+            .builder()
+            .flagCode(HEARING_LOOP.getFlagCode())
+            .name(HEARING_LOOP.getName())
+            .status("Active")
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
                 appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -342,29 +345,14 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
                 boolean canHandle = hearingRequirementsAppellantCaseFlagsHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS)
-                        .contains(callback.getEvent())) {
+                    && List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS)
+                    .contains(callback.getEvent())) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
                 }
             }
         }
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "REVIEW_HEARING_REQUIREMENTS",
-        "UPDATE_HEARING_REQUIREMENTS"
-    })
-    void should_throw_exception_when_appellant_name_is_missing(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        assertThatThrownBy(() ->
-            hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Appellant full name is not present")
-                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -390,7 +378,7 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> hearingRequirementsAppellantCaseFlagsHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
