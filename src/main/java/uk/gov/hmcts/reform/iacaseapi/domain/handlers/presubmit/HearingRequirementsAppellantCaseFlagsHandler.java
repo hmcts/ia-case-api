@@ -75,11 +75,11 @@ class HearingRequirementsAppellantCaseFlagsHandler
             caseDataUpdated = true;
         }
         if (!isHearingLoopNeeded && hasActiveTargetCaseFlag(existingCaseFlagDetails, HEARING_LOOP)) {
-            existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, HEARING_LOOP, currentDateTime);
+            existingCaseFlagDetails = deactivateCaseFlags(existingCaseFlagDetails, HEARING_LOOP, currentDateTime);
             caseDataUpdated = true;
         }
         if (!isHearingRoomNeeded && hasActiveTargetCaseFlag(existingCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS)) {
-            existingCaseFlagDetails = deactivateCaseFlag(
+            existingCaseFlagDetails = deactivateCaseFlags(
                 existingCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
             caseDataUpdated = true;
         }

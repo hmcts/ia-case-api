@@ -40,28 +40,14 @@ class AppellantCaseFlagsHandler  {
         return caseFlagDetails;
     }
 
-    protected List<CaseFlagDetail> deactivateCaseFlag(
+    protected List<CaseFlagDetail> deactivateCaseFlags(
         List<CaseFlagDetail> caseFlagDetails,
         StrategicCaseFlagType caseFlagType,
         String dateTimeModified) {
-        if (hasActiveTargetCaseFlag(caseFlagDetails, caseFlagType)) {
-            caseFlagDetails = caseFlagDetails.stream().map(detail -> {
-                CaseFlagValue value = detail.getCaseFlagValue();
-                if (isActiveTargetCaseFlag(value, caseFlagType)) {
-                    return new CaseFlagDetail(detail.getId(), CaseFlagValue.builder()
-                        .flagCode(value.getFlagCode())
-                        .name(value.getName())
-                        .status("Inactive")
-                        .hearingRelevant(value.getHearingRelevant())
-                        .dateTimeModified(dateTimeModified)
-                        .build());
-                } else {
-                    return detail;
-                }
-            }).collect(Collectors.toList());
-        }
 
-        return caseFlagDetails;
+        return caseFlagDetails.stream()
+            .map(detail -> tryDeactivateCaseFlag(caseFlagType, dateTimeModified, detail))
+            .collect(Collectors.toList());
     }
 
     protected boolean hasActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
@@ -80,6 +66,21 @@ class AppellantCaseFlagsHandler  {
             .orElseGet(() -> new StrategicCaseFlag(
                 HandlerUtils.getAppellantFullName(asylumCase),
                 StrategicCaseFlag.ROLE_ON_CASE_APPELLANT));
+    }
+
+    private CaseFlagDetail tryDeactivateCaseFlag(
+        StrategicCaseFlagType caseFlagType,String dateTimeModified, CaseFlagDetail detail) {
+        CaseFlagValue value = detail.getCaseFlagValue();
+
+        return isActiveTargetCaseFlag(value, caseFlagType)
+            ? new CaseFlagDetail(detail.getId(), CaseFlagValue.builder()
+                .flagCode(value.getFlagCode())
+                .name(value.getName())
+                .status("Inactive")
+                .hearingRelevant(value.getHearingRelevant())
+                .dateTimeModified(dateTimeModified)
+                .build())
+            : detail;
     }
 
 }

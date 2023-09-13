@@ -122,7 +122,7 @@ class AppellantCaseFlagsHandlerTest {
     @Test
     void should_deactivate_case_flag() {
         boolean deactivated = appellantCaseFlagsHandler
-            .deactivateCaseFlag(activeCaseFlagDetails, HEARING_LOOP, "06-09-2023")
+            .deactivateCaseFlags(activeCaseFlagDetails, HEARING_LOOP, "06-09-2023")
             .stream()
             .anyMatch(details -> Objects.equals(details.getCaseFlagValue().getStatus(), "Inactive"));
 
