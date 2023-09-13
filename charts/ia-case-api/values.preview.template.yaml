@@ -829,7 +829,7 @@ aac-manage-case-assignment:
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MCA_CONDITIONAL_APIS_CASE_ASSIGNMENTS_ENABLED: "true"
-      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,ccd_gw,xui_mo_webapp,et_cos
+      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,ccd_gw,iac
       CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CCD_DEFINITION_STORE_API_BASE_URL: https://ccd-definition-store-${SERVICE_FQDN}
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
@@ -899,8 +899,8 @@ wa:
         POSTGRES_REPLICA_NAME: "cft_task_db_replica"
         POSTGRES_USERNAME: hmcts
         POSTGRES_PASSWORD: hmcts
-        ALLOWED_JURISDICTIONS: employment
-        ALLOWED_CASE_TYPES: et_englandwales,et_englandwales_listings,et_englandwales_multiple,et_scotland,et_scotland_listings,et_scotland_multiple,et_admin
+        ALLOWED_JURISDICTIONS: ia
+        ALLOWED_CASE_TYPES: asylum
         REPLICATION_USERNAME: hmcts
         REPLICATION_PASSWORD: hmcts
         POSTGRES_CONNECTION_OPTIONS: ""
@@ -959,6 +959,10 @@ servicebus:
       - name: ccd-case-events
         subscriptionNeeded: yes
         requiresSession: true
+      - name: crd-topic
+        subscriptionNeeded: yes
+      - name: jrd-topic
+        subscriptionNeeded: yes
 
 ccd-message-publisher:
   enabled: true
