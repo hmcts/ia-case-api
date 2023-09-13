@@ -79,14 +79,14 @@ public class EvidenceInPrivateCaseFlagsHandler
         }
 
         if (!inCameraCourt && hasActiveTargetCaseFlag(existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE)) {
-            existingCaseFlagDetails = deactivateCaseFlag(
+            existingCaseFlagDetails = deactivateCaseFlags(
                 existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE, currentDateTime);
             caseDataUpdated = true;
         }
 
         if (isInCameraCourtAllowed.equals(CASE_REFUSED)
             && hasActiveTargetCaseFlag(existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE)) {
-            existingCaseFlagDetails = deactivateCaseFlag(
+            existingCaseFlagDetails = deactivateCaseFlags(
                 existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE, currentDateTime);
             caseDataUpdated = true;
         }

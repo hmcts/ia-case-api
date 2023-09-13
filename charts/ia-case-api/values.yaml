@@ -28,6 +28,7 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     COMMON_DATA_API: http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    CASE_DOCUMENT_AM_URL: "http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   postgresql:    
     auth:
       username: ia_case_api
@@ -69,4 +70,10 @@ xui-webapp:
 ccd:
   enabled: false
 ia-aip-frontend:
+  enabled: false
+ccd-case-document-am-api:
+  enabled: false
+em-ccdorc:
+  enabled: false
+em-stitching:
   enabled: false

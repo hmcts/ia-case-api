@@ -1,14 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import lombok.*;
 
-@Value
-@Builder
-@Jacksonized
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class LegacyCaseFlag {
 

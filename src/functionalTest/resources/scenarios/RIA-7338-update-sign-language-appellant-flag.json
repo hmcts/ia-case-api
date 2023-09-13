@@ -5,7 +5,7 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "updateHearingAdjustments",
+      "eventId": "updateHearingRequirements",
       "state": "preHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
@@ -44,8 +44,8 @@
             "languageManualEntry": [],
             "languageManualEntryDescription": ""
           },
-          "isHearingRoomNeeded": "Yes",
-          "isHearingLoopNeeded": "Yes",
+          "isHearingRoomNeeded": "No",
+          "isHearingLoopNeeded": "No",
           "physicalOrMentalHealthIssues": "Yes",
           "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
           "pastExperiences": "Yes",
@@ -113,8 +113,8 @@
           "languageManualEntry": [],
           "languageManualEntryDescription": ""
         },
-        "isHearingRoomNeeded": "Yes",
-        "isHearingLoopNeeded": "Yes",
+        "isHearingRoomNeeded": "No",
+        "isHearingLoopNeeded": "No",
         "physicalOrMentalHealthIssues": "Yes",
         "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
         "pastExperiences": "Yes",
@@ -146,7 +146,7 @@
             {
               "id": "7338-ABC",
               "value": {
-                "name": "Sign Language",
+                "name": "Sign Language igbo",
                 "status": "Active",
                 "flagCode": "RA0042",
                 "hearingRelevant": "Yes"

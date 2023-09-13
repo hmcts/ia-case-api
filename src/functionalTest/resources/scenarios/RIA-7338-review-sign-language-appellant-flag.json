@@ -1,6 +1,6 @@
 {
   "description": "RIA-7338 review sign language for appellant with legal rep",
-  "enabled": "true",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -56,7 +56,6 @@
           "singleSexCourtType": "All female",
           "singleSexCourtTypeDescription": "Requirement for single sex court",
           "inCameraCourt": "No",
-          "isInCameraCourtAllowed": "Refused",
           "inCameraCourtDescription": "In camera court description",
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
@@ -124,8 +123,7 @@
         "singleSexCourt": "Yes",
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
-        "inCameraCourt": "Yes",
-        "isInCameraCourtAllowed": "Granted",
+        "inCameraCourt": "No",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",
@@ -146,9 +144,9 @@
             {
               "id": "7338-ABC",
               "value": {
-                "name": "Sign Language",
+                "name": "Sign Language igbo",
                 "status": "Active",
-                "flagCode": " RA0042"
+                "flagCode": "RA0042"
               }
             }
           ]

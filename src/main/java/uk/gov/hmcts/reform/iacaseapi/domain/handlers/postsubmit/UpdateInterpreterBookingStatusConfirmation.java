@@ -32,7 +32,7 @@ public class UpdateInterpreterBookingStatusConfirmation implements PostSubmitCal
         String hearingsTabUrl =
             "/case/IA/Asylum/"
                 + callback.getCaseDetails().getId()
-                + "#hearing";
+                + "#Hearing%20and%20appointment";
 
         postSubmitResponse.setConfirmationHeader("# Booking statuses have been updated");
         postSubmitResponse.setConfirmationBody(
