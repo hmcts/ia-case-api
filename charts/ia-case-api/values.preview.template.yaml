@@ -59,6 +59,7 @@ java:
       initdb:
         scripts:
           init.sql: |
+            ALTER ROLE hmcts WITH SUPERUSER;
             CREATE DATABASE "ia-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
