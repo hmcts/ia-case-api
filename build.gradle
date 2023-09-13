@@ -312,6 +312,17 @@ dependencyManagement {
 }
 
 dependencies {
+    modules {
+        module("org.codehaus.groovy:groovy") {
+            replacedBy("org.apache.groovy:groovy", "conflicts in current rest-assured version")
+        }
+        module("org.codehaus.groovy:groovy-xml") {
+            replacedBy("org.apache.groovy:groovy-xml", "conflicts in current rest-assured version")
+        }
+        module("org.codehaus.groovy:groovy-json") {
+            replacedBy("org.apache.groovy:groovy-json", "conflicts in current rest-assured version")
+        }
+    }
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
