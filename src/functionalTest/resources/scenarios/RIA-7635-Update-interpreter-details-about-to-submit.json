@@ -15,7 +15,6 @@
             {
               "id": "1",
               "value": {
-                "interpreterId": "testId",
                 "interpreterBookingRef": "ref",
                 "interpreterGivenNames": "john",
                 "interpreterFamilyName": "smith",
@@ -27,7 +26,6 @@
             {
               "id": "2",
               "value": {
-                "interpreterId": "testId2",
                 "interpreterBookingRef": "ref",
                 "interpreterGivenNames": "john",
                 "interpreterFamilyName": "smith",
@@ -52,7 +50,7 @@
           {
             "id": "1",
             "value": {
-              "interpreterId": "testId",
+              "interpreterId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "interpreterBookingRef": "ref",
               "interpreterGivenNames": "john",
               "interpreterFamilyName": "smith",
@@ -64,7 +62,7 @@
           {
             "id": "2",
             "value": {
-              "interpreterId": "testId2",
+              "interpreterId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "interpreterBookingRef": "ref",
               "interpreterGivenNames": "john",
               "interpreterFamilyName": "smith",
