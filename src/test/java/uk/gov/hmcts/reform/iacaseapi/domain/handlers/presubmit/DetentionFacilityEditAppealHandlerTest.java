@@ -39,7 +39,6 @@ public class DetentionFacilityEditAppealHandlerTest {
     @BeforeEach
     void setUp() {
         detentionFacilityEditAppealHandler = new DetentionFacilityEditAppealHandler();
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
@@ -47,7 +46,8 @@ public class DetentionFacilityEditAppealHandlerTest {
     }
 
     @Test
-    void should_remove_prison_details_if_now_irc() {
+    void should_remove_prison_details_if_now_irc_edit_appeal() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class))
             .thenReturn(Optional.of(DetentionFacility.IRC.getValue()));
         PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -60,7 +60,8 @@ public class DetentionFacilityEditAppealHandlerTest {
     }
 
     @Test
-    void should_remove_irc_details_if_now_prison() {
+    void should_remove_irc_details_if_now_prison_edit_appeal() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class))
             .thenReturn(Optional.of(DetentionFacility.PRISON.getValue()));
         PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -70,7 +71,8 @@ public class DetentionFacilityEditAppealHandlerTest {
     }
 
     @Test
-    void should_remove_irc_prison_details_if_now_other_facility() {
+    void should_remove_irc_prison_details_if_now_other_facility_edit_appeal() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class))
             .thenReturn(Optional.of(DetentionFacility.OTHER.getValue()));
         PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -86,6 +88,7 @@ public class DetentionFacilityEditAppealHandlerTest {
 
     @Test
     void should_remove_custodial_date_details_if_not_applicable() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class))
             .thenReturn(Optional.of(DetentionFacility.IRC.getValue()));
         when(asylumCase.read(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE, YesOrNo.class))
@@ -97,6 +100,7 @@ public class DetentionFacilityEditAppealHandlerTest {
 
     @Test
     void should_remove_removal_order_date_details_if_not_applicable() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL_AFTER_SUBMIT);
         when(asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class))
             .thenReturn(Optional.of(DetentionFacility.IRC.getValue()));
         when(asylumCase.read(AsylumCaseFieldDefinition.REMOVAL_ORDER_OPTIONS, YesOrNo.class))
@@ -108,6 +112,7 @@ public class DetentionFacilityEditAppealHandlerTest {
 
     @Test
     void handling_should_throw_if_detention_facility_not_available() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
         assertThatThrownBy(() -> detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Detention Facility missing")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
