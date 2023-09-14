@@ -313,7 +313,8 @@ class GenerateDocumentHandlerTest {
                         APPLY_FOR_FTPA_RESPONDENT,
                         TRANSFER_OUT_OF_ADA,
                         RESIDENT_JUDGE_FTPA_DECISION,
-                        APPLY_FOR_FTPA_APPELLANT
+                        APPLY_FOR_FTPA_APPELLANT,
+                        MAINTAIN_CASE_LINKS
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -422,7 +423,8 @@ class GenerateDocumentHandlerTest {
                         APPLY_FOR_FTPA_RESPONDENT,
                         TRANSFER_OUT_OF_ADA,
                         RESIDENT_JUDGE_FTPA_DECISION,
-                        APPLY_FOR_FTPA_APPELLANT
+                        APPLY_FOR_FTPA_APPELLANT,
+                        MAINTAIN_CASE_LINKS
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
