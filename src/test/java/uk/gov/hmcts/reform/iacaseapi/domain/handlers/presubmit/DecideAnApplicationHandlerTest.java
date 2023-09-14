@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -114,6 +116,7 @@ class DecideAnApplicationHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(DECIDE_AN_APPLICATION_ID, "1");
+        verify(asylumCase, times(1)).write(MAKE_AN_APPLICATIONS, asylumCase.read(MAKE_AN_APPLICATIONS));
         verify(asylumCase, times(1)).write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.NO);
 
         if (waR2FeatureFlag) {
@@ -217,5 +220,15 @@ class DecideAnApplicationHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void setDecisionInfoTest() {
+        MakeAnApplication makeAnApplication = new MakeAnApplication();
+        decideAnApplicationHandler.setDecisionInfo(makeAnApplication, "a decision", "a reason", "a date", "a maker role");
+        assertThat(makeAnApplication.getDecision()).isEqualTo("a decision");
+        assertThat(makeAnApplication.getDecisionReason()).isEqualTo("a reason");
+        assertThat(makeAnApplication.getDecisionDate()).isEqualTo("a date");
+        assertThat(makeAnApplication.getDecisionMaker()).isEqualTo("a maker role");
     }
 }
