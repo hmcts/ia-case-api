@@ -1,8 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -12,14 +34,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 @Component
 public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -66,24 +80,24 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
 
         boolean caseDataUpdated = false;
 
-        Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+        Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails);
 
         if (isInterpreterServicesNeeded) {
             if (appellantSpokenLanguage.isPresent()) {
                 String chosenLanguage = getChosenSpokenLanguage(appellantSpokenLanguage.get());
-                if (!activeFlag.isPresent()) {
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, chosenLanguage);
+                if (activeFlag.isEmpty()) {
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, chosenLanguage);
                     caseDataUpdated = true;
                 } else if (asylumCaseBefore.isPresent() &&
                         selectedLanguageDiffers(appellantSpokenLanguage.get(), asylumCaseBefore.get().getCaseData())) {
-                    existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG, chosenLanguage);
+                    existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, chosenLanguage);
                     caseDataUpdated = true;
                 }
             }
         } else {
             if (activeFlag.isPresent()) {
-                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, INTERPRETER_LANGUAGE_FLAG);
+                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails);
                 caseDataUpdated = true;
             }
         }
@@ -111,19 +125,18 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
         Optional<InterpreterLanguageRefData> appellantSpokenLanguageBefore = asylumCaseBefore
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
 
-        return !appellantSpokenLanguage.equals(appellantSpokenLanguageBefore.get());
+        return !Objects.equals(appellantSpokenLanguage, appellantSpokenLanguageBefore.orElse(null));
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
-            StrategicCaseFlagType caseFlagType,
             String language
     ) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
-                .flagCode(caseFlagType.getFlagCode())
-                .name(caseFlagType.getName().concat(" " + language))
+                .flagCode(StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+                .name(StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG.getName().concat(" " + language))
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
@@ -138,12 +151,11 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
     }
 
     private List<CaseFlagDetail> deactivateCaseFlag(
-            List<CaseFlagDetail> caseFlagDetails,
-            StrategicCaseFlagType caseFlagType) {
-        if (hasActiveTargetCaseFlag(caseFlagDetails, caseFlagType)) {
+            List<CaseFlagDetail> caseFlagDetails) {
+        if (hasActiveTargetCaseFlag(caseFlagDetails)) {
             caseFlagDetails = caseFlagDetails.stream().map(detail -> {
                 CaseFlagValue value = detail.getCaseFlagValue();
-                if (isActiveTargetCaseFlag(value, caseFlagType)) {
+                if (isActiveTargetCaseFlag(value, StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG)) {
                     return new CaseFlagDetail(detail.getId(), CaseFlagValue.builder()
                             .flagCode(value.getFlagCode())
                             .name(value.getName())
@@ -160,16 +172,20 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
         return caseFlagDetails;
     }
 
-    private boolean hasActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
+    private boolean hasActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails) {
         return caseFlagDetails
                 .stream()
-                .anyMatch(flagDetail -> isActiveTargetCaseFlag(flagDetail.getCaseFlagValue(), caseFlagType));
+                .anyMatch(flagDetail ->
+                    isActiveTargetCaseFlag(
+                        flagDetail.getCaseFlagValue(), StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG));
     }
 
-    private Optional<CaseFlagDetail> getActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
+    private Optional<CaseFlagDetail> getActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails) {
         return caseFlagDetails
                 .stream()
-                .filter(caseFlagDetail -> isActiveTargetCaseFlag(caseFlagDetail.getCaseFlagValue(), caseFlagType))
+                .filter(caseFlagDetail ->
+                    isActiveTargetCaseFlag(
+                        caseFlagDetail.getCaseFlagValue(), StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG))
                 .findFirst();
     }
 
