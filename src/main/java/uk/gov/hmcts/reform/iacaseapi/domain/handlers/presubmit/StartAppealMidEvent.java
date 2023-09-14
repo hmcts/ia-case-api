@@ -107,7 +107,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
-        if (callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID) && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)) {
+        if (callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID) && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT || callback.getEvent() == Event.START_APPEAL)) {
             boolean suitabilityHearingType = asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
 
             if (suitabilityHearingType) {
