@@ -195,9 +195,7 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
     classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
-task contract(type: Test) {
-    description = "Runs the consumer Pact tests"
-    group = 'Verification'
+task contract(type: Test, description: 'Runs the consumer Pact tests', group: 'Verification') {
     useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
