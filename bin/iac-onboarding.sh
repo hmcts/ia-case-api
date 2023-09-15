@@ -1,4 +1,8 @@
 #!/bin/bash
+# Error handling - exit on any error
+   set -e
+# update ubuntu before installing apps
+sudo apt update
 #shell script for configuring and running docker using wsl2
 # Check if AzureCLI is installed
 if [ -x "$(command -v az)" ]; then
