@@ -85,7 +85,6 @@ public class ProfessionalOrganisationConsumerTest {
             .path("/refdata/external/v1/organisations")
             .willRespondWith()
             .body(buildOrganisationResponseDsl())
-            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(HttpStatus.SC_OK)
             .toPact();
     }
