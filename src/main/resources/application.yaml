@@ -106,6 +106,7 @@ security:
       - "removeBailLegalRepresentative"
       - "createBailCaseLink"
       - "maintainBailCaseLinks"
+      - "createFlag"
     caseworker-ia-homeofficebail:
       - "startApplication"
       - "uploadBailSummary"
@@ -127,6 +128,7 @@ security:
       - "viewPreviousApplications"
       - "createBailCaseLink"
       - "maintainBailCaseLinks"
+      - "createFlag"
 
 
 ### dependency configuration

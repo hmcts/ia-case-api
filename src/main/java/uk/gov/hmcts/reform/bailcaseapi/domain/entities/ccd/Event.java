@@ -30,6 +30,7 @@ public enum Event {
     CLEAR_LEGAL_REPRESENTATIVE_DETAILS("clearLegalRepresentativeDetails"),
     CREATE_BAIL_CASE_LINK("createBailCaseLink"),
     MAINTAIN_BAIL_CASE_LINKS("maintainBailCaseLinks"),
+    CREATE_FLAG("createFlag"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
