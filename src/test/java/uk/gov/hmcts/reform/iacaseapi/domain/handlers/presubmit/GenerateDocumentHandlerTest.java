@@ -316,7 +316,8 @@ class GenerateDocumentHandlerTest {
                         APPLY_FOR_FTPA_APPELLANT,
                         MAINTAIN_CASE_LINKS,
                         UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                        UPLOAD_ADDITIONAL_EVIDENCE
+                        UPLOAD_ADDITIONAL_EVIDENCE,
+                        CHANGE_HEARING_CENTRE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -428,7 +429,8 @@ class GenerateDocumentHandlerTest {
                         APPLY_FOR_FTPA_APPELLANT,
                         MAINTAIN_CASE_LINKS,
                         UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                        UPLOAD_ADDITIONAL_EVIDENCE
+                        UPLOAD_ADDITIONAL_EVIDENCE,
+                        CHANGE_HEARING_CENTRE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
