@@ -55,9 +55,11 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
+        Event event = callback.getEvent();
+
         YesOrNo appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
 
-        if (appellantInDetention.equals(YES)) {
+        if (appellantInDetention.equals(YES) && (event.equals(EDIT_APPEAL) || event.equals(UPDATE_DETENTION_LOCATION))) {
             String facility = asylumCase.read(DETENTION_FACILITY, String.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("Detention Facility missing"));
 
@@ -93,6 +95,9 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
                 log.info("Clearing Custodial Sentence date");
                 asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
             }
+        }
+
+        if (appellantInDetention.equals(YES)) {
 
             if (asylumCase.read(REMOVAL_ORDER_OPTIONS, YesOrNo.class).orElse(NO).equals(NO)) {
                 log.info("Clearing Removal Order date");
