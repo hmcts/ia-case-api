@@ -87,6 +87,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     })
     void should_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
         when(asylumCase.read(WITNESS_2)).thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
@@ -107,6 +108,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     })
     void should_not_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
 
@@ -215,6 +217,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
         when(asylumCase.read(WITNESS_2)).thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
@@ -250,7 +253,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-//        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
+        when(asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
         when(asylumCase.read(WITNESS_2)).thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)).thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));

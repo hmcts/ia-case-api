@@ -136,13 +136,14 @@ public class SpokenLanguageForWitnessCaseFlagsHandler implements PreSubmitCallba
                     }
                 }
             } else {
-                deactivateAnyActiveCaseFlags(existingCaseFlags);
+                boolean caseFlagsUpdated = deactivateAnyActiveCaseFlags(existingCaseFlags);
+                if (caseFlagsUpdated)
                 asylumCase.write(WITNESS_LEVEL_FLAGS, existingCaseFlags);
             }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void deactivateAnyActiveCaseFlags(Optional<List<PartyFlagIdValue>> existingCaseFlags) {
+    private boolean deactivateAnyActiveCaseFlags(Optional<List<PartyFlagIdValue>> existingCaseFlags) {
         if (existingCaseFlags.isPresent()) {
             for (int i = 0; i < existingCaseFlags.get().size(); i++){
                 PartyFlagIdValue partyFlag = existingCaseFlags.get().get(i);
@@ -152,9 +153,11 @@ public class SpokenLanguageForWitnessCaseFlagsHandler implements PreSubmitCallba
                     StrategicCaseFlag caseFlag = new StrategicCaseFlag(
                             partyFlag.getValue().getPartyName(), StrategicCaseFlag.ROLE_ON_CASE_WITNESS, flags);
                    existingCaseFlags.get().set(i, new PartyFlagIdValue(partyFlag.getPartyId(), caseFlag));
+                   return true;
                 }
             }
         }
+        return false;
     }
 
     private Map<WitnessDetails, Optional<InterpreterLanguageRefData>> mapWitness(List<IdValue<WitnessDetails>> witnessDetails, AsylumCase asylumCase) {
@@ -217,6 +220,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandler implements PreSubmitCallba
                             .name(value.getName())
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
+                            .dateTimeCreated(value.getDateTimeCreated())
                             .hearingRelevant(value.getHearingRelevant())
                             .build());
                 } else {
