@@ -58,8 +58,6 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
         Optional<InterpreterLanguageRefData> appellantSignLanguage = asylumCase
                 .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class);
 
-        boolean isSignServicesNeeded = appellantSignLanguage.isPresent();
-
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
 
@@ -67,7 +65,7 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
 
         Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, SIGN_LANGUAGE);
 
-        if (isSignServicesNeeded) {
+        if (isSignServicesNeeded(appellantSignLanguage)) {
             String chosenLanguage = getChosenSignLanguage(appellantSignLanguage.get());
             if (appellantSignLanguage.isPresent()) {
                 if (!activeFlag.isPresent()) {
@@ -97,6 +95,13 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
                     appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isSignServicesNeeded(Optional<InterpreterLanguageRefData> refData) {
+        if (refData.isPresent() && (refData.get().getLanguageRefData() != null || refData.get().getLanguageManualEntryDescription() != null)) {
+            return true;
+        }
+        return false;
     }
 
     private String getChosenSignLanguage(InterpreterLanguageRefData appellantSpokenLanguage) {
@@ -148,6 +153,7 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
                             .name(value.getName())
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
+                            .dateTimeCreated(value.getDateTimeCreated())
                             .hearingRelevant(value.getHearingRelevant())
                             .build());
                 } else {
