@@ -20,3 +20,4 @@ public class CaseFlagDetail {
     @JsonProperty("value")
     private CaseFlagValue caseFlagValue;
 }
+

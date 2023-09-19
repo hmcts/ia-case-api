@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
 import java.util.List;
 
 @Getter
