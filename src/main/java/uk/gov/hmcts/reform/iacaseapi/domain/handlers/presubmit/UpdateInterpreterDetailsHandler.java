@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterDetails;
@@ -40,10 +41,14 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<List<IdValue<InterpreterDetails>>> optionalInterpreterDetailsList = asylumCase.read(INTERPRETER_DETAILS);
+        Optional<List<IdValue<InterpreterDetails>>> optionalInterpreterDetailsList = asylumCase
+            .read(INTERPRETER_DETAILS);
 
-        if (optionalInterpreterDetailsList.isPresent()) {
-            asylumCase.write(INTERPRETER_DETAILS, generateInterpreterDetailsWithId(optionalInterpreterDetailsList));
+        List<IdValue<InterpreterDetails>> interpreterDetailsList =
+            generateInterpreterDetailsWithId(optionalInterpreterDetailsList);
+
+        if (!interpreterDetailsList.isEmpty()) {
+            asylumCase.write(INTERPRETER_DETAILS, interpreterDetailsList);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -51,12 +56,13 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
 
     private static List<IdValue<InterpreterDetails>> generateInterpreterDetailsWithId(
         Optional<List<IdValue<InterpreterDetails>>> interpreterDetailsList) {
-        interpreterDetailsList.get().stream().map(IdValue::getValue).forEach(details -> {
-            if (details.getInterpreterId() == null) {
-                details.setInterpreterId(UUID.randomUUID().toString());
-            }
-        });
-
-        return interpreterDetailsList.get();
+        return interpreterDetailsList.map(detailsList ->
+            detailsList.stream()
+                .map(idValue -> {
+                    InterpreterDetails details = idValue.getValue();
+                    details.setInterpreterId(UUID.randomUUID().toString());
+                    return new IdValue<>(idValue.getId(), details);
+                }).toList())
+            .orElse(Collections.emptyList());
     }
 }

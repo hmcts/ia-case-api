@@ -35,4 +35,8 @@ public class InterpreterLanguageRefData {
         return Objects.equals(languageManualEntryDescription, refData.languageManualEntryDescription);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(languageRefData, languageManualEntry, languageManualEntryDescription);
+    }
 }

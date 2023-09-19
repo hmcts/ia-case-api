@@ -84,9 +84,12 @@ class UpdateInterpreterBookingStatusPreparerTest {
         List<String> languageCategories = Arrays.asList("spokenLanguageInterpreter", "signLanguageInterpreter");
 
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(languageCategories));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(appellantSpokenRefData));
-        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(appellantSignRefData));
-        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("Test Appellant"));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(appellantSpokenRefData));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(appellantSignRefData));
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of("Test Appellant"));
 
         updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
 
@@ -108,7 +111,8 @@ class UpdateInterpreterBookingStatusPreparerTest {
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(appellantRefData));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS)).thenReturn(Optional.of(REQUESTED));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS)).thenReturn(Optional.of(BOOKED));
-        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("Test Appellant"));
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of("Test Appellant"));
 
         updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
 
@@ -141,11 +145,13 @@ class UpdateInterpreterBookingStatusPreparerTest {
             "test manual language");
 
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(
-            language -> when(asylumCase.read(language)).thenReturn(Optional.of(witnessSpokenRefData))
+            language -> when(asylumCase.read(language, InterpreterLanguageRefData.class))
+                .thenReturn(Optional.of(witnessSpokenRefData))
         );
 
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(
-            language -> when(asylumCase.read(language)).thenReturn(Optional.of(witnessSignRefData))
+            language -> when(asylumCase.read(language, InterpreterLanguageRefData.class))
+                .thenReturn(Optional.of(witnessSignRefData))
         );
 
         List<IdValue<WitnessDetails>> witnessDetailsList = getWitnessDetailsList();
@@ -189,11 +195,13 @@ class UpdateInterpreterBookingStatusPreparerTest {
             null);
 
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(
-            language -> when(asylumCase.read(language)).thenReturn(Optional.of(witnessRefData))
+            language -> when(asylumCase.read(language, InterpreterLanguageRefData.class))
+                .thenReturn(Optional.of(witnessRefData))
         );
 
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(
-            language -> when(asylumCase.read(language)).thenReturn(Optional.of(witnessRefData))
+            language -> when(asylumCase.read(language, InterpreterLanguageRefData.class))
+                .thenReturn(Optional.of(witnessRefData))
         );
 
         WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUSES.forEach(
