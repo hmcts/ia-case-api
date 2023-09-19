@@ -10,8 +10,8 @@ java:
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
-    #IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
+    IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
+    IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
@@ -61,6 +61,7 @@ java:
             CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       username: hmcts
       password: hmcts
@@ -467,8 +468,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    #image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
+    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     memoryRequests: 256Mi
@@ -786,6 +787,14 @@ em-stitching:
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
+      SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
+      SPRING_DATASOURCE_USERNAME: hmcts
+      SPRING_DATASOURCE_PASSWORD: hmcts
+      SPRING_DATASOURCE_NAME: emstitch
+      SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+      ENABLE_DB_MIGRATE: true
+      RUN_DB_MIGRATION_ON_STARTUP: true
+      FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal

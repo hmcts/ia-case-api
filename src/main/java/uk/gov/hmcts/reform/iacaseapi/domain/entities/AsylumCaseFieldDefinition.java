@@ -1977,6 +1977,7 @@ public enum AsylumCaseFieldDefinition {
     // the case flag id for the purpose of functional test
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){});
 
+
     private final String value;
     private final TypeReference typeReference;
 
