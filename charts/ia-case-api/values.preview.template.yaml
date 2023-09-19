@@ -61,6 +61,7 @@ java:
             CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "hmc_cft_hearing_service" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       username: hmcts
       password: hmcts
@@ -831,5 +832,100 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
 
+hmc-cft-hearing-service:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-cft-hearing-service
+    image: hmctspublic.azurecr.io/hmc/cft-hearing-service:latest
+    ingressHost: cft-hearing-service-${SERVICE_FQDN}
+    environment:
+      CFT_HEARING_SERVICE_DB_USERNAME: hmcts
+      CFT_HEARING_SERVICE_DB_PASSWORD: hmcts
+      CFT_HEARING_SERVICE_DB_HOST: ccd-shared-database-v11
+      CFT_HEARING_SERVICE_DB_PORT: 5432
+      CFT_HEARING_SERVICE_DB_NAME: hmc_cft_hearing_service
+      CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api:4452
+      SERVER_PORT: 4561
+      REFORM_SERVICE_NAME: hmc-cft-hearing-service
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      IDAM_OIDC_URL: "${IDAM_STUB_SERVICE_NAME:-http://sidam-simulator:5000}"
+      IDAM_API_URL: "${IDAM_STUB_SERVICE_NAME:-http://sidam-simulator:5000}"
+      S2S_URL: http://service-auth-provider-api:8080
+      CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: "xui_webapp,hmc_hmi_inbound_adapter,iac"
+      HMC_ACCESS_CONTROL_ENABLED: "${HMC_ACCESS_CONTROL_ENABLED}"
+      ROLE_ASSIGNMENT_URL: http://am-role-assignment-service:4096
+      #inbound queue
+      HMC_QUEUE_CONNECTION_STRING: "${HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING}"
+      HMC_SERVICE_BUS_QUEUE: "${HMC_SERVICE_BUS_INBOUND_QUEUE}"
+      #outbound queue
+      HMC_OUTBOUND_QUEUE_CONNECTION_STRING: "${HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING}"
+      HMC_OUTBOUND_SERVICE_BUS_QUEUE: "${HMC_SERVICE_BUS_OUTBOUND_QUEUE}"
+      #topic connection
+      HMC_SERVICE_BUS_CONNECTION_STRING: "${HMC_SERVICE_BUS_CONNECTION_STRING}"
+      HMC_SERVICE_BUS_TOPIC: "${HMC_SERVICE_BUS_TOPIC}"
+      HMC_SERVICE_BUS_SUBSCRIPTION: "${HMC_SERVICE_BUS_SUBSCRIPTION}"
+      #HMI/LA connection details
+      FH_BASE_URL: "${FH_BASE_URL}"
+      FH_GET_TOKEN_URL: "oauth2/v2.0/token"
+      CLIENT_ID: "${CLIENT_ID}"
+      CLIENT_SECRET: "${CLIENT_SECRET}"
+      SCOPE: "${SCOPE}"
+      GRANT_TYPE: "client_credentials"
+      HMI_BASE_URL: "${HMI_BASE_URL}"
+      HMI_SOURCE_SYSTEM: "CFT"
+      HMI_DESTINATION_SYSTEM: "MOCK"
+    ports:
+      - 4561:4561
+    depends_on:
+      ccd-shared-database-v11:
+        condition: service_started
 
+hmc-hmi-outbound-adapter:
+  image: "${HMC_HMI_OUTBOUND_ADAPTER_USE_LOCAL-hmctspublic.azurecr.io/}hmc/hmi-outbound-adapter:${HMC_HMI_OUTBOUND_ADAPTER_TAG:-latest}"
+  container_name: hmi-outbound-adapter
+  environment:
+    SERVER_PORT: 4558
+    REFORM_SERVICE_NAME: hmc-hmi-outbound-adapter
+    REFORM_ENVIRONMENT: local
+    APPINSIGHTS_INSTRUMENTATIONKEY: key
+    WIREMOCK_URL: "${WIREMOCK_STUB_SERVICE_NAME:-http://wiremock:8991}"
+    HMC_SERVICE_BUS_OUTBOUND_QUEUE: "${HMC_SERVICE_BUS_OUTBOUND_QUEUE}"
+    HMC_SERVICE_BUS_INBOUND_QUEUE: "${HMC_SERVICE_BUS_INBOUND_QUEUE}"
+    HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING: "${HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING}"
+    HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING: "${HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING}"
+    #HMI/LA connection details
+    FH_BASE_URL: "${FH_BASE_URL}"
+    FH_GET_TOKEN_URL: "oauth2/v2.0/token"
+    CLIENT_ID: "${CLIENT_ID}"
+    CLIENT_SECRET: "${CLIENT_SECRET}"
+    SCOPE: "${SCOPE}"
+    GRANT_TYPE: "client_credentials"
+    HMI_BASE_URL: "${HMI_BASE_URL}"
+    HMI_SOURCE_SYSTEM: "CFT"
+    HMI_DESTINATION_SYSTEM: "MOCK"
+  ports:
+    - 4558:4558
+  depends_on:
+    - wiremock
+
+
+hmc-hmi-inbound-adapter:
+  image: "${HMC_HMI_INBOUND_ADAPTER_USE_LOCAL-hmctspublic.azurecr.io/}hmc/hmi-inbound-adapter:${HMC_HMI_INBOUND_ADAPTER_TAG:-latest}"
+  container_name: hmi-inbound-adapter
+  environment:
+    SERVER_PORT: 4559
+    REFORM_SERVICE_NAME: hmc-hmi-inbound-adapter
+    REFORM_ENVIRONMENT: local
+    APPINSIGHTS_INSTRUMENTATIONKEY: key
+    CFT_HEARING_SERVICE_URL: "${CFT_HEARING_SERVICE_URL:-http://hmc-cft-hearing-service:4561}"
+    HMC_SERVICE_BUS_QUEUE: "${HMC_SERVICE_BUS_INBOUND_QUEUE}"
+    HMC_SERVICE_BUS_CONNECTION_STRING: "${HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING}"
+    IDAM_API_URL: "${IDAM_STUB_SERVICE_NAME:-http://sidam-simulator:5000}"
+    S2S_URL: http://service-auth-provider-api:8080
+  ports:
+    - 4559:4559
+  depends_on:
+    - wiremock
 
