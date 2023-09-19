@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
@@ -78,6 +75,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingSt
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -152,9 +153,11 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
      * event which caused by COMPLEX type fields being set as READONLY.
      */
     private boolean isInterpreterPresent(AsylumCaseFieldDefinition language) {
-        return asylumCase.read(language).isPresent()
-            && (((InterpreterLanguageRefData) asylumCase.read(language).get()).getLanguageRefData() != null
-            || ((InterpreterLanguageRefData) asylumCase.read(language).get()).getLanguageManualEntryDescription() != null);
+        return asylumCase
+            .read(language, InterpreterLanguageRefData.class)
+            .filter(refData ->
+                refData.getLanguageRefData() != null || refData.getLanguageManualEntryDescription() != null)
+            .isPresent();
     }
 
     private void populateOrClearAppellantSignAndSpokenInterpreterBookingFields() {
@@ -188,7 +191,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
                                                          AsylumCaseFieldDefinition booking,
                                                          AsylumCaseFieldDefinition bookingStatus) {
         String bookingDetails = formatBookingDetails(
-            (String) asylumCase.read(APPELLANT_NAME_FOR_DISPLAY).get(),
+            asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElse(""),
             APPELLANT,
             getLanguage(language));
 
@@ -508,14 +511,13 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     }
 
     private String getLanguage(AsylumCaseFieldDefinition fieldDefinition) {
-        Optional<InterpreterLanguageRefData> languageRefData = asylumCase.read(
-            fieldDefinition);
-
-        String language = isEmpty(languageRefData.get().getLanguageManualEntryDescription()) ?
-            languageRefData.get().getLanguageRefData().getValue().getLabel() :
-            languageRefData.get().getLanguageManualEntryDescription();
-
-        return language;
+        return asylumCase
+            .read(fieldDefinition, InterpreterLanguageRefData.class)
+            .map(languageRefData ->
+                isEmpty(languageRefData.getLanguageManualEntryDescription())
+                    ? languageRefData.getLanguageRefData().getValue().getLabel()
+                    : languageRefData.getLanguageManualEntryDescription())
+            .orElse("");
     }
 
     private String formatBookingDetails(String name, String party, String language) {
@@ -528,7 +530,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     }
 
     private void setBookingStatus(AsylumCaseFieldDefinition bookingStatus) {
-        if (!asylumCase.read(bookingStatus).isPresent()) {
+        if (asylumCase.read(bookingStatus).isEmpty()) {
             asylumCase.write(bookingStatus, NOT_REQUESTED);
         }
     }
