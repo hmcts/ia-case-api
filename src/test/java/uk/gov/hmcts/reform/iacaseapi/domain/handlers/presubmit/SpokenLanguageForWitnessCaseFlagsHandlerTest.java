@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.HEARING_LOOP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
@@ -50,11 +49,6 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     private DateProvider systemDateProvider;
     @Mock
     private List<IdValue<WitnessDetails>> witnessDetails;
-    @Mock
-    private WitnessDetails witnessDetails1;
-    @Mock
-    private WitnessDetails witnessDetails2;
-
     private SpokenLanguageForWitnessCaseFlagsHandler handler;
 
     @BeforeEach
@@ -82,8 +76,8 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -103,8 +97,8 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -153,13 +147,15 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), any());
     }
 
-    boolean hasInactiveFlag(List<PartyFlagIdValue> partyFlagList){
+    boolean hasInactiveFlag(List<PartyFlagIdValue> partyFlagList) {
         boolean isInactive = false;
-        for (PartyFlagIdValue idValue : partyFlagList){
+        for (PartyFlagIdValue idValue : partyFlagList) {
             isInactive = idValue.getValue().getDetails()
                     .stream()
                     .anyMatch(caseFlag -> caseFlag.getCaseFlagValue().getStatus().equals("Inactive"));
-            if (isInactive) break;
+            if (isInactive) {
+                break;
+            }
         }
         return isInactive;
     }
@@ -212,8 +208,8 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -248,8 +244,8 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_REQUIREMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
