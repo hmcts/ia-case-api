@@ -79,6 +79,7 @@ class AppellantCaseFlagsHandler  {
                 .status("Inactive")
                 .hearingRelevant(value.getHearingRelevant())
                 .dateTimeModified(dateTimeModified)
+                .dateTimeCreated(value.getDateTimeCreated())
                 .build())
             : detail;
     }

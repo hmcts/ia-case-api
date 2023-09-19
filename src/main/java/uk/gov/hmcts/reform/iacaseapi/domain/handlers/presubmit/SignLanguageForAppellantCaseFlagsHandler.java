@@ -1,30 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -34,6 +12,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
 
 @Component
 public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -72,29 +58,29 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
         Optional<InterpreterLanguageRefData> appellantSignLanguage = asylumCase
                 .read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class);
 
-        boolean isSignServicesNeeded = appellantSignLanguage.isPresent();
-
         List<CaseFlagDetail> existingCaseFlagDetails = existingCaseflags
                 .map(StrategicCaseFlag::getDetails).orElse(Collections.emptyList());
 
         boolean caseDataUpdated = false;
 
-        Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails);
+        Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingCaseFlagDetails, SIGN_LANGUAGE);
 
-        if (isSignServicesNeeded) {
+        if (isSignServicesNeeded(appellantSignLanguage)) {
             String chosenLanguage = getChosenSignLanguage(appellantSignLanguage.get());
-            if (activeFlag.isEmpty()) {
-                existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, chosenLanguage);
-                caseDataUpdated = true;
-            } else if (asylumCaseBefore.isPresent() &&
-                selectedLanguageDiffers(appellantSignLanguage.get(), asylumCaseBefore.get().getCaseData())) {
-                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails);
-                existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, chosenLanguage);
-                caseDataUpdated = true;
+            if (appellantSignLanguage.isPresent()) {
+                if (!activeFlag.isPresent()) {
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, SIGN_LANGUAGE, chosenLanguage);
+                    caseDataUpdated = true;
+                } else if (asylumCaseBefore.isPresent() &&
+                        selectedLanguageDiffers(appellantSignLanguage.get(), asylumCaseBefore.get().getCaseData())) {
+                    existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, SIGN_LANGUAGE);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, SIGN_LANGUAGE, chosenLanguage);
+                    caseDataUpdated = true;
+                }
             }
         } else {
             if (activeFlag.isPresent()) {
-                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails);
+                existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails, SIGN_LANGUAGE);
                 caseDataUpdated = true;
             }
         }
@@ -111,29 +97,37 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private String getChosenSignLanguage(InterpreterLanguageRefData appellantSignLanguage) {
-        if (appellantSignLanguage.getLanguageManualEntry() == null || appellantSignLanguage.getLanguageManualEntry().isEmpty()) {
-            return appellantSignLanguage.getLanguageRefData().getValue().getLabel();
+    private boolean isSignServicesNeeded(Optional<InterpreterLanguageRefData> refData) {
+        if (refData.isPresent() && (refData.get().getLanguageRefData() != null || refData.get().getLanguageManualEntryDescription() != null)) {
+            return true;
         }
-        return appellantSignLanguage.getLanguageManualEntryDescription();
+        return false;
     }
 
-    private boolean selectedLanguageDiffers(InterpreterLanguageRefData appellantSignLanguage, AsylumCase asylumCaseBefore) {
+    private String getChosenSignLanguage(InterpreterLanguageRefData appellantSpokenLanguage) {
+        if (appellantSpokenLanguage.getLanguageManualEntry() == null || appellantSpokenLanguage.getLanguageManualEntry().isEmpty()) {
+            return appellantSpokenLanguage.getLanguageRefData().getValue().getLabel();
+        }
+        return appellantSpokenLanguage.getLanguageManualEntryDescription();
+    }
+
+    private boolean selectedLanguageDiffers(InterpreterLanguageRefData appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
         Optional<InterpreterLanguageRefData> appellantSpokenLanguageBefore = asylumCaseBefore
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
 
-        return !Objects.equals(appellantSignLanguage, appellantSpokenLanguageBefore.orElse(null));
+        return !appellantSpokenLanguage.equals(appellantSpokenLanguageBefore.get());
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
+            StrategicCaseFlagType caseFlagType,
             String chosenLanguage
     ) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
-                .flagCode(StrategicCaseFlagType.SIGN_LANGUAGE.getFlagCode())
-                .name(StrategicCaseFlagType.SIGN_LANGUAGE.getName().concat(" " + chosenLanguage))
+                .flagCode(caseFlagType.getFlagCode())
+                .name(caseFlagType.getName().concat(" " + chosenLanguage))
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
@@ -148,16 +142,18 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
     }
 
     private List<CaseFlagDetail> deactivateCaseFlag(
-            List<CaseFlagDetail> caseFlagDetails) {
-        if (hasActiveTargetCaseFlag(caseFlagDetails)) {
+            List<CaseFlagDetail> caseFlagDetails,
+            StrategicCaseFlagType caseFlagType) {
+        if (hasActiveTargetCaseFlag(caseFlagDetails, caseFlagType)) {
             caseFlagDetails = caseFlagDetails.stream().map(detail -> {
                 CaseFlagValue value = detail.getCaseFlagValue();
-                if (isActiveTargetCaseFlag(value)) {
+                if (isActiveTargetCaseFlag(value, caseFlagType)) {
                     return new CaseFlagDetail(detail.getId(), CaseFlagValue.builder()
                             .flagCode(value.getFlagCode())
                             .name(value.getName())
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
+                            .dateTimeCreated(value.getDateTimeCreated())
                             .hearingRelevant(value.getHearingRelevant())
                             .build());
                 } else {
@@ -169,23 +165,21 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
         return caseFlagDetails;
     }
 
-    private boolean hasActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails) {
+    private boolean hasActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
         return caseFlagDetails
                 .stream()
-                .anyMatch(flagDetail ->
-                    isActiveTargetCaseFlag(flagDetail.getCaseFlagValue()));
+                .anyMatch(flagDetail -> isActiveTargetCaseFlag(flagDetail.getCaseFlagValue(), caseFlagType));
     }
 
-    private Optional<CaseFlagDetail> getActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails) {
+    private Optional<CaseFlagDetail> getActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
         return caseFlagDetails
                 .stream()
-                .filter(caseFlagDetail ->
-                    isActiveTargetCaseFlag(caseFlagDetail.getCaseFlagValue()))
+                .filter(caseFlagDetail -> isActiveTargetCaseFlag(caseFlagDetail.getCaseFlagValue(), caseFlagType))
                 .findFirst();
     }
 
-    private boolean isActiveTargetCaseFlag(CaseFlagValue value) {
-        return Objects.equals(value.getFlagCode(), StrategicCaseFlagType.SIGN_LANGUAGE.getFlagCode())
+    private boolean isActiveTargetCaseFlag(CaseFlagValue value, StrategicCaseFlagType targetCaseFlagType) {
+        return Objects.equals(value.getFlagCode(), targetCaseFlagType.getFlagCode())
                 && Objects.equals(value.getStatus(), "Active");
     }
 

@@ -161,6 +161,7 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
                             .name(value.getName())
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
+                            .dateTimeCreated(value.getDateTimeCreated())
                             .hearingRelevant(value.getHearingRelevant())
                             .build());
                 } else {
