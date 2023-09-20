@@ -956,7 +956,7 @@ servicebus:
   enabled: true
   releaseNameOverride: ${SERVICE_NAME}
   resourceGroup: ia-aso-preview-rg
-  sbNamespace: ia-sb-preview
+  sbNamespace: ia-servicebus-preview
   setup:
     topics:
       - name: ccd-case-events
