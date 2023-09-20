@@ -122,7 +122,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.APPLY_FOR_FTPA_APPELLANT,
             Event.MAINTAIN_CASE_LINKS,
             Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-            Event.UPLOAD_ADDITIONAL_EVIDENCE
+            Event.UPLOAD_ADDITIONAL_EVIDENCE,
+            Event.CREATE_CASE_LINK
         );
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.SUBMIT_CASE);
