@@ -317,7 +317,8 @@ class GenerateDocumentHandlerTest {
                         MAINTAIN_CASE_LINKS,
                         UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
                         UPLOAD_ADDITIONAL_EVIDENCE,
-                        CREATE_CASE_LINK
+                        CREATE_CASE_LINK,
+                        REQUEST_RESPONSE_AMEND
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -430,7 +431,8 @@ class GenerateDocumentHandlerTest {
                         MAINTAIN_CASE_LINKS,
                         UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
                         UPLOAD_ADDITIONAL_EVIDENCE,
-                        CREATE_CASE_LINK
+                        CREATE_CASE_LINK,
+                        REQUEST_RESPONSE_AMEND
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
