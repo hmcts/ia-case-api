@@ -114,8 +114,10 @@ public class SignLanguageForAppellantCaseFlagsHandler implements PreSubmitCallba
     private boolean selectedLanguageDiffers(InterpreterLanguageRefData appellantSpokenLanguage, AsylumCase asylumCaseBefore) {
         Optional<InterpreterLanguageRefData> appellantSpokenLanguageBefore = asylumCaseBefore
                 .read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class);
-
-        return !appellantSpokenLanguage.equals(appellantSpokenLanguageBefore.get());
+        if (appellantSpokenLanguageBefore.isPresent()) {
+            return !appellantSpokenLanguage.equals(appellantSpokenLanguageBefore.get());
+        }
+        return true;
     }
 
     private List<CaseFlagDetail> activateCaseFlag(
