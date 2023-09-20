@@ -57,6 +57,7 @@ java:
         requests:
           cpu: 25m
       initdb:
+        user: postgres
         scripts:
           init.sql: |
             ALTER ROLE hmcts WITH SUPERUSER;
