@@ -19,7 +19,6 @@ public class StrategicCaseFlag {
     public static String ROLE_ON_CASE_APPELLANT = "Appellant";
     public static String ROLE_ON_CASE_WITNESS = "Witness";
 
-
     String partyName;
     String roleOnCase;
 

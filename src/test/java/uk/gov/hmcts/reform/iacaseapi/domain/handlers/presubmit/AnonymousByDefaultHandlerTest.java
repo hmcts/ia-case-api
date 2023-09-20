@@ -106,7 +106,7 @@ public class AnonymousByDefaultHandlerTest {
                 .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -120,10 +120,10 @@ public class AnonymousByDefaultHandlerTest {
     void should_set_anonymity_flag_when_an_empty_class_level_flag_exists() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.of(new StrategicCaseFlag()));
+             .thenReturn(Optional.of(new StrategicCaseFlag()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
