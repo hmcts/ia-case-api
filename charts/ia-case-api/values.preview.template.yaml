@@ -955,7 +955,7 @@ wa:
 servicebus:
   enabled: true
   releaseNameOverride: ${SERVICE_NAME}
-  resourceGroup: ia-preview
+  resourceGroup: ia-aso-preview-rg
   sbNamespace: ia-sb-preview
   setup:
     topics:
