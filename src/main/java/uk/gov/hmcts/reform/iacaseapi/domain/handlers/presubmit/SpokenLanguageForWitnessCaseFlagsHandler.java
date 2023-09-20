@@ -145,7 +145,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
             if (witnessRefData.isEmpty() || (witnessRefData.get().getLanguageRefData() == null && witnessRefData.get().getLanguageManualEntry() == null)) {
                 witnessRefData = Optional.empty();
             }
-                witnessRefMap.put(details, witnessRefData);
+            witnessRefMap.put(details, witnessRefData);
         }
         return witnessRefMap;
     }
