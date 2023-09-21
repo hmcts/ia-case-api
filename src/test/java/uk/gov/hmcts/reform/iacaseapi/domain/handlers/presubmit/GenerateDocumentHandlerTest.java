@@ -257,7 +257,7 @@ class GenerateDocumentHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getEvent()).thenReturn(REMOVE_DETAINED_STATUS);
         assertThatThrownBy(() -> generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
