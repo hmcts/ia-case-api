@@ -11,12 +11,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -162,7 +157,13 @@ class UploadHomeOfficeAppealResponseHandlerTest {
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
         verify(asylumCase, times(1)).write(APPEAL_RESPONSE_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE);
     }
 
     @Test

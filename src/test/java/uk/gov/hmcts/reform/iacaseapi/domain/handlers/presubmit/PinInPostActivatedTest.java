@@ -150,6 +150,7 @@ public class PinInPostActivatedTest {
 
         asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Arrays.asList(new IdValue<>(USER_ID, existingSubscriber))));
         asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
@@ -159,6 +160,7 @@ public class PinInPostActivatedTest {
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
+        assertEquals(State.APPEAL_SUBMITTED, response.getState());
 
         Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
 
@@ -208,11 +210,24 @@ public class PinInPostActivatedTest {
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS))
             .thenReturn(Optional.of(legalRepresentativeDocuments));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.emptyList()));
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.EMAIL);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE, JourneyType.REP);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
