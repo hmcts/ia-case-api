@@ -141,17 +141,16 @@ public class PinInPostActivatedTest {
 
     @Test
     public void should_update_existing_subscription() {
-        Subscriber existingSubscriber = new Subscriber(
-            SubscriberType.APPELLANT,
-            APPELLANT_EMAIL,
-            YesOrNo.YES,
-            APPELLANT_MOBILE_NUMBER,
-            YesOrNo.NO);
-
         asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
+        Subscriber existingSubscriber = new Subscriber(
+                SubscriberType.APPELLANT,
+                APPELLANT_EMAIL,
+                YesOrNo.YES,
+                APPELLANT_MOBILE_NUMBER,
+                YesOrNo.NO);
         asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Arrays.asList(new IdValue<>(USER_ID, existingSubscriber))));
         asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
         asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
@@ -216,6 +215,7 @@ public class PinInPostActivatedTest {
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
+        assertNotNull(response);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
@@ -229,7 +229,6 @@ public class PinInPostActivatedTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE, JourneyType.REP);
 
-        assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, documentWithMetadata.getDescription());

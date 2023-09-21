@@ -302,9 +302,6 @@ class LegalRepOrganisationFormatterTest {
                 null,null,null,null,null,null,null
         );
         addresses.add(legRepAddressUk);
-        AddressUk emptyAddressUk = new AddressUk(
-                "","","","","","",""
-        );
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -316,6 +313,9 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
         when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
+        AddressUk emptyAddressUk = new AddressUk(
+                "","","","","","",""
+        );
         legalRepOrganisationFormatter.handle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
