@@ -314,7 +314,8 @@ class GenerateDocumentHandlerTest {
                         TRANSFER_OUT_OF_ADA,
                         RESIDENT_JUDGE_FTPA_DECISION,
                         APPLY_FOR_FTPA_APPELLANT,
-                        MAINTAIN_CASE_LINKS
+                        MAINTAIN_CASE_LINKS,
+                        SEND_DIRECTION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -424,6 +425,7 @@ class GenerateDocumentHandlerTest {
                         TRANSFER_OUT_OF_ADA,
                         RESIDENT_JUDGE_FTPA_DECISION,
                         APPLY_FOR_FTPA_APPELLANT,
+                        SEND_DIRECTION,
                         MAINTAIN_CASE_LINKS
                     );
 
