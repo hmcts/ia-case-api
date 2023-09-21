@@ -17,7 +17,7 @@ public class SystemDocumentManagementUploader {
 
     private final LDClientInterface ldClient;
 
-    private final CDAMSystemDocumentManagementUploader cdamSystemDocumentManagementUploader;
+    private final CdamSystemDocumentManagementUploader cdamSystemDocumentManagementUploader;
 
     private final DMSystemDocumentManagementUploader dmSystemDocumentManagementUploader;
 

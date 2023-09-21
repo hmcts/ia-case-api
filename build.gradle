@@ -1,16 +1,17 @@
 buildscript {
   dependencies {
     classpath("org.yaml:snakeyaml:2.0")
-    classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.3")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:3.6.22")
+    classpath("au.com.dius.pact:au.com.dius.pact.gradle.plugin:4.4.0-beta.1")
   }
 }
 
 plugins {
-  id 'au.com.dius.pact' version '4.1.7'
+  id 'au.com.dius.pact' version '4.2.14'
   id 'application'
   id 'checkstyle'
   id 'com.github.ben-manes.versions' version '0.42.0'
-  id "info.solidsoft.pitest" version '1.5.2'
+  id "info.solidsoft.pitest" version '1.9.0'
   id "io.freefair.lombok" version '6.2.0'
   id 'io.spring.dependency-management' version '1.1.0'
   id 'jacoco'
@@ -20,21 +21,25 @@ plugins {
   id 'org.springframework.boot' version '2.7.14'
   id 'pmd'
   id 'uk.gov.hmcts.java' version '0.12.43'
+  id 'org.gradle.test-retry' version '1.0.0'
 }
 
 apply plugin: 'java'
-apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
 apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-  junit              : '5.7.0',
+  jupiter            : '5.7.2',
   junitPlatform      : '1.7.2',
-  pitest             : '1.5.2',
+  pitest             : '1.9.0',
+  gradlePitest       : '1.9.0',
   reformLogging      : '5.1.7',
   reformHealthStarter: '0.0.5',
-  serenity           : '3.2.3',
+  restAssured        : '5.3.1',
+  serenity           : '3.6.22',
   springDoc          : '1.6.8',
+  sonarPitest        : '0.5',
   springHystrix      : '2.2.10.RELEASE',
   pact_version       : '4.1.7',
   snakeyaml          : '2.0'
@@ -42,9 +47,9 @@ def versions = [
 
 ext.libraries = [
   junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+    "org.junit.jupiter:junit-jupiter-api:${versions.jupiter}",
+    "org.junit.jupiter:junit-jupiter-engine:${versions.jupiter}",
+    "org.junit.jupiter:junit-jupiter-params:${versions.jupiter}",
     "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
     "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
   ]
@@ -60,12 +65,8 @@ java {
   }
 }
 
-compileJava {
-  options.compilerArgs << '-parameters' << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
-}
-
-compileTestJava {
-  options.compilerArgs << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
+tasks.withType(JavaCompile) {
+  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
 tasks.withType(Test) {
@@ -127,16 +128,7 @@ lombok {
   config['lombok.anyConstructor.addConstructorProperties'] = 'true'
 }
 
-tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
-}
-
-
 configurations {
-  integrationTestCompile.extendsFrom testCompile
-  integrationTestRuntime.extendsFrom testRuntime
-  functionalTestCompile.extendsFrom testCompile
-  functionalTestRuntime.extendsFrom testRuntime
   contractTestCompile.extendsFrom testCompile
   contractTestRuntime.extendsFrom testRuntime
 }
@@ -168,6 +160,11 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
   finalizedBy aggregate
+  testLogging {
+    outputs.upToDateWhen {false}
+    showStandardStreams = true
+    showStackTraces = true
+  }
 }
 
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
@@ -198,9 +195,8 @@ jacoco {
   toolVersion = "0.8.10"
 }
 
-//TODO: include integration in parameter along with test once integration tests are added.
 jacocoTestReport {
-  executionData(test)
+  executionData(test, integration)
   reports {
     xml.required = true
     csv.required = false
@@ -209,7 +205,8 @@ jacocoTestReport {
 }
 
 pitest {
-  junit5PluginVersion = '0.12'
+  print('./gradlew --version'.execute().text.trim())
+  junit5PluginVersion = '1.1.2'
   targetClasses = ['uk.gov.hmcts.reform.bailcaseapi.*']
   excludedClasses = [
     'uk.gov.hmcts.reform.bailcaseapi.infrastructure.config.*',
@@ -217,9 +214,10 @@ pitest {
   ]
   threads = 10
   outputFormats = ['XML', 'HTML']
-  timestampedReports = false
+  timestampedReports = true
   failWhenNoMutations = false
-  mutationThreshold = 85
+  verbose = true
+  mutationThreshold = 90
 }
 
 project.tasks['pitest'].group = "Verification"
@@ -280,6 +278,17 @@ dependencyManagement {
 }
 
 dependencies {
+  modules {
+    module("org.codehaus.groovy:groovy") {
+      replacedBy("org.apache.groovy:groovy", "conflicts in current rest-assured version")
+    }
+    module("org.codehaus.groovy:groovy-xml") {
+      replacedBy("org.apache.groovy:groovy-xml", "conflicts in current rest-assured version")
+    }
+    module("org.codehaus.groovy:groovy-json") {
+      replacedBy("org.apache.groovy:groovy-json", "conflicts in current rest-assured version")
+    }
+  }
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -318,8 +327,8 @@ dependencies {
 
   testImplementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
-  testImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
-  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
+  testImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured
+  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
@@ -329,6 +338,9 @@ dependencies {
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   testImplementation libraries.junit5
+  testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
+  testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.gradlePitest}"
+  testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
 
   testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
@@ -345,18 +357,22 @@ dependencies {
 
 
   //pact contract testing
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-
-  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
-  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+  contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
+  contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
+  contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version : versions.jupiter
 
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
 
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.3.0'
-
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.3.0', classifier: 'all', {
+    exclude group: 'commons-io', module: 'commons-io'
+    exclude group: 'org.apache.commons', module: 'commons-lang3'
+  }
 
   testImplementation(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
     version {

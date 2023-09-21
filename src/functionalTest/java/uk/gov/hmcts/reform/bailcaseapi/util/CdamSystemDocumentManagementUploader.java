@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
 @Component
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
 @RequiredArgsConstructor
-public class CDAMSystemDocumentManagementUploader {
+public class CdamSystemDocumentManagementUploader {
 
     private final CaseDocumentClient caseDocumentClient;
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
