@@ -204,8 +204,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.UPDATE_HEARING_REQUIREMENTS,
                 Event.MAINTAIN_CASE_LINKS,
                 Event.CREATE_CASE_LINK,
-                Event.UPLOAD_ADDITIONAL_EVIDENCE
-        );
+                Event.UPLOAD_ADDITIONAL_EVIDENCE,
+                Event.REQUEST_RESPONSE_AMEND
+                );
 
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
