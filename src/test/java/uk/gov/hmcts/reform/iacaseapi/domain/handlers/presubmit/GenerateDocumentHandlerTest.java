@@ -315,6 +315,10 @@ class GenerateDocumentHandlerTest {
                         RESIDENT_JUDGE_FTPA_DECISION,
                         APPLY_FOR_FTPA_APPELLANT,
                         MAINTAIN_CASE_LINKS,
+                        UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                        UPLOAD_ADDITIONAL_EVIDENCE,
+                        CREATE_CASE_LINK,
+                        REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION
                     ).contains(event)) {
 
@@ -425,8 +429,12 @@ class GenerateDocumentHandlerTest {
                         TRANSFER_OUT_OF_ADA,
                         RESIDENT_JUDGE_FTPA_DECISION,
                         APPLY_FOR_FTPA_APPELLANT,
-                        SEND_DIRECTION,
-                        MAINTAIN_CASE_LINKS
+                        MAINTAIN_CASE_LINKS,
+                        UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                        UPLOAD_ADDITIONAL_EVIDENCE,
+                        CREATE_CASE_LINK,
+                        REQUEST_RESPONSE_AMEND,
+                        SEND_DIRECTION
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

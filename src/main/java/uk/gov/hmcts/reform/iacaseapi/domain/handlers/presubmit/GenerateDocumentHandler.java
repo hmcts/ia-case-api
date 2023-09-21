@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
@@ -121,6 +122,10 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RESIDENT_JUDGE_FTPA_DECISION,
             Event.APPLY_FOR_FTPA_APPELLANT,
             Event.MAINTAIN_CASE_LINKS,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE,
+            Event.CREATE_CASE_LINK,
+            Event.REQUEST_RESPONSE_AMEND,
             Event.SEND_DIRECTION
         );
         if (isEmStitchingEnabled) {
