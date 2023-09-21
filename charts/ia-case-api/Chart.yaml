@@ -78,3 +78,15 @@ dependencies:
     version: ~0.0.48
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: am-org-role-mapping-service.enabled
+  - name: hmc-hmi-outbound-adapter
+    version: ~0.1.11
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-hmi-outbound-adapter.enabled
+  - name: hmc-hmi-inbound-adapter
+    version: ~0.1.14
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-hmi-inbound-adapter.enabled
+  - name: hmc-cft-hearing-service
+    version: ~1.6.14
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-cft-hearing-service.enabled

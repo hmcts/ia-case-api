@@ -72,6 +72,7 @@ java:
             CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "cft_task_db_replica" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "hmc_cft_hearing_service" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       database: cft_task_db
       username: hmcts
@@ -593,6 +594,7 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
+      PREVIEW_DEPLOYMENT_ID: iac-preview-deployment-1669
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
@@ -1002,6 +1004,11 @@ servicebus:
         subscriptionNeeded: yes
       - name: jrd-topic
         subscriptionNeeded: yes
+      - name: hmc-to-cft
+        subscriptionNeeded: yes
+    queues:
+      - name: hmc-to-hmi
+      - name: hmc-from-hmi
 
 ccd-message-publisher:
   enabled: true
@@ -1072,3 +1079,83 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
       RUN_LD_ON_STARTUP: true
+
+hmc-hmi-outbound-adapter:
+  image: "hmctspublic.azurecr.io/hmc/hmi-outbound-adapter:latest"
+  ingressHost: hmc-hmi-outbound-adapter-${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_OUTBOUND_QUEUE: "{{ .Release.Name}}-hmc-to-hmi"
+    HMC_SERVICE_BUS_INBOUND_QUEUE: "{{ .Release.Name}}-hmc-from-hmi"
+  secrets:
+    HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+    HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+  keyVaults:
+    hmc:
+      resourceGroup: hmc-shared
+      secrets:
+        - name: AppInsightsInstrumentationKey
+
+hmc-hmi-inbound-adapter:
+  image: "hmctspublic.azurecr.io/hmc/hmi-inbound-adapter:latest"
+  ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_QUEUE: "{{ .Release.Name}}-hmc-from-hmi"
+  secrets:
+    HMC_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+  keyVaults:
+    hmc:
+      resourceGroup: hmc-shared
+      secrets:
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: hmc-servicebus-connection-string
+          alias: HMC_SERVICE_BUS_CONNECTION_STRING
+        - name: hmc-hmi-inbound-adapter-s2s-secret
+          alias: IDAM_KEY_HMI_INBOUND_ADAPTER
+        - name: idam-hmc-hmi-inbound-adapter-client-secret
+          alias: IDAM_CLIENT_SECRET
+        - name: idam-hmc-system-user-username
+          alias: HMC_SYSTEM_USER_ID
+        - name: idam-hmc-system-user-password
+          alias: HMC_SYSTEM_USER_PASSWORD
+
+hmc-cft-hearing-service:
+  image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
+  ingressHost: hmc-cft-hearing-service-${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_TOPIC: "{{ .Release.Name}}-hmc-to-cft"
+    HMC_SERVICE_BUS_SUBSCRIPTION: "{{ .Release.Name}}-hmc-to-cft"
+    HMC_SERVICE_BUS_QUEUE: "{{ .Release.Name}}-hmc-from-hmi"
+    HMC_OUTBOUND_SERVICE_BUS_QUEUE: "{{ .Release.Name}}-hmc-to-hmi"
+    CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
+    CFT_HEARING_SERVICE_DB_NAME: hmc_cft_hearing_service
+    CFT_HEARING_SERVICE_DB_USERNAME: hmcts
+    CFT_HEARING_SERVICE_DB_PASSWORD: hmcts
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
+    CFT_HEARING_SERVICE_DB_PORT: 5432
+    CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+  postgresql:
+    enabled: true
+  secrets:
+    HMC_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+    HMC_QUEUE_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+    HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+  keyVaults:
+    hmc:
+      resourceGroup: hmc-aso-preview-rg
+      secrets:
+        - name: AppInsightsInstrumentationKey
+        - name: hmc-cft-hearing-service-s2s-secret
+          alias: IDAM_KEY_CFT_HEARING_SERVICE
