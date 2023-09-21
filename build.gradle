@@ -405,7 +405,6 @@ dependencies {
     //pact contract testing
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.2.14'
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
-    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.42'
     contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
 
