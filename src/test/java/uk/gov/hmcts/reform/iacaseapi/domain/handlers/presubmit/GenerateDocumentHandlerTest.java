@@ -320,7 +320,7 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION
-                        REQUEST_RESPONSE_AMEND
+
 
                     ).contains(event)) {
 
@@ -436,7 +436,7 @@ class GenerateDocumentHandlerTest {
                         UPLOAD_ADDITIONAL_EVIDENCE,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION
-                        REQUEST_RESPONSE_AMEND
+
 
                     );
 
