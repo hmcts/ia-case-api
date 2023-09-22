@@ -42,4 +42,3 @@ public class S94bStatusHandler implements PreSubmitCallbackHandler<AsylumCase> {
     }
 
 }
-

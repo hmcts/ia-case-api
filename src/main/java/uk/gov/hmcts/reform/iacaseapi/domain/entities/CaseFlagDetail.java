@@ -15,7 +15,7 @@ public class CaseFlagDetail {
     private CaseFlagDetail() {
         // noop -- for deserializer
     }
-
+  
     private String id;
     @JsonProperty("value")
     private CaseFlagValue caseFlagValue;
