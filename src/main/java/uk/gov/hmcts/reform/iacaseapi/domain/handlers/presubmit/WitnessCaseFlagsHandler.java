@@ -29,14 +29,15 @@ public class WitnessCaseFlagsHandler extends AppellantCaseFlagsHandler {
         return witnessCaseFlags;
     }
 
-    protected void deactivateAnyActiveCaseFlags(Optional<List<PartyFlagIdValue>> existingCaseFlags, AsylumCase asylumCase, StrategicCaseFlagType flag) {
+    protected void deactivateAnyActiveCaseFlags(Optional<List<PartyFlagIdValue>> existingCaseFlags, AsylumCase asylumCase,
+                                                StrategicCaseFlagType flag, String currentDateTime) {
         boolean updated = false;
         if (existingCaseFlags.isPresent()) {
             for (int i = 0; i < existingCaseFlags.get().size(); i++) {
                 PartyFlagIdValue partyFlag = existingCaseFlags.get().get(i);
                 Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(partyFlag.getValue().getDetails(), flag);
                 if (activeFlag.isPresent()) {
-                    List<CaseFlagDetail> flags = deactivateCaseFlag(partyFlag.getValue().getDetails(), flag);
+                    List<CaseFlagDetail> flags = deactivateCaseFlag(partyFlag.getValue().getDetails(), flag, currentDateTime);
                     StrategicCaseFlag caseFlag = new StrategicCaseFlag(
                             partyFlag.getValue().getPartyName(), StrategicCaseFlag.ROLE_ON_CASE_WITNESS, flags);
                     existingCaseFlags.get().set(i, new PartyFlagIdValue(partyFlag.getPartyId(), caseFlag));
@@ -53,14 +54,15 @@ public class WitnessCaseFlagsHandler extends AppellantCaseFlagsHandler {
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
             StrategicCaseFlagType caseFlagType,
-            String flagName) {
+            String flagName,
+            String dateTimeCreated) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
                 .flagCode(caseFlagType.getFlagCode())
                 .name(flagName)
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
-                .dateTimeCreated(systemDateProvider.nowWithTime().toString())
+                .dateTimeCreated(dateTimeCreated)
                 .build();
         String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
         List<CaseFlagDetail> caseFlagDetails = existingCaseFlagDetails.isEmpty()
@@ -73,7 +75,8 @@ public class WitnessCaseFlagsHandler extends AppellantCaseFlagsHandler {
 
     protected List<CaseFlagDetail> deactivateCaseFlag(
             List<CaseFlagDetail> caseFlagDetails,
-            StrategicCaseFlagType caseFlagType) {
+            StrategicCaseFlagType caseFlagType,
+            String dateTimeModified) {
         if (hasActiveTargetCaseFlag(caseFlagDetails, caseFlagType)) {
             caseFlagDetails = caseFlagDetails.stream().map(detail -> {
                 CaseFlagValue value = detail.getCaseFlagValue();
@@ -82,7 +85,7 @@ public class WitnessCaseFlagsHandler extends AppellantCaseFlagsHandler {
                             .flagCode(value.getFlagCode())
                             .name(value.getName())
                             .status("Inactive")
-                            .dateTimeModified(systemDateProvider.nowWithTime().toString())
+                            .dateTimeModified(dateTimeModified)
                             .dateTimeCreated(value.getDateTimeCreated())
                             .hearingRelevant(value.getHearingRelevant())
                             .build());
