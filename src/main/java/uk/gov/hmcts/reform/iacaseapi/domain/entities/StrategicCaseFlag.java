@@ -4,21 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.Value;
 
 @Value
-@Getter
-@Setter
-@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StrategicCaseFlag {
-
-    public static String ROLE_ON_CASE_APPELLANT = "Appellant";
-    public static String ROLE_ON_CASE_WITNESS = "Witness";
-    public static String ROLE_ON_CASE_INTERPRETER = "Interpreter";
 
     String partyName;
     String roleOnCase;

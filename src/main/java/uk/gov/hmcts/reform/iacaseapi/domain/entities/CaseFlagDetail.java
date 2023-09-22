@@ -2,21 +2,24 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
-@AllArgsConstructor
+import java.util.UUID;
+
+@Value
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CaseFlagDetail {
 
-    private CaseFlagDetail() {
-        // noop -- for deserializer
-    }
-  
-    private String id;
+    String id;
     @JsonProperty("value")
-    private CaseFlagValue caseFlagValue;
+    CaseFlagValue caseFlagValue;
+
+    public CaseFlagDetail(CaseFlagValue caseFlagValue) {
+        this(UUID.randomUUID().toString(), caseFlagValue);
+    }
+
+    public CaseFlagDetail(String id, CaseFlagValue caseFlagValue) {
+        this.id = id;
+        this.caseFlagValue = caseFlagValue;
+    }
 }

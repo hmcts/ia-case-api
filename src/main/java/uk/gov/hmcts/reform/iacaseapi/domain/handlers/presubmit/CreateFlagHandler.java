@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,11 +63,11 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
             .ifPresentOrElse(existingAppellantLevelFlags -> {
                     if (!Objects.equals(existingAppellantLevelFlags.getPartyName(), appellantFullName)) {
                         StrategicCaseFlag updatedAppellantLevelFlags = new StrategicCaseFlag(appellantFullName,
-                            StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingAppellantLevelFlags.getDetails());
+                            ROLE_ON_CASE_APPELLANT, existingAppellantLevelFlags.getDetails());
                         asylumCase.write(APPELLANT_LEVEL_FLAGS, updatedAppellantLevelFlags);
                     }
                 }, () -> asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(
-                    appellantFullName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT))
+                    appellantFullName, ROLE_ON_CASE_APPELLANT))
             );
     }
 
@@ -121,7 +124,7 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                         flagDetails = existingFlag.getDetails();
                     }
                     return new PartyFlagIdValue(interpreterDetails.getInterpreterId(), new StrategicCaseFlag(
-                            interpreterName, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, flagDetails));
+                            interpreterName, ROLE_ON_CASE_INTERPRETER, flagDetails));
                 }).collect(Collectors.toList());
     }
 
@@ -143,7 +146,7 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     flagDetails = existingFlag.getDetails();
                 }
                 return new PartyFlagIdValue(witnessDetails.getWitnessPartyId(), new StrategicCaseFlag(
-                    witnessName, StrategicCaseFlag.ROLE_ON_CASE_WITNESS, flagDetails));
+                    witnessName, ROLE_ON_CASE_WITNESS, flagDetails));
             }).collect(Collectors.toList());
     }
 }

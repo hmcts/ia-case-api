@@ -11,7 +11,6 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "taylorHouse",
-          "caseFlagId": "7338-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -144,7 +143,7 @@
           "roleOnCase": "Appellant",
           "details": [
             {
-              "id": "7338-ABC",
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
                 "name": "Sign Language igbo",
                 "status": "Active",

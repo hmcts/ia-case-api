@@ -50,7 +50,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class HearingRequirementsAppellantCaseFlagsHandlerTest {
+public class HearingRequirementsAppellantFlagsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -61,7 +61,7 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
     @Mock
     private DateProvider systemDateProvider;
 
-    private HearingRequirementsAppellantCaseFlagsHandler hearingRequirementsAppellantCaseFlagsHandler;
+    private HearingRequirementsAppellantFlagsHandler hearingRequirementsAppellantCaseFlagsHandler;
     private final String appellantDisplayName = "Eke Uke";
 
     @BeforeEach
@@ -73,7 +73,7 @@ public class HearingRequirementsAppellantCaseFlagsHandlerTest {
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
         hearingRequirementsAppellantCaseFlagsHandler =
-            new HearingRequirementsAppellantCaseFlagsHandler(systemDateProvider);
+            new HearingRequirementsAppellantFlagsHandler(systemDateProvider);
     }
 
     @ParameterizedTest

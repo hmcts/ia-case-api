@@ -8,12 +8,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.STEP_FREE_WHEELCHAIR_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -21,15 +22,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
 
 @Component
-class HearingRequirementsAppellantCaseFlagsHandler
-        extends AppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider systemDateProvider;
 
-    public HearingRequirementsAppellantCaseFlagsHandler(DateProvider systemDateProvider) {
+    public HearingRequirementsAppellantFlagsHandler(DateProvider systemDateProvider) {
         this.systemDateProvider = systemDateProvider;
     }
 
@@ -54,44 +56,41 @@ class HearingRequirementsAppellantCaseFlagsHandler
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        StrategicCaseFlag caseFlags = getOrCreateAppellantCaseFlags(asylumCase);
+        StrategicCaseFlagService strategicCaseFlagService = new StrategicCaseFlagService(asylumCase
+            .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class).orElse(null));
         boolean isHearingLoopNeeded = asylumCase.read(IS_HEARING_LOOP_NEEDED, YesOrNo.class)
             .map(hearingLoopNeeded -> YesOrNo.YES == hearingLoopNeeded).orElse(false);
         boolean isHearingRoomNeeded = asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)
             .map(hearingRoomNeeded -> YesOrNo.YES == hearingRoomNeeded).orElse(false);
-        List<CaseFlagDetail> existingCaseFlagDetails = caseFlags.getDetails();
         String currentDateTime = systemDateProvider.nowWithTime().toString();
 
-        boolean caseDataUpdated = false;
+        boolean caseDataUpdated;
 
-        if (isHearingLoopNeeded && !hasActiveTargetCaseFlag(existingCaseFlagDetails, HEARING_LOOP)) {
-            existingCaseFlagDetails = activateCaseFlag(
-                asylumCase, existingCaseFlagDetails, HEARING_LOOP, currentDateTime);
-            caseDataUpdated = true;
+        if (isHearingLoopNeeded) {
+
+            strategicCaseFlagService
+                .initializeIfEmpty(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT);
+
+            caseDataUpdated = strategicCaseFlagService.activateFlag(HEARING_LOOP, YES, currentDateTime);
+        } else {
+            caseDataUpdated = strategicCaseFlagService.deactivateFlag(HEARING_LOOP, currentDateTime);
         }
-        if (isHearingRoomNeeded && !hasActiveTargetCaseFlag(existingCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS)) {
-            existingCaseFlagDetails = activateCaseFlag(
-                asylumCase, existingCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
-            caseDataUpdated = true;
-        }
-        if (!isHearingLoopNeeded && hasActiveTargetCaseFlag(existingCaseFlagDetails, HEARING_LOOP)) {
-            existingCaseFlagDetails = deactivateCaseFlags(existingCaseFlagDetails, HEARING_LOOP, currentDateTime);
-            caseDataUpdated = true;
-        }
-        if (!isHearingRoomNeeded && hasActiveTargetCaseFlag(existingCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS)) {
-            existingCaseFlagDetails = deactivateCaseFlags(
-                existingCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
-            caseDataUpdated = true;
+        if (isHearingRoomNeeded) {
+
+            strategicCaseFlagService
+                .initializeIfEmpty(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT);
+
+            caseDataUpdated = strategicCaseFlagService
+                .activateFlag(STEP_FREE_WHEELCHAIR_ACCESS, YES, currentDateTime);
+        } else {
+            caseDataUpdated = strategicCaseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
         }
 
         if (caseDataUpdated) {
 
             asylumCase.write(
                 APPELLANT_LEVEL_FLAGS,
-                new StrategicCaseFlag(
-                    caseFlags.getPartyName(),
-                    StrategicCaseFlag.ROLE_ON_CASE_APPELLANT,
-                    existingCaseFlagDetails));
+                strategicCaseFlagService.getStrategicCaseFlag());
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

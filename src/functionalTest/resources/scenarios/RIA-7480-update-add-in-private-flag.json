@@ -11,7 +11,6 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "taylorHouse",
-          "caseFlagId": "7480-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -142,7 +141,7 @@
           "roleOnCase": "Appellant",
           "details": [
             {
-              "id": "7480-ABC",
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
                 "name": "Evidence given in private",
                 "status": "Active",

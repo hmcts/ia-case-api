@@ -7,12 +7,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.CASE_GIVEN_IN_PRIVATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -20,11 +21,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
 
 @Component
-public class EvidenceInPrivateCaseFlagsHandler
-        extends AppellantCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider systemDateProvider;
 
@@ -57,48 +59,33 @@ public class EvidenceInPrivateCaseFlagsHandler
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        StrategicCaseFlag caseFlags = getOrCreateAppellantCaseFlags(asylumCase);
+        StrategicCaseFlagService strategicCaseFlagService = new StrategicCaseFlagService(asylumCase
+            .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class).orElse(null));
 
-        boolean inCameraCourt = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
-            .map(cameraCourtNeeded -> YesOrNo.YES == cameraCourtNeeded).orElse(false);
+        boolean inCameraCourtRequested = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
+            .map(cameraCourtNeeded -> YES == cameraCourtNeeded).orElse(false);
+        boolean inCameraCourtGranted = asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
+            .map(decision -> CASE_GRANTED.equals(decision))
+            .orElse(false);
 
-        String isInCameraCourtAllowed = asylumCase
-            .read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
-            .orElse(CASE_REFUSED);
-
-        List<CaseFlagDetail> existingCaseFlagDetails = caseFlags.getDetails();
         String currentDateTime = systemDateProvider.nowWithTime().toString();
 
-        boolean caseDataUpdated = false;
+        boolean caseDataUpdated;
 
-        if (isInCameraCourtAllowed.equals(CASE_GRANTED)
-            && !hasActiveTargetCaseFlag(existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE)) {
-            existingCaseFlagDetails = activateCaseFlag(
-                asylumCase, existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE, currentDateTime);
-            caseDataUpdated = true;
-        }
+        if (inCameraCourtRequested && inCameraCourtGranted) {
+            strategicCaseFlagService
+                .initializeIfEmpty(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT);
 
-        if (!inCameraCourt && hasActiveTargetCaseFlag(existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE)) {
-            existingCaseFlagDetails = deactivateCaseFlags(
-                existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE, currentDateTime);
-            caseDataUpdated = true;
-        }
-
-        if (isInCameraCourtAllowed.equals(CASE_REFUSED)
-            && hasActiveTargetCaseFlag(existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE)) {
-            existingCaseFlagDetails = deactivateCaseFlags(
-                existingCaseFlagDetails, CASE_GIVEN_IN_PRIVATE, currentDateTime);
-            caseDataUpdated = true;
+            caseDataUpdated = strategicCaseFlagService.activateFlag(CASE_GIVEN_IN_PRIVATE, YES, currentDateTime);
+        } else {
+            caseDataUpdated = strategicCaseFlagService.deactivateFlag(CASE_GIVEN_IN_PRIVATE, currentDateTime);
         }
 
         if (caseDataUpdated) {
 
             asylumCase.write(
                 APPELLANT_LEVEL_FLAGS,
-                new StrategicCaseFlag(
-                    caseFlags.getPartyName(),
-                    StrategicCaseFlag.ROLE_ON_CASE_APPELLANT,
-                    existingCaseFlagDetails));
+                strategicCaseFlagService.getStrategicCaseFlag());
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

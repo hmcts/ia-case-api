@@ -6,17 +6,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -111,7 +110,7 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
                 throw new IllegalStateException("Appellant full name is not present");
             }
             asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(
-                    appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
+                    appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingCaseFlagDetails));
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -155,11 +154,10 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
                 .build();
-        String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
         List<CaseFlagDetail> caseFlagDetails = existingCaseFlagDetails.isEmpty()
                 ? new ArrayList<>()
                 : new ArrayList<>(existingCaseFlagDetails);
-        caseFlagDetails.add(new CaseFlagDetail(caseFlagId, caseFlagValue));
+        caseFlagDetails.add(new CaseFlagDetail(caseFlagValue));
 
         return caseFlagDetails;
     }
