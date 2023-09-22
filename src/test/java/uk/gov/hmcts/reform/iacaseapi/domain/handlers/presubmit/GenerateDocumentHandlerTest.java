@@ -319,7 +319,8 @@ class GenerateDocumentHandlerTest {
                         UPLOAD_ADDITIONAL_EVIDENCE,
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
-                        SEND_DIRECTION
+                        SEND_DIRECTION,
+                        EDIT_APPEAL
 
 
                     ).contains(event)) {
