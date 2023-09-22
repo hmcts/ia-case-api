@@ -662,6 +662,20 @@ ccd:
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
 
+  ccd-user-profile-api:
+    java:
+      autoscaling:
+        enabled: false
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+      enviroment:
+        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+      keyVaults: [ ]
+      environment:
+        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
