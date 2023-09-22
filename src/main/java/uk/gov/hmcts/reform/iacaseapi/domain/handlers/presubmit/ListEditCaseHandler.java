@@ -73,6 +73,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
+        asylumCase.write(EPIMS_ID, HearingCentre.getEpimsIdByValue(listCaseHearingCentre.getValue()));
         asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         asylumCase.clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         asylumCase.clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);

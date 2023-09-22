@@ -77,6 +77,16 @@ public class HearingCentreFinder {
             HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
             HearingCentre.NEWCASTLE,
             HearingCentre.BELFAST,
-            HearingCentre.NOTTINGHAM).contains(hearingCentre);
+            HearingCentre.NOTTINGHAM,
+            HearingCentre.HARMONDSWORTH,
+            HearingCentre.HENDON,
+            HearingCentre.YARLS_WOOD,
+            HearingCentre.BRADFORD_KEIGHLEY,
+            HearingCentre.MCC_MINSHULL,
+            HearingCentre.MCC_CROWN_SQUARE,
+            HearingCentre.MANCHESTER_MAGS,
+            HearingCentre.NTH_TYNE_MAGS,
+            HearingCentre.LEEDS_MAGS,
+            HearingCentre.ALLOA_SHERRIF).contains(hearingCentre);
     }
 }
