@@ -64,6 +64,7 @@ java:
             CREATE DATABASE "ia-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "wa-case-event-handler" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
@@ -636,7 +637,7 @@ ccd:
     elastic:
       enabled: true
     ras:
-      enabled: false
+      enabled: true
   global:
     ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
