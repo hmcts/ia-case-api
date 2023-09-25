@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3734 case-listing Belfast as Hearing Venue",
+  "description": "RIA-3734 RIA-7879 case-listing Belfast as Hearing Venue",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -55,6 +55,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "epimsId": "999973",
         "currentHearingDetailsVisible": "Yes",
         "ariaListingReference": "LP/12345/2019",
         "hearingCentre": "manchester",

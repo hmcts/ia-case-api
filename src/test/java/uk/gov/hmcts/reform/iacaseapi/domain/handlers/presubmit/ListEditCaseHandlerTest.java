@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EPIMS_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
@@ -28,6 +29,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -214,6 +217,42 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingCentre.class, names = {
+        "BIRMINGHAM",
+        "BRADFORD",
+        "COVENTRY",
+        "GLASGOW_TRIBUNALS_CENTRE",
+        "HATTON_CROSS",
+        "MANCHESTER",
+        "NEWCASTLE",
+        "NEWPORT",
+        "NOTTINGHAM",
+        "TAYLOR_HOUSE",
+        "BELFAST",
+        "HARMONDSWORTH",
+        "HENDON",
+        "YARLS_WOOD",
+        "BRADFORD_KEIGHLEY",
+        "MCC_MINSHULL",
+        "MCC_CROWN_SQUARE",
+        "MANCHESTER_MAGS",
+        "NTH_TYNE_MAGS",
+        "LEEDS_MAGS",
+        "ALLOA_SHERRIF"
+    })
+    void should_save_expected_epims_id_in_ccd_when_submit_list_case(HearingCentre hearingCentre) {
+
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+                .thenReturn(Optional.of(hearingCentre));
+        when(hearingCentreFinder.hearingCentreIsActive(hearingCentre)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(EPIMS_ID, hearingCentre.getEpimsId());
     }
 
     @Test
