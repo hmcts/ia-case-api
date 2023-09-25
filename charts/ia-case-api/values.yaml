@@ -76,3 +76,15 @@ em-ccdorc:
   enabled: false
 em-stitching:
   enabled: false
+wa:
+  enabled: false
+servicebus:
+  enabled: false
+ccd-message-publisher:
+  enabled: false
+aac-manage-case-assignment:
+  enabled: false
+am-org-role-mapping-service:
+  enabled: false
+redis:
+  enabled: false
