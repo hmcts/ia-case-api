@@ -29,27 +29,6 @@ public class WitnessCaseFlagsHandler extends AppellantCaseFlagsHandler {
         return witnessCaseFlags;
     }
 
-    protected void deactivateAnyActiveCaseFlags(Optional<List<PartyFlagIdValue>> existingCaseFlags, AsylumCase asylumCase,
-                                                StrategicCaseFlagType flag, String currentDateTime) {
-        boolean updated = false;
-        if (existingCaseFlags.isPresent()) {
-            for (int i = 0; i < existingCaseFlags.get().size(); i++) {
-                PartyFlagIdValue partyFlag = existingCaseFlags.get().get(i);
-                Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(partyFlag.getValue().getDetails(), flag);
-                if (activeFlag.isPresent()) {
-                    List<CaseFlagDetail> flags = deactivateCaseFlag(partyFlag.getValue().getDetails(), flag, currentDateTime);
-                    StrategicCaseFlag caseFlag = new StrategicCaseFlag(
-                            partyFlag.getValue().getPartyName(), StrategicCaseFlag.ROLE_ON_CASE_WITNESS, flags);
-                    existingCaseFlags.get().set(i, new PartyFlagIdValue(partyFlag.getPartyId(), caseFlag));
-                    updated = true;
-                }
-            }
-        }
-        if (updated) {
-            asylumCase.write(WITNESS_LEVEL_FLAGS, existingCaseFlags);
-        }
-    }
-
     protected List<CaseFlagDetail> activateCaseFlag(
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
