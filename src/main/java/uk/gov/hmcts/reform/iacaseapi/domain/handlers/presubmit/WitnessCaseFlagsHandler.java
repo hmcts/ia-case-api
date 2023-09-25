@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 
 public class WitnessCaseFlagsHandler extends AppellantCaseFlagsHandler {
 
