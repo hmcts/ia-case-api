@@ -68,7 +68,7 @@ public class AnonymousByDefaultHandlerTest {
     void should_set_anonymity_flag_for_PA_appeal() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -82,7 +82,7 @@ public class AnonymousByDefaultHandlerTest {
     void should_set_anonymity_flag_for_RP_appeal() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -106,7 +106,7 @@ public class AnonymousByDefaultHandlerTest {
                 .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -120,10 +120,10 @@ public class AnonymousByDefaultHandlerTest {
     void should_set_anonymity_flag_when_an_empty_class_level_flag_exists() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.of(new StrategicCaseFlag()));
+             .thenReturn(Optional.of(new StrategicCaseFlag()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -138,7 +138,7 @@ public class AnonymousByDefaultHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
@@ -182,7 +182,7 @@ public class AnonymousByDefaultHandlerTest {
                 boolean canHandle = anonymousByDefaultHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && callback.getEvent() == SUBMIT_APPEAL) {
+                    && callback.getEvent() == SUBMIT_APPEAL) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
@@ -195,33 +195,33 @@ public class AnonymousByDefaultHandlerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.canHandle(ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
     }
 }
