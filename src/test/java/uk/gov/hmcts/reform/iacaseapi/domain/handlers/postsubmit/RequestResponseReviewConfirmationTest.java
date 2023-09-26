@@ -76,6 +76,7 @@ class RequestResponseReviewConfirmationTest {
             uniqueId,
             directionType
     );
+
     @ParameterizedTest
     @MethodSource("getDirections")
     void should_return_confirmation(Direction direction) {
@@ -84,7 +85,7 @@ class RequestResponseReviewConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(List.of(new IdValue("1", direction))));
-        String personForNotification = direction.getParties() == Parties.APPELLANT
+        final String personForNotification = direction.getParties() == Parties.APPELLANT
                 ? "Appellant"
                 : "Legal representative";
 

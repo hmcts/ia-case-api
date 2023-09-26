@@ -83,7 +83,7 @@ class RequestCaseBuildingConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(List.of(new IdValue("1", direction))));
-        String personForNotification = direction.getParties() == Parties.APPELLANT
+        final String personForNotification = direction.getParties() == Parties.APPELLANT
                 ? "Appellant"
                 : "Legal representative";
 
