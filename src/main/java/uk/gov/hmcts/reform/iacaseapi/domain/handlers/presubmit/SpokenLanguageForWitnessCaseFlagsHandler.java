@@ -69,7 +69,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
                 Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG);
 
                 if (activeFlag.isPresent()) {
-                    existingFlags = tryDeactivateFlags(existingFlags, refData, activeFlag, isWitnessInterpreterRequired, currentDateTime);
+                    existingFlags = tryDeactivateFlags(existingFlags, refData, activeFlag.get(), isWitnessInterpreterRequired, currentDateTime);
                 }
 
                 if (refData.isPresent() && isWitnessInterpreterRequired) {
@@ -121,10 +121,10 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
     }
 
     private List<CaseFlagDetail> tryDeactivateFlags(List<CaseFlagDetail> existingFlags, Optional<InterpreterLanguageRefData> refData,
-                                                    Optional<CaseFlagDetail> activeFlag, boolean isWitnessInterpreterRequired, String currentDateTime) {
+                                                    CaseFlagDetail activeFlag, boolean isWitnessInterpreterRequired, String currentDateTime) {
         if (refData.isPresent()) {
             String flagName = getChosenSpokenLanguage(refData.get());
-            if (!isWitnessInterpreterRequired || selectedLanguageDiffers(flagName, activeFlag.get())) {
+            if (!isWitnessInterpreterRequired || selectedLanguageDiffers(flagName, activeFlag)) {
                 existingFlags = deactivateCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
                 caseDataUpdated = true;
             }
