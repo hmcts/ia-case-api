@@ -12,18 +12,24 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -42,6 +48,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -96,8 +103,8 @@ class RequestHearingRequirementsDirectionTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Parties.class, names = {"LEGAL_REPRESENTATIVE", "APPELLANT"})
-    void should_append_new_direction_to_existing_directions_for_the_case(Parties party) {
+    @MethodSource("caseTypeScenarios")
+    void should_append_new_direction_to_existing_directions_for_the_case(YesOrNo yesOrNo, YesOrNo ada, JourneyType journeyType, Parties party) {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -113,7 +120,9 @@ class RequestHearingRequirementsDirectionTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
 
-        JourneyType journeyType = (party == Parties.APPELLANT) ? JourneyType.AIP : JourneyType.REP;
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.ofNullable(ada));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
 
         when(directionAppender.append(
@@ -256,5 +265,15 @@ class RequestHearingRequirementsDirectionTest {
             () -> requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    static Stream<Arguments> caseTypeScenarios() {
+        return Stream.of(
+                Arguments.of(NO, NO, AIP, Parties.APPELLANT),
+                Arguments.of(YES, YES, AIP, Parties.APPELLANT),
+                Arguments.of(YES, NO, REP, Parties.APPELLANT),
+                Arguments.of(YES, YES, REP, Parties.LEGAL_REPRESENTATIVE),
+                Arguments.of(NO, NO, REP, Parties.LEGAL_REPRESENTATIVE),
+                Arguments.of(NO, YES, REP, Parties.LEGAL_REPRESENTATIVE));
     }
 }

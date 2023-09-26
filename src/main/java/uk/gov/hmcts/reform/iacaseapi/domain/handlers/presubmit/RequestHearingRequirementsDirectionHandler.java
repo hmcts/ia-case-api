@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +78,7 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
                     + "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.\n\n"
                     + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
                     + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
-                    HandlerUtils.isAipJourney(asylumCase) ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE,
+                    resolvePartiesForHearingRequirements(asylumCase),
                     dateProvider
                         .now()
                         .plusDays(hearingRequirementsDueInDays)
@@ -89,5 +90,17 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
         asylumCase.write(DIRECTIONS, allDirections);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private Parties resolvePartiesForHearingRequirements(AsylumCase asylumCase) {
+        if (
+                HandlerUtils.isAipJourney(asylumCase)
+                        || isInternalCase(asylumCase)
+                        && isAppellantInDetention(asylumCase)
+                        && !isAcceleratedDetainedAppeal(asylumCase)
+        ) {
+            return Parties.APPELLANT;
+        }
+            return Parties.LEGAL_REPRESENTATIVE;
     }
 }
