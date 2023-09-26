@@ -320,7 +320,7 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION,
-                        EDIT_APPEAL
+                        EDIT_APPEAL_AFTER_SUBMIT
 
 
                     ).contains(event)) {
