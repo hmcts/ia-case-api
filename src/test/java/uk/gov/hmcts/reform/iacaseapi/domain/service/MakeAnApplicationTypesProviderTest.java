@@ -586,4 +586,31 @@ class MakeAnApplicationTypesProviderTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void should_return_given_application_types_in_decided_state_internal_ada() {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_ADMIN));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(DECIDED);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
+            new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+            new Value(OTHER.name(), OTHER.toString());
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
 }
