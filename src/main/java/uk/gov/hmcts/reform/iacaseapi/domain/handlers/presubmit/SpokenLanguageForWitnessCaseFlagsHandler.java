@@ -125,11 +125,11 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
         if (refData.isPresent()) {
             String flagName = getChosenSpokenLanguage(refData.get());
             if (!isWitnessInterpreterRequired || selectedLanguageDiffers(flagName, activeFlag)) {
-                existingFlags = deactivateCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
+                existingFlags = deactivateCaseFlags(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
                 caseDataUpdated = true;
             }
         } else {
-            existingFlags = deactivateCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
+            existingFlags = deactivateCaseFlags(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
             caseDataUpdated = true;
         }
         return existingFlags;
