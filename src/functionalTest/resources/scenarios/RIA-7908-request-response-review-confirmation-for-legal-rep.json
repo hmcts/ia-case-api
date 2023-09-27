@@ -1,12 +1,12 @@
 {
-  "description": "RIA-1789 Request case building direction confirmation when direction to legalRepresentative",
+  "description": "RIA-7908 Request response review direction to appellant in detention, non-Ada",
   "request": {
     "uri": "/asylum/ccdSubmitted",
-    "credentials": "LegalRepresentative",
+    "credentials": "CaseOfficer",
     "input": {
-      "eventId": "requestCaseBuilding",
-      "state": "awaitingRespondentEvidence",
-      "id": 1789,
+      "eventId": "requestResponseReview",
+      "state": "*",
+      "id": 7908,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -18,7 +18,7 @@
                 "parties": "legalRepresentative",
                 "dateDue": "{$TODAY+28}",
                 "dateSent": "{$TODAY}",
-                "tag": "requestCaseBuilding"
+                "tag": "requestResponseReview"
               }
             }
           ]

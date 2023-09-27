@@ -1,0 +1,31 @@
+{
+  "description": "RIA-7908 Request case building direction to legal representative",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7908,
+      "eventId": "requestCaseBuilding",
+      "state": "*",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "Test",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "uploadHomeOfficeBundleAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadHomeOfficeBundleAvailable": "Yes",
+        "sendDirectionParties": "legalRepresentative"
+      }
+    }
+  }
+}
