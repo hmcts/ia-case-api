@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7908 Request case building direction to legal representative",
+  "description": "RIA-7908 Request case building direction sent to legal representative",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
