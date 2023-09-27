@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7908 Request case building direction ADA confirmation when direction to appelant(in DET)",
+  "description": "RIA-7908 Request case building direction confirmation when direction sent to appellant(for Internal case, Appellant in detention, Accelerated, Detained appeal)",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

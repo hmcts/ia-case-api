@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7908 Request case building direction to appellant in DET non-Ada",
+  "description": "RIA-7908 Request response review direction sent to appellant(for Internal case, Appellant in detention, non-Accelerated, Detained appeal)",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

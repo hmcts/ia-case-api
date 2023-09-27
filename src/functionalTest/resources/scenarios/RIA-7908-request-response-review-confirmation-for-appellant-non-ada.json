@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7908 Request response review direction to appellant in detention, non-Ada",
+  "description": "RIA-7908 Request response review confirmation, direction sent to appellant(for Internal case, Appellant in detention, non-Accelerated, Detained appeal)",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
