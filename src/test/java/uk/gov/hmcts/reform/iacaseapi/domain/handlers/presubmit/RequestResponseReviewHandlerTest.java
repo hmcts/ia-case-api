@@ -71,7 +71,7 @@ class RequestResponseReviewHandlerTest {
 
     @ParameterizedTest
     @MethodSource("caseTypeScenarios")
-    void should_prepare_send_direction_fields(YesOrNo yesOrNo, YesOrNo ada, Parties expectedParties) {
+    void should_prepare_send_direction_fields(YesOrNo appellantInDetention, YesOrNo acceleratedDetainedAppeal, Parties expectedParties) {
 
         final String expectedExplanationContains =
             "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
@@ -81,9 +81,9 @@ class RequestResponseReviewHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.ofNullable(ada));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.ofNullable(acceleratedDetainedAppeal));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);

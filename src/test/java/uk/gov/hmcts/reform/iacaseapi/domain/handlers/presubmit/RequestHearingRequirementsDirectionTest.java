@@ -95,7 +95,7 @@ class RequestHearingRequirementsDirectionTest {
 
     @ParameterizedTest
     @MethodSource("caseTypeScenarios")
-    void should_append_new_direction_to_existing_directions_for_the_case(YesOrNo yesOrNo, YesOrNo ada, JourneyType journeyType, Parties party) {
+    void should_append_new_direction_to_existing_directions_for_the_case(YesOrNo appellantInDetention, YesOrNo acceleratedDetainedAppeal, JourneyType journeyType, Parties party) {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -111,9 +111,9 @@ class RequestHearingRequirementsDirectionTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
 
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.ofNullable(ada));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.ofNullable(acceleratedDetainedAppeal));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
 
         when(directionAppender.append(

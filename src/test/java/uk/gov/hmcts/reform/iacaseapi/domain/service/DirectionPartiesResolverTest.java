@@ -51,7 +51,7 @@ class DirectionPartiesResolverTest {
 
     @ParameterizedTest
     @MethodSource("caseTypeScenarios")
-    void should_return_parties_for_send_direction_events(YesOrNo yesOrNo, Parties parties) {
+    void should_return_parties_for_send_direction_events(YesOrNo appellantInDetention, Parties parties) {
         Parties expectedDirectionParties = Parties.BOTH;
         Map<Event, Parties> exampleInputOutputs =
             ImmutableMap
@@ -82,8 +82,8 @@ class DirectionPartiesResolverTest {
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
                 when(asylumCase.read(SEND_DIRECTION_PARTIES)).thenReturn(Optional.of(expectedDirectionParties));
 
-                when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
-                when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
+                when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+                when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
 
                 Parties actualDirectionParties = directionPartiesResolver.resolve(callback);
 

@@ -93,7 +93,8 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
     }
 
     private Parties resolvePartiesForHearingRequirements(AsylumCase asylumCase) {
-        if (HandlerUtils.isAipJourney(asylumCase) || isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase)) {
+        if (HandlerUtils.isAipJourney(asylumCase) ||
+                (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase))) {
             return Parties.APPELLANT;
         }
         return Parties.LEGAL_REPRESENTATIVE;
