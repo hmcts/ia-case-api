@@ -3,10 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
@@ -23,10 +20,19 @@ class AppellantCaseFlagsHandler  {
         List<CaseFlagDetail> existingCaseFlagDetails,
         StrategicCaseFlagType caseFlagType,
         String dateTimeCreated) {
+        return activateCaseFlag(asylumCase,existingCaseFlagDetails, caseFlagType, dateTimeCreated, caseFlagType.getName());
+    }
+
+    protected List<CaseFlagDetail> activateCaseFlag(
+        AsylumCase asylumCase,
+        List<CaseFlagDetail> existingCaseFlagDetails,
+        StrategicCaseFlagType caseFlagType,
+        String dateTimeCreated,
+        String flagName) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
             .flagCode(caseFlagType.getFlagCode())
-            .name(caseFlagType.getName())
+            .name(flagName)
             .status("Active")
             .hearingRelevant(YesOrNo.YES)
             .dateTimeCreated(dateTimeCreated)
@@ -45,9 +51,13 @@ class AppellantCaseFlagsHandler  {
         StrategicCaseFlagType caseFlagType,
         String dateTimeModified) {
 
-        return caseFlagDetails.stream()
-            .map(detail -> tryDeactivateCaseFlag(caseFlagType, dateTimeModified, detail))
-            .collect(Collectors.toList());
+        if (hasActiveTargetCaseFlag(caseFlagDetails, caseFlagType)) {
+            return caseFlagDetails.stream()
+                .map(detail -> tryDeactivateCaseFlag(caseFlagType, dateTimeModified, detail))
+                .collect(Collectors.toList());
+        } else {
+            return caseFlagDetails;
+        }
     }
 
     protected boolean hasActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
@@ -82,6 +92,13 @@ class AppellantCaseFlagsHandler  {
                 .dateTimeCreated(value.getDateTimeCreated())
                 .build())
             : detail;
+    }
+
+    protected Optional<CaseFlagDetail> getActiveTargetCaseFlag(List<CaseFlagDetail> caseFlagDetails, StrategicCaseFlagType caseFlagType) {
+        return caseFlagDetails
+            .stream()
+            .filter(caseFlagDetail -> isActiveTargetCaseFlag(caseFlagDetail.getCaseFlagValue(), caseFlagType))
+            .findFirst();
     }
 
 }

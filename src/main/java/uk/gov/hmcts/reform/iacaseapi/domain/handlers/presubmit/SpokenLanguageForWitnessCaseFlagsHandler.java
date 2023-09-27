@@ -53,7 +53,6 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
 
         String currentDateTime = systemDateProvider.nowWithTime().toString();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<List<PartyFlagIdValue>> existingCaseFlags = asylumCase.read(WITNESS_LEVEL_FLAGS);
         boolean isWitnessInterpreterRequired = asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)
                 .map(yesOrNo -> yesOrNo.equals(YES))
                 .orElse(false);
@@ -63,9 +62,9 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
             Map<WitnessDetails, Optional<InterpreterLanguageRefData>> witnessRefMap = mapWitness(witnessDetailsOptional.get(), asylumCase);
 
             for (Map.Entry<WitnessDetails, Optional<InterpreterLanguageRefData>> entry : witnessRefMap.entrySet()) {
+                Optional<List<PartyFlagIdValue>> existingCaseFlags = asylumCase.read(WITNESS_LEVEL_FLAGS);
                 WitnessDetails witness = entry.getKey();
                 Optional<InterpreterLanguageRefData> refData = entry.getValue();
-                Optional<PartyFlagIdValue> existingPartyFlagId = Optional.empty();
                 List<CaseFlagDetail> existingFlags = getWitnessCaseFlags(existingCaseFlags, witness.getWitnessPartyId());
                 Optional<CaseFlagDetail> activeFlag = getActiveTargetCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG);
 
@@ -90,8 +89,6 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
                 }
                 caseDataUpdated = false;
             }
-        } else {
-            deactivateAnyActiveCaseFlags(existingCaseFlags, asylumCase, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -128,11 +125,11 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
         if (refData.isPresent()) {
             String flagName = getChosenSpokenLanguage(refData.get());
             if (!isWitnessInterpreterRequired || selectedLanguageDiffers(flagName, activeFlag)) {
-                existingFlags = deactivateCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
+                existingFlags = deactivateCaseFlags(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
                 caseDataUpdated = true;
             }
         } else {
-            existingFlags = deactivateCaseFlag(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
+            existingFlags = deactivateCaseFlags(existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
             caseDataUpdated = true;
         }
         return existingFlags;
