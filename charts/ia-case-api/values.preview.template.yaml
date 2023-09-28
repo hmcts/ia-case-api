@@ -23,7 +23,7 @@ java:
     OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
-    ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+    ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
   keyVaults:
     ia:
@@ -589,8 +589,8 @@ xui-webapp:
       SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
       SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
-      SERVICES_ROLE_ASSIGNMENT_API: http://{{ .Release.Name }}-am-role-assignment-service
-      SERVICES_ROLE_ASSIGNMENT_MAPPING_API: http://{{ .Release.Name }}-am-org-role-mapping-service
+      SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
+      SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -637,13 +637,13 @@ ccd:
     elastic:
       enabled: true
     ras:
-      enabled: false
+      enabled: true
   global:
     ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://{{ .Release.Name }}-ccd-definition-store
-    ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
+    ccdUserProfileUrl: https://ccd-user-profile-api-${SERVICE_FQDN}
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
@@ -662,6 +662,20 @@ ccd:
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
 
+  ccd-user-profile-api:
+    java:
+      autoscaling:
+        enabled: false
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+      enviroment:
+        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+      keyVaults: [ ]
+      environment:
+        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
@@ -676,14 +690,16 @@ ccd:
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+        USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
+        DEFINITION_STORE_HOST: https://ccd-definition-store-${SERVICE_FQDN}
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
@@ -692,6 +708,26 @@ ccd:
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+
+  am-role-assignment-service:
+    java:
+      autoscaling:
+        enabled: false
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/am/role-assignment-service:latest
+      ingressHost: am-role-assignment-${SERVICE_FQDN}
+      environment:
+        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,fis_hmc_api
+        RUN_LD_ON_STARTUP: false
+      keyVaults:
+        am:
+          secrets:
+            - am-role-assignment-service-s2s-secret
+            - app-insights-connection-string
+            - role-assignment-service-IDAM-CLIENT-SECRET
+            - role-assignment-service-IDAM-ADMIN-SECRET
+            - role-assignment-service-LD-SDK-KEY
 
   ccd-admin-web:
     nodejs:
@@ -717,7 +753,7 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
-        USER_PROFILE_HOST: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
+        USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
       keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
   postgresql:
@@ -837,7 +873,7 @@ aac-manage-case-assignment:
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_DEFINITION_STORE_ALLOWED_SERVICE: xui_webapp
       CCD_DATA_STORE_ALLOWED_SERVICE: xui_webapp
-      ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     autoscaling:
       enabled: false
     keyVaults:
@@ -893,7 +929,7 @@ wa:
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
-        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
         POSTGRES_REPLICA_HOST: "{{ .Release.Name }}-postgresql"
         POSTGRES_REPLICA_PORT: 5432
@@ -931,7 +967,7 @@ wa:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
@@ -990,3 +1026,49 @@ ccd-message-publisher:
       SERVICE_BUS_CONNECTION_STRING:
         secretRef: ia-sb-preview
         key: connectionString
+
+am-org-role-mapping-service:
+  enabled: true
+  java:
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
+    secrets:
+      SB_ACCESS_KEY:
+        secretRef: ia-sb-preview
+        key: primaryKey
+      SB_CONNECTION_STRING:
+        secretRef: ia-sb-preview
+        key: connectionString
+    keyVaults:
+      am:
+        secrets:
+          - app-insights-connection-string
+          - am-org-role-mapping-service-s2s-secret
+          - role-assignment-service-LD-SDK-KEY
+          - orm-IDAM-CLIENT-ID
+          - orm-IDAM-CLIENT-SECRET
+          - orm-IDAM-ADMIN-SECRET
+    environment:
+      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
+      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
+      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
+      LAUNCH_DARKLY_ENV: pr
+      AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
+      AMQP_HOST: "ia-sb-preview.servicebus.windows.net"
+      CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-jrd-topic"
+      CRD_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
+      AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      ORG_ROLE_MAPPING_DB_HOST: "{{ .Release.Name }}-postgresql"
+      ORG_ROLE_MAPPING_DB_NAME: org_role_mapping
+      ORG_ROLE_MAPPING_DB_USERNAME: hmcts
+      ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
+      ORG_ROLE_MAPPING_DB_PORT: 5432
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
+      RUN_LD_ON_STARTUP: true
