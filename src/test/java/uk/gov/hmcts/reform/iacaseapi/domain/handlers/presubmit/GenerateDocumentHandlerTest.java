@@ -320,7 +320,8 @@ class GenerateDocumentHandlerTest {
                         CHANGE_HEARING_CENTRE,
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
-                        SEND_DIRECTION
+                        SEND_DIRECTION,
+                        EDIT_APPEAL_AFTER_SUBMIT
                     ).contains(event)) {
 
                     assertTrue(canHandle);
