@@ -369,9 +369,10 @@ public class MakeAnApplicationTypesProvider {
                         && isAcceleratedDetainedAppeal(asylumCase)) {
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
-                }
-                values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
                         UPDATE_APPEAL_DETAILS.toString()));
+                }
+
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
