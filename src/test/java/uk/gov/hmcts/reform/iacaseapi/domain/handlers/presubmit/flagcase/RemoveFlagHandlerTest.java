@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class RemoveCaseFlagHandlerTest {
+class RemoveFlagHandlerTest {
 
     private final LegacyCaseFlag expectedCaseFlag =
         new LegacyCaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
