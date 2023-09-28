@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ public class DirectionPartiesResolver {
     ) {
         requireNonNull(callback, "callback must not be null");
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         switch (callback.getEvent()) {
 
             case LIST_CASE:
@@ -25,7 +29,9 @@ public class DirectionPartiesResolver {
             case FORCE_REQUEST_CASE_BUILDING:
             case REQUEST_RESPONSE_REVIEW:
             case REQUEST_NEW_HEARING_REQUIREMENTS:
-                return Parties.LEGAL_REPRESENTATIVE;
+                return isInternalCase(asylumCase) && isAppellantInDetention(asylumCase)
+                        ? Parties.APPELLANT
+                        : Parties.LEGAL_REPRESENTATIVE;
 
             case REQUEST_RESPONSE_AMEND:
             case REQUEST_RESPONDENT_EVIDENCE:

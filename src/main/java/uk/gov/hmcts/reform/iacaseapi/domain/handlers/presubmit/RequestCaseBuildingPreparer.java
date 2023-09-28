@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -84,7 +86,11 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
             asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
         }
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        if (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase)) {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
+        } else {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
