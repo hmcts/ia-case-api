@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,11 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -56,6 +49,7 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         handleAppellantLevelFlags(asylumCase);
         handleCaseLevelFlags(asylumCase);
         handleWitnessLevelFlags(asylumCase);
+        handleInterpreterLevelFlags(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -93,6 +87,42 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     .write(WITNESS_LEVEL_FLAGS, mapWitnessesToFlag(witnessDetailsList, Collections.emptyList()))
             );
         });
+    }
+
+    private void handleInterpreterLevelFlags(AsylumCase asylumCase) {
+        Optional<List<PartyFlagIdValue>> interpreterLevelFlagsOptional = asylumCase.read(INTERPRETER_LEVEL_FLAGS);
+        final Optional<List<IdValue<InterpreterDetails>>> interpreterDetailsOptional = asylumCase.read(INTERPRETER_DETAILS);
+
+        interpreterDetailsOptional.ifPresent(idValues -> {
+            final List<InterpreterDetails> interpreterDetailsList = idValues.stream().map(IdValue::getValue).toList();
+            interpreterLevelFlagsOptional.ifPresentOrElse(
+                    existingWitnessFlags -> asylumCase
+                            .write(INTERPRETER_LEVEL_FLAGS, mapInterpreterToFlag(interpreterDetailsList, existingWitnessFlags)),
+                    () -> asylumCase
+                            .write(INTERPRETER_LEVEL_FLAGS, mapInterpreterToFlag(interpreterDetailsList, Collections.emptyList()))
+            );
+        });
+    }
+
+    private List<PartyFlagIdValue> mapInterpreterToFlag(
+            List<InterpreterDetails> interpreterDetailsList, List<PartyFlagIdValue> existingInterpreterFlags) {
+        Map<String, StrategicCaseFlag> idToFlagMap = existingInterpreterFlags.isEmpty()
+                ? Collections.emptyMap()
+                : existingInterpreterFlags.stream()
+                .collect(Collectors.toMap(PartyFlagIdValue::getPartyId, PartyFlagIdValue::getValue));
+
+        return interpreterDetailsList.stream()
+                .filter(interpreterDetails -> interpreterDetails.getInterpreterId() != null)
+                .map(interpreterDetails -> {
+                    List<CaseFlagDetail> flagDetails = Collections.emptyList();
+                    String interpreterName = interpreterDetails.buildInterpreterFullName();
+                    if (idToFlagMap.containsKey(interpreterDetails.getInterpreterId())) {
+                        StrategicCaseFlag existingFlag = idToFlagMap.get(interpreterDetails.getInterpreterId());
+                        flagDetails = existingFlag.getDetails();
+                    }
+                    return new PartyFlagIdValue(interpreterDetails.getInterpreterId(), new StrategicCaseFlag(
+                            interpreterName, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, flagDetails));
+                }).collect(Collectors.toList());
     }
 
     private List<PartyFlagIdValue> mapWitnessesToFlag(

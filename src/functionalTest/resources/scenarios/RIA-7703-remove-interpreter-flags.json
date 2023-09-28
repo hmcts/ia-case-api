@@ -1,0 +1,51 @@
+{
+  "description": "RIA-7730 remove interpreter flags when interpreters removed",
+  "enabled": "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingRequirement",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantNameForDisplay": "Eke Uk",
+          "isWitnessesAttending": "No",
+          "interpreterLevelFlags": [
+            {
+              "id": "1",
+              "value": {
+                "partyName": "Interp One Test Family 1",
+                "roleOnCase": "Interpreter",
+                "details": []
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "partyName": "Interp Two Test Family 2",
+                "roleOnCase": "Interpreter",
+                "details": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantNameForDisplay": "Eke Uk",
+        "isWitnessesAttending": "No",
+        "interpreterLevelFlags": [
+          {}
+        ]
+      }
+    }
+  }
+}

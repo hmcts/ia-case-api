@@ -13,11 +13,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -33,12 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -53,6 +44,8 @@ class CreateFlagHandlerTest {
 
     @Captor
     private ArgumentCaptor<List<PartyFlagIdValue>> witnessFlagsCaptor;
+    @Captor
+    private ArgumentCaptor<List<PartyFlagIdValue>> interpreterFlagsCaptor;
     @Captor
     private ArgumentCaptor<StrategicCaseFlag> appellantFlagsCaptor;
     @Captor
@@ -70,11 +63,17 @@ class CreateFlagHandlerTest {
     private final String appellantNameForDisplay = "some-name";
 
     private final String partyId1 = "witnessPartyId1";
+    private final String interpreterPartyId1 = "interpreterPartyId1";
     private final String witnessName1 = "witnessName1";
+    private final String interpreterName1 = "interpreterName1";
     private final String witnessFamilyName1 = "witnessFamilyName1";
+    private final String interpreterFamilyName1 = "interpreterFamilyName1";
     private final String partyId2 = "witnessPartyId2";
+    private final String interpreterPartyId2 = "interpreterPartyId2";
     private final String witnessName2 = "witnessName2";
+    private final String interpreterName2 = "interpreterName2";
     private final String witnessFamilyName2 = "witnessFamilyName2";
+    private final String interpreterFamilyName2 = "interpreterFamilyName2";
 
     @BeforeEach
     public void setUp() {
@@ -90,6 +89,14 @@ class CreateFlagHandlerTest {
                 new IdValue<>(witnessName1, new WitnessDetails(partyId1, witnessName1, witnessFamilyName1)),
                 new IdValue<>(witnessName2, new WitnessDetails(partyId2, witnessName2, witnessFamilyName2)),
                 new IdValue<>(witnessName3, new WitnessDetails(witnessName3, witnessFamilyName3)))));
+
+        when(asylumCase.read(INTERPRETER_DETAILS))
+                .thenReturn(Optional.of(List.of(
+                    new IdValue<>(interpreterName1, new InterpreterDetails(interpreterPartyId1, "bookingRef1",
+                        interpreterName1, interpreterFamilyName1, "0771222222", "test1@email.com", "")),
+                    new IdValue<>(interpreterName2, new InterpreterDetails(interpreterPartyId2, "bookingRef2",
+                        interpreterName2, interpreterFamilyName2, "0771222233", "test2@email.com", ""))
+                )));
 
         createFlagHandler = new CreateFlagHandler();
     }
@@ -265,4 +272,65 @@ class CreateFlagHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+
+    @Test
+    void test_handle_interpreter_level_flags() {
+
+        final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
+        final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
+        final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
+                fullName1, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+        final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
+                fullName2, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+        final List<PartyFlagIdValue> expected = List.of(
+                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                createFlagHandler.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+        assertNotNull(interpreterFlagsCaptor.getValue());
+        assertEquals(2, interpreterFlagsCaptor.getValue().size());
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
+
+        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), any());
+    }
+
+    @Test
+    void test_handle_interpreter_level_flags_when_some_interpreters_have_existing_flags() {
+
+        final List<CaseFlagDetail> caseFlagDetails =
+                List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().build()));
+        final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
+        final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
+        final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
+                fullName1, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, caseFlagDetails);
+        final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
+                fullName2, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+        final List<PartyFlagIdValue> expected = List.of(
+                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
+
+        when(asylumCase.read(INTERPRETER_LEVEL_FLAGS))
+                .thenReturn(Optional.of(List.of(new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1))));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                createFlagHandler.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+        assertNotNull(interpreterFlagsCaptor.getValue());
+        assertEquals(2, interpreterFlagsCaptor.getValue().size());
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
+
+        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), any());
+    }
+
 }
