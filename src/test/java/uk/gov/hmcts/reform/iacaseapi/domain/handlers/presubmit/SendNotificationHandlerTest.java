@@ -146,7 +146,9 @@ class SendNotificationHandlerTest {
             Event.MARK_APPEAL_AS_DETAINED,
             Event.CREATE_CASE_LINK,
             Event.MAINTAIN_CASE_LINKS,
-            Event.MARK_AS_READY_FOR_UT_TRANSFER
+            Event.MARK_AS_READY_FOR_UT_TRANSFER,
+            Event.REQUEST_RESPONSE_AMEND,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -305,7 +307,9 @@ class SendNotificationHandlerTest {
                         Event.CREATE_CASE_LINK,
                         Event.MAINTAIN_CASE_LINKS,
                         Event.MARK_AS_READY_FOR_UT_TRANSFER,
-                        Event.UPDATE_DETENTION_LOCATION
+                        Event.UPDATE_DETENTION_LOCATION,
+                        Event.REQUEST_RESPONSE_AMEND,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER
                     ).contains(event)) {
 
                     assertTrue(canHandle);

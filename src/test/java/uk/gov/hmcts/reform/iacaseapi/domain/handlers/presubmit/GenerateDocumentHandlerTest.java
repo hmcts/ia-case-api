@@ -257,7 +257,7 @@ class GenerateDocumentHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getEvent()).thenReturn(REMOVE_DETAINED_STATUS);
         assertThatThrownBy(() -> generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -317,8 +317,11 @@ class GenerateDocumentHandlerTest {
                         MAINTAIN_CASE_LINKS,
                         UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
                         UPLOAD_ADDITIONAL_EVIDENCE,
+                        CHANGE_HEARING_CENTRE,
                         CREATE_CASE_LINK,
-                        REQUEST_RESPONSE_AMEND
+                        REQUEST_RESPONSE_AMEND,
+                        SEND_DIRECTION,
+                        EDIT_APPEAL_AFTER_SUBMIT
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -431,8 +434,10 @@ class GenerateDocumentHandlerTest {
                         MAINTAIN_CASE_LINKS,
                         UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
                         UPLOAD_ADDITIONAL_EVIDENCE,
+                        CHANGE_HEARING_CENTRE,
                         CREATE_CASE_LINK,
-                        REQUEST_RESPONSE_AMEND
+                        REQUEST_RESPONSE_AMEND,
+                        SEND_DIRECTION
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
