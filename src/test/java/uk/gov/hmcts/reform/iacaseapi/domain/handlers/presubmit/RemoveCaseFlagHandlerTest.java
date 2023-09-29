@@ -58,7 +58,7 @@ public class RemoveCaseFlagHandlerTest {
     private StrategicCaseFlag interpreterFlag1;
     private StrategicCaseFlag interpreterFlag2;
     @Captor
-    private ArgumentCaptor<List<PartyFlagIdValue>> interpreterFlagsCaptor;
+    private ArgumentCaptor<Optional<List<PartyFlagIdValue>>> interpreterFlagsCaptor;
 
     @BeforeEach
     public void setUp() {
@@ -104,9 +104,9 @@ public class RemoveCaseFlagHandlerTest {
 
         verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
-        assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
+        assertEquals(2, interpreterFlagsCaptor.getValue().get().size());
+        assertTrue(interpreterFlagsCaptor.getValue().get().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().get().contains(expected.get(1)));
 
     }
 
@@ -135,8 +135,8 @@ public class RemoveCaseFlagHandlerTest {
 
         verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
-        assertEquals(1, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertEquals(1, interpreterFlagsCaptor.getValue().get().size());
+        assertTrue(interpreterFlagsCaptor.getValue().get().contains(expected.get(0)));
     }
 
     @ParameterizedTest
@@ -156,7 +156,7 @@ public class RemoveCaseFlagHandlerTest {
 
         verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
-        assertEquals(0, interpreterFlagsCaptor.getValue().size());
+        assertTrue(interpreterFlagsCaptor.getValue().isEmpty());
 
         verify(asylumCase, times(0)).write(eq(WITNESS_LEVEL_FLAGS), any());
     }

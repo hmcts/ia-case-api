@@ -51,16 +51,16 @@ public class RemoveCaseFlagHandler implements PreSubmitCallbackHandler<AsylumCas
     private void handleRemovalOfInterpreterLevelFlags(AsylumCase asylumCase) {
         Optional<List<PartyFlagIdValue>> interpreterLevelFlagsOptional = asylumCase.read(INTERPRETER_LEVEL_FLAGS);
         Optional<List<IdValue<InterpreterDetails>>> interpreterDetailsOptional = asylumCase.read(INTERPRETER_DETAILS);
-        List<PartyFlagIdValue> finalPartyFlagList = new ArrayList<>();
+        Optional<List<PartyFlagIdValue>> finalPartyFlagList = Optional.empty();
 
         if (interpreterLevelFlagsOptional.isPresent() && interpreterDetailsOptional.isPresent()) {
             List<String> interpreterIds = new ArrayList<>();
             interpreterDetailsOptional.get().forEach(detail -> interpreterIds.add(detail.getValue().getInterpreterId()));
 
-            finalPartyFlagList = interpreterLevelFlagsOptional.get()
+            finalPartyFlagList = Optional.of(interpreterLevelFlagsOptional.get()
                     .stream()
                     .filter(id -> interpreterIds.contains(id.getPartyId()))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()));
         }
         asylumCase.write(INTERPRETER_LEVEL_FLAGS, finalPartyFlagList);
     }
