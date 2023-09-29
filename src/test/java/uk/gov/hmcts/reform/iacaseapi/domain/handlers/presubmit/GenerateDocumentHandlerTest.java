@@ -324,7 +324,9 @@ class GenerateDocumentHandlerTest {
                         UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
                         UPLOAD_ADDENDUM_EVIDENCE,
-                        CHANGE_DIRECTION_DUE_DATE
+                        CHANGE_DIRECTION_DUE_DATE,
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        REINSTATE_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -444,7 +446,8 @@ class GenerateDocumentHandlerTest {
                         UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
                         UPLOAD_ADDENDUM_EVIDENCE,
-                        CHANGE_DIRECTION_DUE_DATE
+                        CHANGE_DIRECTION_DUE_DATE,
+                        REINSTATE_APPEAL
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
