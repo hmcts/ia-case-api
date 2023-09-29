@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,16 +52,16 @@ public class RemoveCaseFlagHandler implements PreSubmitCallbackHandler<AsylumCas
     private void handleRemovalOfInterpreterLevelFlags(AsylumCase asylumCase) {
         Optional<List<PartyFlagIdValue>> interpreterLevelFlagsOptional = asylumCase.read(INTERPRETER_LEVEL_FLAGS);
         Optional<List<IdValue<InterpreterDetails>>> interpreterDetailsOptional = asylumCase.read(INTERPRETER_DETAILS);
-        Optional<List<PartyFlagIdValue>> finalPartyFlagList = Optional.empty();
+        List<PartyFlagIdValue> finalPartyFlagList = Collections.emptyList();
 
         if (interpreterLevelFlagsOptional.isPresent() && interpreterDetailsOptional.isPresent()) {
             List<String> interpreterIds = new ArrayList<>();
             interpreterDetailsOptional.get().forEach(detail -> interpreterIds.add(detail.getValue().getInterpreterId()));
 
-            finalPartyFlagList = Optional.of(interpreterLevelFlagsOptional.get()
+            finalPartyFlagList = interpreterLevelFlagsOptional.get()
                     .stream()
                     .filter(id -> interpreterIds.contains(id.getPartyId()))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
         }
         asylumCase.write(INTERPRETER_LEVEL_FLAGS, finalPartyFlagList);
     }
