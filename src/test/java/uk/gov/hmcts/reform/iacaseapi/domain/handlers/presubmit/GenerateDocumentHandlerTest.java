@@ -321,7 +321,10 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION,
-                        EDIT_APPEAL_AFTER_SUBMIT
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -437,7 +440,10 @@ class GenerateDocumentHandlerTest {
                         CHANGE_HEARING_CENTRE,
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
-                        SEND_DIRECTION
+                        SEND_DIRECTION,
+                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
