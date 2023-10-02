@@ -208,7 +208,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.UPLOAD_ADDITIONAL_EVIDENCE,
                 Event.REQUEST_RESPONSE_AMEND,
                 Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                Event.EDIT_APPEAL_AFTER_SUBMIT
+                Event.EDIT_APPEAL_AFTER_SUBMIT,
+                Event.CHANGE_HEARING_CENTRE,
+                Event.CHANGE_DIRECTION_DUE_DATE
         );
 
         if (!isSaveAndContinueEnabled) {

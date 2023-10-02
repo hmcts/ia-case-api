@@ -321,7 +321,9 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION,
-                        EDIT_APPEAL_AFTER_SUBMIT
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        CHANGE_HEARING_CENTRE,
+                        CHANGE_DIRECTION_DUE_DATE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -437,7 +439,9 @@ class GenerateDocumentHandlerTest {
                         CHANGE_HEARING_CENTRE,
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
-                        SEND_DIRECTION
+                        SEND_DIRECTION,
+                        CHANGE_HEARING_CENTRE,
+                        CHANGE_DIRECTION_DUE_DATE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
