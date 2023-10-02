@@ -85,6 +85,10 @@ ia-case-payments-api:
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -114,6 +118,10 @@ ia-case-documents-api:
     image: hmctspublic.azurecr.io/ia/case-documents-api:pr-520 #pr-520 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -159,6 +167,10 @@ ia-case-notifications-api:
     image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-724 #pr-724 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
       IA_GOV_NOTIFY_KEY: "test_key-7f72d0fb-2bc4-421b-bceb-1bf5bf350ff9-3df5a74b-f25b-4052-b00f-3f71d33cd0eb"
@@ -350,6 +362,10 @@ ia-bail-case-api:
     # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -431,6 +447,10 @@ ia-home-office-integration-api:
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-285 #pr-285 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -477,10 +497,10 @@ ia-aip-frontend:
     # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
-    memoryRequests: 256Mi
-    cpuRequests: 0.2
-    memoryLimits: 512Mi
-    cpuLimits: 1
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       HTTP_PROTOCOL: http
       NODE_ENV: development
@@ -568,8 +588,14 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    memoryLimits: 1836Mi
-    cpuLimits: 1900m
+    memoryRequests: 2Gi
+    cpuRequests: 2000m
+    memoryLimits: 4Gi
+    cpuLimits: 3500m
+    devmemoryRequests: 6Gi
+    devcpuRequests: 2000m
+    devmemoryLimits: 8Gi
+    devcpuLimits: 4500m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
@@ -654,6 +680,10 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       imagePullPolicy: Always
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
@@ -679,9 +709,10 @@ ccd:
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
-      devcpuRequests: 500m
-      devmemoryRequests: 2048Mi
-      devmemoryLimits: 4096Mi
+      devcpuRequests: 1000m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
       disableKeyVaults: true
@@ -742,6 +773,10 @@ ccd:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
+      devcpuRequests: 500m
+      devmemoryRequests: 512Mi
+      devcpuLimits: 2
+      devmemoryLimits: 1Gi
       autoscaling:
         enabled: false
       environment:

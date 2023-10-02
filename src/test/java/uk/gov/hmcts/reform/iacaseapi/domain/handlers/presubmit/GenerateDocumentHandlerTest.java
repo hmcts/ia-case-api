@@ -321,7 +321,9 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION,
-                        EDIT_APPEAL_AFTER_SUBMIT,
+                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE,
                         CHANGE_DIRECTION_DUE_DATE
                     ).contains(event)) {
 
@@ -439,6 +441,9 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION,
+                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE,
                         CHANGE_DIRECTION_DUE_DATE
                     );
 
