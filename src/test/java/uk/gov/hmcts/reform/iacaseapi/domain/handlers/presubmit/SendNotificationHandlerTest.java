@@ -309,7 +309,9 @@ class SendNotificationHandlerTest {
                         Event.MARK_AS_READY_FOR_UT_TRANSFER,
                         Event.UPDATE_DETENTION_LOCATION,
                         Event.REQUEST_RESPONSE_AMEND,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
