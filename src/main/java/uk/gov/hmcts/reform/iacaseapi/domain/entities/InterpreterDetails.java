@@ -19,4 +19,11 @@ public class InterpreterDetails {
     private String interpreterEmail;
     private String interpreterNote;
 
+    public String buildInterpreterFullName() {
+        String givenNames = getInterpreterGivenNames() == null ? " " : getInterpreterGivenNames();
+        String familyName = getInterpreterFamilyName() == null ? " " : getInterpreterFamilyName();
+
+        return !(givenNames.isBlank() || familyName.isBlank()) ? givenNames + " " + familyName : givenNames;
+    }
+
 }

@@ -1815,6 +1815,9 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_LEVEL_FLAGS(
         "witnessLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
 
+    INTERPRETER_LEVEL_FLAGS(
+            "interpreterLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
+
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
 
