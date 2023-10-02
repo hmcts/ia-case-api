@@ -443,14 +443,11 @@ class GenerateDocumentHandlerTest {
                         CREATE_CASE_LINK,
                         REQUEST_RESPONSE_AMEND,
                         SEND_DIRECTION,
-<<<<<<< HEAD
                         CHANGE_HEARING_CENTRE,
-                        CHANGE_DIRECTION_DUE_DATE
-=======
+                        CHANGE_DIRECTION_DUE_DATE,
                         UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
                         UPLOAD_ADDENDUM_EVIDENCE
->>>>>>> ia-case-api-naba
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
