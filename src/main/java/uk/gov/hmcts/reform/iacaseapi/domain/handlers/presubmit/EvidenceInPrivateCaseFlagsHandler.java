@@ -59,8 +59,11 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        StrategicCaseFlagService strategicCaseFlagService = new StrategicCaseFlagService(asylumCase
-            .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class).orElse(null));
+        StrategicCaseFlagService strategicCaseFlagService = asylumCase
+            .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .map(StrategicCaseFlagService::new)
+            .orElseGet(() ->
+                new StrategicCaseFlagService(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT));
 
         boolean inCameraCourtRequested = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
             .map(cameraCourtNeeded -> YES == cameraCourtNeeded).orElse(false);
@@ -73,9 +76,6 @@ public class EvidenceInPrivateCaseFlagsHandler implements PreSubmitCallbackHandl
         boolean caseDataUpdated;
 
         if (inCameraCourtRequested && inCameraCourtGranted) {
-            strategicCaseFlagService
-                .initializeIfEmpty(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT);
-
             caseDataUpdated = strategicCaseFlagService.activateFlag(CASE_GIVEN_IN_PRIVATE, YES, currentDateTime);
         } else {
             caseDataUpdated = strategicCaseFlagService.deactivateFlag(CASE_GIVEN_IN_PRIVATE, currentDateTime);

@@ -62,11 +62,8 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
     }
 
     private void createAnonymityFlag(AsylumCase asylumCase, Optional<StrategicCaseFlag> strategicCaseFlagOptional) {
-        StrategicCaseFlagService caseFlagService =
-            new StrategicCaseFlagService(strategicCaseFlagOptional.orElse(null));
-        if (caseFlagService.isEmpty()) {
-            caseFlagService.initialize(null, null);
-        }
+        StrategicCaseFlagService caseFlagService = strategicCaseFlagOptional.map(StrategicCaseFlagService::new)
+            .orElseGet(StrategicCaseFlagService::new);
 
         if (caseFlagService.activateFlag(ANONYMITY, YesOrNo.YES, systemDateProvider.nowWithTime().toString())) {
             asylumCase.write(CASE_LEVEL_FLAGS, caseFlagService.getStrategicCaseFlag());

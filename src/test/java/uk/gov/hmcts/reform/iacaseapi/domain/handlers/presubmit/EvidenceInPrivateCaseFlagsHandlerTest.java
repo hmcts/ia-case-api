@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -125,7 +126,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             evidenceInPrivateCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -167,7 +168,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             evidenceInPrivateCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -197,7 +198,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             evidenceInPrivateCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -227,7 +228,7 @@ public class EvidenceInPrivateCaseFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             evidenceInPrivateCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

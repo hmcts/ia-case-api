@@ -20,9 +20,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class WitnessCaseFlagsHandler{
+public class WitnessCaseFlagsHandler {
 
-    protected Map<String, StrategicCaseFlag> getWitnessFlags(AsylumCase asylumCase) {
+    protected Map<String, StrategicCaseFlag> getWitnessFlagsMap(AsylumCase asylumCase) {
         Optional<List<PartyFlagIdValue>> optionalWitnessFlags = asylumCase.read(WITNESS_LEVEL_FLAGS);
 
         return optionalWitnessFlags

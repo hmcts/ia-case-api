@@ -56,34 +56,31 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        StrategicCaseFlagService strategicCaseFlagService = new StrategicCaseFlagService(asylumCase
-            .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class).orElse(null));
+        StrategicCaseFlagService strategicCaseFlagService = asylumCase
+            .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .map(StrategicCaseFlagService::new)
+            .orElseGet(() ->
+                new StrategicCaseFlagService(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT));
         boolean isHearingLoopNeeded = asylumCase.read(IS_HEARING_LOOP_NEEDED, YesOrNo.class)
             .map(hearingLoopNeeded -> YesOrNo.YES == hearingLoopNeeded).orElse(false);
         boolean isHearingRoomNeeded = asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)
             .map(hearingRoomNeeded -> YesOrNo.YES == hearingRoomNeeded).orElse(false);
         String currentDateTime = systemDateProvider.nowWithTime().toString();
 
-        boolean caseDataUpdated;
+        boolean caseDataUpdated = false;
 
         if (isHearingLoopNeeded) {
 
-            strategicCaseFlagService
-                .initializeIfEmpty(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT);
-
-            caseDataUpdated = strategicCaseFlagService.activateFlag(HEARING_LOOP, YES, currentDateTime);
+            caseDataUpdated |= strategicCaseFlagService.activateFlag(HEARING_LOOP, YES, currentDateTime);
         } else {
-            caseDataUpdated = strategicCaseFlagService.deactivateFlag(HEARING_LOOP, currentDateTime);
+            caseDataUpdated |= strategicCaseFlagService.deactivateFlag(HEARING_LOOP, currentDateTime);
         }
         if (isHearingRoomNeeded) {
 
-            strategicCaseFlagService
-                .initializeIfEmpty(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT);
-
-            caseDataUpdated = strategicCaseFlagService
+            caseDataUpdated |= strategicCaseFlagService
                 .activateFlag(STEP_FREE_WHEELCHAIR_ACCESS, YES, currentDateTime);
         } else {
-            caseDataUpdated = strategicCaseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
+            caseDataUpdated |= strategicCaseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
         }
 
         if (caseDataUpdated) {

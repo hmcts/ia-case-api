@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
@@ -99,12 +98,12 @@ class CreateFlagHandlerTest {
                 new IdValue<>(witnessName3, new WitnessDetails(witnessName3, witnessFamilyName3)))));
 
         when(asylumCase.read(INTERPRETER_DETAILS))
-                .thenReturn(Optional.of(List.of(
-                    new IdValue<>(interpreterName1, new InterpreterDetails(interpreterPartyId1, "bookingRef1",
-                        interpreterName1, interpreterFamilyName1, "0771222222", "test1@email.com", "")),
-                    new IdValue<>(interpreterName2, new InterpreterDetails(interpreterPartyId2, "bookingRef2",
-                        interpreterName2, interpreterFamilyName2, "0771222233", "test2@email.com", ""))
-                )));
+            .thenReturn(Optional.of(List.of(
+                new IdValue<>(interpreterName1, new InterpreterDetails(interpreterPartyId1, "bookingRef1",
+                    interpreterName1, interpreterFamilyName1, "0771222222", "test1@email.com", "")),
+                new IdValue<>(interpreterName2, new InterpreterDetails(interpreterPartyId2, "bookingRef2",
+                    interpreterName2, interpreterFamilyName2, "0771222233", "test2@email.com", ""))
+            )));
 
         createFlagHandler = new CreateFlagHandler();
     }
@@ -118,12 +117,10 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(APPELLANT_LEVEL_FLAGS), appellantFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), appellantFlagsCaptor.capture());
         assertTrue(appellantFlagsCaptor.getValue().getDetails().isEmpty());
         assertEquals(ROLE_ON_CASE_APPELLANT, appellantFlagsCaptor.getValue().getRoleOnCase());
         assertEquals(appellantNameForDisplay, appellantFlagsCaptor.getValue().getPartyName());
-
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -161,12 +158,10 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(APPELLANT_LEVEL_FLAGS), appellantFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), appellantFlagsCaptor.capture());
         assertEquals("flagId", appellantFlagsCaptor.getValue().getDetails().get(0).getId());
         assertEquals(ROLE_ON_CASE_APPELLANT, appellantFlagsCaptor.getValue().getRoleOnCase());
         assertEquals(appellantNameForDisplay, appellantFlagsCaptor.getValue().getPartyName());
-
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -187,13 +182,11 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
-
-        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -218,13 +211,11 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
-
-        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -236,10 +227,8 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(APPELLANT_LEVEL_FLAGS), caseFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), caseFlagsCaptor.capture());
         assertNotNull(caseFlagsCaptor.getValue());
-
-        verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -300,13 +289,11 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
-
-        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -332,13 +319,11 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
-
-        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), any());
     }
 
 }

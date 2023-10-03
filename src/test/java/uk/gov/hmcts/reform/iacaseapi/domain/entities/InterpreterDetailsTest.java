@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InterpreterDetailsTest {
 
@@ -13,7 +13,7 @@ public class InterpreterDetailsTest {
         InterpreterDetails interpreterDetails = new InterpreterDetails("id1", "bookingRef1",
                 givenName, familyName, "0771222222", "test1@email.com", "");
 
-        assertTrue(interpreterDetails.buildInterpreterFullName().equals(givenName + " " + familyName));
+        assertEquals(interpreterDetails.buildInterpreterFullName(), givenName + " " + familyName);
     }
 
 }

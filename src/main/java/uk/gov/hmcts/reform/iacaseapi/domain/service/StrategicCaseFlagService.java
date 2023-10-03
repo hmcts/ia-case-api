@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import lombok.NonNull;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Language;
@@ -25,29 +27,23 @@ public class StrategicCaseFlagService {
 
     private Map<String, CaseFlagDetail> details;
 
-    public StrategicCaseFlagService(StrategicCaseFlag strategicCaseFlag) {
-        if (strategicCaseFlag != null) {
-            this.partyName = strategicCaseFlag.getPartyName();
-            this.roleOnCase = strategicCaseFlag.getRoleOnCase();
-            this.details = strategicCaseFlag.getDetails().stream()
-                .collect(Collectors.toMap(detail -> detail.getCaseFlagValue().getFlagCode(), detail -> detail));
-        } else {
-            this.partyName = null;
-            this.roleOnCase = null;
-            this.details = null;
-        }
+    public StrategicCaseFlagService(@NonNull StrategicCaseFlag strategicCaseFlag) {
+        this(strategicCaseFlag.getPartyName(), strategicCaseFlag.getRoleOnCase(), strategicCaseFlag.getDetails());
     }
 
-    public void initializeIfEmpty(String partyName, String roleOnCase) {
-        if (isEmpty()) {
-            initialize(partyName, roleOnCase);
-        }
-    }
-
-    public void initialize(String partyName, String roleOnCase) {
+    public StrategicCaseFlagService(String partyName, String roleOnCase, List<CaseFlagDetail> details) {
         this.partyName = partyName;
         this.roleOnCase = roleOnCase;
-        this.details = new HashMap<>();
+        this.details = details == null ? new HashMap<>() : details.stream()
+            .collect(Collectors.toMap(detail -> detail.getCaseFlagValue().getFlagCode(), detail -> detail));
+    }
+
+    public StrategicCaseFlagService(String partyName, String roleOnCase) {
+        this(partyName, roleOnCase, null);
+    }
+
+    public StrategicCaseFlagService() {
+        this(null, null, null);
     }
 
     public StrategicCaseFlag getStrategicCaseFlag() {
@@ -124,23 +120,17 @@ public class StrategicCaseFlagService {
         }
     }
 
-    public boolean delete() {
-        if (isPresent()) {
-            partyName = null;
-            roleOnCase = null;
-            details = null;
-
-            return true;
-        }
-
-        return false;
+    protected void clear() {
+        this.partyName = null;
+        this.roleOnCase = null;
+        this.details = null;
     }
 
-    public boolean isEmpty() {
+    protected boolean isEmpty() {
         return details == null;
     }
 
-    public boolean isPresent() {
+    protected boolean isPresent() {
         return !isEmpty();
     }
 

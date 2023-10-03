@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APP
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,7 +121,7 @@ public class AnonymousByDefaultHandlerTest {
     void should_set_anonymity_flag_when_an_empty_class_level_flag_exists() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
-             .thenReturn(Optional.of(new StrategicCaseFlag()));
+             .thenReturn(Optional.of(new StrategicCaseFlag(null, null, Collections.emptyList())));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

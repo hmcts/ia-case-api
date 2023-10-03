@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -181,7 +182,7 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -217,7 +218,7 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -267,7 +268,7 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -295,7 +296,7 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -323,7 +324,7 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
             .thenReturn(Optional.of(new StrategicCaseFlag(
-                appellantDisplayName, StrategicCaseFlag.ROLE_ON_CASE_APPELLANT, existingFlags)));
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

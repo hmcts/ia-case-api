@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 import java.util.List;
 import java.util.Map;
@@ -60,22 +61,28 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
         Map<String, WitnessDetails> witnessDetailsMap = getWitnessDetailsMap(asylumCase);
         Map<String, Language> witnessInterpreterLanguageMap =
             getWitnessInterpreterLanguageMap(asylumCase, witnessDetailsMap);
-        Map<String, StrategicCaseFlag> witnessFlagsMap = getWitnessFlags(asylumCase);
+        Map<String, StrategicCaseFlag> witnessFlagsMap = getWitnessFlagsMap(asylumCase);
 
         boolean caseDataUpdated = false;
+        StrategicCaseFlagService strategicCaseFlagService;
         for (WitnessDetails details : witnessDetailsMap.values()) {
-            StrategicCaseFlagService strategicCaseFlagService =
-                new StrategicCaseFlagService(witnessFlagsMap.get(details.getWitnessPartyId()));
+            StrategicCaseFlag existingCaseFlag = witnessFlagsMap.get(details.getWitnessPartyId());
+            strategicCaseFlagService = existingCaseFlag == null
+                ? new StrategicCaseFlagService(details.buildWitnessFullName(), ROLE_ON_CASE_WITNESS)
+                : new StrategicCaseFlagService(existingCaseFlag);
+
             StrategicCaseFlag updatedInterpreterLanguageFlag = tryUpdateFlags(
                 strategicCaseFlagService, details, witnessInterpreterLanguageMap, currentDateTime);
+
             if (updatedInterpreterLanguageFlag != null) {
                 caseDataUpdated = true;
                 witnessFlagsMap.put(details.getWitnessPartyId(), updatedInterpreterLanguageFlag);
             }
         }
 
+        List<PartyFlagIdValue> witnessFlagsIdValues;
         if (caseDataUpdated) {
-            List<PartyFlagIdValue> witnessFlagsIdValues = witnessFlagsMap
+            witnessFlagsIdValues = witnessFlagsMap
                 .entrySet().stream()
                 .map(entry -> new PartyFlagIdValue(entry.getKey(), entry.getValue())).toList();
             asylumCase
@@ -91,13 +98,11 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
         Map<String, Language> witnessInterpreterLanguageMap,
         String currentDateTime) {
 
-        boolean caseDataUpdated = false;
+        boolean caseDataUpdated;
         if (witnessInterpreterLanguageMap.containsKey(details.getWitnessPartyId())) {
             // Try to activate flags for witnesses with interpreter language
 
             Language interpreterLanguage = witnessInterpreterLanguageMap.get(details.getWitnessPartyId());
-            strategicCaseFlagService.initializeIfEmpty(
-                details.buildWitnessFullName(), StrategicCaseFlagService.ROLE_ON_CASE_WITNESS);
             caseDataUpdated = strategicCaseFlagService
                 .activateFlag(INTERPRETER_LANGUAGE_FLAG, YES, currentDateTime, interpreterLanguage);
         } else {

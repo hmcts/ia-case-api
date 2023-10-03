@@ -12,13 +12,13 @@ public class Language {
     private final String languageCode;
     private final String languageText;
 
-    public Language(String languageCode, String languageName) {
+    public Language(String languageCode, String languageText) {
         this.languageCode = languageCode;
-        this.languageText = languageName;
+        this.languageText = languageText;
     }
 
-    public Language(String languageName) {
-        this(null, languageName);
+    public Language(String languageText) {
+        this(null, languageText);
     }
 
     public static Language of(InterpreterLanguageRefData interpreterLanguageRefData) {
@@ -26,7 +26,8 @@ public class Language {
             && interpreterLanguageRefData.getLanguageRefData().getValue() != null) {
             String languageCode = interpreterLanguageRefData.getLanguageRefData().getValue().getCode();
             String languageName = interpreterLanguageRefData.getLanguageRefData().getValue().getLabel();
-                return new Language(languageCode, languageName);
+
+            return new Language(languageCode, languageName);
         } else if (interpreterLanguageRefData.getLanguageManualEntry() != null
             && !interpreterLanguageRefData.getLanguageManualEntry().isEmpty()) {
             return new Language(interpreterLanguageRefData.getLanguageManualEntryDescription());
