@@ -579,6 +579,7 @@ xui-webapp:
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
+      AAC_URL: https://aac-manage-case-assignment-pr-473.preview.platform.hmcts.net
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -801,32 +802,4 @@ em-stitching:
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-
-aac-manage-case-assignment:
-  enabled: true
-  java:
-    image: hmctspublic.azurecr.io/aac/manage-case-assignment:pr-473-c1c030a-20230918114837
-    disableKeyVaults: true
-    imagePullPolicy: Always
-    ingressHost: aac-${SERVICE_FQDN}
-    releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
-    environment:
-      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
-      MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
-      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,divorce_frontend,divorce_ccd_submission,finrem_case_orchestration
-      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
-      PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
-      IDAM_CAA_USERNAME: ${IDAM_CAA_USERNAME}
-      IDAM_CAA_PASSWORD: ${IDAM_CAA_PASSWORD}
-      IDAM_CLIENT_SECRET: ${IDAM_MCA_CLIENT_SECRET}
-      MANAGE_CASE_S2S_KEY: ${MANAGE_CASE_S2S_KEY}
-      IDAM_NOC_APPROVER_USERNAME: ${IDAM_NOC_APPROVER_USERNAME}
-      IDAM_NOC_APPROVER_PASSWORD: ${IDAM_NOC_APPROVER_PASSWORD}
-    autoscaling:
-      enabled: false
 
