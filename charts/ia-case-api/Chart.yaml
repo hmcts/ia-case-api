@@ -78,3 +78,7 @@ dependencies:
     version: ~0.0.48
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: am-org-role-mapping-service.enabled
+  - name: rd-caseworker-ref-api
+    version: ~1.0.1
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: rd-caseworker-ref-api.enabled
