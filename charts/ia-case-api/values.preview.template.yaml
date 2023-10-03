@@ -886,6 +886,7 @@ em-stitching:
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
 
 aac-manage-case-assignment:
   enabled: true
