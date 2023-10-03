@@ -25,6 +25,7 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+    AAC_URL: https://aac-manage-case-assignment-pr-473.preview.platform.hmcts.net
   keyVaults:
     ia:
       secrets:
@@ -579,7 +580,6 @@ xui-webapp:
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
-      AAC_URL: https://aac-manage-case-assignment-pr-473.preview.platform.hmcts.net
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
