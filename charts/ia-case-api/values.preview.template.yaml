@@ -620,7 +620,7 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
-      PREVIEW_DEPLOYMENT_ID: iac-preview-deployment-1669
+      PREVIEW_DEPLOYMENT_ID: iac-preview-deployment-1683
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
@@ -1117,6 +1117,7 @@ am-org-role-mapping-service:
       RUN_LD_ON_STARTUP: true
 
 hmc-hmi-outbound-adapter:
+  enabled: true
   image: "hmctspublic.azurecr.io/hmc/hmi-outbound-adapter:latest"
   ingressHost: hmc-hmi-outbound-adapter-${SERVICE_FQDN}
   environment:
@@ -1136,6 +1137,7 @@ hmc-hmi-outbound-adapter:
         - name: AppInsightsInstrumentationKey
 
 hmc-hmi-inbound-adapter:
+  enabled: true
   image: "hmctspublic.azurecr.io/hmc/hmi-inbound-adapter:latest"
   ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
   environment:
@@ -1162,6 +1164,7 @@ hmc-hmi-inbound-adapter:
           alias: HMC_SYSTEM_USER_PASSWORD
 
 hmc-cft-hearing-service:
+  enabled: true
   image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
   ingressHost: hmc-cft-hearing-service-${SERVICE_FQDN}
   environment:
@@ -1177,7 +1180,7 @@ hmc-cft-hearing-service:
     CFT_HEARING_SERVICE_DB_PORT: 5432
     CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
   postgresql:
-    enabled: true
+    enabled: false
   secrets:
     HMC_SERVICE_BUS_CONNECTION_STRING:
       secretRef: ia-sb-preview

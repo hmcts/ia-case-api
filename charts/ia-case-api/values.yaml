@@ -88,3 +88,9 @@ am-org-role-mapping-service:
   enabled: false
 redis:
   enabled: false
+hmc-hmi-outbound-adapter:
+  enabled: false
+hmc-hmi-inbound-adapter:
+  enabled: false
+hmc-cft-hearing-service:
+  enabled: false
