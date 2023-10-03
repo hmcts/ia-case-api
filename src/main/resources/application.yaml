@@ -88,7 +88,7 @@ spring:
 featureFlag:
   docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
-  isSubmitHearingRequirementsEnabled: true
+  isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
   isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:true}
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:false}
