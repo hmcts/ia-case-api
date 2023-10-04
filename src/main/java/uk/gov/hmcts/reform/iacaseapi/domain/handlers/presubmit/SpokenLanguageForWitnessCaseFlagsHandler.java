@@ -73,12 +73,14 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
                 }
 
                 if (refData.isPresent() && isWitnessInterpreterRequired) {
-                    String flagName = getChosenSpokenLanguage(refData.get());
+                    String languageName = getChosenSpokenLanguage(refData.get());
                     if (activeFlag.isPresent() && caseDataUpdated) {
-                        existingFlags = activateCaseFlag(asylumCase, existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime, flagName);
+                        existingFlags = activateCaseFlag(asylumCase, existingFlags, INTERPRETER_LANGUAGE_FLAG,
+                            currentDateTime, languageName, getLanguageCode(refData.get()));
                         caseDataUpdated = true;
                     } else if (activeFlag.isEmpty()) {
-                        existingFlags = activateCaseFlag(asylumCase, existingFlags, INTERPRETER_LANGUAGE_FLAG, currentDateTime, flagName);
+                        existingFlags = activateCaseFlag(asylumCase, existingFlags, INTERPRETER_LANGUAGE_FLAG,
+                            currentDateTime, languageName, getLanguageCode(refData.get()));
                         caseDataUpdated = true;
                     }
                 }
@@ -155,7 +157,16 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
         } else {
             chosenLanguage = witnessSpokenLanguage.getLanguageManualEntryDescription();
         }
-        return INTERPRETER_LANGUAGE_FLAG.getName().concat(" " + chosenLanguage);
+        return chosenLanguage;
+    }
+
+    private String getLanguageCode(InterpreterLanguageRefData witnessSpokenLanguage) {
+        if (witnessSpokenLanguage.getLanguageRefData() == null
+            || witnessSpokenLanguage.getLanguageRefData().getValue() == null) {
+            return null;
+        }
+
+        return witnessSpokenLanguage.getLanguageRefData().getValue().getCode();
     }
 
     private boolean selectedLanguageDiffers(String flagName, CaseFlagDetail activeCaseFlag) {

@@ -86,12 +86,14 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
             if (appellantSpokenLanguage.isPresent()) {
                 String chosenLanguage = getChosenSpokenLanguage(appellantSpokenLanguage.get());
                 if (activeFlag.isEmpty()) {
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, chosenLanguage);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails,
+                        chosenLanguage, getLanguageCode(appellantSpokenLanguage.get()));
                     caseDataUpdated = true;
                 } else if (asylumCaseBefore.isPresent() &&
                         selectedLanguageDiffers(appellantSpokenLanguage.get(), asylumCaseBefore.get().getCaseData())) {
                     existingCaseFlagDetails = deactivateCaseFlag(existingCaseFlagDetails);
-                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails, chosenLanguage);
+                    existingCaseFlagDetails = activateCaseFlag(asylumCase, existingCaseFlagDetails,
+                        chosenLanguage, getLanguageCode(appellantSpokenLanguage.get()));
                     caseDataUpdated = true;
                 }
             }
@@ -114,6 +116,15 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private String getLanguageCode(InterpreterLanguageRefData witnessSpokenLanguage) {
+        if (witnessSpokenLanguage.getLanguageRefData() == null
+            || witnessSpokenLanguage.getLanguageRefData().getValue() == null) {
+            return null;
+        }
+
+        return witnessSpokenLanguage.getLanguageRefData().getValue().getCode();
+    }
+
     private String getChosenSpokenLanguage(InterpreterLanguageRefData appellantSpokenLanguage) {
         if (appellantSpokenLanguage.getLanguageManualEntry() == null || appellantSpokenLanguage.getLanguageManualEntry().isEmpty()) {
             return appellantSpokenLanguage.getLanguageRefData().getValue().getLabel();
@@ -131,12 +142,15 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
     private List<CaseFlagDetail> activateCaseFlag(
             AsylumCase asylumCase,
             List<CaseFlagDetail> existingCaseFlagDetails,
-            String language
+            String language,
+            String languageCode
     ) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
                 .flagCode(StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG.getName().concat(" " + language))
+                .name(StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG.getName())
+                .subTypeValue(language)
+                .subTypeKey(languageCode)
                 .status("Active")
                 .hearingRelevant(YesOrNo.YES)
                 .dateTimeCreated(systemDateProvider.nowWithTime().toString())
@@ -159,6 +173,8 @@ public class SpokenLanguageForAppellantCaseFlagsHandler implements PreSubmitCall
                     return new CaseFlagDetail(detail.getId(), CaseFlagValue.builder()
                             .flagCode(value.getFlagCode())
                             .name(value.getName())
+                            .subTypeKey(value.getSubTypeKey())
+                            .subTypeValue(value.getSubTypeValue())
                             .status("Inactive")
                             .dateTimeModified(systemDateProvider.nowWithTime().toString())
                             .dateTimeCreated(value.getDateTimeCreated())
