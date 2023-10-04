@@ -73,8 +73,8 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
                     asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
                 yield commonBody + "You must now [link the appeal]" + linkCommon + "linkAppeal) or "
                     + (reasonForLinkAppeal.isPresent()
-                    ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
-                    : "unlink the appeal");
+                        ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
+                        : "unlink the appeal");
             }
             // todo check works
             case ADJOURN -> commonBody
