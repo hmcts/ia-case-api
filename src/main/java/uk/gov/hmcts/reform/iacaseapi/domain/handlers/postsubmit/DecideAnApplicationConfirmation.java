@@ -68,16 +68,19 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
         final long id = callback.getCaseDetails().getId();
         String linkCommon = "(/case/IA/Asylum/" + id + "/trigger/";
         String body = switch (MakeAnApplicationTypes.valueOf(application.getType())) {
-            case ADJOURN, EXPEDITE, TRANSFER -> commonBody + "You need to tell the listing team to relist"
-                + "the case. Once the case is relisted a new Notice of Hearing will be sent to all parties.";
             case LINK_OR_UNLINK -> {
                 final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
                     asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
                 yield commonBody + "You must now [link the appeal]" + linkCommon + "linkAppeal) or "
                     + (reasonForLinkAppeal.isPresent()
-                        ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
-                        : "unlink the appeal");
+                    ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
+                    : "unlink the appeal");
             }
+            // todo check works
+            case ADJOURN -> commonBody
+                + "You must now [record the details of the adjournment]" + linkCommon + "recordAdjournmentDetails).";
+            case TRANSFER, EXPEDITE -> commonBody
+                + "You must now [update the hearing request]" + linkCommon + "updateHearingRequest).";
             case JUDGE_REVIEW ->  commonBody
                 + "Both parties will receive a notification detailing your decision.";
             case REINSTATE ->  commonBody
