@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AppellantCaseFlagsHandlerTest {
 
+    public static final String ACTIVE = "Active";
     @Mock
     private AsylumCase asylumCase;
 
@@ -106,17 +107,21 @@ class AppellantCaseFlagsHandlerTest {
 
     @Test
     void should_activate_case_flag() {
-        boolean activatedWithExistingCaseFlag = appellantCaseFlagsHandler
-            .activateCaseFlag(asylumCase, activeCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS, "06-09-2023")
-            .stream()
-            .anyMatch(details -> Objects.equals(details.getCaseFlagValue().getStatus(), "Active"));
-        boolean activatedWithNoExistingCaseFlag = appellantCaseFlagsHandler
-            .activateCaseFlag(asylumCase, Collections.emptyList(), HEARING_LOOP, "06-09-2023")
-            .stream()
-            .anyMatch(details -> Objects.equals(details.getCaseFlagValue().getStatus(), "Active"));
+        List<CaseFlagDetail> activatedWithExistingCaseFlag = appellantCaseFlagsHandler
+            .activateCaseFlag(asylumCase, activeCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS,
+                "06-09-2023", "langName", "langCode");
 
-        assertTrue(activatedWithExistingCaseFlag);
-        assertTrue(activatedWithNoExistingCaseFlag);
+        List<CaseFlagDetail>  activatedWithNoExistingCaseFlag = appellantCaseFlagsHandler
+            .activateCaseFlag(asylumCase, Collections.emptyList(), HEARING_LOOP,
+                "06-09-2023", "langName2", "langCode2");
+
+        assertEquals(ACTIVE, activatedWithExistingCaseFlag.get(1).getCaseFlagValue().getStatus());
+        assertEquals("langName", activatedWithExistingCaseFlag.get(1).getCaseFlagValue().getSubTypeValue());
+        assertEquals("langCode", activatedWithExistingCaseFlag.get(1).getCaseFlagValue().getSubTypeKey());
+
+        assertEquals(ACTIVE, activatedWithNoExistingCaseFlag.get(0).getCaseFlagValue().getStatus());
+        assertEquals("langName2", activatedWithNoExistingCaseFlag.get(0).getCaseFlagValue().getSubTypeValue());
+        assertEquals("langCode2", activatedWithNoExistingCaseFlag.get(0).getCaseFlagValue().getSubTypeKey());
     }
 
     @Test

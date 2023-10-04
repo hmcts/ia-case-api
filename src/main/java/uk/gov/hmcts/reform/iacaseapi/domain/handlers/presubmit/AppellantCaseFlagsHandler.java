@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +21,8 @@ class AppellantCaseFlagsHandler  {
         List<CaseFlagDetail> existingCaseFlagDetails,
         StrategicCaseFlagType caseFlagType,
         String dateTimeCreated) {
-        return activateCaseFlag(asylumCase,existingCaseFlagDetails, caseFlagType, dateTimeCreated, caseFlagType.getName());
+        return activateCaseFlag(asylumCase, existingCaseFlagDetails, caseFlagType,
+            dateTimeCreated, caseFlagType.getName(), null);
     }
 
     protected List<CaseFlagDetail> activateCaseFlag(
@@ -28,11 +30,14 @@ class AppellantCaseFlagsHandler  {
         List<CaseFlagDetail> existingCaseFlagDetails,
         StrategicCaseFlagType caseFlagType,
         String dateTimeCreated,
-        String flagName) {
+        String languageName,
+        String languageCode) {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
             .flagCode(caseFlagType.getFlagCode())
-            .name(flagName)
+            .subTypeKey(languageCode)
+            .subTypeValue(languageName)
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
             .status("Active")
             .hearingRelevant(YesOrNo.YES)
             .dateTimeCreated(dateTimeCreated)
@@ -85,6 +90,8 @@ class AppellantCaseFlagsHandler  {
         return isActiveTargetCaseFlag(value, caseFlagType)
             ? new CaseFlagDetail(detail.getId(), CaseFlagValue.builder()
                 .flagCode(value.getFlagCode())
+                .subTypeKey(value.getSubTypeKey())
+                .subTypeValue(value.getSubTypeValue())
                 .name(value.getName())
                 .status("Inactive")
                 .hearingRelevant(value.getHearingRelevant())
