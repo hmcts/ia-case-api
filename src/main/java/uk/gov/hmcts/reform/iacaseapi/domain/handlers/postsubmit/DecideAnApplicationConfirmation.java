@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -18,11 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
 public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
-
     @Override
-    public boolean canHandle(
-        Callback<AsylumCase> callback
-    ) {
+    public boolean canHandle(Callback<AsylumCase> callback) {
 
         requireNonNull(callback, "callback must not be null");
         return callback.getEvent() == Event.DECIDE_AN_APPLICATION;
@@ -50,114 +48,52 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
         postSubmitResponse.setConfirmationHeader("# You have decided an application");
 
-        maybeMakeAnApplication
-            .ifPresent(application -> {
-                String decision = application.getValue().getDecision();
-                String typeOfApplication = application.getValue().getType();
-                String whatHappensNextHeader = "#### What happens next\n\n";
-                String decisionRecordedText = "The application decision has been recorded and is now available in the applications tab. ";
+        if (maybeMakeAnApplication.isEmpty()) {
+            return postSubmitResponse;
+        }
 
-                if (decision.equals("Granted")) {
-                    switch (typeOfApplication) {
-                        case "Adjourn":
-                        case "Expedite":
-                        case "Transfer":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "You need to tell the listing team to relist the case. Once the case is relisted a new Notice of Hearing "
-                                + "will be sent to all parties."
-                            );
-                            break;
+        MakeAnApplication application = maybeMakeAnApplication.get().getValue();
+        String commonBody = """
+            #### What happens next
 
-                        case "Link/unlink appeals":
-                            final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
-                                asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
-                            String body =
-                                reasonForLinkAppeal.isPresent() == true
-                                    ? whatHappensNextHeader
-                                      + decisionRecordedText
-                                      + "You must now [link the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                                      + " or [unlink the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal)."
-                                    : whatHappensNextHeader
-                                      + decisionRecordedText
-                                      + "You must now [link the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                                      + " or unlink the appeal";
-                            postSubmitResponse.setConfirmationBody(body);
+            The application decision has been recorded and is now available in the applications tab.\s""";
 
-                            break;
+        if (!"Granted".equals(application.getDecision())) {
+            postSubmitResponse.setConfirmationBody(
+                commonBody + "Both parties will be notified that the application was refused."
+            );
+            return postSubmitResponse;
+        }
 
-                        case "Judge's review of application decision":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "Both parties will receive a notification detailing your decision."
-                            );
-                            break;
+        final long id = callback.getCaseDetails().getId();
+        String linkCommon = "(/case/IA/Asylum/" + id + "/trigger/";
+        String body = switch (MakeAnApplicationTypes.valueOf(application.getType())) {
+            case ADJOURN, EXPEDITE, TRANSFER -> commonBody + "You need to tell the listing team to relist"
+                + "the case. Once the case is relisted a new Notice of Hearing will be sent to all parties.";
+            case LINK_OR_UNLINK -> {
+                final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
+                    asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
+                yield commonBody + "You must now [link the appeal]" + linkCommon + "linkAppeal) or "
+                    + (reasonForLinkAppeal.isPresent()
+                        ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
+                        : "unlink the appeal");
+            }
+            case JUDGE_REVIEW ->  commonBody
+                + "Both parties will receive a notification detailing your decision.";
+            case REINSTATE ->  commonBody
+                + "You now need to [reinstate the appeal]" + linkCommon + "reinstateAppeal)";
+            case TIME_EXTENSION ->  commonBody
+                + "You must now [change the direction's due date]" + linkCommon + "changeDirectionDueDate)";
+            case UPDATE_APPEAL_DETAILS ->  commonBody
+                + "You must now [update the appeal details]" + linkCommon + "editAppealAfterSubmit)";
+            case UPDATE_HEARING_REQUIREMENTS ->  commonBody
+                + "You must now [update the hearing requirements]" + linkCommon + "updateHearingRequirements)";
+            case WITHDRAW -> commonBody
+                + "You must now [end the appeal]" + linkCommon + "endAppeal)";
+            default -> commonBody;
+        };
 
-                        case "Reinstate an ended appeal":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "You now need to [reinstate the appeal](/case/IA/Asylum/"
-                                + callback.getCaseDetails().getId() + "/trigger/reinstateAppeal)"
-                            );
-                            break;
-
-                        case "Time extension":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "You must now [change the direction's due date](/case/IA/Asylum/"
-                                + callback.getCaseDetails().getId() + "/trigger/changeDirectionDueDate)"
-                            );
-                            break;
-
-                        case "Update appeal details":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "You must now [update the appeal details](/case/IA/Asylum/"
-                                + callback.getCaseDetails().getId() + "/trigger/editAppealAfterSubmit)"
-                            );
-                            break;
-
-                        case "Update hearing requirements":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "You must now [update the hearing requirements](/case/IA/Asylum/"
-                                + callback.getCaseDetails().getId() + "/trigger/updateHearingRequirements)"
-                            );
-                            break;
-
-                        case "Withdraw":
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                                + "You must now [end the appeal](/case/IA/Asylum/"
-                                + callback.getCaseDetails().getId() + "/trigger/endAppeal)"
-                            );
-                            break;
-
-                        default:
-                            postSubmitResponse.setConfirmationBody(
-                                whatHappensNextHeader
-                                + decisionRecordedText
-                            );
-                    }
-                } else {
-                    postSubmitResponse.setConfirmationBody(
-                        whatHappensNextHeader
-                        + decisionRecordedText
-                        + "Both parties will be notified that the application was refused."
-                    );
-                }
-            });
-
+        postSubmitResponse.setConfirmationBody(body);
         return postSubmitResponse;
     }
 }
