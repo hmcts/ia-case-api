@@ -111,13 +111,13 @@ class AppellantCaseFlagsHandlerTest {
             .activateCaseFlag(asylumCase, activeCaseFlagDetails, STEP_FREE_WHEELCHAIR_ACCESS,
                 "06-09-2023", "langName", "langCode");
 
-        List<CaseFlagDetail>  activatedWithNoExistingCaseFlag = appellantCaseFlagsHandler
-            .activateCaseFlag(asylumCase, Collections.emptyList(), HEARING_LOOP,
-                "06-09-2023", "langName2", "langCode2");
-
         assertEquals(ACTIVE, activatedWithExistingCaseFlag.get(1).getCaseFlagValue().getStatus());
         assertEquals("langName", activatedWithExistingCaseFlag.get(1).getCaseFlagValue().getSubTypeValue());
         assertEquals("langCode", activatedWithExistingCaseFlag.get(1).getCaseFlagValue().getSubTypeKey());
+
+        List<CaseFlagDetail>  activatedWithNoExistingCaseFlag = appellantCaseFlagsHandler
+            .activateCaseFlag(asylumCase, Collections.emptyList(), HEARING_LOOP,
+                "06-09-2023", "langName2", "langCode2");
 
         assertEquals(ACTIVE, activatedWithNoExistingCaseFlag.get(0).getCaseFlagValue().getStatus());
         assertEquals("langName2", activatedWithNoExistingCaseFlag.get(0).getCaseFlagValue().getSubTypeValue());
