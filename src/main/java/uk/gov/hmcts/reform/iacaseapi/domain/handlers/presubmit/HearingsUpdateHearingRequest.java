@@ -28,7 +28,6 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
 
     private final String hearingsApiEndpoint;
     private final String aboutToStartPath;
-
     private final String midEventPath;
 
     AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
