@@ -72,7 +72,6 @@ java:
             CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "cft_task_db_replica" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "dbrdcaseworker" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       database: cft_task_db
       username: hmcts
@@ -618,7 +617,6 @@ xui-webapp:
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      SERVICES_CASE_CASEWORKER_API: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -1091,7 +1089,7 @@ am-org-role-mapping-service:
     environment:
       IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
       S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
+      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
       JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
       JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
@@ -1111,39 +1109,3 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
       RUN_LD_ON_STARTUP: true
-
-rd-caseworker-ref-api:
-  enabled: true
-  java:
-    image: 'hmctspublic.azurecr.io/rd/caseworker-ref-api:latest'
-    ingressHost: rd-caseworker-ref-api-${SERVICE_FQDN}
-    releaseNameOverride: ${SERVICE_NAME}-rd-caseworker-ref-api
-    secrets:
-      CWRD_MQ_PASSWORD:
-        secretRef: ia-sb-preview
-        key: primaryKey
-    keyVaults:
-      rd:
-        secrets:
-          - name: ApplicationInsightsInstrumentationKey
-            alias: azure.application-insights.instrumentation-key
-          - name: caseworker-ref-api-s2s-secret
-            alias: CASEWORKER_REF_API_S2S_SECRET
-          - name: LD-SDK-KEY
-            alias: LD_SDK_KEY
-    environment:
-      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-      POSTGRES_DB_NAME: dbrdcaseworker
-      POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
-      POSTGRES_PORT: 5432
-      POSTGRES_CONNECTION_OPTIONS: '?currentSchema=dbrdcaseworker'
-      CWRD_MQ_HOST: "ia-sb-preview.servicebus.windows.net"
-      CASEWORKER_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY: "$(CWRD_MQ_PASSWORD)"
-      CWRD_MQ_USERNAME: RootManageSharedAccessKey
-      CWRD_MQ_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
-      CWRD_MQ_TRUST_ALL_CERTS: false
-      CWRD_DATA_PER_MESSAGE: 50
-      LAUNCH_DARKLY_ENV: "preview"
-      ENVIRONMENT_NAME: "preview"
-      EMAIL_DOMAIN_LIST: "justice.gov.uk,dwp.gov.uk,hmrc.gov.uk,hmcts.net,dfcni.gov.uk"

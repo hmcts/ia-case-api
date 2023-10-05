@@ -88,5 +88,3 @@ am-org-role-mapping-service:
   enabled: false
 redis:
   enabled: false
-rd-caseworker-ref-api:
-    enabled: false
