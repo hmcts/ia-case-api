@@ -2,7 +2,7 @@
   "description": "RIA-7730 remove interpreter flags when interpreters removed",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "updateHearingRequirement",
