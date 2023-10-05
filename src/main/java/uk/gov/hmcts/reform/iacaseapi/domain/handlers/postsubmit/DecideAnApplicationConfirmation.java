@@ -67,34 +67,36 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
 
         final long id = callback.getCaseDetails().getId();
         String linkCommon = "(/case/IA/Asylum/" + id + "/trigger/";
-        String body = switch (MakeAnApplicationTypes.valueOf(application.getType())) {
+
+        Optional<MakeAnApplicationTypes> applicationType = MakeAnApplicationTypes.getTypeFrom(application.getType());
+        String body = applicationType.map(makeAnApplicationTypes -> switch (makeAnApplicationTypes) {
             case LINK_OR_UNLINK -> {
                 final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
                     asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
                 yield commonBody + "You must now [link the appeal]" + linkCommon + "linkAppeal) or "
                     + (reasonForLinkAppeal.isPresent()
-                        ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
-                        : "unlink the appeal");
+                    ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
+                    : "unlink the appeal");
             }
             // todo check works
             case ADJOURN -> commonBody
                 + "You must now [record the details of the adjournment]" + linkCommon + "recordAdjournmentDetails).";
             case TRANSFER, EXPEDITE -> commonBody
                 + "You must now [update the hearing request]" + linkCommon + "updateHearingRequest).";
-            case JUDGE_REVIEW ->  commonBody
+            case JUDGE_REVIEW -> commonBody
                 + "Both parties will receive a notification detailing your decision.";
-            case REINSTATE ->  commonBody
+            case REINSTATE -> commonBody
                 + "You now need to [reinstate the appeal]" + linkCommon + "reinstateAppeal)";
-            case TIME_EXTENSION ->  commonBody
+            case TIME_EXTENSION -> commonBody
                 + "You must now [change the direction's due date]" + linkCommon + "changeDirectionDueDate)";
-            case UPDATE_APPEAL_DETAILS ->  commonBody
+            case UPDATE_APPEAL_DETAILS -> commonBody
                 + "You must now [update the appeal details]" + linkCommon + "editAppealAfterSubmit)";
-            case UPDATE_HEARING_REQUIREMENTS ->  commonBody
+            case UPDATE_HEARING_REQUIREMENTS -> commonBody
                 + "You must now [update the hearing requirements]" + linkCommon + "updateHearingRequirements)";
             case WITHDRAW -> commonBody
                 + "You must now [end the appeal]" + linkCommon + "endAppeal)";
             default -> commonBody;
-        };
+        }).orElse(commonBody);
 
         postSubmitResponse.setConfirmationBody(body);
         return postSubmitResponse;
