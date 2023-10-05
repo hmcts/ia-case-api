@@ -32,7 +32,7 @@ public class RemoveCaseFlagHandler implements PreSubmitCallbackHandler<AsylumCas
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == Event.UPDATE_HEARING_REQUIREMENTS;
     }
 

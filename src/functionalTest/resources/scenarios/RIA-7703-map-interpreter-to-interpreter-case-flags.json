@@ -2,7 +2,7 @@
   "description": "RIA-7730 map interpreter's to interpreter case flags",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "createFlag",

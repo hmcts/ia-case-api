@@ -34,8 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -97,7 +96,7 @@ public class RemoveCaseFlagHandlerTest {
                 new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                removeCaseFlagHandler.handle(ABOUT_TO_START, callback);
+                removeCaseFlagHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -128,7 +127,7 @@ public class RemoveCaseFlagHandlerTest {
                 new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                removeCaseFlagHandler.handle(ABOUT_TO_START, callback);
+                removeCaseFlagHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -149,7 +148,7 @@ public class RemoveCaseFlagHandlerTest {
                 new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2))));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                removeCaseFlagHandler.handle(ABOUT_TO_START, callback);
+                removeCaseFlagHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -173,7 +172,7 @@ public class RemoveCaseFlagHandlerTest {
                 boolean canHandle = removeCaseFlagHandler.canHandle(callbackStage, callback);
 
                 if (event == UPDATE_HEARING_REQUIREMENTS
-                        && callbackStage == ABOUT_TO_START) {
+                        && callbackStage == ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -193,7 +192,7 @@ public class RemoveCaseFlagHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> removeCaseFlagHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> removeCaseFlagHandler.handle(ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
