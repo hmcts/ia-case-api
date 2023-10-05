@@ -150,7 +150,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
     # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-976
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -469,7 +469,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1001
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1004
     # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
