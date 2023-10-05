@@ -34,6 +34,10 @@ dependencies:
     version: 0.0.37
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
+  - name: ia-hearings-api
+    version: 0.0.10
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-hearings-api.enabled
   - name: ia-home-office-integration-api
     version: 0.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'

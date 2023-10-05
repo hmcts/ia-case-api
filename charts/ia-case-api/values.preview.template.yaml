@@ -355,6 +355,67 @@ ia-case-notifications-api:
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/hearings-api:latest
+    releaseNameOverride: ${SERVICE_NAME}-hearings-api
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      HMC_API_URL: https://hmc-cft-hearing-service-${SERVICE_FQDN}
+      XUI_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-{{ .Values.global.environment }}"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-{{ .Values.global.environment }}"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "hmc-ia-subs-to-cft-{{ .Values.global.environment }}"
+      HMC_HEARINGS_LISTENING_ENABLED: false
+      HMC_HEARINGS_TOPIC_POLICY_NAME: SendAndListenSharedAccessKey
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: docmosis-enabled
+            alias: IA_DOCMOSIS_ENABLED
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: prof-ref-data-url
+            alias: PROF_REF_DATA_URL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: hmc-servicebus-connection-string
+            alias: HEARINGS_TOPIC_CONNECTION_STRING
+          - name: hmc-servicebus-shared-access-key-tf
+            alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
+
 ia-bail-case-api:
   enabled: true
   java:
@@ -1040,11 +1101,6 @@ servicebus:
         subscriptionNeeded: yes
       - name: jrd-topic
         subscriptionNeeded: yes
-      - name: hmc-to-cft
-        subscriptionNeeded: yes
-    queues:
-      - name: hmc-to-hmi
-      - name: hmc-from-hmi
 
 ccd-message-publisher:
   enabled: true
@@ -1121,15 +1177,8 @@ hmc-hmi-outbound-adapter:
   image: "hmctspublic.azurecr.io/hmc/hmi-outbound-adapter:latest"
   ingressHost: hmc-hmi-outbound-adapter-${SERVICE_FQDN}
   environment:
-    HMC_SERVICE_BUS_OUTBOUND_QUEUE: "{{ .Release.Name}}-hmc-to-hmi"
-    HMC_SERVICE_BUS_INBOUND_QUEUE: "{{ .Release.Name}}-hmc-from-hmi"
-  secrets:
-    HMC_SERVICE_BUS_OUTBOUND_CONNECTION_STRING:
-      secretRef: ia-sb-preview
-      key: connectionString
-    HMC_SERVICE_BUS_INBOUND_CONNECTION_STRING:
-      secretRef: ia-sb-preview
-      key: connectionString
+    HMC_SERVICE_BUS_OUTBOUND_QUEUE: "hmc-to-hmi-{{ .Values.global.environment }}"
+    HMC_SERVICE_BUS_INBOUND_QUEUE: "hmc-from-hmi-{{ .Values.global.environment }}"
   keyVaults:
     hmc:
       resourceGroup: hmc-shared
@@ -1141,11 +1190,7 @@ hmc-hmi-inbound-adapter:
   image: "hmctspublic.azurecr.io/hmc/hmi-inbound-adapter:latest"
   ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
   environment:
-    HMC_SERVICE_BUS_QUEUE: "{{ .Release.Name}}-hmc-from-hmi"
-  secrets:
-    HMC_SERVICE_BUS_CONNECTION_STRING:
-      secretRef: ia-sb-preview
-      key: connectionString
+    HMC_SERVICE_BUS_QUEUE: "hmc-from-hmi-{{ .Values.global.environment }}"
   keyVaults:
     hmc:
       resourceGroup: hmc-shared
@@ -1168,10 +1213,10 @@ hmc-cft-hearing-service:
   image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
   ingressHost: hmc-cft-hearing-service-${SERVICE_FQDN}
   environment:
-    HMC_SERVICE_BUS_TOPIC: "{{ .Release.Name}}-hmc-to-cft"
-    HMC_SERVICE_BUS_SUBSCRIPTION: "{{ .Release.Name}}-hmc-to-cft"
-    HMC_SERVICE_BUS_QUEUE: "{{ .Release.Name}}-hmc-from-hmi"
-    HMC_OUTBOUND_SERVICE_BUS_QUEUE: "{{ .Release.Name}}-hmc-to-hmi"
+    HMC_SERVICE_BUS_TOPIC: "hmc-to-cft-{{ .Values.global.environment }}"
+    HMC_SERVICE_BUS_SUBSCRIPTION: "hmc-ia-subs-to-cft-{{ .Values.global.environment }}"
+    HMC_SERVICE_BUS_QUEUE: "hmc-from-hmi-{{ .Values.global.environment }}"
+    HMC_OUTBOUND_SERVICE_BUS_QUEUE: "hmc-to-hmi-{{ .Values.global.environment }}"
     CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
     CFT_HEARING_SERVICE_DB_NAME: hmc_cft_hearing_service
     CFT_HEARING_SERVICE_DB_USERNAME: hmcts
@@ -1181,16 +1226,6 @@ hmc-cft-hearing-service:
     CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
   postgresql:
     enabled: false
-  secrets:
-    HMC_SERVICE_BUS_CONNECTION_STRING:
-      secretRef: ia-sb-preview
-      key: connectionString
-    HMC_QUEUE_CONNECTION_STRING:
-      secretRef: ia-sb-preview
-      key: connectionString
-    HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
-      secretRef: ia-sb-preview
-      key: connectionString
   keyVaults:
     hmc:
       resourceGroup: hmc-aso-preview-rg

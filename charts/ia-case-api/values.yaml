@@ -60,6 +60,8 @@ ia-case-documents-api:
   enabled: false
 ia-case-notifications-api:
   enabled: false
+ia-hearings-api:
+  enabled: false
 ia-home-office-integration-api:
   enabled: false
 idam-pr:
