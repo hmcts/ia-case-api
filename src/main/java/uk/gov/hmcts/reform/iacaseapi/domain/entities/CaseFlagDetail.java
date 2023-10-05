@@ -11,15 +11,14 @@ import java.util.UUID;
 public class CaseFlagDetail {
 
     String id;
-    @JsonProperty("value")
-    CaseFlagValue caseFlagValue;
+    CaseFlagValue value;
 
-    public CaseFlagDetail(CaseFlagValue caseFlagValue) {
-        this(UUID.randomUUID().toString(), caseFlagValue);
+    public CaseFlagDetail(CaseFlagValue value) {
+        this(UUID.randomUUID().toString(), value);
     }
 
-    public CaseFlagDetail(String id, CaseFlagValue caseFlagValue) {
+    public CaseFlagDetail(@JsonProperty("id") String id, @JsonProperty("value") CaseFlagValue value) {
         this.id = id;
-        this.caseFlagValue = caseFlagValue;
+        this.value = value;
     }
 }

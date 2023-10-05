@@ -21,11 +21,13 @@ public class StrategicCaseFlagService {
     public static String ROLE_ON_CASE_APPELLANT = "Appellant";
     public static String ROLE_ON_CASE_WITNESS = "Witness";
     public static String ROLE_ON_CASE_INTERPRETER = "Interpreter";
+    public static String ACTIVE_STATUS = "Active";
+    public static String INACTIVE_STATUS = "Inactive";
 
     private String partyName;
     private String roleOnCase;
 
-    private Map<String, CaseFlagDetail> details;
+    private Map<FlagKey, CaseFlagDetail> details;
 
     public StrategicCaseFlagService(@NonNull StrategicCaseFlag strategicCaseFlag) {
         this(strategicCaseFlag.getPartyName(), strategicCaseFlag.getRoleOnCase(), strategicCaseFlag.getDetails());
@@ -35,7 +37,8 @@ public class StrategicCaseFlagService {
         this.partyName = partyName;
         this.roleOnCase = roleOnCase;
         this.details = details == null ? new HashMap<>() : details.stream()
-            .collect(Collectors.toMap(detail -> detail.getCaseFlagValue().getFlagCode(), detail -> detail));
+            .collect(Collectors.toMap(detail ->
+                new FlagKey(detail.getValue().getFlagCode(), detail.getValue().getStatus()), detail -> detail));
     }
 
     public StrategicCaseFlagService(String partyName, String roleOnCase) {
@@ -67,12 +70,13 @@ public class StrategicCaseFlagService {
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
             .flagCode(caseFlagType.getFlagCode())
             .name(buildFlagName(caseFlagType, null))
-            .status("Active")
+            .status(ACTIVE_STATUS)
             .hearingRelevant(hearingRelevant)
             .dateTimeCreated(dateTimeCreated)
             .build();
+        CaseFlagDetail caseFlagDetail = new CaseFlagDetail(caseFlagValue);
 
-        details.put(caseFlagType.getFlagCode(), new CaseFlagDetail(caseFlagValue));
+        details.put(new FlagKey(caseFlagValue.getFlagCode(), caseFlagValue.getStatus()), caseFlagDetail);
 
         return true;
     }
@@ -90,29 +94,36 @@ public class StrategicCaseFlagService {
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
             .flagCode(caseFlagType.getFlagCode())
             .name(languageFlagName)
-            .status("Active")
+            .status(ACTIVE_STATUS)
             .hearingRelevant(hearingRelevant)
             .dateTimeCreated(dateTimeCreated)
             .build();
+        CaseFlagDetail caseFlagDetail = new CaseFlagDetail(caseFlagValue);
 
-        details.put(caseFlagType.getFlagCode(), new CaseFlagDetail(caseFlagValue));
+        details.put(new FlagKey(caseFlagValue.getFlagCode(), caseFlagValue.getStatus()), caseFlagDetail);
 
         return true;
     }
 
     public boolean deactivateFlag(StrategicCaseFlagType caseFlagType, String dateTimeModified) {
 
-        if (hasActiveFlag(caseFlagType)) {
-            CaseFlagDetail targetFlagDetails = details.get(caseFlagType.getFlagCode());
-            CaseFlagValue targetFlagValue = targetFlagDetails.getCaseFlagValue();
-            details.put(targetFlagValue.getFlagCode(), new CaseFlagDetail(targetFlagDetails.getId(), CaseFlagValue.builder()
-                .flagCode(targetFlagValue.getFlagCode())
-                .name(targetFlagValue.getName())
-                .status("Inactive")
-                .hearingRelevant(targetFlagValue.getHearingRelevant())
+        FlagKey existingActiveFlagKey = new FlagKey(caseFlagType.getFlagCode(), ACTIVE_STATUS);
+        CaseFlagDetail existingActiveFlagDetail = details.get(existingActiveFlagKey);
+        if (existingActiveFlagDetail != null) {
+            details.remove(existingActiveFlagKey);
+
+            CaseFlagValue newFlagValue = CaseFlagValue.builder()
+                .flagCode(existingActiveFlagDetail.getValue().getFlagCode())
+                .name(existingActiveFlagDetail.getValue().getName())
+                .status(INACTIVE_STATUS)
+                .hearingRelevant(existingActiveFlagDetail.getValue().getHearingRelevant())
                 .dateTimeModified(dateTimeModified)
-                .dateTimeCreated(targetFlagValue.getDateTimeCreated())
-                .build()));
+                .dateTimeCreated(existingActiveFlagDetail.getValue().getDateTimeCreated())
+                .build();
+
+            details.put(
+                new FlagKey(newFlagValue.getFlagCode(), newFlagValue.getStatus()),
+                new CaseFlagDetail(existingActiveFlagDetail.getId(), newFlagValue));
 
             return true;
         } else {
@@ -135,22 +146,21 @@ public class StrategicCaseFlagService {
     }
 
     private boolean hasActiveFlag(StrategicCaseFlagType caseFlagType) {
-        if (isEmpty() || details.isEmpty() || !details.containsKey(caseFlagType.getFlagCode())) {
+        if (isEmpty() || details.isEmpty()) {
             return false;
         }
 
-        CaseFlagValue targetFlag = details.get(caseFlagType.getFlagCode()).getCaseFlagValue();
-        return Objects.equals(targetFlag.getStatus(), "Active");
+        return details.containsKey(new FlagKey(caseFlagType.getFlagCode(), ACTIVE_STATUS));
     }
 
     private boolean hasActiveLanguageFlag(StrategicCaseFlagType caseFlagType, String languageFlagName) {
-        if (isEmpty() || details.isEmpty() || !details.containsKey(caseFlagType.getFlagCode())) {
+        FlagKey activeFlagKey = new FlagKey(caseFlagType.getFlagCode(), ACTIVE_STATUS);
+
+        if (isEmpty() || details.isEmpty() || !details.containsKey(activeFlagKey)) {
             return false;
         }
 
-        CaseFlagValue targetFlag = details.get(caseFlagType.getFlagCode()).getCaseFlagValue();
-        return Objects.equals(targetFlag.getName(), languageFlagName)
-            && Objects.equals(targetFlag.getStatus(), "Active");
+        return Objects.equals(details.get(activeFlagKey).getValue().getName(), languageFlagName);
     }
 
     private String buildFlagName(StrategicCaseFlagType caseFlagType, String caseFlagNamePostfix) {
@@ -159,4 +169,8 @@ public class StrategicCaseFlagService {
             ? caseFlagType.getName()
             : caseFlagType.getName().concat(" " + caseFlagNamePostfix);
     }
+
+    public record FlagKey(String code, String status) {
+    }
+
 }

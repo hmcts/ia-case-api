@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class WitnessCaseFlagsHandlerTest {
             .builder()
             .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
             .name(INTERPRETER_LANGUAGE_FLAG.getName())
-            .status("Active")
+            .status(ACTIVE_STATUS)
             .build();
         partyFlagIdValue = new PartyFlagIdValue("partyId1", new StrategicCaseFlag(
             "Tester Name", ROLE_ON_CASE_WITNESS, List.of(new CaseFlagDetail("123", activeCaseFlagValue))));

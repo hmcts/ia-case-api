@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 
 import java.time.LocalDateTime;
@@ -187,7 +188,7 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
                 .builder()
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Inactive")
+                .status(INACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(
@@ -218,7 +219,7 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
                 .builder()
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(INTERPRETER_LANGUAGE_FLAG.getName())
-                .status("Inactive")
+                .status(INACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -12,7 +13,8 @@ public class Language {
     private final String languageCode;
     private final String languageText;
 
-    public Language(String languageCode, String languageText) {
+    public Language(@JsonProperty("languageCode") String languageCode,
+                    @JsonProperty("languageText") String languageText) {
         this.languageCode = languageCode;
         this.languageText = languageText;
     }

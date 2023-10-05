@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagServ
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -86,7 +85,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandler extends WitnessCaseFlagsHa
                 .entrySet().stream()
                 .map(entry -> new PartyFlagIdValue(entry.getKey(), entry.getValue())).toList();
             asylumCase
-                .write(WITNESS_LEVEL_FLAGS, Optional.of(witnessFlagsIdValues));
+                .write(WITNESS_LEVEL_FLAGS, witnessFlagsIdValues);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

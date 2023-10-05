@@ -1,0 +1,49 @@
+{
+  "description": "RIA-7813 remove witness flags when a witness is removed",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingRequirement",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantNameForDisplay": "Eke Uk",
+          "isWitnessesAttending": "No",
+          "witnessLevelFlags": [
+            {
+              "id": "1",
+              "value": {
+                "partyName": "Witness1 One Test Family 1",
+                "roleOnCase": "Witness",
+                "details": []
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "partyName": "Witness2 Two Test Family 2",
+                "roleOnCase": "Witness",
+                "details": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantNameForDisplay": "Eke Uk",
+        "isWitnessesAttending": "No",
+        "interpreterLevelFlags": []
+      }
+    }
+  }
+}

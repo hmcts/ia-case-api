@@ -8,6 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.STEP_FREE_WHEELCHAIR_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +34,7 @@ class StrategicCaseFlagServiceTest {
             .builder()
             .flagCode(HEARING_LOOP.getFlagCode())
             .name(HEARING_LOOP.getName())
-            .status("Active")
+            .status(ACTIVE_STATUS)
             .build());
     }
 
@@ -63,8 +65,8 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(activated);
         assertNotNull(strategicCaseFlag);
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getCaseFlagValue();
-        assertEquals("Active", caseFlagValue.getStatus());
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        assertEquals(ACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(HEARING_LOOP.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(HEARING_LOOP.getName(), caseFlagValue.getName());
     }
@@ -81,8 +83,8 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(activated);
         assertNotNull(strategicCaseFlag);
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getCaseFlagValue();
-        assertEquals("Active", caseFlagValue.getStatus());
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        assertEquals(ACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " text", caseFlagValue.getName());
     }
@@ -105,10 +107,15 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(activated);
         assertNotNull(strategicCaseFlag);
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getCaseFlagValue();
-        assertEquals("Active", caseFlagValue.getStatus());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), caseFlagValue.getFlagCode());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " text", caseFlagValue.getName());
+        List<CaseFlagValue> values = strategicCaseFlag.getDetails().stream().map(CaseFlagDetail::getValue).toList();
+        CaseFlagValue activeCaseFlagValue = values.stream().filter(value -> "Active".equals(value.getStatus()))
+            .findAny().orElse(null);
+        CaseFlagValue inactiveCaseFlagValue = values.stream().filter(value -> INACTIVE_STATUS.equals(value.getStatus()))
+            .findAny().orElse(null);
+        assertTrue(activeCaseFlagValue != null && "Active".equals(activeCaseFlagValue.getStatus()));
+        assertTrue(inactiveCaseFlagValue != null && INACTIVE_STATUS.equals(inactiveCaseFlagValue.getStatus()));
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " text", activeCaseFlagValue.getName());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " abc", inactiveCaseFlagValue.getName());
     }
 
     @Test
@@ -152,8 +159,8 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(strategicCaseFlagService.deactivateFlag(HEARING_LOOP, "dateTime"));
         strategicCaseFlag = strategicCaseFlagService.getStrategicCaseFlag();
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getCaseFlagValue();
-        assertEquals("Inactive", caseFlagValue.getStatus());
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        assertEquals(INACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(HEARING_LOOP.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(HEARING_LOOP.getName(), caseFlagValue.getName());
     }
@@ -176,7 +183,7 @@ class StrategicCaseFlagServiceTest {
 
         assertFalse(strategicCaseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, "dateTime"));
         strategicCaseFlag = strategicCaseFlagService.getStrategicCaseFlag();
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getCaseFlagValue();
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
         assertEquals("Active", caseFlagValue.getStatus());
         assertEquals(HEARING_LOOP.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(HEARING_LOOP.getName(), caseFlagValue.getName());

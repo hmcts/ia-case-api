@@ -21,13 +21,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     @Mock
     private DateProvider systemDateProvider;
     @Captor
-    private ArgumentCaptor<Optional<List<PartyFlagIdValue>>> partyFlagsCaptor;
+    private ArgumentCaptor<List<PartyFlagIdValue>> partyFlagsCaptor;
     private List<IdValue<WitnessDetails>> witnessDetails;
     private SpokenLanguageForWitnessCaseFlagsHandler handler;
     private final Value spokenLanguageValue = new Value("spa", "Spanish");
@@ -113,7 +114,11 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), partyFlagsCaptor.capture());
-        assertTrue(partyFlagsCaptor.getValue().isPresent());
+
+        List<PartyFlagIdValue> actualWitnessFlags = partyFlagsCaptor.getValue();
+
+        assertEquals(1, actualWitnessFlags.size());
+        assertEquals("1234", actualWitnessFlags.get(0).getPartyId());
     }
 
     @ParameterizedTest
@@ -146,7 +151,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
                 .builder()
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Active")
+                .status(ACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
@@ -158,7 +163,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), partyFlagsCaptor.capture());
-        assertTrue(hasInactiveFlag(partyFlagsCaptor.getValue().orElseGet(Collections::emptyList)));
+        assertTrue(hasInactiveFlag(partyFlagsCaptor.getValue()));
     }
 
     @Test
@@ -186,7 +191,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
                 .builder()
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Inactive")
+                .status(INACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
@@ -220,7 +225,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
                 .builder()
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Inactive")
+                .status(INACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
@@ -254,7 +259,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
                 .builder()
                 .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
                 .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Active")
+                .status(ACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
@@ -326,7 +331,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     private boolean hasInactiveFlag(List<PartyFlagIdValue> partyFlagList) {
         return partyFlagList.stream().map(idValue -> idValue.getValue().getDetails())
             .flatMap(Collection::stream)
-            .anyMatch(caseFlag -> caseFlag.getCaseFlagValue().getStatus().equals("Inactive"));
+            .anyMatch(caseFlag -> caseFlag.getValue().getStatus().equals(INACTIVE_STATUS));
     }
 
     private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry) {

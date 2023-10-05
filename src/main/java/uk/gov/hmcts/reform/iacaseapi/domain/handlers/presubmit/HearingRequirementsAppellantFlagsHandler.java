@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_LOOP_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_ROOM_NEEDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_IN_CAMERA_COURT_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.CASE_GIVEN_IN_PRIVATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.HEARING_LOOP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.STEP_FREE_WHEELCHAIR_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
@@ -29,6 +33,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
 @Component
 class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public static String CASE_GRANTED =  "Granted";
+    public static String CASE_REFUSED =  "Refused";
     private final DateProvider systemDateProvider;
 
     public HearingRequirementsAppellantFlagsHandler(DateProvider systemDateProvider) {
@@ -40,7 +46,8 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        List<Event> targetEvents = List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS);
+        List<Event> targetEvents = List.of(
+            REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS, UPDATE_HEARING_ADJUSTMENTS);
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && targetEvents.contains(callback.getEvent());
     }
 
@@ -61,26 +68,34 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
             .map(StrategicCaseFlagService::new)
             .orElseGet(() ->
                 new StrategicCaseFlagService(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT));
+        String currentDateTime = systemDateProvider.nowWithTime().toString();
         boolean isHearingLoopNeeded = asylumCase.read(IS_HEARING_LOOP_NEEDED, YesOrNo.class)
             .map(hearingLoopNeeded -> YesOrNo.YES == hearingLoopNeeded).orElse(false);
         boolean isHearingRoomNeeded = asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)
             .map(hearingRoomNeeded -> YesOrNo.YES == hearingRoomNeeded).orElse(false);
-        String currentDateTime = systemDateProvider.nowWithTime().toString();
-
+        boolean inCameraCourtRequested = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
+            .map(cameraCourtNeeded -> YES == cameraCourtNeeded).orElse(false);
+        boolean inCameraCourtGranted = asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
+            .map(decision -> CASE_GRANTED.equals(decision))
+            .orElse(false);
         boolean caseDataUpdated = false;
 
-        if (isHearingLoopNeeded) {
-
-            caseDataUpdated |= strategicCaseFlagService.activateFlag(HEARING_LOOP, YES, currentDateTime);
-        } else {
-            caseDataUpdated |= strategicCaseFlagService.deactivateFlag(HEARING_LOOP, currentDateTime);
-        }
-        if (isHearingRoomNeeded) {
-
-            caseDataUpdated |= strategicCaseFlagService
-                .activateFlag(STEP_FREE_WHEELCHAIR_ACCESS, YES, currentDateTime);
-        } else {
-            caseDataUpdated |= strategicCaseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
+        switch (callback.getEvent()) {
+            case REVIEW_HEARING_REQUIREMENTS -> {
+                caseDataUpdated |= handleHearingLoopFlag(
+                    strategicCaseFlagService, currentDateTime, isHearingLoopNeeded);
+                caseDataUpdated |= handleHearingRoomFlag(strategicCaseFlagService, currentDateTime, isHearingRoomNeeded);
+                caseDataUpdated |= handleEvidenceInPrivate(
+                    strategicCaseFlagService, currentDateTime, inCameraCourtRequested && inCameraCourtGranted);
+            }
+            case UPDATE_HEARING_REQUIREMENTS -> {
+                caseDataUpdated |= handleHearingLoopFlag(
+                    strategicCaseFlagService, currentDateTime, isHearingLoopNeeded);
+                caseDataUpdated |= handleHearingRoomFlag(
+                    strategicCaseFlagService, currentDateTime, isHearingRoomNeeded);
+            }
+            default -> caseDataUpdated |= handleEvidenceInPrivate(
+                strategicCaseFlagService, currentDateTime, inCameraCourtRequested && inCameraCourtGranted);
         }
 
         if (caseDataUpdated) {
@@ -91,6 +106,27 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean handleHearingLoopFlag(
+        StrategicCaseFlagService caseFlagService, String currentDateTime, boolean hearingLoopNeeded) {
+
+        return hearingLoopNeeded ? caseFlagService.activateFlag(HEARING_LOOP, YES, currentDateTime)
+            : caseFlagService.deactivateFlag(HEARING_LOOP, currentDateTime);
+    }
+
+    private boolean handleHearingRoomFlag(
+        StrategicCaseFlagService caseFlagService, String currentDateTime, boolean hearingRoomNeeded) {
+
+        return hearingRoomNeeded ? caseFlagService.activateFlag(STEP_FREE_WHEELCHAIR_ACCESS, YES, currentDateTime)
+            : caseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, currentDateTime);
+    }
+
+    private boolean handleEvidenceInPrivate(
+        StrategicCaseFlagService caseFlagService, String currentDateTime, boolean inCameraCourtRequestedAndGranted) {
+
+        return inCameraCourtRequestedAndGranted ? caseFlagService.activateFlag(CASE_GIVEN_IN_PRIVATE, YES, currentDateTime)
+            : caseFlagService.deactivateFlag(CASE_GIVEN_IN_PRIVATE, currentDateTime);
     }
 
 }

@@ -16,6 +16,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -101,7 +103,7 @@ public class AnonymousByDefaultHandlerTest {
                 .builder()
                 .flagCode(ANONYMITY.getFlagCode())
                 .name(ANONYMITY.getName())
-                .status("Inactive")
+                .status(INACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
@@ -156,7 +158,7 @@ public class AnonymousByDefaultHandlerTest {
                 .builder()
                 .flagCode(ANONYMITY.getFlagCode())
                 .name(ANONYMITY.getName())
-                .status("Active")
+                .status(ACTIVE_STATUS)
                 .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
                 .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
