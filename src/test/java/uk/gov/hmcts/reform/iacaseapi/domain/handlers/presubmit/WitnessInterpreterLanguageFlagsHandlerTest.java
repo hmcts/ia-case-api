@@ -13,11 +13,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ANY_WITNESS_INTERPRETER_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -62,7 +64,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
+public class WitnessInterpreterLanguageFlagsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -75,8 +77,9 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
     @Captor
     private ArgumentCaptor<List<PartyFlagIdValue>> partyFlagsCaptor;
     private List<IdValue<WitnessDetails>> witnessDetails;
-    private SpokenLanguageForWitnessCaseFlagsHandler handler;
+    private WitnessInterpreterLanguageFlagsHandler handler;
     private final Value spokenLanguageValue = new Value("spa", "Spanish");
+    private final Value signLanguageValue = new Value("sign-lps", "Lipspeaker");
 
     @BeforeEach
     public void setUp() {
@@ -90,7 +93,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
                 new IdValue<>("2",
                     new WitnessDetails("2333","Witness2Given", "Witness2Family"))
         );
-        handler = new SpokenLanguageForWitnessCaseFlagsHandler(systemDateProvider);
+        handler = new WitnessInterpreterLanguageFlagsHandler(systemDateProvider);
     }
 
     @ParameterizedTest
@@ -98,7 +101,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         "REVIEW_HEARING_REQUIREMENTS",
         "UPDATE_HEARING_REQUIREMENTS"
     })
-    void should_set_interpreter_language_flag(Event event) {
+    void should_set_spoken_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
@@ -106,7 +109,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
             .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true, spokenLanguageValue)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -126,23 +129,8 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         "REVIEW_HEARING_REQUIREMENTS",
         "UPDATE_HEARING_REQUIREMENTS"
     })
-    void should_not_set_interpreter_language_flag(Event event) {
+    void should_deactivate_spoken_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
-        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(eq(WITNESS_LEVEL_FLAGS), any());
-    }
-
-    @Test
-    void should_deactivate_interpreter_language_flag() {
-        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
             .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
@@ -159,6 +147,83 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), partyFlagsCaptor.capture());
+        assertTrue(hasInactiveFlag(partyFlagsCaptor.getValue()));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_set_sign_language_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
+        when(asylumCase.read(WITNESS_1, WitnessDetails.class))
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+        when(asylumCase.read(WITNESS_2, WitnessDetails.class))
+            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
+        when(asylumCase.read(WITNESS_1_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true, signLanguageValue)));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        List<PartyFlagIdValue> actualWitnessFlags = partyFlagsCaptor.getValue();
+
+        assertEquals(1, actualWitnessFlags.size());
+        assertEquals("1234", actualWitnessFlags.get(0).getPartyId());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_not_set_language_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(eq(WITNESS_LEVEL_FLAGS), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_deactivate_sign_language_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
+        when(asylumCase.read(WITNESS_1, WitnessDetails.class))
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+
+        List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
+            .builder()
+            .flagCode(SIGN_LANGUAGE.getFlagCode())
+            .name(buildLanguageFlagName(SIGN_LANGUAGE.getName(), signLanguageValue.getLabel()))
+            .status(ACTIVE_STATUS)
+            .build()));
+        when(asylumCase.read(WITNESS_LEVEL_FLAGS))
+            .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
+                "Witness1Given", ROLE_ON_CASE_WITNESS, existingFlags)))));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -219,7 +284,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
             .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
                 .builder()
@@ -253,7 +318,7 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
             .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
                 .builder()
@@ -334,14 +399,14 @@ public class SpokenLanguageForWitnessCaseFlagsHandlerTest {
             .anyMatch(caseFlag -> caseFlag.getValue().getStatus().equals(INACTIVE_STATUS));
     }
 
-    private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry) {
+    private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry, Value value) {
         if (manualEntry) {
             List<String> list = new ArrayList<>();
-            list.add(spokenLanguageValue.getLabel());
-            return new InterpreterLanguageRefData(null, list, spokenLanguageValue.getLabel());
+            list.add("Yes");
+            return new InterpreterLanguageRefData(null, list, value.getLabel());
         }
         DynamicList dynamicList = new DynamicList("");
-        dynamicList.setValue(spokenLanguageValue);
+        dynamicList.setValue(value);
         return new InterpreterLanguageRefData(dynamicList, null, null);
     }
 
