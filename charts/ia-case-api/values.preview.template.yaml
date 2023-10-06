@@ -25,7 +25,6 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-    AAC_URL: https://aac-manage-case-assignment-pr-473.preview.platform.hmcts.net
   keyVaults:
     ia:
       secrets:
@@ -469,7 +468,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1004
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
     # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
@@ -650,7 +649,6 @@ ccd:
 
   ccd-data-store-api:
     java:
-      image: hmctspublic.azurecr.io/ccd/data-store-api:pr-2306-75cafb9-20230928150035
       imagePullPolicy: Always
       devcpuRequests: 500m
       devmemoryRequests: 2048Mi
@@ -691,7 +689,7 @@ ccd:
 
   ccd-definition-store-api:
     java:
-      image: hmctspublic.azurecr.io/ccd/definition-store-api:pr-1335-0b8a4a1-20230925103728
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
       autoscaling:
         enabled: false
