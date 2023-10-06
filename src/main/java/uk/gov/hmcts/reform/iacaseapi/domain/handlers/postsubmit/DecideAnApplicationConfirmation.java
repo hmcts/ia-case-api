@@ -1,21 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.getTypeFrom;
 
 @Component
 public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
@@ -32,7 +36,8 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
+        final AsylumCase asylumCase = caseDetails.getCaseData();
 
         String applicationId = asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)
             .orElseThrow(() -> new IllegalStateException("Application id is not present"));
@@ -53,51 +58,38 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
         }
 
         MakeAnApplication application = maybeMakeAnApplication.get().getValue();
-        String commonBody = """
+        String body = "Granted".equals(application.getDecision())
+            ? getGrantedConfirmationBody(application.getType(), asylumCase, caseDetails.getId())
+            : "Both parties will be notified that the application was refused.";
+
+        postSubmitResponse.setConfirmationBody("""
             #### What happens next
 
-            The application decision has been recorded and is now available in the applications tab.\s""";
+            The application decision has been recorded and is now available in the applications tab.\s""" + body);
+        return postSubmitResponse;
+    }
 
-        if (!"Granted".equals(application.getDecision())) {
-            postSubmitResponse.setConfirmationBody(
-                commonBody + "Both parties will be notified that the application was refused."
-            );
-            return postSubmitResponse;
-        }
-
-        final long id = callback.getCaseDetails().getId();
-        String linkCommon = "(/case/IA/Asylum/" + id + "/trigger/";
-
-        Optional<MakeAnApplicationTypes> applicationType = MakeAnApplicationTypes.getTypeFrom(application.getType());
-        String body = applicationType.map(makeAnApplicationTypes -> switch (makeAnApplicationTypes) {
+    private static String getGrantedConfirmationBody(String applicationType, AsylumCase asylumCase, long caseId) {
+        String body = getTypeFrom(applicationType).map(type -> switch (type) {
             case LINK_OR_UNLINK -> {
-                final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
+                final Optional<ReasonForLinkAppealOptions> reasonForAppeal =
                     asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
-                yield commonBody + "You must now [link the appeal]" + linkCommon + "linkAppeal) or "
-                    + (reasonForLinkAppeal.isPresent()
-                    ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
+                yield "You must now [link the appeal](LINK)linkAppeal) or " + (reasonForAppeal.isPresent()
+                    ? "[unlink the appeal](LINK)unlinkAppeal)."
                     : "unlink the appeal");
             }
-            case ADJOURN -> commonBody
-                + "You must now [record the details of the adjournment]" + linkCommon + "recordAdjournmentDetails).";
-            case TRANSFER, EXPEDITE -> commonBody
-                + "You must now [update the hearing request]" + linkCommon + "updateHearingRequest).";
-            case JUDGE_REVIEW -> commonBody
-                + "Both parties will receive a notification detailing your decision.";
-            case REINSTATE -> commonBody
-                + "You now need to [reinstate the appeal]" + linkCommon + "reinstateAppeal)";
-            case TIME_EXTENSION -> commonBody
-                + "You must now [change the direction's due date]" + linkCommon + "changeDirectionDueDate)";
-            case UPDATE_APPEAL_DETAILS -> commonBody
-                + "You must now [update the appeal details]" + linkCommon + "editAppealAfterSubmit)";
-            case UPDATE_HEARING_REQUIREMENTS -> commonBody
-                + "You must now [update the hearing requirements]" + linkCommon + "updateHearingRequirements)";
-            case WITHDRAW -> commonBody
-                + "You must now [end the appeal]" + linkCommon + "endAppeal)";
-            default -> commonBody;
-        }).orElse(commonBody);
+            case ADJOURN -> "You must now [record the details of the adjournment](LINK)recordAdjournmentDetails).";
+            case TRANSFER, EXPEDITE -> "You must now [update the hearing request](LINK)updateHearingRequest).";
+            case JUDGE_REVIEW -> "Both parties will receive a notification detailing your decision.";
+            case REINSTATE -> "You now need to [reinstate the appeal](LINK)reinstateAppeal)";
+            case TIME_EXTENSION -> "You must now [change the direction's due date](LINK)changeDirectionDueDate)";
+            case UPDATE_APPEAL_DETAILS -> "You must now [update the appeal details](LINK)editAppealAfterSubmit)";
+            case UPDATE_HEARING_REQUIREMENTS ->
+                "You must now [update the hearing requirements](LINK)updateHearingRequirements)";
+            case WITHDRAW -> "You must now [end the appeal](LINK)endAppeal)";
+            default -> "";
+        }).orElse("");
 
-        postSubmitResponse.setConfirmationBody(body);
-        return postSubmitResponse;
+        return body.replace("(LINK)", "(/case/IA/Asylum/" + caseId + "/trigger/");
     }
 }
