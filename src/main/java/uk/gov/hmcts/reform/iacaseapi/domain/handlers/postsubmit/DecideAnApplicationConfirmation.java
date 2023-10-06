@@ -78,7 +78,6 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
                     ? "[unlink the appeal]" + linkCommon + "unlinkAppeal)."
                     : "unlink the appeal");
             }
-            // todo check works
             case ADJOURN -> commonBody
                 + "You must now [record the details of the adjournment]" + linkCommon + "recordAdjournmentDetails).";
             case TRANSFER, EXPEDITE -> commonBody
