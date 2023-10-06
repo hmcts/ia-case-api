@@ -5,7 +5,7 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "createFlag",
+      "eventId": "updateInterpreterDetails",
       "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",

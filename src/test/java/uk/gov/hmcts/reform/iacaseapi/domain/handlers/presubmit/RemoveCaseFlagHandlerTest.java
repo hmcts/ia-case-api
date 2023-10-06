@@ -62,7 +62,7 @@ public class RemoveCaseFlagHandlerTest {
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(Event.UPDATE_INTERPRETER_DETAILS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
@@ -78,7 +78,7 @@ public class RemoveCaseFlagHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_INTERPRETER_DETAILS"
     })
     void should_not_remove_any_interpreter_flags(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -111,7 +111,7 @@ public class RemoveCaseFlagHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_INTERPRETER_DETAILS"
     })
     void should_remove_one_interpreter_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -140,7 +140,7 @@ public class RemoveCaseFlagHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "UPDATE_HEARING_REQUIREMENTS"
+        "UPDATE_INTERPRETER_DETAILS"
     })
     void should_remove_all_interpreter_flags(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -171,7 +171,7 @@ public class RemoveCaseFlagHandlerTest {
 
                 boolean canHandle = removeCaseFlagHandler.canHandle(callbackStage, callback);
 
-                if (event == UPDATE_HEARING_REQUIREMENTS
+                if (event == UPDATE_INTERPRETER_DETAILS
                         && callbackStage == ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {
