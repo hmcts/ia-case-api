@@ -1979,6 +1979,9 @@ public enum AsylumCaseFieldDefinition {
     EPIMS_ID(
             "epimsId", new TypeReference<String>() {}),
 
+    IS_INTEGRATED(
+            "isIntegrated", new TypeReference<YesOrNo>(){}),
+
     // This is not actually a real case field. It is used to determine
     // the case flag id for the purpose of functional test
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){});

@@ -123,6 +123,7 @@ public enum Event {
     UPDATE_S94B_STATUS("updateS94bStatus"),
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
     UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
+    UPDATE_HMC_RESPONSE("updateHMCResponse"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
