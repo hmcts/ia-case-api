@@ -60,7 +60,10 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
             detailsList.stream()
                 .map(idValue -> {
                     InterpreterDetails details = idValue.getValue();
-                    details.setInterpreterId(UUID.randomUUID().toString());
+                    if (details.getInterpreterId() == null || details.getInterpreterId().isBlank()) {
+                        details.setInterpreterId(UUID.randomUUID().toString());
+                    }
+
                     return new IdValue<>(idValue.getId(), details);
                 }).toList())
             .orElse(Collections.emptyList());
