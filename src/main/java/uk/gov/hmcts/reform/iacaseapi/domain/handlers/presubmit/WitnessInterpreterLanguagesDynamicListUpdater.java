@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
@@ -39,8 +41,6 @@ public class WitnessInterpreterLanguagesDynamicListUpdater implements PreSubmitC
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String YES = "Yes";
     protected static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
-    public static final String SPOKEN = "spokenLanguageInterpreter";
-    public static final String SIGN = "signLanguageInterpreter";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -87,10 +87,9 @@ public class WitnessInterpreterLanguagesDynamicListUpdater implements PreSubmitC
 
             if (witnessSelected) {
 
-                Optional<List<String>> optionalSelectedInterpreterType = asylumCase.read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
-                List<String> selectedInterpreterType = optionalSelectedInterpreterType.isEmpty()
-                    ? Collections.emptyList()
-                    : optionalSelectedInterpreterType.get();
+                Optional<List<String>> optionalSelectedInterpreterType = asylumCase
+                    .read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
+                List<String> selectedInterpreterType = optionalSelectedInterpreterType.orElse(Collections.emptyList());
 
                 witnessIndexToInterpreterNeeded.put(i, selectedInterpreterType);
             }
@@ -103,10 +102,10 @@ public class WitnessInterpreterLanguagesDynamicListUpdater implements PreSubmitC
 
         witnessIndexToInterpreterNeeded.forEach((index, interpretersNeeded) -> {
             interpretersNeeded.forEach(interpreterCategory -> {
-                if (Objects.equals(interpreterCategory, SPOKEN)) {
+                if (Objects.equals(interpreterCategory, SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
                     asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(index), spokenLanguages);
                 }
-                if (Objects.equals(interpreterCategory, SIGN)) {
+                if (Objects.equals(interpreterCategory, SIGN_LANGUAGE_INTERPRETER.getValue())) {
                     asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(index), signLanguages);
                 }
             });

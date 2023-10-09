@@ -24,7 +24,7 @@
           ],
           "isInterpreterServicesNeeded": "Yes",
           "appellantInterpreterLanguageCategory": [
-            "signLanguageInterpreter"
+            "spokenLanguageInterpreter"
           ],
           "appellantInterpreterSpokenLanguage": {
             "languageRefData": {
@@ -93,7 +93,7 @@
         ],
         "isInterpreterServicesNeeded": "Yes",
         "appellantInterpreterLanguageCategory": [
-          "signLanguageInterpreter"
+          "spokenLanguageInterpreter"
         ],
         "appellantInterpreterSpokenLanguage": {
           "languageRefData": {

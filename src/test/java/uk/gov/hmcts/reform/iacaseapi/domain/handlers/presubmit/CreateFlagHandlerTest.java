@@ -20,9 +20,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -146,7 +144,7 @@ class CreateFlagHandlerTest {
     void should_update_appellant_name_in_existing_flags() {
 
         List<CaseFlagDetail> caseFlagDetails =
-            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().build()));
+            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().status(ACTIVE_STATUS).build()));
         StrategicCaseFlag appellantFlag = new StrategicCaseFlag(
             "appellantOldName", ROLE_ON_CASE_APPELLANT, caseFlagDetails);
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
@@ -193,7 +191,7 @@ class CreateFlagHandlerTest {
     void test_handle_witness_level_flags_when_some_witnesses_have_existing_flags() {
 
         final List<CaseFlagDetail> caseFlagDetails =
-            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().build()));
+            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().status(ACTIVE_STATUS).build()));
         final String fullName1 = witnessName1 + " " + witnessFamilyName1;
         final String fullName2 = witnessName2 + " " + witnessFamilyName2;
         final StrategicCaseFlag witnessFlag1 = new StrategicCaseFlag(
@@ -211,11 +209,70 @@ class CreateFlagHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
+        verify(asylumCase, times(1))
+                .write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
+    }
+
+    @Test
+    void test_handle_interpreter_level_flags() {
+
+        final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
+        final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
+        final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
+                fullName1, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+        final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
+                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+        final List<PartyFlagIdValue> expected = List.of(
+                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1),
+                new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                createFlagHandler.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+                .write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+        assertNotNull(interpreterFlagsCaptor.getValue());
+        assertEquals(2, interpreterFlagsCaptor.getValue().size());
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
+    }
+
+    @Test
+    void test_handle_interpreter_level_flags_when_some_interpreters_have_existing_flags() {
+
+        final List<CaseFlagDetail> caseFlagDetails =
+                List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().status(ACTIVE_STATUS).build()));
+        final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
+        final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
+        final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
+                fullName1, ROLE_ON_CASE_INTERPRETER, caseFlagDetails);
+        final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
+                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+        final List<PartyFlagIdValue> expected = List.of(
+                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1),
+                new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
+
+        when(asylumCase.read(INTERPRETER_LEVEL_FLAGS))
+                .thenReturn(Optional.of(List.of(new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1))));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                createFlagHandler.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+        assertNotNull(interpreterFlagsCaptor.getValue());
+        assertEquals(2, interpreterFlagsCaptor.getValue().size());
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
     @Test
@@ -268,62 +325,6 @@ class CreateFlagHandlerTest {
         assertThatThrownBy(() -> createFlagHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-
-    @Test
-    void test_handle_interpreter_level_flags() {
-
-        final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
-        final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
-        final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
-                fullName1, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
-        final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
-                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
-        final List<PartyFlagIdValue> expected = List.of(
-                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                createFlagHandler.handle(ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
-        assertNotNull(interpreterFlagsCaptor.getValue());
-        assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
-    }
-
-    @Test
-    void test_handle_interpreter_level_flags_when_some_interpreters_have_existing_flags() {
-
-        final List<CaseFlagDetail> caseFlagDetails =
-                List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().build()));
-        final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
-        final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
-        final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
-                fullName1, ROLE_ON_CASE_INTERPRETER, caseFlagDetails);
-        final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
-                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
-        final List<PartyFlagIdValue> expected = List.of(
-                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
-
-        when(asylumCase.read(INTERPRETER_LEVEL_FLAGS))
-                .thenReturn(Optional.of(List.of(new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1))));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                createFlagHandler.handle(ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
-        assertNotNull(interpreterFlagsCaptor.getValue());
-        assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
 }

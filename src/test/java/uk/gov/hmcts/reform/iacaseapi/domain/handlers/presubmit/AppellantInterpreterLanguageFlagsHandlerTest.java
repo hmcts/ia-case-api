@@ -11,11 +11,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -52,7 +57,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SpokenLanguageForAppellantFlagsHandlerTest {
+public class AppellantInterpreterLanguageFlagsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -63,9 +68,10 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     @Mock
     private DateProvider systemDateProvider;
 
-    private SpokenLanguageForAppellantFlagsHandler interpreterLanguageHandler;
+    private AppellantInterpreterLanguageFlagsHandler handler;
     private final String appellantDisplayName = "Eke Uke";
     private final Value spokenLanguageValue = new Value("spa", "Spanish");
+    private final Value signLanguageValue = new Value("sign-lps", "Lipspeaker");
 
     @BeforeEach
     public void setUp() {
@@ -73,8 +79,8 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
-        interpreterLanguageHandler =
-                new SpokenLanguageForAppellantFlagsHandler(systemDateProvider);
+        handler =
+                new AppellantInterpreterLanguageFlagsHandler(systemDateProvider);
     }
 
     @ParameterizedTest
@@ -84,12 +90,13 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     })
     void should_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
@@ -103,12 +110,13 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     })
     void should_set_interpreter_language_flag_for_language_entered_manually(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
@@ -122,24 +130,26 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     })
     void should_not_set_interpreter_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(eq(APPELLANT_LEVEL_FLAGS), any());
     }
 
-    @Test
-    void should_deactivate_interpreter_language_flag() {
-        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_deactivate_interpreter_language_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -153,7 +163,75 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
                         appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_set_sign_language_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SIGN_LANGUAGE_INTERPRETER.getValue())));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, signLanguageValue)));
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_set_sign_language_flag_for_language_entered_manually(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SIGN_LANGUAGE_INTERPRETER.getValue())));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true, signLanguageValue)));
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS"
+    })
+    void should_deactivate_sign_language_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+
+        List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
+            .builder()
+            .flagCode(SIGN_LANGUAGE.getFlagCode())
+            .name(buildLanguageFlagName(SIGN_LANGUAGE.getName(), signLanguageValue.getLabel()))
+            .status("Active")
+            .build()));
+        when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
+            .thenReturn(Optional.of(new StrategicCaseFlag(
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -164,11 +242,10 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     @Test
     void should_not_deactivate_flag_when_non_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -179,9 +256,8 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     @Test
     void should_not_deactivate_flag_when_an_inactive_one_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -195,7 +271,7 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
                         appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -210,9 +286,10 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     })
     void should_set_flag_when_an_inactive_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
@@ -226,7 +303,7 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
                         appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -241,9 +318,10 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     })
     void should_not_set_flag_when_an_active_one_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         
@@ -258,7 +336,7 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
                         appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -274,7 +352,7 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = interpreterLanguageHandler.canHandle(callbackStage, callback);
+                boolean canHandle = handler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                         && List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS)
@@ -296,10 +374,10 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false)));
+            .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 
         assertThatThrownBy(() ->
-                interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Appellant given names required")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -307,19 +385,19 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> interpreterLanguageHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> handler.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> interpreterLanguageHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> handler.canHandle(ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> interpreterLanguageHandler.handle(null, callback))
+        assertThatThrownBy(() -> handler.handle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> interpreterLanguageHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> handler.handle(ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -327,24 +405,24 @@ public class SpokenLanguageForAppellantFlagsHandlerTest {
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> interpreterLanguageHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        assertThatThrownBy(() -> interpreterLanguageHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> handler.handle(ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry) {
+    private InterpreterLanguageRefData interpreterLanguageRefDataMocked(boolean manualEntry, Value value) {
         if (manualEntry) {
             List<String> list = new ArrayList<>();
-            list.add(spokenLanguageValue.getLabel());
-            return new InterpreterLanguageRefData(null, list, spokenLanguageValue.getLabel());
+            list.add("Yes");
+            return new InterpreterLanguageRefData(null, list, value.getLabel());
         }
         DynamicList dynamicList = new DynamicList("");
-        dynamicList.setValue(spokenLanguageValue);
+        dynamicList.setValue(value);
         return new InterpreterLanguageRefData(dynamicList, null, null);
     }
 
