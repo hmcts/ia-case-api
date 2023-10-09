@@ -213,8 +213,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.CHANGE_DIRECTION_DUE_DATE,
                 Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                 Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                Event.UPLOAD_ADDENDUM_EVIDENCE,
-                Event.CHANGE_DIRECTION_DUE_DATE
+                Event.UPLOAD_ADDENDUM_EVIDENCE
         );
 
         if (!isSaveAndContinueEnabled) {
