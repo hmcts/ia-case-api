@@ -1782,7 +1782,10 @@ public enum AsylumCaseFieldDefinition {
         "suitabilityInterpreterServicesLanguage", new TypeReference<String>() {}),
 
     SOURCE_OF_APPEAL(
-            "sourceOfAppeal", new TypeReference<String>(){})
+            "sourceOfAppeal", new TypeReference<String>(){}),
+
+    IS_NOTIFICATION_TURNED_OFF(
+            "isNotificationTurnedOff", new TypeReference<YesOrNo>() {}),
     ;
 
     private final String value;
