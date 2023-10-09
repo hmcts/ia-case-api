@@ -1825,6 +1825,8 @@ public enum AsylumCaseFieldDefinition {
     IS_EJP(
         "isEjp", new TypeReference<YesOrNo>() {}),
 
+    IS_NOTIFICATION_TURNED_OFF(
+            "isNotificationTurnedOff", new TypeReference<YesOrNo>() {}),
     ;
 
     private final String value;
