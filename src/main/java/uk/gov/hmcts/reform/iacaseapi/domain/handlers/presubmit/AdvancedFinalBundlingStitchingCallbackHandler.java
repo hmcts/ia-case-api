@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
             handleHomeOfficeNotification(callback, asylumCase);
         }
 
-        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
+        AsylumCase asylumCaseWithNotificationMarker = isNotificationTurnedOff(asylumCase)
+                ? asylumCase : notificationSender.send(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }

@@ -55,10 +55,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        if (isNotificationTurnedOff(asylumCase)) {
+            return false;
+        }
+
         if (isInternalCase(asylumCase)) {
             return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && getInternalEventsToHandle(callback).contains(callback.getEvent())
-                    && !isNotificationTurnedOff(asylumCase);
+                    && getInternalEventsToHandle(callback).contains(callback.getEvent());
         }
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
