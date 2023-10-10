@@ -70,7 +70,8 @@ public class WitnessesDraftMidEventHandlerTest {
 
     @Test
     void should_add_error_when_witnesses_more_than_ten() {
-        List<WitnessDetails> elevenWitnesses = Collections.nCopies(11, witnessDetails);
+        List<IdValue<WitnessDetails>> elevenWitnesses =
+            Collections.nCopies(11, new IdValue<>("1", witnessDetails));
 
         when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
@@ -83,7 +84,8 @@ public class WitnessesDraftMidEventHandlerTest {
 
     @Test
     void should_not_add_error_when_witnesses_are_ten_or_less() {
-        List<WitnessDetails> elevenWitnesses = Collections.nCopies(10, witnessDetails);
+        List<IdValue<WitnessDetails>> elevenWitnesses =
+            Collections.nCopies(10, new IdValue<>("1", witnessDetails));
 
         when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));

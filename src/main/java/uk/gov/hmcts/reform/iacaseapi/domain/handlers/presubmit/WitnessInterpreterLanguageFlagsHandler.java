@@ -43,7 +43,7 @@ public class WitnessInterpreterLanguageFlagsHandler extends WitnessCaseFlagsHand
 
     @Override
     public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LATEST;
+        return DispatchPriority.LAST;
     }
 
     @Override

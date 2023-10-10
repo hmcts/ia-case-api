@@ -3,11 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessIndividualFields;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WitnessesService;
 
 @Component
 public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -56,7 +54,11 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
         Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
 
         switch (pageId) {
-            case IS_WITNESSES_ATTENDING_PAGE_ID ->
+            case IS_WITNESSES_ATTENDING_PAGE_ID -> {
+
+                // Append witness party IDs
+                WitnessesService.appendWitnessPartyId(asylumCase);
+                optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
 
                 // cannot add more than 10 witnesses to the collection
                 optionalWitnesses.ifPresentOrElse(witnesses -> {
@@ -68,9 +70,11 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
                     clearWitnessIndividualFields(asylumCase);
                     clearWitnessInterpreterLanguageFields(asylumCase);
                 });
+            }
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
                 clearWitnessIndividualFields(asylumCase);
-                optionalWitnesses.ifPresent(witnesses -> decentralizeWitnessCollection(asylumCase, witnesses));
+                optionalWitnesses.ifPresent(witnesses ->
+                    decentralizeWitnessCollection(asylumCase, witnesses));
             }
             default -> {
             }
@@ -86,8 +90,9 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
      * @param asylumCase The asylum case
      * @param witnesses  The value of the witnessDetails field (collection)
      */
-    protected void decentralizeWitnessCollection(AsylumCase asylumCase,
-                                                 List<IdValue<WitnessDetails>> witnesses) {
+    protected void decentralizeWitnessCollection(
+        AsylumCase asylumCase, List<IdValue<WitnessDetails>> witnesses) {
+
         int i = 0;
         while (i < witnesses.size()) {
 

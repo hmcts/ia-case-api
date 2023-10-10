@@ -8,7 +8,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WitnessDetails {
@@ -16,6 +15,9 @@ public class WitnessDetails {
     private String witnessPartyId;
     private String witnessName;
     private String witnessFamilyName;
+
+    public WitnessDetails() {
+    }
 
     public WitnessDetails(String witnessName) {
         this.witnessName = witnessName;

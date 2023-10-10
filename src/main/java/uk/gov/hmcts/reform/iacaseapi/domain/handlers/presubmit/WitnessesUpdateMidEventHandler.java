@@ -48,9 +48,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WitnessesService;
 
 @Component
-public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String IS_WITNESSES_ATTENDING_PAGE_ID = "isWitnessesAttending";
     private static final String IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID = "isInterpreterServicesNeeded";
@@ -125,14 +126,17 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
 
         // CODE REPETITION IN THIS STATEMENT IS DUE TO CHECKSTYLE NOT PERMITTING FALLTHROUGH
         switch (pageId) {
-            case IS_WITNESSES_ATTENDING_PAGE_ID ->
-
+            case IS_WITNESSES_ATTENDING_PAGE_ID -> {
+                // append witness party ID
+                WitnessesService.appendWitnessPartyId(asylumCase);
+                optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
                 // cannot add more than 10 witnesses to the collection
                 optionalWitnesses.ifPresent(witnesses -> {
                     if (witnesses.size() > WITNESS_N_FIELD.size()) {        // 10
                         response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
                     }
                 });
+            }
             case IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 YesOrNo isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
@@ -377,7 +381,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
         }
         while (i < 10) {
             // clearing does not work, dummy fields have to be set and then hidden with ccd
-            asylumCase.write(WITNESS_N_FIELD.get(i), new WitnessDetails("", ""));
+            asylumCase.write(WITNESS_N_FIELD.get(i), new WitnessDetails());
             asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i), new DynamicMultiSelectList());
             i++;
         }
