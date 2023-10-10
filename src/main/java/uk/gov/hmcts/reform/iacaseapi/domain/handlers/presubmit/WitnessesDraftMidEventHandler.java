@@ -51,30 +51,29 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
         String pageId = callback.getPageId();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        // Append witness party IDs if missing
+        WitnessesService.appendWitnessPartyId(asylumCase);
+
         Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
+        List<IdValue<WitnessDetails>> witnesses = optionalWitnesses.orElseGet(Collections::emptyList);
 
         switch (pageId) {
             case IS_WITNESSES_ATTENDING_PAGE_ID -> {
 
-                // Append witness party IDs
-                WitnessesService.appendWitnessPartyId(asylumCase);
-                optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
-
-                // cannot add more than 10 witnesses to the collection
-                optionalWitnesses.ifPresentOrElse(witnesses -> {
-                    if (witnesses.size() > WITNESS_N_FIELD.size()) {        // 10
-                        response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
-                    }
-                }, () -> {
+                if (witnesses.isEmpty()) {
                     // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
                     clearWitnessIndividualFields(asylumCase);
                     clearWitnessInterpreterLanguageFields(asylumCase);
-                });
+                } else if (witnesses.size() > WITNESS_N_FIELD.size()) {
+                    // cannot add more than 10 witnesses to the collection // 10
+                    response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
+                }
             }
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
                 clearWitnessIndividualFields(asylumCase);
-                optionalWitnesses.ifPresent(witnesses ->
-                    decentralizeWitnessCollection(asylumCase, witnesses));
+                if (!witnesses.isEmpty()) {
+                    decentralizeWitnessCollection(asylumCase, witnesses);
+                }
             }
             default -> {
             }

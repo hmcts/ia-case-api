@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_WITNESSES_ATTENDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_COUNT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
@@ -120,76 +121,81 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
         List<String> appellantInterpreterLanguageCategory = optionalAppellantInterpreterLanguageCategory
             .orElse(Collections.emptyList());
 
+        // append witness party ID if missing
+        WitnessesService.appendWitnessPartyId(asylumCase);
+
         Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
+        List<IdValue<WitnessDetails>> witnesses = optionalWitnesses.orElseGet(Collections::emptyList);
 
         Map<Integer,Integer> newToOldWitnessesIndexes = newWitnessesToOldWitnessesIndexes(callback);
 
         // CODE REPETITION IN THIS STATEMENT IS DUE TO CHECKSTYLE NOT PERMITTING FALLTHROUGH
         switch (pageId) {
             case IS_WITNESSES_ATTENDING_PAGE_ID -> {
-                // append witness party ID
-                WitnessesService.appendWitnessPartyId(asylumCase);
-                optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
-                // cannot add more than 10 witnesses to the collection
-                optionalWitnesses.ifPresent(witnesses -> {
-                    if (witnesses.size() > WITNESS_N_FIELD.size()) {        // 10
-                        response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
-                    }
-                });
+
+                if (witnesses.isEmpty()) {
+                    clearWitnessIndividualFields(asylumCase);
+                    clearWitnessInterpreterLanguageFields(asylumCase);
+                } else if (witnesses.size() > WITNESS_N_FIELD.size()) { // 10
+                    // cannot add more than 10 witnesses to the collection
+                    response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
+                }
             }
             case IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
-                YesOrNo isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
-                    .orElse(NO);
-                if (!isInterpreterServicesNeeded.equals(YES)) {
-                    if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                boolean isInterpreterServicesNeeded = asylumCase
+                    .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+                    .map(YES::equals)
+                    .orElse(false);
+                if (!isInterpreterServicesNeeded) {
+                    if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
                         // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
                         clearWitnessIndividualFields(asylumCase);
                         clearWitnessInterpreterLanguageFields(asylumCase);
 
                     } else {
-                        optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
-                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                        transferOldWitnessesToNewWitnesses(
+                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
                     }
                 }
             }
             case APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 if (!appellantInterpreterLanguageCategory.contains(SPOKEN)) {
-                    if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                    if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
                         // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
                         clearWitnessIndividualFields(asylumCase);
                         clearWitnessInterpreterLanguageFields(asylumCase);
 
                     } else {
-                        optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
-                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                        transferOldWitnessesToNewWitnesses(
+                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
                     }
                 }
             }
             case APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 if (!appellantInterpreterLanguageCategory.contains(SIGN)) {
-                    if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                    if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
                         // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
                         clearWitnessIndividualFields(asylumCase);
                         clearWitnessInterpreterLanguageFields(asylumCase);
 
                     } else {
-                        optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
-                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                        transferOldWitnessesToNewWitnesses(
+                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
                     }
                 }
             }
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
-                if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+                if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
                     // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
                     clearWitnessIndividualFields(asylumCase);
                     clearWitnessInterpreterLanguageFields(asylumCase);
 
                 } else {
-                    optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
-                        asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
+                    transferOldWitnessesToNewWitnesses(
+                        asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
                 }
             }
             case WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID -> {
@@ -385,6 +391,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
             asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i), new DynamicMultiSelectList());
             i++;
         }
+        asylumCase.write(WITNESS_COUNT, witnesses.size());
     }
 
     public List<AsylumCaseFieldDefinition> getFieldsToBeCleared() {

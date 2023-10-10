@@ -32,7 +32,7 @@ public class RemoveWitnessCaseFlagsHandler extends WitnessCaseFlagsHandler
 
     @Override
     public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LAST;
+        return DispatchPriority.LATEST;
     }
 
     @Override
