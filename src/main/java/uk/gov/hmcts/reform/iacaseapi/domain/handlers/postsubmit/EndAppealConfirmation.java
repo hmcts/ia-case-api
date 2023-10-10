@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUIRE_MANUAL_HEARINGS_CANCELLATION;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -12,6 +13,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
 public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    public static final String HEARING_CANCEL_SUCCEED = "#### What happens next\n\n"
+        + "A notification has been sent to all parties.<br><br>"
+        + "Any hearings requested or listed in List Assist have been automatically cancelled.";
+
+
+    public static final String HEARING_CANCEL_FAILED = "#### What happens next\n\n"
+        + "A notification has been sent to all parties.<br><br>"
+        + "The hearing could not be automatically cancelled.<br><br>"
+        + "[Cancel the hearing on the Hearings tab](/cases/case-details/%s/hearings)";
+
 
     @Override
     public boolean canHandle(
@@ -45,12 +57,16 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
                 + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
             );
         } else {
-
             postSubmitResponse.setConfirmationHeader("# You have ended the appeal");
-            postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "A notification has been sent to all parties.<br>"
-            );
+
+            if (asylumCase.read(REQUIRE_MANUAL_HEARINGS_CANCELLATION).isPresent()) {
+                postSubmitResponse.setConfirmationBody(
+                    String.format(HEARING_CANCEL_FAILED, callback.getCaseDetails().getId())
+                );
+            } else {
+                postSubmitResponse.setConfirmationBody(HEARING_CANCEL_SUCCEED);
+            }
+
         }
 
         return postSubmitResponse;

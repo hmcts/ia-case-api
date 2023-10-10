@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -22,14 +23,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
 @Component
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
 
-    public EndAppealHandler(DateProvider dateProvider) {
+    AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+
+    private final String hearingsApiEndpoint;
+    private final String aboutToSubmitPath;
+
+    public EndAppealHandler(DateProvider dateProvider,
+                            AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+                            @Value("${hearingsApi.endpoint}") String hearingsApiEndpoint,
+                            @Value("${hearingsApi.aboutToSubmitPath}") String aboutToSubmitPath) {
         this.dateProvider = dateProvider;
+        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.hearingsApiEndpoint = hearingsApiEndpoint;
+        this.aboutToSubmitPath = aboutToSubmitPath;
     }
 
     @Override
@@ -87,7 +100,15 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
 
+        if (callback.getEvent() == Event.END_APPEAL) {
+            asylumCase = deleteHearings(callback);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private AsylumCase deleteHearings(Callback<AsylumCase> callback) {
+        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToSubmitPath);
     }
 
     private void changeWithdrawApplicationsToCompleted(AsylumCase asylumCase) {

@@ -1,0 +1,27 @@
+{
+  "description": "RIA 7744 end appeal requires manual hearing cancellation confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "endAppeal",
+      "state": "listing",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeEndAppealInstructStatus": "OK",
+          "requireManualHearingsCancellation": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have ended the appeal",
+      "body": "#### What happens next\n\nA notification has been sent to all parties.<br><br>The hearing could not be automatically cancelled.<br><br>[Cancel the hearing on the Hearings tab](/cases/case-details/1234/hearings)"
+    }
+  }
+}

@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,12 +52,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class EndAppealHandlerTest {
 
+    public static final String HEARINGS_API_ENDPOINT = "hearingsApiEndpoint";
+    public static final String ABOUT_TO_SUBMIT_PATH = "aboutToSubmitPath";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -64,6 +69,8 @@ class EndAppealHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
     @Mock
     private CaseDetails<AsylumCase> previousCaseDetails;
 
@@ -87,10 +94,12 @@ class EndAppealHandlerTest {
     public void setup() {
 
         when(dateProvider.now()).thenReturn(date);
-        endAppealHandler = new EndAppealHandler(dateProvider);
+        endAppealHandler = new EndAppealHandler(dateProvider, asylumCaseCallbackApiDelegator,
+            HEARINGS_API_ENDPOINT, ABOUT_TO_SUBMIT_PATH);
         when(previousCaseDetails.getState()).thenReturn(previousState);
         when(callback
             .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
+        when(asylumCaseCallbackApiDelegator.delegate(any(), any())).thenReturn(asylumCase);
 
     }
 
@@ -114,6 +123,7 @@ class EndAppealHandlerTest {
 
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        verify(asylumCaseCallbackApiDelegator).delegate(callback, HEARINGS_API_ENDPOINT + ABOUT_TO_SUBMIT_PATH);
     }
 
 
@@ -180,6 +190,7 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCaseCallbackApiDelegator, never()).delegate(callback, HEARINGS_API_ENDPOINT + ABOUT_TO_SUBMIT_PATH);
     }
 
     @Test
