@@ -115,4 +115,16 @@ class HandlerUtilsTest {
         when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         assertFalse(HandlerUtils.isEjpCase(asylumCase));
     }
+
+    @Test
+    void isNotificationTurnedOff_should_return_true() {
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isNotificationTurnedOff(asylumCase));
+    }
+
+    @Test
+    void isNotificationTurnedOff_should_return_false() {
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isNotificationTurnedOff(asylumCase));
+    }
 }

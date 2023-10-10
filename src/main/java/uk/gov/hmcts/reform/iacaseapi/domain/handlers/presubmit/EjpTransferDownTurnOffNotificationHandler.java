@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+
 
 @Component
 public class EjpTransferDownTurnOffNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -40,11 +43,10 @@ public class EjpTransferDownTurnOffNotificationHandler implements PreSubmitCallb
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String sourceOfAppeal = asylumCase
-                .read(SOURCE_OF_APPEAL, String.class)
-                .orElseThrow(() -> new IllegalStateException("sourceOfAppeal is not present"));
+        Optional<String> sourceOfAppeal = asylumCase
+                .read(SOURCE_OF_APPEAL, String.class);
 
-        if (sourceOfAppeal.equals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue())) {
+        if (sourceOfAppeal.isPresent() && sourceOfAppeal.get().equals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue())) {
             asylumCase.write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
         }
 

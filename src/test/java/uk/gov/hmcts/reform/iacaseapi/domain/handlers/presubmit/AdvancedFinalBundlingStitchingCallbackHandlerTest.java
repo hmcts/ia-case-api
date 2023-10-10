@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -299,6 +301,18 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void handler_should_not_send_notification_when_is_notification_turned_off_() {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(RP));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        verify(notificationSender, times(0)).send(callback);
     }
 
     @Test
