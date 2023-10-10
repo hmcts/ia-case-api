@@ -5,8 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.Objects;
 import java.util.Set;
@@ -54,7 +53,7 @@ public class DetentionValidator  implements PreSubmitCallbackHandler<AsylumCase>
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (!isAppellantInDetention(asylumCase) && isInternalCase(asylumCase)) {
+        if (!isAppellantInDetention(asylumCase) && isInternalCase(asylumCase) && !isEjpCase(asylumCase)) {
             response.addError(OPTION_UNAVAILABLE_ERROR);
         }
 

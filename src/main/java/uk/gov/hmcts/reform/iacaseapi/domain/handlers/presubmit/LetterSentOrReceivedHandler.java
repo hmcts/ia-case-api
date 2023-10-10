@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LETTER_SENT_OR_RECEIVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -55,22 +56,18 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
                         .getCaseData();
 
         YesOrNo isOutOfCountryEnabled = asylumCase
-                .read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)
-                .orElseThrow(() -> new IllegalArgumentException("isOutOfCountryEnabled is missing"));
-
-        YesOrNo appellantInUk = asylumCase
-                .read(APPELLANT_IN_UK, YesOrNo.class)
-                .orElseThrow(() -> new IllegalArgumentException("appellantInUk is missing"));
-
+            .read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)
+            .orElseThrow(() -> new IllegalArgumentException("isOutOfCountryEnabled is missing"));
+        Optional<YesOrNo> appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
         Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
         Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
 
         // Set the values only for non age assessment appeals. For age assessment, we have separate field - DATE_ON_DECISION_LETTER
-        if ((isOutOfCountryEnabled.equals(YES) && appellantInUk.equals(NO))
+        if ((isOutOfCountryEnabled.equals(YES)) && appellantInUk.equals(Optional.of(NO))
             || isAcceleratedDetainedAppeal.equals(Optional.of(YES))) {
             asylumCase.write(LETTER_SENT_OR_RECEIVED, "Received");
-        } else if ((appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(NO)))
-            || (appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(YES))
+        } else if ((appellantInUk.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(NO)))
+            || (appellantInUk.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(YES))
             && isAcceleratedDetainedAppeal.equals(Optional.of(NO)))
             || (appellantInUk.equals(YES) && appellantInDetention.isEmpty())) { //when detention question is never answered
             asylumCase.write(LETTER_SENT_OR_RECEIVED, "Sent");

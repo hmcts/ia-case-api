@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 /**
@@ -47,13 +50,12 @@ public class InCountryToOutOfCountryHandler implements PreSubmitCallbackHandler<
                         .getCaseDetails()
                         .getCaseData();
 
-        YesOrNo ukAppeal = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
-                .orElseThrow(() -> new IllegalStateException("Unable to determine if appeal is in UK or out of country"));
+        Optional<YesOrNo> appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
 
-        if (ukAppeal.equals(YesOrNo.YES)) {
+        if (appellantInUk.isPresent() && appellantInUk.equals(YesOrNo.YES)) {
             asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
 
-        } else {
+        } else if (appellantInUk.equals(YesOrNo.NO)){
             asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
             asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
             asylumCase.clear(DETENTION_FACILITY);
