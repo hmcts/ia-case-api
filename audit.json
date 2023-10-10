@@ -30,5 +30,9 @@
   "10096_Timestamp Disclosure - Unix_http://ia-case-api-aat.service.core-compute-aat.internal/asylum/ccdAboutToStart_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://ia-case-api-aat.service.core-compute-aat.internal/asylum/ccdAboutToSubmit_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://ia-case-api-aat.service.core-compute-aat.internal/asylum/ccdMidEvent_POST": "ignore",
-  "10096_Timestamp Disclosure - Unix_http://ia-case-api-aat.service.core-compute-aat.internal/asylum/ccdSubmitted_POST": "ignore"
+  "10096_Timestamp Disclosure - Unix_http://ia-case-api-aat.service.core-compute-aat.internal/asylum/ccdSubmitted_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://ia-case-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_http://ia-case-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10049_Non-Storable Content_http://ia-case-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10112_Session Management Response Identified_http://ia-case-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
 }
