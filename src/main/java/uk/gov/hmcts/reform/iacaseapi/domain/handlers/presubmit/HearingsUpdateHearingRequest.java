@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -15,12 +14,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackAp
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_LOCATION_CHANGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_LOCATION_VALUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HEARINGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION_VALUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
 
 @Component
 @Slf4j
@@ -68,7 +65,7 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
 
         AsylumCase asylumCase;
 
-        if (callback.getCaseDetails().getCaseData().read(UPDATE_HEARINGS).isEmpty()) {
+        if (callback.getCaseDetails().getCaseData().read(CHANGE_HEARINGS).isEmpty()) {
             asylumCase = getHearings(callback);
         } else {
             asylumCase = getHearingDetails(callback);
@@ -87,19 +84,10 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
     }
 
     private static void setHearingLocationDetails(AsylumCase asylumCase) {
-        Optional<String> hearingLocation = asylumCase.read(HEARING_LOCATION_VALUE);
+        Optional<String> hearingLocation = asylumCase.read(CHANGE_HEARING_LOCATION_VALUE);
         if (hearingLocation.isPresent()) {
             String hearingCenterValue = HearingCentre.getValueByEpimsId(hearingLocation.get());
-            asylumCase.write(HEARING_LOCATION_VALUE, hearingCenterValue);
-            DynamicList locationsList = new DynamicList(
-                    new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(hearingLocation.get(), hearingCenterValue),
-                    HearingCentre.epimsIdMapping
-                            .values()
-                            .stream()
-                            .map(hearingCentre -> new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(hearingCentre.getEpimsId(), hearingCentre.getValue()))
-                            .collect(Collectors.toList())
-            );
-            asylumCase.write(HEARING_LOCATION_CHANGE, locationsList);
+            asylumCase.write(CHANGE_HEARING_LOCATION_VALUE, hearingCenterValue);
         }
     }
 }
