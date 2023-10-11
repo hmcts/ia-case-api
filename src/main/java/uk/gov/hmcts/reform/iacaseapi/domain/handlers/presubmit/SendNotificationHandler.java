@@ -201,7 +201,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.TRANSFER_OUT_OF_ADA,
                 Event.SEND_DIRECTION,
                 Event.RESIDENT_JUDGE_FTPA_DECISION,
-                Event.UPDATE_HEARING_REQUIREMENTS,
                 Event.MAINTAIN_CASE_LINKS,
                 Event.CHANGE_HEARING_CENTRE,
                 Event.CREATE_CASE_LINK,
