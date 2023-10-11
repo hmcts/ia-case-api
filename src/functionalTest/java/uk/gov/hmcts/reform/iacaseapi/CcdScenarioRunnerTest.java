@@ -110,6 +110,7 @@ public class CcdScenarioRunnerTest {
         );
 
         String scenarioPattern = System.getProperty("scenario");
+        scenarioPattern = "RIA-7823-list-hearings-about-to-start";
         if (scenarioPattern == null) {
             scenarioPattern = "*.json";
         } else {
