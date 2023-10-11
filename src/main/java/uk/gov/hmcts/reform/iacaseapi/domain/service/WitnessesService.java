@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 public class WitnessesService {
 
+    private WitnessesService() {
+    }
+
     public static void appendWitnessPartyId(AsylumCase asylumCase) {
 
         Optional<List<IdValue<WitnessDetails>>> witnessDetailsOptional = asylumCase.read(WITNESS_DETAILS);
