@@ -72,6 +72,7 @@ java:
             CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "cft_task_db_replica" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "hmc_cft_hearing_service" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       database: cft_task_db
       username: hmcts
@@ -354,6 +355,67 @@ ia-case-notifications-api:
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/hearings-api:latest
+    releaseNameOverride: ${SERVICE_NAME}-hearings-api
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      HMC_API_URL: https://hmc-cft-hearing-service-${SERVICE_FQDN}
+      XUI_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-{{ .Values.global.environment }}"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-{{ .Values.global.environment }}"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "hmc-ia-subs-to-cft-{{ .Values.global.environment }}"
+      HMC_HEARINGS_LISTENING_ENABLED: false
+      HMC_HEARINGS_TOPIC_POLICY_NAME: SendAndListenSharedAccessKey
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: docmosis-enabled
+            alias: IA_DOCMOSIS_ENABLED
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: prof-ref-data-url
+            alias: PROF_REF_DATA_URL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: hmc-servicebus-connection-string
+            alias: HEARINGS_TOPIC_CONNECTION_STRING
+          - name: hmc-servicebus-shared-access-key-tf
+            alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
+
 ia-bail-case-api:
   enabled: true
   java:
@@ -619,6 +681,7 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
+      PREVIEW_DEPLOYMENT_ID: iac-preview-deployment-1683
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
@@ -1108,3 +1171,65 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
       RUN_LD_ON_STARTUP: true
+
+hmc-hmi-outbound-adapter:
+  enabled: true
+  image: "hmctspublic.azurecr.io/hmc/hmi-outbound-adapter:latest"
+  ingressHost: hmc-hmi-outbound-adapter-${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_OUTBOUND_QUEUE: "hmc-to-hmi-{{ .Values.global.environment }}"
+    HMC_SERVICE_BUS_INBOUND_QUEUE: "hmc-from-hmi-{{ .Values.global.environment }}"
+  keyVaults:
+    hmc:
+      resourceGroup: hmc-shared
+      secrets:
+        - name: AppInsightsInstrumentationKey
+
+hmc-hmi-inbound-adapter:
+  enabled: true
+  image: "hmctspublic.azurecr.io/hmc/hmi-inbound-adapter:latest"
+  ingressHost: hmc-hmi-inbound-adapter-${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_QUEUE: "hmc-from-hmi-{{ .Values.global.environment }}"
+  keyVaults:
+    hmc:
+      resourceGroup: hmc-shared
+      secrets:
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: hmc-servicebus-connection-string
+          alias: HMC_SERVICE_BUS_CONNECTION_STRING
+        - name: hmc-hmi-inbound-adapter-s2s-secret
+          alias: IDAM_KEY_HMI_INBOUND_ADAPTER
+        - name: idam-hmc-hmi-inbound-adapter-client-secret
+          alias: IDAM_CLIENT_SECRET
+        - name: idam-hmc-system-user-username
+          alias: HMC_SYSTEM_USER_ID
+        - name: idam-hmc-system-user-password
+          alias: HMC_SYSTEM_USER_PASSWORD
+
+hmc-cft-hearing-service:
+  enabled: true
+  image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
+  ingressHost: hmc-cft-hearing-service-${SERVICE_FQDN}
+  environment:
+    HMC_SERVICE_BUS_TOPIC: "hmc-to-cft-{{ .Values.global.environment }}"
+    HMC_SERVICE_BUS_SUBSCRIPTION: "hmc-ia-subs-to-cft-{{ .Values.global.environment }}"
+    HMC_SERVICE_BUS_QUEUE: "hmc-from-hmi-{{ .Values.global.environment }}"
+    HMC_OUTBOUND_SERVICE_BUS_QUEUE: "hmc-to-hmi-{{ .Values.global.environment }}"
+    CFT_HEARING_SERVICE_DB_HOST: "{{ .Release.Name }}-postgresql"
+    CFT_HEARING_SERVICE_DB_NAME: hmc_cft_hearing_service
+    CFT_HEARING_SERVICE_DB_USERNAME: hmcts
+    CFT_HEARING_SERVICE_DB_PASSWORD: hmcts
+    CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
+    CFT_HEARING_SERVICE_DB_PORT: 5432
+    CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+  postgresql:
+    enabled: false
+  keyVaults:
+    hmc:
+      resourceGroup: hmc-aso-preview-rg
+      secrets:
+        - name: AppInsightsInstrumentationKey
+        - name: hmc-cft-hearing-service-s2s-secret
+          alias: IDAM_KEY_CFT_HEARING_SERVICE

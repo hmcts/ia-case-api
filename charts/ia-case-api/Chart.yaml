@@ -34,6 +34,10 @@ dependencies:
     version: 0.0.37
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
+  - name: ia-hearings-api
+    version: 0.0.10
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-hearings-api.enabled
   - name: ia-home-office-integration-api
     version: 0.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
@@ -78,3 +82,15 @@ dependencies:
     version: ~0.0.48
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: am-org-role-mapping-service.enabled
+  - name: hmc-hmi-outbound-adapter
+    version: ~0.1.11
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-hmi-outbound-adapter.enabled
+  - name: hmc-hmi-inbound-adapter
+    version: ~0.1.14
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-hmi-inbound-adapter.enabled
+  - name: hmc-cft-hearing-service
+    version: ~1.6.14
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-cft-hearing-service.enabled

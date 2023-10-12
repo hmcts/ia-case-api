@@ -60,6 +60,8 @@ ia-case-documents-api:
   enabled: false
 ia-case-notifications-api:
   enabled: false
+ia-hearings-api:
+  enabled: false
 ia-home-office-integration-api:
   enabled: false
 idam-pr:
@@ -87,4 +89,10 @@ aac-manage-case-assignment:
 am-org-role-mapping-service:
   enabled: false
 redis:
+  enabled: false
+hmc-hmi-outbound-adapter:
+  enabled: false
+hmc-hmi-inbound-adapter:
+  enabled: false
+hmc-cft-hearing-service:
   enabled: false
