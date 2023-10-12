@@ -53,7 +53,7 @@ public class DetentionValidator  implements PreSubmitCallbackHandler<AsylumCase>
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (!isAppellantInDetention(asylumCase) && isInternalCase(asylumCase) && !isEjpCase(asylumCase)) {
+        if (!isAppellantInDetention(asylumCase) && isInternalCase(asylumCase) && !sourceOfAppealEjp(asylumCase)) {
             response.addError(OPTION_UNAVAILABLE_ERROR);
         }
 

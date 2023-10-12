@@ -68,7 +68,8 @@ public class HandlerUtils {
         return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 
-    public static boolean isEjpCase(AsylumCase asylumCase) {
-        return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(null) == SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL;
+    // This method uses the Source of Appeal value to check if it is EJP during Start Appeal event
+    public static boolean sourceOfAppealEjp(AsylumCase asylumCase) {
+        return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL;
     }
 }

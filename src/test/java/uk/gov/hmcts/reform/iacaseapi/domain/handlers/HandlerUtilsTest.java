@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -77,5 +78,17 @@ class HandlerUtilsTest {
     void isInternalCase_should_return_false() {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         assertFalse(HandlerUtils.isInternalCase(asylumCase));
+    }
+
+    @Test
+    void sourceOfAppealEjp_should_return_true() {
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
+        assertTrue(HandlerUtils.sourceOfAppealEjp(asylumCase));
+    }
+
+    @Test
+    void sourceOfAppealEjp_should_return_false() {
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
+        assertFalse(HandlerUtils.sourceOfAppealEjp(asylumCase));
     }
 }

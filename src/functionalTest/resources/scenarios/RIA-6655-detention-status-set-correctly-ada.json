@@ -1,6 +1,5 @@
 {
   "description": "RIA-6655 Confirm detention status set correctly for ADA cases -- Tests DetentionStatusHandler specifically",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
