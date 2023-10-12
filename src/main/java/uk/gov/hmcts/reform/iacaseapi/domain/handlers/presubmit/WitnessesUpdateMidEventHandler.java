@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_WITNESSES_ATTENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -20,9 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.NO_WITNESSES_SELECTED_ERROR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,9 +60,13 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
     private List<AsylumCaseFieldDefinition> fieldsToBeCleared = new ArrayList<>();
-    private WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater;
+    private final WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater;
+    static final String SPOKEN = SPOKEN_LANGUAGE_INTERPRETER.getValue();
+    static final String SIGN = SIGN_LANGUAGE_INTERPRETER.getValue();
 
-    public WitnessesUpdateMidEventHandler(WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater) {
+    public WitnessesUpdateMidEventHandler(
+        WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater) {
+
         this.witnessInterpreterLanguagesDynamicListUpdater = witnessInterpreterLanguagesDynamicListUpdater;
     }
 
@@ -121,7 +125,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
 
         // CODE REPETITION IN THIS STATEMENT IS DUE TO CHECKSTYLE NOT PERMITTING FALLTHROUGH
         switch (pageId) {
-            case IS_WITNESSES_ATTENDING_PAGE_ID:
+            case IS_WITNESSES_ATTENDING_PAGE_ID ->
 
                 // cannot add more than 10 witnesses to the collection
                 optionalWitnesses.ifPresent(witnesses -> {
@@ -129,10 +133,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                         response.addError(WITNESSES_NUMBER_EXCEEDED_ERROR);
                     }
                 });
-
-                break;
-
-            case IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID:
+            case IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 YesOrNo isInterpreterServicesNeeded = asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                     .orElse(NO);
@@ -147,10 +148,8 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                             asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
                     }
                 }
-
-                break;
-
-            case APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID:
+            }
+            case APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 if (!appellantInterpreterLanguageCategory.contains(SPOKEN)) {
                     if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
@@ -163,10 +162,8 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                             asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
                     }
                 }
-
-                break;
-
-            case APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID:
+            }
+            case APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID -> {
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter"
                 if (!appellantInterpreterLanguageCategory.contains(SIGN)) {
                     if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
@@ -179,11 +176,8 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                             asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
                     }
                 }
-
-                break;
-
-            case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID:
-
+            }
+            case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
                 if (optionalWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
                     // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
                     clearWitnessIndividualFields(asylumCase);
@@ -193,17 +187,13 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                     optionalWitnesses.ifPresent(witnesses -> transferOldWitnessesToNewWitnesses(
                         asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes));
                 }
-                break;
-
-            case WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID:
-
+            }
+            case WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID -> {
                 Map<Integer, InterpreterLanguageRefData> existingSpokenSelections = new HashMap<>();
                 Map<Integer, InterpreterLanguageRefData> existingSignSelections = new HashMap<>();
-
-                Map<Integer,List<String>> witnessIndexToInterpreterNeeded = new HashMap<>();
+                Map<Integer, List<String>> witnessIndexToInterpreterNeeded = new HashMap<>();
                 int numberOfWitnesses = optionalWitnesses.map(List::size).orElse(0);
-
-                newToOldWitnessesIndexes.forEach((n,o) -> {
+                newToOldWitnessesIndexes.forEach((n, o) -> {
                     oldAsylumCase
                         .read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(o), InterpreterLanguageRefData.class)
                         .ifPresent(spokenLanguageSelection -> existingSpokenSelections.put(n, spokenLanguageSelection));
@@ -212,37 +202,32 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                         .read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(o), InterpreterLanguageRefData.class)
                         .ifPresent(signLanguageSelection -> existingSignSelections.put(n, signLanguageSelection));
                 });
-
                 int i = 0;
                 while (i < numberOfWitnesses) {
                     DynamicMultiSelectList witnessElement = asylumCase
                         .read(WITNESS_LIST_ELEMENT_N_FIELD.get(i), DynamicMultiSelectList.class).orElse(null);
 
                     boolean witnessSelected = witnessElement != null
-                                              && !witnessElement.getValue().isEmpty()
-                                              && !witnessElement.getValue().get(0).getLabel().isEmpty();
+                        && !witnessElement.getValue().isEmpty()
+                        && !witnessElement.getValue().get(0).getLabel().isEmpty();
 
                     if (witnessSelected) {
 
                         Optional<List<String>> optionalSelectedInterpreterType = asylumCase.read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
-                        List<String> selectedInterpreterType = optionalSelectedInterpreterType.isEmpty()
-                            ? Collections.emptyList()
-                            : optionalSelectedInterpreterType.get();
+                        List<String> selectedInterpreterType = optionalSelectedInterpreterType
+                            .orElse(Collections.emptyList());
 
                         witnessIndexToInterpreterNeeded.put(i, selectedInterpreterType);
                     }
                     i++;
                 }
-
                 if (witnessIndexToInterpreterNeeded.isEmpty()) {
                     response.addError(NO_WITNESSES_SELECTED_ERROR);
                 }
-
                 InterpreterLanguageRefData spokenLanguages = witnessInterpreterLanguagesDynamicListUpdater
                     .generateDynamicList(INTERPRETER_LANGUAGES);
                 InterpreterLanguageRefData signLanguages = witnessInterpreterLanguagesDynamicListUpdater
                     .generateDynamicList(SIGN_LANGUAGES);
-
                 witnessIndexToInterpreterNeeded.forEach((index, interpretersNeeded) -> {
                     interpretersNeeded.forEach(interpreterCategory -> {
                         if (Objects.equals(interpreterCategory, SPOKEN)) {
@@ -269,7 +254,6 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                         }
                     });
                 });
-
                 int j = 0;
                 while (j < 10) {
                     if (witnessIndexToInterpreterNeeded.get(j) == null) {
@@ -279,7 +263,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
 
                         fieldsToBeCleared.addAll(
                             Set.of(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(j),
-                            WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(j))
+                                WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(j))
                         );
                     } else {
                         if (!witnessIndexToInterpreterNeeded.get(j).contains(SPOKEN)) {
@@ -293,11 +277,9 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
                     }
                     j++;
                 }
-
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
         return response;
@@ -340,10 +322,10 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
     }
 
 
-    protected AsylumCase transferOldWitnessesToNewWitnesses(AsylumCase asylumCase,
-                                                            AsylumCase oldAsylumCase,
-                                                            List<IdValue<WitnessDetails>> witnesses,
-                                                            Map<Integer,Integer> newToOldIndexes) {
+    protected void transferOldWitnessesToNewWitnesses(AsylumCase asylumCase,
+                                                      AsylumCase oldAsylumCase,
+                                                      List<IdValue<WitnessDetails>> witnesses,
+                                                      Map<Integer,Integer> newToOldIndexes) {
 
         Map<Integer,DynamicMultiSelectList> previousWitnessSelections = new HashMap<>();
         newToOldIndexes.forEach((n,o) -> previousWitnessSelections.put(
@@ -399,7 +381,6 @@ public class WitnessesUpdateMidEventHandler extends WitnessesDraftMidEventHandle
             asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i), new DynamicMultiSelectList());
             i++;
         }
-        return asylumCase;
     }
 
     public List<AsylumCaseFieldDefinition> getFieldsToBeCleared() {

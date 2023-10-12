@@ -28,9 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String IS_WITNESSES_ATTENDING_PAGE_ID = "isWitnessesAttending";
-    private static final String IS_INTERPRETER_SERVICES_NEEDED = "isInterpreterServicesNeeded";
-    private static final String APPELLANT_INTERPRETER_SPOKEN_LANGUAGE = "appellantInterpreterSpokenLanguage";
-    private static final String APPELLANT_INTERPRETER_SIGN_LANGUAGE = "appellantInterpreterSignLanguage";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
     private static final String WITNESSES_NUMBER_EXCEEDED_ERROR = "Maximum number of witnesses is 10";
 
@@ -59,7 +56,7 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
         Optional<List<IdValue<WitnessDetails>>> optionalWitnesses = asylumCase.read(WITNESS_DETAILS);
 
         switch (pageId) {
-            case IS_WITNESSES_ATTENDING_PAGE_ID:
+            case IS_WITNESSES_ATTENDING_PAGE_ID ->
 
                 // cannot add more than 10 witnesses to the collection
                 optionalWitnesses.ifPresentOrElse(witnesses -> {
@@ -71,16 +68,12 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
                     clearWitnessIndividualFields(asylumCase);
                     clearWitnessInterpreterLanguageFields(asylumCase);
                 });
-                break;
-
-            case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID:
-
+            case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
                 clearWitnessIndividualFields(asylumCase);
-
                 optionalWitnesses.ifPresent(witnesses -> decentralizeWitnessCollection(asylumCase, witnesses));
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
         return response;
@@ -89,12 +82,12 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
     /**
      * Breaks witnessDetails collection down into individual witness fields (witness1, witness2 etc.) and generates the
      * individual dynamicMultiSelectList fields for each witness (witnessListElement1, witnessListElement2 etc.)
+     *
      * @param asylumCase The asylum case
      * @param witnesses  The value of the witnessDetails field (collection)
-     * @return           The asylum case enriched with the generated fields
      */
-    protected AsylumCase decentralizeWitnessCollection(AsylumCase asylumCase,
-                                                       List<IdValue<WitnessDetails>> witnesses) {
+    protected void decentralizeWitnessCollection(AsylumCase asylumCase,
+                                                 List<IdValue<WitnessDetails>> witnesses) {
         int i = 0;
         while (i < witnesses.size()) {
 
@@ -108,7 +101,6 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
                 ));
             i++;
         }
-        return asylumCase;
     }
 
 }
