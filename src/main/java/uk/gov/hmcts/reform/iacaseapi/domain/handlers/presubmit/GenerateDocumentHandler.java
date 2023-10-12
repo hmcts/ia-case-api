@@ -134,6 +134,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
             Event.UPLOAD_ADDENDUM_EVIDENCE,
             Event.CHANGE_DIRECTION_DUE_DATE,
+            Event.UPDATE_HEARING_ADJUSTMENTS,
+            Event.CHANGE_DIRECTION_DUE_DATE,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.REINSTATE_APPEAL
         );
