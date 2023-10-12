@@ -85,6 +85,7 @@ class AppealGroundsForDisplayFormatterTest {
         when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.of(appealGrounds2));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(asylumCase).clear(APPEAL_GROUNDS_FOR_DISPLAY);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
