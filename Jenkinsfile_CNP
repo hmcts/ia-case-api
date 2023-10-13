@@ -60,6 +60,8 @@ def secrets = [
         secret('wa-test-caseofficer-stcw-password', 'IA_WA_CASEOFFICER_PASSWORD_STCW'),
         secret('wa-test-judge-username', 'IA_WA_JUDGE_USERNAME'),
         secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
+        secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
+        secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
 
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
