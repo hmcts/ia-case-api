@@ -387,6 +387,7 @@ security:
       - "updatePaymentStatus"
       - "endAppealAutomatically"
       - "listCase"
+      - "updateHMCResponse"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
