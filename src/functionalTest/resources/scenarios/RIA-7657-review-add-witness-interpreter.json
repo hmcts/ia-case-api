@@ -32,6 +32,16 @@
               }
             }
           ],
+          "witness1": {
+            "witnessPartyId": "partyId1",
+            "witnessName": "AWitness1",
+            "witnessFamilyName": "AFamilyName1"
+          },
+          "witness2": {
+            "witnessPartyId": "partyId2",
+            "witnessName": "AWitness2",
+            "witnessFamilyName": "AFamilyName2"
+          },
           "isAnyWitnessInterpreterRequired": "Yes",
           "isInterpreterServicesNeeded": "No",
           "witness1InterpreterSpokenLanguage": {
@@ -109,6 +119,16 @@
             }
           }
         ],
+        "witness1": {
+          "witnessPartyId": "partyId1",
+          "witnessName": "AWitness1",
+          "witnessFamilyName": "AFamilyName1"
+        },
+        "witness2": {
+          "witnessPartyId": "partyId2",
+          "witnessName": "AWitness2",
+          "witnessFamilyName": "AFamilyName2"
+        },
         "isAnyWitnessInterpreterRequired": "Yes",
         "isInterpreterServicesNeeded": "No",
         "witness1InterpreterSpokenLanguage": {

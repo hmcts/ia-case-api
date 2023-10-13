@@ -68,6 +68,7 @@ public class WitnessCaseFlagsHandler {
 
             if (witnessDetails != null
                 && witnessInterpreterLanguage != null
+                && !witnessInterpreterLanguage.isEmpty()
                 && witnessDetailsMap.containsKey(witnessDetails.getWitnessPartyId())) {
                 witnessLanguageMap.put(witnessDetails.getWitnessPartyId(), witnessInterpreterLanguage);
             }

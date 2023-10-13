@@ -99,8 +99,6 @@ public class WitnessesUpdateMidEventHandlerTest {
     @Mock
     private DynamicMultiSelectList witnessListElement2;
     @Mock
-    private DynamicMultiSelectList witnessListElement3;
-    @Mock
     private DynamicMultiSelectList witnessListElement4;
 
     MockedStatic<InterpreterLanguagesUtils> interpreterLanguagesUtils;
@@ -183,7 +181,8 @@ public class WitnessesUpdateMidEventHandlerTest {
 
     @Test
     void should_not_add_error_when_witnesses_are_ten_or_less() {
-        List<WitnessDetails> elevenWitnesses = Collections.nCopies(10, witnessDetails1);
+        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
+            .nCopies(10, new IdValue<>("1", witnessDetails1));
 
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(IS_WITNESSES_ATTENDING_PAGE_ID);
