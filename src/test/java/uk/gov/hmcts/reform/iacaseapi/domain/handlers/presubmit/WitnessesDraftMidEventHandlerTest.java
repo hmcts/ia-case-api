@@ -55,8 +55,6 @@ public class WitnessesDraftMidEventHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private WitnessDetails witnessDetails;
-    private String witnessName = "name";
-    private String witnessFamilyName = "lastName";
 
     private WitnessesDraftMidEventHandler witnessesDraftMidEventHandler;
 
@@ -65,14 +63,15 @@ public class WitnessesDraftMidEventHandlerTest {
         witnessesDraftMidEventHandler = new WitnessesDraftMidEventHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(witnessDetails.getWitnessName()).thenReturn(witnessName);
-        when(witnessDetails.getWitnessFamilyName()).thenReturn(witnessFamilyName);
+        when(witnessDetails.getWitnessName()).thenReturn("name");
+        when(witnessDetails.getWitnessFamilyName()).thenReturn("lastName");
         when(callback.getPageId()).thenReturn(IS_WITNESSES_ATTENDING);
     }
 
     @Test
     void should_add_error_when_witnesses_more_than_ten() {
-        List<WitnessDetails> elevenWitnesses = Collections.nCopies(11, witnessDetails);
+        List<IdValue<WitnessDetails>> elevenWitnesses =
+            Collections.nCopies(11, new IdValue<>("1", witnessDetails));
 
         when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
@@ -85,7 +84,8 @@ public class WitnessesDraftMidEventHandlerTest {
 
     @Test
     void should_not_add_error_when_witnesses_are_ten_or_less() {
-        List<WitnessDetails> elevenWitnesses = Collections.nCopies(10, witnessDetails);
+        List<IdValue<WitnessDetails>> elevenWitnesses =
+            Collections.nCopies(10, new IdValue<>("1", witnessDetails));
 
         when(callback.getEvent()).thenReturn(DRAFT_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
@@ -104,7 +104,7 @@ public class WitnessesDraftMidEventHandlerTest {
         when(callback.getPageId()).thenReturn(IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnesses));
 
-        PreSubmitCallbackResponse<AsylumCase> response = witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
+        witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
         DynamicMultiSelectList dynamicMultiSelectListEmpty = new DynamicMultiSelectList();
         DynamicMultiSelectList dynamicMultiSelectList = new DynamicMultiSelectList(Collections.emptyList(),

@@ -124,6 +124,7 @@ public enum Event {
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
     UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
     UPDATE_HEARING_REQUEST("updateHearingRequest"),
+    HANDLE_HEARING_EXCEPTION("handleHearingException"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

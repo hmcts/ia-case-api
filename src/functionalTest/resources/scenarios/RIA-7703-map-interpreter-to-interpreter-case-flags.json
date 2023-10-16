@@ -2,15 +2,14 @@
   "description": "RIA-7730 map interpreter's to interpreter case flags",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "createFlag",
+      "eventId": "updateInterpreterDetails",
       "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantNameForDisplay": "Eke Uk",
           "isWitnessesAttending": "No",
           "interpreterDetails": [
             {
@@ -64,7 +63,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantNameForDisplay": "Eke Uk",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
         "isWitnessesAttending": "No",
         "interpreterDetails": [
           {

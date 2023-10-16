@@ -1982,10 +1982,7 @@ public enum AsylumCaseFieldDefinition {
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),
     CHANGE_HEARING_LOCATION_VALUE(
-            "changeHearingLocationValue", new TypeReference<String>(){}),
-    // This is not actually a real case field. It is used to determine
-    // the case flag id for the purpose of functional test
-    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){});
+            "changeHearingLocationValue", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

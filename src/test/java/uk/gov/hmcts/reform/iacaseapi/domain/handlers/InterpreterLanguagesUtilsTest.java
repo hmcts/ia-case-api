@@ -13,10 +13,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
 
 import java.util.List;
 import java.util.Optional;
@@ -120,8 +120,9 @@ public class InterpreterLanguagesUtilsTest {
         InterpreterLanguagesUtils.persistWitnessInterpreterCategoryField(asylumCase);
 
         verify(asylumCase, times(1))
-            .write(WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY, List.of(SPOKEN, SIGN));
+            .write(WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY, List.of(
+                SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue()));
         verify(asylumCase, times(1))
-            .write(WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY, List.of(SPOKEN));
+            .write(WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY, List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue()));
     }
 }

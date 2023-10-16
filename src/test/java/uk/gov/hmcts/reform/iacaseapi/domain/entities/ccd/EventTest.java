@@ -122,10 +122,11 @@ class EventTest {
         assertEquals("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString());
         assertEquals("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString());
         assertEquals("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString());
+        assertEquals("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(120, Event.values().length);
+        assertEquals(121, Event.values().length);
     }
 }

@@ -10,7 +10,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseFlagId": "7337-7340-ABC",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -222,7 +221,7 @@
           "roleOnCase": "Appellant",
           "details": [
             {
-              "id": "7337-7340-ABC",
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
                 "name": "Hearing loop (hearing enhancement system)",
                 "status": "Active",
@@ -231,7 +230,7 @@
               }
             },
             {
-              "id": "7337-7340-ABC",
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
                 "name": "Step free / wheelchair access",
                 "status": "Active",

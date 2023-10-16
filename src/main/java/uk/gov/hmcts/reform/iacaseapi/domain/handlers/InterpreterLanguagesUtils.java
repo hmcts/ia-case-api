@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -209,10 +209,10 @@ public final class InterpreterLanguagesUtils {
 
             List<String> chosen = new ArrayList<>();
             if (spokenIsChosen) {
-                chosen.add(SPOKEN);
+                chosen.add(SPOKEN_LANGUAGE_INTERPRETER.getValue());
             }
             if (signIsChosen) {
-                chosen.add(SIGN);
+                chosen.add(SIGN_LANGUAGE_INTERPRETER.getValue());
             }
 
             if (!chosen.isEmpty()) {
