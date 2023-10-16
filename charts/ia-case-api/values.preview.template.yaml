@@ -25,7 +25,7 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
-    AAC_URL: https://${SERVICE_NAME}-aac-manage-case-assignment
+    AAC_URL: https://aac-${SERVICE_FQDN}
     DUMMY: true
   keyVaults:
     ia:
