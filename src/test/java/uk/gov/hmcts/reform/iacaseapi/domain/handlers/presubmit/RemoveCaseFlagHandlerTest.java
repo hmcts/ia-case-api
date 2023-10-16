@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -25,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,7 +31,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -62,26 +61,22 @@ public class RemoveCaseFlagHandlerTest {
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(Event.UPDATE_INTERPRETER_DETAILS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
         final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
         interpreterFlag1 = new StrategicCaseFlag(
-                fullName1, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+                fullName1, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
         interpreterFlag2 = new StrategicCaseFlag(
-                fullName2, StrategicCaseFlag.ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
 
         removeCaseFlagHandler = new RemoveCaseFlagHandler();
 
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "UPDATE_HEARING_REQUIREMENTS"
-    })
-    void should_not_remove_any_interpreter_flags(Event event) {
-        when(callback.getEvent()).thenReturn(event);
+    @Test
+    void should_not_remove_any_interpreter_flags() {
         when(asylumCase.read(INTERPRETER_LEVEL_FLAGS)).thenReturn(Optional.of(List.of(
                 new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2))));
         when(asylumCase.read(INTERPRETER_DETAILS))
@@ -109,12 +104,8 @@ public class RemoveCaseFlagHandlerTest {
 
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "UPDATE_HEARING_REQUIREMENTS"
-    })
-    void should_remove_one_interpreter_flag(Event event) {
-        when(callback.getEvent()).thenReturn(event);
+    @Test
+    void should_remove_one_interpreter_flag() {
         when(asylumCase.read(INTERPRETER_LEVEL_FLAGS)).thenReturn(Optional.of(List.of(
                 new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2))));
         when(asylumCase.read(INTERPRETER_DETAILS))
@@ -138,12 +129,8 @@ public class RemoveCaseFlagHandlerTest {
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "UPDATE_HEARING_REQUIREMENTS"
-    })
-    void should_remove_all_interpreter_flags(Event event) {
-        when(callback.getEvent()).thenReturn(event);
+    @Test
+    void should_remove_all_interpreter_flags() {
         when(asylumCase.read(INTERPRETER_LEVEL_FLAGS)).thenReturn(Optional.of(List.of(
                 new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1), new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2))));
 
@@ -171,7 +158,7 @@ public class RemoveCaseFlagHandlerTest {
 
                 boolean canHandle = removeCaseFlagHandler.canHandle(callbackStage, callback);
 
-                if (event == UPDATE_HEARING_REQUIREMENTS
+                if (event == UPDATE_INTERPRETER_DETAILS
                         && callbackStage == ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {

@@ -5,12 +5,11 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "createFlag",
+      "eventId": "updateInterpreterDetails",
       "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantNameForDisplay": "Eke Uk",
           "isWitnessesAttending": "No",
           "interpreterDetails": [
             {
@@ -64,7 +63,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantNameForDisplay": "Eke Uk",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
         "isWitnessesAttending": "No",
         "interpreterDetails": [
           {

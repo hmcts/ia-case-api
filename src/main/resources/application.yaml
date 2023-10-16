@@ -387,6 +387,7 @@ security:
       - "updatePaymentStatus"
       - "endAppealAutomatically"
       - "listCase"
+      - "handleHearingException"
       - "updateHMCResponse"
 
 ### dependency configuration

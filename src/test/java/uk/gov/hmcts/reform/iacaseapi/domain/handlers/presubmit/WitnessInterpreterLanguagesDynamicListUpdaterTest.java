@@ -60,11 +60,7 @@ class WitnessInterpreterLanguagesDynamicListUpdaterTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private CaseDetails<AsylumCase> caseDetailsBefore;
-    @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private AsylumCase asylumCaseBefore;
     @Mock
     private CommonDataResponse commonDataResponse;
     @Mock
