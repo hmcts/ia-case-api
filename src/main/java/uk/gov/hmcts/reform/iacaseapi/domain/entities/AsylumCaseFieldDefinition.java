@@ -1977,7 +1977,10 @@ public enum AsylumCaseFieldDefinition {
             "sponsorPartyId", new TypeReference<String>() {}),
 
     EPIMS_ID(
-            "epimsId", new TypeReference<String>() {});
+            "epimsId", new TypeReference<String>() {}),
+
+    IS_INTEGRATED(
+            "isIntegrated", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
