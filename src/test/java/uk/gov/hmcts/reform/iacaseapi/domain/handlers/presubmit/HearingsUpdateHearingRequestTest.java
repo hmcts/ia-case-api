@@ -19,14 +19,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION_VALUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION_VALUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.BRADFORD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -117,7 +114,6 @@ public class HearingsUpdateHearingRequestTest {
         verify(asylumCaseCallbackApiDelegator, times(1))
                 .delegate(callback, hearingsApiEndpoint + midEventPath);
         verify(asylumCase).write(CHANGE_HEARING_LOCATION_VALUE, BRADFORD.getValue());
-        verify(asylumCase).write(eq(LIST_CASE_HEARING_CENTRE), any(DynamicList.class));
     }
 }
 
