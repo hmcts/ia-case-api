@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ANY_WITNESS_INTERPRETER_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_WITNESSES_ATTENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_COUNT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS_READONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
@@ -159,16 +161,17 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                     .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                     .map(YES::equals)
                     .orElse(false);
-                if (!isInterpreterServicesNeeded) {
-                    if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
-                        // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
-                        clearWitnessIndividualFields(asylumCase);
-                        clearWitnessInterpreterLanguageFields(asylumCase);
 
-                    } else {
-                        transferOldWitnessesToNewWitnesses(
-                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
-                    }
+                if (!isInterpreterServicesNeeded && isWitnessAttending.equals(NO)) {
+
+                    // if no witnesses present nullify with dummies all witness-related fields
+                    // (clearing does not work) for ccd show-conditions to work
+                    clearWitnessIndividualFields(asylumCase);
+                    clearWitnessInterpreterLanguageFields(asylumCase);
+
+                    addAllWitnessFieldsToFieldsToBeCleared();
+                    asylumCase.write(WITNESS_COUNT, 0);
+
                 }
             }
             case APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID -> {
@@ -176,16 +179,15 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter" otherwise do the mapping
                 // as explained in transferOldWitnessesToNewWitnesses()
 
-                if (!appellantInterpreterLanguageCategory.contains(SPOKEN)) {
-                    if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
-                        // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
-                        clearWitnessIndividualFields(asylumCase);
-                        clearWitnessInterpreterLanguageFields(asylumCase);
+                if (!appellantInterpreterLanguageCategory.contains(SIGN) && isWitnessAttending.equals(NO)) {
 
-                    } else {
-                        transferOldWitnessesToNewWitnesses(
-                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
-                    }
+                    // if no witnesses present nullify with dummies all witness-related fields
+                    // (clearing does not work) for ccd show-conditions to work
+                    clearWitnessIndividualFields(asylumCase);
+                    clearWitnessInterpreterLanguageFields(asylumCase);
+
+                    addAllWitnessFieldsToFieldsToBeCleared();
+                    asylumCase.write(WITNESS_COUNT, 0);
                 }
             }
             case APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID -> {
@@ -193,27 +195,40 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter" otherwise do the mapping
                 //as explained in transferOldWitnessesToNewWitnesses()
 
-                if (!appellantInterpreterLanguageCategory.contains(SIGN)) {
-                    if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
-                        // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
-                        clearWitnessIndividualFields(asylumCase);
-                        clearWitnessInterpreterLanguageFields(asylumCase);
+                if (isWitnessAttending.equals(NO)) {
+                    // if no witnesses present nullify with dummies all witness-related fields
+                    // (clearing does not work) for ccd show-conditions to work
+                    clearWitnessIndividualFields(asylumCase);
+                    clearWitnessInterpreterLanguageFields(asylumCase);
 
-                    } else {
-                        transferOldWitnessesToNewWitnesses(
-                            asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
-                    }
+                    addAllWitnessFieldsToFieldsToBeCleared();
+                    asylumCase.write(WITNESS_COUNT, 0);
+
+                } else {
+                    //transferOldWitnessesToNewWitnesses(
+                    //    asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
                 }
+
             }
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
 
-                // if this page is shown it'll certainly be the last before "whichWitnessRequiresInterpreter"
-                // do the mapping as explained in transferOldWitnessesToNewWitnesses()
+                // if this page is shown it's because isWitnessAttending=Yes and it'll certainly be the last
+                // before "whichWitnessRequiresInterpreter"
+                // so do the mapping as explained in transferOldWitnessesToNewWitnesses()
 
-                if (witnesses.isEmpty() || isWitnessAttending.equals(NO)) {
-                    // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
+                boolean isAnyWitnessInterpreterRequired = asylumCase
+                    .read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)
+                    .map(yesOrNo -> yesOrNo.equals(YES))
+                    .orElse(false);
+
+                if (!isAnyWitnessInterpreterRequired) {
+                    // if witness list empty or none need interpreter nullify with dummies all witness-related fields
+                    // (clearing does not work) for ccd show-conditions to work
                     clearWitnessIndividualFields(asylumCase);
                     clearWitnessInterpreterLanguageFields(asylumCase);
+
+                    addAllWitnessFieldsToFieldsToBeCleared();
+                    asylumCase.write(WITNESS_COUNT, 0);
 
                 } else {
                     transferOldWitnessesToNewWitnesses(
@@ -301,7 +316,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                 at the aboutToSubmit stage
                  */
 
-                fieldsToBeCleared = new ArrayList<>();
+                fieldsToBeCleared.clear();
 
                 int j = 0;
                 while (j < 10) {
@@ -451,6 +466,17 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
             i++;
         }
         asylumCase.write(WITNESS_COUNT, witnesses.size());
+    }
+
+    private void addAllWitnessFieldsToFieldsToBeCleared() {
+        fieldsToBeCleared.clear();
+        fieldsToBeCleared.addAll(WITNESS_N_FIELD);
+        fieldsToBeCleared.addAll(WITNESS_LIST_ELEMENT_N_FIELD);
+        fieldsToBeCleared.addAll(WITNESS_N_INTERPRETER_CATEGORY_FIELD);
+        fieldsToBeCleared.addAll(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE);
+        fieldsToBeCleared.addAll(WITNESS_N_INTERPRETER_SIGN_LANGUAGE);
+        fieldsToBeCleared.add(WITNESS_DETAILS);
+        fieldsToBeCleared.add(WITNESS_DETAILS_READONLY);
     }
 
     public List<AsylumCaseFieldDefinition> getFieldsToBeCleared() {
