@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+
+import lombok.Getter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
@@ -1982,9 +1984,14 @@ public enum AsylumCaseFieldDefinition {
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),
     CHANGE_HEARING_LOCATION_VALUE(
-            "changeHearingLocationValue", new TypeReference<String>(){});
+            "changeHearingLocationValue", new TypeReference<String>(){}),
+
+    ADJOURNMENT_DETAILS_HEARING(
+        "adjournmentDetailsHearing", new TypeReference<DynamicList>(){});
 
     private final String value;
+
+    @Getter
     private final TypeReference typeReference;
 
     AsylumCaseFieldDefinition(String value, TypeReference typeReference) {
@@ -1996,7 +2003,4 @@ public enum AsylumCaseFieldDefinition {
         return value;
     }
 
-    public TypeReference getTypeReference() {
-        return typeReference;
-    }
 }
