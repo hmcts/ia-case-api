@@ -39,10 +39,7 @@ public class AdjournedHearingDetailsRequest implements PreSubmitCallbackHandler<
     }
 
     @Override
-    public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
-    ) {
+    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -68,5 +65,4 @@ public class AdjournedHearingDetailsRequest implements PreSubmitCallbackHandler<
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-
 }
