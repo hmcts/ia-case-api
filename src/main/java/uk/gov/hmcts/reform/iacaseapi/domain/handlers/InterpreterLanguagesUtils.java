@@ -207,16 +207,19 @@ public final class InterpreterLanguagesUtils {
             boolean signIsChosen = optionalSign.isPresent()
                                    && isInterpreterLanguagePopulated(optionalSign.get());
 
-            List<String> chosen = new ArrayList<>();
+            List<String> chosenLanguageType = new ArrayList<>();
             if (spokenIsChosen) {
-                chosen.add(SPOKEN_LANGUAGE_INTERPRETER.getValue());
+                chosenLanguageType.add(SPOKEN_LANGUAGE_INTERPRETER.getValue());
             }
             if (signIsChosen) {
-                chosen.add(SIGN_LANGUAGE_INTERPRETER.getValue());
+                chosenLanguageType.add(SIGN_LANGUAGE_INTERPRETER.getValue());
             }
 
-            if (!chosen.isEmpty()) {
-                asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i), chosen);
+            if (!chosenLanguageType.isEmpty()) {
+                asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i), chosenLanguageType);
+            } else {
+                asylumCase.clear(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
+                asylumCase.clear(WITNESS_LIST_ELEMENT_N_FIELD.get(i));
             }
 
             i++;
