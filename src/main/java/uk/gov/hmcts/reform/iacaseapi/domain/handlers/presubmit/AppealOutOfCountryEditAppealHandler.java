@@ -44,7 +44,6 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL
                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
-            && featureToggler.getValue("out-of-country-feature", false)
             && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 

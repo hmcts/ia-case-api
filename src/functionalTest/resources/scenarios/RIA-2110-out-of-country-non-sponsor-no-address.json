@@ -1,6 +1,5 @@
 {
   "description": "RIA-2110 Out of country no sponsor no address",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -43,24 +44,23 @@ public class InCountryToOutOfCountryHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.empty());
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_can_handle_callback(Event event) {
 
-        for (Event event : Event.values()) {
-            for (PreSubmitCallbackStage stage: PreSubmitCallbackStage.values()) {
-                when(callback.getEvent()).thenReturn(event);
-                boolean canHandle = inCountryToOutOfCountryHandler.canHandle(stage, callback);
+        for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
+            when(callback.getEvent()).thenReturn(event);
+            boolean canHandle = inCountryToOutOfCountryHandler.canHandle(stage, callback);
 
-                if (stage == MID_EVENT && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL)) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
+            if (stage == MID_EVENT && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL)) {
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
             }
-
-            reset(callback);
         }
     }
 
