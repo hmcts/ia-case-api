@@ -1,6 +1,5 @@
 {
   "description": "RIA-3851 Derive default hearing centre when no Sponsor selected and no Company address",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

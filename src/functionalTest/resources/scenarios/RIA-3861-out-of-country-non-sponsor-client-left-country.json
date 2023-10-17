@@ -1,6 +1,5 @@
 {
   "description": "RIA-3861 Out of country no sponsor client left country",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

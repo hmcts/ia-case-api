@@ -1434,9 +1434,6 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_OUT_OF_COUNTRY(
         "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
 
-    IS_OUT_OF_COUNTRY_ENABLED(
-        "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
-
     IS_AGE_ASSESSMENT_ENABLED(
         "isAgeAssessmentEnabled", new TypeReference<YesOrNo>() {}),
 
@@ -1782,7 +1779,7 @@ public enum AsylumCaseFieldDefinition {
         "suitabilityInterpreterServicesLanguage", new TypeReference<String>() {}),
 
     SOURCE_OF_APPEAL(
-            "sourceOfAppeal", new TypeReference<String>(){}),
+        "sourceOfAppeal", new TypeReference<SourceOfAppeal>(){}),
 
     APPLIED_COSTS_TYPES(
             "appliedCostsTypes", new TypeReference<DynamicList>(){}),
@@ -1818,7 +1815,12 @@ public enum AsylumCaseFieldDefinition {
             "isAppliedForCosts", new TypeReference<String>(){}),
 
     RESPONDENT_TO_COSTS_ORDER(
-            "respondentToCostsOrder", new TypeReference<String>(){});
+            "respondentToCostsOrder", new TypeReference<String>(){}),
+
+    UPPER_TRIBUNAL_REFERENCE_NUMBER(
+        "upperTribunalReferenceNumber", new TypeReference<String>() {}),
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;

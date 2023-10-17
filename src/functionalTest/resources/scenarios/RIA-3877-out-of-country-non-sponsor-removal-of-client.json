@@ -1,6 +1,5 @@
 {
   "description": "RIA-3877 Out of country no sponsor removal of client",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
