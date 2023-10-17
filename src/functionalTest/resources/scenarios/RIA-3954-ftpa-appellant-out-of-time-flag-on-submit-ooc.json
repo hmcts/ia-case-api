@@ -1,6 +1,5 @@
 {
   "description": "RIA-3954 FTPA appellant sets out of time flag on late application submission in out of country",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",

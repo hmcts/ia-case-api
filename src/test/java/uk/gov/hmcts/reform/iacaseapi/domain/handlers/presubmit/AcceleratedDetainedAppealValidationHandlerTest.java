@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
@@ -25,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -56,24 +56,23 @@ class AcceleratedDetainedAppealValidationHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.empty());
+
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_can_handle_callback(Event event) {
 
-        for (Event event : Event.values()) {
-            for (PreSubmitCallbackStage stage: PreSubmitCallbackStage.values()) {
-                when(callback.getEvent()).thenReturn(event);
-                boolean canHandle = acceleratedDetainedAppealValidationHandler.canHandle(stage, callback);
+        for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
+            when(callback.getEvent()).thenReturn(event);
+            boolean canHandle = acceleratedDetainedAppealValidationHandler.canHandle(stage, callback);
 
-                if (stage == MID_EVENT && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL)) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
+            if (stage == MID_EVENT && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL)) {
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
             }
-
-            reset(callback);
         }
     }
 
@@ -103,7 +102,8 @@ class AcceleratedDetainedAppealValidationHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = DetentionFacility.class)
-    void should_add_error_to_response_only_when_ada_selected_with_prison_or_other_detention_facility(DetentionFacility detentionFacility) {
+    void should_add_error_to_response_only_when_ada_selected_with_prison_or_other_detention_facility_lr_flow(DetentionFacility detentionFacility) {
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of(detentionFacility.toString()));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -121,4 +121,26 @@ class AcceleratedDetainedAppealValidationHandlerTest {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(value = DetentionFacility.class)
+    void should_add_error_to_response_only_when_ada_selected_with_prison_or_other_detention_facility_internal_paper_flow(DetentionFacility detentionFacility) {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of(detentionFacility.toString()));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            acceleratedDetainedAppealValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        Assertions.assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+
+        if (Arrays.asList(DetentionFacility.PRISON.toString(), DetentionFacility.OTHER.toString()).contains(detentionFacility.toString())) {
+            assertThat(errors).hasSize(1).containsOnly(callbackErrorMessage);
+        } else {
+            assertThat(errors).hasSize(0).doesNotContain(callbackErrorMessage);
+        }
+    }
 }

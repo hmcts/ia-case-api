@@ -47,6 +47,7 @@ class StartAppealMidEventTest {
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
+    private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -66,6 +67,9 @@ class StartAppealMidEventTest {
         "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
     private String detentionFacilityErrorMessage = "You cannot update the detention location to a prison because this is an accelerated detained appeal.";
     private String getCallbackErrorMessageOutOfCountry = "This option is currently unavailable";
+    private String correctUpperTribunalReferenceFormat = "UI-2020-123456";
+    private String wrongUpperTribunalReferenceFormat = "UI-123456-2020";
+    private String utReferenceErrorMessage = "Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -339,5 +343,35 @@ class StartAppealMidEventTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.NO);
+    }
+
+    @Test
+    void should_error_when_upper_tribunal_reference_number_format_is_wrong() {
+        when(callback.getPageId()).thenReturn(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID);
+        when(asylumCase.read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(wrongUpperTribunalReferenceFormat));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(utReferenceErrorMessage);
+    }
+
+    @Test
+    void should_validate_as_correct_format_for_upper_tribunal_reference_number() {
+        when(callback.getPageId()).thenReturn(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID);
+        when(asylumCase.read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(correctUpperTribunalReferenceFormat));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
     }
 }
