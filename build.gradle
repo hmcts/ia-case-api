@@ -306,6 +306,12 @@ dependencyManagement {
             entry 'json-smart'
         }
 
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.81') {
+            entry 'tomcat-embed-core'
+            entry 'tomcat-embed-el'
+            entry 'tomcat-embed-websocket'
+        }
+
     }
 }
 
