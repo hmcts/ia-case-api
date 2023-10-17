@@ -1981,8 +1981,12 @@ public enum AsylumCaseFieldDefinition {
 
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),
+
     CHANGE_HEARING_LOCATION_VALUE(
-            "changeHearingLocationValue", new TypeReference<String>(){});
+            "changeHearingLocationValue", new TypeReference<String>(){}),
+
+    IS_INTEGRATED(
+            "isIntegrated", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
