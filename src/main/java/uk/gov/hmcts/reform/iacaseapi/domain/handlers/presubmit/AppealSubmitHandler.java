@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,8 @@ public class AppealSubmitHandler implements PreSubmitCallbackHandler<AsylumCase>
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        asylumCase.write(AsylumCaseFieldDefinition.IS_INTEGRATED, NO);
 
         boolean isAipJourney = callback.getCaseDetails().getCaseData()
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)

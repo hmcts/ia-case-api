@@ -1,0 +1,32 @@
+{
+  "description": "RIA-7819 update isIntegrated flag when updateHMCResponse triggered",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHMCResponse",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantNameForDisplay": "Eke Uk",
+          "isWitnessesAttending": "No",
+          "isIntegrated": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantNameForDisplay": "Eke Uk",
+        "isWitnessesAttending": "No",
+        "isIntegrated": "Yes"
+      }
+    }
+  }
+}

@@ -20,9 +20,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SIGN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SPOKEN;
 
 import java.util.Collections;
 import java.util.List;
@@ -98,8 +98,6 @@ public class WitnessesUpdateMidEventHandlerTest {
     private DynamicMultiSelectList witnessListElement1;
     @Mock
     private DynamicMultiSelectList witnessListElement2;
-    @Mock
-    private DynamicMultiSelectList witnessListElement3;
     @Mock
     private DynamicMultiSelectList witnessListElement4;
 
@@ -183,7 +181,8 @@ public class WitnessesUpdateMidEventHandlerTest {
 
     @Test
     void should_not_add_error_when_witnesses_are_ten_or_less() {
-        List<WitnessDetails> elevenWitnesses = Collections.nCopies(10, witnessDetails1);
+        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
+            .nCopies(10, new IdValue<>("1", witnessDetails1));
 
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(IS_WITNESSES_ATTENDING_PAGE_ID);

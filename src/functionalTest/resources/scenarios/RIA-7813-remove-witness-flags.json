@@ -1,30 +1,30 @@
 {
-  "description": "RIA-7730 remove interpreter flags when interpreters removed",
+  "description": "RIA-7813 remove witness flags when a witness is removed",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "updateInterpreterDetails",
-      "state": "listing",
+      "eventId": "updateHearingRequirements",
+      "state": "preHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isWitnessesAttending": "No",
-          "interpreterLevelFlags": [
+          "witnessLevelFlags": [
             {
               "id": "1",
               "value": {
-                "partyName": "Interp One Test Family 1",
-                "roleOnCase": "Interpreter",
+                "partyName": "Witness1 One Test Family 1",
+                "roleOnCase": "Witness",
                 "details": []
               }
             },
             {
               "id": "2",
               "value": {
-                "partyName": "Interp Two Test Family 2",
-                "roleOnCase": "Interpreter",
+                "partyName": "Witness2 Two Test Family 2",
+                "roleOnCase": "Witness",
                 "details": []
               }
             }
@@ -39,9 +39,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "uploadAdditionalEvidenceActionAvailable": "Yes",
         "isWitnessesAttending": "No",
-        "interpreterLevelFlags": []
+        "witnessLevelFlags": []
       }
     }
   }
