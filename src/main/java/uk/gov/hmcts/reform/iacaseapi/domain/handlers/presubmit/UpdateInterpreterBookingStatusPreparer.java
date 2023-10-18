@@ -72,6 +72,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_8;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_9;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingStatus.NOT_REQUESTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
@@ -93,8 +95,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallbackHandler<AsylumCase> {
-    public static final String SPOKEN_LANGUAGE_INTERPRETER = "spokenLanguageInterpreter";
-    public static final String SIGN_LANGUAGE_INTERPRETER = "signLanguageInterpreter";
+
     public static String APPELLANT = "Appellant";
     public static String WITNESS = "Witness";
     private AsylumCase asylumCase;
@@ -164,7 +165,8 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         Optional<List<String>> languageCategoriesOptional = asylumCase
             .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
 
-        if (languageCategoriesOptional.isPresent() && languageCategoriesOptional.get().contains(SPOKEN_LANGUAGE_INTERPRETER)) {
+        if (languageCategoriesOptional.isPresent()
+            && languageCategoriesOptional.get().contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
             populateBookingStatusFieldsForAppellant(
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE,
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
@@ -175,7 +177,8 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
                 APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
         }
 
-        if (languageCategoriesOptional.isPresent() && languageCategoriesOptional.get().contains(SIGN_LANGUAGE_INTERPRETER)) {
+        if (languageCategoriesOptional.isPresent()
+            && languageCategoriesOptional.get().contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
             populateBookingStatusFieldsForAppellant(
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE,
                 APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING,

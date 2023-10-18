@@ -1979,12 +1979,17 @@ public enum AsylumCaseFieldDefinition {
     EPIMS_ID(
             "epimsId", new TypeReference<String>() {}),
 
-    REQUIRE_MANUAL_HEARINGS_CANCELLATION(
-        "requireManualHearingsCancellation", new TypeReference<String>(){}),
+    CHANGE_HEARINGS(
+            "changeHearings", new TypeReference<DynamicList>(){}),
 
-    // This is not actually a real case field. It is used to determine
-    // the case flag id for the purpose of functional test
-    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){});
+    CHANGE_HEARING_LOCATION(
+            "changeHearingLocation", new TypeReference<String>(){}),
+
+    IS_INTEGRATED(
+            "isIntegrated", new TypeReference<YesOrNo>(){}),
+
+    REQUIRE_MANUAL_HEARINGS_CANCELLATION(
+        "requireManualHearingsCancellation", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

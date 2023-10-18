@@ -288,6 +288,7 @@ security:
       - "updateS94bStatus"
       - "updateInterpreterBookingStatus"
       - "updateInterpreterDetails"
+      - "updateHearingRequest"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -321,6 +322,7 @@ security:
       - "createFlag"
       - "updateInterpreterBookingStatus"
       - "updateInterpreterDetails"
+      - "updateHearingRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -397,6 +399,8 @@ security:
       - "updatePaymentStatus"
       - "endAppealAutomatically"
       - "listCase"
+      - "handleHearingException"
+      - "updateHMCResponse"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

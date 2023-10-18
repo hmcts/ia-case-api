@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SPOKEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -207,16 +207,19 @@ public final class InterpreterLanguagesUtils {
             boolean signIsChosen = optionalSign.isPresent()
                                    && isInterpreterLanguagePopulated(optionalSign.get());
 
-            List<String> chosen = new ArrayList<>();
+            List<String> chosenLanguageType = new ArrayList<>();
             if (spokenIsChosen) {
-                chosen.add(SPOKEN);
+                chosenLanguageType.add(SPOKEN_LANGUAGE_INTERPRETER.getValue());
             }
             if (signIsChosen) {
-                chosen.add(SIGN);
+                chosenLanguageType.add(SIGN_LANGUAGE_INTERPRETER.getValue());
             }
 
-            if (!chosen.isEmpty()) {
-                asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i), chosen);
+            if (!chosenLanguageType.isEmpty()) {
+                asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i), chosenLanguageType);
+            } else {
+                asylumCase.clear(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
+                asylumCase.clear(WITNESS_LIST_ELEMENT_N_FIELD.get(i));
             }
 
             i++;

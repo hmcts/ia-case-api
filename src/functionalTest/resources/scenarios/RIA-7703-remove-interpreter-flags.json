@@ -10,7 +10,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantNameForDisplay": "Eke Uk",
           "isWitnessesAttending": "No",
           "interpreterLevelFlags": [
             {
@@ -40,11 +39,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantNameForDisplay": "Eke Uk",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
         "isWitnessesAttending": "No",
-        "interpreterLevelFlags": [
-          {}
-        ]
+        "interpreterLevelFlags": []
       }
     }
   }
