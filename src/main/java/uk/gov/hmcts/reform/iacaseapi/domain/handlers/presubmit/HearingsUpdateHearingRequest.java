@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION_VALUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
 
 @Component
@@ -84,10 +84,10 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
     }
 
     private static void setHearingLocationDetails(AsylumCase asylumCase) {
-        Optional<String> hearingLocation = asylumCase.read(CHANGE_HEARING_LOCATION_VALUE);
+        Optional<String> hearingLocation = asylumCase.read(CHANGE_HEARING_LOCATION);
         if (hearingLocation.isPresent()) {
             String hearingCenterValue = HearingCentre.getValueByEpimsId(hearingLocation.get());
-            asylumCase.write(CHANGE_HEARING_LOCATION_VALUE, hearingCenterValue);
+            asylumCase.write(CHANGE_HEARING_LOCATION, hearingCenterValue);
         }
     }
 }

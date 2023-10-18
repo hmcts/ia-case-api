@@ -23,7 +23,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION_VALUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.BRADFORD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -85,7 +85,7 @@ public class HearingsUpdateHearingRequestTest {
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath))
                 .thenReturn(asylumCase);
-        when(asylumCase.read(CHANGE_HEARING_LOCATION_VALUE))
+        when(asylumCase.read(CHANGE_HEARING_LOCATION))
                 .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -104,7 +104,7 @@ public class HearingsUpdateHearingRequestTest {
                 .thenReturn(Optional.of(new DynamicList("hearing 1")));
         when(asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath))
                 .thenReturn(asylumCase);
-        when(asylumCase.read(CHANGE_HEARING_LOCATION_VALUE))
+        when(asylumCase.read(CHANGE_HEARING_LOCATION))
                 .thenReturn(Optional.of(BRADFORD.getEpimsId()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -113,7 +113,7 @@ public class HearingsUpdateHearingRequestTest {
         assertNotNull(callbackResponse);
         verify(asylumCaseCallbackApiDelegator, times(1))
                 .delegate(callback, hearingsApiEndpoint + midEventPath);
-        verify(asylumCase).write(CHANGE_HEARING_LOCATION_VALUE, BRADFORD.getValue());
+        verify(asylumCase).write(CHANGE_HEARING_LOCATION, BRADFORD.getValue());
     }
 }
 
