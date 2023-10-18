@@ -87,6 +87,8 @@ class StrategicCaseFlagServiceTest {
         assertEquals(ACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " text", caseFlagValue.getName());
+        assertEquals("code", caseFlagValue.getSubTypeKey());
+        assertEquals("text", caseFlagValue.getSubTypeValue());
     }
 
     @Test

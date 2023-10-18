@@ -41,7 +41,7 @@ public enum HearingCentre {
     private final String epimsId;
 
     private static final Map<String, HearingCentre> hearingVenueIdMapping = new HashMap<>();
-    private static final Map<String, HearingCentre> epimsIdMapping = new HashMap<>();
+    public static final Map<String, HearingCentre> epimsIdMapping = new HashMap<>();
 
     static {
         for (HearingCentre centre : HearingCentre.values()) {

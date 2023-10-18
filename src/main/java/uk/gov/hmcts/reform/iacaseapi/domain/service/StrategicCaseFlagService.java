@@ -99,6 +99,8 @@ public class StrategicCaseFlagService {
             .flagCode(caseFlagType.getFlagCode())
             .name(languageFlagName)
             .status(ACTIVE_STATUS)
+            .subTypeKey(language.getLanguageCode())
+            .subTypeValue(language.getLanguageText())
             .hearingRelevant(hearingRelevant)
             .dateTimeCreated(dateTimeCreated)
             .build();
