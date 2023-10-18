@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,10 +17,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.INTERPRETER_LANGUAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SIGN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SIGN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SPOKEN;
 
 import java.util.Collections;
@@ -32,6 +32,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -181,78 +183,126 @@ public class WitnessesUpdateMidEventHandlerTest {
 
     @Test
     void should_not_add_error_when_witnesses_are_ten_or_less() {
-        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
+        List<IdValue<WitnessDetails>> tenWitnesses = Collections
             .nCopies(10, new IdValue<>("1", witnessDetails1));
 
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(IS_WITNESSES_ATTENDING_PAGE_ID);
-        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(tenWitnesses));
 
         PreSubmitCallbackResponse<AsylumCase> response = witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
 
         assertTrue(response.getErrors().isEmpty());
     }
 
-    @Test
-    void should_skip_logic_if_appellant_interpreter_page_is_not_last_page() { // before whichWitnessRequiresInterpterer
+    @ParameterizedTest
+    @ValueSource(strings = {"NO", "YES"})
+    void should_skip_clearing_if_interpreter_services_needed_page_is_not_last_page(String yesOrNo) { // before whichWitnessRequiresInterpterer
 
         // check if interpreter services are needed to establish whether to break out of the loop or not
         // (i.e. leave it to a further page to run the logic since this wouldn't be the last page before witnesses
         // mappings need to be evaluated)
 
-        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
+        List<IdValue<WitnessDetails>> tenWitnesses = Collections
             .nCopies(10, new IdValue<>("1", witnessDetails1));
 
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID);
-        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
-        when(oldAsylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(tenWitnesses));
+        YesOrNo isInterpreterServicesNeeded = YesOrNo.valueOf(yesOrNo);
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(isInterpreterServicesNeeded));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of(SPOKEN)));
 
-        witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
+        Set.of(YES, NO).forEach(isWitnessAttending -> {
+            when(asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(isWitnessAttending));
 
-        verify(asylumCase, times(1)).read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class);
+            witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
+
+            if (isInterpreterServicesNeeded.equals(NO) && isWitnessAttending.equals(NO)) {
+                interpreterLanguagesUtils.verify(() ->
+                    InterpreterLanguagesUtils.clearWitnessIndividualFields(asylumCase), times(1));
+                interpreterLanguagesUtils.verify(() ->
+                    InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields(asylumCase), times(1));
+                verify(asylumCase, times(1)).write(WITNESS_COUNT, 0);
+                assertEquals(witnessesUpdateMidEventHandler.getFieldsToBeCleared().size(), 52);
+                witnessesUpdateMidEventHandler.getFieldsToBeCleared().clear();
+            } else {
+                assertEquals(witnessesUpdateMidEventHandler.getFieldsToBeCleared().size(), 0);
+            }
+        });
     }
 
-    @Test
-    void should_skip_logic_if_appellant_spoken_language_page_is_not_last_page() { // before whichWitnessRequiresInterpterer
+    @ParameterizedTest
+    @ValueSource(strings = {"NO", "YES"})
+    void should_skip_clearing_if_appellant_spoken_language_page_is_not_last_page(String yesOrNo) { // before whichWitnessRequiresInterpterer
 
-        // check if logic is skipped (1st method to be called in all the logic is never called)
+        // check if appellant spoken language is last page to establish whether to break out of the loop or not
         // (i.e. leave it to a further page to run the logic since this wouldn't be the last page before witnesses
         // mappings need to be evaluated)
 
-        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
+        List<IdValue<WitnessDetails>> tenWitnesses = Collections
             .nCopies(10, new IdValue<>("1", witnessDetails1));
 
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID);
-        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
-        when(oldAsylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of(SPOKEN)));
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(tenWitnesses));
+        YesOrNo isWitnessAttending = YesOrNo.valueOf(yesOrNo);
+        when(asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(isWitnessAttending));
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
+        List<String> spokenAndSign = List.of(SPOKEN, SIGN);
+        List<String> spoken = List.of(SPOKEN);
 
-        verify(oldAsylumCase, never()).read(WITNESS_LIST_ELEMENT_1, DynamicMultiSelectList.class);
+        Set.of(spokenAndSign, spoken).forEach(scenario -> {
+            when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(scenario));
+
+            witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
+
+            if (!scenario.contains(SIGN) && isWitnessAttending.equals(NO)) {
+                interpreterLanguagesUtils.verify(() ->
+                    InterpreterLanguagesUtils.clearWitnessIndividualFields(asylumCase), times(1));
+                interpreterLanguagesUtils.verify(() ->
+                    InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields(asylumCase), times(1));
+                verify(asylumCase, times(1)).write(WITNESS_COUNT, 0);
+                assertEquals(witnessesUpdateMidEventHandler.getFieldsToBeCleared().size(), 52);
+                witnessesUpdateMidEventHandler.getFieldsToBeCleared().clear();
+            } else {
+                assertEquals(witnessesUpdateMidEventHandler.getFieldsToBeCleared().size(), 0);
+            }
+        });
     }
 
-    @Test
-    void should_skip_logic_if_appellant_sign_language_page_is_not_last_page() { // before whichWitnessRequiresInterpterer
+    @ParameterizedTest
+    @ValueSource(strings = {"NO", "YES"})
+    void should_skip_clearing_if_appellant_sign_language_page_is_not_last_page(String yesOrNo) { // before whichWitnessRequiresInterpterer
 
-        // check if logic is skipped (1st method to be called in all the logic is never called)
-        // (i.e. leave it to a further page to run the logic since this wouldn't be the last page before witnesses
+        // simply check if isWitnessAttending=NO, if it is appellant sign interpreter language page will be last one
+        // (i.e. leave it to a further page to run the logic if this isn't the last page before witnesses
         // mappings need to be evaluated)
 
-        List<IdValue<WitnessDetails>> elevenWitnesses = Collections
+        List<IdValue<WitnessDetails>> tenWitnesses = Collections
             .nCopies(10, new IdValue<>("1", witnessDetails1));
 
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(callback.getPageId()).thenReturn(APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID);
-        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
-        when(oldAsylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(elevenWitnesses));
-        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of(SIGN)));
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(tenWitnesses));
+        YesOrNo isWitnessAttending = YesOrNo.valueOf(yesOrNo);
+        when(asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(isWitnessAttending));
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of(SPOKEN)));
 
         witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
 
-        verify(oldAsylumCase, never()).read(WITNESS_LIST_ELEMENT_1, DynamicMultiSelectList.class);
+        if (isWitnessAttending.equals(NO)) {
+            interpreterLanguagesUtils.verify(() ->
+                InterpreterLanguagesUtils.clearWitnessIndividualFields(asylumCase), times(1));
+            interpreterLanguagesUtils.verify(() ->
+                InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields(asylumCase), times(1));
+            verify(asylumCase, times(1)).write(WITNESS_COUNT, 0);
+            assertEquals(witnessesUpdateMidEventHandler.getFieldsToBeCleared().size(), 52);
+        } else {
+            assertEquals(witnessesUpdateMidEventHandler.getFieldsToBeCleared().size(), 0);
+        }
     }
 
     @Test
@@ -308,7 +358,6 @@ public class WitnessesUpdateMidEventHandlerTest {
         when(asylumCase.read(WITNESS_4_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of(SIGN)));
 
         witnessesUpdateMidEventHandler.handle(MID_EVENT, callback);
-
 
         verify(asylumCase).write(WITNESS_1_INTERPRETER_SIGN_LANGUAGE, witness1SignLanguages);
         verify(asylumCase).write(WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE, spokenLanguages);
