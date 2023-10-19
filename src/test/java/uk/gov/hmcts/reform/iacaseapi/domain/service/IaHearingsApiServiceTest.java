@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackAp
 @ExtendWith(MockitoExtension.class)
 public class IaHearingsApiServiceTest {
 
-    private final static String IA_HEARINGS_API_URL = "http://127.0.0.1";
-    private final static String ABOUT_TO_START_PATH = "/ccdAboutToStart";
-    private final static String MID_EVENT_PATH = "/ccdMidEvent";
-    private final static String ABOUT_TO_SUBMIT_PATH = "/ccdAboutToSubmit";
+    private static final String IA_HEARINGS_API_URL = "http://127.0.0.1";
+    private static final String ABOUT_TO_START_PATH = "/ccdAboutToStart";
+    private static final String MID_EVENT_PATH = "/ccdMidEvent";
+    private static final String ABOUT_TO_SUBMIT_PATH = "/ccdAboutToSubmit";
 
     @Mock
     private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
