@@ -1,20 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +23,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -81,7 +83,7 @@ class DecideAnApplicationConfirmationTest {
         "Update hearing requirements",
         "Withdraw"
     })
-    void should_return_valid_confirmation_message_for_granted(String type) {
+    void ifGranted_whenIsIntegrated_returnValidConfirmationMessage(String type) {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence = List.of(new IdValue<>("1",
@@ -103,6 +105,7 @@ class DecideAnApplicationConfirmationTest {
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
         when(asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class))
             .thenReturn(Optional.of(ReasonForLinkAppealOptions.BAIL));
+        when(asylumCase.read(IS_INTEGRATED)).thenReturn(Optional.of(YesOrNo.YES));
 
         PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
 
@@ -161,12 +164,47 @@ class DecideAnApplicationConfirmationTest {
         assertThat(callbackResponse.getConfirmationBody()).contains(expectedBody);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Adjourn", "Expedite", "Transfer"})
+    void ifGranted_whenNotIntegrated_returnValidConfirmationMessage(String type) {
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
+        List<IdValue<Document>> evidence = List.of(new IdValue<>("1",
+            new Document("http://localhost/documents/123456",
+                "http://localhost/documents/123456",
+                "DocumentName.pdf"
+            )
+        ));
+        MakeAnApplication makeAnApplication = new MakeAnApplication(
+            "Legal representative", type, "A reason to update appeal details", evidence, dateProvider.now().toString(),
+            "Pending", State.LISTING.toString()
+        );
+        makeAnApplication.setApplicantRole("caseworker-ia-caseofficer");
+        makeAnApplication.setDecision("Granted");
+        final List<IdValue<MakeAnApplication>> makeAnApplications = List.of(new IdValue<>("1", makeAnApplication));
+
+        when(asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)).thenReturn(Optional.of("1"));
+        when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
+        when(asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class))
+            .thenReturn(Optional.of(ReasonForLinkAppealOptions.BAIL));
+        when(asylumCase.read(IS_INTEGRATED)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getConfirmationHeader()).contains("# You have decided an application");
+
+        assertThat(callbackResponse.getConfirmationBody()).contains(
+            "#### What happens next\n\nThe application decision has been recorded and is now available in"
+            + " the applications tab. You need to tell the listing team to relist the case. Once the case is relisted"
+            + " a new Notice of Hearing will be sent to all parties.");
+    }
+
     @Test
     void should_return_valid_confirmation_message_for_refused() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence =
-            Arrays.asList(new IdValue<>("1",
+            List.of(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
                     "DocumentName.pdf")));
@@ -176,8 +214,7 @@ class DecideAnApplicationConfirmationTest {
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-caseofficer");
         makeAnApplication.setDecision("Refused");
-        final List<IdValue<MakeAnApplication>> makeAnApplications =
-            Arrays.asList(new IdValue<>("1", makeAnApplication));
+        final List<IdValue<MakeAnApplication>> makeAnApplications = List.of(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)).thenReturn(Optional.of("1"));
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -185,17 +222,13 @@ class DecideAnApplicationConfirmationTest {
         PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have decided an application");
+        assertThat(callbackResponse.getConfirmationHeader().orElseThrow()).contains("You have decided an application");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "#### What happens next\n\n"
-                    + "The application decision has been recorded and is now available in the applications tab. "
-                    + "Both parties will be notified that the application was refused."
-            );
+        assertThat(callbackResponse.getConfirmationBody().orElseThrow()).contains(
+            "#### What happens next\n\n"
+                + "The application decision has been recorded and is now available in the applications tab. "
+                + "Both parties will be notified that the application was refused."
+        );
     }
 
     @Test
