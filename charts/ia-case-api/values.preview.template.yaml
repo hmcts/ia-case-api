@@ -5,10 +5,7 @@ java:
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD:
-      secretRef: "{{ .Values.global.postgresSecret }}"
-      key: PASSWORD
-      disabled: false
+    POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
@@ -400,10 +397,7 @@ ia-timed-event-service:
       POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db"
       POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-        disabled: false
+      POSTGRES_PASSWORD: hmcts
       POSTGRES_CONNECTION_OPTIONS: ""
     keyVaults:
       ia:
@@ -699,10 +693,7 @@ ccd:
       environment:
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: false
+        DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -847,7 +838,7 @@ ccd:
           jdbc {
             jdbc_connection_string => "jdbc:postgresql://ia-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode=require&stringtype=unspecified"
             jdbc_user => "hmcts"
-            jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
+            jdbc_password_filepath => "hmcts"
             jdbc_validate_connection => true
             jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
             jdbc_driver_class => "org.postgresql.Driver"
@@ -995,10 +986,7 @@ em-stitching:
     environment:
       SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       SPRING_DATASOURCE_USERNAME: hmcts
-      SPRING_DATASOURCE_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-        disabled: false
+      SPRING_DATASOURCE_PASSWORD: hmcts
       SPRING_DATASOURCE_NAME: "{{ .Values.global.databaseNamePrefix }}emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
@@ -1095,10 +1083,7 @@ wa:
         POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db"
         POSTGRES_REPLICA_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db_replica"
         POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: false
+        POSTGRES_PASSWORD: hmcts
         ALLOWED_JURISDICTIONS: ia
         ALLOWED_CASE_TYPES: asylum
         REPLICATION_USERNAME: hmcts
@@ -1139,10 +1124,7 @@ wa:
         POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}wa-case-event-handler"
         POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: false
+        POSTGRES_PASSWORD: hmcts
         POSTGRES_CONNECTION_OPTIONS: ""
   wa-task-monitor:
     java:
@@ -1184,10 +1166,7 @@ ccd-message-publisher:
       DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       DATA_STORE_DB_NAME: "{{ .Values.global.databaseNamePrefix }}data-store"
       DATA_STORE_DB_USERNAME: hmcts
-      DATA_STORE_DB_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-        disabled: false
+      DATA_STORE_DB_PASSWORD: hmcts
       DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
     secrets:
@@ -1236,10 +1215,7 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       ORG_ROLE_MAPPING_DB_NAME: "{{ .Values.global.databaseNamePrefix }}org_role_mapping"
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
-      ORG_ROLE_MAPPING_DB_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-        disabled: false
+      ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
       RUN_LD_ON_STARTUP: true
