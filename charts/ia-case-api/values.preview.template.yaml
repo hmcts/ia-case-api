@@ -2,7 +2,7 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+    POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
@@ -394,7 +394,7 @@ ia-timed-event-service:
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
-      POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
       POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: hmcts
@@ -673,7 +673,7 @@ ccd:
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
       enviroment:
-        USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
       keyVaults: [ ]
       environment:
@@ -691,7 +691,7 @@ ccd:
         enabled: false
       disableKeyVaults: true
       environment:
-        DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
@@ -758,7 +758,7 @@ ccd:
       autoscaling:
         enabled: false
       environment:
-        DEFINITION_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
@@ -984,7 +984,7 @@ em-stitching:
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
-      SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+      SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_PASSWORD: hmcts
       SPRING_DATASOURCE_NAME: "{{ .Values.global.databaseNamePrefix }}emstitch"
@@ -1077,8 +1077,8 @@ wa:
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-        POSTGRES_REPLICA_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        POSTGRES_HOST: ia-preview.postgres.database.azure.com
+        POSTGRES_REPLICA_HOST: ia-preview.postgres.database.azure.com
         POSTGRES_REPLICA_PORT: 5432
         POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db"
         POSTGRES_REPLICA_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db_replica"
@@ -1121,7 +1121,7 @@ wa:
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
         #AZURE_SERVICE_BUS_TOPIC_NAME: servicebus-topic-{{ .Release.Name }}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        POSTGRES_HOST: ia-preview.postgres.database.azure.com
         POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}wa-case-event-handler"
         POSTGRES_USERNAME: hmcts
         POSTGRES_PASSWORD: hmcts
@@ -1163,7 +1163,7 @@ ccd-message-publisher:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
     environment:
-      DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+      DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
       DATA_STORE_DB_NAME: "{{ .Values.global.databaseNamePrefix }}data-store"
       DATA_STORE_DB_USERNAME: hmcts
       DATA_STORE_DB_PASSWORD: hmcts
@@ -1212,7 +1212,7 @@ am-org-role-mapping-service:
       JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
       AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
-      ORG_ROLE_MAPPING_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+      ORG_ROLE_MAPPING_DB_HOST: ia-preview.postgres.database.azure.com
       ORG_ROLE_MAPPING_DB_NAME: "{{ .Values.global.databaseNamePrefix }}org_role_mapping"
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
       ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
