@@ -394,11 +394,6 @@ ia-timed-event-service:
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
-      POSTGRES_HOST: ia-preview.postgres.database.azure.com
-      POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db"
-      POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
-      POSTGRES_CONNECTION_OPTIONS: ""
     keyVaults:
       ia:
         resourceGroup: ia
@@ -691,9 +686,6 @@ ccd:
         enabled: false
       disableKeyVaults: true
       environment:
-        DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
-        DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -758,7 +750,6 @@ ccd:
       autoscaling:
         enabled: false
       environment:
-        DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
@@ -987,7 +978,7 @@ em-stitching:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_PASSWORD: hmcts
-      SPRING_DATASOURCE_NAME: "{{ .Values.global.databaseNamePrefix }}emstitch"
+      SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
@@ -1080,8 +1071,8 @@ wa:
         POSTGRES_HOST: ia-preview.postgres.database.azure.com
         POSTGRES_REPLICA_HOST: ia-preview.postgres.database.azure.com
         POSTGRES_REPLICA_PORT: 5432
-        POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db"
-        POSTGRES_REPLICA_NAME: "{{ .Values.global.databaseNamePrefix }}cft_task_db_replica"
+        POSTGRES_NAME: "pr-${CHANGE_ID}-cft_task_db"
+        POSTGRES_REPLICA_NAME: "pr-${CHANGE_ID}-cft_task_db_replica"
         POSTGRES_USERNAME: hmcts
         POSTGRES_PASSWORD: hmcts
         ALLOWED_JURISDICTIONS: ia
@@ -1121,11 +1112,7 @@ wa:
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
         #AZURE_SERVICE_BUS_TOPIC_NAME: servicebus-topic-{{ .Release.Name }}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        POSTGRES_HOST: ia-preview.postgres.database.azure.com
-        POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}wa-case-event-handler"
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
-        POSTGRES_CONNECTION_OPTIONS: ""
+
   wa-task-monitor:
     java:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
@@ -1164,10 +1151,10 @@ ccd-message-publisher:
             alias: azure.application-insights.instrumentation-key
     environment:
       DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
-      DATA_STORE_DB_NAME: "{{ .Values.global.databaseNamePrefix }}data-store"
+      DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
       DATA_STORE_DB_USERNAME: hmcts
       DATA_STORE_DB_PASSWORD: hmcts
-      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
+      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
@@ -1213,11 +1200,11 @@ am-org-role-mapping-service:
       AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       ORG_ROLE_MAPPING_DB_HOST: ia-preview.postgres.database.azure.com
-      ORG_ROLE_MAPPING_DB_NAME: "{{ .Values.global.databaseNamePrefix }}org_role_mapping"
+      ORG_ROLE_MAPPING_DB_NAME: "pr-${CHANGE_ID}-org_role_mapping"
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
       ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
-      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
             
 
