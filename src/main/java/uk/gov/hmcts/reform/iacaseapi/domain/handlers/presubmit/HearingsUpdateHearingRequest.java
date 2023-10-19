@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
+
+import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
@@ -10,35 +15,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
-
-import java.util.Objects;
-import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @Component
 @Slf4j
 public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final String hearingsApiEndpoint;
-    private final String aboutToStartPath;
-    private final String midEventPath;
-
-    AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private IaHearingsApiService iaHearingsApiService;
 
     public HearingsUpdateHearingRequest(
-            AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
-            @Value("${hearingsApi.endpoint}") String hearingsApiEndpoint,
-            @Value("${hearingsApi.aboutToStartPath}") String aboutToStartPath,
-            @Value("${hearingsApi.midEventPath}") String midEventPath
+            IaHearingsApiService iaHearingsApiService
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
-        this.hearingsApiEndpoint = hearingsApiEndpoint;
-        this.aboutToStartPath = aboutToStartPath;
-        this.midEventPath = midEventPath;
+        this.iaHearingsApiService = iaHearingsApiService;
     }
 
     @Override
@@ -76,11 +64,11 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
     }
 
     private AsylumCase getHearings(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToStartPath);
+        return iaHearingsApiService.aboutToStart(callback);
     }
 
     private AsylumCase getHearingDetails(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath);
+        return iaHearingsApiService.midEvent(callback);
     }
 
     private static void setHearingLocationDetails(AsylumCase asylumCase) {

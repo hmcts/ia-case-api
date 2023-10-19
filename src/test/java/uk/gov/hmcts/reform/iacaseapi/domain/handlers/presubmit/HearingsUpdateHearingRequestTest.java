@@ -1,6 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.BRADFORD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,21 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.BRADFORD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -43,7 +42,7 @@ public class HearingsUpdateHearingRequestTest {
     private final String aboutToStartPath = "/about-to-start";
     private final String midEventPath = "/mid-event";
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private IaHearingsApiService iaHearingsApiService;
     HearingsUpdateHearingRequest hearingsUpdateHearingRequest;
 
     @BeforeEach
@@ -51,29 +50,20 @@ public class HearingsUpdateHearingRequestTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
-        hearingsUpdateHearingRequest =
-                new HearingsUpdateHearingRequest(
-                        asylumCaseCallbackApiDelegator,
-                        hearingsApiEndpoint,
-                        aboutToStartPath,
-                        midEventPath
-                );
+        hearingsUpdateHearingRequest = new HearingsUpdateHearingRequest(iaHearingsApiService);
     }
 
     @Test
     public void should_delegate_to_hearings_api_start_event_when_update_hearings_is_null() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
-        when(asylumCase.read(CHANGE_HEARINGS))
-                .thenReturn(Optional.empty());
-        when(asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToStartPath))
-                .thenReturn(asylumCase);
+        when(asylumCase.read(CHANGE_HEARINGS)).thenReturn(Optional.empty());
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 hearingsUpdateHearingRequest.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCaseCallbackApiDelegator, times(1))
-                .delegate(callback, hearingsApiEndpoint + aboutToStartPath);
+        verify(iaHearingsApiService, times(1)).aboutToStart(callback);
         assertEquals(asylumCase, callbackResponse.getData());
     }
 
@@ -83,8 +73,8 @@ public class HearingsUpdateHearingRequestTest {
         when(asylumCase.read(CHANGE_HEARINGS))
                 .thenReturn(Optional.of(new DynamicList("hearing 1")));
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath))
-                .thenReturn(asylumCase);
+        when(iaHearingsApiService.midEvent(callback)).thenReturn(asylumCase);
+
         when(asylumCase.read(CHANGE_HEARING_LOCATION))
                 .thenReturn(Optional.empty());
 
@@ -92,8 +82,8 @@ public class HearingsUpdateHearingRequestTest {
                 hearingsUpdateHearingRequest.handle(MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCaseCallbackApiDelegator, times(1))
-                .delegate(callback, hearingsApiEndpoint + midEventPath);
+        verify(iaHearingsApiService, times(1)).midEvent(callback);
+
         assertEquals(asylumCase, callbackResponse.getData());
     }
 
@@ -102,8 +92,8 @@ public class HearingsUpdateHearingRequestTest {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
         when(asylumCase.read(CHANGE_HEARINGS))
                 .thenReturn(Optional.of(new DynamicList("hearing 1")));
-        when(asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath))
-                .thenReturn(asylumCase);
+        when(iaHearingsApiService.midEvent(callback)).thenReturn(asylumCase);
+
         when(asylumCase.read(CHANGE_HEARING_LOCATION))
                 .thenReturn(Optional.of(BRADFORD.getEpimsId()));
 
@@ -111,8 +101,8 @@ public class HearingsUpdateHearingRequestTest {
                 hearingsUpdateHearingRequest.handle(MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCaseCallbackApiDelegator, times(1))
-                .delegate(callback, hearingsApiEndpoint + midEventPath);
+        verify(iaHearingsApiService, times(1)).midEvent(callback);
+
         verify(asylumCase).write(CHANGE_HEARING_LOCATION, BRADFORD.getValue());
     }
 }
