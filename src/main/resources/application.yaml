@@ -286,6 +286,11 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "updateDetentionLocation"
+      - "buildCase"
+      - "listCase"
+      - "draftHearingRequirements"
+      - "recordAttendeesAndDuration"
+      - "uploadHearingRecording"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
