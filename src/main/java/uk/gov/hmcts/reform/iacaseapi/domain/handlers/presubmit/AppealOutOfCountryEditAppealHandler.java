@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -122,7 +123,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 clearAdaSuitabilityFields(asylumCase);
             }
 
-        } else {
+        } else if (!sourceOfAppealEjp(asylumCase)) {
             throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
         }
 
