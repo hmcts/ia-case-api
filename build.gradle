@@ -177,11 +177,6 @@ pmd {
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
-    testLogging {
-        showStackTraces = true
-        showStandardStreams = true
-        showExceptions = true
-    }
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
