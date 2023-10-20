@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.WitnessesService;
 
+@Slf4j
 @Component
 public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -47,6 +49,8 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("WitnessesDraftMidEventHandler running for case {}", callback.getCaseDetails().getId());
+
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         String pageId = callback.getPageId();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
@@ -59,6 +63,9 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
 
         switch (pageId) {
             case IS_WITNESSES_ATTENDING_PAGE_ID -> {
+                log.info("WitnessDraftMidEventHandler running on page {}, where witnessDetails is {}",
+                    IS_WITNESSES_ATTENDING_PAGE_ID,
+                    witnesses);
 
                 if (witnesses.isEmpty()) {
                     // if no witnesses present nullify with dummies all witness-related fields (clearing does not work)
@@ -70,7 +77,10 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
                 }
             }
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
+                log.info("WitnessDraftMidEventHandler running on page {}", IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID);
                 clearWitnessIndividualFields(asylumCase);
+                log.info("Trying to decentralizeWitnessCollection with witnessDetails being: {}", witnesses);
+
                 if (!witnesses.isEmpty()) {
                     decentralizeWitnessCollection(asylumCase, witnesses);
                 }
@@ -103,6 +113,7 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
                     Collections.emptyList(),
                     List.of(new Value(fullName, fullName))
                 ));
+            log.info("Writing {} with value {}", WITNESS_N_FIELD.get(i), witnesses.get(i).getValue());
             i++;
         }
     }
