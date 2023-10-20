@@ -122,13 +122,9 @@ withNightlyPipeline(type, product, component) {
     }
 
     before('fullFunctionalTest') {
-        try {
-            builder.gradle('test')
-            builder.gradle('integration')
-            builder.gradle('smoke')
-        } finally {
-            junit '**/test-results/**/*.xml'
-        }
+        builder.gradle('test')
+        builder.gradle('integration')
+        builder.gradle('smoke')
     }
 
     afterAlways('fullFunctionalTest') {
