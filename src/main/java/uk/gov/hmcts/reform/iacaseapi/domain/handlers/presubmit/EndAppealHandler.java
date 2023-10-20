@@ -23,26 +23,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @Component
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
 
-    AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-
-    private final String hearingsApiEndpoint;
-    private final String aboutToSubmitPath;
+    private IaHearingsApiService iaHearingsApiService;
 
     public EndAppealHandler(DateProvider dateProvider,
-                            AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
-                            @Value("${hearingsApi.endpoint}") String hearingsApiEndpoint,
-                            @Value("${hearingsApi.aboutToSubmitPath}") String aboutToSubmitPath) {
+                            IaHearingsApiService iaHearingsApiService) {
         this.dateProvider = dateProvider;
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
-        this.hearingsApiEndpoint = hearingsApiEndpoint;
-        this.aboutToSubmitPath = aboutToSubmitPath;
+        this.iaHearingsApiService = iaHearingsApiService;
     }
 
     @Override
@@ -108,7 +101,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
     }
 
     private AsylumCase deleteHearings(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToSubmitPath);
+        return iaHearingsApiService.aboutToSubmit(callback);
     }
 
     private void changeWithdrawApplicationsToCompleted(AsylumCase asylumCase) {

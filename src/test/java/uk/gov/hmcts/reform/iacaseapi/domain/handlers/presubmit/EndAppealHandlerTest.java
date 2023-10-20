@@ -52,15 +52,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class EndAppealHandlerTest {
-
-    public static final String HEARINGS_API_ENDPOINT = "hearingsApiEndpoint";
-    public static final String ABOUT_TO_SUBMIT_PATH = "aboutToSubmitPath";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -70,9 +67,9 @@ class EndAppealHandlerTest {
     @Mock
     private DateProvider dateProvider;
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-    @Mock
     private CaseDetails<AsylumCase> previousCaseDetails;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
 
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
@@ -94,12 +91,11 @@ class EndAppealHandlerTest {
     public void setup() {
 
         when(dateProvider.now()).thenReturn(date);
-        endAppealHandler = new EndAppealHandler(dateProvider, asylumCaseCallbackApiDelegator,
-            HEARINGS_API_ENDPOINT, ABOUT_TO_SUBMIT_PATH);
+        endAppealHandler = new EndAppealHandler(dateProvider, iaHearingsApiService);
         when(previousCaseDetails.getState()).thenReturn(previousState);
         when(callback
             .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
-        when(asylumCaseCallbackApiDelegator.delegate(any(), any())).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToSubmit(any())).thenReturn(asylumCase);
 
     }
 
@@ -123,7 +119,7 @@ class EndAppealHandlerTest {
 
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
-        verify(asylumCaseCallbackApiDelegator).delegate(callback, HEARINGS_API_ENDPOINT + ABOUT_TO_SUBMIT_PATH);
+        verify(iaHearingsApiService).aboutToSubmit(callback);
     }
 
 
@@ -190,7 +186,7 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCaseCallbackApiDelegator, never()).delegate(callback, HEARINGS_API_ENDPOINT + ABOUT_TO_SUBMIT_PATH);
+        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
     }
 
     @Test
