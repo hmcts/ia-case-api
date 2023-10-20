@@ -54,7 +54,7 @@ public class ProfessionalUsersRetriever {
         ProfessionalUsersResponse response;
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
-
+        log.info(refDataApiUrl);
         try {
             response =
                 restTemplate
@@ -67,6 +67,7 @@ public class ProfessionalUsersRetriever {
                     ).getBody();
 
         } catch (RestClientResponseException ex) {
+            log.info(String.valueOf(ex));
             throw new ReferenceDataIntegrationException(
                 "Couldn't retrieve organisations using API: " + refDataApiUrl + refDataApiPath,
                 ex
