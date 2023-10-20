@@ -54,8 +54,13 @@ public class ProfessionalUsersRetriever {
         ProfessionalUsersResponse response;
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
+        String temp = System.getenv("PROF_REF_DATA_URL");
+        String[] tempsplit = temp.split("/");
+        for (int i = 0; i < tempsplit.length; i++) {
+            log.info(tempsplit[i]);
+            System.out.println(tempsplit[i]);
+        }
         log.info(System.getenv("PROF_REF_DATA_URL"));
-        log.info("${prof.ref.data.url}");
         try {
             response =
                 restTemplate
