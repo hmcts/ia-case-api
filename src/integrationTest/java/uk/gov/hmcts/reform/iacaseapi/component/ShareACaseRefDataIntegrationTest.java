@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
