@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -39,7 +41,8 @@ public class HearingChannelsDynamicListUpdater implements PreSubmitCallbackHandl
         return callbackStage == PreSubmitCallbackStage.MID_EVENT && List.of(
                 Event.UPDATE_HEARING_ADJUSTMENTS,
                 Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-                Event.REVIEW_HEARING_REQUIREMENTS).contains(callback.getEvent());
+                Event.REVIEW_HEARING_REQUIREMENTS,
+                RECORD_ADJOURNMENT_DETAILS).contains(callback.getEvent());
     }
 
     @Override
@@ -53,14 +56,16 @@ public class HearingChannelsDynamicListUpdater implements PreSubmitCallbackHandl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        populateDynamicList(asylumCase);
+        if (callback.getEvent() == RECORD_ADJOURNMENT_DETAILS) {
+            asylumCase.write(NEXT_HEARING_FORMAT, populateDynamicList());
+        } else {
+            asylumCase.write(HEARING_CHANNEL, populateDynamicList());
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void populateDynamicList(AsylumCase asylumCase) {
-        List<CategoryValues> hearingChannels;
-        DynamicList dynamicListOfHearingChannel;
+    private DynamicList populateDynamicList() {
 
         try {
             CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
@@ -68,16 +73,14 @@ public class HearingChannelsDynamicListUpdater implements PreSubmitCallbackHandl
                     IS_CHILD_REQUIRED
             );
 
-            hearingChannels = refDataUserService
+            List<CategoryValues> hearingChannels = refDataUserService
                     .filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL_CATEGORY);
 
-            dynamicListOfHearingChannel = new DynamicList(new Value("", ""),
+            return new DynamicList(new Value("", ""),
                     refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels));
 
         } catch (Exception e) {
             throw new RuntimeException("Couldn't read response by RefData service for HearingChannel(s)", e);
         }
-
-        asylumCase.write(HEARING_CHANNEL, dynamicListOfHearingChannel);
     }
 }
