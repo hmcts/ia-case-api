@@ -19,8 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
@@ -30,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRetriever;
 
 @Slf4j
 public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
@@ -46,6 +50,8 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     private List<Value> values = Lists.newArrayList(value1, value2);
 
     private DynamicList dynamicList;
+    @Autowired
+    private ProfessionalUsersRetriever professionalUsersRetriever;
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
@@ -67,7 +73,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
-
+        ReflectionTestUtils.setField(professionalUsersRetriever, "refDataApiUrl", "http://localhost:8990");
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
