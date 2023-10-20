@@ -54,13 +54,7 @@ public class ProfessionalUsersRetriever {
         ProfessionalUsersResponse response;
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
-        String temp = System.getenv("PROF_REF_DATA_URL");
-        String[] tempsplit = temp.split("/");
-        for (int i = 0; i < tempsplit.length; i++) {
-            log.info(tempsplit[i]);
-            System.out.println(tempsplit[i]);
-        }
-        log.info(System.getenv("PROF_REF_DATA_URL"));
+
         try {
             response =
                 restTemplate
@@ -73,7 +67,6 @@ public class ProfessionalUsersRetriever {
                     ).getBody();
 
         } catch (RestClientResponseException ex) {
-            log.info(String.valueOf(ex));
             throw new ReferenceDataIntegrationException(
                 "Couldn't retrieve organisations using API: " + refDataApiUrl + refDataApiPath,
                 ex

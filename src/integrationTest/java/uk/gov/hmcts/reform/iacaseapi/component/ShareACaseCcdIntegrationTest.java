@@ -101,7 +101,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_failure_when_user_is_invalid() {
-
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
@@ -114,7 +113,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
         long caseId = 9999L;
         URI uri = buildUri(idamUserId, String.valueOf(caseId));
         addReferenceCreatedStub(server, uri.getPath());
-
+        System.setProperty("PROF_REF_DATA_URL", "http://localhost:8990");
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(SHARE_A_CASE)
             .caseDetails(someCaseDetailsWith()
