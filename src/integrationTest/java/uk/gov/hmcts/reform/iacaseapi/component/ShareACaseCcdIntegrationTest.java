@@ -63,17 +63,20 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     @BeforeEach
     public void setupReferenceDataStub() throws IOException {
-
         prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
     }
 
+    @BeforeEach
+    public void setupReferenceDataUrl() {
+        ReflectionTestUtils.setField(professionalUsersRetriever, "refDataApiUrl", "http://localhost:8990");
+    }
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
-        ReflectionTestUtils.setField(professionalUsersRetriever, "refDataApiUrl", "http://localhost:8990");
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
