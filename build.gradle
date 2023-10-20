@@ -287,23 +287,23 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.3') {
             entry 'jackson-databind'
             entry 'jackson-core'
             entry 'jackson-annotations'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.3') {
             entry 'jackson-dataformat-csv'
             entry 'jackson-dataformat-yaml'
        }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.3') {
             entry 'jackson-datatype-jsr310'
             entry 'jackson-datatype-jdk8'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.3') {
             entry 'jackson-module-parameter-names'
         }
 
