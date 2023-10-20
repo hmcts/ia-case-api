@@ -121,7 +121,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
         long caseId = 9999L;
         URI uri = buildUri(idamUserId, String.valueOf(caseId));
         addReferenceCreatedStub(server, uri.getPath());
-        System.setProperty("PROF_REF_DATA_URL", "http://localhost:8990");
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(SHARE_A_CASE)
             .caseDetails(someCaseDetailsWith()
