@@ -54,7 +54,8 @@ public class ProfessionalUsersRetriever {
         ProfessionalUsersResponse response;
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
-        log.info(refDataApiUrl);
+        log.info(System.getenv("PROF_REF_DATA_URL"));
+        log.info("${prof.ref.data.url}");
         try {
             response =
                 restTemplate

@@ -22,7 +22,7 @@
         <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-41080</cve>
     </suppress>
-    <suppress until="2023-10-30">
+    <suppress until="2023-11-30">
         <notes>Suppress until a new version of uk.gov.service.notify/notifications-java-client is released that includes
         a version of JSON that is newer than version 20230618</notes>
         <cve>CVE-2023-5072</cve>
