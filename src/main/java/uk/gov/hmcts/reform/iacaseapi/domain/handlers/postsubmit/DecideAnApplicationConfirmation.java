@@ -17,12 +17,18 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.getTypeFrom;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Component
 public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    public static final String NOTIFY_LISTING_TEAM_NOTICE = "You need to tell the listing team to relist the case. "
+        + "Once the case is relisted a new Notice of Hearing will be sent to all parties.";
+
     @Override
     public boolean canHandle(Callback<AsylumCase> callback) {
 
@@ -70,6 +76,8 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
     }
 
     private static String getGrantedConfirmationBody(String applicationType, AsylumCase asylumCase, long caseId) {
+        boolean isListAssisted = asylumCase.read(IS_INTEGRATED).map(yesOrNo -> yesOrNo.equals(YES)).orElse(false);
+
         String body = getTypeFrom(applicationType).map(type -> switch (type) {
             case LINK_OR_UNLINK -> {
                 final Optional<ReasonForLinkAppealOptions> reasonForAppeal =
@@ -78,8 +86,12 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
                     ? "[unlink the appeal](LINK)unlinkAppeal)."
                     : "unlink the appeal");
             }
-            case ADJOURN -> "You must now [record the details of the adjournment](LINK)recordAdjournmentDetails).";
-            case TRANSFER, EXPEDITE -> "You must now [update the hearing request](LINK)updateHearingRequest).";
+            case ADJOURN -> isListAssisted
+                ? "You must now [record the details of the adjournment](LINK)recordAdjournmentDetails)."
+                : NOTIFY_LISTING_TEAM_NOTICE;
+            case TRANSFER, EXPEDITE -> isListAssisted
+                ? "You must now [update the hearing request](LINK)updateHearingRequest)."
+                : NOTIFY_LISTING_TEAM_NOTICE;
             case JUDGE_REVIEW -> "Both parties will receive a notification detailing your decision.";
             case REINSTATE -> "You now need to [reinstate the appeal](LINK)reinstateAppeal)";
             case TIME_EXTENSION -> "You must now [change the direction's due date](LINK)changeDirectionDueDate)";

@@ -289,6 +289,7 @@ security:
       - "updateInterpreterBookingStatus"
       - "updateInterpreterDetails"
       - "updateHearingRequest"
+      - "recordAdjournmentDetails"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -323,6 +324,7 @@ security:
       - "updateInterpreterBookingStatus"
       - "updateInterpreterDetails"
       - "updateHearingRequest"
+      - "recordAdjournmentDetails"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -401,6 +403,7 @@ security:
       - "listCase"
       - "handleHearingException"
       - "updateHMCResponse"
+      - "recordAdjournmentDetails"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
