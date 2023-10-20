@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagServ
 
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
 
+@Slf4j
 @Component
 public class WitnessInterpreterLanguageFlagsHandler extends WitnessCaseFlagsHandler
         implements PreSubmitCallbackHandler<AsylumCase> {
@@ -55,6 +57,7 @@ public class WitnessInterpreterLanguageFlagsHandler extends WitnessCaseFlagsHand
         String currentDateTime = systemDateProvider.nowWithTime().toString();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        log.info("WitnessInterpreterLanguageFlagsHandler running on case {}", callback.getCaseDetails().getId());
         updateWitnessInterpreterFlags(asylumCase, currentDateTime);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -63,10 +66,15 @@ public class WitnessInterpreterLanguageFlagsHandler extends WitnessCaseFlagsHand
     private void updateWitnessInterpreterFlags(AsylumCase asylumCase, String currentDateTime) {
 
         Map<String, WitnessDetails> witnessDetailsMap = getWitnessDetailsMap(asylumCase);
+        log.info("witnessDetailsMap: {}", witnessDetailsMap);
         Map<String, Language> witnessesSpokenLanguageMap =
                 getWitnessInterpreterLanguageMap(asylumCase, witnessDetailsMap);
+        log.info("witnessesSpokenLanguageMap: {}", witnessesSpokenLanguageMap);
         Map<String, Language> witnessesSignLanguageMap = getWitnessSignLanguageMap(asylumCase, witnessDetailsMap);
+        log.info("witnessesSignLanguageMap: {}", witnessesSignLanguageMap);
         Map<String, StrategicCaseFlag> witnessFlagsMap = getWitnessFlagsMap(asylumCase);
+        log.info("witnessFlagsMap: {}", witnessFlagsMap);
+
         StrategicCaseFlagService strategicCaseFlagService;
 
         boolean caseDataUpdated = false;

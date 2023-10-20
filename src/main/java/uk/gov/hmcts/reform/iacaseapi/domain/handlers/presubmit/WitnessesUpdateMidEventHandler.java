@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -53,6 +54,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.WitnessesService;
 
+@Slf4j
 @Component
 public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -114,7 +116,10 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        log.info("WitnessInterpreterMidEventHandler running for case {}", callback.getCaseDetails().getId());
+
         if (callbackStage.equals(ABOUT_TO_SUBMIT)) {
+            log.info("fieldsToBeCleared at aboutToSubmit stage: {}", fieldsToBeCleared);
             fieldsToBeCleared.forEach(asylumCase::clear);
             return response;
         }
@@ -136,6 +141,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
 
         // mapping indexes of preexisting witnesses in new witness list to indexes in old witness list
         Map<Integer,Integer> newToOldWitnessesIndexes = newWitnessesToOldWitnessesIndexes(callback);
+        log.info("newWitnessesToOldWitnessesIndexes: {}", newToOldWitnessesIndexes);
 
         // CODE REPETITION IN THIS STATEMENT IS DUE TO CHECKSTYLE NOT PERMITTING FALLTHROUGH
         switch (pageId) {
@@ -153,6 +159,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                 }
             }
             case IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID -> {
+                log.info("WitnessInterpreterMidEventHandler on page: {}", IS_INTERPRETER_SERVICES_NEEDED_PAGE_ID);
 
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter" otherwise do the mapping
                 // as explained in transferOldWitnessesToNewWitnesses()
@@ -161,6 +168,8 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                     .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
                     .map(YES::equals)
                     .orElse(false);
+
+
 
                 if (!isInterpreterServicesNeeded && isWitnessAttending.equals(NO)) {
 
@@ -172,9 +181,11 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                     addAllWitnessFieldsToFieldsToBeCleared();
                     asylumCase.write(WITNESS_COUNT, 0);
 
+                    log.info("fieldsToBeCleared: {}", fieldsToBeCleared);
                 }
             }
             case APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID -> {
+                log.info("WitnessInterpreterMidEventHandler on page: {}", APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_PAGE_ID);
 
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter" otherwise do the mapping
                 // as explained in transferOldWitnessesToNewWitnesses()
@@ -188,9 +199,12 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
 
                     addAllWitnessFieldsToFieldsToBeCleared();
                     asylumCase.write(WITNESS_COUNT, 0);
+
+                    log.info("fieldsToBeCleared: {}", fieldsToBeCleared);
                 }
             }
             case APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID -> {
+                log.info("WitnessInterpreterMidEventHandler on page: {}", APPELLANT_INTERPRETER_SIGN_LANGUAGE_PAGE_ID);
 
                 // skip if this isn't the last page before "whichWitnessRequiresInterpreter" otherwise do the mapping
                 //as explained in transferOldWitnessesToNewWitnesses()
@@ -204,13 +218,12 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                     addAllWitnessFieldsToFieldsToBeCleared();
                     asylumCase.write(WITNESS_COUNT, 0);
 
-                } else {
-                    //transferOldWitnessesToNewWitnesses(
-                    //    asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
+                    log.info("fieldsToBeCleared: {}", fieldsToBeCleared);
                 }
 
             }
             case IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID -> {
+                log.info("WitnessInterpreterMidEventHandler on page: {}", IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID);
 
                 // if this page is shown it's because isWitnessAttending=Yes and it'll certainly be the last
                 // before "whichWitnessRequiresInterpreter"
@@ -230,12 +243,14 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                     addAllWitnessFieldsToFieldsToBeCleared();
                     asylumCase.write(WITNESS_COUNT, 0);
 
+                    log.info("fieldsToBeCleared: {}", fieldsToBeCleared);
                 } else {
                     transferOldWitnessesToNewWitnesses(
                         asylumCase, oldAsylumCase, witnesses, newToOldWitnessesIndexes);
                 }
             }
             case WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID -> {
+                log.info("WitnessInterpreterMidEventHandler on page: {}", WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID);
 
                 /*
                 this page reads the selections made on the UI and props up the dynamic lists (for interpreters)
@@ -317,6 +332,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                  */
 
                 fieldsToBeCleared.clear();
+                log.info("Clearing fieldsToBeCleared: {}", fieldsToBeCleared);
 
                 int j = 0;
                 while (j < 10) {
@@ -341,6 +357,9 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                     }
                     j++;
                 }
+                log.info("fieldsToBeCleared after page {}: {}",
+                    WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID,
+                    fieldsToBeCleared);
             }
             default -> {
             }
@@ -410,6 +429,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
                                                       AsylumCase oldAsylumCase,
                                                       List<IdValue<WitnessDetails>> witnesses,
                                                       Map<Integer,Integer> newToOldIndexes) {
+        log.info("transferOldWitnessesToNewWitnesses");
 
         Map<Integer,DynamicMultiSelectList> previousWitnessSelections = new HashMap<>();
         newToOldIndexes.forEach((n,o) -> previousWitnessSelections.put(
@@ -466,6 +486,7 @@ public class WitnessesUpdateMidEventHandler implements PreSubmitCallbackHandler<
             i++;
         }
         asylumCase.write(WITNESS_COUNT, witnesses.size());
+        log.info("Witness count: {}", witnesses.size());
     }
 
     private void addAllWitnessFieldsToFieldsToBeCleared() {
