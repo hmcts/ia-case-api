@@ -22,14 +22,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @Component
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
 
-    public EndAppealHandler(DateProvider dateProvider) {
+    private IaHearingsApiService iaHearingsApiService;
+
+    public EndAppealHandler(DateProvider dateProvider,
+                            IaHearingsApiService iaHearingsApiService) {
         this.dateProvider = dateProvider;
+        this.iaHearingsApiService = iaHearingsApiService;
     }
 
     @Override
@@ -87,7 +92,15 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
 
+        if (callback.getEvent() == Event.END_APPEAL) {
+            asylumCase = deleteHearings(callback);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private AsylumCase deleteHearings(Callback<AsylumCase> callback) {
+        return iaHearingsApiService.aboutToSubmit(callback);
     }
 
     private void changeWithdrawApplicationsToCompleted(AsylumCase asylumCase) {

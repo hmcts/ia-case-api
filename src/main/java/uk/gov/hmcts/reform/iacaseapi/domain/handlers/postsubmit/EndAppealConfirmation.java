@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUIRE_MANUAL_HEARINGS_CANCELLATION;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -12,6 +13,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
 public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    public static final String HEARING_CANCEL_SUCCEED = "#### What happens next\n\n"
+        + "A notification has been sent to all parties.<br><br>"
+        + "Any hearings requested or listed in List Assist have been automatically cancelled.";
+
+    public static final String HEARING_CANCEL_FAILED = "#### What happens next\n\n"
+        + "A notification has been sent to all parties.<br><br>"
+        + "The hearing could not be automatically cancelled.<br><br>"
+        + "[Cancel the hearing on the Hearings tab](/cases/case-details/%s/hearings)";
+
+    public static final String NOTIFICATION_FAILED = "![Respondent notification failed confirmation]"
+        + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
+        + "#### Do this next\n\n"
+        + "Contact the respondent to tell them what has changed, including any action they need to take.\n";
+
 
     @Override
     public boolean canHandle(
@@ -38,21 +54,24 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
             new PostSubmitCallbackResponse();
 
         if (hoEndAppealInstructStatus.equalsIgnoreCase("FAIL")) {
-            postSubmitResponse.setConfirmationBody(
-                "![Respondent notification failed confirmation]"
-                + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-                + "#### Do this next\n\n"
-                + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
-            );
+            postSubmitResponse.setConfirmationBody(NOTIFICATION_FAILED);
         } else {
-
-            postSubmitResponse.setConfirmationHeader("# You have ended the appeal");
-            postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "A notification has been sent to all parties.<br>"
-            );
+            populateConfirmationPage(callback, postSubmitResponse, asylumCase);
         }
 
         return postSubmitResponse;
+    }
+
+    private static void populateConfirmationPage(Callback<AsylumCase> callback, PostSubmitCallbackResponse postSubmitResponse,
+                                  AsylumCase asylumCase) {
+        postSubmitResponse.setConfirmationHeader("# You have ended the appeal");
+
+        if (asylumCase.read(REQUIRE_MANUAL_HEARINGS_CANCELLATION).isPresent()) {
+            postSubmitResponse.setConfirmationBody(
+                String.format(HEARING_CANCEL_FAILED, callback.getCaseDetails().getId())
+            );
+        } else {
+            postSubmitResponse.setConfirmationBody(HEARING_CANCEL_SUCCEED);
+        }
     }
 }

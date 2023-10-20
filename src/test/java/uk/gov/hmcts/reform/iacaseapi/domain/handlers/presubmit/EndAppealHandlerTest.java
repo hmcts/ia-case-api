@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,12 +52,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class EndAppealHandlerTest {
-
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -66,6 +68,8 @@ class EndAppealHandlerTest {
     private DateProvider dateProvider;
     @Mock
     private CaseDetails<AsylumCase> previousCaseDetails;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
 
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
@@ -87,10 +91,11 @@ class EndAppealHandlerTest {
     public void setup() {
 
         when(dateProvider.now()).thenReturn(date);
-        endAppealHandler = new EndAppealHandler(dateProvider);
+        endAppealHandler = new EndAppealHandler(dateProvider, iaHearingsApiService);
         when(previousCaseDetails.getState()).thenReturn(previousState);
         when(callback
             .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
+        when(iaHearingsApiService.aboutToSubmit(any())).thenReturn(asylumCase);
 
     }
 
@@ -114,6 +119,7 @@ class EndAppealHandlerTest {
 
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        verify(iaHearingsApiService).aboutToSubmit(callback);
     }
 
 
@@ -180,6 +186,7 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
     }
 
     @Test

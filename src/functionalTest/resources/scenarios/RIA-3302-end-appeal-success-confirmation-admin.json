@@ -20,7 +20,7 @@
     "errors": [],
     "confirmation": {
       "header": "# You have ended the appeal",
-      "body": "#### What happens next\n\nA notification has been sent to all parties.<br>"
+      "body": "#### What happens next\n\nA notification has been sent to all parties.<br><br>Any hearings requested or listed in List Assist have been automatically cancelled."
     }
   }
 }
