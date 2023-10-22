@@ -1782,8 +1782,41 @@ public enum AsylumCaseFieldDefinition {
         "suitabilityInterpreterServicesLanguage", new TypeReference<String>() {}),
 
     SOURCE_OF_APPEAL(
-            "sourceOfAppeal", new TypeReference<String>(){})
-    ;
+            "sourceOfAppeal", new TypeReference<String>(){}),
+
+    APPLIED_COSTS_TYPES(
+        "typesOfAppliedCosts", new TypeReference<TypesOfAppliedCosts>(){}),
+
+    ARGUMENTS_AND_EVIDENCE_DETAILS(
+        "argumentsAndEvidenceDetails", new TypeReference<String>(){}),
+
+    ARGUMENTS_AND_EVIDENCE_DOCUMENTS(
+        "argumentsAndEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    //add here other fields from ApplyForCosts.class
+    SCHEDULE_OF_COSTS_DOCUMENTS(
+        "scheduleOfCostsDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    APPLY_FOR_COSTS_HEARING_TYPE(
+        "applyForCostsHearingType", new TypeReference<YesOrNo>(){}),
+
+    APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION(
+        "applyForCostsHearingTypeExplanation", new TypeReference<String>(){}),
+
+    APPLIES_FOR_COSTS(
+        "appliesForCosts", new TypeReference<List<IdValue<ApplyForCosts>>>(){}),
+
+    APPLY_FOR_COSTS_DECISION(
+            "applyForCostsDecision", new TypeReference<String>(){}),
+
+    APPLY_FOR_COSTS_APPLICANT_TYPE(
+            "applyForCostsApplicantType", new TypeReference<String>(){}),
+
+    APPLY_FOR_COSTS_CREATION_DATE(
+            "applyForCostsCreationDate", new TypeReference<String>(){}),
+
+    IS_APPLIED_FOR_COSTS(
+            "isAppliedForCosts", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
