@@ -686,6 +686,7 @@ ccd:
         enabled: false
       disableKeyVaults: true
       environment:
+        DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -1224,6 +1225,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-wa-case-event-handler"
       - name: "pr-${CHANGE_ID}-wa_workflow_api"
       - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
 
