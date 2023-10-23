@@ -667,12 +667,11 @@ ccd:
         enabled: false
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      enviroment:
-        USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
-        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
       keyVaults: [ ]
       environment:
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+        USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
+        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-data-store-api:
@@ -1071,6 +1070,8 @@ wa:
               alias: LAUNCH_DARKLY_SDK_KEY
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
+        CAMUNDA_DB_HOST: ia-preview.postgres.database.azure.com
+        CAMUNDA_DB_NAME: "pr-${CHANGE_ID}-camunda"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
