@@ -77,7 +77,7 @@ public class ApplyForCostsAppender {
         return allAppliesForCosts;
     }
 
-    private String resolveRespondentToCostsOrder (String applicant) {
+    private String resolveRespondentToCostsOrder(String applicant) {
         return switch (applicant) {
             case respondent -> legalRepresentative;
             case legalRepresentative -> homeOffice;
