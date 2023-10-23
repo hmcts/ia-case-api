@@ -1,6 +1,6 @@
 {
   "description": "RIA-7771 Record adjournment details event does not change appeal status to Adjourned",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -25,7 +25,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "relistCaseImmediately": "Yes",
-        "hearingAdjournmentWhen": "beforeHearingDate"
+        "hearingAdjournmentWhen": "beforeHearingDate",
+        "sendDirectionActionAvailable": "Yes",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

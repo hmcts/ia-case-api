@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -42,7 +41,7 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback .getCaseDetails() .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         final State currentState = callback.getCaseDetails().getState();
 

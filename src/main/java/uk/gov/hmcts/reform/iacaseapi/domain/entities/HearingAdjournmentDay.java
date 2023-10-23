@@ -20,6 +20,6 @@ public enum HearingAdjournmentDay {
 
     @Override
     public String toString() {
-        return value ;
+        return value;
     }
 }

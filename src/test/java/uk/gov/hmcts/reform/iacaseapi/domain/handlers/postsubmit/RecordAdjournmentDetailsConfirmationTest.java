@@ -74,10 +74,10 @@ class RecordAdjournmentDetailsConfirmationTest {
             .contains("# You have recorded the adjournment details");
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The hearing will be adjourned using the details recorded.\n"
+            .contains("#### Do this next\n\n"
+                + "The hearing will be adjourned using the details recorded.\n\n"
                 + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                + caseId + "##Hearing%20and%20appointment).");
+                + caseId + "#Hearing%20and%20appointment).");
     }
 
     @Test
@@ -99,11 +99,11 @@ class RecordAdjournmentDetailsConfirmationTest {
             .contains("# You have recorded the adjournment details");
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "All parties will be informed of the decision to adjourn without a date.\n"
-                + "The existing hearing will be cancelled.\n"
+            .contains("#### Do this next\n\n"
+                + "All parties will be informed of the decision to adjourn without a date.\n\n"
+                + "The existing hearing will be cancelled.\n\n"
                 + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                + caseId + "##Hearing%20and%20appointment).");
+                + caseId + "#Hearing%20and%20appointment).");
     }
 
     @Test
@@ -125,10 +125,10 @@ class RecordAdjournmentDetailsConfirmationTest {
             .contains("# You have recorded the adjournment details");
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The hearing will be adjourned using the details recorded.\n"
+            .contains("#### Do this next\n\n"
+                + "The hearing will be adjourned using the details recorded.\n\n"
                 + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                + caseId + "##Hearing%20and%20appointment)."
+                + caseId + "#Hearing%20and%20appointment).\n\n"
                 + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
                 + caseId + "/hearings).");
     }
@@ -152,10 +152,10 @@ class RecordAdjournmentDetailsConfirmationTest {
             .contains("# You have recorded the adjournment details");
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The hearing will be adjourned using the details recorded.\n"
+            .contains("#### Do this next\n\n"
+                + "The hearing will be adjourned using the details recorded.\n\n"
                 + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                + caseId + "##Hearing%20and%20appointment)."
+                + caseId + "#Hearing%20and%20appointment).\n\n"
                 + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
                 + caseId + "/hearings).");
     }
