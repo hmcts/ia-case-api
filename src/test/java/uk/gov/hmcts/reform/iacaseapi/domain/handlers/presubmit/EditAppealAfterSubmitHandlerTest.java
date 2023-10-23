@@ -421,8 +421,8 @@ class EditAppealAfterSubmitHandlerTest {
                 boolean canHandle = editAppealAfterSubmitHandler.canHandle(callbackStage, callback);
 
                 if (event == Event.EDIT_APPEAL_AFTER_SUBMIT
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    || callbackStage == PreSubmitCallbackStage.MID_EVENT) {
+                    && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    || callbackStage == PreSubmitCallbackStage.MID_EVENT)) {
 
                     assertTrue(canHandle);
                 } else {
