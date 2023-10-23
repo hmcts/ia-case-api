@@ -1218,7 +1218,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-data-store"
       - name: "pr-${CHANGE_ID}-definition-store"
       - name: "pr-${CHANGE_ID}-user-profile"
-      - name: "pr-${CHANGE_ID}-role-assignment"
+      - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-ia-case-api"
       - name: "pr-${CHANGE_ID}-emstitch"
       - name: "pr-${CHANGE_ID}-wa-case-event-handler"
