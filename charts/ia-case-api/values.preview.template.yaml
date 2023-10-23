@@ -671,7 +671,9 @@ ccd:
       environment:
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
         USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
+        USER_PROFILE_DB_NAME: "pr-${CHANGE_ID}-user-profile"
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-data-store-api:
@@ -1126,6 +1128,23 @@ wa:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
       environment:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
+
+  wa-workflow-api:
+    java:
+      environment:
+        POSTGRES_NAME: "pr-${CHANGE_ID}-wa_workflow_api"
+        POSTGRES_HOST: ia-preview.postgres.database.azure.com
+        POSTGRES_USERNAME: hmcts
+        POSTGRES_PASSWORD: hmcts
+
+  camunda-bpm:
+    java:
+      environment:
+        CAMUNDA_DB_HOST: ia-preview.postgres.database.azure.com
+        CAMUNDA_DB_USER_NAME: hmcts
+        CAMUNDA_DB_PASSWORD: hmcts
+        CAMUNDA_DB_NAME: "pr-${CHANGE_ID}-camunda"
+
   wa:
     postgresql:
       enabled: false
