@@ -49,8 +49,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     private List<Value> values = Lists.newArrayList(value1, value2);
 
     private DynamicList dynamicList;
-    @Autowired
-    private ProfessionalUsersRetriever professionalUsersRetriever;
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
@@ -66,11 +64,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
-    }
-
-    @BeforeEach
-    public void setupReferenceDataUrl() {
-        ReflectionTestUtils.setField(professionalUsersRetriever, "refDataApiUrl", "http://localhost:8990");
     }
 
     @Test

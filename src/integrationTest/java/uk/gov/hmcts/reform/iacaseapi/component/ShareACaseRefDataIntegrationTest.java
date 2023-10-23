@@ -43,15 +43,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
     @org.springframework.beans.factory.annotation.Value("${prof.ref.data.path.org.users}")
     private String refDataPath;
 
-    @Autowired
-    private ProfessionalOrganisationRetriever professionalOrganisationRetriever;
-
     private ProfessionalUsersResponse prdSuccessResponse;
-
-    @BeforeEach
-    public void setupReferenceDataUrl() {
-        ReflectionTestUtils.setField(professionalOrganisationRetriever, "refDataApiUrl", "http://localhost:8990");
-    }
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
