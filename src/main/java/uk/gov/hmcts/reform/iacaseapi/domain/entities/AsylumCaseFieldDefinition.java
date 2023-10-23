@@ -1784,7 +1784,7 @@ public enum AsylumCaseFieldDefinition {
     SOURCE_OF_APPEAL(
             "sourceOfAppeal", new TypeReference<String>(){}),
 
-    APPLIED_COSTS_TYPES(
+    TYPES_OF_APPLIED_COSTS(
         "typesOfAppliedCosts", new TypeReference<TypesOfAppliedCosts>(){}),
 
     ARGUMENTS_AND_EVIDENCE_DETAILS(
@@ -1816,7 +1816,10 @@ public enum AsylumCaseFieldDefinition {
             "applyForCostsCreationDate", new TypeReference<String>(){}),
 
     IS_APPLIED_FOR_COSTS(
-            "isAppliedForCosts", new TypeReference<String>(){});
+            "isAppliedForCosts", new TypeReference<String>(){}),
+
+    RESPONDENT_TO_COSTS_ORDER(
+            "respondentToCostsOrder", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

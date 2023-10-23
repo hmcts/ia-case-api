@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.applyForCosts;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.applyforcosts;
 
 import static java.util.Objects.requireNonNull;
 

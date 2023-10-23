@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -22,6 +21,7 @@ public class ApplyForCosts {
     private String applyForCostsDecision;
     private String applyForCostsApplicantType;
     private String applyForCostsCreationDate;
+    private String respondentToCostsOrder;
 
     public ApplyForCosts() {
         // noop -- for deserializer
@@ -36,7 +36,8 @@ public class ApplyForCosts {
             String applyForCostsHearingTypeExplanation,
             String applyForCostsDecision,
             String applyForCostsApplicantType,
-            String applyForCostsCreationDate
+            String applyForCostsCreationDate,
+            String respondentToCostsOrder
     ) {
         requireNonNull(typesOfAppliedCosts);
         requireNonNull(argumentsAndEvidenceDocuments);
@@ -47,6 +48,7 @@ public class ApplyForCosts {
         if (applyForCostsHearingType.equals(YesOrNo.YES)) {
             requireNonNull(applyForCostsHearingTypeExplanation);
         }
+        requireNonNull(respondentToCostsOrder);
 
         this.typesOfAppliedCosts = typesOfAppliedCosts;
         this.argumentsAndEvidenceDetails = argumentsAndEvidenceDetails;
@@ -57,6 +59,7 @@ public class ApplyForCosts {
         this.applyForCostsDecision = applyForCostsDecision;
         this.applyForCostsApplicantType = applyForCostsApplicantType;
         this.applyForCostsCreationDate = applyForCostsCreationDate;
+        this.respondentToCostsOrder = respondentToCostsOrder;
     }
 
 
@@ -104,5 +107,10 @@ public class ApplyForCosts {
     public String getApplyForCostsCreationDate() {
         requireNonNull(applyForCostsCreationDate);
         return applyForCostsCreationDate;
+    }
+
+    public String getRespondentToCostsOrder() {
+        requireNonNull(respondentToCostsOrder);
+        return respondentToCostsOrder;
     }
 }

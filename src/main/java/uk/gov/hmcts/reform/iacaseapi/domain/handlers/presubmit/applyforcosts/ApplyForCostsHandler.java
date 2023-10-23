@@ -19,14 +19,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsHandlerAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsAppender;
 
 @Component
 public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase> {
-    private ApplyForCostsHandlerAppender applyForCostsHandlerAppender;
+    private ApplyForCostsAppender applyForCostsAppender;
 
-    public ApplyForCostsHandler(ApplyForCostsHandlerAppender applyForCostsHandlerAppender) {
-        this.applyForCostsHandlerAppender = applyForCostsHandlerAppender;
+    public ApplyForCostsHandler(ApplyForCostsAppender applyForCostsAppender) {
+        this.applyForCostsAppender = applyForCostsAppender;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        TypesOfAppliedCosts typeOfAppliedCosts = asylumCase.read(APPLIED_COSTS_TYPES, TypesOfAppliedCosts.class)
+        TypesOfAppliedCosts typeOfAppliedCosts = asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)
                 .orElseThrow(() -> new IllegalStateException("typesOfAppliedCosts is not present"));
 
         Optional<String> argumentsAndEvidenceDetails = asylumCase.read(ARGUMENTS_AND_EVIDENCE_DETAILS, String.class);
@@ -65,14 +65,14 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
                     .orElseThrow(() -> new IllegalStateException("applyForCostsHearingTypeExplanation is not present"));
         }
 
-        Optional<List<IdValue<ApplyForCosts>>> maybeExistingMakeAnApplications =
+        Optional<List<IdValue<ApplyForCosts>>> maybeExistingApplyForCosts =
                 asylumCase.read(APPLIES_FOR_COSTS);
 
         final List<IdValue<ApplyForCosts>> existingAppliesForCosts =
-                maybeExistingMakeAnApplications.orElse(Collections.emptyList());
+                maybeExistingApplyForCosts.orElse(Collections.emptyList());
 
         List<IdValue<ApplyForCosts>> allApplyForCosts =
-                applyForCostsHandlerAppender.append(
+                applyForCostsAppender.append(
                         existingAppliesForCosts,
                         typeOfAppliedCosts,
                         argumentsAndEvidenceDetails.orElse(StringUtils.EMPTY),
@@ -88,7 +88,7 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         //Flag if the event has been completed
         asylumCase.write(IS_APPLIED_FOR_COSTS, YesOrNo.YES);
 
-        asylumCase.clear(APPLIED_COSTS_TYPES);
+        asylumCase.clear(TYPES_OF_APPLIED_COSTS);
         asylumCase.clear(ARGUMENTS_AND_EVIDENCE_DETAILS);
         asylumCase.clear(ARGUMENTS_AND_EVIDENCE_DOCUMENTS);
         asylumCase.clear(SCHEDULE_OF_COSTS_DOCUMENTS);

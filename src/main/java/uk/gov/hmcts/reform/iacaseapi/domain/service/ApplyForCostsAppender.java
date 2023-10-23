@@ -13,12 +13,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @Service
-public class ApplyForCostsHandlerAppender {
+public class ApplyForCostsAppender {
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
     private final DateProvider dateProvider;
+    private final String legalRepresentative = "Legal representative";
+    private final String homeOffice = "Home office";
+    private final String respondent = "Respondent";
 
-    public ApplyForCostsHandlerAppender(UserDetails userDetails, UserDetailsHelper userDetailsHelper, DateProvider dateProvider) {
+    public ApplyForCostsAppender(UserDetails userDetails, UserDetailsHelper userDetailsHelper, DateProvider dateProvider) {
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
         this.dateProvider = dateProvider;
@@ -56,16 +59,9 @@ public class ApplyForCostsHandlerAppender {
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
                 applicant,
-                dateProvider.now().toString()
+                dateProvider.now().toString(),
+                resolveRespondentToCostsOrder(applicant)
         );
-
-//        TypesOfAppliedCosts typesOfAppliedCosts,
-//        String argumentsAndEvidenceDetails,
-//        List<IdValue<Document>> argumentsAndEvidenceDocuments,
-//        List<IdValue<Document>> scheduleOfCostsDocuments,
-//        YesOrNo applyForCostsHearingType,
-//        String applyForCostsHearingTypeExplanation,
-//        String applyForCostsDecision
 
         final List<IdValue<ApplyForCosts>> allAppliesForCosts =
                 new ArrayList<>();
@@ -79,5 +75,13 @@ public class ApplyForCostsHandlerAppender {
         }
 
         return allAppliesForCosts;
+    }
+
+    private String resolveRespondentToCostsOrder (String applicant) {
+        return switch (applicant) {
+            case respondent -> legalRepresentative;
+            case legalRepresentative -> homeOffice;
+            default -> throw new IllegalStateException("Provided applicant is not valid");
+        };
     }
 }
