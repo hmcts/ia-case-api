@@ -1092,6 +1092,9 @@ wa:
         DB_READER_USERNAME: hmcts
         POSTGRES_CONNECTION_OPTIONS: ""
         SPRING_PROFILES_ACTIVE: "preview,replica"
+        SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: "pr-${CHANGE_ID}-cft_task_db"
+        SPRING_FLYWAY_DEFAULT_SCHEMA: "pr-${CHANGE_ID}-cft_task_db"
+        SPRING_FLYWAY_SCHEMAS: "pr-${CHANGE_ID}-cft_task_db"
   wa-case-event-handler:
     java:
       ingressHost: wa-case-event-handler-${SERVICE_FQDN}
