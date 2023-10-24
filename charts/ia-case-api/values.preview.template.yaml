@@ -1121,6 +1121,20 @@ wa:
     postgresql:
       enabled: false
 
+servicebus:
+  enabled: true
+  releaseNameOverride: ${SERVICE_NAME}
+  resourceGroup: ia-aso-preview-rg
+  sbNamespace: ia-servicebus-preview
+  setup:
+    topics:
+      - name: ccd-case-events
+        subscriptionNeeded: yes
+        requiresSession: true
+      - name: crd-topic
+        subscriptionNeeded: yes
+      - name: jrd-topic
+        subscriptionNeeded: yes
 
 ccd-message-publisher:
   enabled: true
