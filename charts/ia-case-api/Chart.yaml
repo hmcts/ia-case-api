@@ -59,7 +59,7 @@ dependencies:
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: aac-manage-case-assignment.enabled
   - name: wa
-    version: ~0.1.5
+    version: ~1.0.4
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
