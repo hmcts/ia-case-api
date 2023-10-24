@@ -1064,6 +1064,10 @@ wa:
   camunda-bpm:
     java:
       environment:
+        POSTGRES_NAME: "pr-${CHANGE_ID}-wa_workflow_api"
+        POSTGRES_HOST: ia-preview.postgres.database.azure.com
+        POSTGRES_USERNAME: hmcts
+        POSTGRES_PASSWORD: hmcts
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
 
   wa-task-management-api:
@@ -1077,6 +1081,7 @@ wa:
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         ALLOWED_JURISDICTIONS: ia
         ALLOWED_CASE_TYPES: asylum
+        POSTGRES_PASSWORD: hmcts
 
   wa-case-event-handler:
     java:
@@ -1096,11 +1101,21 @@ wa:
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
+        POSTGRES_HOST: ia-preview.postgres.database.azure.com
+        POSTGRES_NAME: "pr-${CHANGE_ID}-wa-case-event-handler"
   wa-task-monitor:
     java:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
       environment:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
+
+  wa-workflow-api:
+    java:
+      environment:
+        POSTGRES_NAME: "pr-${CHANGE_ID}-wa_workflow_api"
+        POSTGRES_HOST: ia-preview.postgres.database.azure.com
+        POSTGRES_USERNAME: hmcts
+        POSTGRES_PASSWORD: hmcts
   wa:
     postgresql:
       enabled: false
