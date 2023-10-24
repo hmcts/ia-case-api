@@ -1040,8 +1040,14 @@ aac-manage-case-assignment:
           - name: notify-mca-api-key-secret
             alias: NOTIFY_MCA_API_KEY
 
+
 wa:
   enabled: true
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: ia-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
   wa-initiation-batch:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
@@ -1054,47 +1060,24 @@ wa:
   wa-message-cron-service:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
+
+  camunda-bpm:
+    java:
+      environment:
+        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      keyVaults:
-        wa:
-          secrets:
-            - name: wa-system-username
-              alias: WA_SYSTEM_USERNAME
-            - name: wa-system-password
-              alias: WA_SYSTEM_PASSWORD
-            - name: wa-idam-client-secret
-              alias: WA_IDAM_CLIENT_SECRET
-            - name: s2s-secret-task-management-api
-              alias: S2S_SECRET_TASK_MANAGEMENT_API
-            - name: ld-secret
-              alias: LAUNCH_DARKLY_SDK_KEY
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
-        CAMUNDA_DB_HOST: ia-preview.postgres.database.azure.com
-        CAMUNDA_DB_NAME: "pr-${CHANGE_ID}-camunda"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        POSTGRES_HOST: ia-preview.postgres.database.azure.com
-        POSTGRES_REPLICA_HOST: ia-preview.postgres.database.azure.com
-        POSTGRES_REPLICA_PORT: 5432
-        POSTGRES_NAME: "pr-${CHANGE_ID}-cft_task_db"
-        POSTGRES_REPLICA_NAME: "pr-${CHANGE_ID}-cft_task_db_replica"
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
         ALLOWED_JURISDICTIONS: ia
         ALLOWED_CASE_TYPES: asylum
-        REPLICATION_USERNAME: hmcts
-        REPLICATION_PASSWORD: hmcts
-        DB_READER_USERNAME: hmcts
-        POSTGRES_CONNECTION_OPTIONS: ""
-        SPRING_PROFILES_ACTIVE: "preview,replica"
-        SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: "pr-${CHANGE_ID}-cft_task_db"
-        SPRING_FLYWAY_DEFAULT_SCHEMA: "pr-${CHANGE_ID}-cft_task_db"
-        SPRING_FLYWAY_SCHEMAS: "pr-${CHANGE_ID}-cft_task_db"
+
   wa-case-event-handler:
     java:
       ingressHost: wa-case-event-handler-${SERVICE_FQDN}
@@ -1103,15 +1086,6 @@ wa:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
           secretRef: ia-sb-preview
           key: connectionString
-      keyVaults:
-        wa:
-          secrets:
-            - name: s2s-secret-case-event-handler
-              alias: S2S_SECRET_CASE_EVENT_HANDLER
-            - name: ld-secret
-              alias: LAUNCH_DARKLY_SDK_KEY
-            - name: wa-idam-client-secret
-              alias: WA_IDAM_CLIENT_SECRET
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -1121,51 +1095,16 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        #AZURE_SERVICE_BUS_TOPIC_NAME: servicebus-topic-{{ .Release.Name }}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        POSTGRES_HOST:  ia-preview.postgres.database.azure.com
-        POSTGRES_NAME: "pr-${CHANGE_ID}-wa-case-event-handler"
-
   wa-task-monitor:
     java:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
       environment:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-
-  wa-workflow-api:
-    java:
-      environment:
-        POSTGRES_NAME: "pr-${CHANGE_ID}-wa_workflow_api"
-        POSTGRES_HOST: ia-preview.postgres.database.azure.com
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
-
-  camunda-bpm:
-    java:
-      environment:
-        CAMUNDA_DB_HOST: ia-preview.postgres.database.azure.com
-        CAMUNDA_DB_USER_NAME: hmcts
-        CAMUNDA_DB_PASSWORD: hmcts
-        CAMUNDA_DB_NAME: "pr-${CHANGE_ID}-camunda"
-
   wa:
     postgresql:
       enabled: false
 
-servicebus:
-  enabled: true
-  releaseNameOverride: ${SERVICE_NAME}
-  resourceGroup: ia-aso-preview-rg
-  sbNamespace: ia-servicebus-preview
-  setup:
-    topics:
-      - name: ccd-case-events
-        subscriptionNeeded: yes
-        requiresSession: true
-      - name: crd-topic
-        subscriptionNeeded: yes
-      - name: jrd-topic
-        subscriptionNeeded: yes
 
 ccd-message-publisher:
   enabled: true
