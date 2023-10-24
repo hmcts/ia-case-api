@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_COSTS;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -21,12 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -66,6 +65,74 @@ class ApplyForCostsHandlerTest {
     }
 
     @Test
+    void should_append_apply_for_costs() {
+        final List<IdValue<ApplyForCosts>> existingAppliesForCosts = new ArrayList<>();
+        final List<IdValue<ApplyForCosts>> newAppliesForCosts = new ArrayList<>();
+        when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+        when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
+        when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
+        when(asylumCase.read(APPLY_FOR_COSTS_DECISION, String.class)).thenReturn(Optional.of("test"));
+        when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of("test"));
+
+        when(applyForCostsAppender.append(
+                existingAppliesForCosts,
+                TypesOfAppliedCosts.UNREASONABLE_COSTS,
+                "test",
+                argumentsAndEvidenceDocuments,
+                Collections.emptyList(),
+                YesOrNo.YES,
+                "test",
+                "test",
+                "test")).thenReturn(newAppliesForCosts);
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+                .read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class);
+        verify(asylumCase, times(1))
+                .read(ARGUMENTS_AND_EVIDENCE_DETAILS, String.class);
+        verify(asylumCase, times(1))
+                .read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS);
+        verify(asylumCase, times(1))
+                .read(SCHEDULE_OF_COSTS_DOCUMENTS);
+        verify(asylumCase, times(1))
+                .read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class);
+        verify(asylumCase, times(1))
+                .read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class);
+        verify(asylumCase, times(1))
+                .read(LEGAL_REP_NAME, String.class);
+        verify(asylumCase, times(1))
+                .read(APPLIES_FOR_COSTS);
+        verify(asylumCase, times(1))
+                .write(APPLIES_FOR_COSTS, newAppliesForCosts);
+        verify(asylumCase, times(1))
+                .write(IS_APPLIED_FOR_COSTS, YesOrNo.YES);
+        verify(asylumCase, times(1))
+                .clear(TYPES_OF_APPLIED_COSTS);
+        verify(asylumCase, times(1))
+                .clear(ARGUMENTS_AND_EVIDENCE_DETAILS);
+        verify(asylumCase, times(1))
+                .clear(ARGUMENTS_AND_EVIDENCE_DOCUMENTS);
+        verify(asylumCase, times(1))
+                .clear(SCHEDULE_OF_COSTS_DOCUMENTS);
+        verify(asylumCase, times(1))
+                .clear(APPLY_FOR_COSTS_HEARING_TYPE);
+        verify(asylumCase, times(1))
+                .clear(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION);
+    }
+
+    @Test
     void should_throw_on_missing_types_of_applied_costs_reason() {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -85,6 +152,7 @@ class ApplyForCostsHandlerTest {
         when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
+        when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of("test"));
 
         Assertions
                 .assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -119,6 +187,22 @@ class ApplyForCostsHandlerTest {
                 .assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("applyForCostsHearingTypeExplanation is not present");
+    }
+
+    @Test
+    void should_throw_on_legal_rep_reason() {
+        when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+        when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
+        when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
+
+        Assertions
+                .assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("legalRepName is not present");
     }
 
     @Test

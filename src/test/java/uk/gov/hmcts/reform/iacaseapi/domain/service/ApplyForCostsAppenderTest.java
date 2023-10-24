@@ -53,7 +53,7 @@ class ApplyForCostsAppenderTest {
     private String applyForCostsDecision = "Test decision";
     private String applyForCostsApplicantType = "Respondent";
     private String applyForCostsApplicantTypeLegalRep = "Legal representative";
-    private String respondentToCostsOrder = "Legal representative";
+    private String respondentToCostsOrder = "Test name of LegalRep";
     private String respondentToCostsOrderHomeOffice = "Home office";
     private String applyForCostsCreationDate = "2020-09-21";
     private ApplyForCostsAppender applyForCostsAppender;
@@ -86,7 +86,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision);
+                applyForCostsDecision,
+                respondentToCostsOrder);
 
         assertNotNull(allAppliesForCosts);
         assertEquals(3, allAppliesForCosts.size());
@@ -125,7 +126,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision);
+                applyForCostsDecision,
+                respondentToCostsOrder);
 
         assertNotNull(allAppliesForCosts);
         assertEquals(1, allAppliesForCosts.size());
@@ -154,7 +156,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -165,7 +168,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -176,7 +180,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -187,7 +192,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -198,7 +204,8 @@ class ApplyForCostsAppenderTest {
                 null,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -209,7 +216,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 null,
                 applyForCostsHearingTypeExplanation,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -220,7 +228,8 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 null,
-                applyForCostsDecision))
+                applyForCostsDecision,
+                respondentToCostsOrder))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -231,6 +240,19 @@ class ApplyForCostsAppenderTest {
                 scheduleOfCostsDocuments,
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
+                null,
+                respondentToCostsOrder))
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> applyForCostsAppender.append(
+                existingAppliesForCosts,
+                typesOfAppliedCosts,
+                argumentsAndEvidenceDetails,
+                argumentsAndEvidenceDocuments,
+                scheduleOfCostsDocuments,
+                applyForCostsHearingType,
+                applyForCostsHearingTypeExplanation,
+                applyForCostsDecision,
                 null))
                 .isExactlyInstanceOf(NullPointerException.class);
     }

@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplyForCosts;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -35,7 +37,8 @@ public class ApplyForCostsAppender {
             List<IdValue<Document>> scheduleOfCostsDocuments,
             YesOrNo applyForCostsHearingType,
             String applyForCostsHearingTypeExplanation,
-            String applyForCostsDecision
+            String applyForCostsDecision,
+            String legalRepName
     ) {
 
         requireNonNull(existingAppliesForCosts);
@@ -47,6 +50,7 @@ public class ApplyForCostsAppender {
         if (applyForCostsHearingType.equals(YesOrNo.YES)) {
             requireNonNull(applyForCostsHearingTypeExplanation);
         }
+        requireNonNull(legalRepName);
 
         String applicant = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
 
@@ -60,7 +64,7 @@ public class ApplyForCostsAppender {
                 applyForCostsDecision,
                 applicant,
                 dateProvider.now().toString(),
-                resolveRespondentToCostsOrder(applicant)
+                resolveRespondentToCostsOrder(applicant, legalRepName)
         );
 
         final List<IdValue<ApplyForCosts>> allAppliesForCosts =
@@ -77,9 +81,9 @@ public class ApplyForCostsAppender {
         return allAppliesForCosts;
     }
 
-    private String resolveRespondentToCostsOrder(String applicant) {
+    private String resolveRespondentToCostsOrder(String applicant, String legalRepName) {
         return switch (applicant) {
-            case respondent -> legalRepresentative;
+            case respondent -> legalRepName;
             case legalRepresentative -> homeOffice;
             default -> throw new IllegalStateException("Provided applicant is not valid");
         };

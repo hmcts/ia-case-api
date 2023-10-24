@@ -35,7 +35,8 @@
           ],
           "applyForCostsHearingTypeExplanation": "",
           "appliesForCosts": []
-        }
+        },
+        "legalRepName": "Fake Org Ltd"
       }
     }
   },
@@ -78,7 +79,8 @@
             }
           }
         ]
-      }
+      },
+      "legalRepName": "Fake Org Ltd"
     }
   }
 }

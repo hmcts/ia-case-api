@@ -65,6 +65,9 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
                     .orElseThrow(() -> new IllegalStateException("applyForCostsHearingTypeExplanation is not present"));
         }
 
+        String legalRepName = asylumCase.read(LEGAL_REP_NAME, String.class)
+                .orElseThrow(() -> new IllegalStateException("legalRepName is not present"));
+
         Optional<List<IdValue<ApplyForCosts>>> maybeExistingApplyForCosts =
                 asylumCase.read(APPLIES_FOR_COSTS);
 
@@ -80,7 +83,8 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
                         scheduleOfCostsDocuments.orElse(Collections.emptyList()),
                         applyForCostsHearingType,
                         applyForCostsHearingTypeExplanation,
-                        "Pending"
+                        "Pending",
+                        legalRepName
                 );
 
         asylumCase.write(APPLIES_FOR_COSTS, allApplyForCosts);
