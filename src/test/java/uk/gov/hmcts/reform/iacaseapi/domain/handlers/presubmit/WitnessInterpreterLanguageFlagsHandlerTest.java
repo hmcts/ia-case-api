@@ -88,10 +88,10 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
         witnessDetails = Arrays.asList(
-                new IdValue<>("1",
-                    new WitnessDetails("1234", "Witness1Given", "Witness1Family")),
-                new IdValue<>("2",
-                    new WitnessDetails("2333","Witness2Given", "Witness2Family"))
+            new IdValue<>("1",
+                new WitnessDetails("1234", "Witness1Given", "Witness1Family")),
+            new IdValue<>("2",
+                new WitnessDetails("2333","Witness2Given", "Witness2Family"))
         );
         handler = new WitnessInterpreterLanguageFlagsHandler(systemDateProvider);
     }
@@ -136,17 +136,19 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
             .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status(ACTIVE_STATUS)
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status(ACTIVE_STATUS)
+            .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
                 "Witness1Given", ROLE_ON_CASE_WITNESS, existingFlags)))));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -215,7 +217,9 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
             .flagCode(SIGN_LANGUAGE.getFlagCode())
-            .name(buildLanguageFlagName(SIGN_LANGUAGE.getName(), signLanguageValue.getLabel()))
+            .name(SIGN_LANGUAGE.getName())
+            .subTypeKey(signLanguageValue.getCode())
+            .subTypeValue(signLanguageValue.getLabel())
             .status(ACTIVE_STATUS)
             .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
@@ -253,11 +257,13 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(asylumCase.read(WITNESS_1, WitnessDetails.class)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status(INACTIVE_STATUS)
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status(INACTIVE_STATUS)
+            .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
                 "Witness1Given", ROLE_ON_CASE_WITNESS, existingFlags)))));
@@ -287,11 +293,13 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
             .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status(INACTIVE_STATUS)
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status(INACTIVE_STATUS)
+            .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
                 "Witness1Given", ROLE_ON_CASE_WITNESS, existingFlags)))));
@@ -321,11 +329,13 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
             .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status(ACTIVE_STATUS)
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status(ACTIVE_STATUS)
+            .build()));
         when(asylumCase.read(WITNESS_LEVEL_FLAGS))
             .thenReturn(Optional.of(List.of(new PartyFlagIdValue("1234", new StrategicCaseFlag(
                 "Witness1Given", ROLE_ON_CASE_WITNESS, existingFlags)))));
@@ -408,9 +418,5 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         DynamicList dynamicList = new DynamicList("");
         dynamicList.setValue(value);
         return new InterpreterLanguageRefData(dynamicList, null, null);
-    }
-
-    private String buildLanguageFlagName(String flagName, String language) {
-        return flagName + " " + language;
     }
 }

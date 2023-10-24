@@ -1,6 +1,6 @@
 {
   "description": "RIA-7658 review sign language requirements for witness with legal rep",
-  "enabled": "true",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -159,7 +159,8 @@
                 {
                   "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
                   "value": {
-                    "name": "Sign Language manual sign language",
+                    "name": "Sign Language",
+                    "subTypeValue": "manual sign language",
                     "status": "Active",
                     "flagCode": "RA0042"
                   }

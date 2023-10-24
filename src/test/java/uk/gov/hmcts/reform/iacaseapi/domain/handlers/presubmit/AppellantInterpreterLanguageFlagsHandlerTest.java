@@ -30,12 +30,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagServ
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -67,6 +70,8 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider systemDateProvider;
+    @Captor
+    private ArgumentCaptor<StrategicCaseFlag> partyFlagsCaptor;
 
     private AppellantInterpreterLanguageFlagsHandler handler;
     private final String appellantDisplayName = "Eke Uke";
@@ -100,7 +105,14 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(1, flagDetails.size());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
+        assertEquals(spokenLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
     }
 
     @ParameterizedTest
@@ -120,7 +132,14 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(1, flagDetails.size());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
+        assertEquals(spokenLanguageValue.getLabel(), flagDetails.get(0).getValue().getSubTypeValue());
     }
 
     @ParameterizedTest
@@ -153,22 +172,30 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Active")
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status("Active")
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.of(new StrategicCaseFlag(
-                        appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
+            .thenReturn(Optional.of(new StrategicCaseFlag(
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(1, flagDetails.size());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals("Inactive", flagDetails.get(0).getValue().getStatus());
     }
 
     @ParameterizedTest
@@ -188,7 +215,14 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(1, flagDetails.size());
+        assertEquals(SIGN_LANGUAGE.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
+        assertEquals(signLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
     }
 
     @ParameterizedTest
@@ -208,7 +242,14 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(1, flagDetails.size());
+        assertEquals(SIGN_LANGUAGE.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
+        assertEquals(signLanguageValue.getLabel(), flagDetails.get(0).getValue().getSubTypeValue());
     }
 
     @ParameterizedTest
@@ -223,7 +264,9 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
             .flagCode(SIGN_LANGUAGE.getFlagCode())
-            .name(buildLanguageFlagName(SIGN_LANGUAGE.getName(), signLanguageValue.getLabel()))
+            .name(SIGN_LANGUAGE.getName())
+            .subTypeKey(signLanguageValue.getCode())
+            .subTypeValue(signLanguageValue.getLabel())
             .status("Active")
             .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
@@ -236,7 +279,14 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(1, flagDetails.size());
+        assertEquals(SIGN_LANGUAGE.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals("Inactive", flagDetails.get(0).getValue().getStatus());
+        assertEquals(signLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
     }
 
     @Test
@@ -261,17 +311,19 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status(INACTIVE_STATUS)
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status(INACTIVE_STATUS)
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.of(new StrategicCaseFlag(
-                        appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
+            .thenReturn(Optional.of(new StrategicCaseFlag(
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -293,22 +345,37 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(INTERPRETER_LANGUAGE_FLAG.getName())
-                .status(INACTIVE_STATUS)
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status(INACTIVE_STATUS)
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.of(new StrategicCaseFlag(
-                        appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
+            .thenReturn(Optional.of(new StrategicCaseFlag(
+                appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), partyFlagsCaptor.capture());
+
+        StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
+        List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
+        assertEquals(2, flagDetails.size());
+        CaseFlagDetail activeFlagDetail = flagDetails.stream()
+            .filter(details -> Objects.equals(details.getValue().getStatus(), "Active"))
+            .findAny().orElse(null);
+        CaseFlagDetail inactiveFlagDetail = flagDetails.stream()
+            .filter(details -> Objects.equals(details.getValue().getStatus(), "Inactive"))
+            .findAny().orElse(null);
+        assertNotNull(activeFlagDetail);
+        assertNotNull(inactiveFlagDetail);
+        assertEquals(activeFlagDetail.getValue().getFlagCode(), inactiveFlagDetail.getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -326,17 +393,19 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         
         
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-                .builder()
-                .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-                .name(buildLanguageFlagName(INTERPRETER_LANGUAGE_FLAG.getName(), spokenLanguageValue.getLabel()))
-                .status("Active")
-                .build()));
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey(spokenLanguageValue.getCode())
+            .subTypeValue(spokenLanguageValue.getLabel())
+            .status("Active")
+            .build()));
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.of(new StrategicCaseFlag(
-                        appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
+            .thenReturn(Optional.of(new StrategicCaseFlag(
+                    appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -424,10 +493,6 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         DynamicList dynamicList = new DynamicList("");
         dynamicList.setValue(value);
         return new InterpreterLanguageRefData(dynamicList, null, null);
-    }
-
-    private String buildLanguageFlagName(String flagName, String language) {
-        return flagName + " " + language;
     }
 
 }

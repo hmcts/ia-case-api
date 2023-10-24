@@ -86,7 +86,7 @@ class StrategicCaseFlagServiceTest {
         CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
         assertEquals(ACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), caseFlagValue.getFlagCode());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " text", caseFlagValue.getName());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName(), caseFlagValue.getName());
         assertEquals("code", caseFlagValue.getSubTypeKey());
         assertEquals("text", caseFlagValue.getSubTypeValue());
     }
@@ -96,7 +96,9 @@ class StrategicCaseFlagServiceTest {
         caseFlagDetail = new CaseFlagDetail("id", CaseFlagValue
             .builder()
             .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-            .name("Language Interpreter abc")
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            .subTypeKey("code1")
+            .subTypeValue("abc")
             .status("Active")
             .build());
         strategicCaseFlagService = new StrategicCaseFlagService(
@@ -104,7 +106,7 @@ class StrategicCaseFlagServiceTest {
             "roleOnCase", List.of(caseFlagDetail));
 
         boolean activated = strategicCaseFlagService
-            .activateFlag(INTERPRETER_LANGUAGE_FLAG, YES, "dateTime", new Language("code", "text"));
+            .activateFlag(INTERPRETER_LANGUAGE_FLAG, YES, "dateTime", new Language("code2", "text"));
         strategicCaseFlag = strategicCaseFlagService.getStrategicCaseFlag();
 
         assertTrue(activated);
@@ -116,8 +118,8 @@ class StrategicCaseFlagServiceTest {
             .findAny().orElse(null);
         assertTrue(activeCaseFlagValue != null && "Active".equals(activeCaseFlagValue.getStatus()));
         assertTrue(inactiveCaseFlagValue != null && INACTIVE_STATUS.equals(inactiveCaseFlagValue.getStatus()));
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " text", activeCaseFlagValue.getName());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getName() + " abc", inactiveCaseFlagValue.getName());
+        assertEquals("code2", activeCaseFlagValue.getSubTypeKey());
+        assertEquals("code1", inactiveCaseFlagValue.getSubTypeKey());
     }
 
     @Test
@@ -135,7 +137,9 @@ class StrategicCaseFlagServiceTest {
         caseFlagDetail = new CaseFlagDetail("id", CaseFlagValue
             .builder()
             .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
-            .name("Language Interpreter text")
+            .name("Language Interpreter")
+            .subTypeKey("code")
+            .subTypeValue("text")
             .status("Active")
             .build());
         strategicCaseFlagService = new StrategicCaseFlagService(
