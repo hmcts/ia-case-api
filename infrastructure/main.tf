@@ -34,6 +34,30 @@ module "ia_case_api_database_11" {
   postgresql_version = "11"
   common_tags        =  merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
   subscription       = "${var.subscription}"
+  backup_retention_days = "${var.database_backup_retention_days}"
+}
+
+module "ia_case_api_database_15" {
+  providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
+
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env    = var.env
+
+  product       = var.product
+  component     = var.component
+  business_area = "cft"
+
+  common_tags = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
+  name        = "rpe-${var.product}-v15"
+  pgsql_databases = [
+    {
+      name : var.postgresql_database_name
+    }
+  ]
+
+  pgsql_version = "15"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-11" {
