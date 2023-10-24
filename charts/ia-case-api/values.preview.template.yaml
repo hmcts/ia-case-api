@@ -1064,7 +1064,7 @@ wa:
   camunda-bpm:
     java:
       environment:
-        POSTGRES_NAME: "pr-${CHANGE_ID}-wa_workflow_api"
+        POSTGRES_NAME: "pr-${CHANGE_ID}-camunda"
         POSTGRES_HOST: ia-preview.postgres.database.azure.com
         POSTGRES_USERNAME: hmcts
         POSTGRES_PASSWORD: hmcts
@@ -1081,6 +1081,7 @@ wa:
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         ALLOWED_JURISDICTIONS: ia
         ALLOWED_CASE_TYPES: asylum
+        POSTGRES_USERNAME: hmcts
         POSTGRES_PASSWORD: hmcts
 
   wa-case-event-handler:
