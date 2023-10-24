@@ -1,0 +1,35 @@
+{
+  "description": "RIA-7771 Record adjournment details confirmation",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 77713,
+      "eventId": "recordAdjournmentDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "relistCaseImmediately": "Yes",
+          "hearingAdjournmentWhen": "beforeHearingDate"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have recorded the adjournment details",
+      "body": "#### Do this next\n\nThe hearing will be adjourned using the details recorded.\n\nThe adjournment details are available on the [Hearing requirements tab](/cases/case-details/77713#Hearing%20and%20appointment)."
+    },
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "relistCaseImmediately": "Yes",
+        "hearingAdjournmentWhen": "beforeHearingDate",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
