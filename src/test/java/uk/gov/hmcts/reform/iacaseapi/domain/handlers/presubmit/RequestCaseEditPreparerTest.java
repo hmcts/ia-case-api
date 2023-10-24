@@ -9,7 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +25,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.util.Optional;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -47,8 +50,7 @@ class RequestCaseEditPreparerTest {
     }
 
     @Test
-    void should_prepare_send_direction_parties_field() {
-
+    void should_prepare_send_direction_parties_field_legal_rep() {
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -57,6 +59,25 @@ class RequestCaseEditPreparerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestCaseEditPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+    }
+
+    @Test
+    void should_prepare_send_direction_parties_field_appellant() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        final Parties expectedParties = Parties.APPELLANT;
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestCaseEditPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());

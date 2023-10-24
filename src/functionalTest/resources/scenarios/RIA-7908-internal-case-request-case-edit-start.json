@@ -1,5 +1,5 @@
 {
-  "description": "RIA-611 Request case edit - prefill case details - legalRepresentative",
+  "description": "RIA-7908 Request case edit - prefill case details - appellant",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -9,6 +9,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isAdmin": "Yes",
+          "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "No",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
           "sendDirectionDateDue": null
@@ -22,8 +25,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "isAdmin": "Yes",
         "sendDirectionExplanation": null,
-        "sendDirectionParties": "legalRepresentative",
+        "sendDirectionParties": "appellant",
         "sendDirectionDateDue": null
       }
     }
