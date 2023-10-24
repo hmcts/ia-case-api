@@ -1064,11 +1064,11 @@ wa:
   camunda-bpm:
     java:
       environment:
-        POSTGRES_NAME: "pr-${CHANGE_ID}-camunda"
-        POSTGRES_HOST: ia-preview.postgres.database.azure.com
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
-        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+        CAMUNDA_DB_HOST: ia-preview.postgres.database.azure.com
+        CAMUNDA_DB_USER_NAME: hmcts
+        CAMUNDA_DB_PASSWORD: hmcts
+        CAMUNDA_DB_NAME: "pr-${CHANGE_ID}-camunda"
+
 
   wa-task-management-api:
     java:
