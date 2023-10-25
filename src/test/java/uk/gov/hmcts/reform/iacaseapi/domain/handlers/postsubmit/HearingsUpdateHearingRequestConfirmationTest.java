@@ -24,6 +24,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class HearingsUpdateHearingRequestConfirmationTest {
+    public static final String MANUAL_HEARING_UPDATE_REQUIRED_TEXT =
+        "The hearing could not be automatically updated. You must manually update the hearing in the "
+            + "[Hearings tab](/cases/case-details/0/hearings)\n\n"
+            + "If required, parties will be informed of the changes to the hearing.";
+
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -32,6 +37,7 @@ public class HearingsUpdateHearingRequestConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
     HearingsUpdateHearingRequestConfirmation hearingsUpdateHearingRequestConfirmation;
+    private String confirmationBody;
 
     @BeforeEach
     public void setUp() {
@@ -59,10 +65,6 @@ public class HearingsUpdateHearingRequestConfirmationTest {
 
     @Test
     public void should_set_confirmation_body_when_manual_hearing_update_required() {
-        String confirmationBody = "The hearing could not be automatically updated. You must manually update the hearing in the "
-            + "[Hearings tab](/cases/case-details/0/hearings)\n\n"
-            + "If required, parties will be informed of the changes to the hearing.";
-
         when(asylumCase.read(MANUAL_UPDATE_HEARING_REQUIRED)).thenReturn(Optional.of(YES));
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
 
@@ -70,7 +72,7 @@ public class HearingsUpdateHearingRequestConfirmationTest {
             hearingsUpdateHearingRequestConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(confirmationBody, callbackResponse.getConfirmationBody().get());
+        assertEquals(MANUAL_HEARING_UPDATE_REQUIRED_TEXT, callbackResponse.getConfirmationBody().get());
     }
 }
 
