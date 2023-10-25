@@ -19,9 +19,11 @@
         <cve>CVE-2023-20883</cve>
     </suppress>
     <suppress until="2024-01-01">
-    <cve>CVE-2023-42794</cve>
-    <cve>CVE-2023-42795</cve>
-    <cve>CVE-2023-45648</cve>
+        <cve>CVE-2023-42794</cve>
+        <cve>CVE-2023-42795</cve>
+        <cve>CVE-2023-45648</cve>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-44487</cve>
     </suppress>
     <suppress until="2023-06-18">
         <notes>Temporarily suppress vulnerability</notes>
