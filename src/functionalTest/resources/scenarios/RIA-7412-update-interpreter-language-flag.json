@@ -144,7 +144,9 @@
             {
               "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
-                "name": "Language Interpreter igbo",
+                "name": "Language Interpreter",
+                "subTypeKey": "igbo",
+                "subTypeValue": "igbo",
                 "status": "Active",
                 "flagCode": "PF0015",
                 "hearingRelevant": "Yes"

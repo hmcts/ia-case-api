@@ -73,7 +73,7 @@ public class StrategicCaseFlagService {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
             .flagCode(caseFlagType.getFlagCode())
-            .name(buildFlagName(caseFlagType, null))
+            .name(caseFlagType.getName())
             .status(ACTIVE_STATUS)
             .hearingRelevant(hearingRelevant)
             .dateTimeCreated(dateTimeCreated)
@@ -88,8 +88,7 @@ public class StrategicCaseFlagService {
     public boolean activateFlag(
         StrategicCaseFlagType caseFlagType, YesOrNo hearingRelevant, String dateTimeCreated, Language language) {
 
-        String languageFlagName = buildFlagName(caseFlagType, language.getLanguageText());
-        if (hasActiveLanguageFlag(caseFlagType, languageFlagName)) {
+        if (hasActiveLanguageFlag(caseFlagType, language)) {
             return false;
         }
 
@@ -97,7 +96,7 @@ public class StrategicCaseFlagService {
 
         CaseFlagValue caseFlagValue = CaseFlagValue.builder()
             .flagCode(caseFlagType.getFlagCode())
-            .name(languageFlagName)
+            .name(caseFlagType.getName())
             .status(ACTIVE_STATUS)
             .subTypeKey(language.getLanguageCode())
             .subTypeValue(language.getLanguageText())
@@ -120,6 +119,8 @@ public class StrategicCaseFlagService {
             CaseFlagValue newFlagValue = CaseFlagValue.builder()
                 .flagCode(existingActiveFlagDetail.getValue().getFlagCode())
                 .name(existingActiveFlagDetail.getValue().getName())
+                .subTypeKey(existingActiveFlagDetail.getValue().getSubTypeKey())
+                .subTypeValue(existingActiveFlagDetail.getValue().getSubTypeValue())
                 .status(INACTIVE_STATUS)
                 .hearingRelevant(existingActiveFlagDetail.getValue().getHearingRelevant())
                 .dateTimeModified(dateTimeModified)
@@ -156,20 +157,15 @@ public class StrategicCaseFlagService {
         return activeDetails.containsKey(caseFlagType.getFlagCode());
     }
 
-    private boolean hasActiveLanguageFlag(StrategicCaseFlagType caseFlagType, String languageFlagName) {
+    private boolean hasActiveLanguageFlag(StrategicCaseFlagType caseFlagType, Language language) {
 
         if (isEmpty() || activeDetails.isEmpty() || !activeDetails.containsKey(caseFlagType.getFlagCode())) {
             return false;
         }
 
-        return Objects.equals(activeDetails.get(caseFlagType.getFlagCode()).getValue().getName(), languageFlagName);
-    }
-
-    private String buildFlagName(StrategicCaseFlagType caseFlagType, String caseFlagNamePostfix) {
-
-        return caseFlagNamePostfix == null || caseFlagNamePostfix.isBlank()
-            ? caseFlagType.getName()
-            : caseFlagType.getName().concat(" " + caseFlagNamePostfix);
+        CaseFlagDetail existingFlagDetails = activeDetails.get(caseFlagType.getFlagCode());
+        return Objects.equals(existingFlagDetails.getValue().getSubTypeKey(), language.getLanguageCode())
+            || Objects.equals(existingFlagDetails.getValue().getSubTypeValue(), language.getLanguageText());
     }
 
 }
