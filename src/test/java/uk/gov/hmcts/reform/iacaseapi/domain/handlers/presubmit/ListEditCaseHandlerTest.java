@@ -108,7 +108,7 @@ class ListEditCaseHandlerTest {
     }
 
     @Test
-    void should_set_flags_and_add_direction_if_ada_legal_rep_jounrey() {
+    void should_set_flags_and_add_direction_if_ada() {
         Direction expectedDirection = new Direction(directionExplanation,
             Parties.LEGAL_REPRESENTATIVE,
             "2022-12-16",
@@ -134,45 +134,6 @@ class ListEditCaseHandlerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DIRECTIONS, expectedListOfDirections);
-    }
-
-    @Test
-    void should_set_flags_and_add_direction_if_ada_internal_case() {
-        Direction expectedDirection = new Direction(directionExplanation,
-                Parties.APPELLANT,
-                "2022-12-16",
-                LocalDate.now().toString(),
-                DirectionTag.ADA_LIST_CASE,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                "1",
-                Event.LIST_CASE.toString());
-
-        List<IdValue<Direction>> expectedListOfDirections = List.of(new IdValue<>("1", expectedDirection));
-
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2022-12-01"));
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
-        when(directionAppender.append(asylumCase,
-                Collections.emptyList(),
-                directionExplanation,
-                Parties.APPELLANT,
-                "2022-12-16",
-                DirectionTag.ADA_LIST_CASE,
-                Event.LIST_CASE.toString())).thenReturn(expectedListOfDirections);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
