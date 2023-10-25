@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -39,7 +42,7 @@ public class HearingsUpdateHearingRequestConfirmationTest {
     }
 
     @Test
-    public void should_delegate_to_hearings_api_start_event_when_update_hearings_is_null() {
+    public void should_set_confirmation_body_when_manual_hearing_update_not_required() {
         String confirmationBody = """
                 #### What happens next
                 The hearing will be updated as directed.
@@ -49,6 +52,22 @@ public class HearingsUpdateHearingRequestConfirmationTest {
 
         PostSubmitCallbackResponse callbackResponse =
                 hearingsUpdateHearingRequestConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(confirmationBody, callbackResponse.getConfirmationBody().get());
+    }
+
+    @Test
+    public void should_set_confirmation_body_when_manual_hearing_update_required() {
+        String confirmationBody = "The hearing could not be automatically updated. You must manually update the hearing in the "
+            + "[Hearings tab](/cases/case-details/0/hearings)\n\n"
+            + "If required, parties will be informed of the changes to the hearing.";
+
+        when(asylumCase.read(MANUAL_UPDATE_HEARING_REQUIRED)).thenReturn(Optional.of(YES));
+        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
+
+        PostSubmitCallbackResponse callbackResponse =
+            hearingsUpdateHearingRequestConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertEquals(confirmationBody, callbackResponse.getConfirmationBody().get());

@@ -9,10 +9,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
 
 @Component
 @Slf4j
 public class HearingsUpdateHearingRequestConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    public static final String HEARING_NEED_MANUAL_UPDATE =
+        "The hearing could not be automatically updated. You must manually update the hearing in the "
+            + "[Hearings tab](/cases/case-details/%s/hearings)\n\n"
+            + "If required, parties will be informed of the changes to the hearing.";
 
     @Override
     public boolean canHandle(Callback<AsylumCase> callback) {
@@ -28,14 +34,24 @@ public class HearingsUpdateHearingRequestConfirmation implements PostSubmitCallb
 
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
-        postSubmitResponse.setConfirmationHeader("# You've updated the hearing");
-        postSubmitResponse.setConfirmationBody(
+
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (asylumCase.read(MANUAL_UPDATE_HEARING_REQUIRED).isPresent()) {
+            postSubmitResponse.setConfirmationBody(
+                String.format(HEARING_NEED_MANUAL_UPDATE, callback.getCaseDetails().getId())
+            );
+        } else {
+            postSubmitResponse.setConfirmationHeader("# You've updated the hearing");
+            postSubmitResponse.setConfirmationBody(
                 """
                         #### What happens next
                         The hearing will be updated as directed.
                         
                         If required, parties will be informed of the changes to the hearing."""
-        );
+            );
+        }
+
         return postSubmitResponse;
     }
 }

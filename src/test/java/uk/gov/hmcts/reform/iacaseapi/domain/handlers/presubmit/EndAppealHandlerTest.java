@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_WITHDRAW_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.END_APPEAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATED_DECISION_MAKER;
@@ -140,6 +141,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
+        verify(asylumCase).clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
     }
 
     @Test
@@ -264,6 +266,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
+        verify(asylumCase).clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }
