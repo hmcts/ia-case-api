@@ -2,8 +2,8 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    POSTGRES_HOST: ${SERVICE_NAME}-postgresql
-    POSTGRES_NAME: ia-case-api
+    POSTGRES_HOST: ia-preview.postgres.database.azure.com
+    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
@@ -45,39 +45,12 @@ java:
         - launch-darkly-sdk-key
         - app-insights-connection-string
         - ia-config-validator-secret
-  postgresql:
-    enabled: true
-    extraEnvVars:
-      - name: POSTGRESQL_WAL_LEVEL
-        value: "logical"
-    image:
-      tag: '11.6.0'
-    primary:
-      persistence:
-        enabled: false
-      resources:
-        requests:
-          cpu: 25m
-      initdb:
-        user: postgres
-        scripts:
-          init.sql: |
-            ALTER ROLE hmcts WITH SUPERUSER;
-            CREATE DATABASE "ia-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "wa-case-event-handler" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "wa_workflow_api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "cft_task_db_replica" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-    auth:
-      database: cft_task_db
-      username: hmcts
-      password: hmcts
+
+global:
+  postgresHostname: "ia-preview.postgres.database.azure.com"
+  postgresSecret: postgres
+  databaseNamePrefix: "pr-${CHANGE_ID}-"
+
 
 ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
@@ -421,11 +394,6 @@ ia-timed-event-service:
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
-      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-      POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
-      POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
-      POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
-      POSTGRES_CONNECTION_OPTIONS: ""
     keyVaults:
       ia:
         resourceGroup: ia
@@ -439,8 +407,6 @@ ia-timed-event-service:
           - s2s-microservice
           - app-insights-connection-string
           - ia-config-validator-secret
-    postgresql:
-      enabled: true
 
 ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
@@ -701,12 +667,13 @@ ccd:
         enabled: false
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      enviroment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
       keyVaults: [ ]
       environment:
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+        USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
+        USER_PROFILE_DB_NAME: "pr-${CHANGE_ID}-user-profile"
+        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-data-store-api:
@@ -720,9 +687,8 @@ ccd:
         enabled: false
       disableKeyVaults: true
       environment:
-        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-        DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: hmcts
+        DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+        DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -755,6 +721,9 @@ ccd:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
         RUN_LD_ON_STARTUP: false
+        ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
+        ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role_assignment"
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
       keyVaults:
         am:
           secrets:
@@ -787,7 +756,8 @@ ccd:
       autoscaling:
         enabled: false
       environment:
-        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+        DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
@@ -798,9 +768,6 @@ ccd:
         USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
       keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
-  postgresql:
-    persistence:
-      enabled: false
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
@@ -844,9 +811,15 @@ ccd:
     extraVolumes: |
       - name: logstash-lib
         emptyDir: {}
+      - name: database-secret-volume
+        secret:
+          secretName: postgres
     extraVolumeMounts: |
       - name: logstash-lib
         mountPath: /usr/share/logstash/ccd
+      - name: database-secret-volume
+        mountPath: /etc/logstash/secrets
+        readOnly: true
     logstashConfig:
       logstash.yml: |
         http.host: 0.0.0.0
@@ -862,9 +835,9 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/data-store?stringtype=unspecified"
+            jdbc_connection_string => "jdbc:postgresql://ia-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode=require&stringtype=unspecified"
             jdbc_user => "hmcts"
-            jdbc_password => "hmcts"
+            jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
             jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
             jdbc_driver_class => "org.postgresql.Driver"
@@ -1010,10 +983,10 @@ em-stitching:
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
-      SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
+      SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_PASSWORD: hmcts
-      SPRING_DATASOURCE_NAME: emstitch
+      SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
@@ -1067,8 +1040,14 @@ aac-manage-case-assignment:
           - name: notify-mca-api-key-secret
             alias: NOTIFY_MCA_API_KEY
 
+
 wa:
   enabled: true
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: ia-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
   wa-initiation-batch:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
@@ -1081,42 +1060,24 @@ wa:
   wa-message-cron-service:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
+
+  camunda-bpm:
+    java:
+      environment:
+        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      keyVaults:
-        wa:
-          secrets:
-            - name: wa-system-username
-              alias: WA_SYSTEM_USERNAME
-            - name: wa-system-password
-              alias: WA_SYSTEM_PASSWORD
-            - name: wa-idam-client-secret
-              alias: WA_IDAM_CLIENT_SECRET
-            - name: s2s-secret-task-management-api
-              alias: S2S_SECRET_TASK_MANAGEMENT_API
-            - name: ld-secret
-              alias: LAUNCH_DARKLY_SDK_KEY
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-        POSTGRES_REPLICA_HOST: "{{ .Release.Name }}-postgresql"
-        POSTGRES_REPLICA_PORT: 5432
-        POSTGRES_NAME: "cft_task_db"
-        POSTGRES_REPLICA_NAME: "cft_task_db_replica"
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
         ALLOWED_JURISDICTIONS: ia
         ALLOWED_CASE_TYPES: asylum
-        REPLICATION_USERNAME: hmcts
-        REPLICATION_PASSWORD: hmcts
-        DB_READER_USERNAME: hmcts
-        POSTGRES_CONNECTION_OPTIONS: ""
-        SPRING_PROFILES_ACTIVE: "preview,replica"
+
   wa-case-event-handler:
     java:
       ingressHost: wa-case-event-handler-${SERVICE_FQDN}
@@ -1125,17 +1086,6 @@ wa:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
           secretRef: ia-sb-preview
           key: connectionString
-      keyVaults:
-        wa:
-          secrets:
-            - name: s2s-secret-case-event-handler
-              alias: S2S_SECRET_CASE_EVENT_HANDLER
-            - name: ld-secret
-              alias: LAUNCH_DARKLY_SDK_KEY
-            - name: wa-case-event-handler-POSTGRES-DATABASE
-              alias: POSTGRES_NAME
-            - name: wa-idam-client-secret
-              alias: WA_IDAM_CLIENT_SECRET
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -1145,13 +1095,7 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        #AZURE_SERVICE_BUS_TOPIC_NAME: servicebus-topic-{{ .Release.Name }}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-        POSTGRES_NAME: wa-case-event-handler
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
-        POSTGRES_CONNECTION_OPTIONS: ""
   wa-task-monitor:
     java:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
@@ -1160,6 +1104,7 @@ wa:
   wa:
     postgresql:
       enabled: false
+
 
 servicebus:
   enabled: true
@@ -1189,11 +1134,11 @@ ccd-message-publisher:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
     environment:
-      DATA_STORE_DB_HOST: "{{ .Release.Name }}-postgresql"
-      DATA_STORE_DB_NAME: data-store
+      DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+      DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
       DATA_STORE_DB_USERNAME: hmcts
       DATA_STORE_DB_PASSWORD: hmcts
-      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
+      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
@@ -1238,10 +1183,32 @@ am-org-role-mapping-service:
       JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
       AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
-      ORG_ROLE_MAPPING_DB_HOST: "{{ .Release.Name }}-postgresql"
-      ORG_ROLE_MAPPING_DB_NAME: org_role_mapping
+      ORG_ROLE_MAPPING_DB_HOST: ia-preview.postgres.database.azure.com
+      ORG_ROLE_MAPPING_DB_NAME: "pr-${CHANGE_ID}-org_role_mapping"
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
       ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
-      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
+            
+
+
+postgresql:
+  enabled: true
+  flexibleserver: ia-preview
+  setup:
+    databases:
+      - name: "pr-${CHANGE_ID}-data-store"
+      - name: "pr-${CHANGE_ID}-definition-store"
+      - name: "pr-${CHANGE_ID}-user-profile"
+      - name: "pr-${CHANGE_ID}-role_assignment"
+      - name: "pr-${CHANGE_ID}-ia-case-api"
+      - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
+      - name: "pr-${CHANGE_ID}-wa_workflow_api"
+      - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
+      - name: "pr-${CHANGE_ID}-cft_task_db_replica"
+      - name: "pr-${CHANGE_ID}-org_role_mapping"
+
+
