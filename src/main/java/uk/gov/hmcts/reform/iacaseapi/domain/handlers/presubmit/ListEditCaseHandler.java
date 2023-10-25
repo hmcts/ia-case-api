@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -166,7 +168,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
                 + "\n"
                 + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.",
-                Parties.LEGAL_REPRESENTATIVE,
+                resolvePartiesForListCase(asylumCase),
                 directionDueDate.toString(),
                 DirectionTag.ADA_LIST_CASE,
                 Event.LIST_CASE.toString()
@@ -175,5 +177,12 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         asylumCase.write(DIRECTIONS, allDirections);
 
         return asylumCase;
+    }
+
+    private Parties resolvePartiesForListCase(AsylumCase asylumCase) {
+        if (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase)) {
+            return Parties.APPELLANT;
+        }
+        return Parties.LEGAL_REPRESENTATIVE;
     }
 }
