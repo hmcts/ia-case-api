@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TypesOfAppliedCosts {
-    UNREASONABLE_COSTS("unreasonableCosts"),
-    WASTED_COSTS("wastedCosts");
+    UNREASONABLE_COSTS("Unreasonable costs"),
+    WASTED_COSTS("Wasted costs");
 
     @JsonValue
     private final String value;

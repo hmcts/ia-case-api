@@ -38,8 +38,8 @@ class ApplyForCostsAppenderTest {
     @Mock
     private IdValue<ApplyForCosts> applyForCostsById2;
 
-    private TypesOfAppliedCosts typesOfAppliedCosts = TypesOfAppliedCosts.UNREASONABLE_COSTS;
-    private TypesOfAppliedCosts typesOfAppliedCostsDesc = TypesOfAppliedCosts.WASTED_COSTS;
+    private String typesOfAppliedCosts = TypesOfAppliedCosts.UNREASONABLE_COSTS.toString();
+    private String typesOfAppliedCostsDesc = TypesOfAppliedCosts.WASTED_COSTS.toString();
     private String argumentsAndEvidenceDetails = "Test details";
 
     private List<IdValue<Document>> argumentsAndEvidenceDocuments =
@@ -96,7 +96,7 @@ class ApplyForCostsAppenderTest {
         assertEquals("2", allAppliesForCosts.get(1).getId());
         assertEquals("1", allAppliesForCosts.get(2).getId());
 
-        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getTypesOfAppliedCosts());
+        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getAppliedCostsType());
         assertEquals(argumentsAndEvidenceDetails, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDetails());
         assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDocuments());
         assertEquals(scheduleOfCostsDocuments, allAppliesForCosts.get(0).getValue().getScheduleOfCostsDocuments());
@@ -132,7 +132,7 @@ class ApplyForCostsAppenderTest {
         assertNotNull(allAppliesForCosts);
         assertEquals(1, allAppliesForCosts.size());
 
-        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getTypesOfAppliedCosts());
+        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getAppliedCostsType());
         assertEquals(argumentsAndEvidenceDetails, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDetails());
         assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDocuments());
         assertEquals(scheduleOfCostsDocuments, allAppliesForCosts.get(0).getValue().getScheduleOfCostsDocuments());

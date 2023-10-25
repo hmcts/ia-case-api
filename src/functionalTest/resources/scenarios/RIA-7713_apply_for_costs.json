@@ -17,12 +17,27 @@
               "revocationHumanitarianProtection"
             ]
           },
-          "typesOfAppliedCosts": "unreasonableCosts",
           "applyForCostsDecision": "Pending",
           "respondentToCostsOrder": "Home office",
           "applyForCostsHearingType": "No",
           "scheduleOfCostsDocuments": [],
           "argumentsAndEvidenceDetails": "",
+          "appliedCostsTypes": {
+            "value": {
+              "code": "UNREASONABLE_COSTS",
+              "label": "Unreasonable costs"
+            },
+            "list_items": [
+              {
+                "code": "UNREASONABLE_COSTS",
+                "label": "Unreasonable costs"
+              },
+              {
+                "code": "WASTED_COSTS",
+                "label": "Wasted costs"
+              }
+            ]
+          },
           "argumentsAndEvidenceDocuments": [
             {
               "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
@@ -34,9 +49,9 @@
             }
           ],
           "applyForCostsHearingTypeExplanation": "",
-          "appliesForCosts": []
-        },
+          "appliesForCosts": [],
         "legalRepName": "Fake Org Ltd"
+        }
       }
     }
   },
@@ -57,12 +72,12 @@
           {
             "id": "1",
             "value": {
-              "typesOfAppliedCosts": "unreasonableCosts",
+              "appliedCostsType": "Unreasonable costs",
               "applyForCostsDecision": "Pending",
               "respondentToCostsOrder": "Home office",
               "applyForCostsHearingType": "No",
               "scheduleOfCostsDocuments": [],
-              "applyForCostsCreationDate": "2023-10-23",
+              "applyForCostsCreationDate": "{$TODAY}",
               "applyForCostsApplicantType": "Legal representative",
               "argumentsAndEvidenceDetails": "",
               "argumentsAndEvidenceDocuments": [
@@ -78,9 +93,9 @@
               "applyForCostsHearingTypeExplanation": ""
             }
           }
-        ]
-      },
+        ],
       "legalRepName": "Fake Org Ltd"
+      }
     }
   }
 }

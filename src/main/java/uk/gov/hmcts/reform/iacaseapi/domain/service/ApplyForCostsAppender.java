@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplyForCosts;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -31,7 +30,7 @@ public class ApplyForCostsAppender {
 
     public List<IdValue<ApplyForCosts>> append(
             List<IdValue<ApplyForCosts>> existingAppliesForCosts,
-            TypesOfAppliedCosts typesOfAppliedCosts,
+            String appliedCostsType,
             String argumentsAndEvidenceDetails,
             List<IdValue<Document>> argumentsAndEvidenceDocuments,
             List<IdValue<Document>> scheduleOfCostsDocuments,
@@ -42,7 +41,7 @@ public class ApplyForCostsAppender {
     ) {
 
         requireNonNull(existingAppliesForCosts);
-        requireNonNull(typesOfAppliedCosts);
+        requireNonNull(appliedCostsType);
         requireNonNull(argumentsAndEvidenceDocuments);
         requireNonNull(scheduleOfCostsDocuments);
         requireNonNull(applyForCostsHearingType);
@@ -55,7 +54,7 @@ public class ApplyForCostsAppender {
         String applicant = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
 
         final ApplyForCosts newApplyForCosts = new ApplyForCosts(
-                typesOfAppliedCosts,
+                appliedCostsType,
                 argumentsAndEvidenceDetails,
                 argumentsAndEvidenceDocuments,
                 scheduleOfCostsDocuments,

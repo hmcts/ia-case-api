@@ -71,8 +71,9 @@ class ApplyForCostsHandlerTest {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        DynamicList appliedCostsTypes = new DynamicList("UNREASONABLE_COSTS");
 
-        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+        when(asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(appliedCostsTypes));
         when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
@@ -81,7 +82,7 @@ class ApplyForCostsHandlerTest {
 
         when(applyForCostsAppender.append(
                 existingAppliesForCosts,
-                TypesOfAppliedCosts.UNREASONABLE_COSTS,
+                TypesOfAppliedCosts.UNREASONABLE_COSTS.toString(),
                 "test",
                 argumentsAndEvidenceDocuments,
                 Collections.emptyList(),
@@ -99,7 +100,7 @@ class ApplyForCostsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1))
-                .read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class);
+                .read(APPLIED_COSTS_TYPES, DynamicList.class);
         verify(asylumCase, times(1))
                 .read(ARGUMENTS_AND_EVIDENCE_DETAILS, String.class);
         verify(asylumCase, times(1))
@@ -119,7 +120,7 @@ class ApplyForCostsHandlerTest {
         verify(asylumCase, times(1))
                 .write(IS_APPLIED_FOR_COSTS, YesOrNo.YES);
         verify(asylumCase, times(1))
-                .clear(TYPES_OF_APPLIED_COSTS);
+                .clear(APPLIED_COSTS_TYPES);
         verify(asylumCase, times(1))
                 .clear(ARGUMENTS_AND_EVIDENCE_DETAILS);
         verify(asylumCase, times(1))
@@ -149,7 +150,8 @@ class ApplyForCostsHandlerTest {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+
+        when(asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(new DynamicList("UNREASONABLE_COSTS")));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
         when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of("test"));
@@ -165,7 +167,7 @@ class ApplyForCostsHandlerTest {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+        when(asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(new DynamicList("UNREASONABLE_COSTS")));
         when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
 
         Assertions
@@ -179,7 +181,7 @@ class ApplyForCostsHandlerTest {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+        when(asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(new DynamicList("UNREASONABLE_COSTS")));
         when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -194,7 +196,7 @@ class ApplyForCostsHandlerTest {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)).thenReturn(Optional.of(TypesOfAppliedCosts.UNREASONABLE_COSTS));
+        when(asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(new DynamicList("UNREASONABLE_COSTS")));
         when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));

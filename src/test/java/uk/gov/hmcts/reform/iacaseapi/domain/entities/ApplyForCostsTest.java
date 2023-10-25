@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 class ApplyForCostsTest {
-    private TypesOfAppliedCosts typesOfAppliedCosts = TypesOfAppliedCosts.UNREASONABLE_COSTS;
+    private String typesOfAppliedCosts = TypesOfAppliedCosts.UNREASONABLE_COSTS.toString();
     private String argumentsAndEvidenceDetails = "Test details";
     private List<IdValue<Document>> argumentsAndEvidenceDocuments =
             List.of(new IdValue<>("1",
@@ -41,7 +41,7 @@ class ApplyForCostsTest {
 
     @Test
     void should_hold_onto_values() {
-        assertEquals(typesOfAppliedCosts, applyForCosts.getTypesOfAppliedCosts());
+        assertEquals(typesOfAppliedCosts, applyForCosts.getAppliedCostsType());
         assertEquals(argumentsAndEvidenceDetails, applyForCosts.getArgumentsAndEvidenceDetails());
         assertEquals(argumentsAndEvidenceDocuments, applyForCosts.getArgumentsAndEvidenceDocuments());
         assertEquals(scheduleOfCostsDocuments, applyForCosts.getScheduleOfCostsDocuments());

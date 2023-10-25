@@ -1784,8 +1784,8 @@ public enum AsylumCaseFieldDefinition {
     SOURCE_OF_APPEAL(
             "sourceOfAppeal", new TypeReference<String>(){}),
 
-    TYPES_OF_APPLIED_COSTS(
-        "typesOfAppliedCosts", new TypeReference<TypesOfAppliedCosts>(){}),
+    APPLIED_COSTS_TYPES(
+            "appliedCostsTypes", new TypeReference<DynamicList>(){}),
 
     ARGUMENTS_AND_EVIDENCE_DETAILS(
         "argumentsAndEvidenceDetails", new TypeReference<String>(){}),
@@ -1793,7 +1793,6 @@ public enum AsylumCaseFieldDefinition {
     ARGUMENTS_AND_EVIDENCE_DOCUMENTS(
         "argumentsAndEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
 
-    //add here other fields from ApplyForCosts.class
     SCHEDULE_OF_COSTS_DOCUMENTS(
         "scheduleOfCostsDocuments", new TypeReference<List<IdValue<Document>>>(){}),
 

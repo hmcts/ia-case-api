@@ -10,7 +10,7 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.S
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplyForCosts;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -46,8 +46,10 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        TypesOfAppliedCosts typeOfAppliedCosts = asylumCase.read(TYPES_OF_APPLIED_COSTS, TypesOfAppliedCosts.class)
-                .orElseThrow(() -> new IllegalStateException("typesOfAppliedCosts is not present"));
+        String typeOfAppliedCosts = asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)
+                .orElseThrow(() -> new IllegalStateException("typesOfAppliedCosts is not present"))
+                .getValue()
+                .getLabel();
 
         Optional<String> argumentsAndEvidenceDetails = asylumCase.read(ARGUMENTS_AND_EVIDENCE_DETAILS, String.class);
 
@@ -92,7 +94,7 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         //Flag if the event has been completed
         asylumCase.write(IS_APPLIED_FOR_COSTS, YesOrNo.YES);
 
-        asylumCase.clear(TYPES_OF_APPLIED_COSTS);
+        asylumCase.clear(APPLIED_COSTS_TYPES);
         asylumCase.clear(ARGUMENTS_AND_EVIDENCE_DETAILS);
         asylumCase.clear(ARGUMENTS_AND_EVIDENCE_DOCUMENTS);
         asylumCase.clear(SCHEDULE_OF_COSTS_DOCUMENTS);

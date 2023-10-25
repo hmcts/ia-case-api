@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @EqualsAndHashCode
 @ToString
 public class ApplyForCosts {
-    private TypesOfAppliedCosts typesOfAppliedCosts;
+    private String appliedCostsType;
     private String argumentsAndEvidenceDetails;
     private List<IdValue<Document>> argumentsAndEvidenceDocuments;
     private List<IdValue<Document>> scheduleOfCostsDocuments;
@@ -28,7 +28,7 @@ public class ApplyForCosts {
     }
 
     public ApplyForCosts(
-            TypesOfAppliedCosts typesOfAppliedCosts,
+            String appliedCostsType,
             String argumentsAndEvidenceDetails,
             List<IdValue<Document>> argumentsAndEvidenceDocuments,
             List<IdValue<Document>> scheduleOfCostsDocuments,
@@ -39,7 +39,7 @@ public class ApplyForCosts {
             String applyForCostsCreationDate,
             String respondentToCostsOrder
     ) {
-        requireNonNull(typesOfAppliedCosts);
+        requireNonNull(appliedCostsType);
         requireNonNull(argumentsAndEvidenceDocuments);
         requireNonNull(applyForCostsHearingType);
         requireNonNull(applyForCostsDecision);
@@ -50,7 +50,7 @@ public class ApplyForCosts {
         }
         requireNonNull(respondentToCostsOrder);
 
-        this.typesOfAppliedCosts = typesOfAppliedCosts;
+        this.appliedCostsType = appliedCostsType;
         this.argumentsAndEvidenceDetails = argumentsAndEvidenceDetails;
         this.argumentsAndEvidenceDocuments = argumentsAndEvidenceDocuments;
         this.scheduleOfCostsDocuments = scheduleOfCostsDocuments;
@@ -63,9 +63,9 @@ public class ApplyForCosts {
     }
 
 
-    public TypesOfAppliedCosts getTypesOfAppliedCosts() {
-        requireNonNull(typesOfAppliedCosts);
-        return typesOfAppliedCosts;
+    public String getAppliedCostsType() {
+        requireNonNull(appliedCostsType);
+        return appliedCostsType;
     }
 
     public String getArgumentsAndEvidenceDetails() {
