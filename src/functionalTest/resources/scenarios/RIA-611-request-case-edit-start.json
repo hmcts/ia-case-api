@@ -1,5 +1,5 @@
 {
-  "description": "RIA-611 Request case edit - prefill case details - legalRepresentative",
+  "description": "RIA-611 Request case edit - prefill case details",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
