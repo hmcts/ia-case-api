@@ -401,6 +401,7 @@ security:
       - "updatePaymentStatus"
       - "endAppealAutomatically"
       - "listCase"
+      - "editCaseListing"
       - "handleHearingException"
       - "updateHMCResponse"
       - "recordAdjournmentDetails"
