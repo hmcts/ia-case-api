@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts.
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -27,9 +28,11 @@ public class ApplyForCostsMidEvent implements PreSubmitCallbackHandler<AsylumCas
     private static final String ROLE_HO_POU = "caseworker-ia-homeofficepou";
     private static final List<String> LEGAL_REP_OR_HO_ROLES = List.of(ROLE_LEGAL_REP, ROLE_HO_APC, ROLE_HO_LART, ROLE_HO_POU);
 
+    private final UserDetailsHelper userDetailsHelper;
     private final UserDetails userDetails;
 
-    public ApplyForCostsMidEvent(UserDetails userDetails) {
+    public ApplyForCostsMidEvent(UserDetailsHelper userDetailsHelper, UserDetails userDetails) {
+        this.userDetailsHelper = userDetailsHelper;
         this.userDetails = userDetails;
     }
 
@@ -49,7 +52,7 @@ public class ApplyForCostsMidEvent implements PreSubmitCallbackHandler<AsylumCas
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        boolean isLegalRepOrHomeOffice = userDetails.getRoles().stream().anyMatch(LEGAL_REP_OR_HO_ROLES::contains);
+        boolean isLegalRepOrHomeOffice = LEGAL_REP_OR_HO_ROLES.contains(userDetailsHelper.getLoggedInUserRole(userDetails).toString());
 
         final List<Value> values = new ArrayList<>();
         if (isLegalRepOrHomeOffice) {

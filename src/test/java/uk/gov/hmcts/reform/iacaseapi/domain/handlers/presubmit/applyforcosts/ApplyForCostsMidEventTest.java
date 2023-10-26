@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -35,6 +36,8 @@ class ApplyForCostsMidEventTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
     private UserDetails userDetails;
 
     @Captor
@@ -50,7 +53,7 @@ class ApplyForCostsMidEventTest {
     @BeforeEach
     public void setUp() {
         applyForCostsMidEvent =
-                new ApplyForCostsMidEvent(userDetails);
+                new ApplyForCostsMidEvent(userDetailsHelper, userDetails);
     }
 
     @Test
@@ -66,6 +69,7 @@ class ApplyForCostsMidEventTest {
         when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-legalrep-solicitor"));
         when(asylumCase.read(AsylumCaseFieldDefinition.APPLIED_COSTS_TYPES, DynamicList.class))
                 .thenReturn(Optional.of(typesOfAppliedCosts));
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.LEGAL_REPRESENTATIVE);
 
         applyForCostsMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 

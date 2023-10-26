@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,8 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.APPLY_FOR_COSTS;
+                && callback.getEvent() == Event.APPLY_FOR_COSTS
+                && isLegalRepJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override

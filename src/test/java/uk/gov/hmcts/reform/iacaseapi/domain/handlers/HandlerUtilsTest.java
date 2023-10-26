@@ -32,6 +32,13 @@ class HandlerUtilsTest {
     void given_journey_type_rep_returns_true() {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
         assertTrue(HandlerUtils.isRepJourney(asylumCase));
+        assertTrue(HandlerUtils.isLegalRepJourney(asylumCase));
+    }
+
+    @Test
+    void given_journey_type_legal_rep_returns_false() {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        assertFalse(HandlerUtils.isLegalRepJourney(asylumCase));
     }
 
     @Test
