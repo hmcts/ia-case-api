@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "journeyType": "rep",
           "appealType": "revocationOfProtection",
           "appealGroundsRevocation": {
             "values": [
