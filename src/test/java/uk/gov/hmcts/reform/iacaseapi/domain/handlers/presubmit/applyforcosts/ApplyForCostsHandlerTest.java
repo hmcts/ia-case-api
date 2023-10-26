@@ -64,7 +64,7 @@ class ApplyForCostsHandlerTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         applyForCostsHandler = new ApplyForCostsHandler(applyForCostsAppender);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of("test"));
     }
 
     @Test
@@ -230,7 +230,7 @@ class ApplyForCostsHandlerTest {
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
