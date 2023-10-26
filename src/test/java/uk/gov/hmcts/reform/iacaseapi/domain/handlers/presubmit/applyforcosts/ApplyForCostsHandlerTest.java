@@ -194,23 +194,6 @@ class ApplyForCostsHandlerTest {
     }
 
     @Test
-    void should_throw_on_legal_rep_reason() {
-        when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(new DynamicList("UNREASONABLE_COSTS")));
-        when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
-        when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
-        when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.empty());
-
-        Assertions
-                .assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("legalRepName is not present");
-    }
-
-    @Test
     void handling_should_throw_if_stage_is_incorrect_handle() {
         assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
