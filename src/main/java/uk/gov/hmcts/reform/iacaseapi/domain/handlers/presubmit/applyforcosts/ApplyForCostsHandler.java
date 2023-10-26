@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsAppender;
 
 @Component
 public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase> {
-    private ApplyForCostsAppender applyForCostsAppender;
+    private final ApplyForCostsAppender applyForCostsAppender;
 
     public ApplyForCostsHandler(ApplyForCostsAppender applyForCostsAppender) {
         this.applyForCostsAppender = applyForCostsAppender;
