@@ -11,7 +11,7 @@ dependencies:
     version: 5.0.0
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: ccd
-    version: ~8.0.28
+    version: 9.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
@@ -23,23 +23,23 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ia-case-payments-api
-    version: 0.0.15
+    version: ~0.0.15
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
-    version: 0.0.26
+    version: ~0.0.26
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-documents-api.enabled
   - name: ia-case-notifications-api
-    version: 0.0.37
+    version: ~0.0.37
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
   - name: ia-home-office-integration-api
-    version: 0.0.20
+    version: ~0.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
-    version: 0.0.43
+    version: ~0.0.43
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
   - name: ccd-case-document-am-api
@@ -59,7 +59,7 @@ dependencies:
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: aac-manage-case-assignment.enabled
   - name: wa
-    version: ~1.0.4
+    version: ~1.0.5
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
