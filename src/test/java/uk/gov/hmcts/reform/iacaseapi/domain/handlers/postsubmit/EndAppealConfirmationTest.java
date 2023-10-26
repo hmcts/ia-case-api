@@ -62,7 +62,7 @@ class EndAppealConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of(""));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REQUIRE_MANUAL_HEARINGS_CANCELLATION))
+        when(asylumCase.read(AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED))
             .thenReturn(Optional.of("Yes"));
 
         PostSubmitCallbackResponse callbackResponse =

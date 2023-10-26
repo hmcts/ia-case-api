@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUIRE_MANUAL_HEARINGS_CANCELLATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -66,7 +66,7 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
                                   AsylumCase asylumCase) {
         postSubmitResponse.setConfirmationHeader("# You have ended the appeal");
 
-        if (asylumCase.read(REQUIRE_MANUAL_HEARINGS_CANCELLATION).isPresent()) {
+        if (asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED).isPresent()) {
             postSubmitResponse.setConfirmationBody(
                 String.format(HEARING_CANCEL_FAILED, callback.getCaseDetails().getId())
             );

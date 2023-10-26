@@ -1997,8 +1997,13 @@ public enum AsylumCaseFieldDefinition {
     IS_INTEGRATED(
             "isIntegrated", new TypeReference<YesOrNo>(){}),
 
-    REQUIRE_MANUAL_HEARINGS_CANCELLATION(
-        "requireManualHearingsCancellation", new TypeReference<String>(){});
+    MANUAL_CANCEL_HEARINGS_REQUIRED(
+
+        "manualCancelHearingsRequired", new TypeReference<String>(){}),
+
+    MANUAL_UPDATE_HEARING_REQUIRED(
+
+        "manualUpdateHearingRequired", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
