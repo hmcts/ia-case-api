@@ -67,10 +67,9 @@ public class HandlerUtils {
         return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 
-    //Updated method to check if it is a rep journey
+    //Updated method to check if it is a LegalRep journey
     public static boolean isLegalRepJourney(AsylumCase asylumCase) {
-        return asylumCase.read(JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.REP)
-                .orElse(false);
+        String legalRepName = asylumCase.read(LEGAL_REP_NAME, String.class).orElse("");
+        return !legalRepName.isEmpty();
     }
 }
