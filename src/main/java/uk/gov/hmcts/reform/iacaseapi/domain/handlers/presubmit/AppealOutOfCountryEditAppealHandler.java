@@ -123,8 +123,10 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 clearAdaSuitabilityFields(asylumCase);
             }
 
-        } else if (!sourceOfAppealEjp(asylumCase)) {
-            throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
+        } else {
+            if (!sourceOfAppealEjp(asylumCase)) {
+                throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
