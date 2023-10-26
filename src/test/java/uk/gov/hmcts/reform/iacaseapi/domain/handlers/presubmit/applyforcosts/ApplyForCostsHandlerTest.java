@@ -113,7 +113,7 @@ class ApplyForCostsHandlerTest {
                 .read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class);
         verify(asylumCase, times(1))
                 .read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class);
-        verify(asylumCase, times(1))
+        verify(asylumCase, times(2))
                 .read(LEGAL_REP_NAME, String.class);
         verify(asylumCase, times(1))
                 .read(APPLIES_FOR_COSTS);
@@ -202,6 +202,7 @@ class ApplyForCostsHandlerTest {
         when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of("test"));
+        when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.empty());
 
         Assertions
                 .assertThatThrownBy(() -> applyForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
