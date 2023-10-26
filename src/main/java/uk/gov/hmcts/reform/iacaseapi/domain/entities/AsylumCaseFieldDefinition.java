@@ -2017,7 +2017,21 @@ public enum AsylumCaseFieldDefinition {
         "manualUpdateHearingRequired", new TypeReference<YesOrNo>(){}),
 
     UPDATE_HMC_REQUEST_SUCCESS(
-            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {});
+            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {}),
+    NEXT_HEARING_LOCATION(
+        "nextHearingLocation", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DURATION(
+        "nextHearingDuration", new TypeReference<String>(){}),
+
+    REQUESTED_HEARING_CHANNEL(
+        "requestedHearingChannel", new TypeReference<DynamicList>(){}),
+
+    REQUESTED_HEARING_LOCATION(
+        "requestedHearingLocation", new TypeReference<String>(){}),
+
+    REQUESTED_HEARING_LENGTH(
+        "requestedHearingLength", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
