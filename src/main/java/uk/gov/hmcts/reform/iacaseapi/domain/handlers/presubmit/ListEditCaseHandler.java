@@ -124,7 +124,9 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             // awaitingRespondentEvidence
             asylumCase.write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
 
-            addDirection(asylumCase);
+            if (callback.getEvent() == Event.LIST_CASE) {
+                addDirection(asylumCase);
+            }
         }
 
 
