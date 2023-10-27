@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED_OOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -66,6 +67,8 @@ class NabaFeatureTogglePreparerTest {
         assertThat(response.getErrors()).isEmpty();
         Mockito.verify(asylumCase, times(1)).write(
                 IS_NABA_ENABLED, YesOrNo.YES);
+        Mockito.verify(asylumCase, times(1)).write(
+            IS_NABA_ENABLED_OOC, YesOrNo.YES);
     }
 
     @ParameterizedTest
@@ -85,6 +88,8 @@ class NabaFeatureTogglePreparerTest {
         assertThat(response.getErrors()).isEmpty();
         Mockito.verify(asylumCase, times(1)).write(
                 IS_NABA_ENABLED, YesOrNo.NO);
+        Mockito.verify(asylumCase, times(1)).write(
+            IS_NABA_ENABLED_OOC, YesOrNo.NO);
     }
 
     @Test

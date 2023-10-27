@@ -72,4 +72,9 @@ public class HandlerUtils {
     public static boolean sourceOfAppealEjp(AsylumCase asylumCase) {
         return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL;
     }
+
+    // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
+    public static boolean isEjpCase(AsylumCase asylumCase) {
+        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
 }
