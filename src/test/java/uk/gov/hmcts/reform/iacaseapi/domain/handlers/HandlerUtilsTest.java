@@ -103,4 +103,16 @@ class HandlerUtilsTest {
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
         assertFalse(HandlerUtils.sourceOfAppealEjp(asylumCase));
     }
+
+    @Test
+    void isEjpCase_should_return_true() {
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isEjpCase(asylumCase));
+    }
+
+    @Test
+    void isEjpCase_should_return_false() {
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isEjpCase(asylumCase));
+    }
 }
