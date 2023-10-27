@@ -5,7 +5,6 @@ java:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
@@ -45,6 +44,11 @@ java:
         - launch-darkly-sdk-key
         - app-insights-connection-string
         - ia-config-validator-secret
+  secrets:
+    POSTGRES_PASSWORD:
+      secretRef: postgres
+      key: PASSWORD
+      disabled: false
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
@@ -549,6 +553,7 @@ ccd-case-document-am-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
 
+# https://github.com/hmcts/rpx-xui-webapp/blob/master/charts/xui-webapp/Chart.yaml
 xui-webapp:
   enabled: true
   nodejs:
@@ -985,7 +990,6 @@ em-stitching:
     environment:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
-      SPRING_DATASOURCE_PASSWORD: hmcts
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
@@ -997,6 +1001,11 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
+    secrets:
+      SPRING_DATASOURCE_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
 
 aac-manage-case-assignment:
   enabled: true
@@ -1041,6 +1050,8 @@ aac-manage-case-assignment:
             alias: NOTIFY_MCA_API_KEY
 
 
+# https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
+# 1.0.4
 wa:
   enabled: true
   global:
@@ -1137,13 +1148,16 @@ ccd-message-publisher:
       DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
       DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
       DATA_STORE_DB_USERNAME: hmcts
-      DATA_STORE_DB_PASSWORD: hmcts
       DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
         secretRef: ia-sb-preview
         key: connectionString
+      DATA_STORE_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
 
 am-org-role-mapping-service:
   enabled: true
@@ -1158,6 +1172,10 @@ am-org-role-mapping-service:
       SB_CONNECTION_STRING:
         secretRef: ia-sb-preview
         key: connectionString
+      ORG_ROLE_MAPPING_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
     keyVaults:
       am:
         secrets:
@@ -1186,7 +1204,6 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_HOST: ia-preview.postgres.database.azure.com
       ORG_ROLE_MAPPING_DB_NAME: "pr-${CHANGE_ID}-org_role_mapping"
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
-      ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
