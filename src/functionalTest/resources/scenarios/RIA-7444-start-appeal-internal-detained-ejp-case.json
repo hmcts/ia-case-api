@@ -1,0 +1,45 @@
+{
+  "description": "RIA-7444 Start appeal case for internal EJP detained flow",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStartedByAdmin",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "isEjp": "Yes",
+          "isNabaEnabled": "Yes",
+          "sourceOfAppeal": "transferredFromUpperTribunal",
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse",
+          "appellantInUk": null,
+          "appealTypeForDisplay": "protection",
+          "appealType": "protection"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "isEjp": "Yes",
+        "isNabaEnabled": "Yes",
+        "sourceOfAppeal": "transferredFromUpperTribunal",
+        "appellantInDetention": "Yes",
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse",
+        "appellantInUk": null,
+        "appealTypeForDisplay": "protection",
+        "appealType": "protection"
+      }
+    }
+  }
+}

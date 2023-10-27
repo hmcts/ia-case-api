@@ -1443,6 +1443,8 @@ public enum AsylumCaseFieldDefinition {
     IS_NABA_ENABLED(
             "isNabaEnabled", new TypeReference<YesOrNo>() {}),
 
+    IS_NABA_ENABLED_OOC(
+        "isNabaEnabledOoc", new TypeReference<YesOrNo>() {}),
     HAS_CORRESPONDENCE_ADDRESS(
         "hasCorrespondenceAddress", new TypeReference<YesOrNo>() {}),
 
@@ -1819,6 +1821,9 @@ public enum AsylumCaseFieldDefinition {
 
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
+
+    IS_EJP(
+        "isEjp", new TypeReference<YesOrNo>() {}),
 
     ;
 
