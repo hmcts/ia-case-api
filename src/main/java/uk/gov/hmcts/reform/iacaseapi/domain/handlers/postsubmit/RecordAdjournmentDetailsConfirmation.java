@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -40,34 +39,50 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
                 .map(relist -> YES == relist)
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+        boolean updateRequestSuccess = asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class)
+                .map(relist -> YES == relist)
+                .orElse(false);
 
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
 
+        String hearingRequirementsTabUrl =
+                "(/cases/case-details/"
+                        + callback.getCaseDetails().getId()
+                        + "#Hearing%20and%20appointment)";
+
         postSubmitResponse.setConfirmationHeader("# You have recorded the adjournment details");
 
         long caseId = callback.getCaseDetails().getId();
-        if (hearingAdjournmentDay == BEFORE_HEARING_DATE && relistCaseImmediately) {
+
+        if (!updateRequestSuccess) {
+            postSubmitResponse.setConfirmationBody(
+                    "#### Do this next\n\n"
+                            + "The hearing could not be automatically updated. You will need to update the "
+                            + "[hearings manually](/cases/case-details/" + caseId + "/hearings )."
+                            + "\n\nThe adjournment details are available on the "
+                            + "[Hearing requirements]" + hearingRequirementsTabUrl
+                            + " tab."
+            );
+        } else if (hearingAdjournmentDay == BEFORE_HEARING_DATE && relistCaseImmediately) {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "The hearing will be adjourned using the details recorded.\n\n"
-                    + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                    + caseId + "#Hearing%20and%20appointment)."
+                    + "The adjournment details are available on the [Hearing requirements tab]" + hearingRequirementsTabUrl
             );
         } else if (hearingAdjournmentDay == BEFORE_HEARING_DATE) {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "All parties will be informed of the decision to adjourn without a date.\n\n"
                     + "The existing hearing will be cancelled.\n\n"
-                    + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                    + caseId + "#Hearing%20and%20appointment)."
+                    + "The adjournment details are available on the [Hearing requirements tab]" +   hearingRequirementsTabUrl
             );
         } else {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "The hearing will be adjourned using the details recorded.\n\n"
-                    + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                    + caseId + "#Hearing%20and%20appointment).\n\n"
+                    + "The adjournment details are available on the [Hearing requirements tab]" + hearingRequirementsTabUrl
+                    + ".\n\n"
                     + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
                     + caseId + "/hearings)."
             );

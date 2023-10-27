@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Slf4j
 @Component
 public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+
+    private IaHearingsApiService iaHearingsApiService;
+
+    public RecordAdjournmentDetailsStateHandler(IaHearingsApiService iaHearingsApiService) {
+        this.iaHearingsApiService = iaHearingsApiService;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -51,6 +60,19 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
                 .map(relist -> YES == relist)
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+        YesOrNo updateRequestSuccess = YES;
+
+        if (!adjournedOnHearingDay && relistCaseImmediately) {
+            try {
+                asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            } catch (AsylumCaseServiceResponseException ex) {
+                log.error("Error updating HMC hearing details. " + ex);
+                updateRequestSuccess = NO;
+            }
+        }
+
+        asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, updateRequestSuccess);
+
         if (adjournedOnHearingDay || !relistCaseImmediately) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.ADJOURNED);
         } else {

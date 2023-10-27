@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +44,9 @@ class RecordAdjournmentDetailsStateHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
+
     private RecordAdjournmentDetailsStateHandler recordAdjournmentDetailsStateHandler;
 
     @BeforeEach
@@ -53,7 +57,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
         when(callback.getCaseDetails().getState()).thenReturn(LISTING);
 
         recordAdjournmentDetailsStateHandler =
-            new RecordAdjournmentDetailsStateHandler();
+            new RecordAdjournmentDetailsStateHandler(iaHearingsApiService);
     }
 
     @Test
