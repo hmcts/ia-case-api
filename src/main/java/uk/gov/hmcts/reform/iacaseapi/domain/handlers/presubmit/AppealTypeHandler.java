@@ -55,8 +55,13 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        YesOrNo isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class).orElse(NO);
-        if (isNabaEnabled.equals(NO)) {
+        Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
+
+        // This duplicate feature flag field is used because isNabaEnabled is on the detention screen which is not
+        // visible in the OOC flows.
+        Optional<YesOrNo> isNabaEnabledOoc = asylumCase.read(IS_NABA_ENABLED_OOC, YesOrNo.class);
+
+        if (isNabaEnabled.equals(Optional.of(NO)) || isNabaEnabledOoc.equals(Optional.of(NO))) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 

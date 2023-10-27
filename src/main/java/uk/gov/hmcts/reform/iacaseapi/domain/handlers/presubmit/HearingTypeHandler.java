@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -49,14 +50,15 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         //if RP or DC or ADA
 
-        boolean isRpDcAda = appealTypeForDisplay != null
+        boolean isRpDcAdaEjp = appealTypeForDisplay != null
                             && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
-                                || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
+                                || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES
+                                || sourceOfAppealEjp(asylumCase));
 
         //if RP or DC or ADA
 
         if (callback.getEvent() == Event.START_APPEAL) {
-            YesOrNo hearingTypeResult = isRpDcAda ? YES : NO;
+            YesOrNo hearingTypeResult = isRpDcAdaEjp ? YES : NO;
             asylumCase.write(HEARING_TYPE_RESULT, hearingTypeResult);
         }
 
@@ -67,7 +69,7 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
             }
 
-            isRpDcAda = appealTypeForDisplay != null
+            boolean isRpDcAda = appealTypeForDisplay != null
                     && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
                     || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
 

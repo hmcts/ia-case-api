@@ -8,6 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LETTER_SENT_OR_RECEIVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -59,7 +61,8 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
 
         // Set the values only for non age assessment appeals. For age assessment, we have separate field - DATE_ON_DECISION_LETTER
         if ((appellantInUk.equals(Optional.of(NO)))
-            || isAcceleratedDetainedAppeal.equals(Optional.of(YES))) {
+            || isAcceleratedDetainedAppeal.equals(Optional.of(YES))
+            || sourceOfAppealEjp(asylumCase)) {
             asylumCase.write(LETTER_SENT_OR_RECEIVED, "Received");
         } else if ((appellantInUk.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(NO)))
             || (appellantInUk.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(YES))
