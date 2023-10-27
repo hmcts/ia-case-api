@@ -106,12 +106,12 @@ class RecordAdjournmentDetailsConfirmationTest {
                 .contains("# You have recorded the adjournment details");
         assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains(                    "#### Do this next\n\n"
+                .contains("#### Do this next\n\n"
                         + "The hearing could not be automatically updated. You will need to update the "
                         + "[hearings manually](/cases/case-details/" + caseId + "/hearings )."
                         + "\n\nThe adjournment details are available on the "
-                        + "[Hearing requirements]" + hearingRequirementsTabUrl
-                        + " tab.");
+                        + "[Hearing requirements](/cases/case-details/" + caseId
+                        + "#Hearing%20and%20appointment) tab.");
     }
 
     @Test
