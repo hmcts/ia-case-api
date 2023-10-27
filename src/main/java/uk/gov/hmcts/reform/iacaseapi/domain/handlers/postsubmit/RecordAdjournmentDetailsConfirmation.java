@@ -68,21 +68,23 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "The hearing will be adjourned using the details recorded.\n\n"
-                    + "The adjournment details are available on the [Hearing requirements tab]" + hearingRequirementsTabUrl
+                    + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                    + caseId + "#Hearing%20and%20appointment)."
             );
         } else if (hearingAdjournmentDay == BEFORE_HEARING_DATE) {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "All parties will be informed of the decision to adjourn without a date.\n\n"
                     + "The existing hearing will be cancelled.\n\n"
-                    + "The adjournment details are available on the [Hearing requirements tab]" +   hearingRequirementsTabUrl
+                    + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                    + caseId + "#Hearing%20and%20appointment)."
             );
         } else {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "The hearing will be adjourned using the details recorded.\n\n"
-                    + "The adjournment details are available on the [Hearing requirements tab]" + hearingRequirementsTabUrl
-                    + ".\n\n"
+                    + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                    + caseId + "#Hearing%20and%20appointment).\n\n"
                     + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
                     + caseId + "/hearings)."
             );
