@@ -41,7 +41,7 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
         boolean updateRequestSuccess = asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class)
                 .map(relist -> YES == relist)
-                .orElse(false);
+                .orElse(true);
 
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
