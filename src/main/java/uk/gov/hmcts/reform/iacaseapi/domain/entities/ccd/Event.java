@@ -126,6 +126,7 @@ public enum Event {
     MARK_APPEAL_AS_DETAINED("markAppealAsDetained"),
     MARK_AS_READY_FOR_UT_TRANSFER("markAsReadyForUtTransfer"),
     UPDATE_DETENTION_LOCATION("updateDetentionLocation"),
+    APPLY_FOR_COSTS("applyForCosts"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

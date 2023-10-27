@@ -66,4 +66,10 @@
         <notes>Temporarily suppress vulnerability as no current fix</notes>
         <cve>CVE-2023-35116</cve>
     </suppress>
+    <suppress until="2023-11-30">
+        <notes>Temporarily suppress vulnerability as no current fix</notes>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-44487</cve>
+        <cve>CVE-2023-44487</cve>
+    </suppress>
 </suppressions>
