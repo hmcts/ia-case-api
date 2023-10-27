@@ -1,28 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-
-import java.util.Optional;
-
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DURATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_LOCATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUESTED_HEARING_CHANNEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUESTED_HEARING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUESTED_HEARING_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESERVE_OR_EXCLUDE_JUDGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AdjournmentDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -49,19 +48,63 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        asylumCase.read(NEXT_HEARING_LOCATION, String.class).ifPresent(hearingLocation -> {
-            String hearingCenterValue = HearingCentre.getValueByEpimsId(hearingLocation);
-            asylumCase.write(REQUESTED_HEARING_LOCATION, hearingCenterValue);
-        });
-
-        asylumCase.read(NEXT_HEARING_DURATION, String.class).ifPresent(hearingDuration -> {
-            asylumCase.write(REQUESTED_HEARING_LENGTH, hearingDuration);
-        });
-
-        Optional<DynamicList> hearingFormatOptional =  asylumCase.read(NEXT_HEARING_FORMAT);
-        hearingFormatOptional.ifPresent(hearingFormat -> asylumCase.write(REQUESTED_HEARING_CHANNEL, hearingFormat));
+        preserveAdjournmentDetailsHistory(asylumCase);
+        buildCurrentAdjustmentDetail(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void preserveAdjournmentDetailsHistory(AsylumCase asylumCase) {
+
+        asylumCase.read(CURRENT_ADJOURNMENT_DETAIL, AdjournmentDetail.class).ifPresent(detail -> {
+            Optional<List<IdValue<AdjournmentDetail>>> optionalPreviousAdjournmentDetails = asylumCase
+                    .read(PREVIOUS_ADJOURNMENT_DETAILS);
+            List<IdValue<AdjournmentDetail>> previousAdjournmentDetails = optionalPreviousAdjournmentDetails
+                    .orElseGet(ArrayList::new);
+            previousAdjournmentDetails.add(new IdValue<>(String.valueOf(previousAdjournmentDetails.size()), detail));
+            asylumCase.write(PREVIOUS_ADJOURNMENT_DETAILS, previousAdjournmentDetails);
+        });
+
+    }
+
+    private void buildCurrentAdjustmentDetail(AsylumCase asylumCase) {
+
+        String adjournmentDetailsHearing = asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class)
+                .map(dynamicList -> dynamicList.getValue().getLabel()).orElse("");
+
+        if (!adjournmentDetailsHearing.isBlank()) {
+
+            asylumCase.write(CURRENT_ADJOURNMENT_DETAIL, AdjournmentDetail.builder()
+                .adjournmentDetailsHearing(adjournmentDetailsHearing)
+                .hearingAdjournmentWhen(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+                        .map(HearingAdjournmentDay::getValue).orElse(""))
+                .hearingAdjournmentDecisionParty(asylumCase.read(HEARING_ADJOURNMENT_DECISION_PARTY, String.class)
+                        .orElse(""))
+                .hearingAdjournmentDecisionPartyName(asylumCase.read(HEARING_ADJOURNMENT_DECISION_PARTY_NAME, String.class)
+                        .orElse(""))
+                .hearingAdjournmentRequestingParty(asylumCase.read(HEARING_ADJOURNMENT_REQUESTING_PARTY, String.class)
+                        .orElse(""))
+                .anyAdditionalAdjournmentInfo(asylumCase.read(ANY_ADDITIONAL_ADJOURNMENT_INFO, YesOrNo.class)
+                        .map(YesOrNo::toString).orElse(""))
+                .additionalAdjournmentInfo(asylumCase.read(ADDITIONAL_ADJOURNMENT_INFO, String.class).orElse(""))
+                .relistCaseImmediately(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
+                        .map(YesOrNo::toString).orElse(""))
+                .nextHearingFormat(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class)
+                        .map(dynamicList -> dynamicList.getValue().getLabel()).orElse(""))
+                .nextHearingLocation(asylumCase.read(NEXT_HEARING_LOCATION, String.class).orElse(""))
+                .nextHearingDuration(asylumCase.read(NEXT_HEARING_DURATION, String.class).orElse(""))
+                .nextHearingDate(asylumCase.read(NEXT_HEARING_DATE, String.class).orElse(""))
+                .nextHearingDateFixed(asylumCase.read(NEXT_HEARING_DATE_FIXED, String.class).orElse(""))
+                .nextHearingDateRangeEarliest(asylumCase.read(NEXT_HEARING_DATE_RANGE_EARLIEST, String.class)
+                        .orElse(""))
+                .nextHearingDateRangeLatest(asylumCase.read(NEXT_HEARING_DATE_RANGE_LATEST, String.class)
+                        .orElse(""))
+                .shouldReserveOrExcludedJudge(asylumCase.read(SHOULD_RESERVE_OR_EXCLUDE_JUDGE, YesOrNo.class)
+                        .map(YesOrNo::toString).orElse(""))
+                .reserveOrExcludeJudge(asylumCase.read(RESERVE_OR_EXCLUDE_JUDGE, String.class).orElse(""))
+                .build());
+
+        }
     }
 
 }
