@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
@@ -88,10 +89,10 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
         witnessDetails = Arrays.asList(
-            new IdValue<>("1",
-                new WitnessDetails("1234", "Witness1Given", "Witness1Family")),
-            new IdValue<>("2",
-                new WitnessDetails("2333","Witness2Given", "Witness2Family"))
+                new IdValue<>("1",
+                    new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)),
+                new IdValue<>("2",
+                    new WitnessDetails("2333","Witness2Given", "Witness2Family", NO))
         );
         handler = new WitnessInterpreterLanguageFlagsHandler(systemDateProvider);
     }
@@ -133,7 +134,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
@@ -165,9 +166,9 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
+            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family", NO)));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
             .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true, signLanguageValue)));
 
@@ -191,7 +192,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
     })
     void should_not_set_language_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+        when(asylumCase.read(WITNESS_1)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -212,7 +213,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
@@ -239,7 +240,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
     void should_not_deactivate_flag_when_non_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -254,7 +255,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
     void should_not_deactivate_flag_when_an_inactive_one_exists() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUIREMENTS);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
-        when(asylumCase.read(WITNESS_1, WitnessDetails.class)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+        when(asylumCase.read(WITNESS_1, WitnessDetails.class)).thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
@@ -286,9 +287,9 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
+            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family", NO)));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
             .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 
@@ -322,9 +323,9 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
+            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family", NO)));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
             .thenReturn(Optional.of(interpreterLanguageRefDataMocked(false, spokenLanguageValue)));
 

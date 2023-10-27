@@ -30,7 +30,8 @@ public class WitnessesService {
                     new WitnessDetails(
                         defaultIfNull(idValue.getValue().getWitnessPartyId(), HearingPartyIdGenerator.generate()),
                         idValue.getValue().getWitnessName(),
-                        idValue.getValue().getWitnessFamilyName()
+                        idValue.getValue().getWitnessFamilyName(),
+                        idValue.getValue().getIsWitnessDeleted()
                     )
                 ))
                 .collect(toList());

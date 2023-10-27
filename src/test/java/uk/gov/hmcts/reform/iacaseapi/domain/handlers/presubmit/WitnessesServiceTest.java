@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,8 +67,8 @@ class WitnessesServiceTest {
         "DRAFT_HEARING_REQUIREMENTS"
     })
     void should_not_append_witnesses_party_id(Event event) {
-        WitnessDetails witnessDetails1 = new WitnessDetails(WITNESS_1_PARTY_ID, "witness1", "family1");
-        WitnessDetails witnessDetails2 = new WitnessDetails(WITNESS_2_PARTY_ID, "witness2", "family2");
+        WitnessDetails witnessDetails1 = new WitnessDetails(WITNESS_1_PARTY_ID, "witness1", "family1", NO);
+        WitnessDetails witnessDetails2 = new WitnessDetails(WITNESS_2_PARTY_ID, "witness2", "family2", NO);
         witnessDetails = Arrays.asList(
             new IdValue<>("1", witnessDetails1),
             new IdValue<>("2", witnessDetails2)

@@ -14,8 +14,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LIST_ELEMENT_1;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LIST_ELEMENT_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -49,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdet
 @SuppressWarnings("unchecked")
 class WitnessInterpreterLanguagesDynamicListUpdaterTest {
 
-    private static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
+    private static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness interpreter requirement";
     private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
     public static final String SIGN_LANGUAGES = "SignLanguage";
@@ -105,8 +103,6 @@ class WitnessInterpreterLanguagesDynamicListUpdaterTest {
         when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, SIGN_LANGUAGES))
             .thenReturn(languages);
         when(refDataUserService.mapCategoryValuesToDynamicListValues(languages)).thenReturn(values);
-        when(asylumCase.read(WITNESS_LIST_ELEMENT_1, DynamicMultiSelectList.class)).thenReturn(Optional.of(witnessListElement1));
-        when(asylumCase.read(WITNESS_LIST_ELEMENT_2, DynamicMultiSelectList.class)).thenReturn(Optional.of(witnessListElement2));
         List<Value> user = List.of(new Value("name lastname", "name lastName"));
         when(witnessListElement1.getValue()).thenReturn(user);
         when(witnessListElement2.getValue()).thenReturn(user);

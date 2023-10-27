@@ -7,15 +7,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageC
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.persistWitnessInterpreterCategoryField;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
 @Component
-public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UpdateHearingRequirementsHandler extends WitnessHandler
+    implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final FeatureToggler featureToggler;
@@ -73,15 +74,38 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
                 .getCaseDetails()
                 .getCaseData();
 
+        AsylumCase asylumCaseBefore = callback.getCaseDetailsBefore()
+            .orElseThrow(() -> new IllegalStateException("Could not retrieve previous case data")).getCaseData();
+
         ensureOnlySelectedLanguageCategoryIsSet(asylumCase);
 
-        List<WitnessDetails> witnessDetails = asylumCase.<List<IdValue<WitnessDetails>>>read(WITNESS_DETAILS)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(IdValue::getValue)
-            .collect(Collectors.toList());
+        List<IdValue<WitnessDetails>> inclusiveWitnessDetails = buildInclusiveWitnessDetailsList(asylumCase, asylumCaseBefore);
 
-        asylumCase.write(WITNESS_COUNT, witnessDetails.size());
+        List<IdValue<WitnessDetails>> nonDeletedWitnesses = inclusiveWitnessDetails.stream()
+            .filter(idValue -> !Objects.equals(idValue.getValue().getIsWitnessDeleted(), YES)).toList();
+
+        YesOrNo isWitnessAttending = asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class).orElse(NO);
+        YesOrNo isAnyWitnessInterpreterRequired = asylumCase.read(IS_ANY_WITNESS_INTERPRETER_REQUIRED, YesOrNo.class)
+            .orElse(NO);
+
+        if (nonDeletedWitnesses.isEmpty() || isWitnessAttending.equals(NO)) {
+            clearWitnessRelatedFields(asylumCase);
+            clearWitnessFields(asylumCase);
+            asylumCase.clear(WITNESS_DETAILS_READONLY);
+            asylumCase.write(WITNESS_COUNT, 0);
+            asylumCase.write(IS_ANY_WITNESS_INTERPRETER_REQUIRED, NO);
+            asylumCase.clear(WITNESS_DETAILS);
+
+        } else if (isAnyWitnessInterpreterRequired.equals(NO)) {
+
+            clearWitnessRelatedFields(asylumCase);
+            filterOutDeletedWitnessesAndCompress(nonDeletedWitnesses, asylumCase);
+
+        } else {
+
+            filterOutDeletedFieldsAndCompress(inclusiveWitnessDetails, asylumCase);
+            filterOutDeletedWitnessesAndCompress(nonDeletedWitnesses, asylumCase);
+        }
 
         asylumCase.write(DISABLE_OVERVIEW_PAGE, YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.UNKNOWN);
@@ -112,14 +136,6 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
         if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)
             && featureToggler.getValue("reheard-feature", false)) {
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
-        }
-
-        YesOrNo isWitnessAttending = asylumCase.read(IS_WITNESSES_ATTENDING, YesOrNo.class).orElse(NO);
-
-        if (witnessDetails.isEmpty() || isWitnessAttending.equals(NO)) {
-            clearWitnessRelatedFields(asylumCase);
-        } else {
-            persistWitnessInterpreterCategoryField(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -155,7 +171,7 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
     private void ensureOnlySelectedLanguageCategoryIsSet(AsylumCase asylumCase) {
         boolean isInterpreterServicesNeeded = asylumCase
             .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
-            .map(yesOrNo -> yesOrNo.equals(YES))
+            .map(yesOrNo -> Objects.equals(yesOrNo, YES))
             .orElse(false);
 
         if (!isInterpreterServicesNeeded) {
@@ -185,11 +201,100 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
 
     private void clearWitnessRelatedFields(AsylumCase asylumCase) {
         // to be called if the witness collection is updated to empty
-        WITNESS_N_FIELD.forEach(asylumCase::clear);
-        WITNESS_LIST_ELEMENT_N_FIELD.forEach(asylumCase::clear);
-        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
-        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
-        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
+        clearWitnessRelatedFieldsAfterIndex(0, asylumCase);
     }
+
+    private void clearWitnessRelatedFieldsAfterIndex(int index, AsylumCase asylumCase) {
+        while (index < 10) {
+            asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(index), Collections.emptyList());
+            asylumCase.clear(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(index));
+            asylumCase.clear(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(index));
+            index++;
+        }
+    }
+
+    private void clearWitnessFields(AsylumCase asylumCase) {
+        // to be called if the witness collection is updated to empty
+        clearWitnessFieldsAfterIndex(0, asylumCase);
+    }
+
+    private void clearWitnessFieldsAfterIndex(int index, AsylumCase asylumCase) {
+        while (index < 10) {
+            asylumCase.clear(WITNESS_N_FIELD.get(index));
+            index++;
+        }
+    }
+
+    /**
+     * Filter out fields related to deleted witnesses (witnessInterpreterLanguageCategory,
+     * witnessSpokenLanguageInterpreter, witnessSignLanguageInterpreter) and transpose them from top to bottom,
+     * so that, out of 4 witnesses, if the third is deleted, the fields related to witness4 are transcribed onto
+     * the fields for witness3.
+     * @param inclusiveWitnessDetails List of witnesses inclusive of deleted, non-deleted old and new witnesses.
+     * @param asylumCase The case data.
+     */
+    private void filterOutDeletedFieldsAndCompress(List<IdValue<WitnessDetails>> inclusiveWitnessDetails,
+                                                  AsylumCase asylumCase) {
+
+        int i = 0;
+        int j = 0;
+        while (i < inclusiveWitnessDetails.size()) {
+            if (!isWitnessDeleted(inclusiveWitnessDetails.get(i))) {
+                asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(j),
+                    asylumCase.read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i)).orElse(Collections.emptyList()));
+                asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(j),
+                    asylumCase.read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i)).orElse(null));
+                asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(j),
+                    asylumCase.read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i)).orElse(null));
+                j++;
+            }
+            i++;
+        }
+        while (j < 10) {
+            asylumCase.write(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(j), Collections.emptyList());
+            asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(j), null);
+            asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(j), null);
+            j++;
+        }
+    }
+
+    /*
+    witness1 deleted=NO  -> witness1 (used to be witness1)
+    witness2 deleted=NO  -> witness2 (used to be witness2)
+    witness3 deleted=YES -> witness3 (used to be witness5)
+    witness4 deleted=YES -> witness4 (used to be witness6)
+    witness5 deleted=NO  -> witness5 (used to be witness7)
+    witness6 deleted=NO
+    witness7 deleted=NO
+     */
+    /**
+     * Filter out witness individual fields (witness1, witness2 etc.) and transpose them from top to bottom,
+     * so that, out of (e.g.) 7 witnesses, if witness3 and witness4 are deleted, witness5 becomes witness3,
+     * witness6 becomes witness5, witness 7 becomes witness6.
+     * @param nonDeletedWitnesses List of non-deleted old and new witnesses.
+     * @param asylumCase The case data.
+     */
+    private void filterOutDeletedWitnessesAndCompress(List<IdValue<WitnessDetails>> nonDeletedWitnesses,
+                                                      AsylumCase asylumCase) {
+
+        List<IdValue<WitnessDetails>> reindexedNonDeletedWitnesses = new ArrayList<>();
+        int k = 0;
+        while (k < nonDeletedWitnesses.size()) {
+            IdValue<WitnessDetails> reindexedWitness = new IdValue<>(
+                String.valueOf(k+1),
+                nonDeletedWitnesses.get(k).getValue()
+            );
+            reindexedNonDeletedWitnesses.add(reindexedWitness);
+            asylumCase.write(WITNESS_N_FIELD.get(k), reindexedWitness.getValue());
+            k++;
+        }
+        asylumCase.write(WITNESS_DETAILS, reindexedNonDeletedWitnesses);
+        asylumCase.write(WITNESS_COUNT, reindexedNonDeletedWitnesses.size());
+        while (k < 10) {
+            asylumCase.clear(WITNESS_N_FIELD.get(k));
+            k++;
+        }
+    }
+
 }
 
