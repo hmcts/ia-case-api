@@ -1999,11 +1999,11 @@ public enum AsylumCaseFieldDefinition {
 
     MANUAL_CANCEL_HEARINGS_REQUIRED(
 
-        "manualCancelHearingsRequired", new TypeReference<String>(){}),
+        "manualCancelHearingsRequired", new TypeReference<YesOrNo>(){}),
 
     MANUAL_UPDATE_HEARING_REQUIRED(
 
-        "manualUpdateHearingRequired", new TypeReference<String>(){});
+        "manualUpdateHearingRequired", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;

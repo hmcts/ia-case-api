@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -47,7 +48,20 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
         postSubmitResponse.setConfirmationHeader("# You have recorded the adjournment details");
 
         long caseId = callback.getCaseDetails().getId();
-        if (hearingAdjournmentDay == BEFORE_HEARING_DATE && relistCaseImmediately) {
+
+        YesOrNo manualCancelHearingsRequired = asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
+            .orElseThrow(() -> new IllegalStateException("Manual cancel hearing required is not present"));
+
+        if (YES.equals(manualCancelHearingsRequired)) {
+            postSubmitResponse.setConfirmationBody(
+                "#### Do this next\n\n"
+                    + "All parties will be informed of the decision to adjourn without a date.\n\n"
+                    + "The hearing could not be automatically cancelled. "
+                    + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)"
+                    + "The adjournment details are available on the "
+                    + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment)."
+            );
+        } else if (hearingAdjournmentDay == BEFORE_HEARING_DATE && relistCaseImmediately) {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "The hearing will be adjourned using the details recorded.\n\n"

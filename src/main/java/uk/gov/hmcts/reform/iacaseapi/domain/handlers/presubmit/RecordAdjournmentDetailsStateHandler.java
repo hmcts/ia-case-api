@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
@@ -16,10 +17,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @Slf4j
 @Component
 public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+    private IaHearingsApiService iaHearingsApiService;
+
+    public RecordAdjournmentDetailsStateHandler(IaHearingsApiService iaHearingsApiService) {
+        this.iaHearingsApiService = iaHearingsApiService;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -51,6 +58,11 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
                 .map(relist -> YES == relist)
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+
+        if (!adjournedOnHearingDay && !relistCaseImmediately) {
+            callbackResponse.setData(iaHearingsApiService.aboutToSubmit(callback));
+        }
+
         if (adjournedOnHearingDay || !relistCaseImmediately) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.ADJOURNED);
         } else {
