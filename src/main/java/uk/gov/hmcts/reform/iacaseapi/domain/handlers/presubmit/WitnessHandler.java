@@ -23,6 +23,8 @@ public class WitnessHandler {
         List<IdValue<WitnessDetails>> newWitnessesCollection = newWitnessesCollectionOptional.orElse(Collections.emptyList());
         List<String> newWitnessesNames = newWitnessesCollection.stream()
             .map(idValue -> idValue.getValue().buildWitnessFullName()).toList();
+        List<String> newWitnessesPartyIds = newWitnessesCollection.stream()
+            .map(idValue -> idValue.getValue().getWitnessPartyId()).toList();
 
         List<IdValue<WitnessDetails>> inclusiveWitnessCollection = new ArrayList<>();
 
@@ -31,8 +33,21 @@ public class WitnessHandler {
         int i = 0;
         while (i < oldWitnessesCollection.size()) {
             IdValue<WitnessDetails> idValueOldWitness = oldWitnessesCollection.get(i);
-            if (newWitnessesNames.contains(idValueOldWitness.getValue().buildWitnessFullName())) {
+            String oldPartyId = idValueOldWitness.getValue().getWitnessPartyId();
+
+            if (newWitnessesPartyIds.contains(oldPartyId)) {
                 idValueOldWitness.getValue().setIsWitnessDeleted(NO);
+
+                Optional<IdValue<WitnessDetails>> newWitnessOpt = newWitnessesCollection
+                    .stream()
+                    .filter(idValue -> Objects.equals(idValue.getValue().getWitnessPartyId(), oldPartyId))
+                    .findFirst();
+
+                newWitnessOpt.ifPresent(oldWitness -> {
+                    idValueOldWitness.getValue().setWitnessName(oldWitness.getValue().getWitnessName());
+                    idValueOldWitness.getValue().setWitnessFamilyName(oldWitness.getValue().getWitnessFamilyName());
+                });
+
             } else {
                 idValueOldWitness.getValue().setIsWitnessDeleted(YES);
                 deletedWitnesses++;
@@ -64,5 +79,9 @@ public class WitnessHandler {
         return inclusiveWitnessList.stream()
             .filter(idValue -> Objects.equals(idValue.getValue().getIsWitnessDeleted(), YES))
             .toList();
+    }
+
+    private void updateWitnessName() {
+
     }
 }

@@ -75,6 +75,11 @@ public class WitnessesUpdateMidEventHandlerTest {
     private static final String IS_WITNESSES_ATTENDING_PAGE_ID = "isWitnessesAttending";
     private static final String WHICH_WITNESS_REQUIRES_INTERPRETER_PAGE_ID = "whichWitnessRequiresInterpreter";
     private static final String IS_ANY_WITNESS_INTERPRETER_REQUIRED_PAGE_ID = "isAnyWitnessInterpreterRequired";
+    private static final String PARTY_ID_1 = "partyId1";
+    private static final String PARTY_ID_2 = "partyId2";
+    private static final String PARTY_ID_3 = "partyId3";
+    private static final String PARTY_ID_A = "partyIdA";
+    private static final String PARTY_ID_B = "partyIdB";
 
     @Mock
     private WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater;
@@ -121,28 +126,33 @@ public class WitnessesUpdateMidEventHandlerTest {
         when(witnessDetails1.getWitnessFamilyName()).thenReturn(witnessFamilyName1);
         when(witnessDetails1.buildWitnessFullName()).thenReturn(witnessName1 + " " + witnessFamilyName1);
         when(witnessDetails1.getIsWitnessDeleted()).thenReturn(NO);
+        when(witnessDetails1.getWitnessPartyId()).thenReturn(PARTY_ID_1);
         String witnessName2 = "2";
         when(witnessDetails2.getWitnessName()).thenReturn(witnessName2);
         String witnessFamilyName2 = "2";
         when(witnessDetails2.getWitnessFamilyName()).thenReturn(witnessFamilyName2);
         when(witnessDetails2.buildWitnessFullName()).thenReturn(witnessName2 + " " + witnessFamilyName2);
         when(witnessDetails2.getIsWitnessDeleted()).thenReturn(NO);
+        when(witnessDetails2.getWitnessPartyId()).thenReturn(PARTY_ID_2);
         String witnessName3 = "3";
         when(witnessDetails3.getWitnessName()).thenReturn(witnessName3);
         String witnessFamilyName3 = "3";
         when(witnessDetails3.getWitnessFamilyName()).thenReturn(witnessFamilyName3);
         when(witnessDetails3.buildWitnessFullName()).thenReturn(witnessName3 + " " + witnessFamilyName3);
         when(witnessDetails3.getIsWitnessDeleted()).thenReturn(NO);
+        when(witnessDetails3.getWitnessPartyId()).thenReturn(PARTY_ID_3);
         String witnessNameA = "A";
         when(witnessDetailsA.getWitnessName()).thenReturn(witnessNameA);
         String witnessFamilyNameA = "A";
         when(witnessDetailsA.getWitnessFamilyName()).thenReturn(witnessFamilyNameA);
         when(witnessDetailsA.buildWitnessFullName()).thenReturn(witnessNameA + " " + witnessFamilyNameA);
+        when(witnessDetailsA.getWitnessPartyId()).thenReturn(PARTY_ID_A);
         String witnessNameB = "B";
         when(witnessDetailsB.getWitnessName()).thenReturn(witnessNameB);
         String witnessFamilyNameB = "B";
         when(witnessDetailsB.getWitnessFamilyName()).thenReturn(witnessFamilyNameB);
         when(witnessDetailsB.buildWitnessFullName()).thenReturn(witnessNameB + " " + witnessFamilyNameB);
+        when(witnessDetailsB.getWitnessPartyId()).thenReturn(PARTY_ID_B);
 
     }
 
@@ -154,7 +164,9 @@ public class WitnessesUpdateMidEventHandlerTest {
     @Test
     void should_add_error_when_witnesses_more_than_ten() {
         List<IdValue<WitnessDetails>> oneDeletedWitnesses = List.of(new IdValue<>("1", witnessDetails1));
+        when(witnessDetails1.getWitnessPartyId()).thenReturn("partyId1");
         when(witnessDetails1.getIsWitnessDeleted()).thenReturn(YES);
+        when(witnessDetails2.getWitnessPartyId()).thenReturn("partyId2");
         List<IdValue<WitnessDetails>> tenNonDeletedWitnesses = Collections
             .nCopies(10, new IdValue<>("1", witnessDetails2));
 

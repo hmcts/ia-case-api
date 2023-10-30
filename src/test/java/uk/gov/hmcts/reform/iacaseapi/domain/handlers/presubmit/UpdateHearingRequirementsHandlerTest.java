@@ -381,13 +381,16 @@ public class UpdateHearingRequirementsHandlerTest {
         when(witnessDetails1.getWitnessName()).thenReturn("A");
         when(witnessDetails1.getWitnessFamilyName()).thenReturn("a");
         when(witnessDetails1.buildWitnessFullName()).thenReturn("A a");
+        when(witnessDetails1.getWitnessPartyId()).thenReturn("partyId1");
         when(witnessDetails2.getWitnessName()).thenReturn("B");
         when(witnessDetails2.getWitnessFamilyName()).thenReturn("b");
         when(witnessDetails2.buildWitnessFullName()).thenReturn("B b");
         when(witnessDetails2.getIsWitnessDeleted()).thenReturn(YES);
+        when(witnessDetails2.getWitnessPartyId()).thenReturn("partyId2");
         when(witnessDetails3.getWitnessName()).thenReturn("C");
         when(witnessDetails3.getWitnessFamilyName()).thenReturn("c");
         when(witnessDetails3.buildWitnessFullName()).thenReturn("C c");
+        when(witnessDetails3.getWitnessPartyId()).thenReturn("partyId3");
 
         List<IdValue<WitnessDetails>> twoOldWitnesses = List.of(
             new IdValue<>("1", witnessDetails1),
@@ -450,13 +453,16 @@ public class UpdateHearingRequirementsHandlerTest {
         when(witnessDetails1.getWitnessName()).thenReturn("A");
         when(witnessDetails1.getWitnessFamilyName()).thenReturn("a");
         when(witnessDetails1.buildWitnessFullName()).thenReturn("A a");
+        when(witnessDetails1.getWitnessPartyId()).thenReturn("partyId1");
         when(witnessDetails2.getWitnessName()).thenReturn("B");
         when(witnessDetails2.getWitnessFamilyName()).thenReturn("b");
         when(witnessDetails2.buildWitnessFullName()).thenReturn("B b");
         when(witnessDetails2.getIsWitnessDeleted()).thenReturn(YES);
+        when(witnessDetails2.getWitnessPartyId()).thenReturn("partyId2");
         when(witnessDetails3.getWitnessName()).thenReturn("C");
         when(witnessDetails3.getWitnessFamilyName()).thenReturn("c");
         when(witnessDetails3.buildWitnessFullName()).thenReturn("C c");
+        when(witnessDetails3.getWitnessPartyId()).thenReturn("partyId3");
 
         List<IdValue<WitnessDetails>> twoOldWitnesses = List.of(
             new IdValue<>("1", witnessDetails1),
