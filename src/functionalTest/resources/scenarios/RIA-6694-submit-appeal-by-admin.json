@@ -11,6 +11,7 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "isAdmin": "Yes",
+          "sourceOfAppeal": "paperForm",
           "appealReferenceNumber": "PA/12345/2018",
           "appellantInUk": "Yes",
           "appellantInDetention": "Yes",

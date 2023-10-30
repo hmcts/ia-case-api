@@ -194,6 +194,32 @@ class AppealSubmittedConfirmationTest {
     }
 
     @Test
+    void should_return_ejp_confirmation_for_all_appeal_for_ejp_cases() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+                appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "A Legal Officer will progress the case to the correct state and upload the relevant documents at each point.");
+    }
+
+    @Test
     void aip_should_return_out_of_time_confirmation_for_pay_offline_by_card_ea() {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
