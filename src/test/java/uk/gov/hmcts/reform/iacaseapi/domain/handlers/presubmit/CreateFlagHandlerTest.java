@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.*;
 
 import java.util.Collections;
@@ -91,8 +92,8 @@ class CreateFlagHandlerTest {
         String witnessFamilyName3 = "witnessFamilyName3";
         when(asylumCase.read(WITNESS_DETAILS))
             .thenReturn(Optional.of(List.of(
-                new IdValue<>(witnessName1, new WitnessDetails(partyId1, witnessName1, witnessFamilyName1)),
-                new IdValue<>(witnessName2, new WitnessDetails(partyId2, witnessName2, witnessFamilyName2)),
+                new IdValue<>(witnessName1, new WitnessDetails(partyId1, witnessName1, witnessFamilyName1, NO)),
+                new IdValue<>(witnessName2, new WitnessDetails(partyId2, witnessName2, witnessFamilyName2, NO)),
                 new IdValue<>(witnessName3, new WitnessDetails(witnessName3, witnessFamilyName3)))));
 
         when(asylumCase.read(INTERPRETER_DETAILS))

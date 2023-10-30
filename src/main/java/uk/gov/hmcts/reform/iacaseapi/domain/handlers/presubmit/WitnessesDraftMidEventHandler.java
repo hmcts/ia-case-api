@@ -3,8 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessIndividualFields;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.clearWitnessInterpreterLanguageFields;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +14,6 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -93,9 +92,7 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
     }
 
     /**
-     * Breaks witnessDetails collection down into individual witness fields (witness1, witness2 etc.) and generates the
-     * individual dynamicMultiSelectList fields for each witness (witnessListElement1, witnessListElement2 etc.)
-     *
+     * Breaks witnessDetails collection down into individual witness fields (witness1, witness2 etc.).
      * @param asylumCase The asylum case
      * @param witnesses  The value of the witnessDetails field (collection)
      */
@@ -104,16 +101,7 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
 
         int i = 0;
         while (i < witnesses.size()) {
-
-            String fullName = buildWitnessFullName(witnesses.get(i).getValue());
-
             asylumCase.write(WITNESS_N_FIELD.get(i), witnesses.get(i).getValue());
-            asylumCase.write(WITNESS_LIST_ELEMENT_N_FIELD.get(i),
-                new DynamicMultiSelectList(
-                    Collections.emptyList(),
-                    List.of(new Value(fullName, fullName))
-                ));
-            log.info("Writing {} with value {}", WITNESS_N_FIELD.get(i), witnesses.get(i).getValue());
             i++;
         }
     }

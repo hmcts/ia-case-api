@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -84,7 +85,7 @@ class RemoveWitnessCaseFlagsHandlerTest {
             .thenReturn(Optional.of(List.of(witness1PartyFlagIdVAlue, witness2PartyFlagIdValue)));
         when(asylumCase.read(WITNESS_DETAILS))
             .thenReturn(Optional.of(List.of(
-                new IdValue<>("2", new WitnessDetails(witnessPartyId2, witnessName2, witnessFamilyName2)))));
+                new IdValue<>("2", new WitnessDetails(witnessPartyId2, witnessName2, witnessFamilyName2, YesOrNo.NO)))));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             removeWitnessCaseFlagsHandler.handle(ABOUT_TO_SUBMIT, callback);
