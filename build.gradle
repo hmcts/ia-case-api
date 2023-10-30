@@ -360,6 +360,9 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
 
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.81'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.81'
+
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
