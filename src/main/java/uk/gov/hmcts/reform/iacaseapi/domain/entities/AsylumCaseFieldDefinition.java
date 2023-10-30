@@ -2004,10 +2004,7 @@ public enum AsylumCaseFieldDefinition {
         "manualUpdateHearingRequired", new TypeReference<String>(){}),
 
     UPDATE_HMC_REQUEST_SUCCESS(
-            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {}),
-
-    REQUIRE_MANUAL_HEARINGS_CANCELLATION(
-        "requireManualHearingsCancellation", new TypeReference<String>(){});
+            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {});
 
     private final String value;
     private final TypeReference typeReference;

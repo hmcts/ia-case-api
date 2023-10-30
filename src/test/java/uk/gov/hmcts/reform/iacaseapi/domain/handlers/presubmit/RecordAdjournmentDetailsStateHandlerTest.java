@@ -52,8 +52,8 @@ class RecordAdjournmentDetailsStateHandlerTest {
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails().getState()).thenReturn(LISTING);
 
         recordAdjournmentDetailsStateHandler =
@@ -92,7 +92,6 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
     @Test
     void should_set_appeal_as_adjourned_before_hearing_date_and_not_relist() {
-
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
@@ -107,11 +106,11 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
     @Test
     void should_not_set_appeal_as_adjourned() {
-
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response = recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
