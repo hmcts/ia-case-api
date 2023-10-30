@@ -65,20 +65,6 @@
               "witnessFamilyName": "witness last name one"
             }
           },
-          "witnessListElement1": {
-            "value": [
-              {
-                "code": "witness name one",
-                "label": "witness last name one"
-              }
-            ],
-            "list_items": [
-              {
-                "code": "witness name one",
-                "label": "witness last name one"
-              }
-            ]
-          },
           "witness1InterpreterSignLanguage": {},
           "witness1InterpreterSpokenLanguage": {
             "languageManualEntry": [],
@@ -110,20 +96,6 @@
               "witnessFamilyName": "witness last name two"
             }
           },
-          "witnessListElement2": {
-            "value": [
-              {
-                "code": "witness name two",
-                "label": "witness last name two"
-              }
-            ],
-            "list_items": [
-              {
-                "code": "witness name two",
-                "label": "witness last name two"
-              }
-            ]
-          },
           "witness2InterpreterSignLanguage": {},
           "witness2InterpreterSpokenLanguage": {
             "languageManualEntry": [],
@@ -154,20 +126,6 @@
               "witnessName": "witness name three",
               "witnessFamilyName": "witness last name three"
             }
-          },
-          "witnessListElement3": {
-            "value": [
-              {
-                "code": "witness name three",
-                "label": "witness last name three"
-              }
-            ],
-            "list_items": [
-              {
-                "code": "witness name three",
-                "label": "witness last name three"
-              }
-            ]
           },
           "witness3InterpreterSignLanguage": {
             "languageManualEntry": [],
@@ -280,20 +238,6 @@
             "witnessFamilyName": "witness last name one"
           }
         },
-        "witnessListElement1": {
-          "value": [
-            {
-              "code": "witness name one",
-              "label": "witness last name one"
-            }
-          ],
-          "list_items": [
-            {
-              "code": "witness name one",
-              "label": "witness last name one"
-            }
-          ]
-        },
         "witness1InterpreterSignLanguage": {},
         "witness1InterpreterSpokenLanguage": {
           "languageManualEntry": [],
@@ -325,20 +269,6 @@
             "witnessFamilyName": "witness last name two"
           }
         },
-        "witnessListElement2": {
-          "value": [
-            {
-              "code": "witness name two",
-              "label": "witness last name two"
-            }
-          ],
-          "list_items": [
-            {
-              "code": "witness name two",
-              "label": "witness last name two"
-            }
-          ]
-        },
         "witness2InterpreterSignLanguage": {},
         "witness2InterpreterSpokenLanguage": {
           "languageManualEntry": [],
@@ -369,20 +299,6 @@
             "witnessName": "witness name three",
             "witnessFamilyName": "witness last name three"
           }
-        },
-        "witnessListElement3": {
-          "value": [
-            {
-              "code": "witness name three",
-              "label": "witness last name three"
-            }
-          ],
-          "list_items": [
-            {
-              "code": "witness name three",
-              "label": "witness last name three"
-            }
-          ]
         },
         "witness3InterpreterSignLanguage": {
           "languageManualEntry": [],

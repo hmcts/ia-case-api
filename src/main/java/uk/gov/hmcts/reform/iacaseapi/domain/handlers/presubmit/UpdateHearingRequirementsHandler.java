@@ -281,7 +281,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
         int k = 0;
         while (k < nonDeletedWitnesses.size()) {
             IdValue<WitnessDetails> reindexedWitness = new IdValue<>(
-                String.valueOf(k+1),
+                String.valueOf(k + 1),
                 nonDeletedWitnesses.get(k).getValue()
             );
             reindexedNonDeletedWitnesses.add(reindexedWitness);

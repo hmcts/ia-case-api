@@ -106,9 +106,9 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
         when(asylumCase.read(WITNESS_1, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family")));
+            .thenReturn(Optional.of(new WitnessDetails("1234", "Witness1Given", "Witness1Family", NO)));
         when(asylumCase.read(WITNESS_2, WitnessDetails.class))
-            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family")));
+            .thenReturn(Optional.of(new WitnessDetails("2333","Witness2Given", "Witness2Family", NO)));
         when(asylumCase.read(WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
             .thenReturn(Optional.of(interpreterLanguageRefDataMocked(true, spokenLanguageValue)));
 

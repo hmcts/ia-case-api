@@ -525,8 +525,8 @@ public class UpdateHearingRequirementsHandlerTest {
         updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         WITNESS_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
-        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1)).
-            write(field, Collections.emptyList()));
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1))
+            .write(field, Collections.emptyList()));
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
     }

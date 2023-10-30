@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
@@ -69,10 +68,6 @@ class WitnessInterpreterLanguagesDynamicListUpdaterTest {
     private WitnessDetails witnessDetails1;
     @Mock
     private WitnessDetails witnessDetails2;
-    @Mock
-    private DynamicMultiSelectList witnessListElement1;
-    @Mock
-    private DynamicMultiSelectList witnessListElement2;
 
     private RefDataUserService refDataUserService;
     private WitnessInterpreterLanguagesDynamicListUpdater witnessInterpreterLanguagesDynamicListUpdater;
@@ -104,8 +99,6 @@ class WitnessInterpreterLanguagesDynamicListUpdaterTest {
             .thenReturn(languages);
         when(refDataUserService.mapCategoryValuesToDynamicListValues(languages)).thenReturn(values);
         List<Value> user = List.of(new Value("name lastname", "name lastName"));
-        when(witnessListElement1.getValue()).thenReturn(user);
-        when(witnessListElement2.getValue()).thenReturn(user);
 
         // selecting spoken interpreter for witness1 and sign interpreter for witness2
         when(asylumCase.read(WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of("spokenLanguageInterpreter")));

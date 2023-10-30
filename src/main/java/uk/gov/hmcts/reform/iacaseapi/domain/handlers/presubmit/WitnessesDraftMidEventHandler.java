@@ -92,9 +92,7 @@ public class WitnessesDraftMidEventHandler implements PreSubmitCallbackHandler<A
     }
 
     /**
-     * Breaks witnessDetails collection down into individual witness fields (witness1, witness2 etc.) and generates the
-     * individual dynamicMultiSelectList fields for each witness (witnessListElement1, witnessListElement2 etc.)
-     *
+     * Breaks witnessDetails collection down into individual witness fields (witness1, witness2 etc.).
      * @param asylumCase The asylum case
      * @param witnesses  The value of the witnessDetails field (collection)
      */
