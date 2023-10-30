@@ -57,7 +57,7 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
                 "#### Do this next\n\n"
                     + "All parties will be informed of the decision to adjourn without a date.\n\n"
                     + "The hearing could not be automatically cancelled. "
-                    + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)"
+                    + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)\n\n"
                     + "The adjournment details are available on the "
                     + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment)."
             );
