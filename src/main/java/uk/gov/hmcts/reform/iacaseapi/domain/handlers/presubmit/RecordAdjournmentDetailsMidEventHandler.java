@@ -34,7 +34,7 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<DynamicList> hearingChannel = asylumCase.read(AsylumCaseFieldDefinition.HEARING_CHANNEL);
         Optional<String> listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class);
-        Optional<HearingCentre> listCaseHearingCentre= asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
+        Optional<HearingCentre> listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
 
         asylumCase.write(AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT, hearingChannel);
         asylumCase.write(AsylumCaseFieldDefinition.NEXT_HEARING_DURATION, listCaseHearingLength);
