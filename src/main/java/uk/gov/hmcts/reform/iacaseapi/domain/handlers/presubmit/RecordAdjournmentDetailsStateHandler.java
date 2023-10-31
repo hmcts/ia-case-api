@@ -55,16 +55,12 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
 
         final State currentState = callback.getCaseDetails().getState();
 
-        boolean  adjournedOnHearingDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
-                .map(adjournmentDay -> ON_HEARING_DATE == adjournmentDay)
+        HearingAdjournmentDay  hearingAdjournmentDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
                 .orElseThrow(() -> new IllegalStateException("Hearing adjournment day is not present"));
 
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
                 .map(relist -> YES == relist)
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
-
-        HearingAdjournmentDay  hearingAdjournmentDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
-                .orElseThrow(() -> new IllegalStateException("Hearing adjournment day is not present"));
 
         YesOrNo updateRequestSuccess = YES;
 
@@ -79,7 +75,7 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
 
         asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, updateRequestSuccess);
 
-        if (adjournedOnHearingDay || !relistCaseImmediately) {
+        if (hearingAdjournmentDay == ON_HEARING_DATE || !relistCaseImmediately) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.ADJOURNED);
         } else {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
