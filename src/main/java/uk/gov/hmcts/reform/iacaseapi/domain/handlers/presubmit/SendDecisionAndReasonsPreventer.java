@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENT;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -58,18 +56,6 @@ public class SendDecisionAndReasonsPreventer implements PreSubmitCallbackHandler
             asylumCasePreSubmitCallbackResponse.addError("You must generate the Decision and reasons draft before completing the Decision and reasons");
 
             return asylumCasePreSubmitCallbackResponse;
-        }
-
-        if (decisionAndReasonsAvailable.equals(YesOrNo.YES)) {
-
-            final Document finalDecisionAndReasonsDoc = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENT, Document.class)
-                    .orElseThrow(
-                            () -> new IllegalStateException("finalDecisionAndReasonsDocument must be present"));
-
-            if (!finalDecisionAndReasonsDoc.getDocumentFilename().endsWith(".pdf")) {
-                throw new IllegalStateException("The Decision and reasons document must be a PDF file");
-            }
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
