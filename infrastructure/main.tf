@@ -42,27 +42,33 @@ module "ia_case_api_database_15" {
     azurerm.postgres_network = azurerm.cft_vnet
   }
 
-  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  env    = var.env
-
-  product       = var.product
-  component     = var.component
-  business_area = "cft"
-
-  common_tags = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
-  name        = "rpe-${var.product}-v15"
+  source          = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env             = var.env
+  location        = var.location
+  product         = "${var.product}-${var.component}-postgres-15-db"
+  component       = var.component
+  business_area   = "cft"
+  subscription    = var.subscription
+  common_tags     = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
+  name            = "rpe-${var.product}-v15"
   pgsql_databases = [
     {
       name : var.postgresql_database_name
     }
   ]
 
-  pgsql_version = "15"
+  pgsql_version   = "15"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-11" {
   name         = "${var.component}-POSTGRES-PASS-11"
   value        = module.ia_case_api_database_11.postgresql_password
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-15" {
+  name         = "${var.component}-POSTGRES-PASS-15"
+  value        = module.ia_case_api_database_15.postgresql_password
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
 
