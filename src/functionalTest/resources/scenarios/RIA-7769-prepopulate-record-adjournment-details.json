@@ -12,7 +12,8 @@
         "replacements": {
           "isWitnessesAttending": "No",
           "hearingChannel": "glasgow",
-          "listCaseHearingLength": "60"
+          "listCaseHearingLength": "60",
+          "listCaseHearingCentre": "glasgowTribunalsCentre"
         }
       }
     }
@@ -26,7 +27,7 @@
         "isWitnessesAttending": "No",
         "nextHearingFormat": "test",
         "nextHearingDuration": "60",
-        "nextHearingLocation": "glasgow"
+        "nextHearingLocation": "glasgowTribunalsCentre"
       }
     }
   }
