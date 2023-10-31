@@ -167,8 +167,12 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
                         if (!isWitnessDeleted(inclusiveWitnessDetails.get(i))) {
                             if (witnessInterpreterCategories.contains(SPOKEN)) {
 
-                                if (witnessIsNewlyAdded || oldAsylumCase
-                                    .read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i)).isEmpty()) {
+                                Optional<InterpreterLanguageRefData> optionalLanguage = oldAsylumCase
+                                    .read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i));
+
+                                if (witnessIsNewlyAdded
+                                    || optionalLanguage.isEmpty()
+                                    || interpreterLanguageIsNull(optionalLanguage.get())) {
 
                                     asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i), spokenLanguages);
 
@@ -189,8 +193,12 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
                             }
                             if (witnessInterpreterCategories.contains(SIGN)) {
 
-                                if (witnessIsNewlyAdded || oldAsylumCase
-                                    .read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i)).isEmpty()) {
+                                Optional<InterpreterLanguageRefData> optionalLanguage = oldAsylumCase
+                                    .read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i));
+
+                                if (witnessIsNewlyAdded
+                                    || optionalLanguage.isEmpty()
+                                    || interpreterLanguageIsNull(optionalLanguage.get())) {
 
                                     asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), signLanguages);
 
@@ -219,6 +227,11 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
         }
 
         return response;
+    }
+
+    private boolean interpreterLanguageIsNull(InterpreterLanguageRefData interpreterLanguageRefData) {
+        return null == interpreterLanguageRefData.getLanguageRefData()
+               && null == interpreterLanguageRefData.getLanguageManualEntryDescription();
     }
 
     private void writeIndividualWitnessFields(AsylumCase asylumCase,
@@ -280,6 +293,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
         }
 
         return oldLanguageField.isPresent()
+               && oldLanguageField.get().getLanguageManualEntry() != null
                && oldLanguageField.get().getLanguageManualEntry().contains(MANUAL_LANGUAGE_YES);
     }
 
