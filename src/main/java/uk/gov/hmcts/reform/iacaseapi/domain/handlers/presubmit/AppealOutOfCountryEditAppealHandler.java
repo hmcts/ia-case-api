@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,6 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL
                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
-            && featureToggler.getValue("out-of-country-feature", false)
             && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
@@ -124,7 +124,9 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
             }
 
         } else {
-            throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
+            if (!sourceOfAppealEjp(asylumCase)) {
+                throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

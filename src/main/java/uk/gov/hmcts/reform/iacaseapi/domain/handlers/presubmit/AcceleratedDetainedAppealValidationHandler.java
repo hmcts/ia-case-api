@@ -5,10 +5,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -33,7 +33,8 @@ public class AcceleratedDetainedAppealValidationHandler implements PreSubmitCall
                 && Arrays.asList(
                 Event.START_APPEAL,
                 Event.EDIT_APPEAL
-        ).contains(callback.getEvent());
+        ).contains(callback.getEvent())
+                && !sourceOfAppealEjp(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -57,11 +58,9 @@ public class AcceleratedDetainedAppealValidationHandler implements PreSubmitCall
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
-                .orElseThrow(() -> new RequiredFieldMissingException("Unable to determine if in country or out of country appeal"));
-        boolean isUkAppeal = appellantInUk.equals(YES);
+        YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
 
-        if (isAda.equals(YES) && adaEnabled.equals(NO) && isUkAppeal) {
+        if (isAda.equals(YES) && adaEnabled.equals(NO) && appellantInUk.equals(YES)) {
             response.addError("You can only select yes if the appellant is detained in an immigration removal centre");
         }
 

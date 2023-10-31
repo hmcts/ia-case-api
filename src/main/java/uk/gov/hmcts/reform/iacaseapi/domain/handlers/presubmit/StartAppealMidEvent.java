@@ -25,7 +25,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
-
+    private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
+    private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -42,7 +43,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
                     || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
                     || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
-                    || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID));
+                    || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID)
+                    || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -116,6 +118,16 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 asylumCase.write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.NO);
             }
 
+        }
+
+        if (callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID) && callback.getEvent() == Event.START_APPEAL) {
+            String upperTribunalReferenceNumber = asylumCase
+                .read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException("upperTribunalReferenceNumber is missing"));
+
+            if (!UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN.matcher(upperTribunalReferenceNumber).matches()) {
+                response.addError("Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.");
+            }
         }
 
         return response;

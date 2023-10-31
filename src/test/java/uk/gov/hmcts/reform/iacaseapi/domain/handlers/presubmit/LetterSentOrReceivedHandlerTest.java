@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -42,7 +43,6 @@ class LetterSentOrReceivedHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private final YesOrNo isOutOfCountryEnabled = YES;
     private final YesOrNo appellantInUk = YES;
     private final YesOrNo isAcc = YES;
     private final YesOrNo appellantInDetention = YES;
@@ -69,7 +69,6 @@ class LetterSentOrReceivedHandlerTest {
     @Test
     void should_write_received_for_accelerate_detained_appeal() {
 
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(isAcc));
@@ -87,7 +86,6 @@ class LetterSentOrReceivedHandlerTest {
     @Test
     void should_write_sent_for_non_accelerated_detained_appeal() {
 
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -105,7 +103,6 @@ class LetterSentOrReceivedHandlerTest {
     @Test
     void should_write_received_for_appellant_in_uk_and_is_out_of_country_enabled() {
 
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -123,7 +120,6 @@ class LetterSentOrReceivedHandlerTest {
     @Test
     void should_write_age_assessment_no_if_detained() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
@@ -139,7 +135,6 @@ class LetterSentOrReceivedHandlerTest {
     @Test
     void should_write_not_ada_if_appellant_not_detained_mid_event() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -155,7 +150,6 @@ class LetterSentOrReceivedHandlerTest {
     @Test
     void should_write_not_ada_if_appellant_not_detained_about_to_submit() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -166,6 +160,19 @@ class LetterSentOrReceivedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+    }
+
+    @Test
+    void should_write_received_for_ejp_cases() {
+
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            letterSentOrReceivedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(LETTER_SENT_OR_RECEIVED, "Received");
     }
 
     @Test
@@ -209,7 +216,6 @@ class LetterSentOrReceivedHandlerTest {
     @ParameterizedTest
     @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
     void should_handle_when_detention_question_is_hidden(YesOrNo appellantInUk) {
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.empty());
 
