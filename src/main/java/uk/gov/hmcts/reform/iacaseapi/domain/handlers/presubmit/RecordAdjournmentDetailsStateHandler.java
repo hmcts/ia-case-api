@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -57,12 +58,17 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
         boolean  adjournedOnHearingDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
                 .map(adjournmentDay -> ON_HEARING_DATE == adjournmentDay)
                 .orElseThrow(() -> new IllegalStateException("Hearing adjournment day is not present"));
+
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
                 .map(relist -> YES == relist)
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+
+        HearingAdjournmentDay  hearingAdjournmentDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+                .orElseThrow(() -> new IllegalStateException("Hearing adjournment day is not present"));
+
         YesOrNo updateRequestSuccess = YES;
 
-        if (!adjournedOnHearingDay && relistCaseImmediately) {
+        if (hearingAdjournmentDay == BEFORE_HEARING_DATE && relistCaseImmediately) {
             try {
                 asylumCase = iaHearingsApiService.aboutToSubmit(callback);
             } catch (AsylumCaseServiceResponseException ex) {
