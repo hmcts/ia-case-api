@@ -53,6 +53,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         DynamicList hearingChannel = new DynamicList(new Value("INTER", "In Person"), null);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CHANNEL)).thenReturn(Optional.of(hearingChannel));
         when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of("60"));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -62,7 +63,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, Optional.of(hearingChannel));
         verify(asylumCase, times(1)).write(NEXT_HEARING_DURATION, Optional.of("60"));
-        verify(asylumCase, times(1)).write(NEXT_HEARING_LOCATION, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
+        verify(asylumCase, times(1)).write(NEXT_HEARING_LOCATION, Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, Optional.empty());
         verify(asylumCase, times(1)).write(NEXT_HEARING_DURATION, Optional.empty());
-        verify(asylumCase, times(1)).write(NEXT_HEARING_LOCATION, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
+        verify(asylumCase, times(1)).write(NEXT_HEARING_LOCATION, Optional.empty());
     }
 
 

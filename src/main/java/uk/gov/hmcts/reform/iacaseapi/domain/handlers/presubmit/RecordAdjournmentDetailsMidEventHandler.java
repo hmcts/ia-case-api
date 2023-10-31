@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 
 @Component
@@ -33,10 +34,11 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<DynamicList> hearingChannel = asylumCase.read(AsylumCaseFieldDefinition.HEARING_CHANNEL);
         Optional<String> listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class);
+        Optional<HearingCentre> listCaseHearingCentre= asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
 
         asylumCase.write(AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT, hearingChannel);
         asylumCase.write(AsylumCaseFieldDefinition.NEXT_HEARING_DURATION, listCaseHearingLength);
-        asylumCase.write(AsylumCaseFieldDefinition.NEXT_HEARING_LOCATION, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
+        asylumCase.write(AsylumCaseFieldDefinition.NEXT_HEARING_LOCATION, listCaseHearingCentre);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
