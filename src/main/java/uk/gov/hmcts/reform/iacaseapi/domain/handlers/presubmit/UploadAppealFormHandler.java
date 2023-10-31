@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -60,7 +61,7 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
 
         YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
-        if (isAdmin.equals(YesOrNo.YES)) {
+        if (isAdmin.equals(YesOrNo.YES) && !HandlerUtils.isEjpCase(asylumCase)) {
             String appellantName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElse("");
             String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).orElse("");
             String appealFormSuffix = "appeal form";

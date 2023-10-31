@@ -14,8 +14,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -81,14 +79,15 @@ class UploadAppealFormHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class,names = {"SUBMIT_APPEAL"})
-    void should_append_appeal_forms_to_tribunal_documents(Event event) {
+    @Test
+    void should_append_appeal_forms_to_tribunal_documents() {
 
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         allAppealFormDocuments = Arrays.asList(
             new IdValue<>("1", someAppealFormDocument)
@@ -118,6 +117,43 @@ class UploadAppealFormHandlerTest {
         verify(documentsAppender, times(1)).prepend(
             allTribunalDocuments,
             docsWithMetadata
+        );
+    }
+
+    @Test
+    void should_not_append_appeal_forms_for_ejp() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        allAppealFormDocuments = Arrays.asList(
+                new IdValue<>("1", someAppealFormDocument)
+        );
+
+        allTribunalDocuments = Arrays.asList(
+                new IdValue<>("1", someTribunalMeta)
+        );
+
+        List<DocumentWithMetadata> docsWithMetadata = Arrays.asList(appealForm1WithMetadata);
+
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("somename"));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
+
+        when(asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS)).thenReturn(Optional.of(allAppealFormDocuments));
+        when(asylumCase.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(allTribunalDocuments));
+
+        when(documentReceiver.tryReceive(someAppealFormDocument, DocumentTag.APPEAL_FORM))
+                .thenReturn(Optional.of(appealForm1WithMetadata));
+
+        when(documentsAppender.prepend(allTribunalDocuments, docsWithMetadata)).thenReturn(allTribunalDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadAppealFormHandler.handle(ABOUT_TO_SUBMIT,callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, never()).prepend(
+                allTribunalDocuments,
+                docsWithMetadata
         );
     }
 
