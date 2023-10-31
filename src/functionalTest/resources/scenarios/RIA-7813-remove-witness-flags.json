@@ -1,34 +1,18 @@
 {
-  "description": "RIA-7813 remove witness flags when a witness is removed",
+  "description": "RIA-7769 prepopulate data for record adjournment details",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "updateHearingRequirements",
+      "eventId": "recordAdjournmentDetails",
       "state": "preHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isWitnessesAttending": "No",
-          "witnessLevelFlags": [
-            {
-              "id": "1",
-              "value": {
-                "partyName": "Witness1 One Test Family 1",
-                "roleOnCase": "Witness",
-                "details": []
-              }
-            },
-            {
-              "id": "2",
-              "value": {
-                "partyName": "Witness2 Two Test Family 2",
-                "roleOnCase": "Witness",
-                "details": []
-              }
-            }
-          ]
+          "hearingChannel": "glasgow",
+          "listCaseHearingLength": "60"
         }
       }
     }
@@ -40,7 +24,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "isWitnessesAttending": "No",
-        "witnessLevelFlags": []
+        "nextHearingFormat": "test",
+        "nextHearingDuration": "60",
+        "nextHearingLocation": "glasgow"
       }
     }
   }
