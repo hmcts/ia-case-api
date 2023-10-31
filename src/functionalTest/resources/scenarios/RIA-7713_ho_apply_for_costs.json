@@ -79,7 +79,7 @@
               "applyForCostsHearingType": "No",
               "scheduleOfCostsDocuments": [],
               "applyForCostsCreationDate": "{$TODAY}",
-              "applyForCostsApplicantType": "Respondent",
+              "applyForCostsApplicantType": "Home office",
               "argumentsAndEvidenceDetails": "",
               "argumentsAndEvidenceDocuments": [
                 {
