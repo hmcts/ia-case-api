@@ -4,13 +4,11 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESERVE_OR_EXCLUDE_JUDGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AdjournmentDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -49,7 +47,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         preserveAdjournmentDetailsHistory(asylumCase);
-        buildCurrentAdjustmentDetail(asylumCase);
+        buildCurrentAdjournmentDetail(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -67,7 +65,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
 
     }
 
-    private void buildCurrentAdjustmentDetail(AsylumCase asylumCase) {
+    private void buildCurrentAdjournmentDetail(AsylumCase asylumCase) {
 
         String adjournmentDetailsHearing = asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class)
                 .map(dynamicList -> dynamicList.getValue().getLabel()).orElse("");
