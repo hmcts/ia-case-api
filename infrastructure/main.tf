@@ -1,5 +1,8 @@
 provider "azurerm" {
-  features {}
+    features {}
+    skip_provider_registration = true
+    alias                      = "cft_vnet"
+    subscription_id            = var.aks_subscription_id
 }
 
 locals {
@@ -45,12 +48,12 @@ module "ia_case_api_database_15" {
   source          = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   env             = var.env
   location        = var.location
-  product         = "${var.product}-${var.component}-postgres-15-db"
+  product         = var.product
   component       = var.component
   business_area   = "cft"
   subscription    = var.subscription
   common_tags     = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
-  name            = "rpe-${var.product}-v15"
+  name            = "${var.product}-${var.component}-postgres-15-db"
   pgsql_databases = [
     {
       name : var.postgresql_database_name
