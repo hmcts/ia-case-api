@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -81,6 +82,9 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         // If case data has oocDecisionType && ADA=YES, it means appeal was moving from in-country to OOC
         if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase) && outOfCountryDecisionTypeOptional.isEmpty()) {
             handleAdaAppeal(asylumCase);
+        } else if (isEjpCase(callback.getCaseDetails().getCaseData())) {
+            //For EJP cases, Out of time is always NO
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
         } else if (!HandlerUtils.isAipJourney(asylumCase)) {
             boolean isOutOfCountry = outOfCountryDecisionTypeOptional.isPresent();
             AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
