@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.List;
@@ -57,6 +58,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         "You will receive an email confirming that this appeal has been submitted successfully.";
     private static final String ADMIN_LABEL =
         "A Legal Officer will check the appeal is valid and all parties will be notified of next steps.";
+    private static final String EJP_LABEL =
+            "A Legal Officer will progress the case to the correct state and upload the relevant documents at each point.";
     private static final String OUT_OF_TIME_DEFAULT_LABEL =
         "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
             + "telling you whether your appeal can go ahead.";
@@ -277,11 +280,15 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                         YesOrNo submissionOutOfTime,
                                         AsylumCase asylumCase) {
         if (isInternalCase(asylumCase)) {
-            postSubmitCallbackResponse.setConfirmationBody(
-                    submissionOutOfTime == NO
-                            ? WHAT_HAPPENS_NEXT_LABEL + ADMIN_LABEL
-                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + OUT_OF_TIME_ADMIN_LABEL
-            );
+            if (isEjpCase(asylumCase)) {
+                postSubmitCallbackResponse.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL + EJP_LABEL);
+            } else {
+                postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                                ? WHAT_HAPPENS_NEXT_LABEL + ADMIN_LABEL
+                                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + OUT_OF_TIME_ADMIN_LABEL
+                );
+            }
         } else {
             postSubmitCallbackResponse.setConfirmationBody(
                     submissionOutOfTime == NO

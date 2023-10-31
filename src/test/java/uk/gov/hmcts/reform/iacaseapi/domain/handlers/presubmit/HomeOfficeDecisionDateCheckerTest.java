@@ -15,6 +15,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -424,6 +426,23 @@ class HomeOfficeDecisionDateCheckerTest {
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("dateOnDecisionLetter is not present")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2023-10-10", "2020-11-10"})
+    void handles_ejp_case(String receivedLetterDate) {
+        final String nowDate = "2023-10-20";
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(1)).write(asylumExtractor.capture(), outOfTime.capture());
+
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
     }
 
 }
