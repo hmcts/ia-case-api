@@ -51,7 +51,7 @@ class ApplyForCostsAppenderTest {
     private YesOrNo applyForCostsHearingType = YesOrNo.YES;
     private String applyForCostsHearingTypeExplanation = "Test explanation";
     private String applyForCostsDecision = "Test decision";
-    private String applyForCostsApplicantType = "Respondent";
+    private String applyForCostsApplicantType = "Home office";
     private String applyForCostsApplicantTypeLegalRep = "Legal representative";
     private String respondentToCostsOrder = "Test name of LegalRep";
     private String respondentToCostsOrderHomeOffice = "Home office";
