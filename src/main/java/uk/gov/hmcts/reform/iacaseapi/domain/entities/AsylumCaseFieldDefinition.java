@@ -818,6 +818,36 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_10(
         "witness10", new TypeReference<WitnessDetails>() {}),
 
+    WITNESS_LIST_ELEMENT_1(
+        "witnessListElement1", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_2(
+        "witnessListElement2", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_3(
+        "witnessListElement3", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_4(
+        "witnessListElement4", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_5(
+        "witnessListElement5", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_6(
+        "witnessListElement6", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_7(
+        "witnessListElement7", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_8(
+        "witnessListElement8", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_9(
+        "witnessListElement9", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_10(
+        "witnessListElement10", new TypeReference<DynamicMultiSelectList>() {}),
+
     WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY(
         "witness1InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
 

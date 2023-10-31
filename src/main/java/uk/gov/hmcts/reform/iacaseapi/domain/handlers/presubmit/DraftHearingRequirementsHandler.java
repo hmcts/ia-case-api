@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
@@ -132,7 +133,18 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             persistWitnessInterpreterCategoryField(asylumCase);
         }
 
+        // WitnessListElement(s) are only needed for the AIP screens, they do not need to be written
+        clearAllWitnessListElementFields(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void clearAllWitnessListElementFields(AsylumCase asylumCase) {
+        int i = 0;
+        while (i < 10) {
+            asylumCase.clear(WITNESS_LIST_ELEMENT_N.get(i));
+            i++;
+        }
     }
 
 

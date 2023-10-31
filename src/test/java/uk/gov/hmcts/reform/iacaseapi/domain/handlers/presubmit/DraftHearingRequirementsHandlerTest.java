@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
@@ -77,6 +78,7 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.WITNESS_COUNT), eq(0));
         verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
+        WITNESS_LIST_ELEMENT_N.forEach(witnessListElement -> verify(asylumCase, times(1)).clear(witnessListElement));
     }
 
     @Test
@@ -155,6 +157,8 @@ class DraftHearingRequirementsHandlerTest {
         WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_LIST_ELEMENT_N.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_LIST_ELEMENT_N.forEach(witnessListElement -> verify(asylumCase, times(1)).clear(witnessListElement));
     }
 
     @Test
@@ -175,6 +179,7 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
         verify(asylumCase, times(0)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        WITNESS_LIST_ELEMENT_N.forEach(witnessListElement -> verify(asylumCase, times(1)).clear(witnessListElement));
     }
 
     @Test
