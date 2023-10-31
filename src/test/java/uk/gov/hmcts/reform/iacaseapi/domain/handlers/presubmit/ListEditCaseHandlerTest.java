@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,6 +57,8 @@ class ListEditCaseHandlerTest {
     private CaseManagementLocationService caseManagementLocationService;
     @Mock
     private DirectionAppender directionAppender;
+    @Mock
+    private List<IdValue<Direction>> listOfDirections;
     private int dueDaysSinceSubmission = 15;
 
     private String directionExplanation = "You have a direction for this case.\n"
@@ -181,6 +186,33 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
         verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DIRECTIONS, expectedListOfDirections);
+    }
+
+    @Test
+    void should_set_flags_and_not_add_direction_if_edit_case_listing() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_CASE_LISTING);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2022-12-01"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        verify(directionAppender, times(0)).append(any(AsylumCase.class),
+                anyList(),
+                anyString(),
+                any(Parties.class),
+                anyString(),
+                any(DirectionTag.class),
+                anyString());
+        verify(asylumCase, times(0)).write(DIRECTIONS, listOfDirections);
     }
 
     @Test

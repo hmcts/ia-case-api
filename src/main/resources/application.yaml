@@ -364,6 +364,7 @@ security:
       - "uploadAddendumEvidenceHomeOffice"
       - "applyForFTPARespondent"
       - "makeAnApplication"
+      - "applyForCosts"
     citizen:
       - "startAppeal"
       - "editAppeal"
