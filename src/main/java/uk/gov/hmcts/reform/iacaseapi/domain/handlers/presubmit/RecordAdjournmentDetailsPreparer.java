@@ -68,7 +68,7 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
             NEXT_HEARING_DATE_FIXED,
             NEXT_HEARING_DATE_RANGE_EARLIEST,
             NEXT_HEARING_DATE_RANGE_LATEST,
-            SHOULD_RESERVE_OR_EXCLUDE_JUDGE,
+            SHOULD_RESERVE_OR_EXCLUDED_JUDGE,
             RESERVE_OR_EXCLUDE_JUDGE,
             NEXT_HEARING_FORMAT).forEach(asylumCase::clear);
     }

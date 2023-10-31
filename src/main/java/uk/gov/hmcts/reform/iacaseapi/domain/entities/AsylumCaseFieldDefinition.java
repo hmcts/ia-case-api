@@ -2041,7 +2041,7 @@ public enum AsylumCaseFieldDefinition {
     NEXT_HEARING_DATE_RANGE_LATEST(
         "nextHearingDateRangeLatest", new TypeReference<String>(){}),
 
-    SHOULD_RESERVE_OR_EXCLUDE_JUDGE(
+    SHOULD_RESERVE_OR_EXCLUDED_JUDGE(
         "shouldReserveOrExcludedJudge", new TypeReference<YesOrNo>(){}),
 
     RESERVE_OR_EXCLUDE_JUDGE(

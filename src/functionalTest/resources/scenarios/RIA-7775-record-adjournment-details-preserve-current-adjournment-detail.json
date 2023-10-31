@@ -1,0 +1,105 @@
+{
+  "description": "RIA-7775 preserve current adjournment detail",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 77751,
+      "eventId": "recordAdjournmentDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "adjournmentDetailsHearing" : {
+            "value": {
+              "code": "hearing1",
+              "label": "Substantive - 31 October 2023"
+            },
+            "list_items": [
+              {
+                "code": "hearing1",
+                "label": "Substantive - 31 October 2023"
+              }
+            ]
+          },
+          "nextHearingDate": "ChooseADateRange",
+          "nextHearingFormat": "Not in Attendance",
+          "nextHearingDuration": "120",
+          "nextHearingLocation": "newcastle",
+          "nextHearingDateFixed": "",
+          "relistCaseImmediately": "Yes",
+          "reserveOrExcludeJudge": "exclude",
+          "hearingAdjournmentWhen": "beforeHearingDate",
+          "additionalAdjournmentInfo": "Important information",
+          "nextHearingDateRangeLatest": "2023-12-01",
+          "anyAdditionalAdjournmentInfo": "Yes",
+          "nextHearingDateRangeEarliest": "2023-11-01",
+          "shouldReserveOrExcludedJudge": "Yes",
+          "hearingAdjournmentDecisionParty": "judge",
+          "hearingAdjournmentRequestingParty": "homeOffice",
+          "hearingAdjournmentDecisionPartyName": "Somebody"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "listing",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "adjournmentDetailsHearing" : {
+          "value": {
+            "code": "hearing1",
+            "label": "Substantive - 31 October 2023"
+          },
+          "list_items": [
+            {
+              "code": "hearing1",
+              "label": "Substantive - 31 October 2023"
+            }
+          ]
+        },
+        "nextHearingDate": "ChooseADateRange",
+        "nextHearingFormat": "Not in Attendance",
+        "nextHearingDuration": "120",
+        "nextHearingLocation": "newcastle",
+        "nextHearingDateFixed": "",
+        "relistCaseImmediately": "Yes",
+        "reserveOrExcludeJudge": "exclude",
+        "hearingAdjournmentWhen": "beforeHearingDate",
+        "additionalAdjournmentInfo": "Important information",
+        "nextHearingDateRangeLatest": "2023-12-01",
+        "anyAdditionalAdjournmentInfo": "Yes",
+        "nextHearingDateRangeEarliest": "2023-11-01",
+        "shouldReserveOrExcludedJudge": "Yes",
+        "hearingAdjournmentDecisionParty": "judge",
+        "hearingAdjournmentRequestingParty": "homeOffice",
+        "hearingAdjournmentDecisionPartyName": "Somebody",
+        "currentAdjournmentDetail": {
+          "nextHearingDate": "ChooseADateRange",
+          "nextHearingFormat": "Not in Attendance",
+          "nextHearingDuration": "120",
+          "nextHearingLocation": "newcastle",
+          "nextHearingDateFixed": "",
+          "relistCaseImmediately": "Yes",
+          "reserveOrExcludeJudge": "exclude",
+          "hearingAdjournmentWhen": "beforeHearingDate",
+          "additionalAdjournmentInfo": "Important information",
+          "adjournmentDetailsHearing": "Substantive - 31 October 2023",
+          "nextHearingDateRangeLatest": "2023-12-01",
+          "anyAdditionalAdjournmentInfo": "Yes",
+          "nextHearingDateRangeEarliest": "2023-11-01",
+          "shouldReserveOrExcludedJudge": "Yes",
+          "hearingAdjournmentDecisionParty": "judge",
+          "hearingAdjournmentRequestingParty": "homeOffice",
+          "hearingAdjournmentDecisionPartyName": "Somebody"
+        },
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "sendDirectionActionAvailable": "Yes"
+      }
+    }
+  }
+}
