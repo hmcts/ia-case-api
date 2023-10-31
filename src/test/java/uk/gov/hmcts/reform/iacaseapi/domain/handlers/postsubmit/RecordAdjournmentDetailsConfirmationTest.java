@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
@@ -62,6 +63,8 @@ class RecordAdjournmentDetailsConfirmationTest {
             .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         PostSubmitCallbackResponse callbackResponse =
             recordAdjournmentDetailsConfirmation.handle(callback);
@@ -78,6 +81,39 @@ class RecordAdjournmentDetailsConfirmationTest {
                 + "The hearing will be adjourned using the details recorded.\n\n"
                 + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
                 + caseId + "#Hearing%20and%20appointment).");
+    }
+
+    @Test
+    void should_return_success_confirmation_when_update_request_failed() {
+        String hearingRequirementsTabUrl =
+                "(/cases/case-details/"
+                        + callback.getCaseDetails().getId()
+                        + "#Hearing%20and%20appointment)";
+
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+                .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+
+        PostSubmitCallbackResponse callbackResponse =
+                recordAdjournmentDetailsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(callbackResponse.getConfirmationHeader().get())
+                .contains("# You have recorded the adjournment details");
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### Do this next\n\n"
+                        + "The hearing could not be automatically updated. You will need to update the "
+                        + "[hearings manually](/cases/case-details/" + caseId + "/hearings )."
+                        + "\n\nThe adjournment details are available on the "
+                        + "[Hearing requirements](/cases/case-details/" + caseId
+                        + "#Hearing%20and%20appointment) tab.");
     }
 
     @Test
