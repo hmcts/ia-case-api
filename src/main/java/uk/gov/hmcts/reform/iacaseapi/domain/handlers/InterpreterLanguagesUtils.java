@@ -51,6 +51,19 @@ public final class InterpreterLanguagesUtils {
         WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY
     );
 
+    public static final List<AsylumCaseFieldDefinition> WITNESS_LIST_ELEMENT_N = List.of(
+        WITNESS_LIST_ELEMENT_1,
+        WITNESS_LIST_ELEMENT_2,
+        WITNESS_LIST_ELEMENT_3,
+        WITNESS_LIST_ELEMENT_4,
+        WITNESS_LIST_ELEMENT_5,
+        WITNESS_LIST_ELEMENT_6,
+        WITNESS_LIST_ELEMENT_7,
+        WITNESS_LIST_ELEMENT_8,
+        WITNESS_LIST_ELEMENT_9,
+        WITNESS_LIST_ELEMENT_10
+    );
+
     public static final List<AsylumCaseFieldDefinition> WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE = List.of(
         WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE,
         WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE,
