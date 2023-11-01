@@ -509,6 +509,8 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).write(eq(WITNESS_DETAILS), anyList());
 
         verify(asylumCase).write(WITNESS_COUNT, 2);
+        verify(asylumCase).clear(WITNESS_1_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_3);
         verify(asylumCase).clear(WITNESS_4);
         verify(asylumCase).clear(WITNESS_5);
