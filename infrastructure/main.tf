@@ -34,11 +34,13 @@ data "azurerm_key_vault" "ia_key_vault" {
 module "ia_case_api_database_11" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.product}-${var.component}-postgres-11-db"
+  location           = "${var.location}"
   env                = "${var.env}"
   database_name      = "${var.postgresql_database_name}"
   postgresql_user    = "${var.postgresql_user}"
   postgresql_version = "11"
   common_tags        =  merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
+  subscription       = "${var.subscription}"
   backup_retention_days = "${var.database_backup_retention_days}"
 }
 
@@ -49,11 +51,9 @@ module "ia_case_api_database_15" {
 
   source          = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   env             = var.env
-  location        = var.location
   product         = var.product
   component       = var.component
   business_area   = "cft"
-  subscription    = var.subscription
   common_tags     = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
   name            = "${var.product}-${var.component}-postgres-15-db"
   pgsql_databases = [
