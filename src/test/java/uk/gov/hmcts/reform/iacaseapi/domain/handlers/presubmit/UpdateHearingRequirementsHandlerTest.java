@@ -512,13 +512,29 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).clear(WITNESS_1_INTERPRETER_SIGN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_3);
+        verify(asylumCase).clear(WITNESS_3_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_4);
+        verify(asylumCase).clear(WITNESS_4_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_5);
+        verify(asylumCase).clear(WITNESS_5_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_6);
+        verify(asylumCase).clear(WITNESS_6_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_7);
+        verify(asylumCase).clear(WITNESS_7_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_8);
+        verify(asylumCase).clear(WITNESS_8_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_9);
+        verify(asylumCase).clear(WITNESS_9_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(WITNESS_10);
+        verify(asylumCase).clear(WITNESS_10_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE);
     }
 
 
