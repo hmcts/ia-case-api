@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -41,9 +42,17 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
                 .map(relist -> YES == relist)
                 .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+        boolean updateRequestSuccess = asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class)
+                .map(requestSuccess -> YES == requestSuccess)
+                .orElse(true);
 
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
+
+        String hearingRequirementsTabUrl =
+                "(/cases/case-details/"
+                        + callback.getCaseDetails().getId()
+                        + "#Hearing%20and%20appointment)";
 
         postSubmitResponse.setConfirmationHeader("# You have recorded the adjournment details");
 
@@ -60,6 +69,15 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
                     + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)\n\n"
                     + "The adjournment details are available on the "
                     + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment)."
+            );
+        } else if (!updateRequestSuccess) {
+            postSubmitResponse.setConfirmationBody(
+                "#### Do this next\n\n"
+                    + "The hearing could not be automatically updated. You will need to update the "
+                    + "[hearings manually](/cases/case-details/" + caseId + "/hearings )."
+                    + "\n\nThe adjournment details are available on the "
+                    + "[Hearing requirements]" + hearingRequirementsTabUrl
+                    + " tab."
             );
         } else if (hearingAdjournmentDay == BEFORE_HEARING_DATE && relistCaseImmediately) {
             postSubmitResponse.setConfirmationBody(

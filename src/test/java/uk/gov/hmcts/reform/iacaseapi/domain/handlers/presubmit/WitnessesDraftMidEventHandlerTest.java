@@ -10,7 +10,17 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_4;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_5;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_6;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_7;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_8;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_9;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -28,8 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -106,41 +114,16 @@ public class WitnessesDraftMidEventHandlerTest {
 
         witnessesDraftMidEventHandler.handle(MID_EVENT, callback);
 
-        DynamicMultiSelectList dynamicMultiSelectListEmpty = new DynamicMultiSelectList();
-        DynamicMultiSelectList dynamicMultiSelectList = new DynamicMultiSelectList(Collections.emptyList(),
-            List.of(new Value("name lastName", "name lastName"))
-        );
-
         verify(asylumCase, times(2)).write(eq(WITNESS_1), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_1), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_1), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_2), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_2), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_2), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_3), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_3), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_3), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_4), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_4), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_4), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_5), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_5), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_5), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_6), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_6), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_6), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_7), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_7), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_7), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_8), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_8), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_8), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_9), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_9), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_9), eq(dynamicMultiSelectList));
         verify(asylumCase, times(2)).write(eq(WITNESS_10), any(WitnessDetails.class));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_10), eq(dynamicMultiSelectListEmpty));
-        verify(asylumCase, times(1)).write(eq(WITNESS_LIST_ELEMENT_10), eq(dynamicMultiSelectList));
     }
 
     @Test

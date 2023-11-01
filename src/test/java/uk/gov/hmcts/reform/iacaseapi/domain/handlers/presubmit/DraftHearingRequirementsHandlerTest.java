@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
@@ -153,7 +152,6 @@ class DraftHearingRequirementsHandlerTest {
         draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         WITNESS_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
-        WITNESS_LIST_ELEMENT_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));

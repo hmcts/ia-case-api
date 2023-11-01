@@ -118,36 +118,20 @@ public class InterpreterLanguagesUtilsTest {
         verify(asylumCase, times(1))
             .clear(WITNESS_2_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_2);
-        verify(asylumCase, times(1))
             .write(WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY, List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue()));
         verify(asylumCase, times(1))
             .clear(WITNESS_4_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_4);
-        verify(asylumCase, times(1))
             .clear(WITNESS_5_INTERPRETER_LANGUAGE_CATEGORY);
-        verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_5);
         verify(asylumCase, times(1))
             .clear(WITNESS_6_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_6);
-        verify(asylumCase, times(1))
             .clear(WITNESS_7_INTERPRETER_LANGUAGE_CATEGORY);
-        verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_7);
         verify(asylumCase, times(1))
             .clear(WITNESS_8_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_8);
-        verify(asylumCase, times(1))
             .clear(WITNESS_9_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_9);
-        verify(asylumCase, times(1))
             .clear(WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY);
-        verify(asylumCase, times(1))
-            .clear(WITNESS_LIST_ELEMENT_10);
     }
 }

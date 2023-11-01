@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ public class WitnessDetails {
     private String witnessPartyId;
     private String witnessName;
     private String witnessFamilyName;
+    private YesOrNo isWitnessDeleted;
 
     public WitnessDetails() {
     }

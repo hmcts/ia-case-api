@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -60,7 +61,7 @@ public class WitnessCaseFlagsHandlerTest {
             .build();
         partyFlagIdValue = new PartyFlagIdValue("partyId1", new StrategicCaseFlag(
             "Tester Name", ROLE_ON_CASE_WITNESS, List.of(new CaseFlagDetail("123", activeCaseFlagValue))));
-        witnessDetails = new WitnessDetails("1234", "Witness1Given", "Witness1Family");
+        witnessDetails = new WitnessDetails("1234", "Witness1Given", "Witness1Family", YesOrNo.NO);
         witnessDetailsList = List.of(new IdValue<>("1", witnessDetails));
 
         witnessCaseFlagsHandler = new WitnessCaseFlagsHandler();

@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
@@ -18,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -40,7 +38,7 @@ public class WitnessInterpreterLanguagesDynamicListUpdater implements PreSubmitC
     public static final String INTERPRETER_LANGUAGES = "InterpreterLanguage";
     public static final String SIGN_LANGUAGES = "SignLanguage";
     public static final String YES = "Yes";
-    protected static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness";
+    protected static final String NO_WITNESSES_SELECTED_ERROR = "Select at least one witness interpreter requirement";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -78,14 +76,12 @@ public class WitnessInterpreterLanguagesDynamicListUpdater implements PreSubmitC
 
         int i = 0;
         while (i < numberOfWitnesses) {
-            DynamicMultiSelectList witnessElement = asylumCase
-                .read(WITNESS_LIST_ELEMENT_N_FIELD.get(i), DynamicMultiSelectList.class).orElse(null);
 
-            boolean witnessSelected = witnessElement != null
-                                      && !witnessElement.getValue().isEmpty()
-                                      && !witnessElement.getValue().get(0).getLabel().isEmpty();
+            boolean witnessNeedInterpreter = !asylumCase
+                .<List<String>>read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i))
+                .orElse(Collections.emptyList()).isEmpty();
 
-            if (witnessSelected) {
+            if (witnessNeedInterpreter) {
 
                 Optional<List<String>> optionalSelectedInterpreterType = asylumCase
                     .read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
