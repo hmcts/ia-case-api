@@ -58,3 +58,4 @@ variable "postgresql_user" {
   default = "ia_case_api"
 }
 
+variable "aks_subscription_id" {}
