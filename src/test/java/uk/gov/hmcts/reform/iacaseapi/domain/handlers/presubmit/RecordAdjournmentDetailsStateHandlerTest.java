@@ -221,7 +221,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
         return Stream.of(
             Arguments.of(ON_HEARING_DATE, YES, 0),
             Arguments.of(ON_HEARING_DATE, NO, 0),
-            Arguments.of(BEFORE_HEARING_DATE, YES, 0),
+            Arguments.of(BEFORE_HEARING_DATE, YES, 1),
             Arguments.of(BEFORE_HEARING_DATE, NO, 1)
         );
     }
