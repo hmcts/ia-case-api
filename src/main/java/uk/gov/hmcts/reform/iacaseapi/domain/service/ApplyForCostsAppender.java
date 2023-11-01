@@ -52,6 +52,9 @@ public class ApplyForCostsAppender {
         requireNonNull(legalRepName);
 
         String applicant = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
+        if (applicant.equals(respondent)) {
+            applicant = homeOffice;
+        }
 
         final ApplyForCosts newApplyForCosts = new ApplyForCosts(
                 appliedCostsType,
@@ -82,7 +85,7 @@ public class ApplyForCostsAppender {
 
     private String resolveRespondentToCostsOrder(String applicant, String legalRepName) {
         return switch (applicant) {
-            case respondent -> legalRepName;
+            case homeOffice -> legalRepName;
             case legalRepresentative -> homeOffice;
             default -> throw new IllegalStateException("Provided applicant is not valid");
         };
