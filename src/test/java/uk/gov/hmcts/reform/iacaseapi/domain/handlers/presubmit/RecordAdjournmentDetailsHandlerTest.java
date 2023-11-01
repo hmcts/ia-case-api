@@ -83,7 +83,7 @@ public class RecordAdjournmentDetailsHandlerTest {
             .nextHearingDateFixed("")
             .nextHearingDateRangeEarliest("")
             .nextHearingDateRangeLatest("")
-            .shouldReserveOrExcludedJudge("")
+            .shouldReserveOrExcludeJudge("")
             .reserveOrExcludeJudge("")
             .build();
 

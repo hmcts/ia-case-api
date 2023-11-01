@@ -35,7 +35,7 @@
           "nextHearingDateRangeLatest": "2023-12-01",
           "anyAdditionalAdjournmentInfo": "Yes",
           "nextHearingDateRangeEarliest": "2023-11-01",
-          "shouldReserveOrExcludedJudge": "Yes",
+          "shouldReserveOrExcludeJudge": "Yes",
           "hearingAdjournmentDecisionParty": "judge",
           "hearingAdjournmentRequestingParty": "homeOffice",
           "hearingAdjournmentDecisionPartyName": "Somebody"
@@ -74,7 +74,7 @@
         "nextHearingDateRangeLatest": "2023-12-01",
         "anyAdditionalAdjournmentInfo": "Yes",
         "nextHearingDateRangeEarliest": "2023-11-01",
-        "shouldReserveOrExcludedJudge": "Yes",
+        "shouldReserveOrExcludeJudge": "Yes",
         "hearingAdjournmentDecisionParty": "judge",
         "hearingAdjournmentRequestingParty": "homeOffice",
         "hearingAdjournmentDecisionPartyName": "Somebody",
@@ -92,7 +92,7 @@
           "nextHearingDateRangeLatest": "2023-12-01",
           "anyAdditionalAdjournmentInfo": "Yes",
           "nextHearingDateRangeEarliest": "2023-11-01",
-          "shouldReserveOrExcludedJudge": "Yes",
+          "shouldReserveOrExcludeJudge": "Yes",
           "hearingAdjournmentDecisionParty": "judge",
           "hearingAdjournmentRequestingParty": "homeOffice",
           "hearingAdjournmentDecisionPartyName": "Somebody"

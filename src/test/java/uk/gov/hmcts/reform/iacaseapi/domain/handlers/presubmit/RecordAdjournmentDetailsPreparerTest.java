@@ -82,7 +82,7 @@ public class RecordAdjournmentDetailsPreparerTest {
             NEXT_HEARING_DATE_FIXED,
             NEXT_HEARING_DATE_RANGE_EARLIEST,
             NEXT_HEARING_DATE_RANGE_LATEST,
-            SHOULD_RESERVE_OR_EXCLUDED_JUDGE,
+            SHOULD_RESERVE_OR_EXCLUDE_JUDGE,
             RESERVE_OR_EXCLUDE_JUDGE,
             NEXT_HEARING_FORMAT).forEach(field -> verify(asylumCase).clear(field));
     }

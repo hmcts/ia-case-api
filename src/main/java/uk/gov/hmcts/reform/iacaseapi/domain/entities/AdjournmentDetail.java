@@ -22,6 +22,6 @@ public class AdjournmentDetail {
     private String nextHearingDateFixed;
     private String nextHearingDateRangeEarliest;
     private String nextHearingDateRangeLatest;
-    private String shouldReserveOrExcludedJudge;
+    private String shouldReserveOrExcludeJudge;
     private String reserveOrExcludeJudge;
 }

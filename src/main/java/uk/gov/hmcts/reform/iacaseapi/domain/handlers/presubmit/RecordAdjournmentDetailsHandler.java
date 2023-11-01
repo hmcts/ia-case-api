@@ -97,7 +97,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
                         .orElse(""))
                 .nextHearingDateRangeLatest(asylumCase.read(NEXT_HEARING_DATE_RANGE_LATEST, String.class)
                         .orElse(""))
-                .shouldReserveOrExcludedJudge(asylumCase.read(SHOULD_RESERVE_OR_EXCLUDED_JUDGE, YesOrNo.class)
+                .shouldReserveOrExcludeJudge(asylumCase.read(SHOULD_RESERVE_OR_EXCLUDE_JUDGE, YesOrNo.class)
                         .map(YesOrNo::toString).orElse(""))
                 .reserveOrExcludeJudge(asylumCase.read(RESERVE_OR_EXCLUDE_JUDGE, String.class).orElse(""))
                 .build());
