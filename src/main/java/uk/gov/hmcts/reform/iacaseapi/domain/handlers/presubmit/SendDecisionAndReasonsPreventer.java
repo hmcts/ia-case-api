@@ -21,37 +21,37 @@ public class SendDecisionAndReasonsPreventer implements PreSubmitCallbackHandler
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                && callback.getEvent() == Event.SEND_DECISION_AND_REASONS;
+               && callback.getEvent() == Event.SEND_DECISION_AND_REASONS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
         YesOrNo decisionAndReasonsAvailable =
                 asylumCase.read(DECISION_AND_REASONS_AVAILABLE, YesOrNo.class)
-                        .orElseThrow(() -> new IllegalStateException("decisionAndReasonsAvailable must be present complete decision and reasons"));
+                    .orElseThrow(() -> new IllegalStateException("decisionAndReasonsAvailable must be present complete decision and reasons"));
 
         if (decisionAndReasonsAvailable.equals(YesOrNo.NO)) {
 
             PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse =
-                    new PreSubmitCallbackResponse<>(asylumCase);
+                new PreSubmitCallbackResponse<>(asylumCase);
 
             asylumCasePreSubmitCallbackResponse.addError("You must generate the Decision and reasons draft before completing the Decision and reasons");
 
