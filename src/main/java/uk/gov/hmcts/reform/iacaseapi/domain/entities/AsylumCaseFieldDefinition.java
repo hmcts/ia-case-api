@@ -1991,6 +1991,15 @@ public enum AsylumCaseFieldDefinition {
     NEXT_HEARING_FORMAT(
             "nextHearingFormat", new TypeReference<DynamicList>(){}),
 
+    NEXT_HEARING_DURATION(
+            "nextHearingDuration", new TypeReference<String>(){}),
+
+    NEXT_HEARING_LOCATION(
+            "nextHearingLocation", new TypeReference<HearingCentre>(){}),
+
+    ADJOURNMENT_DETAILS_HEARING(
+            "adjournmentDetailsHearing", new TypeReference<DynamicList>(){}),
+
     HEARING_ADJOURNMENT_WHEN(
             "hearingAdjournmentWhen", new TypeReference<HearingAdjournmentDay>(){}),
 
