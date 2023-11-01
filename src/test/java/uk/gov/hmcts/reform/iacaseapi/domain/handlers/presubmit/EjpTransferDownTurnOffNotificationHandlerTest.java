@@ -7,10 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Optional;
@@ -49,6 +48,7 @@ class EjpTransferDownTurnOffNotificationHandlerTest {
         ejpTransferDownTurnOffNotificationHandler = new EjpTransferDownTurnOffNotificationHandler();
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
@@ -56,7 +56,7 @@ class EjpTransferDownTurnOffNotificationHandlerTest {
 
     @Test
     void handler_should_write_is_notification_turned_off_if_transferred_from_upper_tribunal() {
-        when(asylumCase.read(SOURCE_OF_APPEAL, String.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue()));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 ejpTransferDownTurnOffNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -68,7 +68,7 @@ class EjpTransferDownTurnOffNotificationHandlerTest {
 
     @Test
     void handler_should_not_write_is_notification_turned_off_if_not_transferred_from_upper_tribunal() {
-        when(asylumCase.read(SOURCE_OF_APPEAL, String.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM.getValue()));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 ejpTransferDownTurnOffNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -116,5 +116,18 @@ class EjpTransferDownTurnOffNotificationHandlerTest {
         assertThatThrownBy(() -> ejpTransferDownTurnOffNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void handling_should_throw_if_cannot_actually_handle() {
+
+        assertThatThrownBy(() -> ejpTransferDownTurnOffNotificationHandler.handle(ABOUT_TO_START, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        assertThatThrownBy(() -> ejpTransferDownTurnOffNotificationHandler.handle(ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 }

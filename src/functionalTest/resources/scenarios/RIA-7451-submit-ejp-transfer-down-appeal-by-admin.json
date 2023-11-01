@@ -7,27 +7,12 @@
       "eventId": "submitAppeal",
       "state": "appealSubmitted",
       "caseData": {
-        "template": "minimal-appeal-started.json",
+        "template": "minimal-ejp-appeal-started.json",
         "replacements": {
-          "isAdmin": "Yes",
           "appealReferenceNumber": "PA/12345/2018",
-          "appellantInUk": "Yes",
-          "appellantInDetention": "No",
-          "decisionLetterReceivedDate": "{$TODAY}",
-          "sourceOfAppeal": "transferredFromUpperTribunal",
-          "uploadTheAppealFormDocs": [
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
-                  "document_filename": "some-appeal-form.pdf",
-                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
-                },
-                "description": "some appeal form description"
-              }
-            }
-          ]
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse"
         }
       }
     }
@@ -36,30 +21,13 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-submitted.json",
+      "template": "minimal-ejp-appeal-submitted.json",
       "replacements": {
-        "isAdmin": "Yes",
-        "ircName": null,
-        "legalRepresentativeName": null,
-        "legalRepresentativeEmailAddress": null,
-        "legalRepCompany": null,
         "appealReferenceNumber": "PA/12345/2018",
         "isNotificationTurnedOff": "Yes",
-        "tribunalDocuments": [
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
-                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
-                "document_filename": "PA/12345/2018-Talha Awan-appeal form1.pdf"
-              },
-              "description": "some appeal form description",
-              "dateUploaded": "{$TODAY}",
-              "tag": "appealForm"
-            }
-          }
-        ]
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse",
+        "hearingCentre": "taylorHouse"
       }
     }
   }

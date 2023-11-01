@@ -2,13 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -28,8 +27,11 @@ public class EjpTransferDownTurnOffNotificationHandler implements PreSubmitCallb
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && isInternalCase(callback.getCaseDetails().getCaseData())
+                && isInternalCase(asylumCase)
+                && isEjpCase(asylumCase)
                 && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
@@ -43,10 +45,7 @@ public class EjpTransferDownTurnOffNotificationHandler implements PreSubmitCallb
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        Optional<String> sourceOfAppeal = asylumCase
-                .read(SOURCE_OF_APPEAL, String.class);
-
-        if (sourceOfAppeal.isPresent() && sourceOfAppeal.get().equals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue())) {
+        if (sourceOfAppealEjp(asylumCase)) {
             asylumCase.write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
         }
 
