@@ -44,10 +44,7 @@ public class EjpTransferDownTurnOffNotificationHandler implements PreSubmitCallb
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        if (sourceOfAppealEjp(asylumCase)) {
-            asylumCase.write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
-        }
+        asylumCase.write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

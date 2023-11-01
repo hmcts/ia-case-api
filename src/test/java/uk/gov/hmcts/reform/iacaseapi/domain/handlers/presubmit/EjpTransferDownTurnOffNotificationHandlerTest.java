@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -56,8 +55,6 @@ class EjpTransferDownTurnOffNotificationHandlerTest {
 
     @Test
     void handler_should_write_is_notification_turned_off_if_transferred_from_upper_tribunal() {
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
-
         PreSubmitCallbackResponse<AsylumCase> response =
                 ejpTransferDownTurnOffNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -67,14 +64,10 @@ class EjpTransferDownTurnOffNotificationHandlerTest {
     }
 
     @Test
-    void handler_should_not_write_is_notification_turned_off_if_not_transferred_from_upper_tribunal() {
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-                ejpTransferDownTurnOffNotificationHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response).isNotNull();
-        verify(asylumCase, times(0)).write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
+    void dont_handle_if_admin_but_not_transferred_from_upper_tribunal() {
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        boolean canHandle = ejpTransferDownTurnOffNotificationHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        assertFalse(canHandle);
     }
 
     @Test
