@@ -105,6 +105,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
 
             filterOutDeletedFieldsAndCompress(inclusiveWitnessDetails, asylumCase);
             filterOutDeletedWitnessesAndCompress(nonDeletedWitnesses, asylumCase);
+            clearLanguagesAccordingToCategories(asylumCase);
         }
 
         asylumCase.write(DISABLE_OVERVIEW_PAGE, YES);
@@ -139,6 +140,22 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void clearLanguagesAccordingToCategories(AsylumCase asylumCase) {
+        int i = 0;
+        while (i < 10) {
+            Optional<List<String>> categoriesOpt = asylumCase.read(WITNESS_N_INTERPRETER_CATEGORY_FIELD.get(i));
+            List<String> categories = categoriesOpt.orElse(Collections.emptyList());
+
+            if (!categories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
+                asylumCase.clear(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i));
+            }
+            if (!categories.contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
+                asylumCase.clear(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i));
+            }
+            i++;
+        }
     }
 
     private void changeUpdateHearingsApplicationsToCompleted(AsylumCase asylumCase) {
