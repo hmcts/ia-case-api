@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7447 Submit an EJP appeal by admin",
+  "description": "RIA-7451 Submit an EJP transfer down appeal by admin should turn off notifications",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-ejp-appeal-started.json",
         "replacements": {
-          "appealReferenceNumber": "HU/50001/2023",
+          "appealReferenceNumber": "PA/12345/2018",
           "appellantInDetention": "Yes",
           "detentionFacility": "immigrationRemovalCentre",
           "ircName": "Brookhouse"
@@ -23,9 +23,10 @@
     "caseData": {
       "template": "minimal-ejp-appeal-submitted.json",
       "replacements": {
+        "appealReferenceNumber": "PA/12345/2018",
+        "isNotificationTurnedOff": "Yes",
         "detentionFacility": "immigrationRemovalCentre",
         "ircName": "Brookhouse",
-        "appealReferenceNumber": "HU/50001/2023",
         "hearingCentre": "taylorHouse"
       }
     }

@@ -52,6 +52,12 @@ public class HandlerUtils {
         return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 
+    // This method uses the field isNotificationTurnedOff to check if
+    // notification need to be sent, in scope of EJP transfer down cases.
+    public static boolean isNotificationTurnedOff(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
     public static String getAdaSuffix() {
         return "_ada";
     }

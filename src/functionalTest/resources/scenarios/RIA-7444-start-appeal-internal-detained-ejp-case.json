@@ -7,18 +7,12 @@
       "eventId": "startAppeal",
       "state": "appealStartedByAdmin",
       "caseData": {
-        "template": "minimal-appeal-started.json",
+        "template": "minimal-ejp-appeal-started.json",
         "replacements": {
-          "isAdmin": "Yes",
-          "isEjp": "Yes",
           "isNabaEnabled": "Yes",
-          "sourceOfAppeal": "transferredFromUpperTribunal",
           "appellantInDetention": "Yes",
           "detentionFacility": "immigrationRemovalCentre",
-          "ircName": "Brookhouse",
-          "appellantInUk": null,
-          "appealTypeForDisplay": "protection",
-          "appealType": "protection"
+          "ircName": "Brookhouse"
         }
       }
     }
@@ -27,18 +21,12 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-started.json",
+      "template": "minimal-ejp-appeal-started.json",
       "replacements": {
-        "isAdmin": "Yes",
-        "isEjp": "Yes",
         "isNabaEnabled": "Yes",
-        "sourceOfAppeal": "transferredFromUpperTribunal",
         "appellantInDetention": "Yes",
         "detentionFacility": "immigrationRemovalCentre",
-        "ircName": "Brookhouse",
-        "appellantInUk": null,
-        "appealTypeForDisplay": "protection",
-        "appealType": "protection"
+        "ircName": "Brookhouse"
       }
     }
   }
