@@ -1987,25 +1987,6 @@ public enum AsylumCaseFieldDefinition {
 
     CHANGE_HEARING_LOCATION(
             "changeHearingLocation", new TypeReference<String>(){}),
-
-    NEXT_HEARING_FORMAT(
-            "nextHearingFormat", new TypeReference<DynamicList>(){}),
-
-    NEXT_HEARING_DURATION(
-            "nextHearingDuration", new TypeReference<String>(){}),
-
-    NEXT_HEARING_LOCATION(
-            "nextHearingLocation", new TypeReference<HearingCentre>(){}),
-
-    ADJOURNMENT_DETAILS_HEARING(
-            "adjournmentDetailsHearing", new TypeReference<DynamicList>(){}),
-
-    HEARING_ADJOURNMENT_WHEN(
-            "hearingAdjournmentWhen", new TypeReference<HearingAdjournmentDay>(){}),
-
-    RELIST_CASE_IMMEDIATELY(
-            "relistCaseImmediately", new TypeReference<YesOrNo>(){}),
-
     IS_INTEGRATED(
             "isIntegrated", new TypeReference<YesOrNo>(){}),
 
@@ -2017,7 +1998,63 @@ public enum AsylumCaseFieldDefinition {
         "manualUpdateHearingRequired", new TypeReference<YesOrNo>(){}),
 
     UPDATE_HMC_REQUEST_SUCCESS(
-            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {});
+            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {}),
+    NEXT_HEARING_FORMAT(
+        "nextHearingFormat", new TypeReference<DynamicList>(){}),
+
+    HEARING_ADJOURNMENT_WHEN(
+        "hearingAdjournmentWhen", new TypeReference<HearingAdjournmentDay>(){}),
+
+    RELIST_CASE_IMMEDIATELY(
+        "relistCaseImmediately", new TypeReference<YesOrNo>(){}),
+
+    NEXT_HEARING_LOCATION(
+        "nextHearingLocation", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DURATION(
+        "nextHearingDuration", new TypeReference<String>(){}),
+
+    HEARING_ADJOURNMENT_DECISION_PARTY(
+        "hearingAdjournmentDecisionParty", new TypeReference<String>(){}),
+
+    HEARING_ADJOURNMENT_DECISION_PARTY_NAME(
+        "hearingAdjournmentDecisionPartyName", new TypeReference<String>(){}),
+
+    HEARING_ADJOURNMENT_REQUESTING_PARTY(
+        "hearingAdjournmentRequestingParty", new TypeReference<String>(){}),
+
+    ANY_ADDITIONAL_ADJOURNMENT_INFO(
+        "anyAdditionalAdjournmentInfo", new TypeReference<YesOrNo>(){}),
+
+    ADDITIONAL_ADJOURNMENT_INFO(
+        "additionalAdjournmentInfo", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE(
+        "nextHearingDate", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE_FIXED(
+        "nextHearingDateFixed", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE_RANGE_EARLIEST(
+        "nextHearingDateRangeEarliest", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE_RANGE_LATEST(
+        "nextHearingDateRangeLatest", new TypeReference<String>(){}),
+
+    SHOULD_RESERVE_OR_EXCLUDE_JUDGE(
+        "shouldReserveOrExcludeJudge", new TypeReference<YesOrNo>(){}),
+
+    RESERVE_OR_EXCLUDE_JUDGE(
+        "reserveOrExcludeJudge", new TypeReference<String>(){}),
+
+    ADJOURNMENT_DETAILS_HEARING(
+        "adjournmentDetailsHearing", new TypeReference<DynamicList>(){}),
+
+    CURRENT_ADJOURNMENT_DETAIL(
+            "currentAdjournmentDetail", new TypeReference<AdjournmentDetail>(){}),
+
+    PREVIOUS_ADJOURNMENT_DETAILS(
+        "previousAdjournmentDetails", new TypeReference<List<IdValue<AdjournmentDetail>>>(){});
 
     private final String value;
     private final TypeReference typeReference;

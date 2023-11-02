@@ -6,10 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.Arrays;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,34 @@ public class RecordAdjournmentDetailsPreparerTest {
         recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback);
 
         verify(iaHearingsApiService, times(1)).aboutToStart(callback);
+    }
+
+    @Test
+    void should_clear_all_fields() {
+
+        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
+
+        recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback);
+
+        Arrays.asList(
+            ADJOURNMENT_DETAILS_HEARING,
+            HEARING_ADJOURNMENT_WHEN,
+            RELIST_CASE_IMMEDIATELY,
+            NEXT_HEARING_LOCATION,
+            NEXT_HEARING_DURATION,
+            HEARING_ADJOURNMENT_DECISION_PARTY,
+            HEARING_ADJOURNMENT_DECISION_PARTY_NAME,
+            HEARING_ADJOURNMENT_REQUESTING_PARTY,
+            ANY_ADDITIONAL_ADJOURNMENT_INFO,
+            ADDITIONAL_ADJOURNMENT_INFO,
+            NEXT_HEARING_DATE,
+            NEXT_HEARING_DATE_FIXED,
+            NEXT_HEARING_DATE_RANGE_EARLIEST,
+            NEXT_HEARING_DATE_RANGE_LATEST,
+            SHOULD_RESERVE_OR_EXCLUDE_JUDGE,
+            RESERVE_OR_EXCLUDE_JUDGE,
+            NEXT_HEARING_FORMAT).forEach(field -> verify(asylumCase).clear(field));
     }
 
     @Test

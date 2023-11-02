@@ -1,8 +1,8 @@
 {
   "description": "RIA-7769 prepopulate data for record adjournment details",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "enabled": "true",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "recordAdjournmentDetails",
@@ -11,7 +11,18 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isWitnessesAttending": "No",
-          "hearingChannel": "glasgow",
+          "hearingChannel": {
+            "value": {
+              "code": "INTER",
+              "label": "In Person"
+            },
+            "list_items": [
+              {
+                "code": "INTER",
+                "label": "In Person"
+              }
+            ]
+          },
           "listCaseHearingLength": "60",
           "listCaseHearingCentre": "glasgowTribunalsCentre"
         }
@@ -25,7 +36,18 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "isWitnessesAttending": "No",
-        "nextHearingFormat": "test",
+        "nextHearingFormat": {
+          "value": {
+            "code": "INTER",
+            "label": "In Person"
+          },
+          "list_items": [
+            {
+              "code": "INTER",
+              "label": "In Person"
+            }
+          ]
+        },
         "nextHearingDuration": "60",
         "nextHearingLocation": "glasgowTribunalsCentre"
       }
