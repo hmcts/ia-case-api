@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -51,6 +52,8 @@ class RecordAdjournmentDetailsConfirmationTest {
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
+        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
 
         recordAdjournmentDetailsConfirmation =
             new RecordAdjournmentDetailsConfirmation();
@@ -236,5 +239,34 @@ class RecordAdjournmentDetailsConfirmationTest {
         assertThatThrownBy(() -> recordAdjournmentDetailsConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_return_confirmation_if_manual_cancel_hearing_required() {
+
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordAdjournmentDetailsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(callbackResponse.getConfirmationHeader().get())
+            .contains("# You have recorded the adjournment details");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next\n\n"
+                + "All parties will be informed of the decision to adjourn without a date.\n\n"
+                + "The hearing could not be automatically cancelled. "
+                + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)\n\n"
+                + "The adjournment details are available on the "
+                + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment).");
     }
 }
