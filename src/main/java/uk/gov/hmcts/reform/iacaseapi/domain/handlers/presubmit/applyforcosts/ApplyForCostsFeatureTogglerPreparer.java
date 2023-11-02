@@ -45,7 +45,7 @@ public class ApplyForCostsFeatureTogglerPreparer implements PreSubmitCallbackHan
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         if (!isApplyForCostsFeatureEnabled) {
-            response.addError("The 'Apply for costs' feature is not enabled.");
+            response.addError("You cannot currently use this service to apply for costs");
         }
 
         return response;

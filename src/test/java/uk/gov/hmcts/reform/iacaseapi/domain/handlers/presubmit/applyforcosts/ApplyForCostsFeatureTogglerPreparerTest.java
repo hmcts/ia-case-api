@@ -69,7 +69,7 @@ class ApplyForCostsFeatureTogglerPreparerTest {
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
-        assertThat(response.getErrors()).contains("The 'Apply for costs' feature is not enabled.");
+        assertThat(response.getErrors()).contains("You cannot currently use this service to apply for costs");
     }
 
     @Test
