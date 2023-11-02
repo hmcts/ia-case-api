@@ -63,3 +63,5 @@ variable "database_backup_retention_days" {
 }
 
 variable "aks_subscription_id" {}
+
+variable "jenkins_AAD_objectId" {}
