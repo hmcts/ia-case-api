@@ -63,8 +63,6 @@ module "ia_case_api_database_14" {
   ]
 
   pgsql_version   = "14"
-
-  admin_user_object_id = var.jenkins_AAD_objectId
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-11" {
