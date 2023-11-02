@@ -48,7 +48,6 @@ module "ia_case_api_database_15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-
   source          = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   env             = var.env
   product         = var.product
@@ -61,9 +60,13 @@ module "ia_case_api_database_15" {
       name : var.postgresql_database_name
     }
   ]
-
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql,pg_stat_statements,pg_buffercache,hypopg"
+    }
+  ]
   pgsql_version   = "15"
-
   admin_user_object_id = var.jenkins_AAD_objectId
 }
 
