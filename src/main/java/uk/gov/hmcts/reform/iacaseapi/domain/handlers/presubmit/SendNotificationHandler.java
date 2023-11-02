@@ -5,8 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -55,6 +54,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isNotificationTurnedOff(asylumCase)) {
+            return false;
+        }
 
         if (isInternalCase(asylumCase)) {
             return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
