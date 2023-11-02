@@ -51,4 +51,11 @@
         <cve>CVE-2023-45648</cve>
         <cve>CVE-2023-5072</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jose4j-0.7.7.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bitbucket\.b_c/jose4j@.*$</packageUrl>
+        <cpe>cpe:/a:jose4j_project:jose4j</cpe>
+    </suppress>
 </suppressions>
