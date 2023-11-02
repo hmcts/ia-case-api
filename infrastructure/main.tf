@@ -63,7 +63,7 @@ module "ia_case_api_database_15" {
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
-      value = "plpgsql,pg_stat_statements,pg_buffercache,hypopg"
+      value = "plpgsql,pg_stat_statements,pg_buffercache"
     }
   ]
   pgsql_version   = "15"
