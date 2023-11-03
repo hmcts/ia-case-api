@@ -60,6 +60,7 @@ module "ia-case-api-db-v15" {
       name : var.postgresql_database_name
     }
   ]
+  subnet_suffix = "expanded"
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
