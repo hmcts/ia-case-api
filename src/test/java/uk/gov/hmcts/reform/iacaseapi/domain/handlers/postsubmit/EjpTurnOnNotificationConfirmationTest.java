@@ -23,7 +23,7 @@ public class EjpTurnOnNotificationConfirmationTest {
     @Mock
     private Callback<AsylumCase> callback;
     private EjpTurnOnNotificationConfirmation ejpTurnOnNotificationConfirmation = new EjpTurnOnNotificationConfirmation();
-    
+
     @Test
     void should_return_confirmation() {
 
