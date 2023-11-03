@@ -292,6 +292,7 @@ security:
       - "draftHearingRequirements"
       - "recordAttendeesAndDuration"
       - "uploadHearingRecording"
+      - "turnOnNotifications"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -338,6 +339,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "updateDetentionLocation"
+      - "turnOnNotifications"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

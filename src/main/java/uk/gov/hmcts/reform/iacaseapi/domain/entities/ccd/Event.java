@@ -127,6 +127,7 @@ public enum Event {
     MARK_AS_READY_FOR_UT_TRANSFER("markAsReadyForUtTransfer"),
     UPDATE_DETENTION_LOCATION("updateDetentionLocation"),
     APPLY_FOR_COSTS("applyForCosts"),
+    TURN_ON_NOTIFICATIONS("turnOnNotifications"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
