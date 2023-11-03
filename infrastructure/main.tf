@@ -56,8 +56,8 @@ module "ia-case-api-db-v15" {
   common_tags     = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
   name            = "${var.product}-${var.component}-postgres-db-v15"
 
-   # The original subnet is full, this is required to use the new subnet for new databases
-    subnet_suffix = "expanded"
+  # The original subnet is full, this is required to use the new subnet for new databases
+  subnet_suffix = "expanded"
 
   pgsql_databases = [
     {
