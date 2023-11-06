@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndReque
 public class UpdateHearingRequirementsHandler extends WitnessHandler
     implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String LIST_YES = "Yes";
     private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final FeatureToggler featureToggler;
 
@@ -106,6 +107,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
             filterOutDeletedFieldsAndCompress(inclusiveWitnessDetails, asylumCase);
             filterOutDeletedWitnessesAndCompress(nonDeletedWitnesses, asylumCase);
             clearLanguagesAccordingToCategories(asylumCase);
+            sanitizeLanguageComplexType(asylumCase);
         }
 
         asylumCase.write(DISABLE_OVERVIEW_PAGE, YES);
@@ -140,6 +142,52 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    /*
+    Based on whether the user selected or deselected the manual language option. If selected, clear dynamic list.
+    If unselected, clear manual language description.
+     */
+    private void sanitizeLanguageComplexType(AsylumCase asylumCase) {
+        int i = 0;
+        while (i < 10) {
+            InterpreterLanguageRefData sanitizedComplexType;
+            Optional<InterpreterLanguageRefData> spoken =
+                asylumCase.read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
+
+            if (spoken.isPresent()) {
+                InterpreterLanguageRefData spokenComplexType = spoken.get();
+
+                sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+                asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i), sanitizedComplexType);
+            }
+
+            Optional<InterpreterLanguageRefData> sign =
+                asylumCase.read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
+
+            if (sign.isPresent()) {
+                InterpreterLanguageRefData signComplexType = sign.get();
+
+                sanitizedComplexType = clearComplexTypeField(signComplexType);
+                asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), sanitizedComplexType);
+            }
+
+            i++;
+        }
+    }
+
+    private InterpreterLanguageRefData clearComplexTypeField(InterpreterLanguageRefData languageComplexType) {
+        if (languageComplexType.getLanguageManualEntry().isEmpty()
+            && languageComplexType.getLanguageManualEntryDescription() != null) {
+
+            languageComplexType.setLanguageManualEntryDescription(null);
+
+        } else if (languageComplexType.getLanguageManualEntry().contains(LIST_YES)
+                   && languageComplexType.getLanguageRefData() != null) {
+
+            languageComplexType.setLanguageRefData(null);
+        }
+        return languageComplexType;
     }
 
     private void clearLanguagesAccordingToCategories(AsylumCase asylumCase) {

@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -64,7 +63,7 @@ public class AppellantInterpreterLanguageFlagsHandler implements PreSubmitCallba
         String currentDateTime = systemDateProvider.nowWithTime().toString();
 
         handleInterpreterLanguage(asylumCase, INTERPRETER_LANGUAGE_FLAG, currentDateTime);
-        handleInterpreterLanguage(asylumCase, SIGN_LANGUAGE, currentDateTime);
+        handleInterpreterLanguage(asylumCase, StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER, currentDateTime);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

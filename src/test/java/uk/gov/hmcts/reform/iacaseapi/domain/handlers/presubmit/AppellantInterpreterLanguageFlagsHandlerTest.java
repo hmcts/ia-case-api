@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -50,6 +49,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -220,7 +220,7 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(SIGN_LANGUAGE.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
         assertEquals("Active", flagDetails.get(0).getValue().getStatus());
         assertEquals(signLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
     }
@@ -247,7 +247,7 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(SIGN_LANGUAGE.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
         assertEquals("Active", flagDetails.get(0).getValue().getStatus());
         assertEquals(signLanguageValue.getLabel(), flagDetails.get(0).getValue().getSubTypeValue());
     }
@@ -263,8 +263,8 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
-            .flagCode(SIGN_LANGUAGE.getFlagCode())
-            .name(SIGN_LANGUAGE.getName())
+            .flagCode(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode())
+            .name(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getName())
             .subTypeKey(signLanguageValue.getCode())
             .subTypeValue(signLanguageValue.getLabel())
             .status("Active")
@@ -284,7 +284,7 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(SIGN_LANGUAGE.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
+        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
         assertEquals("Inactive", flagDetails.get(0).getValue().getStatus());
         assertEquals(signLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
     }
