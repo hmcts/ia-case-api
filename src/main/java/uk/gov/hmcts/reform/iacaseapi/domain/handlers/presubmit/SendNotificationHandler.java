@@ -95,6 +95,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
             Event.SUBMIT_TIME_EXTENSION,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.RECORD_ADJOURNMENT_DETAILS,
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
             Event.SUBMIT_CMA_REQUIREMENTS,
