@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -91,7 +91,7 @@ public class WitnessInterpreterLanguageFlagsHandler extends WitnessCaseFlagsHand
 
             Language selectedSignLanguage = witnessesSignLanguageMap.get(details.getWitnessPartyId());
             flagsUpdated |= tryUpdate(
-                strategicCaseFlagService, SIGN_LANGUAGE, currentDateTime, selectedSignLanguage);
+                strategicCaseFlagService, SIGN_LANGUAGE_INTERPRETER, currentDateTime, selectedSignLanguage);
 
             if (flagsUpdated) {
                 caseDataUpdated = true;
