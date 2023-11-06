@@ -1827,6 +1827,12 @@ public enum AsylumCaseFieldDefinition {
 
     IS_NOTIFICATION_TURNED_OFF(
             "isNotificationTurnedOff", new TypeReference<YesOrNo>() {}),
+
+    UT_TRANSFER_DOC(
+            "utTransferDoc", new TypeReference<List<IdValue<Document>>>(){}),
+
+    UPLOAD_EJP_APPEAL_FORM_DOCS(
+            "uploadEjpAppealFormDocs", new TypeReference<List<IdValue<Document>>>(){}),
     ;
 
     private final String value;
