@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -217,8 +217,8 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
             .builder()
-            .flagCode(SIGN_LANGUAGE.getFlagCode())
-            .name(SIGN_LANGUAGE.getName())
+            .flagCode(SIGN_LANGUAGE_INTERPRETER.getFlagCode())
+            .name(SIGN_LANGUAGE_INTERPRETER.getName())
             .subTypeKey(signLanguageValue.getCode())
             .subTypeValue(signLanguageValue.getLabel())
             .status(ACTIVE_STATUS)

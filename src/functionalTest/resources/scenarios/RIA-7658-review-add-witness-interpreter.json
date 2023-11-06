@@ -159,7 +159,7 @@
                 {
                   "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
                   "value": {
-                    "name": "Sign Language",
+                    "name": "Sign Language Interpreter",
                     "subTypeValue": "manual sign language",
                     "status": "Active",
                     "flagCode": "RA0042"
