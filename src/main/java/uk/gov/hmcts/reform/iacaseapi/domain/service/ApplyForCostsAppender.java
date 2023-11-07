@@ -37,19 +37,27 @@ public class ApplyForCostsAppender {
             YesOrNo applyForCostsHearingType,
             String applyForCostsHearingTypeExplanation,
             String applyForCostsDecision,
-            String legalRepName
+            String legalRepName,
+            String applyForCostsOotExplanation,
+            List<IdValue<Document>> ootUploadEvidenceDocuments,
+            YesOrNo isApplyForCostsOot
     ) {
 
         requireNonNull(existingAppliesForCosts);
         requireNonNull(appliedCostsType);
         requireNonNull(argumentsAndEvidenceDocuments);
-        requireNonNull(scheduleOfCostsDocuments);
         requireNonNull(applyForCostsHearingType);
         requireNonNull(applyForCostsDecision);
+
         if (applyForCostsHearingType.equals(YesOrNo.YES)) {
             requireNonNull(applyForCostsHearingTypeExplanation);
         }
+
         requireNonNull(legalRepName);
+
+        if (isApplyForCostsOot.equals(YesOrNo.YES)) {
+            requireNonNull(applyForCostsOotExplanation);
+        }
 
         String applicant = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
         if (applicant.equals(respondent)) {
@@ -66,7 +74,10 @@ public class ApplyForCostsAppender {
                 applyForCostsDecision,
                 applicant,
                 dateProvider.now().toString(),
-                resolveRespondentToCostsOrder(applicant, legalRepName)
+                resolveRespondentToCostsOrder(applicant, legalRepName),
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot
         );
 
         final List<IdValue<ApplyForCosts>> allAppliesForCosts =
