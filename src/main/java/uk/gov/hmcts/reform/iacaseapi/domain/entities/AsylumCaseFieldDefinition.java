@@ -1991,11 +1991,11 @@ public enum AsylumCaseFieldDefinition {
             "isIntegrated", new TypeReference<YesOrNo>(){}),
 
     MANUAL_CANCEL_HEARINGS_REQUIRED(
-        "manualCancelHearingsRequired", new TypeReference<YesOrNo>(){}),
+        "manualCanHearingRequired", new TypeReference<YesOrNo>(){}),
 
     MANUAL_UPDATE_HEARING_REQUIRED(
 
-        "manualUpdateHearingsRequired", new TypeReference<YesOrNo>(){}),
+        "manualUpdHearingRequired", new TypeReference<YesOrNo>(){}),
 
     UPDATE_HMC_REQUEST_SUCCESS(
             "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {}),
