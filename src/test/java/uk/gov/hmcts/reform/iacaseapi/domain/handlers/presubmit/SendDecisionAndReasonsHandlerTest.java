@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -34,6 +36,9 @@ class SendDecisionAndReasonsHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    private LocalDate fakeAppealDate = LocalDate.now();
 
     private SendDecisionAndReasonsHandler sendDecisionAndReasonsHandler;
 
@@ -41,7 +46,8 @@ class SendDecisionAndReasonsHandlerTest {
     public void setup() {
 
         sendDecisionAndReasonsHandler =
-                new SendDecisionAndReasonsHandler();
+                new SendDecisionAndReasonsHandler(dateProvider);
+        when(dateProvider.now()).thenReturn(fakeAppealDate);
     }
 
     @Test
@@ -61,6 +67,7 @@ class SendDecisionAndReasonsHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_ADJUSTMENTS_UPDATABLE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_EDIT_LISTING_AVAILABLE);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.SEND_DECISIONS_AND_REASONS_DATE, fakeAppealDate.toString());
     }
 
     @Test

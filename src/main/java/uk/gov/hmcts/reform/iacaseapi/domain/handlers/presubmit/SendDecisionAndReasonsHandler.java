@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DECISIONS_AND_REASONS_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -15,6 +17,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final DateProvider dateProvider;
+
+    public SendDecisionAndReasonsHandler(DateProvider dateProvider) {
+        this.dateProvider = dateProvider;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -45,6 +53,8 @@ public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<A
             //Clear to remove access to event editCaseListing for ada cases after submission
             asylumCase.clear(AsylumCaseFieldDefinition.ADA_EDIT_LISTING_AVAILABLE);
         }
+
+        asylumCase.write(SEND_DECISIONS_AND_REASONS_DATE,  dateProvider.now().toString());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

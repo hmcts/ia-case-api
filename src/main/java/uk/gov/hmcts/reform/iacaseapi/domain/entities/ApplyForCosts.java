@@ -22,6 +22,9 @@ public class ApplyForCosts {
     private String applyForCostsApplicantType;
     private String applyForCostsCreationDate;
     private String respondentToCostsOrder;
+    private String applyForCostsOotExplanation;
+    private List<IdValue<Document>> ootUploadEvidenceDocuments;
+    private YesOrNo isApplyForCostsOot;
 
     public ApplyForCosts() {
         // noop -- for deserializer
@@ -37,7 +40,10 @@ public class ApplyForCosts {
             String applyForCostsDecision,
             String applyForCostsApplicantType,
             String applyForCostsCreationDate,
-            String respondentToCostsOrder
+            String respondentToCostsOrder,
+            String applyForCostsOotExplanation,
+            List<IdValue<Document>> ootUploadEvidenceDocuments,
+            YesOrNo isApplyForCostsOot
     ) {
         requireNonNull(appliedCostsType);
         requireNonNull(argumentsAndEvidenceDocuments);
@@ -45,10 +51,15 @@ public class ApplyForCosts {
         requireNonNull(applyForCostsDecision);
         requireNonNull(applyForCostsApplicantType);
         requireNonNull(applyForCostsCreationDate);
+
         if (applyForCostsHearingType.equals(YesOrNo.YES)) {
             requireNonNull(applyForCostsHearingTypeExplanation);
         }
         requireNonNull(respondentToCostsOrder);
+
+        if (isApplyForCostsOot.equals(YesOrNo.YES)) {
+            requireNonNull(applyForCostsOotExplanation);
+        }
 
         this.appliedCostsType = appliedCostsType;
         this.argumentsAndEvidenceDetails = argumentsAndEvidenceDetails;
@@ -60,6 +71,9 @@ public class ApplyForCosts {
         this.applyForCostsApplicantType = applyForCostsApplicantType;
         this.applyForCostsCreationDate = applyForCostsCreationDate;
         this.respondentToCostsOrder = respondentToCostsOrder;
+        this.applyForCostsOotExplanation = applyForCostsOotExplanation;
+        this.ootUploadEvidenceDocuments = ootUploadEvidenceDocuments;
+        this.isApplyForCostsOot = isApplyForCostsOot;
     }
 
 
@@ -112,5 +126,20 @@ public class ApplyForCosts {
     public String getRespondentToCostsOrder() {
         requireNonNull(respondentToCostsOrder);
         return respondentToCostsOrder;
+    }
+
+    public String getApplyForCostsOotExplanation() {
+        if (isApplyForCostsOot.equals(YesOrNo.YES)) {
+            requireNonNull(applyForCostsOotExplanation);
+        }
+        return applyForCostsOotExplanation;
+    }
+
+    public List<IdValue<Document>> getOotUploadEvidenceDocuments() {
+        return ootUploadEvidenceDocuments;
+    }
+
+    public YesOrNo getIsApplyForCostsOot() {
+        return isApplyForCostsOot;
     }
 }

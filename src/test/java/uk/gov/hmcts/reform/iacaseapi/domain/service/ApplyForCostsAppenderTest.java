@@ -57,6 +57,13 @@ class ApplyForCostsAppenderTest {
     private String respondentToCostsOrderHomeOffice = "Home office";
     private String applyForCostsCreationDate = "2020-09-21";
     private ApplyForCostsAppender applyForCostsAppender;
+    private String applyForCostsOotExplanation = "Test explanation";
+    private List<IdValue<Document>> ootUploadEvidenceDocuments =
+            List.of(new IdValue<>("1",
+                    new Document("http://localhost/documents/123456",
+                            "http://localhost/documents/123456",
+                            "DocumentName.pdf")));
+    private YesOrNo isApplyForCostsOot = YesOrNo.YES;
 
     @BeforeEach
     public void setUp() {
@@ -87,7 +94,11 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder);
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot
+                );
 
         assertNotNull(allAppliesForCosts);
         assertEquals(3, allAppliesForCosts.size());
@@ -127,7 +138,11 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder);
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot
+                );
 
         assertNotNull(allAppliesForCosts);
         assertEquals(1, allAppliesForCosts.size());
@@ -157,7 +172,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -169,7 +187,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -181,7 +202,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -193,7 +217,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -205,7 +232,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -217,7 +247,10 @@ class ApplyForCostsAppenderTest {
                 null,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -229,7 +262,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 null,
                 applyForCostsDecision,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -241,7 +277,10 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 null,
-                respondentToCostsOrder))
+                respondentToCostsOrder,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> applyForCostsAppender.append(
@@ -253,7 +292,25 @@ class ApplyForCostsAppenderTest {
                 applyForCostsHearingType,
                 applyForCostsHearingTypeExplanation,
                 applyForCostsDecision,
-                null))
+                null,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> applyForCostsAppender.append(
+                existingAppliesForCosts,
+                typesOfAppliedCosts,
+                argumentsAndEvidenceDetails,
+                argumentsAndEvidenceDocuments,
+                scheduleOfCostsDocuments,
+                applyForCostsHearingType,
+                applyForCostsHearingTypeExplanation,
+                applyForCostsDecision,
+                respondentToCostsOrder,
+                null,
+                ootUploadEvidenceDocuments,
+                isApplyForCostsOot))
                 .isExactlyInstanceOf(NullPointerException.class);
     }
 

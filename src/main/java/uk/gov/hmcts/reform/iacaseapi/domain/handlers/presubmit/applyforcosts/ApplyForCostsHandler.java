@@ -72,8 +72,20 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         String legalRepName = asylumCase.read(LEGAL_REP_NAME, String.class)
                 .orElseThrow(() -> new IllegalStateException("legalRepName is not present"));
 
+        YesOrNo isApplyForCostsOot = asylumCase.read(IS_APPLY_FOR_COSTS_OOT, YesOrNo.class).orElse(YesOrNo.NO);
+
         Optional<List<IdValue<ApplyForCosts>>> maybeExistingApplyForCosts =
                 asylumCase.read(APPLIES_FOR_COSTS);
+
+
+        String applyForCostsOotExplanation = "";
+
+        if (isApplyForCostsOot.equals(YesOrNo.YES)) {
+            applyForCostsOotExplanation = asylumCase.read(APPLY_FOR_COSTS_OOT_EXPLANATION, String.class)
+                    .orElseThrow(() -> new IllegalStateException("applyForCostsOotExplanation is not present"));
+        }
+
+        Optional<List<IdValue<Document>>> ootUploadEvidenceDocuments = asylumCase.read(OOT_UPLOAD_EVIDENCE_DOCUMENTS);
 
         final List<IdValue<ApplyForCosts>> existingAppliesForCosts =
                 maybeExistingApplyForCosts.orElse(Collections.emptyList());
@@ -88,7 +100,10 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
                         applyForCostsHearingType,
                         applyForCostsHearingTypeExplanation,
                         "Pending",
-                        legalRepName
+                        legalRepName,
+                        applyForCostsOotExplanation,
+                        ootUploadEvidenceDocuments.orElse(Collections.emptyList()),
+                        isApplyForCostsOot
                 );
 
         asylumCase.write(APPLIES_FOR_COSTS, allApplyForCosts);
@@ -102,6 +117,8 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         asylumCase.clear(SCHEDULE_OF_COSTS_DOCUMENTS);
         asylumCase.clear(APPLY_FOR_COSTS_HEARING_TYPE);
         asylumCase.clear(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION);
+        asylumCase.clear(APPLY_FOR_COSTS_OOT_EXPLANATION);
+        asylumCase.clear(OOT_UPLOAD_EVIDENCE_DOCUMENTS);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
