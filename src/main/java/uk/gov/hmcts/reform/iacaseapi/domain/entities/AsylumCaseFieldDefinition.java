@@ -1833,6 +1833,19 @@ public enum AsylumCaseFieldDefinition {
 
     UPLOAD_EJP_APPEAL_FORM_DOCS(
             "uploadEjpAppealFormDocs", new TypeReference<List<IdValue<Document>>>(){}),
+
+    IS_LEGALLY_REPRESENTED_EJP(
+        "isLegallyRepresentedEjp", new TypeReference<YesOrNo>() {}),
+
+    CONTACT_PREFERENCE_UNREP(
+        "contactPreferenceUnrep", new TypeReference<List<ContactPreferenceUnrep>>(){}),
+
+    EMAIL_UNREP(
+        "emailUnrep", new TypeReference<String>(){}),
+
+    MOBILE_NUMBER_UNREP(
+        "mobileNumberUnrep", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
