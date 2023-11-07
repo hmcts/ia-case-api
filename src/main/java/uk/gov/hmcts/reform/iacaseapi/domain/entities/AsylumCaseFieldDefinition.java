@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
@@ -1846,7 +1846,17 @@ public enum AsylumCaseFieldDefinition {
     MOBILE_NUMBER_UNREP(
         "mobileNumberUnrep", new TypeReference<String>(){}),
 
-    ;
+    IS_APPLY_FOR_COSTS_OOT(
+            "isApplyForCostsOot", new TypeReference<YesOrNo>() {}),
+
+    SEND_DECISIONS_AND_REASONS_DATE(
+        "sendDecisionsAndReasonsDate", new TypeReference<String>(){}),
+
+    APPLY_FOR_COSTS_OOT_EXPLANATION(
+            "applyForCostsOotExplanation", new TypeReference<String>(){}),
+
+    OOT_UPLOAD_EVIDENCE_DOCUMENTS(
+            "ootUploadEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){});
 
     private final String value;
     private final TypeReference typeReference;
