@@ -1995,7 +1995,7 @@ public enum AsylumCaseFieldDefinition {
 
     MANUAL_UPDATE_HEARING_REQUIRED(
 
-        "manualUpdateHearingRequired", new TypeReference<YesOrNo>(){}),
+        "manualUpdateHearingsRequired", new TypeReference<YesOrNo>(){}),
 
     UPDATE_HMC_REQUEST_SUCCESS(
             "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {}),
