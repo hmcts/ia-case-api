@@ -12,7 +12,9 @@
           "isNabaEnabled": "Yes",
           "appellantInDetention": "Yes",
           "detentionFacility": "immigrationRemovalCentre",
-          "ircName": "Brookhouse"
+          "ircName": "Brookhouse",
+          "contactPreferenceUnrep": "wantsSms",
+          "mobileNumberUnrep": "07977111111"
         }
       }
     }
@@ -26,7 +28,9 @@
         "isNabaEnabled": "Yes",
         "appellantInDetention": "Yes",
         "detentionFacility": "immigrationRemovalCentre",
-        "ircName": "Brookhouse"
+        "ircName": "Brookhouse",
+        "contactPreferenceUnrep": "wantsSms",
+        "mobileNumber": "07977111111"
       }
     }
   }
