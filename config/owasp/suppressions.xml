@@ -21,7 +21,7 @@
         <notes>Temporarily suppress vulnerability</notes>
         <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-41080</cve>
-        <cve>CVE-2023-5072</cve>
         <cve>CVE-2023-31582</cve>
+        <cve>CVE-2023-5072</cve>
     </suppress>
 </suppressions>
