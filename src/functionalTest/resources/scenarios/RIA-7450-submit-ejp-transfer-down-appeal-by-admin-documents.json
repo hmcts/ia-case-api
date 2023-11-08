@@ -33,7 +33,7 @@
             "id": "a0cf7baa-5581-4dcb-95a4-09f503b528bb",
             "value": {
               "document_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2",
-              "document_filename": "PA/12345/2018-Talha Awan-IAUT-2-appeal-form1.pdf",
+              "document_filename": "PA/12345/2018-Talha-IAUT-2-appeal-form1.pdf",
               "document_binary_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2/binary"
             }
           }
@@ -43,7 +43,7 @@
             "id": "ed05595a-d512-41f5-8fef-0e5cd4b49c67",
             "value": {
               "document_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51",
-              "document_filename": "PA/12345/2018-Talha Awan-UT-transfer-order1.pdf",
+              "document_filename": "PA/12345/2018-Talha-UT-transfer-order1.pdf",
               "document_binary_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51/binary"
             }
           }
@@ -55,7 +55,7 @@
               "document": {
                 "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
                 "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
-                "document_filename": "PA/12345/2018-Talha Awan-UT-transfer-order1.pdf"
+                "document_filename": "PA/12345/2018-Talha-UT-transfer-order1.pdf"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",
@@ -68,7 +68,7 @@
               "document": {
                 "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
                 "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
-                "document_filename": "PA/12345/2018-Talha Awan-IAUT-2-appeal-form1.pdf"
+                "document_filename": "PA/12345/2018-Talha-IAUT-2-appeal-form1.pdf"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",

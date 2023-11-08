@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 class UploadEjpDocumentsHandlerTest {
 
     private final String refNumber = "reference-number";
-    private final String appellantDisplayName = "appellantFullName";
+    private final String appellantGivenName = "appellant-given-name";
     private final String utTransferOrderSuffix = "UT-transfer-order";
     private final String iaut2AppealFormSuffix = "IAUT-2-appeal-form";
 
@@ -140,7 +140,7 @@ class UploadEjpDocumentsHandlerTest {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(appellantGivenName));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(refNumber));
         when(asylumCase.read(UT_TRANSFER_DOC)).thenReturn(Optional.of(allUtTransferDocuments));
         when(asylumCase.read(UPLOAD_EJP_APPEAL_FORM_DOCS)).thenReturn(Optional.of(allEjpAppealFormDocuments));
@@ -186,13 +186,13 @@ class UploadEjpDocumentsHandlerTest {
         );
 
         assertEquals(completeTribunalDocuments.get(1).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + utTransferOrderSuffix + "1.pdf");
+                refNumber + "-" + appellantGivenName + "-" + utTransferOrderSuffix + "1.pdf");
         assertEquals(completeTribunalDocuments.get(2).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + utTransferOrderSuffix + "2.pdf");
+                refNumber + "-" + appellantGivenName + "-" + utTransferOrderSuffix + "2.pdf");
         assertEquals(completeTribunalDocuments.get(3).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + iaut2AppealFormSuffix + "1.pdf");
+                refNumber + "-" + appellantGivenName + "-" + iaut2AppealFormSuffix + "1.pdf");
         assertEquals(completeTribunalDocuments.get(4).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + iaut2AppealFormSuffix + "2.pdf");
+                refNumber + "-" + appellantGivenName + "-" + iaut2AppealFormSuffix + "2.pdf");
     }
 
     @Test

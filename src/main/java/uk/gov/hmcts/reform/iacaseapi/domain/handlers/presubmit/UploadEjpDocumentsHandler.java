@@ -66,7 +66,7 @@ public class UploadEjpDocumentsHandler implements PreSubmitCallbackHandler<Asylu
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String appellantName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElse("");
+        String appellantName = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
         String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).orElse("");
 
         Optional<List<IdValue<Document>>> maybeUtOrderDocs = asylumCase.read(UT_TRANSFER_DOC);
