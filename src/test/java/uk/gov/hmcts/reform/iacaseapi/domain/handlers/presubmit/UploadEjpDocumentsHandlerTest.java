@@ -71,28 +71,28 @@ class UploadEjpDocumentsHandlerTest {
             someUtDocumentOne,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT
     );
 
     private final DocumentWithMetadata someUtDocumentMetadataTwo = new DocumentWithMetadata(
             someUtDocumentTwo,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT
     );
 
     private final DocumentWithMetadata ejpAppealFormDocumentMetadataOne = new DocumentWithMetadata(
             ejpAppealFormDocumentOne,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.IAUT_2_FORM
     );
 
     private final DocumentWithMetadata ejpAppealFormDocumentMetadataTwo = new DocumentWithMetadata(
             ejpAppealFormDocumentTwo,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.IAUT_2_FORM
     );
 
     private final DocumentWithMetadata someTribunalMeta = new DocumentWithMetadata(
@@ -166,13 +166,13 @@ class UploadEjpDocumentsHandlerTest {
 
         when(asylumCase.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(existingTribunalDocuments));
 
-        when(documentReceiver.receive(someUtDocumentOne, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(someUtDocumentOne, "", DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT))
                 .thenReturn(someUtDocumentMetadataOne);
-        when(documentReceiver.receive(someUtDocumentTwo, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(someUtDocumentTwo, "", DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT))
                 .thenReturn(someUtDocumentMetadataTwo);
-        when(documentReceiver.receive(ejpAppealFormDocumentOne, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(ejpAppealFormDocumentOne, "", DocumentTag.IAUT_2_FORM))
                 .thenReturn(ejpAppealFormDocumentMetadataOne);
-        when(documentReceiver.receive(ejpAppealFormDocumentTwo, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(ejpAppealFormDocumentTwo, "", DocumentTag.IAUT_2_FORM))
                 .thenReturn(ejpAppealFormDocumentMetadataTwo);
 
         when(documentsAppender.prepend(existingTribunalDocuments, docsWithMetadata)).thenReturn(completeTribunalDocuments);

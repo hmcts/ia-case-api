@@ -37,7 +37,8 @@ public enum DocumentTag {
     INTERNAL_ADA_SUITABILITY("internalAdaSuitability"),
     NOTICE_OF_DECISION_UT_TRANSFER("noticeOfDecisionUtTransfer"),
     INTERNAL_EDIT_APPEAL_LETTER("internalEditAppealLetter"),
-    INTERNAL_EJP_DOCUMENT("internalEjpDocument"),
+    UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT("upperTribunalTransferOrderDocument"),
+    IAUT_2_FORM("iAUT2Form"),
 
 
     @JsonEnumDefaultValue
