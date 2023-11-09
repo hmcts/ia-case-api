@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 class UploadEjpDocumentsHandlerTest {
 
     private final String refNumber = "reference-number";
-    private final String appellantDisplayName = "appellantFullName";
+    private final String appellantGivenName = "appellant-given-name";
     private final String utTransferOrderSuffix = "UT-transfer-order";
     private final String iaut2AppealFormSuffix = "IAUT-2-appeal-form";
 
@@ -71,28 +71,28 @@ class UploadEjpDocumentsHandlerTest {
             someUtDocumentOne,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT
     );
 
     private final DocumentWithMetadata someUtDocumentMetadataTwo = new DocumentWithMetadata(
             someUtDocumentTwo,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT
     );
 
     private final DocumentWithMetadata ejpAppealFormDocumentMetadataOne = new DocumentWithMetadata(
             ejpAppealFormDocumentOne,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.IAUT_2_FORM
     );
 
     private final DocumentWithMetadata ejpAppealFormDocumentMetadataTwo = new DocumentWithMetadata(
             ejpAppealFormDocumentTwo,
             "",
             "30/10/2323",
-            DocumentTag.INTERNAL_EJP_DOCUMENT
+            DocumentTag.IAUT_2_FORM
     );
 
     private final DocumentWithMetadata someTribunalMeta = new DocumentWithMetadata(
@@ -140,7 +140,7 @@ class UploadEjpDocumentsHandlerTest {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(appellantGivenName));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(refNumber));
         when(asylumCase.read(UT_TRANSFER_DOC)).thenReturn(Optional.of(allUtTransferDocuments));
         when(asylumCase.read(UPLOAD_EJP_APPEAL_FORM_DOCS)).thenReturn(Optional.of(allEjpAppealFormDocuments));
@@ -166,13 +166,13 @@ class UploadEjpDocumentsHandlerTest {
 
         when(asylumCase.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(existingTribunalDocuments));
 
-        when(documentReceiver.receive(someUtDocumentOne, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(someUtDocumentOne, "", DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT))
                 .thenReturn(someUtDocumentMetadataOne);
-        when(documentReceiver.receive(someUtDocumentTwo, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(someUtDocumentTwo, "", DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT))
                 .thenReturn(someUtDocumentMetadataTwo);
-        when(documentReceiver.receive(ejpAppealFormDocumentOne, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(ejpAppealFormDocumentOne, "", DocumentTag.IAUT_2_FORM))
                 .thenReturn(ejpAppealFormDocumentMetadataOne);
-        when(documentReceiver.receive(ejpAppealFormDocumentTwo, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+        when(documentReceiver.receive(ejpAppealFormDocumentTwo, "", DocumentTag.IAUT_2_FORM))
                 .thenReturn(ejpAppealFormDocumentMetadataTwo);
 
         when(documentsAppender.prepend(existingTribunalDocuments, docsWithMetadata)).thenReturn(completeTribunalDocuments);
@@ -186,13 +186,13 @@ class UploadEjpDocumentsHandlerTest {
         );
 
         assertEquals(completeTribunalDocuments.get(1).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + utTransferOrderSuffix + "1.pdf");
+                refNumber + "-" + appellantGivenName + "-" + utTransferOrderSuffix + "1.pdf");
         assertEquals(completeTribunalDocuments.get(2).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + utTransferOrderSuffix + "2.pdf");
+                refNumber + "-" + appellantGivenName + "-" + utTransferOrderSuffix + "2.pdf");
         assertEquals(completeTribunalDocuments.get(3).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + iaut2AppealFormSuffix + "1.pdf");
+                refNumber + "-" + appellantGivenName + "-" + iaut2AppealFormSuffix + "1.pdf");
         assertEquals(completeTribunalDocuments.get(4).getValue().getDocument().getDocumentFilename(),
-                refNumber + "-" + appellantDisplayName + "-" + iaut2AppealFormSuffix + "2.pdf");
+                refNumber + "-" + appellantGivenName + "-" + iaut2AppealFormSuffix + "2.pdf");
     }
 
     @Test
