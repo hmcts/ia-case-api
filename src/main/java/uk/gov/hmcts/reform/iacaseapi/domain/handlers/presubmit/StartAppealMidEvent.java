@@ -120,7 +120,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
 
         }
 
-        if (callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID) && callback.getEvent() == Event.START_APPEAL) {
+        if (callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID) && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)) {
             String upperTribunalReferenceNumber = asylumCase
                 .read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("upperTribunalReferenceNumber is missing"));

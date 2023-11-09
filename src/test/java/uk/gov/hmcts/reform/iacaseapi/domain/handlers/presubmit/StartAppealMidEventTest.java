@@ -345,8 +345,12 @@ class StartAppealMidEventTest {
         verify(asylumCase, times(1)).write(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.NO);
     }
 
-    @Test
-    void should_error_when_upper_tribunal_reference_number_format_is_wrong() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL"
+    })
+    void should_error_when_upper_tribunal_reference_number_format_is_wrong(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID);
         when(asylumCase.read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(wrongUpperTribunalReferenceFormat));
@@ -360,8 +364,12 @@ class StartAppealMidEventTest {
         assertThat(errors).hasSize(1).containsOnly(utReferenceErrorMessage);
     }
 
-    @Test
-    void should_validate_as_correct_format_for_upper_tribunal_reference_number() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL"
+    })
+    void should_validate_as_correct_format_for_upper_tribunal_reference_number(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID);
         when(asylumCase.read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(correctUpperTribunalReferenceFormat));
