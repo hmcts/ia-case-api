@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -107,7 +108,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
             filterOutDeletedFieldsAndCompress(inclusiveWitnessDetails, asylumCase);
             filterOutDeletedWitnessesAndCompress(nonDeletedWitnesses, asylumCase);
             clearLanguagesAccordingToCategories(asylumCase);
-            sanitizeLanguageComplexType(asylumCase);
+            sanitizeWitnessLanguageComplexType(asylumCase);
         }
 
         asylumCase.write(DISABLE_OVERVIEW_PAGE, YES);
@@ -145,34 +146,45 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
     }
 
     /*
-    Based on whether the user selected or deselected the manual language option. If selected, clear dynamic list.
-    If unselected, clear manual language description.
+    If the user entered the language manually, the complex type will look like this:
+    DYNAMIC LIST: null
+    MANUAL LANGUAGE CHECKBOX: Yes
+    MANUAL LANGUAGE DESC: An arbitrary language
+
+    When the user changes the language to non-manual, the complex type ends up looking like this:
+    DYNAMIC LIST: Selected Ref Data Language
+    MANUAL LANGUAGE CHECKBOX: Yes
+    MANUAL LANGUAGE DESC: An arbitrary language
+
+    Before saving submitting the event, the field gets sorted by this method so it'll look like this:
+    DYNAMIC LIST: Selected Ref Data Language
+    MANUAL LANGUAGE CHECKBOX: null
+    MANUAL LANGUAGE DESC: null
      */
-    private void sanitizeLanguageComplexType(AsylumCase asylumCase) {
+    private void sanitizeWitnessLanguageComplexType(AsylumCase asylumCase) {
         int i = 0;
         while (i < 10) {
-            InterpreterLanguageRefData sanitizedComplexType;
-            Optional<InterpreterLanguageRefData> spoken =
-                asylumCase.read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
-
-            if (spoken.isPresent()) {
-                InterpreterLanguageRefData spokenComplexType = spoken.get();
-
-                sanitizedComplexType = clearComplexTypeField(spokenComplexType);
-                asylumCase.write(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i), sanitizedComplexType);
-            }
-
-            Optional<InterpreterLanguageRefData> sign =
-                asylumCase.read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
-
-            if (sign.isPresent()) {
-                InterpreterLanguageRefData signComplexType = sign.get();
-
-                sanitizedComplexType = clearComplexTypeField(signComplexType);
-                asylumCase.write(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), sanitizedComplexType);
-            }
-
+            sanitizeInterpreterLanguageRefDataComplexType(asylumCase, WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i));
+            sanitizeInterpreterLanguageRefDataComplexType(asylumCase, WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i));
             i++;
+        }
+    }
+
+    private void sanitizeAppellantLanguageComplexType(AsylumCase asylumCase) {
+        sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    private void sanitizeInterpreterLanguageRefDataComplexType(AsylumCase asylumCase, AsylumCaseFieldDefinition asylumCaseFieldDefinition) {
+        InterpreterLanguageRefData sanitizedComplexType;
+        Optional<InterpreterLanguageRefData> spoken =
+            asylumCase.read(asylumCaseFieldDefinition, InterpreterLanguageRefData.class);
+
+        if (spoken.isPresent()) {
+            InterpreterLanguageRefData spokenComplexType = spoken.get();
+
+            sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+            asylumCase.write(asylumCaseFieldDefinition, sanitizedComplexType);
         }
     }
 
@@ -261,6 +273,8 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
                     asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
                 }
             }
+
+            sanitizeAppellantLanguageComplexType(asylumCase);
         }
     }
 
