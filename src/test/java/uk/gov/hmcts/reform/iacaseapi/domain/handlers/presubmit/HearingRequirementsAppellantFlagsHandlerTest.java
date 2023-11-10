@@ -366,8 +366,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REVIEW_HEARING_REQUIREMENTS",
-            "UPDATE_HEARING_ADJUSTMENTS"
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
     void should_set_audio_video_evidence_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -395,8 +395,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "UPDATE_HEARING_ADJUSTMENTS",
-            "REVIEW_HEARING_REQUIREMENTS"
+        "UPDATE_HEARING_ADJUSTMENTS",
+        "REVIEW_HEARING_REQUIREMENTS"
     })
     void should_deactivate_audio_video_evidence_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
