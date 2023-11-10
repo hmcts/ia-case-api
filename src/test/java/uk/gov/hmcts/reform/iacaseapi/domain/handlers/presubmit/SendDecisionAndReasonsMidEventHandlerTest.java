@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,6 +62,20 @@ class SendDecisionAndReasonsMidEventHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void handle_throw_exception_when_document_is_null() {
+
+        when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENT, Document.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> sendDecisionAndReasonsMidEventHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
+                .hasMessage("finalDecisionAndReasonsDocument must be present")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test

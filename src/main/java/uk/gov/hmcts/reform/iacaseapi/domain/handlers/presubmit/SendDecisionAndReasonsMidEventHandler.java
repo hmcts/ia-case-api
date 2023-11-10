@@ -37,9 +37,11 @@ public class SendDecisionAndReasonsMidEventHandler implements PreSubmitCallbackH
 
         final Optional<Document> finalDecisionAndReasonsDoc = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENT, Document.class);
 
-        if (finalDecisionAndReasonsDoc.isPresent()
-                && !finalDecisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
+        if (finalDecisionAndReasonsDoc.isEmpty()) {
+            throw new IllegalStateException("finalDecisionAndReasonsDocument must be present");
+        }
 
+        if (!finalDecisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
             PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse =
                     new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The Decision and reasons document must be a PDF file");
