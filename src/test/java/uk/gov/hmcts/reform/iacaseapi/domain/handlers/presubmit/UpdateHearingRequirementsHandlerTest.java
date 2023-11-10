@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -61,6 +62,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndReque
 @SuppressWarnings("unchecked")
 public class UpdateHearingRequirementsHandlerTest {
 
+    private static final String LIST_YES = "Yes";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -244,6 +246,74 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase, times(0)).clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
 
+    }
+
+    @Test
+    void should_sanitize_appellant_languages_when_manual_language_entered_and_manual_entry_deselected() {
+
+        InterpreterLanguageRefData spokenInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("abc", "abc"), Collections.emptyList()),
+            Collections.emptyList(),
+            "manual");
+        InterpreterLanguageRefData signInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("def", "def"), Collections.emptyList()),
+            Collections.emptyList(),
+            "manual");
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(),
+                SIGN_LANGUAGE_INTERPRETER.getValue())));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE))
+            .thenReturn(Optional.of(spokenInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE))
+            .thenReturn(Optional.of(signInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(spokenInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(signInterpreterLanguage));
+
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        ArgumentCaptor<InterpreterLanguageRefData> languageCaptor = ArgumentCaptor
+            .forClass(InterpreterLanguageRefData.class);
+        verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE), languageCaptor.capture());
+        verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SIGN_LANGUAGE), languageCaptor.capture());
+        assertNull(languageCaptor.getAllValues().get(0).getLanguageManualEntryDescription());
+        assertNull(languageCaptor.getAllValues().get(1).getLanguageManualEntryDescription());
+    }
+
+    @Test
+    void should_sanitize_appellant_languages_when_ref_data_language_selected_and_manual_entry_selected() {
+
+        InterpreterLanguageRefData spokenInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("abc", "abc"), Collections.emptyList()),
+            List.of(LIST_YES),
+            "manual");
+        InterpreterLanguageRefData signInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("def", "def"), Collections.emptyList()),
+            List.of(LIST_YES),
+            "manual");
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(),
+                SIGN_LANGUAGE_INTERPRETER.getValue())));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE))
+            .thenReturn(Optional.of(spokenInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE))
+            .thenReturn(Optional.of(signInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(spokenInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(signInterpreterLanguage));
+
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        ArgumentCaptor<InterpreterLanguageRefData> languageCaptor = ArgumentCaptor
+            .forClass(InterpreterLanguageRefData.class);
+        verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE), languageCaptor.capture());
+        verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SIGN_LANGUAGE), languageCaptor.capture());
+        assertNull(languageCaptor.getAllValues().get(0).getLanguageRefData());
+        assertNull(languageCaptor.getAllValues().get(1).getLanguageRefData());
     }
 
     @Test
