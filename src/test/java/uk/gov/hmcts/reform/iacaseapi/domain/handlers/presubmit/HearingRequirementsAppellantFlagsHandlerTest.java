@@ -19,6 +19,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_LOOP_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_ROOM_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_IN_CAMERA_COURT_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_MULTIMEDIA_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.CASE_GIVEN_IN_PRIVATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.HEARING_LOOP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.STEP_FREE_WHEELCHAIR_ACCESS;
@@ -359,6 +362,72 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         assertEquals(1, caseFlag.getDetails().size());
         assertEquals(INACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
         assertEquals(CASE_GIVEN_IN_PRIVATE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+            "REVIEW_HEARING_REQUIREMENTS",
+            "UPDATE_HEARING_ADJUSTMENTS"
+    })
+    void should_set_audio_video_evidence_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(MULTIMEDIA_EVIDENCE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_MULTIMEDIA_ALLOWED, String.class))
+                .thenReturn(Optional.of(CASE_GRANTED));
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class))
+                .thenReturn(Optional.of(appellantDisplayName));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+                .write(eq(APPELLANT_LEVEL_FLAGS), caseFlagArgumentCaptor.capture());
+
+        StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
+        assertNotNull(caseFlag);
+        assertEquals(1, caseFlag.getDetails().size());
+        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
+        assertEquals(AUDIO_VIDEO_EVIDENCE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+            "UPDATE_HEARING_ADJUSTMENTS",
+            "REVIEW_HEARING_REQUIREMENTS"
+    })
+    void should_deactivate_audio_video_evidence_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(MULTIMEDIA_EVIDENCE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_MULTIMEDIA_ALLOWED, String.class))
+                .thenReturn(Optional.of(CASE_REFUSED));
+
+        List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
+                .builder()
+                .flagCode(AUDIO_VIDEO_EVIDENCE.getFlagCode())
+                .name(AUDIO_VIDEO_EVIDENCE.getName())
+                .status(ACTIVE_STATUS)
+                .build()));
+        when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
+                .thenReturn(Optional.of(new StrategicCaseFlag(
+                        appellantDisplayName, ROLE_ON_CASE_APPELLANT, existingFlags)));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                hearingRequirementsAppellantCaseFlagsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+                .write(eq(APPELLANT_LEVEL_FLAGS), caseFlagArgumentCaptor.capture());
+
+        StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
+        assertNotNull(caseFlag);
+        assertEquals(1, caseFlag.getDetails().size());
+        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
+        assertEquals(AUDIO_VIDEO_EVIDENCE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
     }
 
     @ParameterizedTest
