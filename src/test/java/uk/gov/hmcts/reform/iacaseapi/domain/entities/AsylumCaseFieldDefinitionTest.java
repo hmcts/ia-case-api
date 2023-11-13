@@ -16,7 +16,8 @@ class AsylumCaseFieldDefinitionTest {
     List<AsylumCaseFieldDefinition> exceptions = List.of(new AsylumCaseFieldDefinition[]{
         ATTENDING_TCW,
         PRISON_NOMS,
-        PRISON_NOMS_AO
+        PRISON_NOMS_AO,
+        CASE_LEVEL_FLAGS
     });
 
     @Test
