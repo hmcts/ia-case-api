@@ -65,13 +65,9 @@ public class CcdCaseCreationTest {
     protected static String s2sToken;
     protected static String legalRepToken;
     protected static String citizenToken;
-    protected String systemUserToken;
     protected static String caseOfficerToken;
     private String legalRepUserId;
     private String citizenUserId;
-    private String caseOfficerUserId;
-    private String systemUserId;
-    public String paymentReference;
 
     private static final String jurisdiction = "IA";
     private static final String caseType = "Asylum";
@@ -103,12 +99,9 @@ public class CcdCaseCreationTest {
         legalRepToken = idamAuthProvider.getLegalRepToken();
         citizenToken = idamAuthProvider.getCitizenToken();
         caseOfficerToken = idamAuthProvider.getCaseOfficerToken();
-        systemUserToken = idamAuthProvider.getSystemUserToken();
 
         citizenUserId = idamAuthProvider.getUserId(citizenToken);
         legalRepUserId = idamAuthProvider.getUserId(legalRepToken);
-        caseOfficerUserId = idamAuthProvider.getUserId(caseOfficerToken);
-        systemUserId = idamAuthProvider.getUserId(systemUserToken);
 
         caseApiSpecification = new RequestSpecBuilder()
             .setBaseUri(targetInstance)
