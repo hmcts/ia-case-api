@@ -19,10 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
@@ -32,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRetriever;
 
 @Slf4j
 public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
