@@ -11,6 +11,11 @@ idam:
 feign:
   hystrix:
     enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 160000000
+        readTimeout: 160000000
 
 citizenEmail: ${TEST_CITIZEN_USERNAME:ia-citizen@fake.hmcts.net}
 

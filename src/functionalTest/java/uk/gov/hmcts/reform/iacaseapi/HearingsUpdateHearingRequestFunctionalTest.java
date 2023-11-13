@@ -11,6 +11,7 @@ import io.restassured.http.Header;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -30,28 +31,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @ActiveProfiles("functional")
 public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationTest {
 
-    private AsylumCase legalRepCase;
-    private AsylumCase aipCase;
-
     @BeforeEach
     void checkCaseExists() {
-        setup();
-        legalRepCase = getLegalRepCase();
-        aipCase = getAipCase();
+        fetchTokensAndUserIds();
     }
 
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_mid_event_successfully(boolean isAipJourney) {
-        log.info("caseId: " + getCaseId());
+        Case result = createAndGetCase(isAipJourney);
+
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            parseLong(getCaseId()),
+            result.caseId,
             "IA",
             LISTING,
-            isAipJourney ? aipCase : legalRepCase,
+            result.caseData,
             LocalDateTime.now(),
             "securityClassification",
             null
@@ -73,11 +70,13 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_fail_to_handle_update_hearing_request_mid_event_due_to_invalid_authentication(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
+
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            00000111,
+            result.caseId,
             "IA",
             LISTING,
-            isAipJourney ? aipCase : legalRepCase,
+            result.caseData,
             LocalDateTime.now(),
             "securityClassification",
             null
@@ -102,11 +101,13 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_about_to_submit_successfully(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
+
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            parseLong(getCaseId()),
+            result.caseId,
             "IA",
             LISTING,
-            isAipJourney ? aipCase : legalRepCase,
+            result.caseData,
             LocalDateTime.now(),
             "securityClassification",
             null
@@ -131,11 +132,13 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_fail_to_handle_update_hearing_request_about_to_submit_due_to_invalid_authentication(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
+
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            00000111,
+            result.caseId,
             "IA",
             LISTING,
-            isAipJourney ? aipCase : legalRepCase,
+            result.caseData,
             LocalDateTime.now(),
             "securityClassification",
             null
@@ -160,11 +163,13 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_confirmation_successfully(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
+
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            parseLong(getCaseId()),
+            result.caseId(),
             "IA",
             LISTING,
-            isAipJourney ? aipCase : legalRepCase,
+            result.caseData(),
             LocalDateTime.now(),
             "securityClassification",
             null
@@ -189,11 +194,13 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_fail_to_handle_update_hearing_request_confirmation_due_to_invalid_authentication(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
+
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
-            00000111,
+            result.caseId,
             "IA",
             LISTING,
-            isAipJourney ? aipCase : legalRepCase,
+            result.caseData,
             LocalDateTime.now(),
             "securityClassification",
             null
@@ -213,5 +220,27 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
             .extract().response();
 
         assertEquals(401, response.getStatusCode());
+    }
+
+    private record Case(Long caseId, AsylumCase caseData) {
+    }
+
+    @NotNull
+    private Case createAndGetCase(boolean isAipJourney) {
+        Long caseId;
+        AsylumCase caseData;
+        if (isAipJourney) {
+            setupForAip();
+            caseData = getAipCase();
+            caseId = parseLong(getAipCaseId());
+        } else {
+            setupForLegalRep();
+            caseData = getLegalRepCase();
+            caseId = parseLong(getLegalRepCaseId());
+        }
+
+        Case result = new Case(caseId, caseData);
+
+        return result;
     }
 }

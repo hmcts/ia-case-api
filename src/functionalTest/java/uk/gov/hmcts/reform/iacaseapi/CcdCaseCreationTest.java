@@ -87,7 +87,17 @@ public class CcdCaseCreationTest {
     @Autowired
     private MapValueExpander mapValueExpander;
 
-    protected void setup() {
+    protected void setupForLegalRep() {
+        startAppealAsLegalRep();
+        submitAppealAsLegalRep();
+    }
+
+    protected void setupForAip() {
+        startAppealAsCitizen();
+        submitAppealAsCitizen();
+    }
+
+    protected void fetchTokensAndUserIds() {
         s2sToken = s2sAuthTokenGenerator.generate();
 
         legalRepToken = idamAuthProvider.getLegalRepToken();
@@ -106,13 +116,6 @@ public class CcdCaseCreationTest {
             .build();
 
         log.info("targetInstance: " + targetInstance);
-
-        startAppealAsLegalRep();
-        submitAppealAsLegalRep();
-
-        startAppealAsCitizen();
-        submitAppealAsCitizen();
-
     }
 
     private void startAppealAsLegalRep() {
@@ -221,6 +224,9 @@ public class CcdCaseCreationTest {
     }
 
     private void submitAppealAsCitizen() {
+        caseData = new HashMap<>();
+        caseData.put("decisionHearingFeeOption", "decisionWithHearing");
+
         String eventId = "submitAppeal";
         StartEventResponse startEventDetails =
             coreCaseDataApi.startEventForCitizen(
@@ -272,8 +278,12 @@ public class CcdCaseCreationTest {
         }
     }
 
-    public String getCaseId() {
+    public String getLegalRepCaseId() {
         return Long.toString(legalRepCaseId);
+    }
+
+    public String getAipCaseId() {
+        return Long.toString(aipCaseId);
     }
 
     public AsylumCase getLegalRepCase() {
