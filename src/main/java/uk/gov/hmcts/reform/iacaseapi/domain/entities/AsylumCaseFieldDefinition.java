@@ -1849,6 +1849,13 @@ public enum AsylumCaseFieldDefinition {
     IS_APPLY_FOR_COSTS_OOT(
             "isApplyForCostsOot", new TypeReference<YesOrNo>() {}),
 
+    LEGAL_REP_EMAIL_EJP(
+        "legalRepEmailEjp",  new TypeReference<String>(){}),
+
+    LEGAL_REP_REFERENCE_EJP(
+        "legalRepReferenceEjp", new TypeReference<String>(){}),
+
+
     SEND_DECISIONS_AND_REASONS_DATE(
         "sendDecisionsAndReasonsDate", new TypeReference<String>(){}),
 
