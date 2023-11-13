@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterDetails;
@@ -16,9 +18,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @Service
+@RequiredArgsConstructor
 public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+    private final IaHearingsApiService iaHearingsApiService;
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -50,6 +55,7 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
         if (!interpreterDetailsList.isEmpty()) {
             asylumCase.write(INTERPRETER_DETAILS, interpreterDetailsList);
         }
+        asylumCase = iaHearingsApiService.aboutToSubmit(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

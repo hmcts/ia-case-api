@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -35,11 +36,13 @@ class UpdateInterpreterDetailsHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
     private UpdateInterpreterDetailsHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new UpdateInterpreterDetailsHandler();
+        handler = new UpdateInterpreterDetailsHandler(iaHearingsApiService);
         when(callback.getEvent()).thenReturn(Event.UPDATE_INTERPRETER_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -80,6 +83,7 @@ class UpdateInterpreterDetailsHandlerTest {
 
         // Given that the case has interpreter details, one with an id and one without
         when(asylumCase.read(eq(INTERPRETER_DETAILS))).thenReturn(Optional.of(interpreterDetailsList));
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
@@ -91,6 +95,8 @@ class UpdateInterpreterDetailsHandlerTest {
         // Verify that all the interpreter have an id
         assertTrue(updatedInterpreterDetails.stream()
             .noneMatch(idValue -> isEmpty(idValue.getValue().getInterpreterId())));
+
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
     }
 
 }
