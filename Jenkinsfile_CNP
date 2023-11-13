@@ -132,7 +132,7 @@ githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-    afterAlways('functionalTest:aat') {
+    afterAlways('functionalTest:demo') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
