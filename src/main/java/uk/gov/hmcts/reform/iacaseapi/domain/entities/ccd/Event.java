@@ -128,6 +128,7 @@ public enum Event {
     UPDATE_DETENTION_LOCATION("updateDetentionLocation"),
     APPLY_FOR_COSTS("applyForCosts"),
     TURN_ON_NOTIFICATIONS("turnOnNotifications"),
+    RESPOND_TO_COSTS("respondToCosts"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
