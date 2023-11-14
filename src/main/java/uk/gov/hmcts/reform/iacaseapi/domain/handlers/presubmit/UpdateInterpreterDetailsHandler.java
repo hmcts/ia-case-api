@@ -46,6 +46,7 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
         Optional<List<IdValue<InterpreterDetails>>> optionalInterpreterDetailsList = asylumCase
             .read(INTERPRETER_DETAILS);
 
@@ -55,9 +56,17 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
         if (!interpreterDetailsList.isEmpty()) {
             asylumCase.write(INTERPRETER_DETAILS, interpreterDetailsList);
         }
-        asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+        try {
+            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            asylumCasePreSubmitCallbackResponse.setData(asylumCase);
+        } catch (Exception ex) {
+            String errorMessage = String.format("Hearing cannot be auto updated for Case %s",
+                    callback.getCaseDetails().getId()
+            );
+            asylumCasePreSubmitCallbackResponse.addError(errorMessage);
+        }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return asylumCasePreSubmitCallbackResponse;
     }
 
     private static List<IdValue<InterpreterDetails>> generateInterpreterDetailsWithId(
