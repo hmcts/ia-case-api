@@ -77,7 +77,8 @@ public class ApplyForCostsAppender {
                 resolveRespondentToCostsOrder(applicant, legalRepName),
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot
+                isApplyForCostsOot,
+                resolveRespondentRoleToCostsOrder(applicant)
         );
 
         final List<IdValue<ApplyForCosts>> allAppliesForCosts =
@@ -97,6 +98,14 @@ public class ApplyForCostsAppender {
     private String resolveRespondentToCostsOrder(String applicant, String legalRepName) {
         return switch (applicant) {
             case homeOffice -> legalRepName;
+            case legalRepresentative -> homeOffice;
+            default -> throw new IllegalStateException("Provided applicant is not valid");
+        };
+    }
+
+    private String resolveRespondentRoleToCostsOrder(String applicant) {
+        return switch (applicant) {
+            case homeOffice -> legalRepresentative;
             case legalRepresentative -> homeOffice;
             default -> throw new IllegalStateException("Provided applicant is not valid");
         };

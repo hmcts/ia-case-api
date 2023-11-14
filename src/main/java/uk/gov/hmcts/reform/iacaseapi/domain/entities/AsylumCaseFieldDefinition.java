@@ -1856,7 +1856,24 @@ public enum AsylumCaseFieldDefinition {
             "applyForCostsOotExplanation", new TypeReference<String>(){}),
 
     OOT_UPLOAD_EVIDENCE_DOCUMENTS(
-            "ootUploadEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){});
+            "ootUploadEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    RESPOND_TO_COSTS_LIST(
+        "respondToCostsList", new TypeReference<DynamicList>(){}),
+
+    RESPONSE_TO_APPLICATION_TEXT_AREA(
+        "responseToApplicationTextArea", new TypeReference<String>(){}),
+
+    RESPONSE_TO_APPLICATION_EVIDENCE(
+        "responseToApplicationEvidence", new TypeReference<List<IdValue<Document>>>(){}),
+
+    TYPE_OF_HEARING_OPTION(
+        "typeOfHearingOption", new TypeReference<YesOrNo>(){}),
+
+    TYPE_OF_HEARING_EXPLANATION(
+        "typeOfHearingExplanation", new TypeReference<String>(){}),
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;
