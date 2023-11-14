@@ -23,6 +23,7 @@ class ApplyForCostsTest {
     private String applyForCostsHearingTypeExplanation = "Test explanation";
     private String applyForCostsDecision = "Test decision";
     private String applyForCostsApplicantType = "Test applicant type";
+    private String applyForCostsRespondentRole = "Test respondent type";
     private String respondentToCostsOrder = "Respondent test type";
     private String applyForCostsCreationDate = "2020-09-21";
     private String applyForCostsOotExplanation = "Test explanation";
@@ -46,7 +47,8 @@ class ApplyForCostsTest {
             respondentToCostsOrder,
             applyForCostsOotExplanation,
             ootUploadEvidenceDocuments,
-            isApplyForCostsOot
+            isApplyForCostsOot,
+            applyForCostsRespondentRole
     );
 
     @Test
@@ -60,6 +62,7 @@ class ApplyForCostsTest {
         assertEquals(applyForCostsDecision, applyForCosts.getApplyForCostsDecision());
         assertEquals(applyForCostsApplicantType, applyForCosts.getApplyForCostsApplicantType());
         assertEquals(applyForCostsCreationDate, applyForCosts.getApplyForCostsCreationDate());
+        assertEquals(applyForCostsRespondentRole, applyForCosts.getApplyForCostsRespondentRole());
     }
 
     @Test
@@ -77,7 +80,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -93,7 +97,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -109,7 +114,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -125,7 +131,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -141,7 +148,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -157,7 +165,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -173,7 +182,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -189,7 +199,8 @@ class ApplyForCostsTest {
                 null,
                 applyForCostsOotExplanation,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new ApplyForCosts(
@@ -205,7 +216,8 @@ class ApplyForCostsTest {
                 respondentToCostsOrder,
                 null,
                 ootUploadEvidenceDocuments,
-                isApplyForCostsOot))
+                isApplyForCostsOot,
+                applyForCostsRespondentRole))
                 .isExactlyInstanceOf(NullPointerException.class);
     }
 }
