@@ -1,4 +1,5 @@
-targetInstance: ${TEST_URL:http://localhost:8090}
+# Can't use TEST_URL for FTs as it always point to Preview instance
+targetInstance: ${CASE_API_URL:http://localhost:8090}
 
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 

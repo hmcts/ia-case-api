@@ -109,6 +109,7 @@ withPipeline(type, product, component) {
     env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-demo.service.core-compute-demo.internal"
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
     env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
+    env.CASE_API_URL = "http://ia-case-api-demo.service.core-compute-demo.internal"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()
