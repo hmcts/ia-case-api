@@ -1,0 +1,43 @@
+{
+  "description": "RIA-5184 RIA-7335 Sets Anonymity flag for PA (Refusal of protection claim) appeal on submitAppeal event",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseFlagId": "5184-7335-ABC",
+          "appealType": "protection"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "protection",
+        "caseFlags": {
+          "partyName": null,
+          "roleOnCase": null,
+          "details": [
+            {
+              "id": "5184-7335-ABC",
+              "value": {
+                "name": "RRO (Restricted Reporting Order / Anonymisation)",
+                "flagCode": "CF0012",
+                "status": "Active",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

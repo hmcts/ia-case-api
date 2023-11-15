@@ -4,8 +4,7 @@ properties([
     pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
-
-@Library("Infrastructure")
+@Library('Infrastructure')
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
@@ -122,6 +121,12 @@ withPipeline(type, product, component) {
     """
     }
 
+    afterSuccess('akschartsinstall') {
+        onPR {
+            githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+        }
+    }
 
     afterAlways('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
