@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 
@@ -251,37 +250,6 @@ public class CcdCaseCreationTest {
             content);
 
         aipAppealCaseData = caseResource.getData();
-    }
-
-    /**
-     Submitting event for assigning values to mandatory fields which requires system/officer permission.
-     */
-    private Map<String, JsonNode> listCaseAndAssignRequiredFields() {
-        systemUserToken = idamAuthProvider.getSystemUserToken();
-
-        caseData.put("listCaseHearingLength", "120");
-        caseData.put("hearingAdjournmentWhen", "beforeHearingDate");
-        caseData.put("relistCaseImmediately", "Yes");
-        caseData.put("adjournmentDetailsHearing", new DynamicList("hearingId"));
-        caseData.put("hearingCancellationReason", "reclassified");
-        caseData.put("listCaseHearingDate", "2023-11-28T09:45:00.000");
-
-        String eventId = "listCaseForFTOnly";
-        StartEventResponse startEventDetails =
-            coreCaseDataApi.startEvent(systemUserToken, s2sToken, String.valueOf(caseId), eventId);
-
-        Event event = Event.builder().id(eventId).build();
-        CaseDataContent content = CaseDataContent.builder()
-            .caseReference(String.valueOf(caseId))
-            .data(caseData)
-            .event(event)
-            .eventToken(startEventDetails.getToken())
-            .ignoreWarning(true)
-            .build();
-
-        CaseResource caseResource = coreCaseDataApi.createEvent(systemUserToken, s2sToken, String.valueOf(caseId), content);
-
-        return caseResource.getData();
     }
 
     private Map<String, Object> getStartAppealData(Resource appealJson) {
