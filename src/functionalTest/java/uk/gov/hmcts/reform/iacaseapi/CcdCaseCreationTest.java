@@ -345,7 +345,7 @@ public class CcdCaseCreationTest {
     }
 
     @NotNull
-    protected Case createAndGetCase(boolean isAipJourney, boolean assignMandatoryFields) {
+    protected Case createAndGetCase(boolean isAipJourney) {
         AsylumCase caseData;
         if (isAipJourney) {
             setupForAip();
@@ -355,12 +355,6 @@ public class CcdCaseCreationTest {
             setupForLegalRep();
             caseData = getLegalRepCase();
             caseId = parseLong(getLegalRepCaseId());
-        }
-
-        if (assignMandatoryFields) {
-            for (Map.Entry<String, JsonNode> entry : listCaseAndAssignRequiredFields().entrySet()) {
-                caseData.put(entry.getKey(), entry.getValue());
-            }
         }
 
         Case result = new Case(caseId, caseData);

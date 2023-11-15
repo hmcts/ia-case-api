@@ -29,8 +29,8 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
 
     @ParameterizedTest
     @CsvSource({ "true", "false" })
-    void should_handle_update_hearing_request_mid_event_successfully(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+    void should_handle_prepare_record_adjournment_details_successfully(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
 
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);
@@ -60,8 +60,8 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
 
     @ParameterizedTest
     @CsvSource({ "true", "false" })
-    void should_handle_update_hearing_request_mid_event_successfully_due_to_invalid_authentication(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+    void should_fail_prepare_record_adjournment_details_due_to_invalid_authentication(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
 
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);

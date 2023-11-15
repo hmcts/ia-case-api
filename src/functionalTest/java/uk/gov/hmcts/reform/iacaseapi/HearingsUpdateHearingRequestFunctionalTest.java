@@ -36,7 +36,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_mid_event_successfully(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney);
 
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);
@@ -67,7 +67,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_fail_to_handle_update_hearing_request_mid_event_due_to_invalid_authentication(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney);
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             result.getCaseId(),
@@ -98,7 +98,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_about_to_submit_successfully(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney);
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             result.getCaseId(),
@@ -129,7 +129,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_fail_to_handle_update_hearing_request_about_to_submit_due_to_invalid_authentication(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney);
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             result.getCaseId(),
@@ -160,7 +160,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_confirmation_successfully(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney);
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             result.getCaseId(),
@@ -191,7 +191,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_fail_to_handle_update_hearing_request_confirmation_due_to_invalid_authentication(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney);
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             result.getCaseId(),

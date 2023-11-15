@@ -5,6 +5,11 @@ import java.util.Optional;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADJOURNMENT_DETAILS_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CANCELLATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
 import io.restassured.http.Header;
@@ -15,6 +20,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -30,8 +37,15 @@ public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseC
 
     @ParameterizedTest
     @CsvSource({ "true", "false" })
-    void should_handle_update_hearing_request_mid_event_successfully(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, true);
+    void should_handle_record_adjournment_details_state_successfully(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
+
+        AsylumCase asylumCase = result.getCaseData();
+        asylumCase.write(RELIST_CASE_IMMEDIATELY, "Yes");
+        asylumCase.write(ADJOURNMENT_DETAILS_HEARING, new DynamicList("hearingId"));
+        asylumCase.write(HEARING_CANCELLATION_REASON, "reclassified");
+        asylumCase.write(LIST_CASE_HEARING_DATE, "2023-11-28T09:45:00.000");
+        asylumCase.write(HEARING_ADJOURNMENT_WHEN, "beforeHearingDate");
 
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);
@@ -62,8 +76,8 @@ public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseC
 
     @ParameterizedTest
     @CsvSource({ "true", "false" })
-    void should_handle_update_hearing_request_mid_event_successfully_due_to_missing_fields(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+    void should_fail_handle_record_adjournment_details_state_due_to_missing_fields(boolean isAipJourney) {
+        Case result = createAndGetCase(isAipJourney);
 
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);
