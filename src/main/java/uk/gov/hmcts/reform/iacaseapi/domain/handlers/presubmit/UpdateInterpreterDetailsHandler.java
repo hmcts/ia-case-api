@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterDetails;
@@ -16,9 +18,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @Service
+@RequiredArgsConstructor
 public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+    private final IaHearingsApiService iaHearingsApiService;
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -41,6 +46,7 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
         Optional<List<IdValue<InterpreterDetails>>> optionalInterpreterDetailsList = asylumCase
             .read(INTERPRETER_DETAILS);
 
@@ -50,8 +56,16 @@ public class UpdateInterpreterDetailsHandler implements PreSubmitCallbackHandler
         if (!interpreterDetailsList.isEmpty()) {
             asylumCase.write(INTERPRETER_DETAILS, interpreterDetailsList);
         }
+        try {
+            iaHearingsApiService.aboutToSubmit(callback);
+        } catch (Exception ex) {
+            String errorMessage = String.format("Hearing cannot be auto updated for Case %s",
+                    callback.getCaseDetails().getId()
+            );
+            asylumCasePreSubmitCallbackResponse.addError(errorMessage);
+        }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return asylumCasePreSubmitCallbackResponse;
     }
 
     private static List<IdValue<InterpreterDetails>> generateInterpreterDetailsWithId(

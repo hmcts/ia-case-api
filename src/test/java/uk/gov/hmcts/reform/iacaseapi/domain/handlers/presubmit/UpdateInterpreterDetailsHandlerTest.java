@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -35,11 +38,13 @@ class UpdateInterpreterDetailsHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
     private UpdateInterpreterDetailsHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new UpdateInterpreterDetailsHandler();
+        handler = new UpdateInterpreterDetailsHandler(iaHearingsApiService);
         when(callback.getEvent()).thenReturn(Event.UPDATE_INTERPRETER_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -80,6 +85,7 @@ class UpdateInterpreterDetailsHandlerTest {
 
         // Given that the case has interpreter details, one with an id and one without
         when(asylumCase.read(eq(INTERPRETER_DETAILS))).thenReturn(Optional.of(interpreterDetailsList));
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
@@ -91,6 +97,34 @@ class UpdateInterpreterDetailsHandlerTest {
         // Verify that all the interpreter have an id
         assertTrue(updatedInterpreterDetails.stream()
             .noneMatch(idValue -> isEmpty(idValue.getValue().getInterpreterId())));
+
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_throw_an_exception_when_hearing_service_is_not_working() {
+        InterpreterDetails interpreterWithId = InterpreterDetails.builder()
+                .interpreterId("1")
+                .interpreterBookingRef("ref1")
+                .interpreterGivenNames("John")
+                .interpreterFamilyName("Smith")
+                .interpreterPhoneNumber("123")
+                .interpreterEmail("email")
+                .interpreterNote("note")
+                .build();
+        List<IdValue<InterpreterDetails>> interpreterDetailsList = new ArrayList<>();
+        interpreterDetailsList.add(new IdValue<>("1", interpreterWithId));
+
+        when(asylumCase.read(eq(INTERPRETER_DETAILS))).thenReturn(Optional.of(interpreterDetailsList));
+        when(iaHearingsApiService.aboutToSubmit(callback))
+                .thenThrow(new IllegalStateException("hearingService is down"));
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback);
+        assertNotNull(response);
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+
+        assertEquals(Set.of("Hearing cannot be auto updated for Case 0"), response.getErrors());
     }
 
 }
