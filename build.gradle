@@ -158,7 +158,7 @@ configurations {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.12.0'
+    toolVersion = '10.12.5'
     // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
     configFile(new File(rootDir, 'config/checkstyle/checkstyle.xml'))
 }
