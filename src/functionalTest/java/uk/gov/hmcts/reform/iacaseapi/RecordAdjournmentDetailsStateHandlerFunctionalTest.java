@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
@@ -20,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @Slf4j
 @ActiveProfiles("functional")
-public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreationTest {
+public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseCreationTest {
 
     @BeforeEach
     void getAuthentications() {
@@ -30,7 +31,7 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_mid_event_successfully(boolean isAipJourney) {
-        Case result = createAndGetCase(isAipJourney, false);
+        Case result = createAndGetCase(isAipJourney, true);
 
         log.info("caseOfficerToken: " + caseOfficerToken);
         log.info("s2sToken: " + s2sToken);
@@ -52,15 +53,16 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
             .header(new Header(AUTHORIZATION, caseOfficerToken))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
             .body(callback)
-            .post("/asylum/ccdMidEvent")
+            .post("/asylum/ccdAboutToSubmit")
             .then()
             .statusCode(HttpStatus.SC_OK)
-            .log().all(true);
+            .log().all(true)
+            .assertThat().body("data.updateHmcRequestSuccess", notNullValue());
     }
 
     @ParameterizedTest
     @CsvSource({ "true", "false" })
-    void should_handle_update_hearing_request_mid_event_successfully_due_to_invalid_authentication(boolean isAipJourney) {
+    void should_handle_update_hearing_request_mid_event_successfully_due_to_missing_fields(boolean isAipJourney) {
         Case result = createAndGetCase(isAipJourney, false);
 
         log.info("caseOfficerToken: " + caseOfficerToken);
@@ -80,15 +82,16 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
         Response response = given(caseApiSpecification)
             .when()
             .contentType("application/json")
-            .header(new Header(AUTHORIZATION, "invalidToken"))
+            .header(new Header(AUTHORIZATION, caseOfficerToken))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
             .body(callback)
-            .post("/asylum/ccdMidEvent")
+            .post("/asylum/ccdAboutToSubmit")
             .then()
             .log().all(true)
             .extract().response();
 
-        assertEquals(401, response.getStatusCode());
+        assertEquals(400, response.getStatusCode());
     }
+
 
 }

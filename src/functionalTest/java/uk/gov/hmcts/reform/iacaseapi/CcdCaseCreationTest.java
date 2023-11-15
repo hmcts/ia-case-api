@@ -7,6 +7,7 @@ import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import static java.lang.Long.parseLong;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 
@@ -54,20 +57,21 @@ public class CcdCaseCreationTest {
 
     protected static RequestSpecification caseApiSpecification;
 
-    private static long legalRepCaseId;
-    private static long aipCaseId;
-    private static Map<String, JsonNode> legalRepAppealCaseData;
+    private static long caseId;
+    protected static long legalRepCaseId;
+    protected static long aipCaseId;
+    protected static Map<String, JsonNode> legalRepAppealCaseData;
+    protected static Map<String, JsonNode> aipAppealCaseData;
 
-    private static Map<String, JsonNode> aipAppealCaseData;
-
-    private Map<String, Object> caseData;
+    protected Map<String, Object> caseData;
 
     protected static String s2sToken;
     protected static String legalRepToken;
     protected static String citizenToken;
     protected static String caseOfficerToken;
-    private String legalRepUserId;
-    private String citizenUserId;
+    protected String systemUserToken;
+    protected String legalRepUserId;
+    protected String citizenUserId;
 
     private static final String jurisdiction = "IA";
     private static final String caseType = "Asylum";
@@ -249,6 +253,37 @@ public class CcdCaseCreationTest {
         aipAppealCaseData = caseResource.getData();
     }
 
+    /**
+     Submitting event for assigning values to mandatory fields which requires system/officer permission.
+     */
+    private Map<String, JsonNode> listCaseAndAssignRequiredFields() {
+        systemUserToken = idamAuthProvider.getSystemUserToken();
+
+        caseData.put("listCaseHearingLength", "120");
+        caseData.put("hearingAdjournmentWhen", "beforeHearingDate");
+        caseData.put("relistCaseImmediately", "Yes");
+        caseData.put("adjournmentDetailsHearing", new DynamicList("hearingId"));
+        caseData.put("hearingCancellationReason", "reclassified");
+        caseData.put("listCaseHearingDate", "2023-11-28T09:45:00.000");
+
+        String eventId = "listCaseForFTOnly";
+        StartEventResponse startEventDetails =
+            coreCaseDataApi.startEvent(systemUserToken, s2sToken, String.valueOf(caseId), eventId);
+
+        Event event = Event.builder().id(eventId).build();
+        CaseDataContent content = CaseDataContent.builder()
+            .caseReference(String.valueOf(caseId))
+            .data(caseData)
+            .event(event)
+            .eventToken(startEventDetails.getToken())
+            .ignoreWarning(true)
+            .build();
+
+        CaseResource caseResource = coreCaseDataApi.createEvent(systemUserToken, s2sToken, String.valueOf(caseId), content);
+
+        return caseResource.getData();
+    }
+
     private Map<String, Object> getStartAppealData(Resource appealJson) {
 
         Map<String, Object> data = Collections.emptyMap();
@@ -271,15 +306,15 @@ public class CcdCaseCreationTest {
         }
     }
 
-    public String getLegalRepCaseId() {
+    protected String getLegalRepCaseId() {
         return Long.toString(legalRepCaseId);
     }
 
-    public String getAipCaseId() {
+    protected String getAipCaseId() {
         return Long.toString(aipCaseId);
     }
 
-    public AsylumCase getLegalRepCase() {
+    private AsylumCase getLegalRepCase() {
         AsylumCase asylumCase = new AsylumCase();
 
         for (Map.Entry<String, JsonNode> entry : legalRepAppealCaseData.entrySet()) {
@@ -289,7 +324,7 @@ public class CcdCaseCreationTest {
         return asylumCase;
     }
 
-    public AsylumCase getAipCase() {
+    private AsylumCase getAipCase() {
         AsylumCase asylumCase = new AsylumCase();
 
         for (Map.Entry<String, JsonNode> entry : aipAppealCaseData.entrySet()) {
@@ -297,5 +332,39 @@ public class CcdCaseCreationTest {
         }
 
         return asylumCase;
+    }
+
+    protected record Case(Long caseId, AsylumCase caseData) {
+        protected Long getCaseId() {
+            return caseId;
+        }
+
+        protected AsylumCase getCaseData() {
+            return caseData;
+        }
+    }
+
+    @NotNull
+    protected Case createAndGetCase(boolean isAipJourney, boolean assignMandatoryFields) {
+        AsylumCase caseData;
+        if (isAipJourney) {
+            setupForAip();
+            caseData = getAipCase();
+            caseId = parseLong(getAipCaseId());
+        } else {
+            setupForLegalRep();
+            caseData = getLegalRepCase();
+            caseId = parseLong(getLegalRepCaseId());
+        }
+
+        if (assignMandatoryFields) {
+            for (Map.Entry<String, JsonNode> entry : listCaseAndAssignRequiredFields().entrySet()) {
+                caseData.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        Case result = new Case(caseId, caseData);
+
+        return result;
     }
 }
