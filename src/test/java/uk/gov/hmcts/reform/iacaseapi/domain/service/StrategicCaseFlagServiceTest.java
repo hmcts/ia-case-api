@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.HEARING_LOOP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.INTERPRETER_LANGUAGE_FLAG;
@@ -89,6 +90,37 @@ class StrategicCaseFlagServiceTest {
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getName(), caseFlagValue.getName());
         assertEquals("code", caseFlagValue.getSubTypeKey());
         assertEquals("text", caseFlagValue.getSubTypeValue());
+    }
+
+    @Test
+    void should_activate_language_flag_when_manual_language_updated_with_another_manual_language() {
+        caseFlagDetail = new CaseFlagDetail("id", CaseFlagValue
+            .builder()
+            .flagCode(INTERPRETER_LANGUAGE_FLAG.getFlagCode())
+            .name(INTERPRETER_LANGUAGE_FLAG.getName())
+            //no subtypeKey - language is manual
+            .subTypeValue("abc")
+            .status("Active")
+            .build());
+        strategicCaseFlagService = new StrategicCaseFlagService(
+            "partyName",
+            "roleOnCase", List.of(caseFlagDetail));
+
+        boolean activated = strategicCaseFlagService
+            .activateFlag(INTERPRETER_LANGUAGE_FLAG, YES, "dateTime", new Language(null, "text")); // no languageCode
+        strategicCaseFlag = strategicCaseFlagService.getStrategicCaseFlag();
+
+        assertTrue(activated);
+        assertNotNull(strategicCaseFlag);
+        List<CaseFlagValue> values = strategicCaseFlag.getDetails().stream().map(CaseFlagDetail::getValue).toList();
+        CaseFlagValue activeCaseFlagValue = values.stream().filter(value -> "Active".equals(value.getStatus()))
+            .findAny().orElse(null);
+        CaseFlagValue inactiveCaseFlagValue = values.stream().filter(value -> INACTIVE_STATUS.equals(value.getStatus()))
+            .findAny().orElse(null);
+        assertTrue(activeCaseFlagValue != null && "Active".equals(activeCaseFlagValue.getStatus()));
+        assertTrue(inactiveCaseFlagValue != null && INACTIVE_STATUS.equals(inactiveCaseFlagValue.getStatus()));
+        assertNull(activeCaseFlagValue.getSubTypeKey());
+        assertEquals("text", activeCaseFlagValue.getSubTypeValue());
     }
 
     @Test

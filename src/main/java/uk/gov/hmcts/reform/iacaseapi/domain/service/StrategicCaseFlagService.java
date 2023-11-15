@@ -164,8 +164,12 @@ public class StrategicCaseFlagService {
         }
 
         CaseFlagDetail existingFlagDetails = activeDetails.get(caseFlagType.getFlagCode());
-        return Objects.equals(existingFlagDetails.getValue().getSubTypeKey(), language.getLanguageCode())
-            || Objects.equals(existingFlagDetails.getValue().getSubTypeValue(), language.getLanguageText());
+        return (Objects.equals(existingFlagDetails.getValue().getSubTypeKey(), language.getLanguageCode())
+               && !Objects.isNull(existingFlagDetails.getValue().getSubTypeKey())
+               && !Objects.isNull(language.getLanguageCode()))
+            || (Objects.equals(existingFlagDetails.getValue().getSubTypeValue(), language.getLanguageText())
+                && !Objects.isNull(existingFlagDetails.getValue().getSubTypeValue())
+                && !Objects.isNull(language.getLanguageText()));
     }
 
 }
