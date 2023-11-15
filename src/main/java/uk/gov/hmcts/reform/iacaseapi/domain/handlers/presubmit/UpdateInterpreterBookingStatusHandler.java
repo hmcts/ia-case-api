@@ -35,8 +35,7 @@ public class UpdateInterpreterBookingStatusHandler implements PreSubmitCallbackH
         PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse =
                 new PreSubmitCallbackResponse<>(callback.getCaseDetails().getCaseData());
         try {
-            AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
-            asylumCasePreSubmitCallbackResponse.setData(asylumCase);
+            iaHearingsApiService.aboutToSubmit(callback);
         } catch (Exception ex) {
             String errorMessage = String.format("Hearing cannot be auto updated for Case %s",
                     callback.getCaseDetails().getId()
