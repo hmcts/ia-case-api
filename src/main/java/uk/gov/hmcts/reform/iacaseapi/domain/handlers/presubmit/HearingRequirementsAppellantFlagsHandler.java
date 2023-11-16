@@ -6,6 +6,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_LOOP_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_ROOM_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_IN_CAMERA_COURT_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_MULTIMEDIA_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.CASE_GIVEN_IN_PRIVATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.HEARING_LOOP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.STEP_FREE_WHEELCHAIR_ACCESS;
@@ -78,6 +81,11 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
         boolean inCameraCourtGranted = asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
             .map(decision -> CASE_GRANTED.equals(decision))
             .orElse(false);
+        boolean isMultimediaEvidenceRequested = asylumCase.read(MULTIMEDIA_EVIDENCE, YesOrNo.class)
+                .map(multimediaEvidenceNeeded -> YES == multimediaEvidenceNeeded).orElse(false);
+        boolean isMultimediaEvidenceGranted = asylumCase.read(IS_MULTIMEDIA_ALLOWED, String.class)
+                .map(multimediaEvidenceDecision -> CASE_GRANTED.equals(multimediaEvidenceDecision))
+                .orElse(false);
         boolean caseDataUpdated = false;
 
         switch (callback.getEvent()) {
@@ -87,6 +95,8 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
                 caseDataUpdated |= handleHearingRoomFlag(strategicCaseFlagService, currentDateTime, isHearingRoomNeeded);
                 caseDataUpdated |= handleEvidenceInPrivate(
                     strategicCaseFlagService, currentDateTime, inCameraCourtRequested && inCameraCourtGranted);
+                caseDataUpdated |= handleMultimediaEvidence(
+                    strategicCaseFlagService, currentDateTime, isMultimediaEvidenceRequested && isMultimediaEvidenceGranted);
             }
             case UPDATE_HEARING_REQUIREMENTS -> {
                 caseDataUpdated |= handleHearingLoopFlag(
@@ -94,8 +104,12 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
                 caseDataUpdated |= handleHearingRoomFlag(
                     strategicCaseFlagService, currentDateTime, isHearingRoomNeeded);
             }
-            default -> caseDataUpdated |= handleEvidenceInPrivate(
-                strategicCaseFlagService, currentDateTime, inCameraCourtRequested && inCameraCourtGranted);
+            default -> {
+                caseDataUpdated |= handleEvidenceInPrivate(
+                        strategicCaseFlagService, currentDateTime, inCameraCourtRequested && inCameraCourtGranted);
+                caseDataUpdated |= handleMultimediaEvidence(
+                        strategicCaseFlagService, currentDateTime, isMultimediaEvidenceRequested && isMultimediaEvidenceGranted);
+            }
         }
 
         if (caseDataUpdated) {
@@ -127,6 +141,13 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
 
         return inCameraCourtRequestedAndGranted ? caseFlagService.activateFlag(CASE_GIVEN_IN_PRIVATE, YES, currentDateTime)
             : caseFlagService.deactivateFlag(CASE_GIVEN_IN_PRIVATE, currentDateTime);
+    }
+
+    private boolean handleMultimediaEvidence(
+            StrategicCaseFlagService caseFlagService, String currentDateTime, boolean isMultimediaEvidenceRequestedAndGranted) {
+
+        return isMultimediaEvidenceRequestedAndGranted ? caseFlagService.activateFlag(AUDIO_VIDEO_EVIDENCE, YES, currentDateTime)
+                : caseFlagService.deactivateFlag(AUDIO_VIDEO_EVIDENCE, currentDateTime);
     }
 
 }
