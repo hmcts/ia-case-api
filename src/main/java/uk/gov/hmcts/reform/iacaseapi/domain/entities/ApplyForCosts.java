@@ -25,6 +25,12 @@ public class ApplyForCosts {
     private String applyForCostsOotExplanation;
     private List<IdValue<Document>> ootUploadEvidenceDocuments;
     private YesOrNo isApplyForCostsOot;
+    private String applyForCostsRespondentRole;
+    private String responseToApplication;
+    private YesOrNo responseHearingType;
+    private String responseHearingTypeExplanation; //only if type of hearing is yes
+    private List<IdValue<Document>> responseEvidence;
+
 
     public ApplyForCosts() {
         // noop -- for deserializer
@@ -43,7 +49,8 @@ public class ApplyForCosts {
             String respondentToCostsOrder,
             String applyForCostsOotExplanation,
             List<IdValue<Document>> ootUploadEvidenceDocuments,
-            YesOrNo isApplyForCostsOot
+            YesOrNo isApplyForCostsOot,
+            String applyForCostsRespondentRole
     ) {
         requireNonNull(appliedCostsType);
         requireNonNull(argumentsAndEvidenceDocuments);
@@ -74,6 +81,7 @@ public class ApplyForCosts {
         this.applyForCostsOotExplanation = applyForCostsOotExplanation;
         this.ootUploadEvidenceDocuments = ootUploadEvidenceDocuments;
         this.isApplyForCostsOot = isApplyForCostsOot;
+        this.applyForCostsRespondentRole = applyForCostsRespondentRole;
     }
 
 
@@ -135,11 +143,47 @@ public class ApplyForCosts {
         return applyForCostsOotExplanation;
     }
 
+    public String getApplyForCostsRespondentRole() {
+        return applyForCostsRespondentRole;
+    }
+
     public List<IdValue<Document>> getOotUploadEvidenceDocuments() {
         return ootUploadEvidenceDocuments;
     }
 
     public YesOrNo getIsApplyForCostsOot() {
         return isApplyForCostsOot;
+    }
+
+    public void setResponseToApplication(String responseToApplication) {
+        this.responseToApplication = responseToApplication;
+    }
+
+    public String getResponseToApplication() {
+        return responseToApplication;
+    }
+
+    public void setResponseHearingTypeExplanation(String responseHearingTypeExplanation) {
+        this.responseHearingTypeExplanation = responseHearingTypeExplanation;
+    }
+
+    public void setEvidence(List<IdValue<Document>> evidence) {
+        this.responseEvidence = evidence;
+    }
+
+    public String getResponseHearingTypeExplanation() {
+        return responseHearingTypeExplanation;
+    }
+
+    public List<IdValue<Document>> getResponseEvidence() {
+        return responseEvidence;
+    }
+
+    public YesOrNo getResponseHearingType() {
+        return responseHearingType;
+    }
+
+    public void setResponseHearingType(YesOrNo responseHearingType) {
+        this.responseHearingType = responseHearingType;
     }
 }

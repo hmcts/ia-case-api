@@ -128,6 +128,7 @@ class EventTest {
         assertEquals("updateDetentionLocation", Event.UPDATE_DETENTION_LOCATION.toString());
         assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
         assertEquals("turnOnNotifications", Event.TURN_ON_NOTIFICATIONS.toString());
+        assertEquals("respondToCosts", Event.RESPOND_TO_COSTS.toString());
     }
 
     @Test

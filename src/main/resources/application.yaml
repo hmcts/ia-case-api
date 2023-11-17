@@ -214,6 +214,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "applyForCosts"
+      - "respondToCosts"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "sendDirection"
@@ -350,12 +351,14 @@ security:
       - "uploadAddendumEvidenceHomeOffice"
       - "makeAnApplication"
       - "applyForCosts"
+      - "respondToCosts"
     caseworker-ia-homeofficelart:
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
       - "makeAnApplication"
       - "applyForCosts"
+      - "respondToCosts"
     caseworker-ia-homeofficepou:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -363,6 +366,7 @@ security:
       - "applyForFTPARespondent"
       - "makeAnApplication"
       - "applyForCosts"
+      - "respondToCosts"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
@@ -371,6 +375,7 @@ security:
       - "applyForFTPARespondent"
       - "makeAnApplication"
       - "applyForCosts"
+      - "respondToCosts"
     citizen:
       - "startAppeal"
       - "editAppeal"

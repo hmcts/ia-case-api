@@ -53,6 +53,8 @@ class ApplyForCostsAppenderTest {
     private String applyForCostsDecision = "Test decision";
     private String applyForCostsApplicantType = "Home office";
     private String applyForCostsApplicantTypeLegalRep = "Legal representative";
+    private String applyForCostsRespondentRoleLr = "Legal representative";
+    private String applyForCostsRespondentRoleHo = "Home office";
     private String respondentToCostsOrder = "Test name of LegalRep";
     private String respondentToCostsOrderHomeOffice = "Home office";
     private String applyForCostsCreationDate = "2020-09-21";
@@ -117,6 +119,7 @@ class ApplyForCostsAppenderTest {
         assertEquals(applyForCostsApplicantType, allAppliesForCosts.get(0).getValue().getApplyForCostsApplicantType());
         assertEquals(applyForCostsCreationDate, allAppliesForCosts.get(0).getValue().getApplyForCostsCreationDate());
         assertEquals(respondentToCostsOrder, allAppliesForCosts.get(0).getValue().getRespondentToCostsOrder());
+        assertEquals(applyForCostsRespondentRoleLr, allAppliesForCosts.get(0).getValue().getApplyForCostsRespondentRole());
 
         assertEquals(existingApplyForCosts1, allAppliesForCosts.get(1).getValue());
         assertEquals(existingApplyForCosts2, allAppliesForCosts.get(2).getValue());
@@ -157,6 +160,7 @@ class ApplyForCostsAppenderTest {
         assertEquals(applyForCostsApplicantTypeLegalRep, allAppliesForCosts.get(0).getValue().getApplyForCostsApplicantType());
         assertEquals(applyForCostsCreationDate, allAppliesForCosts.get(0).getValue().getApplyForCostsCreationDate());
         assertEquals(respondentToCostsOrderHomeOffice, allAppliesForCosts.get(0).getValue().getRespondentToCostsOrder());
+        assertEquals(applyForCostsRespondentRoleHo, allAppliesForCosts.get(0).getValue().getApplyForCostsRespondentRole());
     }
 
     @Test
