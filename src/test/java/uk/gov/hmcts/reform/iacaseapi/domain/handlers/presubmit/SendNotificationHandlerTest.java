@@ -315,7 +315,8 @@ class SendNotificationHandlerTest {
                         Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
                         Event.UPLOAD_ADDENDUM_EVIDENCE,
-                        Event.APPLY_FOR_COSTS
+                        Event.APPLY_FOR_COSTS,
+                        Event.RESPOND_TO_COSTS
                     ).contains(event)) {
 
                     assertTrue(canHandle);
