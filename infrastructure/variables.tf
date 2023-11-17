@@ -58,10 +58,3 @@ variable "postgresql_user" {
   default = "ia_case_api"
 }
 
-variable "database_backup_retention_days" {
-  default = "7"
-}
-
-variable "aks_subscription_id" {}
-
-variable "jenkins_AAD_objectId" {}
