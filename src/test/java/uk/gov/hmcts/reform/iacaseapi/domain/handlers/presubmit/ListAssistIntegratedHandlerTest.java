@@ -67,8 +67,8 @@ public class ListAssistIntegratedHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-   @ParameterizedTest
-   @ValueSource(strings = {INTEGRATED_LOCATION,UNINTEGRATED_LOCATION})
+    @ParameterizedTest
+    @ValueSource(strings = {INTEGRATED_LOCATION,UNINTEGRATED_LOCATION})
     void should_write_flag_yes_when_integrated_epims_ids_include_configured_location(String configuredLocationId) {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(featureToggler.getJsonValue(LIST_ASSIST_INTEGRATED_LOCATIONS, DEFAULT_VALUE)).thenReturn(EXAMPLE_VALUE);
