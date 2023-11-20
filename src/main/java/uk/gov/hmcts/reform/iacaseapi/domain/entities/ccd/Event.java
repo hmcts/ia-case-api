@@ -127,6 +127,7 @@ public enum Event {
     HANDLE_HEARING_EXCEPTION("handleHearingException"),
     UPDATE_HMC_RESPONSE("updateHMCResponse"),
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
+    LIST_ASSIST_INTEGRATION("listAssistIntegration"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

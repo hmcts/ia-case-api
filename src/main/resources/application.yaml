@@ -290,6 +290,7 @@ security:
       - "updateInterpreterDetails"
       - "updateHearingRequest"
       - "recordAdjournmentDetails"
+      - "listAssistIntegration"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -325,6 +326,7 @@ security:
       - "updateInterpreterDetails"
       - "updateHearingRequest"
       - "recordAdjournmentDetails"
+      - "listAssistIntegration"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
