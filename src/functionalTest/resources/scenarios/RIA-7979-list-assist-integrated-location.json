@@ -1,0 +1,34 @@
+{
+  "description": "RIA-7979 Appeal set as integrated if location is among integrated location (e.g. Glasgow)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "366559"
+        },
+        "isIntegrated": "Yes"
+      }
+    }
+  }
+}
