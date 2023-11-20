@@ -37,8 +37,8 @@ def secrets = [
         secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
         secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
 
-        secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
-        secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+        secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+        secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
         secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
         secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
@@ -109,6 +109,7 @@ withPipeline(type, product, component) {
     env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
     env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
+    env.CASE_API_URL = "http://ia-case-api-demo.service.core-compute-demo.internal"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()
