@@ -77,7 +77,7 @@ public class CcdCaseCreationTest {
     protected static final String AUTHORIZATION = "Authorization";
     protected static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    @Value("${targetInstance}")
+    @Value("${targetInstanceForHearingsTests}")
     protected String targetInstance;
 
     @Autowired
