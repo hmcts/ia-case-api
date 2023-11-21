@@ -85,7 +85,7 @@ class AppealSubmitHandlerTest {
 
         ArgumentCaptor<AsylumCaseFieldDefinition> tabVisibleFieldCaptor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
         ArgumentCaptor<Object> yesOrNoCaptor = ArgumentCaptor.forClass(YesOrNo.class);
-        verify(asylumCase, times(2))
+        verify(asylumCase, times(1))
             .write(tabVisibleFieldCaptor.capture(), yesOrNoCaptor.capture());
 
         assertEquals(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, tabVisibleFieldCaptor.getValue());
@@ -110,7 +110,7 @@ class AppealSubmitHandlerTest {
 
         ArgumentCaptor<AsylumCaseFieldDefinition> tabVisibleFieldCaptor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
         ArgumentCaptor<Object> yesOrNoCaptor = ArgumentCaptor.forClass(YesOrNo.class);
-        verify(asylumCase, times(2))
+        verify(asylumCase, times(1))
             .write(tabVisibleFieldCaptor.capture(), yesOrNoCaptor.capture());
 
         assertEquals(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, tabVisibleFieldCaptor.getValue());
