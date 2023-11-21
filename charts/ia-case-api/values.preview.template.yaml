@@ -566,7 +566,11 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    memoryLimits: 1836Mi
+    memoryLimits: 2048Mi
+    devmemoryRequests: 1Gi
+    devcpuRequests: "1000m"
+    devmemoryLimits: 2Gi
+    devcpuLimits: "3500m"
     cpuLimits: 1900m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
