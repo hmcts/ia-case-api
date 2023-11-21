@@ -405,7 +405,6 @@ security:
       - "listCase"
       - "editCaseListing"
       - "handleHearingException"
-      - "updateHMCResponse"
       - "recordAdjournmentDetails"
 
 ### dependency configuration
