@@ -26,8 +26,8 @@ java:
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
-    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 15
-    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 15
+    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 5
+    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 5
   keyVaults:
     ia:
       secrets:
