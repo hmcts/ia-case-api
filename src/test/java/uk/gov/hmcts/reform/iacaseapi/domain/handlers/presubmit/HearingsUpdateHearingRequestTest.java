@@ -14,6 +14,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -32,6 +35,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class HearingsUpdateHearingRequestTest {
+
+    public static final String NO_HEARINGS_ERROR_MESSAGE =
+        "You've made an invalid request. You must request a substantive hearing before you can update a hearing.";
+
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -57,8 +64,14 @@ public class HearingsUpdateHearingRequestTest {
     @Test
     public void should_delegate_to_hearings_api_start_event_when_update_hearings_is_null() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
-        when(asylumCase.read(CHANGE_HEARINGS)).thenReturn(Optional.empty());
         when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
+
+        DynamicList adjournmentDetailsHearing =
+            new DynamicList(
+                new Value("code", "adjournmentDetailsHearing"),
+                Arrays.asList(new Value("code", "hearing1")));
+        when(asylumCase.read(CHANGE_HEARINGS, DynamicList.class))
+            .thenReturn(Optional.of(adjournmentDetailsHearing));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 hearingsUpdateHearingRequest.handle(ABOUT_TO_START, callback);
@@ -106,6 +119,20 @@ public class HearingsUpdateHearingRequestTest {
 
         verify(asylumCase).write(CHANGE_HEARING_LOCATION, BRADFORD.getValue());
         verify(asylumCase).clear(MANUAL_UPDATE_HEARING_REQUIRED);
+    }
+
+    @Test
+    void should_throw_error_if_no_hearings() {
+        when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
+
+        DynamicList adjournmentDetailsHearing =
+            new DynamicList(new Value("code", "adjournmentDetailsHearing"), Collections.emptyList());
+        when(asylumCase.read(CHANGE_HEARINGS, DynamicList.class))
+            .thenReturn(Optional.of(adjournmentDetailsHearing));
+
+        assertEquals(NO_HEARINGS_ERROR_MESSAGE,
+            hearingsUpdateHearingRequest.handle(ABOUT_TO_START, callback).getErrors().iterator().next());
     }
 }
 

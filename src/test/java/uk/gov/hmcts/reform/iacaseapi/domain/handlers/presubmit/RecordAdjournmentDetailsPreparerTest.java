@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
@@ -12,7 +14,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -31,6 +37,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class RecordAdjournmentDetailsPreparerTest {
 
+    public static final String NO_HEARINGS_ERROR_MESSAGE =
+        "You've made an invalid request. You must request a substantive hearing before you can adjourn a hearing.";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -47,6 +55,11 @@ public class RecordAdjournmentDetailsPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         recordAdjournmentDetailsPreparer = new RecordAdjournmentDetailsPreparer(iaHearingsApiService);
+
+        DynamicList adjournmentDetailsHearing =
+            new DynamicList(new Value("code", "adjournmentDetailsHearing"), Collections.emptyList());
+        when(asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class))
+            .thenReturn(Optional.of(adjournmentDetailsHearing));
     }
 
     @Test
@@ -139,5 +152,20 @@ public class RecordAdjournmentDetailsPreparerTest {
         assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_throw_error_if_no_hearings() {
+        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
+
+        DynamicList adjournmentDetailsHearing =
+            new DynamicList(new Value("code", "adjournmentDetailsHearing"), Collections.emptyList());
+        when(asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class))
+            .thenReturn(Optional.of(adjournmentDetailsHearing));
+
+
+        assertEquals(NO_HEARINGS_ERROR_MESSAGE,
+            recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback).getErrors().iterator().next());
     }
 }
