@@ -50,20 +50,16 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
 
         AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
 
-        if (noHearingsExist(asylumCase)) {
-            return createErrorResponse(asylumCase);
+        if (hasHearings(asylumCase)) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError(NO_HEARINGS_ERROR_MESSAGE);
+            return response;
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private static PreSubmitCallbackResponse<AsylumCase> createErrorResponse(AsylumCase asylumCase) {
-        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-        response.addError(NO_HEARINGS_ERROR_MESSAGE);
-        return response;
-    }
-
-    private static boolean noHearingsExist(AsylumCase asylumCase) {
+    private boolean hasHearings(AsylumCase asylumCase) {
         return asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class).get().getListItems().isEmpty();
     }
 
