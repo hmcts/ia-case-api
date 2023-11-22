@@ -50,7 +50,7 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
 
         AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
 
-        if (hasHearings(asylumCase)) {
+        if (hasNoHearings(asylumCase)) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
             response.addError(NO_HEARINGS_ERROR_MESSAGE);
             return response;
@@ -59,7 +59,7 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean hasHearings(AsylumCase asylumCase) {
+    private boolean hasNoHearings(AsylumCase asylumCase) {
         return asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class).get().getListItems().isEmpty();
     }
 

@@ -60,7 +60,7 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
         if (callback.getCaseDetails().getCaseData().read(CHANGE_HEARINGS).isEmpty()) {
             asylumCase = getHearings(callback);
 
-            if (hasHearings(asylumCase)) {
+            if (hasNoHearings(asylumCase)) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                 response.addError(NO_HEARINGS_ERROR_MESSAGE);
                 return response;
@@ -75,7 +75,7 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean hasHearings(AsylumCase asylumCase) {
+    private boolean hasNoHearings(AsylumCase asylumCase) {
         return asylumCase.read(CHANGE_HEARINGS, DynamicList.class).get().getListItems().isEmpty();
     }
 
