@@ -25,6 +25,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 @Component
 public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    public static final String NEXT_HEARING_DATE_CHOOSE_DATE_RANGE = "ChooseADateRange";
+    public static final String NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE = "You must provide one of the earliest or latest hearing " +
+            "date";
+
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
@@ -51,17 +56,16 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
                 .ifPresent(hearingLength -> asylumCase.write(NEXT_HEARING_DURATION, hearingLength));
         asylumCase.read(HEARING_CENTRE, HearingCentre.class)
                 .ifPresent(hearingCentre -> asylumCase.write(NEXT_HEARING_LOCATION, hearingCentre));
-        return responseCheckingHearingRange(asylumCase);
+        return validateHearingDateRange(asylumCase);
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> responseCheckingHearingRange(AsylumCase asylumCase) {
+    private PreSubmitCallbackResponse<AsylumCase> validateHearingDateRange(AsylumCase asylumCase) {
         PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
         asylumCase.read(NEXT_HEARING_DATE, String.class).ifPresent(nextHearingDate -> {
-            if (nextHearingDate.equals("ChooseADateRange")) {
+            if (nextHearingDate.equals(NEXT_HEARING_DATE_CHOOSE_DATE_RANGE)) {
                 if (asylumCase.read(NEXT_HEARING_DATE_RANGE_EARLIEST, String.class).isEmpty()
                         && asylumCase.read(NEXT_HEARING_DATE_RANGE_LATEST, String.class).isEmpty()) {
-                    preSubmitCallbackResponse.addError("You must provide one of the earliest or latest hearing " +
-                            "date");
+                    preSubmitCallbackResponse.addError(NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE);
                 }
             }
         });

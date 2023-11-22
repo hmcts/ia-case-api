@@ -23,6 +23,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJ
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.NEXT_HEARING_DATE_CHOOSE_DATE_RANGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE;
 
 import java.util.List;
 import java.util.Optional;
@@ -116,13 +118,14 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
                                         "In Person")))));
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
 
-        when(asylumCase.read(NEXT_HEARING_DATE, String.class)).thenReturn(Optional.of("ChooseADateRange"));
+        when(asylumCase.read(NEXT_HEARING_DATE, String.class))
+                .thenReturn(Optional.of(NEXT_HEARING_DATE_CHOOSE_DATE_RANGE));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(MID_EVENT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        assertEquals(Set.of("You must provide one of the earliest or latest hearing date"),
+        assertEquals(Set.of(NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE),
                 callbackResponse.getErrors());
     }
 
