@@ -9,7 +9,7 @@ java:
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
-    IA_CASE_NOTIFICATIONS_API_URL: https://ia-case-notifications-api-pr-944.preview.platform.hmcts.net
+    IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
@@ -487,7 +487,6 @@ ia-aip-frontend:
       #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
-      CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
       IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
       # IDAM_WEB_URL: https://xui-ia-case-api-pr-1389.preview.platform.hmcts.net
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
