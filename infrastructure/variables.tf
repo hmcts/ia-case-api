@@ -59,7 +59,7 @@ variable "postgresql_user" {
 }
 
 variable "database_backup_retention_days" {
-  default = "7"
+  default = "35"
 }
 
 variable "aks_subscription_id" {}
