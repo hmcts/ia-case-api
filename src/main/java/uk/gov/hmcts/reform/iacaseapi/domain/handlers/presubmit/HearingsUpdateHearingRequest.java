@@ -10,6 +10,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -22,6 +23,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 @Slf4j
 public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public static final String NO_HEARINGS_ERROR_MESSAGE =
+        "You've made an invalid request. You must request a substantive hearing before you can update a hearing.";
     private IaHearingsApiService iaHearingsApiService;
 
     public HearingsUpdateHearingRequest(
@@ -56,6 +59,12 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
 
         if (callback.getCaseDetails().getCaseData().read(CHANGE_HEARINGS).isEmpty()) {
             asylumCase = getHearings(callback);
+
+            if (hasNoHearings(asylumCase)) {
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError(NO_HEARINGS_ERROR_MESSAGE);
+                return response;
+            }
         } else {
             asylumCase = getHearingDetails(callback);
             setHearingLocationDetails(asylumCase);
@@ -64,6 +73,10 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
         asylumCase.clear(MANUAL_UPDATE_HEARING_REQUIRED);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean hasNoHearings(AsylumCase asylumCase) {
+        return asylumCase.read(CHANGE_HEARINGS, DynamicList.class).get().getListItems().isEmpty();
     }
 
     private AsylumCase getHearings(Callback<AsylumCase> callback) {

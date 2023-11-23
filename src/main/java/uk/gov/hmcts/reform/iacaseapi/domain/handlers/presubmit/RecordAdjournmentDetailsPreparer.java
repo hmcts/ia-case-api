@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 @Component
 public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public static final String NO_HEARINGS_ERROR_MESSAGE =
+        "You've made an invalid request. You must request a substantive hearing before you can adjourn a hearing.";
     private final IaHearingsApiService iaHearingsApiService;
 
     public RecordAdjournmentDetailsPreparer(IaHearingsApiService iaHearingsApiService) {
@@ -47,7 +50,17 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
 
         AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
 
+        if (hasNoHearings(asylumCase)) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError(NO_HEARINGS_ERROR_MESSAGE);
+            return response;
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean hasNoHearings(AsylumCase asylumCase) {
+        return asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class).get().getListItems().isEmpty();
     }
 
     private void clearAdjournmentDetails(Callback<AsylumCase> callback) {
