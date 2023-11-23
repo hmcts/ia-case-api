@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPLY_FOR_COSTS_OOT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_COSTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
@@ -26,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -63,7 +65,8 @@ class ApplyForCostsFeatureTogglerPreparerTest {
 
     @ParameterizedTest
     @MethodSource("applyForCostsOotScenarios")
-    void handler_checks_age_assessment_feature_flag_set_value(Optional<String> endAppealTime, Optional<String> decisionMadeTime, YesOrNo ootOrNo) {
+    void handler_checks_age_assessment_feature_flag_set_value(Optional<String> endAppealTime, Optional<String> decisionMadeTime, YesOrNo ootOrNo, AppealStatus appealStatus) {
+        when(asylumCase.read(APPEAL_STATUS, AppealStatus.class)).thenReturn(Optional.ofNullable(appealStatus));
         when(callback.getEvent()).thenReturn(APPLY_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -152,11 +155,12 @@ class ApplyForCostsFeatureTogglerPreparerTest {
 
     static Stream<Arguments> applyForCostsOotScenarios() {
         return Stream.of(
-                Arguments.of(Optional.empty(), Optional.empty(), YesOrNo.NO),
-                Arguments.of(Optional.of(outdatedTestTime), Optional.empty(), YesOrNo.YES),
-                Arguments.of(Optional.empty(), Optional.of(outdatedTestTime), YesOrNo.YES),
-                Arguments.of(Optional.of(nonOutdatedTestTime), Optional.empty(), YesOrNo.NO),
-                Arguments.of(Optional.empty(), Optional.of(nonOutdatedTestTime), YesOrNo.NO)
+                Arguments.of(Optional.empty(), Optional.empty(), YesOrNo.NO, null),
+                Arguments.of(Optional.of(outdatedTestTime), Optional.empty(), YesOrNo.YES, null),
+                Arguments.of(Optional.empty(), Optional.of(outdatedTestTime), YesOrNo.YES, null),
+                Arguments.of(Optional.of(nonOutdatedTestTime), Optional.empty(), YesOrNo.NO, null),
+                Arguments.of(Optional.empty(), Optional.of(nonOutdatedTestTime), YesOrNo.NO, null),
+                Arguments.of(Optional.empty(), Optional.of(outdatedTestTime), YesOrNo.NO, AppealStatus.REINSTATED)
         );
     }
 
