@@ -12,9 +12,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_LOCATION;
@@ -22,8 +23,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJ
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.NEXT_HEARING_DATE_CHOOSE_DATE_RANGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,12 +71,21 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
     @Test
     void should_populate_hearing_values() {
-        DynamicList hearingChannel = new DynamicList(new Value("INTER", "In Person"), null);
+        DynamicList hearingChannel = new DynamicList(new Value("INTER", "In Person"),
+                List.of(new Value("INTER",
+                        "In Person")));
         when(asylumCase.read(HEARING_CHANNEL, DynamicList.class))
-            .thenReturn(Optional.of(hearingChannel));
+                .thenReturn(Optional.of(hearingChannel));
         when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of("60"));
-        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
-            .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
+        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
+                .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
+        when(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class))
+                .thenReturn(Optional.of(
+                        new DynamicList(
+                                new Value("",
+                                        ""),
+                                List.of(new Value("INTER",
+                                        "In Person")))));
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -81,6 +97,36 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         verify(asylumCase, times(1)).write(NEXT_HEARING_DURATION, "60");
         verify(asylumCase, times(1))
             .write(NEXT_HEARING_LOCATION, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
+    }
+
+    @Test
+    void should_create_an_error_if_hearing_range_values_are_not_set() {
+        DynamicList hearingChannel = new DynamicList(new Value("INTER", "In Person"),
+                List.of(new Value("INTER",
+                        "In Person")));
+        when(asylumCase.read(HEARING_CHANNEL, DynamicList.class))
+                .thenReturn(Optional.of(hearingChannel));
+        when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of("60"));
+        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
+                .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
+        when(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class))
+                .thenReturn(Optional.of(
+                        new DynamicList(
+                                new Value("",
+                                        ""),
+                                List.of(new Value("INTER",
+                                        "In Person")))));
+        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
+
+        when(asylumCase.read(NEXT_HEARING_DATE, String.class))
+                .thenReturn(Optional.of(NEXT_HEARING_DATE_CHOOSE_DATE_RANGE));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                handler.handle(MID_EVENT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(Set.of(NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE),
+                callbackResponse.getErrors());
     }
 
     @Test
