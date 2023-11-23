@@ -102,8 +102,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-752
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -119,7 +119,6 @@ ia-case-documents-api:
         }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-      #IA_CASE_DOCUMENTS_API_URL: http://ia-case-documents-api-pr-752.preview.platform.hmcts.net
     keyVaults:
       ia:
         resourceGroup: ia
@@ -563,9 +562,9 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:prod-da056cb-20231114163654
+    image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    memoryLimits: 2048Mi
+    memoryLimits: 1836Mi
     devmemoryRequests: 1Gi
     devcpuRequests: "1000m"
     devmemoryLimits: 2Gi
