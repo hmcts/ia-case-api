@@ -44,9 +44,42 @@ module "ia_case_api_database_11" {
   backup_retention_days = "${var.database_backup_retention_days}"
 }
 
+module "ia-case-api-db-v15" {
+  providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
+  source          = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env             = var.env
+  product         = var.product
+  component       = var.component
+  business_area   = "cft"
+  common_tags     = merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
+  name            = "${var.product}-${var.component}-postgres-db-v15"
+  pgsql_databases = [
+    {
+      name : var.postgresql_database_name
+    }
+  ]
+  subnet_suffix = "expanded"
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql,pg_stat_statements,pg_buffercache"
+    }
+  ]
+  pgsql_version   = "15"
+  admin_user_object_id = var.jenkins_AAD_objectId
+}
+
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-11" {
   name         = "${var.component}-POSTGRES-PASS-11"
   value        = module.ia_case_api_database_11.postgresql_password
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-15" {
+  name         = "${var.component}-POSTGRES-PASS-15"
+  value        = module.ia-case-api-db-v15.password
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
 
