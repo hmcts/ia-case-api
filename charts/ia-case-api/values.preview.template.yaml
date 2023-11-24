@@ -389,7 +389,7 @@ ia-timed-event-service:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-135
+    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
     # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
@@ -400,8 +400,7 @@ ia-timed-event-service:
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
-      POSTGRES_HOST: ${SERVICE_NAME}-timed-event-service-postgresql
-      POSTGRES_NAME: timed-event-service
+      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: hmcts
       POSTGRES_CONNECTION_OPTIONS: ""
