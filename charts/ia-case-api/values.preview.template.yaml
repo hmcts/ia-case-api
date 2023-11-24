@@ -400,10 +400,10 @@ ia-timed-event-service:
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
-      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-      POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
-      POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
-      POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+      POSTGRES_HOST: ${SERVICE_NAME}-timed-event-service-postgresql
+      POSTGRES_NAME: timed-event-service
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: hmcts
       POSTGRES_CONNECTION_OPTIONS: ""
     keyVaults:
       ia:
