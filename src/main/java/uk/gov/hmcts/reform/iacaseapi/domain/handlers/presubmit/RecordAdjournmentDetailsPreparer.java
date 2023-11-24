@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJ
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
 import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -61,13 +60,7 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
     }
 
     private boolean hasNoHearings(AsylumCase asylumCase) {
-        Optional<DynamicList> hearings = asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class);
-
-        if (hearings.isEmpty()) {
-            return true;
-        } else {
-            return hearings.get().getListItems().isEmpty();
-        }
+        return asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class).get().getListItems().isEmpty();
     }
 
     private void clearAdjournmentDetails(Callback<AsylumCase> callback) {

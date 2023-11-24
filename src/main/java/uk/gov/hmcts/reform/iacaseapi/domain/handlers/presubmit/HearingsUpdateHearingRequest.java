@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADJOURNMENT_DETAILS_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
@@ -77,13 +76,7 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
     }
 
     private boolean hasNoHearings(AsylumCase asylumCase) {
-        Optional<DynamicList> hearings = asylumCase.read(ADJOURNMENT_DETAILS_HEARING, DynamicList.class);
-
-        if (hearings.isEmpty()) {
-            return true;
-        } else {
-            return hearings.get().getListItems().isEmpty();
-        }
+        return asylumCase.read(CHANGE_HEARINGS, DynamicList.class).get().getListItems().isEmpty();
     }
 
     private AsylumCase getHearings(Callback<AsylumCase> callback) {
