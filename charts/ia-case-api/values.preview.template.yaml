@@ -98,6 +98,45 @@ ia-case-payments-api:
           - system-password
           - ia-config-validator-secret
 
+ia-timed-event-service:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: 'hmctspublic.azurecr.io/ia/timed-event-service:latest'
+    ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
+    releaseNameOverride: ${SERVICE_NAME}-timed-event-service
+    disableTraefikTls: true
+  environment:
+    IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    POSTGRES_PORT: 5432
+    POSTGRES_HOST: ia-timed-event-service-postgres-11-db-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_USERNAME: ia_tes@ia-timed-event-service-postgres-11-db-{{ .Values.global.environment }}
+    POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
+  postgresql:
+    auth:
+      username: ia_tes
+      password: ia_tes
+      database: ia_tes
+    service:
+      port: 5432
+  keyVaults:
+    ia:
+      resourceGroup: ia
+      secrets:
+        - idam-client-id
+        - idam-secret
+        - idam-redirect-uri
+        - system-username
+        - system-password
+        - s2s-secret
+        - s2s-microservice
+        - AppInsightsInstrumentationKey
+        - timed-event-service-POSTGRES-PASS-11
+        - app-insights-connection-string
+        - ia-config-validator-secret
+
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
