@@ -1675,9 +1675,21 @@ public enum AsylumCaseFieldDefinition {
 
     REMOVAL_ORDER_DATE(
         "removalOrderDate", new TypeReference<String>(){}),
-    
+
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
+    }),
+
+    CASE_LEVEL_FLAGS(
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
+    // This is not actually a real case field. It is used to determine
+    // the case flag id for the purpose of functional test
+    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
+
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
 
     LISTING_AVAILABLE_FOR_ADA(
         "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
