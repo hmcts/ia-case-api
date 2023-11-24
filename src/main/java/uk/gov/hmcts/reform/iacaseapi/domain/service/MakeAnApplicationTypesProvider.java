@@ -390,9 +390,4 @@ public class MakeAnApplicationTypesProvider {
             .equals(YesOrNo.YES);
     }
 
-    private boolean check(AsylumCase asylumCase) {
-        return isInternalCase(asylumCase)
-            && (isAcceleratedDetainedAppeal(asylumCase) || !isAcceleratedDetainedAppeal(asylumCase)
-            || (isEjpCase(asylumCase) && (isAppellantInDetention(asylumCase) || !isAppellantInDetention(asylumCase))));
-    }
 }
