@@ -80,10 +80,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .filter(a -> a.getId().equals(applicationId))
             .forEach(application -> {
                 MakeAnApplication makeAnApplication = application.getValue();
-                makeAnApplication.setDecision(decision.toString());
-                makeAnApplication.setDecisionReason(decisionReason);
-                makeAnApplication.setDecisionDate(dateProvider.now().toString());
-                makeAnApplication.setDecisionMaker(updatedDecisionMakerRole);
+                setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), updatedDecisionMakerRole);
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.NO);
                 if (featureToggler.getValue("wa-R2-feature", false)) {
                     asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
@@ -105,5 +102,12 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION_REASON);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    public void setDecisionInfo(MakeAnApplication makeAnApplication, String decision, String decisionReason, String decisionDate, String decisionMakerRole) {
+        makeAnApplication.setDecision(decision);
+        makeAnApplication.setDecisionReason(decisionReason);
+        makeAnApplication.setDecisionDate(decisionDate);
+        makeAnApplication.setDecisionMaker(decisionMakerRole);
     }
 }

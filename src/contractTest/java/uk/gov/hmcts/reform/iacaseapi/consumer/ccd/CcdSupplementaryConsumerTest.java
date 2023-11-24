@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.ccd;
 
-import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
+import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
 import static java.util.Collections.singletonMap;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
