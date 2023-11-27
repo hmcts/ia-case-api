@@ -1,17 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
-import static java.util.Objects.requireNonNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import static java.util.Objects.requireNonNull;
+
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @EqualsAndHashCode
 @ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Document {
 
     private String documentUrl;
