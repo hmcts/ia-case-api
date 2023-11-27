@@ -12,7 +12,7 @@ java:
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
-    IA_TIMED_EVENT_SERVICE_URL: "http://ia-case-api-pr-1819-timed-event-service.preview.platform.hmcts.net/"
+    IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
@@ -26,8 +26,8 @@ java:
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
-    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 5
-    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 5
+    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 10
+    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 10
   keyVaults:
     ia:
       secrets:
@@ -400,6 +400,11 @@ ia-timed-event-service:
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
+      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+      POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+      POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+      POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+      POSTGRES_CONNECTION_OPTIONS: ""
     keyVaults:
       ia:
         resourceGroup: ia
