@@ -12,8 +12,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DURATION;
@@ -77,7 +77,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         when(asylumCase.read(HEARING_CHANNEL, DynamicList.class))
                 .thenReturn(Optional.of(hearingChannel));
         when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of("60"));
-        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
                 .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
         when(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class))
                 .thenReturn(Optional.of(
@@ -107,7 +107,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         when(asylumCase.read(HEARING_CHANNEL, DynamicList.class))
                 .thenReturn(Optional.of(hearingChannel));
         when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of("60"));
-        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
                 .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
         when(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class))
                 .thenReturn(Optional.of(

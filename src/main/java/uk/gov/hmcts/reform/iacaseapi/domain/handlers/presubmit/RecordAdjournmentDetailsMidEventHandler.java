@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE_RANGE_EARLIEST;
@@ -54,7 +54,7 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
 
         asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
                 .ifPresent(hearingLength -> asylumCase.write(NEXT_HEARING_DURATION, hearingLength));
-        asylumCase.read(HEARING_CENTRE, HearingCentre.class)
+        asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
                 .ifPresent(hearingCentre -> asylumCase.write(NEXT_HEARING_LOCATION, hearingCentre));
         return validateHearingDateRange(asylumCase);
     }
