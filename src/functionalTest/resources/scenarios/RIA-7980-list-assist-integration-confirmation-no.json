@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "listHearingInListAssist": "No"
+          "isIntegrated": "No"
         }
       }
     }

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_HEARING_IN_LIST_ASSIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -30,15 +30,15 @@ public class ListAssistIntegrationConfirmation implements PostSubmitCallbackHand
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        String listHearingInListAssist = asylumCase
-            .read(LIST_HEARING_IN_LIST_ASSIST, YesOrNo.class)
+        String isIntegrated = asylumCase
+            .read(IS_INTEGRATED, YesOrNo.class)
             .map(YesOrNo::toString)
             .orElse(YesOrNo.NO.toString());
 
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationHeader("# List Assist Integration");
-        postSubmitResponse.setConfirmationBody("List hearing in List Assist: " + listHearingInListAssist);
+        postSubmitResponse.setConfirmationBody("List hearing in List Assist: " + isIntegrated);
 
         return postSubmitResponse;
     }

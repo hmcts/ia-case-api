@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_HEARING_IN_LIST_ASSIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_ASSIST_INTEGRATION;
 
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class ListAssistIntegrationConfirmationTest {
         when(callback.getEvent()).thenReturn(LIST_ASSIST_INTEGRATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(LIST_HEARING_IN_LIST_ASSIST, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
         PostSubmitCallbackResponse callbackResponse =
             listAssistIntegrationConfirmation.handle(callback);
