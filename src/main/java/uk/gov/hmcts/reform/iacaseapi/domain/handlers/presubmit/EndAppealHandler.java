@@ -5,7 +5,10 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -24,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
+@Slf4j
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
@@ -68,7 +72,12 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
         }
 
-        if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && callback.getCaseDetails().getState() == State.ENDED) {
+        State previousState = callback
+                .getCaseDetailsBefore()
+                .map(CaseDetails::getState)
+                .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
+
+        if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && previousState == State.ENDED) {
             throw new IllegalStateException("Appeal has already been ended!");
         }
 
@@ -83,11 +92,6 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(REINSTATE_APPEAL_DATE);
 
         changeWithdrawApplicationsToCompleted(asylumCase);
-
-        State previousState = callback
-            .getCaseDetailsBefore()
-            .map(CaseDetails::getState)
-            .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
 
         asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
 
