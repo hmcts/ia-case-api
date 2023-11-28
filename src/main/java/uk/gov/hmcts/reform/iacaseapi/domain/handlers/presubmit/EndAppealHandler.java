@@ -5,10 +5,8 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-@Slf4j
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
