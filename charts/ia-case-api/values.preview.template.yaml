@@ -25,6 +25,7 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+    CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
   keyVaults:
     ia:
       secrets:
@@ -564,6 +565,10 @@ xui-webapp:
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     memoryLimits: 1836Mi
+    devmemoryRequests: 1Gi
+    devcpuRequests: "1000m"
+    devmemoryLimits: 2Gi
+    devcpuLimits: "3500m"
     cpuLimits: 1900m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
