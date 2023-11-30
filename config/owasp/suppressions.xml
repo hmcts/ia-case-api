@@ -17,4 +17,8 @@
         ]]</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
+    <suppress until="2024-02-28">
+        <notes>Until gov notify client is updated</notes>
+        <cve>CVE-2023-5072</cve>
+    </suppress>
 </suppressions>
