@@ -57,7 +57,6 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @BeforeEach
     public void setUp() {
-
         asylumCaseCallbackApiDelegator =
             new AsylumCaseCallbackApiDelegator(
                 serviceAuthTokenGenerator,
