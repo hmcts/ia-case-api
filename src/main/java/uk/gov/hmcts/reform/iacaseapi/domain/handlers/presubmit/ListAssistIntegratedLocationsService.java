@@ -32,7 +32,7 @@ public class ListAssistIntegratedLocationsService {
     }
 
 
-    public YesOrNo isListAssistIntegratedLocated(AsylumCase asylumCase ) {
+    public YesOrNo isListAssistEnabled(AsylumCase asylumCase ) {
 
         String flagValueJsonString = featureToggler.getJsonValue(LIST_ASSIST_INTEGRATED_LOCATIONS, DEFAULT_VALUE)
             .toJsonString();

@@ -1,31 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Slf4j
 @Component
-public class ListAssistIntegratedHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class ListAssistIntegrationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private ListAssistIntegratedLocationsService listAssistIntegratedLocationsService;
 
-    public ListAssistIntegratedHandler(ListAssistIntegratedLocationsService listAssistIntegratedLocationsService) {
+    public ListAssistIntegrationPreparer(ListAssistIntegratedLocationsService listAssistIntegratedLocationsService) {
         this.listAssistIntegratedLocationsService = listAssistIntegratedLocationsService;
-    }
-
-    @Override
-    public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LATEST;
     }
 
     public boolean canHandle(
@@ -35,8 +29,8 @@ public class ListAssistIntegratedHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+               && callback.getEvent() == Event.LIST_ASSIST_INTEGRATION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -52,9 +46,12 @@ public class ListAssistIntegratedHandler implements PreSubmitCallbackHandler<Asy
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(IS_INTEGRATED,
-            listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase));
+        PreSubmitCallbackResponse<AsylumCase> response =  new PreSubmitCallbackResponse<>(asylumCase);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        if (listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase) == NO) {
+            response.addError("List assist integration option is not available for selected hearing centre");
+        }
+
+        return response;
     }
 }

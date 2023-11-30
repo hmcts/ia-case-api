@@ -55,7 +55,7 @@ public class ListAssistIntegratedLocationsServiceTest {
     void isListAssistIntegratedLocated_should_return_yes() {
         when(baseLocation.getId()).thenReturn(INTEGRATED_LOCATION);
 
-        assertEquals(YES, listAssistIntegratedLocationsService.isListAssistIntegratedLocated(asylumCase));
+        assertEquals(YES, listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase));
 
     }
 
@@ -63,7 +63,7 @@ public class ListAssistIntegratedLocationsServiceTest {
     void isListAssistIntegratedLocated_should_return_no() {
         when(baseLocation.getId()).thenReturn(UNINTEGRATED_LOCATION);
 
-        assertEquals(NO, listAssistIntegratedLocationsService.isListAssistIntegratedLocated(asylumCase));
+        assertEquals(NO, listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase));
 
     }
 
