@@ -21,7 +21,6 @@ class AppealDecisionTest {
 
     @Test
     void should_throw_exception_when_name_unrecognised() {
-
         assertThatThrownBy(() -> AppealDecision.from("unknown"))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessage("unknown not an AppealDecision")
