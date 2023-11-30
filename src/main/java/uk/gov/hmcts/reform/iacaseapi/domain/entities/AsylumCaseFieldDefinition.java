@@ -2058,7 +2058,10 @@ public enum AsylumCaseFieldDefinition {
         "previousAdjournmentDetails", new TypeReference<List<IdValue<AdjournmentDetail>>>(){}),
 
     HEARING_CANCELLATION_REASON(
-        "hearingCancellationReason", new TypeReference<String>(){});
+        "hearingCancellationReason", new TypeReference<String>(){}),
+
+    IS_APPEAL_SUITABLE_TO_FLOAT(
+            "isAppealSuitableToFloat", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;

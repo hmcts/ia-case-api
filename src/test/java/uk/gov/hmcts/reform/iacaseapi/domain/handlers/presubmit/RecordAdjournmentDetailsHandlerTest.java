@@ -5,14 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADJOURNMENT_DETAILS_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_ADJOURNMENT_DETAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPEAL_SUITABLE_TO_FLOAT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_ADJOURNMENT_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,12 +37,14 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AdjournmentDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -163,5 +172,57 @@ public class RecordAdjournmentDetailsHandlerTest {
         assertThatThrownBy(() -> recordAdjournmentDetailsHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_set_float_suitability_to_no_when_on_hearing_date_and_yes_for_float_suitability() {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+                .thenReturn(Optional.of(ON_HEARING_DATE));
+
+        when(asylumCase.read(IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.class))
+                .thenReturn(Optional.of(YES));
+
+        recordAdjournmentDetailsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(eq(IS_APPEAL_SUITABLE_TO_FLOAT), eq(NO));
+    }
+
+    @Test
+    void should_not_set_float_suitability_when_before_hearing_date_and_no_for_float_suitability() {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+                .thenReturn(Optional.of(ON_HEARING_DATE));
+
+        when(asylumCase.read(IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.class))
+                .thenReturn(Optional.of(NO));
+
+        recordAdjournmentDetailsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(0)).write(IS_APPEAL_SUITABLE_TO_FLOAT, NO);
+    }
+
+    @Test
+    void should_not_set_float_suitability_when_before_hearing_date_and_yes_for_float_suitability() {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+                .thenReturn(Optional.of(BEFORE_HEARING_DATE));
+
+        when(asylumCase.read(IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.class))
+                .thenReturn(Optional.of(YES));
+
+        recordAdjournmentDetailsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(0)).write(IS_APPEAL_SUITABLE_TO_FLOAT, NO);
+    }
+
+    @Test
+    void should_not_set_float_suitability_when_null_value() {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+                .thenReturn(Optional.empty());
+
+        when(asylumCase.read(IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.class))
+                .thenReturn(Optional.empty());
+
+        recordAdjournmentDetailsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(0)).write(IS_APPEAL_SUITABLE_TO_FLOAT, NO);
     }
 }
