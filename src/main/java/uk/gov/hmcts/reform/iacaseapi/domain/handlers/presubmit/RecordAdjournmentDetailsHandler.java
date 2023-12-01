@@ -3,8 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESERVE_OR_EXCLUDE_JUDGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
 
         preserveAdjournmentDetailsHistory(asylumCase);
         buildCurrentAdjournmentDetail(asylumCase);
+        setFloatSuitability(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -102,6 +106,18 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
                 .reserveOrExcludeJudge(asylumCase.read(RESERVE_OR_EXCLUDE_JUDGE, String.class).orElse(""))
                 .build());
 
+        }
+    }
+
+    private void setFloatSuitability(AsylumCase asylumCase) {
+        Optional<HearingAdjournmentDay> optionalHearingAdjournmentDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class);
+        Optional<YesOrNo> optionalIsAppealSuitableToFloat = asylumCase.read(IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.class);
+
+        if (optionalHearingAdjournmentDay.isPresent() &&
+                optionalHearingAdjournmentDay.get().equals(ON_HEARING_DATE) &&
+                optionalIsAppealSuitableToFloat.isPresent() &&
+                optionalIsAppealSuitableToFloat.get().equals(YES)) {
+            asylumCase.write(IS_APPEAL_SUITABLE_TO_FLOAT, NO);
         }
     }
 
