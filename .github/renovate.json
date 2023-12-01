@@ -22,6 +22,10 @@
     {
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "matchPackageNames": ["au.com.dius.pact.consumer:junit5", "au.com.dius.pact.consumer:java8"],
+      "enabled": false
     }
   ],
   "timezone": "Europe/London",
