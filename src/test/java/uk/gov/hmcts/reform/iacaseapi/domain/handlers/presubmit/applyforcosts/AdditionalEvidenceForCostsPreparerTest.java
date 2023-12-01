@@ -1,9 +1,10 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_EVIDENCE_FOR_COSTS_LIST;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,13 +24,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts.RespondToCostsPreparer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsProvider;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class RespondToCostsPreparerTest {
+class AdditionalEvidenceForCostsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -39,14 +39,12 @@ class RespondToCostsPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private ApplyForCostsProvider applyForCostsProvider;
-
-    private RespondToCostsPreparer respondToCostsPreparer;
+    private AdditionalEvidenceForCostsPreparer additionalEvidenceForCostsPreparer;
 
     @BeforeEach
     public void setUp() {
-
-        respondToCostsPreparer = new RespondToCostsPreparer(applyForCostsProvider);
-        when(callback.getEvent()).thenReturn(Event.RESPOND_TO_COSTS);
+        additionalEvidenceForCostsPreparer = new AdditionalEvidenceForCostsPreparer(applyForCostsProvider);
+        when(callback.getEvent()).thenReturn(Event.ADD_EVIDENCE_FOR_COSTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }
@@ -56,33 +54,30 @@ class RespondToCostsPreparerTest {
         List<Value> applyForCostsList = new ArrayList<>();
         applyForCostsList.add(new Value("1", "Costs 1, Wasted costs, 13 Nov 2023"));
         applyForCostsList.add(new Value("2", "Costs 2, Unreasonable costs, 10 Nov 2023"));
-        when(applyForCostsProvider.getApplyForCostsForRespondent(asylumCase)).thenReturn(applyForCostsList);
+        when(applyForCostsProvider.getApplyForCostsForApplicantOrRespondent(asylumCase)).thenReturn(applyForCostsList);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            respondToCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(RESPOND_TO_COSTS_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
+        verify(asylumCase, times(1)).write(ADD_EVIDENCE_FOR_COSTS_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
     }
-
 
     @Test
     void should_add_error_if_dynamic_list_is_empty() {
-
-        when(applyForCostsProvider.getApplyForCostsForRespondent(asylumCase)).thenReturn(Collections.emptyList());
+        when(applyForCostsProvider.getApplyForCostsForApplicantOrRespondent(asylumCase)).thenReturn(Collections.emptyList());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                respondToCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).containsExactly("You do not have any cost applications to respond to.");
+        assertThat(callbackResponse.getErrors()).containsExactly("You do not have any cost applications to add evidence to.");
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-
         assertThatThrownBy(
-            () -> respondToCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -94,9 +89,9 @@ class RespondToCostsPreparerTest {
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = respondToCostsPreparer.canHandle(callbackStage, callback);
+                boolean canHandle = additionalEvidenceForCostsPreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.RESPOND_TO_COSTS
+                if (event == Event.ADD_EVIDENCE_FOR_COSTS
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
                     assertTrue(canHandle);
                 } else {
@@ -110,12 +105,11 @@ class RespondToCostsPreparerTest {
 
     @Test
     void should_not_allow_null_arguments() {
-
-        assertThatThrownBy(() -> respondToCostsPreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> additionalEvidenceForCostsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> respondToCostsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> additionalEvidenceForCostsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

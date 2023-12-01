@@ -30,6 +30,8 @@ public class ApplyForCosts {
     private YesOrNo responseHearingType;
     private String responseHearingTypeExplanation; //only if type of hearing is yes
     private List<IdValue<Document>> responseEvidence;
+    private List<IdValue<Document>> applicantAdditionalEvidence;
+    private List<IdValue<Document>> respondentAdditionalEvidence;
 
 
     public ApplyForCosts() {
@@ -185,5 +187,21 @@ public class ApplyForCosts {
 
     public void setResponseHearingType(YesOrNo responseHearingType) {
         this.responseHearingType = responseHearingType;
+    }
+
+    public List<IdValue<Document>> getApplicantAdditionalEvidence() {
+        return applicantAdditionalEvidence;
+    }
+
+    public void setApplicantAdditionalEvidence(List<IdValue<Document>> applicantAdditionalEvidence) {
+        this.applicantAdditionalEvidence = applicantAdditionalEvidence;
+    }
+
+    public List<IdValue<Document>> getRespondentAdditionalEvidence() {
+        return respondentAdditionalEvidence;
+    }
+
+    public void setRespondentAdditionalEvidence(List<IdValue<Document>> respondentAdditionalEvidence) {
+        this.respondentAdditionalEvidence = respondentAdditionalEvidence;
     }
 }
