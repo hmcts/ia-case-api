@@ -31,7 +31,7 @@ public class AdditionalEvidenceForCostsConfirmation implements PostSubmitCallbac
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        String confirmationHeader = "# You've uploaded additional evidence'";
+        String confirmationHeader = "# You've uploaded additional evidence";
         String confirmationBody =
             "## What happens next\n\n"
                 + "Both parties will receive an email notification confirming you've added additional evidence.\n\n"
