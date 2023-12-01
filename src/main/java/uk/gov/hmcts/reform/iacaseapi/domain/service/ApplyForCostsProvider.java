@@ -39,8 +39,8 @@ public class ApplyForCostsProvider {
 
     public List<Value> getApplyForCostsForApplicantOrRespondent(AsylumCase asylumCase) {
         Predicate<ApplyForCosts> applicantOrRespondentCondition = applyForCosts ->
-            applyForCosts.getApplyForCostsApplicantType().equals(getLoggedUserRole()) ||
-                (applyForCosts.getApplyForCostsRespondentRole().equals(getLoggedUserRole()) && StringUtils.isNotBlank(applyForCosts.getResponseToApplication()));
+            applyForCosts.getApplyForCostsApplicantType().equals(getLoggedUserRole()) && applyForCosts.getApplicantAdditionalEvidence() == null ||
+                (applyForCosts.getApplyForCostsRespondentRole().equals(getLoggedUserRole()) && StringUtils.isNotBlank(applyForCosts.getResponseToApplication()) && applyForCosts.getRespondentAdditionalEvidence() == null);
 
         return getApplyForCosts(asylumCase, applicantOrRespondentCondition);
     }
