@@ -1885,6 +1885,12 @@ public enum AsylumCaseFieldDefinition {
     TYPE_OF_HEARING_EXPLANATION(
         "typeOfHearingExplanation", new TypeReference<String>(){}),
 
+    ADD_EVIDENCE_FOR_COSTS_LIST(
+        "addEvidenceForCostsList", new TypeReference<DynamicList>(){}),
+
+    ADDITIONAL_EVIDENCE_FOR_COSTS(
+        "additionalEvidenceForCosts", new TypeReference<List<IdValue<Document>>>(){}),
+
     ;
 
     private final String value;

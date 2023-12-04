@@ -7,9 +7,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
@@ -27,7 +31,7 @@ class ApplyForCostsProviderTest {
     private UserDetailsHelper userDetailsHelper;
     private ApplyForCostsProvider applyForCostsProvider;
     private String applyForCostsOotExplanation = "Test explanation";
-    private List<IdValue<Document>> evidence =
+    private static List<IdValue<Document>> evidence =
             List.of(new IdValue<>("1",
                     new Document("http://localhost/documents/123456",
                             "http://localhost/documents/123456",
@@ -65,7 +69,22 @@ class ApplyForCostsProviderTest {
     void should_return_apply_costs_in_list_for_LegalRep_loggedIn() {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 
-        List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCosts(asylumCase);
+        List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForRespondent(asylumCase);
+        assertNotNull(applyForCostsForRespondent);
+        assertThat(applyForCostsForRespondent.size()).isEqualTo(1);
+        assertThat(applyForCostsForRespondent.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateApplyForCostsTestScenarios")
+    void should_return_apply_costs_in_list_for_applicant_or_legalrep_with_response(ApplyForCosts applyForCosts, UserRoleLabel role) {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(role);
+        List<IdValue<ApplyForCosts>> existingAppliesForCosts = new ArrayList<>();
+        existingAppliesForCosts.add(new IdValue<>("1", applyForCosts));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPLIES_FOR_COSTS)).thenReturn(Optional.of(existingAppliesForCosts));
+
+        List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForApplicantOrRespondent(asylumCase);
         assertNotNull(applyForCostsForRespondent);
         assertThat(applyForCostsForRespondent.size()).isEqualTo(1);
         assertThat(applyForCostsForRespondent.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
@@ -75,8 +94,48 @@ class ApplyForCostsProviderTest {
     void should_return_empty_list_for_HO_loggedIn() {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
 
-        List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCosts(asylumCase);
+        List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForRespondent(asylumCase);
         assertNotNull(applyForCostsForRespondent);
         assertThat(applyForCostsForRespondent.size()).isEqualTo(0);
+    }
+
+    static Stream<Arguments> generateApplyForCostsTestScenarios() {
+        ApplyForCosts applyForCosts1 = new ApplyForCosts(
+            "Wasted Costs",
+            "Evidence Details",
+            evidence,
+            evidence,
+            YesOrNo.YES,
+            "Hearing explanation",
+            "Pending",
+            "Home office",
+            "2023-11-10",
+            "Legal Rep Name",
+            "OOT explanation",
+            evidence,
+            YesOrNo.NO,
+            "Legal representative");
+
+        ApplyForCosts applyForCosts2 = new ApplyForCosts(
+            "Wasted Costs",
+            "Evidence Details",
+            evidence,
+            evidence,
+            YesOrNo.YES,
+            "Hearing explanation",
+            "Pending",
+            "Legal representative",
+            "2023-11-10",
+            "Legal Rep Name",
+            "OOT explanation",
+            evidence,
+            YesOrNo.YES,
+            "Home office");
+        applyForCosts2.setResponseToApplication("Response to application");
+
+        return Stream.of(
+            Arguments.of(applyForCosts1, UserRoleLabel.HOME_OFFICE_GENERIC),
+            Arguments.of(applyForCosts2, UserRoleLabel.LEGAL_REPRESENTATIVE)
+        );
     }
 }
