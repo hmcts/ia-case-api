@@ -1,0 +1,134 @@
+{
+  "description": "RIA-7715: Legal rep(as an applicant) adds additional evidence to costs",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 7715,
+      "eventId": "addEvidenceForCosts",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "journeyType": "rep",
+          "appealType": "revocationOfProtection",
+          "appealGroundsRevocation": {
+            "values": [
+              "revocationRefugeeConvention",
+              "revocationHumanitarianProtection"
+            ]
+          },
+          "additionalEvidenceForCosts": [
+            {
+              "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+              "value": {
+                "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                "document_filename": "test.pdf",
+                "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+              }
+            }
+          ],
+          "addEvidenceForCostsList": {
+            "value": {
+              "code": "1",
+              "label": "Costs 1, Wasted costs, 13 Nov 2023"
+            },
+            "list_items": [
+              {
+                "code": "1",
+                "label": "Costs 1, Wasted costs, 13 Nov 2023"
+              }
+            ]
+          },
+          "appliesForCosts": [
+            {
+              "id": "1",
+              "value": {
+                "appliedCostsType": "Unreasonable costs",
+                "applyForCostsDecision": "Pending",
+                "respondentToCostsOrder": "Home office",
+                "applyForCostsHearingType": "No",
+                "scheduleOfCostsDocuments": [],
+                "applyForCostsCreationDate": "2023-11-13",
+                "applyForCostsApplicantType": "Legal representative",
+                "applyForCostsRespondentRole": "Home office",
+                "argumentsAndEvidenceDetails": "",
+                "applyForCostsOotExplanation": "",
+                "ootUploadEvidenceDocuments": [],
+                "isApplyForCostsOot": "No",
+                "argumentsAndEvidenceDocuments": [
+                  {
+                    "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                    "value": {
+                      "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                      "document_filename": "test.pdf",
+                      "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+                    }
+                  }
+                ],
+                "applyForCostsHearingTypeExplanation": ""
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "revocationOfProtection",
+        "appealGroundsRevocation": {
+          "values": [
+            "revocationRefugeeConvention",
+            "revocationHumanitarianProtection"
+          ]
+        },
+        "appliesForCosts": [
+          {
+            "id": "1",
+            "value": {
+              "appliedCostsType": "Unreasonable costs",
+              "applyForCostsDecision": "Pending",
+              "respondentToCostsOrder": "Legal representative",
+              "applyForCostsHearingType": "No",
+              "scheduleOfCostsDocuments": [],
+              "applyForCostsCreationDate": "2023-11-13",
+              "applyForCostsApplicantType": "Home office",
+              "argumentsAndEvidenceDetails": "",
+              "applyForCostsRespondentRole": "Legal representative",
+              "applyForCostsOotExplanation": "",
+              "ootUploadEvidenceDocuments": [],
+              "isApplyForCostsOot": "No",
+              "argumentsAndEvidenceDocuments": [
+                {
+                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                  "value": {
+                    "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                    "document_filename": "test.pdf",
+                    "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+                  }
+                }
+              ],
+              "respondentAdditionalEvidence": [
+                {
+                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                  "value": {
+                    "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                    "document_filename": "test.pdf",
+                    "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+                  }
+                }
+              ],
+              "applyForCostsHearingTypeExplanation": ""
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+

@@ -129,10 +129,11 @@ class EventTest {
         assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
         assertEquals("turnOnNotifications", Event.TURN_ON_NOTIFICATIONS.toString());
         assertEquals("respondToCosts", Event.RESPOND_TO_COSTS.toString());
+        assertEquals("addEvidenceForCosts", Event.ADD_EVIDENCE_FOR_COSTS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(127, Event.values().length);
+        assertEquals(128, Event.values().length);
     }
 }

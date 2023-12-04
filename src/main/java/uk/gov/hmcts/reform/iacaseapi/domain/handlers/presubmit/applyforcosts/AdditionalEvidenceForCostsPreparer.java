@@ -1,10 +1,13 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_EVIDENCE_FOR_COSTS_LIST;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -12,14 +15,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsProvider;
 
-import java.util.List;
-
 @Component
-public class RespondToCostsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class AdditionalEvidenceForCostsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final ApplyForCostsProvider applyForCostsProvider;
 
-    public RespondToCostsPreparer(ApplyForCostsProvider applyForCostsProvider) {
+    public AdditionalEvidenceForCostsPreparer(ApplyForCostsProvider applyForCostsProvider) {
         this.applyForCostsProvider = applyForCostsProvider;
     }
 
@@ -31,7 +32,7 @@ public class RespondToCostsPreparer implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.RESPOND_TO_COSTS;
+            && callback.getEvent() == Event.ADD_EVIDENCE_FOR_COSTS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -49,13 +50,12 @@ public class RespondToCostsPreparer implements PreSubmitCallbackHandler<AsylumCa
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        List<Value> applyForCostsList = applyForCostsProvider.getApplyForCosts(asylumCase);
+        List<Value> applyForCostsList = applyForCostsProvider.getApplyForCostsForApplicantOrRespondent(asylumCase);
         if (applyForCostsList.isEmpty()) {
-            response.addError("You do not have any cost applications to respond to.");
+            response.addError("You do not have any cost applications to add evidence to.");
         } else {
             DynamicList dynamicList = new DynamicList(applyForCostsList.get(0), applyForCostsList);
-            asylumCase.write(RESPOND_TO_COSTS_LIST, dynamicList);
-
+            asylumCase.write(ADD_EVIDENCE_FOR_COSTS_LIST, dynamicList);
         }
 
         return response;
