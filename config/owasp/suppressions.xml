@@ -21,4 +21,7 @@
         <notes>Until gov notify client is updated</notes>
         <cve>CVE-2023-5072</cve>
     </suppress>
+    <suppress until="2024-02-28">
+        <cve>CVE-2023-33202</cve>
+    </suppress>
 </suppressions>
