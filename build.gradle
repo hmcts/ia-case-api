@@ -24,7 +24,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.18'
     id 'uk.gov.hmcts.java' version '0.12.50'
     id 'au.com.dius.pact' version '4.6.3'
-    id "io.freefair.lombok" version "6.6.3"
+    id "io.freefair.lombok" version "6.2.0"
 }
 
 apply plugin: 'java'
