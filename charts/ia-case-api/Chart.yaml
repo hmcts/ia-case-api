@@ -1,17 +1,17 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.40
+version: 0.0.41
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.0.0
+    version: 5.0.2
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: ccd
-    version: 8.0.27
+    version: 8.0.29
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
@@ -23,34 +23,34 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ia-case-payments-api
-    version: 0.0.15
+    version: 0.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
-    version: 0.0.26
+    version: 0.0.36
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-documents-api.enabled
   - name: ia-case-notifications-api
-    version: 0.0.37
+    version: 0.0.44
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
   - name: ia-home-office-integration-api
-    version: 0.0.20
+    version: 0.0.23
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
-    version: 0.0.43
+    version: 0.0.46
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
   - name: ccd-case-document-am-api
-    version: 1.7.11
+    version: 1.7.13
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
-    version: 2.0.10
+    version: 2.0.17
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-ccdorc.enabled
   - name: em-stitching
-    version: 1.0.31
+    version: 1.0.41
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
