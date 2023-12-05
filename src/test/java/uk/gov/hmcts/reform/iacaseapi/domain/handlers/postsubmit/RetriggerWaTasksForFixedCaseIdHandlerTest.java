@@ -123,14 +123,6 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
         String testFilePath = "/retriggerWaTasksCaseList.json";
         ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
-        TimedEvent timedEvent = new TimedEvent(
-                timedEventId,
-                Event.RE_TRIGGER_WA_TASKS,
-                timeToSchedule,
-                jurisdiction,
-                caseType,
-                caseId
-        );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_TASKS_BULK);
         when(dateProvider.nowWithTime()).thenReturn(now);
 
@@ -140,6 +132,21 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
         TimedEvent finalResult = timedEventArgumentCaptor.getValue();
         List<TimedEvent> timedEventList = timedEventArgumentCaptor.getAllValues();
+        TimedEvent expectedFinalTimedEvent = new TimedEvent(
+                timedEventId,
+                Event.RE_TRIGGER_WA_TASKS,
+                timeToSchedule,
+                jurisdiction,
+                caseType,
+                caseId
+        );
+        assertEquals(expectedFinalTimedEvent.getCaseId(), finalResult.getCaseId());
+        assertEquals(expectedFinalTimedEvent.getJurisdiction(), finalResult.getJurisdiction());
+        assertEquals(expectedFinalTimedEvent.getCaseType(), finalResult.getCaseType());
+        assertEquals(expectedFinalTimedEvent.getEvent(), finalResult.getEvent());
+        assertEquals(expectedFinalTimedEvent.getId(), finalResult.getId());
+        assertEquals(expectedFinalTimedEvent.getScheduledDateTime(), finalResult.getScheduledDateTime());
+
         List<Long> timedEventListCaseIds = timedEventList.stream()
                 .map(TimedEvent::getCaseId)
                 .collect(Collectors.toList());
@@ -155,13 +162,6 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                 Long.parseLong("3673342967892569"),
                 Long.parseLong("1677132005196104")
         );
-
-        assertEquals(timedEvent.getCaseId(), finalResult.getCaseId());
-        assertEquals(timedEvent.getJurisdiction(), finalResult.getJurisdiction());
-        assertEquals(timedEvent.getCaseType(), finalResult.getCaseType());
-        assertEquals(timedEvent.getEvent(), finalResult.getEvent());
-        assertEquals(timedEvent.getId(), finalResult.getId());
-        assertEquals(timedEvent.getScheduledDateTime(), finalResult.getScheduledDateTime());
 
         assertEquals(expectedCaseIds, timedEventListCaseIds);
     }

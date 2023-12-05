@@ -21,7 +21,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '8.2.1'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.7.14'
+    id 'org.springframework.boot' version '2.7.18'
     id 'uk.gov.hmcts.java' version '0.12.43'
     id 'au.com.dius.pact' version '4.2.14'
     id "io.freefair.lombok" version "6.2.0"
@@ -360,8 +360,8 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
 
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.81'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.81'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.83'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
