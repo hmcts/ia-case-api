@@ -32,14 +32,14 @@ public class ListAssistIntegratedLocationsService {
     }
 
 
-    public YesOrNo isListAssistEnabled(AsylumCase asylumCase ) {
+    public YesOrNo isListAssistEnabled(AsylumCase asylumCase) {
 
         String flagValueJsonString = featureToggler.getJsonValue(LIST_ASSIST_INTEGRATED_LOCATIONS, DEFAULT_VALUE)
             .toJsonString();
 
         Set<Long> epimsIds = extractEpimsIds(flagValueJsonString);
 
-       return asylumCase
+        return asylumCase
             .read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class)
             .map(location -> epimsIds.contains(Long.parseLong(location.getBaseLocation().getId())) ? YES : NO)
             .orElse(NO);
