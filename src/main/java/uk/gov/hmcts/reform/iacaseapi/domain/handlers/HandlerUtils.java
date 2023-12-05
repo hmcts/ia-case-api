@@ -3,8 +3,17 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.RetriggerWaTasksForFixedCaseIdHandler;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class HandlerUtils {
 
@@ -31,5 +40,25 @@ public class HandlerUtils {
     public static boolean isAipToRepJourney(AsylumCase asylumCase) {
         return (asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class).orElse(null) == JourneyType.AIP)
             && isRepJourney(asylumCase);
+    }
+
+    public static List<String> readJsonFileList(String filePath, String key) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(RetriggerWaTasksForFixedCaseIdHandler.class.getResource(filePath).getFile());
+
+        JsonNode rootNode = objectMapper.readTree(file);
+
+        JsonNode listNode = rootNode.get(key);
+        List<String> valueList = new ArrayList<>();
+
+        if (listNode != null && listNode.isArray()) {
+            Iterator<JsonNode> elements = listNode.elements();
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                valueList.add(element.asText());
+            }
+        }
+
+        return valueList;
     }
 }
