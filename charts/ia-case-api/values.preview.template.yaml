@@ -397,7 +397,7 @@ ia-timed-event-service:
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-      POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+      POSTGRES_NAME: "ia-case-api"
       POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
       POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
       POSTGRES_CONNECTION_OPTIONS: ""
