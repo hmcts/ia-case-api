@@ -122,7 +122,6 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     void should_schedule_re_trigger_wa_tasks_5_minutes_in_future_for_all_case_ids() {
 
         String testFilePath = "/retriggerWaTasksCaseList.json";
-        ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_TASKS_BULK);
         when(dateProvider.nowWithTime()).thenReturn(now);
 
@@ -130,8 +129,8 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         retriggerWaTasksForFixedCaseIdHandler.handle(callback);
         verify(scheduler, times(10)).schedule(timedEventArgumentCaptor.capture());
 
+        ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
         TimedEvent finalResult = timedEventArgumentCaptor.getValue();
-        List<TimedEvent> timedEventList = timedEventArgumentCaptor.getAllValues();
         TimedEvent expectedFinalTimedEvent = new TimedEvent(
                 timedEventId,
                 Event.RE_TRIGGER_WA_TASKS,
@@ -147,6 +146,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         assertEquals(expectedFinalTimedEvent.getId(), finalResult.getId());
         assertEquals(expectedFinalTimedEvent.getScheduledDateTime(), finalResult.getScheduledDateTime());
 
+        List<TimedEvent> timedEventList = timedEventArgumentCaptor.getAllValues();
         List<Long> timedEventListCaseIds = timedEventList.stream()
                 .map(TimedEvent::getCaseId)
                 .collect(Collectors.toList());
