@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.time.LocalDateTime;
@@ -123,6 +124,23 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(dateProvider.nowWithTime()).thenReturn(now);
         retriggerWaTasksForFixedCaseIdHandler.handle(callback);
         verify(scheduler, times(0)).schedule(timedEventArgumentCaptor.capture());
+    }
+
+    @Test
+    void should_try_to_schedule_all_despite_one_failure()  {
+        String testFilePath = "/retriggerWaTasksCaseList.json";
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        testFilePath,
+                        dateProvider,
+                        scheduler
+                );
+        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
+        retriggerWaTasksForFixedCaseIdHandler.handle(callback);
+        verify(scheduler, times(10)).schedule(timedEventArgumentCaptor.capture());
     }
 
     @Test
