@@ -20,6 +20,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": []
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
   }
 }

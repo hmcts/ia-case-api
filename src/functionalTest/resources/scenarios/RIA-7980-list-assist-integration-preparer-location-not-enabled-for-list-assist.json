@@ -20,6 +20,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["List assist integration option is not available for selected hearing centre"]
+    "errors": ["List assist integration option is not available for selected hearing centre"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
   }
 }
