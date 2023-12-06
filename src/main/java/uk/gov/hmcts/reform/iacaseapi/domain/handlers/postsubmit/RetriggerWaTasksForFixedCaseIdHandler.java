@@ -28,17 +28,19 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     private List<String> caseIdList;
-    private String filePath = "/caseIdForRetrigger.json";
+    private String filePath;
 
 
     public RetriggerWaTasksForFixedCaseIdHandler(
             @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
+            @Value("${caseIdListJsonLocation}") String filePath,
             DateProvider dateProvider,
             Scheduler scheduler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
+        this.filePath = filePath;
     }
 
     public boolean canHandle(
@@ -46,7 +48,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        Event qualifyingEvent = Event.RE_TRIGGER_WA_TASKS_BULK;
+        Event qualifyingEvent = Event.RE_TRIGGER_WA_BULK_TASKS;
 
         return  timedEventServiceEnabled
                 && callback.getEvent() == qualifyingEvent;
@@ -65,7 +67,8 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
 
         try {
             caseIdList = readJsonFileList(filePath, "caseIdList");
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
+            log.error("filePath is " + filePath);
             log.error(e.getMessage());
         }
         if (caseIdList != null && caseIdList.size() > 0) {
@@ -85,9 +88,4 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
 
         return new PostSubmitCallbackResponse();
     }
-
-    public void setFilePath(String newPath) {
-        this.filePath = newPath;
-    }
-
 }

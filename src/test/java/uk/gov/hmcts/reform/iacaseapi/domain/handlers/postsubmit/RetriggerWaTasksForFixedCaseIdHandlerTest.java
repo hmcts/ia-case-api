@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -9,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
@@ -36,14 +34,8 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     private DateProvider dateProvider;
     @Mock
     private Scheduler scheduler;
-
     @Mock
     private Callback<AsylumCase> callback;
-    @Mock
-    private AsylumCase asylumCase;
-
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
     @Captor
     private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
 
@@ -55,22 +47,17 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     private String caseType = "Asylum";
 
     private RetriggerWaTasksForFixedCaseIdHandler retriggerWaTasksForFixedCaseIdHandler;
-    private RetriggerWaTasksForFixedCaseIdHandler retriggerWaTasksForFixedCaseIdHandlerDisabled;
-
-    @BeforeEach
-    public void setUp() {
-
-        retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        timedEventServiceEnabled,
-                        dateProvider,
-                        scheduler
-                );
-    }
 
     @Test
     void handle_callback_should_return_expected() {
-        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_TASKS_BULK);
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        "/retriggerWaTasksCaseList.json",
+                        dateProvider,
+                        scheduler
+                );
+        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callback);
         assertThat(canHandle).isEqualTo(true);
 
@@ -81,18 +68,26 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
     @Test
     void handle_callback_should_return_false_timed_event_service_disabled() {
-        retriggerWaTasksForFixedCaseIdHandlerDisabled =
+        retriggerWaTasksForFixedCaseIdHandler =
                 new RetriggerWaTasksForFixedCaseIdHandler(
                         false,
+                        "/retriggerWaTasksCaseList.json",
                         dateProvider,
                         scheduler
                 );
-        boolean canHandle = retriggerWaTasksForFixedCaseIdHandlerDisabled.canHandle(callback);
+        boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callback);
         assertThat(canHandle).isEqualTo(false);
     }
 
     @Test
     void handling_should_throw_if_cannot_handle() {
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        "/caseIdForRetrigger.json",
+                        dateProvider,
+                        scheduler
+                );
         assertThatThrownBy(
                 () -> retriggerWaTasksForFixedCaseIdHandler.handle(callback))
                 .hasMessage("Cannot handle callback")
@@ -101,9 +96,15 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
     @Test
     void should_not_schedule_anything_when_read_json_fails()  {
-        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_TASKS_BULK);
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        "/",
+                        dateProvider,
+                        scheduler
+                );
+        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(dateProvider.nowWithTime()).thenReturn(now);
-        retriggerWaTasksForFixedCaseIdHandler.setFilePath("/");
         retriggerWaTasksForFixedCaseIdHandler.handle(callback);
         verify(scheduler, times(0)).schedule(timedEventArgumentCaptor.capture());
     }
@@ -111,9 +112,15 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     @Test
     void should_not_schedule_anything_when_no_case_ids()  {
         String testFilePath = "/retriggerWaTasksEmptyCaseList.json";
-        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_TASKS_BULK);
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        testFilePath,
+                        dateProvider,
+                        scheduler
+                );
+        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(dateProvider.nowWithTime()).thenReturn(now);
-        retriggerWaTasksForFixedCaseIdHandler.setFilePath(testFilePath);
         retriggerWaTasksForFixedCaseIdHandler.handle(callback);
         verify(scheduler, times(0)).schedule(timedEventArgumentCaptor.capture());
     }
@@ -122,10 +129,16 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     void should_schedule_re_trigger_wa_tasks_5_minutes_in_future_for_all_case_ids() {
 
         String testFilePath = "/retriggerWaTasksCaseList.json";
-        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_TASKS_BULK);
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        testFilePath,
+                        dateProvider,
+                        scheduler
+                );
+        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(dateProvider.nowWithTime()).thenReturn(now);
 
-        retriggerWaTasksForFixedCaseIdHandler.setFilePath(testFilePath);
         retriggerWaTasksForFixedCaseIdHandler.handle(callback);
         verify(scheduler, times(10)).schedule(timedEventArgumentCaptor.capture());
 

@@ -5,12 +5,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.RetriggerWaTasksForFixedCaseIdHandler;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +44,8 @@ public class HandlerUtils {
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(RetriggerWaTasksForFixedCaseIdHandler.class.getResource(filePath).getFile());
+        ClassPathResource fileResource = new ClassPathResource(filePath);
+        InputStream file = fileResource.getInputStream();
 
         JsonNode rootNode = objectMapper.readTree(file);
 

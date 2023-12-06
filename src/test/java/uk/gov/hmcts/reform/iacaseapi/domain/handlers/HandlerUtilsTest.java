@@ -62,16 +62,8 @@ class HandlerUtilsTest {
     }
 
     @Test
-    public void read_json_file_list_no_file_found_throws_null() {
+    public void read_json_file_list_invalid_file_path_throws_io() {
         String filePath = "/missingCaseIdList.json";
-        assertThrows(NullPointerException.class, () -> {
-            HandlerUtils.readJsonFileList(filePath, "key");
-        });
-    }
-
-    @Test
-    public void read_json_file_list_directory_path_throws_io() {
-        String filePath = "/";
         assertThrows(IOException.class, () -> {
             HandlerUtils.readJsonFileList(filePath, "key");
         });

@@ -119,7 +119,7 @@ class EventTest {
         assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
-        assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_TASKS_BULK.toString());
+        assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
     }
 
