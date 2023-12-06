@@ -83,4 +83,11 @@ class HandlerUtilsTest {
         List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
         assertEquals(new ArrayList<>(), result);
     }
+
+    @Test
+    public void read_json_file_list_non_array_json_returns_empty() throws IOException {
+        String filePath = "/readJsonNonArray.json";
+        List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
+        assertEquals(new ArrayList<>(), result);
+    }
 }

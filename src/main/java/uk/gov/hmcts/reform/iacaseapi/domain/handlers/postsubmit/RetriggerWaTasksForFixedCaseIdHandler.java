@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -19,6 +20,7 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.readJsonFileList;
 
+@Slf4j
 @Component
 public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -64,7 +66,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
         try {
             caseIdList = readJsonFileList(filePath, "caseIdList");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         if (caseIdList != null && caseIdList.size() > 0) {
             for (int i = 0; i < caseIdList.size(); i++) {
