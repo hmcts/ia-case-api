@@ -54,3 +54,7 @@ dependencies:
     version: 1.0.31
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
+  - name: ia-timed-event-service
+    version: 0.0.24
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-timed-event-service.enabled
