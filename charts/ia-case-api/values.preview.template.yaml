@@ -392,10 +392,8 @@ ia-timed-event-service:
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:
-      IDAM_URL: https://idam-web-public.{{ .Values.global.environment
-        }}.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment
-        }}.service.core-compute-{{ .Values.global.environment }}.internal
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
       POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
