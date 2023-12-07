@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
+          "searchPostcode": "G1 1AB",
           "caseManagementLocation": {
             "region": "1",
             "baseLocation": "366559"
@@ -23,6 +24,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
+        "searchPostcode": "G1 1AB",
         "caseManagementLocation": {
           "region": "1",
           "baseLocation": "366559"
