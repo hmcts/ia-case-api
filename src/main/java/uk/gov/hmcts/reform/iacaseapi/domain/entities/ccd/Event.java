@@ -128,6 +128,7 @@ public enum Event {
     TRIGGER_CMR_UPDATED("triggerCmrUpdated"),
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
+    UPDATE_CMR_NOTIFICATION("updateCmrNotification"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

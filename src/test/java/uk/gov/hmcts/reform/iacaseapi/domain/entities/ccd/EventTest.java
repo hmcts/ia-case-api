@@ -126,6 +126,7 @@ class EventTest {
         assertEquals("triggerCmrUpdated", Event.TRIGGER_CMR_UPDATED.toString());
         assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
+        assertEquals("updateCmrNotification", Event.UPDATE_CMR_NOTIFICATION.toString());
     }
 
     @Test
