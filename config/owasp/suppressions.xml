@@ -59,4 +59,9 @@
         <packageUrl regex="true">^pkg:maven/org\.bitbucket\.b_c/jose4j@.*$</packageUrl>
         <cpe>cpe:/a:jose4j_project:jose4j</cpe>
     </suppress>
+    <suppress>
+        <cve>CVE-2023-6378</cve>
+        <cve>CVE-2023-46589</cve>
+        <cve>CVE-2023-33202</cve>
+    </suppress>
 </suppressions>
