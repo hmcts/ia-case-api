@@ -30,7 +30,6 @@ class ApplyForCostsProviderTest {
     @Mock
     private UserDetailsHelper userDetailsHelper;
     private ApplyForCostsProvider applyForCostsProvider;
-    private String applyForCostsOotExplanation = "Test explanation";
     private static List<IdValue<Document>> evidence =
             List.of(new IdValue<>("1",
                     new Document("http://localhost/documents/123456",
@@ -77,17 +76,25 @@ class ApplyForCostsProviderTest {
 
     @ParameterizedTest
     @MethodSource("generateApplyForCostsTestScenarios")
-    void should_return_apply_costs_in_list_for_applicant_or_legalrep_with_response(ApplyForCosts applyForCosts, UserRoleLabel role) {
+    void should_return_apply_costs_list_suitable_for_additional_evidence(ApplyForCosts applyForCosts, UserRoleLabel role) {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(role);
         List<IdValue<ApplyForCosts>> existingAppliesForCosts = new ArrayList<>();
         existingAppliesForCosts.add(new IdValue<>("1", applyForCosts));
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPLIES_FOR_COSTS)).thenReturn(Optional.of(existingAppliesForCosts));
 
-        List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForApplicantOrRespondent(asylumCase);
-        assertNotNull(applyForCostsForRespondent);
-        assertThat(applyForCostsForRespondent.size()).isEqualTo(1);
-        assertThat(applyForCostsForRespondent.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        List<Value> applyForCostsList = applyForCostsProvider.getApplyForCostsForAdditionalEvidence(asylumCase);
+        assertNotNull(applyForCostsList);
+        assertThat(applyForCostsList.size()).isEqualTo(1);
+        assertThat(applyForCostsList.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+    }
+
+    @Test
+    void should_return_apply_costs_in_list_for_judge_to_decide() {
+        List<Value> applyForCostsForJudgeDecision = applyForCostsProvider.getApplyForCostsForJudgeDecision(asylumCase);
+        assertNotNull(applyForCostsForJudgeDecision);
+        assertThat(applyForCostsForJudgeDecision.size()).isEqualTo(1);
+        assertThat(applyForCostsForJudgeDecision.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
     }
 
     @Test

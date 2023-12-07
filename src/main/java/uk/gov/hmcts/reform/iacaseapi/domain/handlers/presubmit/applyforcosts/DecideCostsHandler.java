@@ -3,14 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplyForCosts;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -21,11 +19,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsProvider;
 
 @Component
-public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DecideCostsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final ApplyForCostsProvider applyForCostsProvider;
 
-    public AdditionalEvidenceForCostsHandler(ApplyForCostsProvider applyForCostsProvider) {
+    public DecideCostsHandler(ApplyForCostsProvider applyForCostsProvider) {
         this.applyForCostsProvider = applyForCostsProvider;
     }
 
@@ -35,7 +33,7 @@ public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.ADD_EVIDENCE_FOR_COSTS;
+            && callback.getEvent() == Event.DECIDE_COSTS_APPLICATION;
     }
 
     @Override
@@ -46,16 +44,20 @@ public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        DynamicList applyForCostsDynamicList = asylumCase.read(ADD_EVIDENCE_FOR_COSTS_LIST, DynamicList.class)
-            .orElseThrow(() -> new IllegalStateException("addEvidenceForCostsList is not present"));
+        DynamicList applyForCostsDynamicList = asylumCase.read(DECIDE_COSTS_APPLICATION_LIST, DynamicList.class)
+            .orElseThrow(() -> new IllegalStateException("decideCostsApplicationList is not present"));
 
         String applicationId = applyForCostsDynamicList.getValue().getCode();
 
-        Optional<List<IdValue<Document>>> evidenceDocuments = asylumCase.read(ADDITIONAL_EVIDENCE_FOR_COSTS);
+        CostsDecision costsDecision = asylumCase.read(APPLY_FOR_COSTS_DECISION, CostsDecision.class)
+            .orElseThrow(() -> new IllegalStateException("applyForCostsDecision is not present"));
+
+        CostsDecisionType costsDecisionType = asylumCase.read(COSTS_DECISION_TYPE, CostsDecisionType.class)
+            .orElseThrow(() -> new IllegalStateException("costsDecisionType is not present"));
+
+        Optional<List<IdValue<Document>>> uploadCostsOrder = asylumCase.read(UPLOAD_COSTS_ORDER);
 
         Optional<List<IdValue<ApplyForCosts>>> mayBeApplyForCosts = asylumCase.read(APPLIES_FOR_COSTS);
-
-        String loggedUser = applyForCostsProvider.getLoggedUserRole();
 
         mayBeApplyForCosts
             .orElse(Collections.emptyList())
@@ -63,21 +65,23 @@ public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandl
             .filter(applyForCosts -> applyForCosts.getId().equals(applicationId))
             .forEach(applyForCostsIdValue -> {
                 ApplyForCosts applyForCosts = applyForCostsIdValue.getValue();
-                if (loggedUser.equals(applyForCosts.getApplyForCostsApplicantType())) {
-                    applyForCosts.setApplicantAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments));
-                } else if (loggedUser.equals(applyForCosts.getApplyForCostsRespondentRole())) {
-                    applyForCosts.setRespondentAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments));
+                applyForCosts.setApplyForCostsDecision(costsDecision.toString());
+                applyForCosts.setCostsDecisionType(costsDecisionType.toString());
+                if (costsDecisionType == CostsDecisionType.WITH_AN_ORAL_HEARING) {
+                    String costsOralHearingDate = asylumCase.read(COSTS_ORAL_HEARING_DATE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("costsOralHearingDate is not present"));
+                    applyForCosts.setCostsOralHearingDate(applyForCostsProvider.formatDate(costsOralHearingDate));
                 }
+                applyForCosts.setUploadCostsOrder(uploadCostsOrder.orElseThrow(() -> new IllegalStateException("uploadCostsOrder is not present")));
+                applyForCosts.setDateOfDecision(applyForCostsProvider.formatDate(LocalDate.now()));
             });
 
         asylumCase.write(APPLIES_FOR_COSTS, mayBeApplyForCosts);
-        asylumCase.clear(ADDITIONAL_EVIDENCE_FOR_COSTS);
-        return new PreSubmitCallbackResponse<>(asylumCase);
-    }
+        asylumCase.clear(APPLY_FOR_COSTS_DECISION);
+        asylumCase.clear(COSTS_DECISION_TYPE);
+        asylumCase.clear(COSTS_ORAL_HEARING_DATE);
+        asylumCase.clear(UPLOAD_COSTS_ORDER);
 
-    private List<IdValue<Document>> addAdditionalEvidenceToList(ApplyForCosts applyForCosts, Optional<List<IdValue<Document>>> evidenceDocuments) {
-        List<IdValue<Document>> applicantAdditionalEvidences = applyForCosts.getApplicantAdditionalEvidence() != null ? applyForCosts.getApplicantAdditionalEvidence() : new ArrayList<>();
-        applicantAdditionalEvidences.addAll(evidenceDocuments.orElseThrow(() -> new IllegalStateException("evidenceDocuments are not present")));
-        return applicantAdditionalEvidences;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
