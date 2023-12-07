@@ -100,6 +100,17 @@ withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#ia-tech')
   enableFullFunctionalTest()
 
+  afterAlways('DependencyCheckNightly') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports",
+      reportFiles          : 'dependency-check-report.html',
+      reportName           : 'Dependency Check Report'
+    ])
+  }
+  
   after('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
