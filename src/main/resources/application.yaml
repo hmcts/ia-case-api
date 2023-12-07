@@ -438,4 +438,4 @@ launchDarkly:
 timed-event-service:
   url: https://ia-timed-event-service-pr-150.preview.platform.hmcts.net
 
-caseIdListJsonLocation: caseIdForRetrigger.json
+caseIdListJsonLocation: caseDataIdForRetrigger.json
