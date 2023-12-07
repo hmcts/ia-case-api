@@ -94,7 +94,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
                                 scheduledDate,
                                 "IA",
                                 "Asylum",
-                                casePk
+                                callback.getCaseDetails().getId()
                         )
                 );
             }
