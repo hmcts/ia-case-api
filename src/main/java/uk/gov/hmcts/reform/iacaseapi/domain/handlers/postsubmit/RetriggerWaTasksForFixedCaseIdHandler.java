@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.TimedEventServiceScheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.time.ZoneId;
@@ -27,7 +27,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
     private final boolean timedEventServiceEnabled;
     private final DateProvider dateProvider;
-    private final Scheduler scheduler;
+    private final TimedEventServiceScheduler scheduler;
     private List<String> caseIdList;
     private String filePath;
 
@@ -36,7 +36,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
             @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
             @Value("${caseIdListJsonLocation}") String filePath,
             DateProvider dateProvider,
-            Scheduler scheduler
+            TimedEventServiceScheduler scheduler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
         this.dateProvider = dateProvider;
