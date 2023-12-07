@@ -6,9 +6,9 @@
 ##
 ## Returns a valid IDAM service token for the given microservice.
 
-microservice=ccd_gw
+microservice=iac
 
-curl --silent --show-error -X POST \
+curl --show-error -X POST \
   -H "Content-Type: application/json" \
   -d '{"microservice":"'${microservice}'"}' \
-  ${SERVICE_AUTH_PROVIDER_API_BASE_URL}/testing-support/lease
+  http://rpe-service-auth-provider-aat.service.core-compute-aat.internal/testing-support/lease

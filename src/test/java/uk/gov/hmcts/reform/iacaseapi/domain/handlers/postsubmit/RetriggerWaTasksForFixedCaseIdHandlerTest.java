@@ -94,7 +94,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         retriggerWaTasksForFixedCaseIdHandler =
                 new RetriggerWaTasksForFixedCaseIdHandler(
                         timedEventServiceEnabled,
-                        "/caseDataIdForRetrigger.json",
+                        "/caseIdForRetrigger.json",
                         dateProvider,
                         scheduler
                 );
