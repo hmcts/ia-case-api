@@ -8,8 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
@@ -36,6 +38,10 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     private Scheduler scheduler;
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
     @Captor
     private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
 
@@ -45,8 +51,9 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     private long caseId = Long.parseLong("1677132005196104");
     private String jurisdiction = "IA";
     private String caseType = "Asylum";
-
+    private PreSubmitCallbackStage callbackStage = PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     private RetriggerWaTasksForFixedCaseIdHandler retriggerWaTasksForFixedCaseIdHandler;
+
 
     @Test
     void handle_callback_should_return_expected() {
@@ -58,11 +65,14 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
-        boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callback);
+        boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callbackStage, callback);
         assertThat(canHandle).isEqualTo(true);
 
+        canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
+        assertThat(canHandle).isEqualTo(false);
+
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
-        canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callback);
+        canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callbackStage, callback);
         assertThat(canHandle).isEqualTo(false);
     }
 
@@ -75,7 +85,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         dateProvider,
                         scheduler
                 );
-        boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callback);
+        boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callbackStage, callback);
         assertThat(canHandle).isEqualTo(false);
     }
 
@@ -89,9 +99,28 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         scheduler
                 );
         assertThatThrownBy(
-                () -> retriggerWaTasksForFixedCaseIdHandler.handle(callback))
+                () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void handling_should_throw_if_null_callback() {
+        retriggerWaTasksForFixedCaseIdHandler =
+                new RetriggerWaTasksForFixedCaseIdHandler(
+                        timedEventServiceEnabled,
+                        "/retriggerWaTasksCaseList.json",
+                        dateProvider,
+                        scheduler
+                );
+        assertThatThrownBy(
+                () -> retriggerWaTasksForFixedCaseIdHandler.handle(null, callback))
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(
+                () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -104,8 +133,10 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
-        retriggerWaTasksForFixedCaseIdHandler.handle(callback);
+        retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
         verify(scheduler, times(0)).schedule(timedEventArgumentCaptor.capture());
     }
 
@@ -120,8 +151,10 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
-        retriggerWaTasksForFixedCaseIdHandler.handle(callback);
+        retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
         verify(scheduler, times(0)).schedule(timedEventArgumentCaptor.capture());
     }
 
@@ -137,9 +170,11 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
 
-        retriggerWaTasksForFixedCaseIdHandler.handle(callback);
+        retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
         verify(scheduler, times(10)).schedule(timedEventArgumentCaptor.capture());
 
         ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);

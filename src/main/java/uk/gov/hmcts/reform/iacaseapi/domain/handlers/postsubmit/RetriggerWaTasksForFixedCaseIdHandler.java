@@ -7,8 +7,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
@@ -22,7 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.readJso
 
 @Slf4j
 @Component
-public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallbackHandler<AsylumCase> {
+public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean timedEventServiceEnabled;
     private final DateProvider dateProvider;
@@ -44,23 +45,32 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
     }
 
     public boolean canHandle(
+            PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
+        requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         Event qualifyingEvent = Event.RE_TRIGGER_WA_BULK_TASKS;
 
         return  timedEventServiceEnabled
+                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == qualifyingEvent;
 
     }
 
-    public PostSubmitCallbackResponse handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
+            PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
-        if (!canHandle(callback)) {
+        if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        AsylumCase asylumCase =
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
         int scheduleDelayInMinutes = 5;
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
@@ -86,6 +96,6 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
             }
         }
 
-        return new PostSubmitCallbackResponse();
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
