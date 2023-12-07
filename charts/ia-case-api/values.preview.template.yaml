@@ -384,7 +384,7 @@ ia-bail-case-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-timed-event-service:
-  enabled: true
+  enabled: false
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
