@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.time.ZoneId;
@@ -74,20 +73,16 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PostSubmitCallback
         }
         if (caseIdList != null && caseIdList.size() > 0) {
             for (int i = 0; i < caseIdList.size(); i++) {
-                try {
-                    scheduler.schedule(
-                            new TimedEvent(
-                                    "",
-                                    Event.RE_TRIGGER_WA_TASKS,
-                                    scheduledDate,
-                                    "IA",
-                                    "Asylum",
-                                    Long.parseLong(caseIdList.get(i))
-                            )
-                    );
-                } catch (AsylumCaseServiceResponseException e) {
-                    log.error(e.getMessage());
-                }
+                scheduler.schedule(
+                        new TimedEvent(
+                                "",
+                                Event.RE_TRIGGER_WA_TASKS,
+                                scheduledDate,
+                                "IA",
+                                "Asylum",
+                                Long.parseLong(caseIdList.get(i))
+                        )
+                );
             }
         }
 
