@@ -67,7 +67,10 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        AsylumCase asylumCase =
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
         int scheduleDelayInMinutes = 5;
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);

@@ -185,7 +185,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                 timeToSchedule,
                 jurisdiction,
                 caseType,
-                0
+                caseId
         );
         assertEquals(expectedFinalTimedEvent.getCaseId(), finalResult.getCaseId());
         assertEquals(expectedFinalTimedEvent.getJurisdiction(), finalResult.getJurisdiction());
@@ -199,16 +199,16 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                 .map(TimedEvent::getCaseId)
                 .collect(Collectors.toList());
         List<Long> expectedCaseIds = Arrays.asList(
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0"),
-                Long.parseLong("0")
+                Long.parseLong("5260728023204485"),
+                Long.parseLong("7829484608979593"),
+                Long.parseLong("3007004947258233"),
+                Long.parseLong("4719620009252072"),
+                Long.parseLong("6797092066725243"),
+                Long.parseLong("9301281768878771"),
+                Long.parseLong("8509676174519453"),
+                Long.parseLong("1682542357170697"),
+                Long.parseLong("3673342967892569"),
+                Long.parseLong("1677132005196104")
         );
 
         assertEquals(expectedCaseIds, timedEventListCaseIds);
