@@ -83,7 +83,10 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
         }
         if (caseIdList != null && caseIdList.size() > 0) {
             for (int i = 0; i < caseIdList.size(); i++) {
-                Long caseIdNotReference = Long.parseLong(caseIdList.get(i));
+                Long casePk = Long.parseLong(caseIdList.get(i));
+                log.info(String.valueOf(Event.RE_TRIGGER_WA_TASKS));
+                log.info(String.valueOf(scheduledDate));
+                log.info(String.valueOf(casePk));
                 scheduler.schedule(
                         new TimedEvent(
                                 "",
@@ -91,7 +94,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
                                 scheduledDate,
                                 "IA",
                                 "Asylum",
-                                caseIdNotReference
+                                casePk
                         )
                 );
             }

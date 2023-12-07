@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
+@Slf4j
 @Service
 public class TimedEventServiceScheduler implements Scheduler {
 
@@ -30,7 +32,9 @@ public class TimedEventServiceScheduler implements Scheduler {
 
         String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
         String accessToken = accessTokenProvider.getAccessToken();
-
+        log.info(serviceAuthorizationToken);
+        log.info(accessToken);
+        log.info(timedEvent.toString());
         try {
 
             return timedEventServiceApi.submitTimedEvent(

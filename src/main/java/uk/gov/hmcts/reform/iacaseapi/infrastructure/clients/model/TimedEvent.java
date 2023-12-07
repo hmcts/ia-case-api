@@ -18,4 +18,15 @@ public class TimedEvent {
     private String caseType;
     private long caseId;
 
+    @Override
+    public String toString() {
+        return "TimedEvent{" +
+                "id='" + id + '\'' +
+                ", event=" + event +
+                ", scheduledDateTime=" + scheduledDateTime +
+                ", jurisdiction='" + jurisdiction + '\'' +
+                ", caseType='" + caseType + '\'' +
+                ", caseId=" + caseId +
+                '}';
+    }
 }
