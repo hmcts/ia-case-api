@@ -114,6 +114,11 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Describe the application you are making and explain the reasons for the application.");
                 break;
+            case CHANGE_HEARING_TYPE:
+                asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                    "Explain why you want to change the hearing type and the type of hearing that you would like"
+                        + " to change to.");
+                break;
             default:
                 break;
         }
