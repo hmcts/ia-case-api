@@ -181,7 +181,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         TimedEvent finalResult = timedEventArgumentCaptor.getValue();
         TimedEvent expectedFinalTimedEvent = new TimedEvent(
                 timedEventId,
-                Event.END_APPEAL_AUTOMATICALLY,
+                Event.RE_TRIGGER_WA_TASKS,
                 timeToSchedule,
                 jurisdiction,
                 caseType,
