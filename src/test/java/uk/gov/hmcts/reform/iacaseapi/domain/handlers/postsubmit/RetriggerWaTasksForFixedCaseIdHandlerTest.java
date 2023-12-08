@@ -175,17 +175,17 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(dateProvider.nowWithTime()).thenReturn(now);
 
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduler, times(10)).schedule(timedEventArgumentCaptor.capture());
+        verify(scheduler, times(1)).schedule(timedEventArgumentCaptor.capture());
 
         ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
         TimedEvent finalResult = timedEventArgumentCaptor.getValue();
         TimedEvent expectedFinalTimedEvent = new TimedEvent(
                 timedEventId,
-                Event.RE_TRIGGER_WA_TASKS,
+                Event.END_APPEAL_AUTOMATICALLY,
                 timeToSchedule,
                 jurisdiction,
                 caseType,
-                caseId
+                0
         );
         assertEquals(expectedFinalTimedEvent.getCaseId(), finalResult.getCaseId());
         assertEquals(expectedFinalTimedEvent.getJurisdiction(), finalResult.getJurisdiction());
