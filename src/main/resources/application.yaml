@@ -428,6 +428,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "decideCostsApplication"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"

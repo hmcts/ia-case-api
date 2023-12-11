@@ -132,6 +132,7 @@ public enum Event {
     TURN_ON_NOTIFICATIONS("turnOnNotifications"),
     RESPOND_TO_COSTS("respondToCosts"),
     ADD_EVIDENCE_FOR_COSTS("addEvidenceForCosts"),
+    DECIDE_COSTS_APPLICATION("decideCostsApplication"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

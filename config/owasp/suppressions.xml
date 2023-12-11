@@ -85,4 +85,10 @@
         <cve>CVE-2023-31582</cve>
         <cve>CVE-2023-5072</cve>
     </suppress>
+    <suppress until="2023-12-30">
+        <cve>CVE-2023-33202</cve>
+        <cve>CVE-2023-6378</cve>
+        <cve>CVE-2023-34055</cve>
+        <cve>CVE-2023-46589</cve>
+    </suppress>
 </suppressions>

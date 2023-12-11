@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_EVIDENCE_FOR_COSTS_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_COSTS_APPLICATION_LIST;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.ApplyForCostsProvider;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class AdditionalEvidenceForCostsPreparerTest {
+class DecideCostsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -39,12 +39,12 @@ class AdditionalEvidenceForCostsPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private ApplyForCostsProvider applyForCostsProvider;
-    private AdditionalEvidenceForCostsPreparer additionalEvidenceForCostsPreparer;
+    private DecideCostsPreparer decideCostsPreparer;
 
     @BeforeEach
     public void setUp() {
-        additionalEvidenceForCostsPreparer = new AdditionalEvidenceForCostsPreparer(applyForCostsProvider);
-        when(callback.getEvent()).thenReturn(Event.ADD_EVIDENCE_FOR_COSTS);
+        decideCostsPreparer = new DecideCostsPreparer(applyForCostsProvider);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_COSTS_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }
@@ -54,30 +54,30 @@ class AdditionalEvidenceForCostsPreparerTest {
         List<Value> applyForCostsList = new ArrayList<>();
         applyForCostsList.add(new Value("1", "Costs 1, Wasted costs, 13 Nov 2023"));
         applyForCostsList.add(new Value("2", "Costs 2, Unreasonable costs, 10 Nov 2023"));
-        when(applyForCostsProvider.getApplyForCostsForAdditionalEvidence(asylumCase)).thenReturn(applyForCostsList);
+        when(applyForCostsProvider.getApplyForCostsForJudgeDecision(asylumCase)).thenReturn(applyForCostsList);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            decideCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(ADD_EVIDENCE_FOR_COSTS_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
+        verify(asylumCase, times(1)).write(DECIDE_COSTS_APPLICATION_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
     }
 
     @Test
     void should_add_error_if_dynamic_list_is_empty() {
-        when(applyForCostsProvider.getApplyForCostsForAdditionalEvidence(asylumCase)).thenReturn(Collections.emptyList());
+        when(applyForCostsProvider.getApplyForCostsForJudgeDecision(asylumCase)).thenReturn(Collections.emptyList());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            decideCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).containsExactly("You do not have any cost applications to add evidence to.");
+        assertThat(callbackResponse.getErrors()).containsExactly("You do not have any cost applications to decide.");
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(
-            () -> additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> decideCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -89,9 +89,9 @@ class AdditionalEvidenceForCostsPreparerTest {
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = additionalEvidenceForCostsPreparer.canHandle(callbackStage, callback);
+                boolean canHandle = decideCostsPreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.ADD_EVIDENCE_FOR_COSTS
+                if (event == Event.DECIDE_COSTS_APPLICATION
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
                     assertTrue(canHandle);
                 } else {
@@ -105,11 +105,11 @@ class AdditionalEvidenceForCostsPreparerTest {
 
     @Test
     void should_not_allow_null_arguments() {
-        assertThatThrownBy(() -> additionalEvidenceForCostsPreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> decideCostsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> additionalEvidenceForCostsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> decideCostsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @EqualsAndHashCode
 @ToString
 public class ApplyForCosts {
+    //Applicant fields
     private String appliedCostsType;
     private String argumentsAndEvidenceDetails;
     private List<IdValue<Document>> argumentsAndEvidenceDocuments;
@@ -25,14 +26,23 @@ public class ApplyForCosts {
     private String applyForCostsOotExplanation;
     private List<IdValue<Document>> ootUploadEvidenceDocuments;
     private YesOrNo isApplyForCostsOot;
+
+    //Respondent fields
     private String applyForCostsRespondentRole;
     private String responseToApplication;
     private YesOrNo responseHearingType;
     private String responseHearingTypeExplanation; //only if type of hearing is yes
     private List<IdValue<Document>> responseEvidence;
+
+    //Both(applicant and respondent) additional evidence
     private List<IdValue<Document>> applicantAdditionalEvidence;
     private List<IdValue<Document>> respondentAdditionalEvidence;
 
+    //Judge decision fields
+    private String costsDecisionType;
+    private String costsOralHearingDate; // only if costsDecisionType is "with an oral hearing"
+    private List<IdValue<Document>> uploadCostsOrder;
+    private String dateOfDecision;
 
     public ApplyForCosts() {
         // noop -- for deserializer
@@ -123,6 +133,10 @@ public class ApplyForCosts {
         return applyForCostsDecision;
     }
 
+    public void setApplyForCostsDecision(String applyForCostsDecision) {
+        this.applyForCostsDecision = applyForCostsDecision;
+    }
+
     public String getApplyForCostsApplicantType() {
         requireNonNull(applyForCostsApplicantType);
         return applyForCostsApplicantType;
@@ -203,5 +217,37 @@ public class ApplyForCosts {
 
     public void setRespondentAdditionalEvidence(List<IdValue<Document>> respondentAdditionalEvidence) {
         this.respondentAdditionalEvidence = respondentAdditionalEvidence;
+    }
+
+    public String getCostsDecisionType() {
+        return costsDecisionType;
+    }
+
+    public void setCostsDecisionType(String costsDecisionType) {
+        this.costsDecisionType = costsDecisionType;
+    }
+
+    public String getCostsOralHearingDate() {
+        return costsOralHearingDate;
+    }
+
+    public void setCostsOralHearingDate(String costsOralHearingDate) {
+        this.costsOralHearingDate = costsOralHearingDate;
+    }
+
+    public List<IdValue<Document>> getUploadCostsOrder() {
+        return uploadCostsOrder;
+    }
+
+    public void setUploadCostsOrder(List<IdValue<Document>> uploadCostsOrder) {
+        this.uploadCostsOrder = uploadCostsOrder;
+    }
+
+    public String getDateOfDecision() {
+        return dateOfDecision;
+    }
+
+    public void setDateOfDecision(String dateOfDecision) {
+        this.dateOfDecision = dateOfDecision;
     }
 }

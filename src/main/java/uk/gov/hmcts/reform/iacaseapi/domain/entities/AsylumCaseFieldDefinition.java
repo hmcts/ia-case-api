@@ -1817,7 +1817,7 @@ public enum AsylumCaseFieldDefinition {
         "appliesForCosts", new TypeReference<List<IdValue<ApplyForCosts>>>(){}),
 
     APPLY_FOR_COSTS_DECISION(
-            "applyForCostsDecision", new TypeReference<String>(){}),
+            "applyForCostsDecision", new TypeReference<CostsDecision>(){}),
 
     APPLY_FOR_COSTS_APPLICANT_TYPE(
             "applyForCostsApplicantType", new TypeReference<String>(){}),
@@ -1890,6 +1890,18 @@ public enum AsylumCaseFieldDefinition {
 
     ADDITIONAL_EVIDENCE_FOR_COSTS(
         "additionalEvidenceForCosts", new TypeReference<List<IdValue<Document>>>(){}),
+
+    DECIDE_COSTS_APPLICATION_LIST(
+        "decideCostsApplicationList", new TypeReference<DynamicList>(){}),
+
+    COSTS_DECISION_TYPE(
+        "costsDecisionType", new TypeReference<CostsDecisionType>(){}),
+
+    COSTS_ORAL_HEARING_DATE(
+        "costsOralHearingDate", new TypeReference<String>(){}),
+
+    UPLOAD_COSTS_ORDER(
+        "uploadCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
 
     ;
 
