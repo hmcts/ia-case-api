@@ -2,19 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLIES_FOR_COSTS;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 @Service
 public class ApplyForCostsProvider {
@@ -37,30 +34,36 @@ public class ApplyForCostsProvider {
         return getApplyForCosts(asylumCase, respondentCondition);
     }
 
-    public List<Value> getApplyForCostsForApplicantOrRespondent(AsylumCase asylumCase) {
+    public List<Value> getApplyForCostsForAdditionalEvidence(AsylumCase asylumCase) {
         Predicate<ApplyForCosts> applicantOrRespondentCondition = applyForCosts ->
-            applyForCosts.getApplyForCostsApplicantType().equals(getLoggedUserRole()) && applyForCosts.getApplicantAdditionalEvidence() == null ||
-                (applyForCosts.getApplyForCostsRespondentRole().equals(getLoggedUserRole()) && StringUtils.isNotBlank(applyForCosts.getResponseToApplication()) && applyForCosts.getRespondentAdditionalEvidence() == null);
+            applyForCosts.getApplyForCostsDecision().equals(CostsDecision.PENDING.toString()) &&
+                (applyForCosts.getApplyForCostsApplicantType().equals(getLoggedUserRole()) ||
+                    (applyForCosts.getApplyForCostsRespondentRole().equals(getLoggedUserRole()) && StringUtils.isNotBlank(applyForCosts.getResponseToApplication())));
 
         return getApplyForCosts(asylumCase, applicantOrRespondentCondition);
     }
 
+    public List<Value> getApplyForCostsForJudgeDecision(AsylumCase asylumCase) {
+        Predicate<ApplyForCosts> respondentCondition = applyForCosts -> applyForCosts.getApplyForCostsDecision().equals(CostsDecision.PENDING.toString());
+        return getApplyForCosts(asylumCase, respondentCondition);
+    }
+
     public List<Value> getApplyForCosts(AsylumCase asylumCase, Predicate<ApplyForCosts> condition) {
         Optional<List<IdValue<ApplyForCosts>>> existingApplyForCosts =
-                asylumCase.read(APPLIES_FOR_COSTS);
+            asylumCase.read(APPLIES_FOR_COSTS);
 
         List<Value> applyForCostsForRespondent = new ArrayList<>();
         AtomicInteger counter = new AtomicInteger(1);
         existingApplyForCosts
-                .orElse(Collections.emptyList())
-                .forEach(idValue -> {
-                    ApplyForCosts applyForCosts = idValue.getValue();
-                    if (condition.test(applyForCosts)) {
-                        applyForCostsForRespondent.add(
-                                new Value(idValue.getId(), "Costs " + counter + ", " + applyForCosts.getAppliedCostsType() + ", " + formatDate(applyForCosts.getApplyForCostsCreationDate())));
-                    }
-                    counter.getAndIncrement();
-                });
+            .orElse(Collections.emptyList())
+            .forEach(idValue -> {
+                ApplyForCosts applyForCosts = idValue.getValue();
+                if (condition.test(applyForCosts)) {
+                    applyForCostsForRespondent.add(
+                        new Value(idValue.getId(), "Costs " + counter + ", " + applyForCosts.getAppliedCostsType() + ", " + formatDate(applyForCosts.getApplyForCostsCreationDate())));
+                }
+                counter.getAndIncrement();
+            });
 
         return applyForCostsForRespondent;
     }
@@ -68,6 +71,10 @@ public class ApplyForCostsProvider {
     // format date string to pattern dd MMM YYYY
     public String formatDate(String date) {
         LocalDate localDate = LocalDate.parse(date);
+        return localDate.format(DateTimeFormatter.ofPattern("d MMM yyyy"));
+    }
+
+    public String formatDate(LocalDate localDate) {
         return localDate.format(DateTimeFormatter.ofPattern("d MMM yyyy"));
     }
 

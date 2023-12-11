@@ -11,13 +11,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -80,7 +78,7 @@ class AdditionalEvidenceForCostsHandlerTest {
             "OOT explanation",
             evidenceDocuments,
             YesOrNo.NO,
-            "Legal Representative");
+            "Legal representative");
         List<IdValue<ApplyForCosts>> existingAppliesForCosts = new ArrayList<>();
         existingAppliesForCosts.add(new IdValue<>("1", applyForCosts));
 
@@ -94,15 +92,15 @@ class AdditionalEvidenceForCostsHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("generateApplyForCostsTestScenarios")
+    @ValueSource(strings = {"Home office", "Legal representative"})
     void should_add_additional_evidence(String role) {
         when(applyForCostsProvider.getLoggedUserRole()).thenReturn(role);
         PreSubmitCallbackResponse<AsylumCase> response = additionalEvidenceForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
-        if (role.equals(UserRoleLabel.HOME_OFFICE_GENERIC)) {
+        if (role.equals(UserRoleLabel.HOME_OFFICE_GENERIC.toString())) {
             assertThat(applyForCosts.getApplicantAdditionalEvidence().equals(evidenceDocuments));
-        } else if (role.equals(UserRoleLabel.LEGAL_REPRESENTATIVE)) {
+        } else if (role.equals(UserRoleLabel.LEGAL_REPRESENTATIVE.toString())) {
             assertThat(applyForCosts.getRespondentAdditionalEvidence().equals(evidenceDocuments));
         }
     }
@@ -113,6 +111,17 @@ class AdditionalEvidenceForCostsHandlerTest {
         assertThatThrownBy(() -> additionalEvidenceForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("addEvidenceForCostsList is not present");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Home office", "Legal representative"})
+    void should_throw_exception_if_additional_evidences_is_missing(String role) {
+        when(applyForCostsProvider.getLoggedUserRole()).thenReturn(role);
+        when(asylumCase.read(ADDITIONAL_EVIDENCE_FOR_COSTS)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> additionalEvidenceForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("evidenceDocuments are not present");
     }
 
     @Test
@@ -147,45 +156,5 @@ class AdditionalEvidenceForCostsHandlerTest {
         assertThatThrownBy(() -> additionalEvidenceForCostsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    static Stream<Arguments> generateApplyForCostsTestScenarios() {
-        ApplyForCosts applyForCosts1 = new ApplyForCosts(
-            "Wasted Costs",
-            "Evidence Details",
-            evidenceDocuments,
-            evidenceDocuments,
-            YesOrNo.YES,
-            "Hearing explanation",
-            "Pending",
-            "Home office",
-            "2023-11-10",
-            "Legal Rep Name",
-            "OOT explanation",
-            evidenceDocuments,
-            YesOrNo.NO,
-            "Legal representative");
-
-        ApplyForCosts applyForCosts2 = new ApplyForCosts(
-            "Wasted Costs",
-            "Evidence Details",
-            evidenceDocuments,
-            evidenceDocuments,
-            YesOrNo.YES,
-            "Hearing explanation",
-            "Pending",
-            "Legal representative",
-            "2023-11-10",
-            "Legal Rep Name",
-            "OOT explanation",
-            evidenceDocuments,
-            YesOrNo.YES,
-            "Home office");
-        applyForCosts2.setResponseToApplication("Response to application");
-
-        return Stream.of(
-            Arguments.of(homeOffice),
-            Arguments.of(legalRep)
-        );
     }
 }

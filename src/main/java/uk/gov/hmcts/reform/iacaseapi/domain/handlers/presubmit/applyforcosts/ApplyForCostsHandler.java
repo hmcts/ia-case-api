@@ -11,6 +11,7 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.S
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplyForCosts;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CostsDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -36,8 +37,8 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.APPLY_FOR_COSTS
-                && isLegalRepJourney(callback.getCaseDetails().getCaseData());
+            && callback.getEvent() == Event.APPLY_FOR_COSTS
+            && isLegalRepJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override
@@ -49,9 +50,9 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         String typeOfAppliedCosts = asylumCase.read(APPLIED_COSTS_TYPES, DynamicList.class)
-                .orElseThrow(() -> new IllegalStateException("typesOfAppliedCosts is not present"))
-                .getValue()
-                .getLabel();
+            .orElseThrow(() -> new IllegalStateException("typesOfAppliedCosts is not present"))
+            .getValue()
+            .getLabel();
 
         Optional<String> argumentsAndEvidenceDetails = asylumCase.read(ARGUMENTS_AND_EVIDENCE_DETAILS, String.class);
 
@@ -60,51 +61,50 @@ public class ApplyForCostsHandler implements PreSubmitCallbackHandler<AsylumCase
         Optional<List<IdValue<Document>>> scheduleOfCostsDocuments = asylumCase.read(SCHEDULE_OF_COSTS_DOCUMENTS);
 
         YesOrNo applyForCostsHearingType = asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)
-                .orElseThrow(() -> new IllegalStateException("applyForCostsHearingType is not present"));
+            .orElseThrow(() -> new IllegalStateException("applyForCostsHearingType is not present"));
 
         String applyForCostsHearingTypeExplanation = "";
 
         if (applyForCostsHearingType.equals(YesOrNo.YES)) {
             applyForCostsHearingTypeExplanation = asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)
-                    .orElseThrow(() -> new IllegalStateException("applyForCostsHearingTypeExplanation is not present"));
+                .orElseThrow(() -> new IllegalStateException("applyForCostsHearingTypeExplanation is not present"));
         }
 
         String legalRepName = asylumCase.read(LEGAL_REP_NAME, String.class)
-                .orElseThrow(() -> new IllegalStateException("legalRepName is not present"));
+            .orElseThrow(() -> new IllegalStateException("legalRepName is not present"));
 
         YesOrNo isApplyForCostsOot = asylumCase.read(IS_APPLY_FOR_COSTS_OOT, YesOrNo.class).orElse(YesOrNo.NO);
 
         Optional<List<IdValue<ApplyForCosts>>> maybeExistingApplyForCosts =
-                asylumCase.read(APPLIES_FOR_COSTS);
-
+            asylumCase.read(APPLIES_FOR_COSTS);
 
         String applyForCostsOotExplanation = "";
 
         if (isApplyForCostsOot.equals(YesOrNo.YES)) {
             applyForCostsOotExplanation = asylumCase.read(APPLY_FOR_COSTS_OOT_EXPLANATION, String.class)
-                    .orElseThrow(() -> new IllegalStateException("applyForCostsOotExplanation is not present"));
+                .orElseThrow(() -> new IllegalStateException("applyForCostsOotExplanation is not present"));
         }
 
         Optional<List<IdValue<Document>>> ootUploadEvidenceDocuments = asylumCase.read(OOT_UPLOAD_EVIDENCE_DOCUMENTS);
 
         final List<IdValue<ApplyForCosts>> existingAppliesForCosts =
-                maybeExistingApplyForCosts.orElse(Collections.emptyList());
+            maybeExistingApplyForCosts.orElse(Collections.emptyList());
 
         List<IdValue<ApplyForCosts>> allApplyForCosts =
-                applyForCostsAppender.append(
-                        existingAppliesForCosts,
-                        typeOfAppliedCosts,
-                        argumentsAndEvidenceDetails.orElse(StringUtils.EMPTY),
-                        argumentsAndEvidenceDocuments.orElseThrow(() -> new IllegalStateException("argumentsAndEvidenceDocuments are not present")),
-                        scheduleOfCostsDocuments.orElse(Collections.emptyList()),
-                        applyForCostsHearingType,
-                        applyForCostsHearingTypeExplanation,
-                        "Pending",
-                        legalRepName,
-                        applyForCostsOotExplanation,
-                        ootUploadEvidenceDocuments.orElse(Collections.emptyList()),
-                        isApplyForCostsOot
-                );
+            applyForCostsAppender.append(
+                existingAppliesForCosts,
+                typeOfAppliedCosts,
+                argumentsAndEvidenceDetails.orElse(StringUtils.EMPTY),
+                argumentsAndEvidenceDocuments.orElseThrow(() -> new IllegalStateException("argumentsAndEvidenceDocuments are not present")),
+                scheduleOfCostsDocuments.orElse(Collections.emptyList()),
+                applyForCostsHearingType,
+                applyForCostsHearingTypeExplanation,
+                CostsDecision.PENDING.toString(),
+                legalRepName,
+                applyForCostsOotExplanation,
+                ootUploadEvidenceDocuments.orElse(Collections.emptyList()),
+                isApplyForCostsOot
+            );
 
         asylumCase.write(APPLIES_FOR_COSTS, allApplyForCosts);
 

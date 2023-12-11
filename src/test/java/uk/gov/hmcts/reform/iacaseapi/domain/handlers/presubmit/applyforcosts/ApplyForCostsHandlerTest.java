@@ -81,7 +81,7 @@ class ApplyForCostsHandlerTest {
         when(asylumCase.read(ARGUMENTS_AND_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(argumentsAndEvidenceDocuments));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION, String.class)).thenReturn(Optional.of(testGenericValue));
-        when(asylumCase.read(APPLY_FOR_COSTS_DECISION, String.class)).thenReturn(Optional.of(testGenericValue));
+        when(asylumCase.read(APPLY_FOR_COSTS_DECISION, CostsDecision.class)).thenReturn(Optional.of(CostsDecision.PENDING));
         when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of(testGenericValue));
 
         when(applyForCostsAppender.append(
