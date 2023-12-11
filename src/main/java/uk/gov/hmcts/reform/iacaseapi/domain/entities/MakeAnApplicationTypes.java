@@ -17,8 +17,8 @@ public enum MakeAnApplicationTypes {
     UPDATE_HEARING_REQUIREMENTS("Update hearing requirements"),
     UPDATE_APPEAL_DETAILS("Update appeal details"),
     REINSTATE("Reinstate an ended appeal"),
-    OTHER("Other"),
-    CHANGE_HEARING_TYPE("Change hearing type");
+    CHANGE_HEARING_TYPE("Change hearing type"),
+    OTHER("Other");
 
     @JsonValue
     private final String value;
