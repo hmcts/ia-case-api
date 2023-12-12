@@ -41,6 +41,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case ENDED:
@@ -67,6 +68,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case FTPA_SUBMITTED:
@@ -106,6 +108,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case ADJOURNED:
@@ -126,6 +129,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case DECIDED:

@@ -405,8 +405,9 @@ security:
       - "listCase"
       - "editCaseListing"
       - "handleHearingException"
+      - "triggerCmrUpdated"
       - "recordAdjournmentDetails"
-      - "updateCmrNotification"
+      - "triggerCmrListed"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
