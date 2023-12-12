@@ -1,0 +1,31 @@
+{
+  "description": "RIA-7779 edit appeal update hearing type when dc appeal type",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "editAppealAfterSubmit",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "deprivation",
+          "rpDcAppealHearingOption": "decisionWithoutHearing",
+          "decisionHearingFeeOption": "decisionWithHearing"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "deprivation",
+        "rpDcAppealHearingOption": "decisionWithoutHearing",
+        "decisionHearingFeeOption": "decisionWithoutHearing"
+      }
+    }
+  }
+}

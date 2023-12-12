@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.time.LocalDate.parse;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -126,8 +127,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
+            setHearingType(asylumCase);
         }
-
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -164,5 +165,23 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             })
             .collect(Collectors.toList())
         );
+    }
+
+    private void setHearingType(AsylumCase asylumCase) {
+        Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        AppealType appealType = optionalAppealType
+                .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+
+        switch (appealType) {
+            case DC:
+            case RP:
+                String hearingOption = asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class) //decisionHearingFeeOption
+                        .orElse("decisionWithHearing");
+                asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption); //decisionHearingFeeOption
+                break;
+
+            default:
+                break;
+        }
     }
 }

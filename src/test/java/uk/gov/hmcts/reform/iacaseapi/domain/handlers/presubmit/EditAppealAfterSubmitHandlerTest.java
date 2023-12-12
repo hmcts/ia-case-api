@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -92,6 +94,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
         when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class))
             .thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
     }
 
     @Test
@@ -474,5 +477,57 @@ class EditAppealAfterSubmitHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).write(HOME_OFFICE_REFERENCE_NUMBER, gwfRefNumber);
+    }
+
+    @Test
+    void should_set_hearing_type_to_decisionHearingFeeOption_when_the_appeal_type_is_dc() {
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2023-12-12"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2023-12-12"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
+                .thenReturn(Optional.of("decisionWithHearing"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
+
+    }
+
+    @Test
+    void should_set_hearing_type_to_decisionHearingFeeOption_when_the_appeal_type_is_RP() {
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2023-12-12"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2023-12-12"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
+        when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
+                .thenReturn(Optional.of("decisionWithoutHearing"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+
+    }
+
+    @Test
+    void should_not_set_hearing_type_to_rpDcAppealHearingOption_when_the_appeal_type_is_not_dc_rp() {
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2023-12-12"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2023-12-12"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).write(RP_DC_APPEAL_HEARING_OPTION, "decisionWithHearing");
+
     }
 }
