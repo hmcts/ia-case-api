@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -46,12 +47,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceRes
 @Component
 public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final Set<String> STATES_FOR_HEARING_CANCELLATION = Set.of(
-        LISTING.toString(),
-        PREPARE_FOR_HEARING.toString(),
-        FINAL_BUNDLING.toString(),
-        PRE_HEARING.toString(),
-        DECISION.toString()
+    private static final Set<State> STATES_FOR_HEARING_CANCELLATION = Set.of(
+        LISTING,
+        PREPARE_FOR_HEARING,
+        FINAL_BUNDLING,
+        PRE_HEARING,
+        DECISION
     );
     private static final String HEARING_DELETION_CALLBACK_ERROR = "Could not delete some hearing request(s)";
     private final DateProvider dateProvider;
@@ -149,9 +150,11 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
                                          MakeAnApplication makeAnApplication,
                                          PreSubmitCallbackResponse<AsylumCase> response) {
 
+        State makeAnApplicationState = State.getStateFrom(makeAnApplication.getState()).orElse(null);
+
         if (makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
             && makeAnApplication.getDecision().equals(GRANTED.toString())
-            && STATES_FOR_HEARING_CANCELLATION.contains(makeAnApplication.getState())) {
+            && STATES_FOR_HEARING_CANCELLATION.contains(makeAnApplicationState)) {
 
             try {
                 AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
