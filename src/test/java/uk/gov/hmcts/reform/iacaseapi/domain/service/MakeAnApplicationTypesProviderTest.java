@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_HEARING_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
@@ -72,7 +73,8 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
-            new Value(OTHER.name(), OTHER.toString()));
+            new Value(OTHER.name(), OTHER.toString()),
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 
@@ -130,7 +132,8 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
-            new Value(OTHER.name(), OTHER.toString()));
+            new Value(OTHER.name(), OTHER.toString()),
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 
@@ -188,7 +191,8 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
-            new Value(OTHER.name(), OTHER.toString()));
+            new Value(OTHER.name(), OTHER.toString()),
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 
@@ -257,7 +261,8 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 
