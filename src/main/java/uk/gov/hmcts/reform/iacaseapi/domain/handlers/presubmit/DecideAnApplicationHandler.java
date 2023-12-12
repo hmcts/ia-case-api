@@ -1,15 +1,37 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_APPLICATIONS_TO_DECIDE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DECISION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision.GRANTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_HEARING_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PREPARE_FOR_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -18,24 +40,37 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Component
 public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final Set<String> STATES_FOR_HEARING_CANCELLATION = Set.of(
+        LISTING.toString(),
+        PREPARE_FOR_HEARING.toString(),
+        FINAL_BUNDLING.toString(),
+        PRE_HEARING.toString(),
+        DECISION.toString()
+    );
+    private static final String HEARING_DELETION_CALLBACK_ERROR = "Could not delete some hearing request(s)";
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
     private final FeatureToggler featureToggler;
+    private final IaHearingsApiService iaHearingsApiService;
 
     public DecideAnApplicationHandler(
         DateProvider dateProvider,
         UserDetails userDetails,
         UserDetailsHelper userDetailsHelper,
-        FeatureToggler featureToggler) {
+        FeatureToggler featureToggler,
+        IaHearingsApiService iaHearingsApiService) {
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
         this.featureToggler = featureToggler;
+        this.iaHearingsApiService = iaHearingsApiService;
     }
 
     @Override
@@ -70,6 +105,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         String decisionMakerRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
 
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         mayBeMakeAnApplications
             .orElse(Collections.emptyList())
@@ -78,7 +114,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .forEach(application -> {
                 MakeAnApplication makeAnApplication = application.getValue();
                 setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), decisionMakerRole);
-                asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.NO);
+                delegateToIaHearingsApi(callback, makeAnApplication, response);
+                asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
                 if (featureToggler.getValue("wa-R2-feature", false)) {
                     asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
                 }
@@ -88,7 +125,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .orElse(Collections.emptyList())
             .stream()
             .filter(a -> a.getValue().getDecision().equals("Pending"))
-            .findAny().ifPresent(a -> asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.YES));
+            .findAny().ifPresent(a -> asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YES));
 
         asylumCase.write(DECIDE_AN_APPLICATION_ID, applicationId);
         asylumCase.write(MAKE_AN_APPLICATIONS, mayBeMakeAnApplications);
@@ -98,7 +135,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION);
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION_REASON);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 
     public void setDecisionInfo(MakeAnApplication makeAnApplication, String decision, String decisionReason, String decisionDate, String decisionMakerRole) {
@@ -106,5 +143,30 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         makeAnApplication.setDecisionReason(decisionReason);
         makeAnApplication.setDecisionDate(decisionDate);
         makeAnApplication.setDecisionMaker(decisionMakerRole);
+    }
+
+    private void delegateToIaHearingsApi(Callback<AsylumCase> callback,
+                                         MakeAnApplication makeAnApplication,
+                                         PreSubmitCallbackResponse<AsylumCase> response) {
+
+        if (makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
+            && makeAnApplication.getDecision().equals(GRANTED.toString())
+            && STATES_FOR_HEARING_CANCELLATION.contains(makeAnApplication.getState())) {
+
+            try {
+                AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+                if (!isDeletionRequestSuccessful(asylumCase)) {
+                    response.addError(HEARING_DELETION_CALLBACK_ERROR);
+                }
+            } catch (AsylumCaseServiceResponseException e) {
+                response.addError(HEARING_DELETION_CALLBACK_ERROR);
+            }
+        }
+    }
+
+    private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {
+        return asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
+            .map(yesOrNo -> !yesOrNo.equals(YES))
+            .orElse(false);
     }
 }
