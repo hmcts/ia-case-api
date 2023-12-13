@@ -2060,6 +2060,9 @@ public enum AsylumCaseFieldDefinition {
     HEARING_CANCELLATION_REASON(
         "hearingCancellationReason", new TypeReference<String>(){}),
 
+    HEARING_RELISTED_UPDATE_REASON(
+        "hearingRelistedUpdateReason", new TypeReference<String>(){}),
+
     IS_APPEAL_SUITABLE_TO_FLOAT(
             "isAppealSuitableToFloat", new TypeReference<YesOrNo>(){});
 
