@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADJOURNMENT_DETAILS_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CANCELLATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -45,7 +45,7 @@ public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseC
         AsylumCase asylumCase = result.getCaseData();
         asylumCase.write(RELIST_CASE_IMMEDIATELY, "Yes");
         asylumCase.write(ADJOURNMENT_DETAILS_HEARING, new DynamicList("hearingId"));
-        asylumCase.write(HEARING_CANCELLATION_REASON, "reclassified");
+        asylumCase.write(HEARING_REASON_TO_CANCEL, "reclassified");
         asylumCase.write(LIST_CASE_HEARING_DATE, "2023-11-28T09:45:00.000");
         asylumCase.write(HEARING_ADJOURNMENT_WHEN, "beforeHearingDate");
 

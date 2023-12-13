@@ -12,9 +12,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CANCELLATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RELISTED_UPDATE_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_UPDATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE;
@@ -204,7 +204,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         DynamicList cancellationList = new DynamicList(new Value("", ""),
                 List.of(new Value(categoryValues.getKey(), categoryValues.getValueEn())));
-        verify(asylumCase, times(1)).write(HEARING_CANCELLATION_REASON, cancellationList);
+        verify(asylumCase, times(1)).write(HEARING_REASON_TO_CANCEL, cancellationList);
     }
 
     @Test
@@ -225,7 +225,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         DynamicList cancellationList = new DynamicList(new Value("", ""),
                 List.of(new Value(categoryValues.getKey(), categoryValues.getValueEn())));
-        verify(asylumCase, times(1)).write(HEARING_RELISTED_UPDATE_REASON, cancellationList);
+        verify(asylumCase, times(1)).write(HEARING_REASON_TO_UPDATE, cancellationList);
     }
 
     private void initializeCommonHearingValues() {

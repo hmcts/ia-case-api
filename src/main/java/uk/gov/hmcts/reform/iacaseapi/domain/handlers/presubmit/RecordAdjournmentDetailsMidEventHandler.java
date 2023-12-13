@@ -22,9 +22,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CANCELLATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RELISTED_UPDATE_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_UPDATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE;
@@ -110,9 +110,9 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
                 .map(hearingRelisted -> Objects.equals(hearingRelisted, YesOrNo.YES)).orElse(false);
 
         if (isHearingRelisted) {
-            populateDynamicList(asylumCase, CHANGE_REASONS, HEARING_RELISTED_UPDATE_REASON);
+            populateDynamicList(asylumCase, CHANGE_REASONS, HEARING_REASON_TO_UPDATE);
         } else {
-            populateDynamicList(asylumCase, CASE_MANAGEMENT_CANCELLATION_REASONS, HEARING_CANCELLATION_REASON);
+            populateDynamicList(asylumCase, CASE_MANAGEMENT_CANCELLATION_REASONS, HEARING_REASON_TO_CANCEL);
         }
     }
 

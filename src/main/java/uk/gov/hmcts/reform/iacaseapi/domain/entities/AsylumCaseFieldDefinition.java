@@ -2057,11 +2057,11 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_ADJOURNMENT_DETAILS(
         "previousAdjournmentDetails", new TypeReference<List<IdValue<AdjournmentDetail>>>(){}),
 
-    HEARING_CANCELLATION_REASON(
-        "hearingCancellationReason", new TypeReference<String>(){}),
+    HEARING_REASON_TO_CANCEL(
+        "hearingReasonToCancel", new TypeReference<DynamicList>(){}),
 
-    HEARING_RELISTED_UPDATE_REASON(
-        "hearingRelistedUpdateReason", new TypeReference<String>(){}),
+    HEARING_REASON_TO_UPDATE(
+        "hearingReasonToUpdate", new TypeReference<DynamicList>(){}),
 
     IS_APPEAL_SUITABLE_TO_FLOAT(
             "isAppealSuitableToFloat", new TypeReference<YesOrNo>(){});
