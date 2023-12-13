@@ -58,10 +58,11 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
 
         long caseId = callback.getCaseDetails().getId();
 
-        YesOrNo manualCancelHearingsRequired = asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
-            .orElseThrow(() -> new IllegalStateException("Manual cancel hearing required is not present"));
+        boolean manualCancelHearingsRequired = asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
+                .map(cancelHearingRequired -> YES == cancelHearingRequired)
+                .orElse(false);
 
-        if (YES.equals(manualCancelHearingsRequired)) {
+        if (manualCancelHearingsRequired) {
             postSubmitResponse.setConfirmationBody(
                 "#### Do this next\n\n"
                     + "All parties will be informed of the decision to adjourn without a date.\n\n"

@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HearingChannelsDynamicListUpdater.INITIALIZE_FIELDS_PAGE_ID;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,6 +87,9 @@ class HearingChannelsDynamicListUpdaterTest {
                 .thenReturn(hearingChannels);
         List<Value> values = List.of(value);
         when(refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels)).thenReturn(values);
+        if (event == RECORD_ADJOURNMENT_DETAILS) {
+            when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
+        }
 
         DynamicList dynamicListOfHearingChannel = new DynamicList(new Value("", ""), values);
 
