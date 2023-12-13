@@ -76,6 +76,9 @@ class DecideAnApplicationHandlerTest {
     @Mock private UserDetailsHelper userDetailsHelper;
     @Mock private FeatureToggler featureToggler;
     @Mock private IaHearingsApiService iaHearingsApiService;
+    private DynamicList makeAnApplicationsList;
+    private List<IdValue<Document>> evidence;
+    private MakeAnApplication makeAnApplication;
 
     private DecideAnApplicationHandler decideAnApplicationHandler;
 
@@ -89,27 +92,27 @@ class DecideAnApplicationHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        makeAnApplicationsList = new DynamicList(
+            new Value("1", "Legal representative : Application 1"),
+            Arrays.asList(new Value("1", "Legal representative : Application 1")));
+        evidence = Arrays.asList(new IdValue<>("1",
+            new Document("http://localhost/documents/123456",
+                "http://localhost/documents/123456",
+                "DocumentName.pdf")));
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     void should_handle_the_about_to_submit(boolean waR2FeatureFlag) {
 
-        when(dateProvider.now()).thenReturn(LocalDate.MAX);
-
-        final DynamicList makeAnApplicationsList = new DynamicList(
-            new Value("1", "Legal representative : Application 1"),
-            Arrays.asList(new Value("1", "Legal representative : Application 1")));
-        List<IdValue<Document>> evidence =
-            Arrays.asList(new IdValue<>("1",
-                new Document("http://localhost/documents/123456",
-                    "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
-        MakeAnApplication makeAnApplication =
+        makeAnApplication =
             new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
+
         List<IdValue<MakeAnApplication>> makeAnApplications = List.of(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -154,20 +157,12 @@ class DecideAnApplicationHandlerTest {
     @EnumSource(value = MakeAnApplicationDecision.class, names = {"GRANTED", "REFUSED"})
     void should_send_hearing_cancellation_request_when_appropriate(MakeAnApplicationDecision decision) {
 
-        when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        final DynamicList makeAnApplicationsList = new DynamicList(
-            new Value("1", "Legal representative : Application 1"),
-            List.of(new Value("1", "Legal representative : Application 1")));
-        List<IdValue<Document>> evidence =
-            List.of(new IdValue<>("1",
-                new Document("http://localhost/documents/123456",
-                    "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
-        MakeAnApplication makeAnApplication =
-            new MakeAnApplication("Legal representative", "Change hearing type", "A reason to update appeal details",
+        makeAnApplication =
+            new MakeAnApplication("Legal representative", "Change hearing type", "A reason to change hearing type",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
+
         List<IdValue<MakeAnApplication>> makeAnApplications = List.of(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -203,20 +198,12 @@ class DecideAnApplicationHandlerTest {
     @Test
     void should_add_error_if_cancellation_call_unsuccessful_in_ia_hearings_api() {
 
-        when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        final DynamicList makeAnApplicationsList = new DynamicList(
-            new Value("1", "Legal representative : Application 1"),
-            Arrays.asList(new Value("1", "Legal representative : Application 1")));
-        List<IdValue<Document>> evidence =
-            Arrays.asList(new IdValue<>("1",
-                new Document("http://localhost/documents/123456",
-                    "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
-        MakeAnApplication makeAnApplication =
-            new MakeAnApplication("Legal representative", "Change hearing type", "A reason to update appeal details",
+        makeAnApplication =
+            new MakeAnApplication("Legal representative", "Change hearing type", "A reason to change hearing type",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
+
         List<IdValue<MakeAnApplication>> makeAnApplications = List.of(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -246,21 +233,12 @@ class DecideAnApplicationHandlerTest {
     @Test
     void should_add_error_if_delegation_to_ia_hearings_api_unsuccessful() {
 
-        when(dateProvider.now()).thenReturn(LocalDate.MAX);
-
-        final DynamicList makeAnApplicationsList = new DynamicList(
-            new Value("1", "Legal representative : Application 1"),
-            Arrays.asList(new Value("1", "Legal representative : Application 1")));
-        List<IdValue<Document>> evidence =
-            Arrays.asList(new IdValue<>("1",
-                new Document("http://localhost/documents/123456",
-                    "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
-        MakeAnApplication makeAnApplication =
-            new MakeAnApplication("Legal representative", "Change hearing type", "A reason to update appeal details",
+        makeAnApplication =
+            new MakeAnApplication("Legal representative", "Change hearing type", "A reason to change hearing type",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
+
         List<IdValue<MakeAnApplication>> makeAnApplications = List.of(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));

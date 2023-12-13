@@ -115,7 +115,9 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .forEach(application -> {
                 MakeAnApplication makeAnApplication = application.getValue();
                 setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), decisionMakerRole);
-                delegateToIaHearingsApi(callback, makeAnApplication, response);
+                if (isHearingDeletionNecessary(makeAnApplication)) {
+                    delegateToIaHearingsApi(callback, response);
+                }
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
                 if (featureToggler.getValue("wa-R2-feature", false)) {
                     asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
@@ -147,24 +149,23 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
     }
 
     private void delegateToIaHearingsApi(Callback<AsylumCase> callback,
-                                         MakeAnApplication makeAnApplication,
                                          PreSubmitCallbackResponse<AsylumCase> response) {
-
-        State makeAnApplicationState = State.getStateFrom(makeAnApplication.getState()).orElse(null);
-
-        if (makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
-            && makeAnApplication.getDecision().equals(GRANTED.toString())
-            && STATES_FOR_HEARING_CANCELLATION.contains(makeAnApplicationState)) {
-
-            try {
-                AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
-                if (!isDeletionRequestSuccessful(asylumCase)) {
-                    response.addError(HEARING_DELETION_CALLBACK_ERROR);
-                }
-            } catch (AsylumCaseServiceResponseException e) {
+        try {
+            AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            if (!isDeletionRequestSuccessful(asylumCase)) {
                 response.addError(HEARING_DELETION_CALLBACK_ERROR);
             }
+        } catch (AsylumCaseServiceResponseException e) {
+            response.addError(HEARING_DELETION_CALLBACK_ERROR);
         }
+    }
+
+    private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication) {
+        State makeAnApplicationState = State.getStateFrom(makeAnApplication.getState()).orElse(null);
+
+        return makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
+               && makeAnApplication.getDecision().equals(GRANTED.toString())
+               && STATES_FOR_HEARING_CANCELLATION.contains(makeAnApplicationState);
     }
 
     private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {
