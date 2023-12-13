@@ -64,9 +64,9 @@ public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandl
             .forEach(applyForCostsIdValue -> {
                 ApplyForCosts applyForCosts = applyForCostsIdValue.getValue();
                 if (loggedUser.equals(applyForCosts.getApplyForCostsApplicantType())) {
-                    applyForCosts.setApplicantAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments));
+                    applyForCosts.setApplicantAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments, true));
                 } else if (loggedUser.equals(applyForCosts.getApplyForCostsRespondentRole())) {
-                    applyForCosts.setRespondentAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments));
+                    applyForCosts.setRespondentAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments, false));
                 }
             });
 
@@ -75,9 +75,14 @@ public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandl
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private List<IdValue<Document>> addAdditionalEvidenceToList(ApplyForCosts applyForCosts, Optional<List<IdValue<Document>>> evidenceDocuments) {
-        List<IdValue<Document>> applicantAdditionalEvidences = applyForCosts.getApplicantAdditionalEvidence() != null ? applyForCosts.getApplicantAdditionalEvidence() : new ArrayList<>();
-        applicantAdditionalEvidences.addAll(evidenceDocuments.orElseThrow(() -> new IllegalStateException("evidenceDocuments are not present")));
-        return applicantAdditionalEvidences;
+    private List<IdValue<Document>> addAdditionalEvidenceToList(ApplyForCosts applyForCosts, Optional<List<IdValue<Document>>> evidenceDocuments, boolean isApplicant) {
+        List<IdValue<Document>> additionalEvidences;
+        if (isApplicant) {
+            additionalEvidences = applyForCosts.getApplicantAdditionalEvidence() != null ? applyForCosts.getApplicantAdditionalEvidence() : new ArrayList<>();
+        } else {
+            additionalEvidences = applyForCosts.getRespondentAdditionalEvidence() != null ? applyForCosts.getRespondentAdditionalEvidence() : new ArrayList<>();
+        }
+        additionalEvidences.addAll(evidenceDocuments.orElseThrow(() -> new IllegalStateException("evidenceDocuments are not present")));
+        return additionalEvidences;
     }
 }
