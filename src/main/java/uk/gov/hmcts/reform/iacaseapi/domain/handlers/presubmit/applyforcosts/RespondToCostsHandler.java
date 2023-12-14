@@ -56,7 +56,7 @@ public class RespondToCostsHandler implements PreSubmitCallbackHandler<AsylumCas
                 .forEach(applyForCostsIdValue -> {
                     ApplyForCosts applyForCosts = applyForCostsIdValue.getValue();
                     applyForCosts.setResponseToApplication(response);
-                    applyForCosts.setEvidence(evidenceDocuments.orElse(Collections.emptyList()));
+                    applyForCosts.setResponseEvidence(evidenceDocuments.orElse(Collections.emptyList()));
                     applyForCosts.setResponseHearingType(typeOfHearing);
                     if (typeOfHearing == YesOrNo.YES) {
                         applyForCosts.setResponseHearingTypeExplanation(typeOfHearingExplanation.orElseThrow(() -> new IllegalStateException("typeOfHearingExplanation is not present")));

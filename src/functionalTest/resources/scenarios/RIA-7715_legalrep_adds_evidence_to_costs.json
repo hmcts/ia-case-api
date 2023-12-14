@@ -123,7 +123,8 @@
                   }
                 }
               ],
-              "applyForCostsHearingTypeExplanation": ""
+              "applyForCostsHearingTypeExplanation": "",
+              "loggedUserRole": "Home office"
             }
           }
         ]
