@@ -40,6 +40,7 @@ public class ApplyForCosts {
     //Both(applicant and respondent) additional evidence
     private List<IdValue<Document>> applicantAdditionalEvidence;
     private List<IdValue<Document>> respondentAdditionalEvidence;
+    private String loggedUserRole;
 
     //Judge decision fields
     private String applyForCostsDecision;
