@@ -63,6 +63,7 @@ public class AdditionalEvidenceForCostsHandler implements PreSubmitCallbackHandl
             .filter(applyForCosts -> applyForCosts.getId().equals(applicationId))
             .forEach(applyForCostsIdValue -> {
                 ApplyForCosts applyForCosts = applyForCostsIdValue.getValue();
+                applyForCosts.setLoggedUserRole(loggedUser);
                 if (loggedUser.equals(applyForCosts.getApplyForCostsApplicantType())) {
                     applyForCosts.setApplicantAdditionalEvidence(addAdditionalEvidenceToList(applyForCosts, evidenceDocuments, true));
                 } else if (loggedUser.equals(applyForCosts.getApplyForCostsRespondentRole())) {
