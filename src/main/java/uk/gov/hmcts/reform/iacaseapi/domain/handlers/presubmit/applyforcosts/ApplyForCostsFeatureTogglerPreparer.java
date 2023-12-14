@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -67,12 +66,6 @@ public class ApplyForCostsFeatureTogglerPreparer implements PreSubmitCallbackHan
     }
 
     private YesOrNo applyForCostsOot(AsylumCase asylumCase) {
-        AppealStatus appealStatus = asylumCase.read(APPEAL_STATUS, AppealStatus.class).orElse(null);
-
-        if (appealStatus != null && appealStatus.equals(AppealStatus.REINSTATED)) {
-            return YesOrNo.NO;
-        }
-
         String endAppealDate = asylumCase.read(END_APPEAL_DATE, String.class).orElse("");
         String sendDecisionAndReasonsDate = asylumCase.read(SEND_DECISIONS_AND_REASONS_DATE, String.class).orElse("");
         LocalDate applyForCostsDate = dateProvider.now();
