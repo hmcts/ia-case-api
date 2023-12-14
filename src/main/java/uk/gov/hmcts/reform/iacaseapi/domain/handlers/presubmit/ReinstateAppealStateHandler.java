@@ -76,6 +76,7 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
         asylumCase.write(APPEAL_STATUS, REINSTATED);
         asylumCase.write(REINSTATE_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);
+        asylumCase.write(IS_APPLY_FOR_COSTS_OOT, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase, stateBeforeEndAppeal.get());
     }
