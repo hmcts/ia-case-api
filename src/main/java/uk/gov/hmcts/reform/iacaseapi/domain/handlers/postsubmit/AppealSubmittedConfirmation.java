@@ -290,6 +290,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
     private void scheduleCreateServiceRequest(Callback<AsylumCase> callback) {
         ZonedDateTime scheduledDate = ZonedDateTime.now();
+        String[] splitCcdReference = callback.getCaseDetails().getCaseData().read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class).orElse("").split(" ");
+        String ccdReference = String.join("", splitCcdReference);
+
         scheduler.schedule(
                 new TimedEvent(
                         "",
@@ -297,7 +300,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                         scheduledDate,
                         "IA",
                         "Asylum",
-                        callback.getCaseDetails().getId()
+                        Long.parseLong(ccdReference)
                 )
         );
     }
