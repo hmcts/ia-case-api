@@ -1,16 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_PARTY_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Set;
 import org.springframework.stereotype.Component;
@@ -19,10 +11,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingPartyIdGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 @Component
 public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -55,49 +45,13 @@ public class PartyIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
                         .getCaseData();
 
         if (Set.of(START_APPEAL, EDIT_APPEAL).contains(callback.getEvent())) {
-            setAppellantPartyId(asylumCase);
-            setLegalRepPartyId(asylumCase);
+            PartyIdService.setAppellantPartyId(asylumCase);
+            PartyIdService.setLegalRepPartyId(asylumCase);
         }
 
-        setSponsorPartyId(asylumCase);
+        PartyIdService.setSponsorPartyId(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private void setAppellantPartyId(AsylumCase asylumCase) {
-
-        if (asylumCase.read(APPELLANT_PARTY_ID, String.class).orElse("").isEmpty()) {
-            asylumCase.write(APPELLANT_PARTY_ID, HearingPartyIdGenerator.generate());
-        }
-    }
-
-    private void setLegalRepPartyId(AsylumCase asylumCase) {
-
-        if (!HandlerUtils.isAipJourney(asylumCase)) {
-            if (asylumCase.read(LEGAL_REP_INDIVIDUAL_PARTY_ID, String.class).orElse("").isEmpty()) {
-                asylumCase.write(LEGAL_REP_INDIVIDUAL_PARTY_ID, HearingPartyIdGenerator.generate());
-            }
-
-            if (asylumCase.read(LEGAL_REP_ORGANISATION_PARTY_ID, String.class).orElse("").isEmpty()) {
-                asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, HearingPartyIdGenerator.generate());
-            }
-        }
-    }
-
-    private void setSponsorPartyId(AsylumCase asylumCase) {
-
-        boolean isAppealOutOfCountry = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
-                .map(flag -> flag == NO)
-                .orElse(false);
-        boolean hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
-                .map(flag -> flag == YES)
-                .orElse(false);
-
-        if (isAppealOutOfCountry && hasSponsor) {
-            if (asylumCase.read(SPONSOR_PARTY_ID, String.class).orElse("").isEmpty()) {
-                asylumCase.write(SPONSOR_PARTY_ID, HearingPartyIdGenerator.generate());
-            }
-        }
     }
 
 }
