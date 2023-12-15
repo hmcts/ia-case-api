@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import feign.RetryableException;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
@@ -223,7 +224,7 @@ public class CcdScenarioRunnerTest {
                         )
                     );
                     break;
-                } catch (Error | RetryableException e) {
+                } catch (Error | RetryableException | FeignException.BadGateway e) {
                     System.out.println("Scenario failed with error " + e.getMessage());
                 }
             }
