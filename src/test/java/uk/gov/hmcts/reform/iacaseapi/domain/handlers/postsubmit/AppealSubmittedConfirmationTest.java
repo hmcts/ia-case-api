@@ -68,7 +68,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater, scheduler, dateProvider);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater, scheduler);
     }
 
     @Test

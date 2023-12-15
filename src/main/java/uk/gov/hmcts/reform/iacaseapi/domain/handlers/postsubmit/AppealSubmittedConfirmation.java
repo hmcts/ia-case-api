@@ -12,13 +12,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAI
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -65,13 +63,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
     private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
     private final Scheduler scheduler;
-    private final DateProvider dateProvider;
 
-    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater, Scheduler scheduler, DateProvider dateProvider) {
+    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater, Scheduler scheduler) {
         this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
         this.scheduler = scheduler;
-        this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
@@ -293,7 +289,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     }
 
     private void scheduleCreateServiceRequest(Callback<AsylumCase> callback) {
-        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(0);
+        ZonedDateTime scheduledDate = ZonedDateTime.now();
         scheduler.schedule(
                 new TimedEvent(
                         "",
