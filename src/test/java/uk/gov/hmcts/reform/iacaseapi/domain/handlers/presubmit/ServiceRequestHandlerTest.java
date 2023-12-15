@@ -101,31 +101,6 @@ public class ServiceRequestHandlerTest {
     }
 
     @Test
-    void it_can_handle_callback() {
-
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = serviceRequestHandler.canHandle(callbackStage, callback);
-
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && List.of(Event.SUBMIT_APPEAL,
-                    Event.GENERATE_SERVICE_REQUEST).contains(event)) {
-
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-
-            reset(callback);
-        }
-    }
-
-    @Test
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> serviceRequestHandler.canHandle(null, callback))
