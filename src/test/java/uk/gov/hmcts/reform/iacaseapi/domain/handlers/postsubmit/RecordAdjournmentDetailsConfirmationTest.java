@@ -269,4 +269,29 @@ class RecordAdjournmentDetailsConfirmationTest {
                 + "The adjournment details are available on the "
                 + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment).");
     }
+
+    @Test
+    void should_return_default_confirmation_if_manual_cancel_hearing_does_not_exists() {
+
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+                .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        PostSubmitCallbackResponse callbackResponse =
+                recordAdjournmentDetailsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(callbackResponse.getConfirmationHeader().get())
+                .contains("# You have recorded the adjournment details");
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### Do this next\n\n"
+                        + "The hearing will be adjourned using the details recorded.\n\n"
+                        + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                        + caseId + "#Hearing%20and%20appointment).");
+    }
 }

@@ -29,6 +29,7 @@ public class HearingChannelsDynamicListUpdater implements PreSubmitCallbackHandl
 
     public static final String HEARING_CHANNEL_CATEGORY = "HearingChannel";
     public static final String IS_CHILD_REQUIRED = "N";
+    public static final String INITIALIZE_FIELDS_PAGE_ID = "relistCaseImmediately";
 
     @Override
     public boolean canHandle(
@@ -56,7 +57,8 @@ public class HearingChannelsDynamicListUpdater implements PreSubmitCallbackHandl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (callback.getEvent() == RECORD_ADJOURNMENT_DETAILS) {
+        if (callback.getEvent() == RECORD_ADJOURNMENT_DETAILS &&
+                callback.getPageId().equals(INITIALIZE_FIELDS_PAGE_ID)) {
             asylumCase.write(NEXT_HEARING_FORMAT, populateDynamicList());
         } else {
             asylumCase.write(HEARING_CHANNEL, populateDynamicList());
