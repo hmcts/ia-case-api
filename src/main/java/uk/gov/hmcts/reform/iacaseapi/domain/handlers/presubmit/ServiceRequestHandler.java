@@ -36,7 +36,7 @@ public class ServiceRequestHandler implements PreSubmitCallbackHandler<AsylumCas
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-               && List.of(Event.SUBMIT_APPEAL, Event.GENERATE_SERVICE_REQUEST).contains(callback.getEvent())
+               && List.of(Event.SUBMIT_APPEAL, Event.GENERATE_SERVICE_REQUEST, Event.CREATE_SERVICE_REQUEST).contains(callback.getEvent())
                && isFeePaymentEnabled;
     }
 

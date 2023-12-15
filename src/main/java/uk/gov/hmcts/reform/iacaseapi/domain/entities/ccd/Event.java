@@ -122,6 +122,7 @@ public enum Event {
 
     PIP_ACTIVATION("pipActivation"),
     UPDATE_S94B_STATUS("updateS94bStatus"),
+    CREATE_SERVICE_REQUEST("createServiceRequest"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

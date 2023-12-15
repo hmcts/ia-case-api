@@ -12,10 +12,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAI
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -27,7 +30,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Slf4j
 @Component
@@ -59,10 +64,14 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
     private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    private final Scheduler scheduler;
+    private final DateProvider dateProvider;
 
-    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater, Scheduler scheduler, DateProvider dateProvider) {
         this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+        this.scheduler = scheduler;
+        this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
@@ -120,6 +129,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
+                    scheduleCreateServiceRequest(callback);
                     setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
@@ -138,6 +148,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
+                    scheduleCreateServiceRequest(callback);
                     setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
@@ -279,5 +290,19 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
         asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
 
+    }
+
+    private void scheduleCreateServiceRequest(Callback<AsylumCase> callback) {
+        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(0);
+        scheduler.schedule(
+                new TimedEvent(
+                        "",
+                        Event.CREATE_SERVICE_REQUEST,
+                        scheduledDate,
+                        "IA",
+                        "Asylum",
+                        callback.getCaseDetails().getId()
+                )
+        );
     }
 }

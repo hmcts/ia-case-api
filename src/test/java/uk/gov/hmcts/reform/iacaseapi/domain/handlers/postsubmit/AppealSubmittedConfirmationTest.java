@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,6 +55,10 @@ class AppealSubmittedConfirmationTest {
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
     @Mock
     private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    @Mock
+    private Scheduler scheduler;
+    @Mock
+    private DateProvider dateProvider;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation;
 
@@ -62,7 +68,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater, scheduler, dateProvider);
     }
 
     @Test
