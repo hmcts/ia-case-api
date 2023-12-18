@@ -1,32 +1,46 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AnonymousByDefaultHandlerTest {
 
     @Mock
@@ -36,67 +50,125 @@ public class AnonymousByDefaultHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private CaseFlagAppender caseFlagAppender;
+    private DateProvider systemDateProvider;
 
     private AnonymousByDefaultHandler anonymousByDefaultHandler;
 
     @BeforeEach
     public void setUp() {
-        anonymousByDefaultHandler = new AnonymousByDefaultHandler(caseFlagAppender);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
-    void should_set_anonymity_flag_for_PA_appeal(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
+
+        anonymousByDefaultHandler = new AnonymousByDefaultHandler(systemDateProvider);
+    }
+
+    @Test
+    void should_set_anonymity_flag_for_PA_appeal() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
-        verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), any());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
-    void should_set_anonymity_flag_for_RP_appeal(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+    @Test
+    void should_set_anonymity_flag_for_RP_appeal() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
-        verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), any());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
-    void anonymity_flag_should_not_be_set_for_non_PA_or_RP_appeal_if_not_already_set(Event event) {
+    @Test
+    void should_set_anonymity_flag_when_an_inactive_anonymity_flag_exists() {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
+            .builder()
+            .flagCode(ANONYMITY.getFlagCode())
+            .name(ANONYMITY.getName())
+            .status("Inactive")
+            .build()));
+        when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
+            .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
+        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), any());
+    }
+
+    @Test
+    void should_set_anonymity_flag_when_an_empty_class_level_flag_exists() {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
+            .thenReturn(Optional.of(new StrategicCaseFlag()));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
+        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), any());
+    }
+
+    @Test
+    void anonymity_flag_should_not_be_set_for_non_PA_or_RP_appeal_if_not_already_set() {
+
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
+        verify(asylumCase, never()).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, never()).write(eq(CASE_LEVEL_FLAGS), any());
+    }
+
+    @Test
+    void anonymity_flag_should_not_be_set_when_an_active_anonymity_flag_exists() {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+
+        List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
+            .builder()
+            .flagCode(ANONYMITY.getFlagCode())
+            .name(ANONYMITY.getName())
+            .status("Active")
+            .build()));
+        when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
+            .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
+        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, never()).write(eq(CASE_LEVEL_FLAGS), any());
     }
 
     @Test
@@ -110,7 +182,7 @@ public class AnonymousByDefaultHandlerTest {
                 boolean canHandle = anonymousByDefaultHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && callback.getEvent() == SUBMIT_APPEAL) {
+                    && callback.getEvent() == SUBMIT_APPEAL) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
@@ -123,33 +195,33 @@ public class AnonymousByDefaultHandlerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.canHandle(ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         assertThatThrownBy(() -> anonymousByDefaultHandler.handle(ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
     }
 }

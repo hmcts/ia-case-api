@@ -839,8 +839,8 @@ public enum AsylumCaseFieldDefinition {
     FLAG_CASE_ADDITIONAL_INFORMATION(
         "flagCaseAdditionalInformation", new TypeReference<String>(){}),
 
-    CASE_FLAGS(
-        "caseFlags", new TypeReference<List<IdValue<CaseFlag>>>(){}),
+    LEGACY_CASE_FLAGS(
+        "legacyCaseFlags", new TypeReference<List<IdValue<LegacyCaseFlag>>>(){}),
 
     CASE_FLAG_ANONYMITY_EXISTS(
         "caseFlagAnonymityExists", new TypeReference<YesOrNo>() {}),
@@ -1573,7 +1573,19 @@ public enum AsylumCaseFieldDefinition {
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
+    }),
+
+    CASE_LEVEL_FLAGS(
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
+    // This is not actually a real case field. It is used to determine
+    // the case flag id for the purpose of functional test
+    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
+
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;

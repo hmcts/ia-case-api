@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsA
     "OPEN_ID_IDAM_URL=http://127.0.0.1:8990/userAuth",
     "IA_CASE_DOCUMENTS_API_URL=http://localhost:8990/ia-case-documents-api",
     "IA_CASE_NOTIFICATIONS_API_URL=http://localhost:8990/ia-case-notifications-api",
-    "PROF_REF_DATA_URL=http://localhost:8990",
+    "prof.ref.data.url=http://localhost:8990",
     "CCD_URL=http://127.0.0.1:8990/ccd-data-store",
     "AAC_URL=http://127.0.0.1:8990",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
@@ -78,12 +79,28 @@ public abstract class SpringBootIntegrationTest {
 
     @AfterEach
     public void reset() {
+        server.resetMappings();
+        server.resetRequests();
+        server.resetScenarios();
         server.resetAll();
     }
 
     @AfterAll
+    @SneakyThrows
+    @SuppressWarnings("java:S2925")
     public void shutDown() {
         server.stop();
+        /*
+            We are not using Wiremock the way it's intended to be used. It should be used by
+            starting a webserver at the beginning of all tests and taking it down at the end, but
+            what we do is spinning up and down the server all the time and change its mappings
+            all the time.
+            The result is that its behaviour is somewhat flaky.
+
+            The following pause is meant to allow Wiremock time to conclude some operations that
+            we invoke.
+         */
+        Thread.sleep(1000);
     }
 
 }

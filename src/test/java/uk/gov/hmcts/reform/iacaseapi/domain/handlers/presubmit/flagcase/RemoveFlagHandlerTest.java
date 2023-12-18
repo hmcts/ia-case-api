@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_FLAG_TYPE_OF_FLAG;
 
 import java.util.ArrayList;
@@ -26,9 +26,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -41,18 +41,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RemoveFlagHandlerTest {
 
-    private final CaseFlag expectedCaseFlag =
-        new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
-    private final CaseFlag expectedCaseFlag2 =
-        new CaseFlag(CaseFlagType.ANONYMITY, "some anonymity flag additional info");
+    private final LegacyCaseFlag expectedCaseFlag =
+        new LegacyCaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
+    private final LegacyCaseFlag expectedCaseFlag2 =
+        new LegacyCaseFlag(CaseFlagType.ANONYMITY, "some anonymity flag additional info");
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private List<IdValue<CaseFlag>> expectedList;
-    private IdValue<CaseFlag> expectedIdValue;
+    private List<IdValue<LegacyCaseFlag>> expectedList;
+    private IdValue<LegacyCaseFlag> expectedIdValue;
     private RemoveFlagHandler removeFlagHandler;
 
     @BeforeEach
@@ -74,15 +74,15 @@ class RemoveFlagHandlerTest {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
-            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getCaseFlagType().getReadableText()))
+            .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
         final DynamicList dynamicList = new DynamicList(expectedElements.get(0), expectedElements);
-        final List<IdValue<CaseFlag>> expectedCaseFlagList = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> expectedCaseFlagList = new ArrayList<>();
         expectedCaseFlagList.add(expectedIdValue);
 
         when(asylumCase.read(REMOVE_FLAG_TYPE_OF_FLAG, DynamicList.class)).thenReturn(Optional.of(dynamicList));
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(expectedList));
+        when(asylumCase.read(LEGACY_CASE_FLAGS)).thenReturn(Optional.of(expectedList));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             removeFlagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -91,9 +91,9 @@ class RemoveFlagHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(REMOVE_FLAG_TYPE_OF_FLAG, DynamicList.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
+        verify(asylumCase, times(1)).read(LEGACY_CASE_FLAGS);
 
-        verify(asylumCase, times(1)).write(CASE_FLAGS, expectedCaseFlagList);
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, expectedCaseFlagList);
         verify(asylumCase, times(1)).clear(REMOVE_FLAG_TYPE_OF_FLAG);
     }
 

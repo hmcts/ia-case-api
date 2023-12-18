@@ -1,32 +1,39 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
 
 @Component
 class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final CaseFlagAppender caseFlagAppender;
+    private final DateProvider systemDateProvider;
 
-    AnonymousByDefaultHandler(CaseFlagAppender caseFlagAppender) {
-        this.caseFlagAppender = caseFlagAppender;
+    public AnonymousByDefaultHandler(DateProvider systemDateProvider) {
+        this.systemDateProvider = systemDateProvider;
     }
 
     @Override
@@ -34,9 +41,12 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return
-                callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && (callback.getEvent() == SUBMIT_APPEAL);
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && callback.getEvent() == SUBMIT_APPEAL;
+    }
+
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
     }
 
     @Override
@@ -48,29 +58,40 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null);
 
-        if (isAPorRPappeal(appealType)) {
-            setAnonymityFlag(asylumCase);
+        if (appealType == AppealType.PA || appealType == AppealType.RP) {
+            Optional<StrategicCaseFlag> strategicCaseFlagOptional = asylumCase
+                .read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
+
+            createAnonymityFlag(asylumCase, strategicCaseFlagOptional);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean isAPorRPappeal(AppealType appealType) {
-        return appealType != null
-                && (appealType == AppealType.PA
-                || appealType == AppealType.RP);
+    private void createAnonymityFlag(AsylumCase asylumCase, Optional<StrategicCaseFlag> strategicCaseFlagOptional) {
+        if (!hasActiveAnonimityFlag(strategicCaseFlagOptional)) {
+            CaseFlagValue caseFlagValue = CaseFlagValue.builder()
+                .name(ANONYMITY.getName())
+                .flagCode(ANONYMITY.getFlagCode())
+                .status("Active")
+                .hearingRelevant(YesOrNo.YES)
+                .dateTimeCreated(systemDateProvider.nowWithTime().toString())
+                .build();
+            List<CaseFlagDetail> caseFlagDetails = new ArrayList<>();
+            String caseFlagId = asylumCase.read(CASE_FLAG_ID, String.class).orElse(UUID.randomUUID().toString());
+            caseFlagDetails.add(new CaseFlagDetail(caseFlagId, caseFlagValue));
+
+            strategicCaseFlagOptional.ifPresent(caseLevelFlags -> caseFlagDetails.addAll(caseLevelFlags.getDetails()));
+
+            asylumCase.write(CASE_LEVEL_FLAGS, new StrategicCaseFlag(null, null, caseFlagDetails));
+        }
     }
 
-    private List<IdValue<CaseFlag>> getExistingCaseFlags(AsylumCase asylumCase) {
-        Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
-        return maybeExistingCaseFlags.orElse(Collections.emptyList());
-    }
-
-    private void setAnonymityFlag(AsylumCase asylumCase) {
-        asylumCase.write(CASE_FLAGS, caseFlagAppender.append(
-                getExistingCaseFlags(asylumCase),
-                CaseFlagType.ANONYMITY, ""
-        ));
-        asylumCase.write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
+    private boolean hasActiveAnonimityFlag(@NonNull Optional<StrategicCaseFlag> strategicCaseFlag) {
+        return strategicCaseFlag.map(caseFlag -> caseFlag.getDetails().stream().anyMatch(flagDetail -> {
+            CaseFlagValue value = flagDetail.getCaseFlagValue();
+            return Objects.equals(value.getFlagCode(), ANONYMITY.getFlagCode())
+                   && Objects.equals(flagDetail.getCaseFlagValue().getStatus(), "Active");
+        })).orElse(false);
     }
 }

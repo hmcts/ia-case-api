@@ -1,5 +1,5 @@
 {
-  "description": "RIA-5184 Sets Anonymity flag for RP (Revocation of a protection status) appeal on submitAppeal even",
+  "description": "RIA-5184 RIA-7335 Sets Anonymity flag for RP (Revocation of a protection status) appeal on submitAppeal event",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "caseFlagId": "5184-7335-DEF",
           "appealType": "revocationOfProtection"
         }
       }
@@ -21,15 +22,21 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealType": "revocationOfProtection",
-        "caseFlags": [
-          {
-            "id": "1",
-            "value": {
-              "caseFlagType": "anonymity"
+        "caseFlags": {
+          "partyName": null,
+          "roleOnCase": null,
+          "details": [
+            {
+              "id": "5184-7335-DEF",
+              "value": {
+                "name": "RRO (Restricted Reporting Order / Anonymisation)",
+                "flagCode": "CF0012",
+                "status": "Active",
+                "hearingRelevant": "Yes"
+              }
             }
-          }
-        ],
-        "caseFlagAnonymityExists": "Yes"
+          ]
+        }
       }
     }
   }

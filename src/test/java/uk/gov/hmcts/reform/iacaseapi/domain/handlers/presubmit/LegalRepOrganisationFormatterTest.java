@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -57,6 +58,9 @@ class LegalRepOrganisationFormatterTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
+    @Mock
+    private org.slf4j.Logger log
+            = org.slf4j.LoggerFactory.getLogger(LegalRepOrganisationFormatter.class);
 
 
     @BeforeEach
@@ -107,8 +111,9 @@ class LegalRepOrganisationFormatterTest {
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
             );
-
+        verify(log, times(0)).warn("Data fetched from Professional Ref data is empty, case ID: {}", ccdCaseId);
         verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY_NAME, companyName);
+        assertThat(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS).equals(legRepAddressUk));
 
         AddressUk addressUk = new AddressUk(
             addressLine1,
@@ -288,5 +293,33 @@ class LegalRepOrganisationFormatterTest {
         assertThatThrownBy(() -> legalRepOrganisationFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_get_empty_address_from_nulls() {
+        List<LegRepAddressUk> addresses = new ArrayList<>();
+        LegRepAddressUk legRepAddressUk = new LegRepAddressUk(
+                null,null,null,null,null,null,null
+        );
+        addresses.add(legRepAddressUk);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
+        when(organisationEntityResponse.getName()).thenReturn(companyName);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+        AddressUk emptyAddressUk = new AddressUk(
+                "","","","","","",""
+        );
+        legalRepOrganisationFormatter.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+        );
+        assertThat(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS).equals(emptyAddressUk));
     }
 }

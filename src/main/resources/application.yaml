@@ -97,15 +97,15 @@ featureFlag:
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:false}
   isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
-legalRepresentativeBuildCase.dueInDays: 28
-legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
-legalRepresentativeHearingRequirements.dueInDays: 5
-legalRepresentativeReview.dueInDays: 5
-requestRespondentEvidence.dueInDays: 14
-requestRespondentReview.dueInDays: 14
-appellantReasonsForAppeal.dueInDays: 28
-paymentAfterRemissionRejection.dueInMinutes: 20160
-paymentEaHuNoRemission.dueInMinutes: 20160
+legalRepresentativeBuildCase.dueInDays: ${LEGAL_REP_BUILD_CASE_DUE_IN_DAYS:28}
+legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: ${LEGAL_REP_BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE:42}
+legalRepresentativeHearingRequirements.dueInDays: ${LEGAL_REP_HEARING_REQUIREMENTS_DUE_IN_DAYS:5}
+legalRepresentativeReview.dueInDays: ${LEGAL_REP_REVIEW_DUE_IN_DAYS:5}
+requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:14}
+requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
+appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
+paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
+paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -114,6 +114,7 @@ core_case_data_api_permissions_revoke_path: "/caseworkers/{idamIdOfUserWhoGrants
 
 core_case_data_api_supplementary_data_path: "/cases/{caseId}/supplementary-data"
 hmcts_service_id: "BFA1"
+role_on_case: "Appellant"
 
 core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
 core_case_data_api_assignments_path: "/case-users"
@@ -277,6 +278,8 @@ security:
       - "markAppealPaid"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "createFlag"
+      - "updateS94bStatus"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -307,6 +310,7 @@ security:
       - "markPaymentRequestSent"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "createFlag"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -373,6 +377,7 @@ security:
       - "markAddendumEvidenceAsReviewed"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "createFlag"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
@@ -386,6 +391,7 @@ security:
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
 document_management.url: ${DM_URL:http://127.0.0.1:4506}
+case_document_am.url: ${CASE_DOCUMENT_AM_URL:http://127.0.0.1:4455}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
