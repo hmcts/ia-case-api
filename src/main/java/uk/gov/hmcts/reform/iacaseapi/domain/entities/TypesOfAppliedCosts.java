@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TypesOfAppliedCosts {
     UNREASONABLE_COSTS("Unreasonable costs"),
-    WASTED_COSTS("Wasted costs");
+    WASTED_COSTS("Wasted costs"),
+    TRIBUNAL_COSTS("Tribunal costs");
 
     @JsonValue
     private final String value;
