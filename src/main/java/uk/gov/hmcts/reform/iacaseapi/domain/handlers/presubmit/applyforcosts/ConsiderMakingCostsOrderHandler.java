@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,8 +36,7 @@ public class ConsiderMakingCostsOrderHandler implements PreSubmitCallbackHandler
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.CONSIDER_MAKING_COSTS_ORDER
-            && isLegalRepJourney(callback.getCaseDetails().getCaseData());
+            && callback.getEvent() == Event.CONSIDER_MAKING_COSTS_ORDER;
     }
 
     @Override
