@@ -11,9 +11,12 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -25,8 +28,12 @@ class ReviewHearingRequirementsConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
 
     private ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
+
+    private long caseId = 1234;
 
     @BeforeEach
     public void setUp() {
@@ -34,10 +41,15 @@ class ReviewHearingRequirementsConfirmationTest {
             new ReviewHearingRequirementsConfirmation();
     }
 
-    @Test
-    void should_return_confirmation() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS", "UPDATE_HEARING_ADJUSTMENTS"
+    })
+    void should_return_confirmation_when_review_hearing_requirements(Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(callback.getEvent()).thenReturn(event);
 
         PostSubmitCallbackResponse callbackResponse =
             reviewHearingRequirementsConfirmation.handle(callback);
@@ -49,6 +61,18 @@ class ReviewHearingRequirementsConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationHeader().get())
             .contains("You've recorded the agreed hearing adjustments");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -72,6 +96,18 @@ class ReviewHearingRequirementsConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationHeader().get())
             .contains("You've recorded the agreed hearing adjustments");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .doesNotContain("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .doesNotContain("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .doesNotContain("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
