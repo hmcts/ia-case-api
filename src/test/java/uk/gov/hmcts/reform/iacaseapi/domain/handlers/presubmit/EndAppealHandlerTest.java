@@ -151,6 +151,20 @@ class EndAppealHandlerTest {
     }
 
     @Test
+    void should_throw_exception_if_previous_case_state_is_ended() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
+        when(caseDetails.getState()).thenReturn(State.ENDED);
+        when(previousCaseDetails.getState()).thenReturn(State.ENDED);
+
+        assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Appeal has already been ended!")
+                .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

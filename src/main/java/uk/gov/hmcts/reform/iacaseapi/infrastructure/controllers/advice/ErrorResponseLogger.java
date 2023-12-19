@@ -17,10 +17,11 @@ public class ErrorResponseLogger {
         if (ex instanceof RestClientResponseException) {
 
             RestClientResponseException cause = (RestClientResponseException) ex;
+            String responseBody = cause.getResponseBodyAsString();
 
             log.error("Error returned with status: {}. \nWith response body: {}",
                 cause.getRawStatusCode(),
-                cause.getResponseBodyAsString());
+                responseBody.contains("{\"data\":") ? "" : responseBody);
         }
 
     }
