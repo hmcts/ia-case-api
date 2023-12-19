@@ -133,6 +133,7 @@ public enum Event {
     RESPOND_TO_COSTS("respondToCosts"),
     ADD_EVIDENCE_FOR_COSTS("addEvidenceForCosts"),
     DECIDE_COSTS_APPLICATION("decideCostsApplication"),
+    CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -1828,9 +1828,6 @@ public enum AsylumCaseFieldDefinition {
     IS_APPLIED_FOR_COSTS(
             "isAppliedForCosts", new TypeReference<String>(){}),
 
-    RESPONDENT_TO_COSTS_ORDER(
-            "respondentToCostsOrder", new TypeReference<String>(){}),
-
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
 
@@ -1903,6 +1900,17 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_COSTS_ORDER(
         "uploadCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
 
+    JUDGE_APPLIED_COSTS_TYPES(
+        "judgeAppliedCostsTypes", new TypeReference<DynamicList>(){}),
+
+    RESPONDENT_TO_COSTS_ORDER(
+        "respondentToCostsOrder", new TypeReference<String>(){}),
+
+    TRIBUNAL_CONSIDERING_REASON(
+    "tribunalConsideringReason", new TypeReference<String>(){}),
+
+    JUDGE_EVIDENCE_FOR_COSTS_ORDER(
+    "judgeEvidenceForCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
     ;
 
     private final String value;

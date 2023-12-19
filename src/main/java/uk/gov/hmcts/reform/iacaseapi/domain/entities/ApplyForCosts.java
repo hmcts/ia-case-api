@@ -23,7 +23,6 @@ public class ApplyForCosts {
     private List<IdValue<Document>> scheduleOfCostsDocuments;
     private YesOrNo applyForCostsHearingType;
     private String applyForCostsHearingTypeExplanation;
-    private String applyForCostsDecision;
     private String applyForCostsApplicantType;
     private String applyForCostsCreationDate;
     private String respondentToCostsOrder;
@@ -44,13 +43,46 @@ public class ApplyForCosts {
     private String loggedUserRole;
 
     //Judge decision fields
+    private String applyForCostsDecision;
     private String costsDecisionType;
     private String costsOralHearingDate; // only if costsDecisionType is "with an oral hearing"
     private List<IdValue<Document>> uploadCostsOrder;
     private String dateOfDecision;
 
+    //Judge consideration fields
+    private String tribunalConsideringReason;
+    private List<IdValue<Document>> judgeEvidenceForCostsOrder;
+
     public ApplyForCosts() {
         // noop -- for deserializer
+    }
+
+    public ApplyForCosts(
+        String applyForCostsDecision,
+        String appliedCostsType,
+        String applyForCostsApplicantType,
+        String tribunalConsideringReason,
+        List<IdValue<Document>> judgeEvidenceForCostsOrder,
+        String applyForCostsCreationDate,
+        String respondentToCostsOrder,
+        String applyForCostsRespondentRole
+    ) {
+        requireNonNull(applyForCostsDecision);
+        requireNonNull(appliedCostsType);
+        requireNonNull(applyForCostsApplicantType);
+        requireNonNull(tribunalConsideringReason);
+        requireNonNull(applyForCostsCreationDate);
+        requireNonNull(respondentToCostsOrder);
+        requireNonNull(applyForCostsRespondentRole);
+
+        this.applyForCostsDecision = applyForCostsDecision;
+        this.appliedCostsType = appliedCostsType;
+        this.applyForCostsApplicantType = applyForCostsApplicantType;
+        this.tribunalConsideringReason = tribunalConsideringReason;
+        this.judgeEvidenceForCostsOrder = judgeEvidenceForCostsOrder;
+        this.applyForCostsCreationDate = applyForCostsCreationDate;
+        this.respondentToCostsOrder = respondentToCostsOrder;
+        this.applyForCostsRespondentRole = applyForCostsRespondentRole;
     }
 
     public ApplyForCosts(
