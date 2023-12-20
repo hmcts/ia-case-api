@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -19,9 +21,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
+@RequiredArgsConstructor
 public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final LocationRefDataService locationRefDataService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -60,6 +68,11 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
             return asylumCasePreSubmitCallbackResponse;
+        }
+
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, YES);
+            asylumCase.write(HEARING_LOCATION, locationRefDataService.getHearingLocationsDynamicList());
         }
 
         decorateWitnessAndInterpreterDetails(asylumCase);
