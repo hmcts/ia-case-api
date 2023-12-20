@@ -117,18 +117,27 @@ class AsylumSupplementaryDataFixingHandlerTest {
     }
 
     @Test
-    void should_handle_if_not_citizen_starts_case() {
+    void should_not_handle_if_not_citizen_starts_case() {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
         when(callback.getEvent()).thenReturn(START_APPEAL);
 
-        assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
+        assertFalse(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
     }
 
     @Test
-    void should_handle_if_citizen_triggers_events_other_than_start_appeal() {
+    void should_not_handle_if_citizen_triggers_events_other_than_start_appeal() {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getRoles()).thenReturn(List.of("citizen"));
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
+
+        assertFalse(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
+    }
+
+    @Test
+    void should_handle_if_not_citizen_triggers_events_other_than_start_appeal() {
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
         when(callback.getEvent()).thenReturn(EDIT_APPEAL);
 
         assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
