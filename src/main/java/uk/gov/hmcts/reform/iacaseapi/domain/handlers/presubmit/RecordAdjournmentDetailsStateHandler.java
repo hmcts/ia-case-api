@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -37,7 +36,7 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == RECORD_ADJOURNMENT_DETAILS;
+            && callback.getEvent() == RECORD_ADJOURNMENT_DETAILS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -53,21 +52,23 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
 
         final State currentState = callback.getCaseDetails().getState();
 
-        HearingAdjournmentDay  hearingAdjournmentDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
-                .orElseThrow(() -> new IllegalStateException("Hearing adjournment day is not present"));
+        HearingAdjournmentDay hearingAdjournmentDay = asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+            .orElseThrow(() -> new IllegalStateException("Hearing adjournment day is not present"));
 
         boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
-                .map(relist -> YES == relist)
-                .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+            .map(relist -> YES == relist)
+            .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
 
+        if (!relistCaseImmediately) {
+            String currentHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
+                .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
+            asylumCase.write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, currentState.toString());
+            asylumCase.write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, currentHearingDate);
+        }
         if (hearingAdjournmentDay == BEFORE_HEARING_DATE) {
             callbackResponse.setData(iaHearingsApiService.aboutToSubmit(callback));
         }
 
-        if (hearingAdjournmentDay == ON_HEARING_DATE || !relistCaseImmediately) {
-            return new PreSubmitCallbackResponse<>(asylumCase, State.ADJOURNED);
-        } else {
-            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
-        }
+        return new PreSubmitCallbackResponse<>(asylumCase, relistCaseImmediately ? currentState : State.ADJOURNED);
     }
 }
