@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.WitnessesService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 @Slf4j
 @Component
@@ -99,7 +99,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         // append witness party ID if missing
-        WitnessesService.appendWitnessPartyId(asylumCase);
+        PartyIdService.appendWitnessPartyId(asylumCase);
 
         AsylumCase oldAsylumCase = callback.getCaseDetailsBefore().orElse(callback.getCaseDetails()).getCaseData();
 
