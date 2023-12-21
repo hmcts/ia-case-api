@@ -29,11 +29,8 @@ class UpdateInterpreterBookingStatusConfirmationTest {
 
     private static final long caseId = 12345;
     private static final String confirmationText = "#### What happens next\n\n"
-        + "You now need to update the hearing in the "
-        + "[Hearings tab](/case/IA/Asylum/" + caseId + "#Hearing%20and%20appointment)"
-        + " to ensure the update is displayed in List Assist."
-        + "\n\nIf an interpreter status has been moved to booked, or has been cancelled,"
-        + " ensure that the interpreter details are up to date before updating the hearing.";
+        + "The hearing has been updated with the interpreter booking status. This information is now visible in List Assist.<br><br>"
+        + "Ensure that the [interpreter details](/case/IA/Asylum/" + caseId + "/trigger/updateInterpreterDetails)";
 
     @Test
     void should_return_confirmation() {

@@ -23,16 +23,16 @@ public class UpdateInterpreterDetailsConfirmation implements PostSubmitCallbackH
 
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
 
-        String hearingsTabUrl = "/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#Hearing%20and%20appointment";
+        String updateInterpreterStatusUrl =
+                "/case/IA/Asylum/"
+                        + callback.getCaseDetails().getId()
+                        + "/trigger/updateInterpreterBookingStatus";
 
         postSubmitResponse.setConfirmationHeader("# Interpreter details have been updated");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-                + "You now need to update the hearing in the "
-                + "[Hearings tab](" + hearingsTabUrl + ")"
-                + " to ensure the new interpreter information is displayed in List Assist."
-                + "\n\nIf updates need to be made to the interpreter booking status this should be completed"
-                + " before updating the hearing."
+                    + "The hearing has been updated with the interpreter details. This information is now visible in List Assist.<br><br>"
+                    + "Ensure that the [interpreter booking status](" + updateInterpreterStatusUrl + ") is up to date."
         );
 
         return postSubmitResponse;
