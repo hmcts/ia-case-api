@@ -1,0 +1,135 @@
+{
+  "description": "RIA-7780 Decide an application (change hearing type) failure message",
+  "launchDarklyKey": "wa-R2-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 3451,
+      "eventId": "decideAnApplication",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "manualCanHearingRequired": "Yes",
+          "appealType": "revocationOfProtection",
+          "appealGroundsRevocation": {
+            "values": [
+              "revocationRefugeeConvention",
+              "revocationHumanitarianProtection"
+            ]
+          },
+          "makeAnApplicationDecision": "Granted",
+          "makeAnApplicationDecisionReason": "A reason for the decision",
+          "makeAnApplicationsList": {
+            "value": {
+              "code": "1",
+              "label": "Legal representative : Application 1"
+            },
+            "list_items": [
+              {
+                "code": "1",
+                "label": "Legal representative : Application 1"
+              }
+            ]
+          },
+          "makeAnApplications": [
+            {
+              "id": "1",
+              "value": {
+                "date": "2023-12-12",
+                "type": "Change hearing type",
+                "state": "listing",
+                "details": "A reason to change hearing type",
+                "decision": "Pending",
+                "evidence": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document_url": "http://document-store/AAA",
+                      "document_filename": "Annexure-E.pdf",
+                      "document_binary_url": "http://document-store/AAA/binary"
+                    }
+                  }
+                ],
+                "applicant": "Legal representative",
+                "applicantRole": "caseworker-ia-legalrep-solicitor"
+              }
+            }
+          ],
+          "hasApplicationsToDecide": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["Could not delete some hearing request(s)"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "revocationOfProtection",
+        "appealGroundsRevocation": {
+          "values": [
+            "revocationRefugeeConvention",
+            "revocationHumanitarianProtection"
+          ]
+        },
+        "makeAnApplications": [
+          {
+            "id": "1",
+            "value": {
+              "date": "2023-12-12",
+              "type": "Change hearing type",
+              "state": "listing",
+              "details": "A reason to change hearing type",
+              "decision": "Granted",
+              "evidence": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document_url": "http://document-store/AAA",
+                    "document_filename": "Annexure-E.pdf",
+                    "document_binary_url": "http://document-store/AAA/binary"
+                  }
+                }
+              ],
+              "applicant": "Legal representative",
+              "decisionDate": "{$TODAY}",
+              "applicantRole": "caseworker-ia-legalrep-solicitor",
+              "decisionMaker": "Tribunal Caseworker",
+              "decisionReason": "A reason for the decision"
+            }
+          }
+        ],
+        "lastModifiedApplication": {
+          "type": "Change hearing type",
+          "details": "A reason to change hearing type",
+          "evidence": [
+            {
+              "id": "1",
+              "value": {
+                "document_url": "http://document-store/AAA",
+                "document_filename": "Annexure-E.pdf",
+                "document_binary_url": "http://document-store/AAA/binary"
+              }
+            }
+          ],
+          "applicant": "Legal representative",
+          "date": "2023-12-12",
+          "decision": "Granted",
+          "state": "listing",
+          "applicantRole": "caseworker-ia-legalrep-solicitor"
+        },
+        "hasApplicationsToDecide": "No",
+        "decideAnApplicationId": "1",
+        "makeAnApplicationsList": null,
+        "makeAnApplicationFields": null,
+        "makeAnApplicationDecision": null,
+        "makeAnApplicationDecisionReason": null,
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
+
