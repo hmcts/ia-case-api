@@ -9,8 +9,11 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -21,6 +24,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +62,8 @@ class RecordAdjournmentDetailsStateHandlerTest {
     private IaHearingsApiService iaHearingsApiService;
     private RecordAdjournmentDetailsStateHandler recordAdjournmentDetailsStateHandler;
 
+    private final String listCaseHearingDate = "4023-12-28T09:47:22.000";
+
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -70,7 +76,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
     }
 
     @Test
-    void should_set_appeal_as_adjourned_on_hearing_date_and_relist() {
+    void should_set_appeal_as_listing_on_hearing_date_and_relist() {
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(ON_HEARING_DATE));
@@ -81,7 +87,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
-        assertThat(response.getState()).isEqualTo(ADJOURNED);
+        assertThat(response.getState()).isEqualTo(LISTING);
     }
 
     @Test
@@ -91,18 +97,27 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .thenReturn(Optional.of(ON_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(NO));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of(listCaseHearingDate));
 
         PreSubmitCallbackResponse<AsylumCase> response = recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
         assertThat(response.getState()).isEqualTo(ADJOURNED);
+        verify(asylumCase, times(1))
+            .write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, LISTING.toString());
+        verify(asylumCase, times(1))
+            .write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, listCaseHearingDate);
+
     }
 
     @Test
     void should_set_appeal_as_adjourned_before_hearing_date_and_not_relist() {
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of(listCaseHearingDate));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(NO));
 
@@ -111,6 +126,10 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
         assertNotNull(response);
         assertThat(response.getState()).isEqualTo(ADJOURNED);
+        verify(asylumCase, times(1))
+            .write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, LISTING.toString());
+        verify(asylumCase, times(1))
+            .write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, listCaseHearingDate);
     }
 
     @Test
@@ -132,7 +151,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
     void should_throw_if_hearing_adjustment_day_is_not_present() {
 
         assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
-                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Hearing adjournment day is not present");
     }
@@ -143,7 +162,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .thenReturn(Optional.of(ON_HEARING_DATE));
 
         assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
-                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Response to relist case immediately is not present");
     }
@@ -152,7 +171,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
-                .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
+            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -190,12 +209,12 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
-                .handle(null, callback, callbackResponse))
+            .handle(null, callback, callbackResponse))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
-                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -208,6 +227,11 @@ class RecordAdjournmentDetailsStateHandlerTest {
         int callToHearingsApi) {
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(adjournmentDay));
+        if (relistCaseImmediately.equals(NO)) {
+            when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+                .thenReturn(Optional.of(listCaseHearingDate));
+        }
+
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(relistCaseImmediately));
 

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
+import java.util.Optional;
 
 public enum State {
 
@@ -51,7 +53,13 @@ public enum State {
         return id;
     }
 
-    private static final Map<String, State> lookup = new HashMap<>();
+    public static Optional<State> getStateFrom(String s) {
+        return Arrays.stream(State.values())
+            .filter(v -> v.id.equals(s))
+            .findFirst();
+    }
+  
+      private static final Map<String, State> lookup = new HashMap<>();
 
     static {
         for (State state : State.values()) {
@@ -61,6 +69,7 @@ public enum State {
     public static State get(String name) {
         return lookup.get(name);
     }
+  
 }
 
 
