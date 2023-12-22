@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
-public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
+class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
     WithServiceAuthStub, WithTimedEventServiceStub, WithNotificationsApiStub {
 
     @MockBean
@@ -29,7 +29,7 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
     private long caseId = 54321;
 
     @BeforeEach
-    public void setupTimedEventServiceStub() {
+    void setupTimedEventServiceStub() {
         when(requestTokenProvider.getAccessToken()).thenReturn("Bearer token");
     }
 
