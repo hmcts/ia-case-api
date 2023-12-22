@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
+class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
 
     @MockBean
     UserDetailsProvider userDetailsProvider;
