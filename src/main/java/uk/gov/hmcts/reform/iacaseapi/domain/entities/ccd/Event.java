@@ -129,6 +129,7 @@ public enum Event {
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     TRIGGER_CMR_LISTED("triggerCmrListed"),
+    TRIGGER_REVIEW_INTERPRETER_BOOKING_TASK("triggerReviewInterpreterBookingTask"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

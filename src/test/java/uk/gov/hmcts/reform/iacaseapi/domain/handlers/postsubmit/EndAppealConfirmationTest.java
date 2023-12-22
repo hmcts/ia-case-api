@@ -6,30 +6,49 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRIGGER_REVIEW_INTERPRETER_BOOKING_TASK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CoreCaseDataService;
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class EndAppealConfirmationTest {
+
+    private static final String CASE_REFERENCE = "1111";
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private CoreCaseDataService coreCaseDataService;
+    @Mock private StartEventResponse startEventResponse;
 
-    private EndAppealConfirmation endAppealConfirmation = new EndAppealConfirmation();
+    private EndAppealConfirmation endAppealConfirmation;
+
+    @BeforeEach
+    public void setUp() {
+        endAppealConfirmation = new EndAppealConfirmation(coreCaseDataService);
+    }
 
     @Test
     void should_return_confirmation() {
@@ -147,5 +166,32 @@ class EndAppealConfirmationTest {
         assertThatThrownBy(() -> endAppealConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_create_review_interpreter_booking_task() {
+        when(caseDetails.getId()).thenReturn(Long.parseLong(CASE_REFERENCE));
+
+        when(coreCaseDataService.startCaseEvent(TRIGGER_REVIEW_INTERPRETER_BOOKING_TASK, CASE_REFERENCE))
+            .thenReturn(startEventResponse);
+        when(coreCaseDataService.getCaseFromStartedEvent(startEventResponse)).thenReturn(asylumCase);
+
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
+            .thenReturn(Optional.of(""));
+        when(asylumCase.read(AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED))
+            .thenReturn(Optional.of("Yes"));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.SHOULD_TRIGGER_REVIEW_INTERPRETER_TASK, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+
+        endAppealConfirmation.handle(callback);
+
+        verify(coreCaseDataService).triggerSubmitEvent(
+            TRIGGER_REVIEW_INTERPRETER_BOOKING_TASK, CASE_REFERENCE, startEventResponse, asylumCase);
+
     }
 }

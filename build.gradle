@@ -370,6 +370,9 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.1-RELEASE'
 
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
+
+
     compileOnly 'org.projectlombok:lombok'
 
     annotationProcessor 'org.projectlombok:lombok'

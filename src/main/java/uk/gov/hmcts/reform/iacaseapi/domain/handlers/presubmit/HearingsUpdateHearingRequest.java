@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SHOULD_TRIGGER_REVIEW_INTERPRETER_TASK;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -71,6 +72,7 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
         }
 
         asylumCase.clear(MANUAL_UPDATE_HEARING_REQUIRED);
+        asylumCase.clear(SHOULD_TRIGGER_REVIEW_INTERPRETER_TASK);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

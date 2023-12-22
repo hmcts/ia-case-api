@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATED_DECISION_MAKER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATE_APPEAL_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATE_APPEAL_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SHOULD_TRIGGER_REVIEW_INTERPRETER_TASK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_END_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
 
@@ -142,6 +143,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
         verify(asylumCase).clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
+        verify(asylumCase).clear(SHOULD_TRIGGER_REVIEW_INTERPRETER_TASK);
     }
 
     @Test

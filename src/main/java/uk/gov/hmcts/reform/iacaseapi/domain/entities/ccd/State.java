@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
+import java.util.HashMap;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -47,6 +49,17 @@ public enum State {
     @Override
     public String toString() {
         return id;
+    }
+
+    private static final Map<String, State> lookup = new HashMap<>();
+
+    static {
+        for (State state : State.values()) {
+            lookup.put(state.id, state);
+        }
+    }
+    public static State get(String name) {
+        return lookup.get(name);
     }
 }
 

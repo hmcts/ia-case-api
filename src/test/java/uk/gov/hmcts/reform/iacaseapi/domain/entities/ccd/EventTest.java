@@ -127,10 +127,11 @@ class EventTest {
         assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
         assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
+        assertEquals("triggerReviewInterpreterBookingTask", Event.TRIGGER_REVIEW_INTERPRETER_BOOKING_TASK.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(125, Event.values().length);
+        assertEquals(126, Event.values().length);
     }
 }

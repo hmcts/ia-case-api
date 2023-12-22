@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @Component
 public class IdamService {
@@ -47,6 +48,10 @@ public class IdamService {
         idamAuthDetails.put("scope", systemUserScope);
 
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
+    }
+
+    public UserInfo getUserInfo() {
+        return idamApi.userInfo(getServiceUserToken());
     }
 
 }

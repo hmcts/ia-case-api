@@ -408,6 +408,7 @@ security:
       - "triggerCmrUpdated"
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
+      - "triggerReviewInterpreterBookingTask"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -465,3 +466,7 @@ timed-event-service:
 commonData:
   api:
     url: ${COMMON_DATA_API:http://localhost:8991}
+
+core_case_data:
+  api:
+    url: ${CCD_URL:http://127.0.0.1:4452}
