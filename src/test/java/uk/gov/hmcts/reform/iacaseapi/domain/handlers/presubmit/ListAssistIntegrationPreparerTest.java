@@ -25,13 +25,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ListAssistIntegrationPreparerTest {
     @Mock
-    private ListAssistIntegratedLocationsService listAssistIntegratedLocationsService;
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -43,7 +44,7 @@ public class ListAssistIntegrationPreparerTest {
 
     @BeforeEach
     void setup() {
-        listAssistIntegrationPreparer = new ListAssistIntegrationPreparer(listAssistIntegratedLocationsService);
+        listAssistIntegrationPreparer = new ListAssistIntegrationPreparer(locationBasedFeatureToggler);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(LIST_ASSIST_INTEGRATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -51,7 +52,7 @@ public class ListAssistIntegrationPreparerTest {
 
     @Test
     void should_return_error_when_location_not_list_assist_enabled() {
-        when(listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase)).thenReturn(NO);
+        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(NO);
 
         PreSubmitCallbackResponse<AsylumCase> response = listAssistIntegrationPreparer
             .handle(ABOUT_TO_START, callback);
@@ -63,7 +64,7 @@ public class ListAssistIntegrationPreparerTest {
 
     @Test
     void should_not_return_error_when_location_is_list_assist_enabled() {
-        when(listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase)).thenReturn(YES);
+        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(YES);
 
         PreSubmitCallbackResponse<AsylumCase> response = listAssistIntegrationPreparer
             .handle(ABOUT_TO_START, callback);

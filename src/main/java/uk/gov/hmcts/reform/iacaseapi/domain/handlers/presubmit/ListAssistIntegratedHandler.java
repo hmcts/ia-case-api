@@ -12,15 +12,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Slf4j
 @Component
 public class ListAssistIntegratedHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private ListAssistIntegratedLocationsService listAssistIntegratedLocationsService;
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
-    public ListAssistIntegratedHandler(ListAssistIntegratedLocationsService listAssistIntegratedLocationsService) {
-        this.listAssistIntegratedLocationsService = listAssistIntegratedLocationsService;
+    public ListAssistIntegratedHandler(LocationBasedFeatureToggler locationBasedFeatureToggler) {
+        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ListAssistIntegratedHandler implements PreSubmitCallbackHandler<Asy
                 .getCaseData();
 
         asylumCase.write(IS_INTEGRATED,
-            listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase));
+            locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -11,15 +11,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Slf4j
 @Component
 public class ListAssistIntegrationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private ListAssistIntegratedLocationsService listAssistIntegratedLocationsService;
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
-    public ListAssistIntegrationPreparer(ListAssistIntegratedLocationsService listAssistIntegratedLocationsService) {
-        this.listAssistIntegratedLocationsService = listAssistIntegratedLocationsService;
+    public ListAssistIntegrationPreparer(LocationBasedFeatureToggler locationBasedFeatureToggler) {
+        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
     }
 
     public boolean canHandle(
@@ -48,7 +49,7 @@ public class ListAssistIntegrationPreparer implements PreSubmitCallbackHandler<A
 
         PreSubmitCallbackResponse<AsylumCase> response =  new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase) == NO) {
+        if (locationBasedFeatureToggler.isListAssistEnabled(asylumCase) == NO) {
             response.addError("List assist integration option is not available for selected hearing centre");
         }
 
