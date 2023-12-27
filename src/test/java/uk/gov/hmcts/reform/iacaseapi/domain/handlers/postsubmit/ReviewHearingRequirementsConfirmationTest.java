@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +33,10 @@ class ReviewHearingRequirementsConfirmationTest {
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     private ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
 
@@ -38,7 +45,7 @@ class ReviewHearingRequirementsConfirmationTest {
     @BeforeEach
     public void setUp() {
         reviewHearingRequirementsConfirmation =
-            new ReviewHearingRequirementsConfirmation();
+            new ReviewHearingRequirementsConfirmation(locationBasedFeatureToggler);
     }
 
     @ParameterizedTest
@@ -85,6 +92,9 @@ class ReviewHearingRequirementsConfirmationTest {
     void should_return_confirmation_when_list_case_without_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
 
         PostSubmitCallbackResponse callbackResponse =
             reviewHearingRequirementsConfirmation.handle(callback);
@@ -119,22 +129,32 @@ class ReviewHearingRequirementsConfirmationTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
         assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void it_can_handle_callback(YesOrNo isAutoHearingRequestEnabled) {
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
+                .thenReturn(isAutoHearingRequestEnabled);
 
             boolean canHandle = reviewHearingRequirementsConfirmation.canHandle(callback);
 
-            if (event == Event.REVIEW_HEARING_REQUIREMENTS || event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
-                || event == Event.UPDATE_HEARING_ADJUSTMENTS) {
+            if (event == Event.REVIEW_HEARING_REQUIREMENTS
+                || event == Event.UPDATE_HEARING_ADJUSTMENTS
+                || (event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
+                    && !isAutoHearingRequestEnabled.equals(YES))) {
 
                 assertTrue(canHandle);
             } else {

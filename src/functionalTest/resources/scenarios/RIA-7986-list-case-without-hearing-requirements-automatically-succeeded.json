@@ -1,0 +1,31 @@
+{
+  "description": "RIA-7986 List case without hearing requirements automatically (Succeeded request)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7986,
+      "eventId": "listCaseWithoutHearingRequirements",
+      "state": "listed",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "listCaseHearingLength": "90",
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "manualCreHearingRequired": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Hearing listed",
+      "body": "#### What happens next\n\nThe hearing request has been created and is visible on the [Hearings tab](/cases/case-details/7986/hearings)"
+    }
+  }
+}

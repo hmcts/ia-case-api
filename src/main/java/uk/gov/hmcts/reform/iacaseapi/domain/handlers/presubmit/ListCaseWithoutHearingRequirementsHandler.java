@@ -5,7 +5,9 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingRecordingDocument;
@@ -17,21 +19,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 
 @Component
+@Slf4j
 public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final FeatureToggler featureToggler;
+    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private IaHearingsApiService iaHearingsApiService;
 
     public ListCaseWithoutHearingRequirementsHandler(
         PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender,
-        FeatureToggler featureToggler
+        FeatureToggler featureToggler,
+        LocationBasedFeatureToggler locationBasedFeatureToggler,
+        IaHearingsApiService iaHearingsApiService
     ) {
         this.previousRequirementsAndRequestsAppender = previousRequirementsAndRequestsAppender;
         this.featureToggler = featureToggler;
+        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
+        this.iaHearingsApiService = iaHearingsApiService;
     }
 
     public boolean canHandle(
@@ -91,7 +103,23 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
             asylumCase.write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        if (Objects.equals(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase), YesOrNo.YES)) {
+            try {
+                AsylumCase updatedAsylumCase = iaHearingsApiService.aboutToSubmit(callback);
+                return new PreSubmitCallbackResponse<>(updatedAsylumCase);
+
+            } catch (AsylumCaseServiceResponseException e) {
+                log.error("Failure in call to IA-HEARINGS-API during event {} with error: {}",
+                    callback.getEvent().toString(),
+                    e.getMessage());
+
+                asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.YES);
+            }
+        }
+
+        return response;
     }
 }
 
