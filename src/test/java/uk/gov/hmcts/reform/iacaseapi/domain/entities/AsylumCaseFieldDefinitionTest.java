@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
 
 import java.util.Set;
@@ -22,7 +23,8 @@ class AsylumCaseFieldDefinitionTest {
                 ATTENDING_TCW,
                 CASE_LEVEL_FLAGS,
                 MANUAL_CANCEL_HEARINGS_REQUIRED,
-                MANUAL_UPDATE_HEARING_REQUIRED
+                MANUAL_UPDATE_HEARING_REQUIRED,
+                MANUAL_CREATE_HEARING_REQUIRED
             ).contains(val))
             .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
                 .isEqualTo(v.value()));
