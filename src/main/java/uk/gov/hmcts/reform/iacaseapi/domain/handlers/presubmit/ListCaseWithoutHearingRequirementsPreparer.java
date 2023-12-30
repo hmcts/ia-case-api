@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -11,9 +13,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
+@RequiredArgsConstructor
 public class ListCaseWithoutHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final LocationRefDataService locationRefDataService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -34,10 +42,12 @@ public class ListCaseWithoutHearingRequirementsPreparer implements PreSubmitCall
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, YES);
+            asylumCase.write(HEARING_LOCATION, locationRefDataService.getHearingLocationsDynamicList());
+        }
 
         setDefaultHearingLengthForAppealType(asylumCase);
 
