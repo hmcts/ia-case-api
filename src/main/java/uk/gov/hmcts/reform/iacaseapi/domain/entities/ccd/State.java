@@ -59,13 +59,14 @@ public enum State {
             .findFirst();
     }
   
-      private static final Map<String, State> lookup = new HashMap<>();
+    private static final Map<String, State> lookup = new HashMap<>();
 
     static {
         for (State state : State.values()) {
             lookup.put(state.id, state);
         }
     }
+
     public static State get(String name) {
         return lookup.get(name);
     }
