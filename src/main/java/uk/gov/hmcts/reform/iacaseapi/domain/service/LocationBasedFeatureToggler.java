@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -15,26 +15,35 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Slf4j
 @Service
-public class ListAssistIntegratedLocationsService {
+public class LocationBasedFeatureToggler {
 
     private static final String LIST_ASSIST_INTEGRATED_LOCATIONS = "list-assist-integrated-locations";
+    private static final String AUTO_HEARING_REQUEST_LOCATIONS_LIST = "auto-hearing-request-locations-list";
     private static final LDValue DEFAULT_VALUE = LDValue.parse("{\"epimsIds\":[]}");
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private FeatureToggler featureToggler;
 
-    public ListAssistIntegratedLocationsService(FeatureToggler featureToggler) {
+    public LocationBasedFeatureToggler(FeatureToggler featureToggler) {
         this.featureToggler = featureToggler;
     }
 
 
     public YesOrNo isListAssistEnabled(AsylumCase asylumCase) {
 
-        String flagValueJsonString = featureToggler.getJsonValue(LIST_ASSIST_INTEGRATED_LOCATIONS, DEFAULT_VALUE)
+        return isTargetLocation(asylumCase, LIST_ASSIST_INTEGRATED_LOCATIONS);
+    }
+
+    public YesOrNo isAutoHearingRequestEnabled(AsylumCase asylumCase) {
+
+        return isTargetLocation(asylumCase, AUTO_HEARING_REQUEST_LOCATIONS_LIST);
+    }
+
+    private YesOrNo isTargetLocation(AsylumCase asylumCase, String featureKey) {
+        String flagValueJsonString = featureToggler.getJsonValue(featureKey, DEFAULT_VALUE)
             .toJsonString();
 
         Set<Long> epimsIds = extractEpimsIds(flagValueJsonString);
@@ -53,7 +62,7 @@ public class ListAssistIntegratedLocationsService {
             epimsIds = OBJECT_MAPPER.readValue(flagValueJsonString, ListAssistIntegratedLocations.class)
                 .getLocations();
         } catch (JsonProcessingException e) {
-            log.error("Error parsing list-assist-integrated-locations LaunchDarkly flag value: {}",
+            log.error("Error parsing location EPIMS IDs from LaunchDarkly: {}",
                 flagValueJsonString);
         }
 

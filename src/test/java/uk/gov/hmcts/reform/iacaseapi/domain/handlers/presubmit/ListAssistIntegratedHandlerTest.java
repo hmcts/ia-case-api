@@ -26,13 +26,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ListAssistIntegratedHandlerTest {
     @Mock
-    private ListAssistIntegratedLocationsService listAssistIntegratedLocationsService;
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -44,7 +45,7 @@ public class ListAssistIntegratedHandlerTest {
 
     @BeforeEach
     void setup() {
-        listAssistIntegratedHandler = new ListAssistIntegratedHandler(listAssistIntegratedLocationsService);
+        listAssistIntegratedHandler = new ListAssistIntegratedHandler(locationBasedFeatureToggler);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
@@ -52,7 +53,7 @@ public class ListAssistIntegratedHandlerTest {
     @Test
     void should_set_isIntegrated_to_yes() {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase)).thenReturn(YES);
+        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(YES);
 
         listAssistIntegratedHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -62,7 +63,7 @@ public class ListAssistIntegratedHandlerTest {
     @Test
     void should_set_isIntegrated_to_no() {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(listAssistIntegratedLocationsService.isListAssistEnabled(asylumCase)).thenReturn(NO);
+        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(NO);
 
         listAssistIntegratedHandler.handle(ABOUT_TO_SUBMIT, callback);
 
