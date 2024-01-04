@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_BOOKING_STATUS_DESCRIPTION_LABEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SIGN_LANGUAGE;
@@ -74,6 +75,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingStatus.NOT_REQUESTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
@@ -92,6 +94,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Component
 public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -99,6 +102,12 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     public static String APPELLANT = "Appellant";
     public static String WITNESS = "Witness";
     private AsylumCase asylumCase;
+
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+
+    public UpdateInterpreterBookingStatusPreparer(LocationBasedFeatureToggler locationBasedFeatureToggler) {
+        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -118,11 +127,23 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
 
         this.asylumCase = callback.getCaseDetails().getCaseData();
 
+        populateInterpreterBookingStatusDescriptionLabel();
+
         populateOrClearAppellantSignAndSpokenInterpreterBookingFields();
 
         populateOrClearWitnessesSignAndSpokenInterpreterBookingFields();
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void populateInterpreterBookingStatusDescriptionLabel() {
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == NO) {
+            asylumCase.write(INTERPRETER_BOOKING_STATUS_DESCRIPTION_LABEL,
+                    "The booking status of interpreters can be managed here. After updating an interpreters status you must update the hearing via the Hearings tab. This information will then be visible in List Assist.");
+        } else {
+            asylumCase.write(INTERPRETER_BOOKING_STATUS_DESCRIPTION_LABEL,
+                    "The booking status of interpreters can be managed here. After updating an interpreters status the hearing will be automatically updated. This information will then be visible in List Assist.");
+        }
     }
 
     private void populateOrClearWitnessesSignAndSpokenInterpreterBookingFields() {
