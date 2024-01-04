@@ -8,11 +8,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_ADJOURNMENT_INFO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADJOURNMENT_DETAILS_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ANY_ADDITIONAL_ADJOURNMENT_INFO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_ADJOURNMENT_DETAIL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPEAL_SUITABLE_TO_FLOAT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_ADJOURNMENT_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESERVE_OR_EXCLUDE_JUDGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SHOULD_RESERVE_OR_EXCLUDE_JUDGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -25,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.swing.text.html.Option;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -118,6 +123,21 @@ public class RecordAdjournmentDetailsHandlerTest {
 
         verify(asylumCase).write(eq(PREVIOUS_ADJOURNMENT_DETAILS), previousDetailsCaptor.capture());
         assertEquals(1, previousDetailsCaptor.getValue().size());
+    }
+
+    @Test
+    void should_not_include_optional_stale_info() {
+
+        when(asylumCase.read(ANY_ADDITIONAL_ADJOURNMENT_INFO, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(SHOULD_RESERVE_OR_EXCLUDE_JUDGE, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        recordAdjournmentDetailsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).clear(ADDITIONAL_ADJOURNMENT_INFO);
+        verify(asylumCase).clear(RESERVE_OR_EXCLUDE_JUDGE);
+        verify(asylumCase).write(eq(CURRENT_ADJOURNMENT_DETAIL), currentDetailCaptor.capture());
+        assertEquals("", currentDetailCaptor.getValue().getAdditionalAdjournmentInfo());
+        assertEquals("", currentDetailCaptor.getValue().getReserveOrExcludeJudge());
     }
 
     @Test
