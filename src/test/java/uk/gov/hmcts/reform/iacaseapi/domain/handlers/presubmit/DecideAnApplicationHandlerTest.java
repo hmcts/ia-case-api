@@ -21,6 +21,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision.GRANTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision.REFUSED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PREPARE_FOR_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.SUBMIT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -28,11 +36,14 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -76,6 +87,13 @@ class DecideAnApplicationHandlerTest {
     @Mock private UserDetailsHelper userDetailsHelper;
     @Mock private FeatureToggler featureToggler;
     @Mock private IaHearingsApiService iaHearingsApiService;
+    private static final Set<State> STATES_FOR_HEARING_CANCELLATION = Set.of(
+        LISTING,
+        PREPARE_FOR_HEARING,
+        FINAL_BUNDLING,
+        PRE_HEARING,
+        DECISION
+    );
     private DynamicList makeAnApplicationsList;
     private List<IdValue<Document>> evidence;
     private MakeAnApplication makeAnApplication;
@@ -153,9 +171,30 @@ class DecideAnApplicationHandlerTest {
         verify(asylumCase, times(1)).clear(MAKE_AN_APPLICATION_DECISION_REASON);
     }
 
+    static Stream<Arguments> makeAnApplicationParameters() {
+        return Stream.of(
+            // decision and states qualifying to trigger hearing req deletion
+            Arguments.of(GRANTED, LISTING),
+            Arguments.of(GRANTED, PREPARE_FOR_HEARING),
+            Arguments.of(GRANTED, FINAL_BUNDLING),
+            Arguments.of(GRANTED, PRE_HEARING),
+            Arguments.of(GRANTED, DECISION),
+            // decision not qualifying to trigger hearing req deletion
+            Arguments.of(REFUSED, LISTING),
+            Arguments.of(REFUSED, PREPARE_FOR_HEARING),
+            Arguments.of(REFUSED, FINAL_BUNDLING),
+            Arguments.of(REFUSED, PRE_HEARING),
+            Arguments.of(REFUSED, DECISION),
+            // state not qualifying to trigger hearing req deletion
+            Arguments.of(GRANTED, ENDED),
+            // decision and state not qualifying to trigger hearing req deletion
+            Arguments.of(REFUSED, SUBMIT_HEARING_REQUIREMENTS)
+        );
+    }
+
     @ParameterizedTest
-    @EnumSource(value = MakeAnApplicationDecision.class, names = {"GRANTED", "REFUSED"})
-    void should_send_hearing_cancellation_request_when_appropriate(MakeAnApplicationDecision decision) {
+    @MethodSource("makeAnApplicationParameters")
+    void should_send_hearing_cancellation_request_when_appropriate(MakeAnApplicationDecision decision, State state) {
 
         makeAnApplication =
             new MakeAnApplication("Legal representative", "Change hearing type", "A reason to change hearing type",
@@ -178,6 +217,7 @@ class DecideAnApplicationHandlerTest {
         when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(updatedAsylumCase);
         when(updatedAsylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(caseDetails.getState()).thenReturn(state);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -185,7 +225,7 @@ class DecideAnApplicationHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        if (decision.equals(GRANTED)) {
+        if (decision.equals(GRANTED) & STATES_FOR_HEARING_CANCELLATION.contains(state)) {
             verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
         } else {
             verify(iaHearingsApiService, never()).aboutToSubmit(callback);

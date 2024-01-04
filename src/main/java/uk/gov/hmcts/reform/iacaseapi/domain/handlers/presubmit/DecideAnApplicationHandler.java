@@ -108,6 +108,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        State currentState = callback.getCaseDetails().getState();
+
         mayBeMakeAnApplications
             .orElse(Collections.emptyList())
             .stream()
@@ -115,7 +117,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .forEach(application -> {
                 MakeAnApplication makeAnApplication = application.getValue();
                 setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), decisionMakerRole);
-                if (isHearingDeletionNecessary(makeAnApplication)) {
+                if (isHearingDeletionNecessary(makeAnApplication, currentState)) {
                     delegateToIaHearingsApi(callback, response);
                 }
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
@@ -160,17 +162,16 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         }
     }
 
-    private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication) {
-        State makeAnApplicationState = State.getStateFrom(makeAnApplication.getState()).orElse(null);
+    private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication, State state) {
 
         return makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
                && makeAnApplication.getDecision().equals(GRANTED.toString())
-               && STATES_FOR_HEARING_CANCELLATION.contains(makeAnApplicationState);
+               && STATES_FOR_HEARING_CANCELLATION.contains(state);
     }
 
     private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {
         return asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
             .map(yesOrNo -> !yesOrNo.equals(YES))
-            .orElse(false);
+            .orElse(true);
     }
 }
