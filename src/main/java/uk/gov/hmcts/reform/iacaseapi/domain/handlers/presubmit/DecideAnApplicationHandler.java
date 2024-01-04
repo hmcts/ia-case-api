@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_APPLICATIONS_TO_DECIDE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DECISION;
@@ -108,6 +109,10 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        boolean isIntegrated = asylumCase.read(IS_INTEGRATED, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
         State currentState = callback.getCaseDetails().getState();
 
         mayBeMakeAnApplications
@@ -117,7 +122,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .forEach(application -> {
                 MakeAnApplication makeAnApplication = application.getValue();
                 setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), decisionMakerRole);
-                if (isHearingDeletionNecessary(makeAnApplication, currentState)) {
+                if (isIntegrated && isHearingDeletionNecessary(makeAnApplication, currentState)) {
                     delegateToIaHearingsApi(callback, response);
                 }
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
