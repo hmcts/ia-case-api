@@ -12,6 +12,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "manualCanHearingRequired": "Yes",
+          "isIntegrated": "Yes",
           "appealType": "revocationOfProtection",
           "appealGroundsRevocation": {
             "values": [

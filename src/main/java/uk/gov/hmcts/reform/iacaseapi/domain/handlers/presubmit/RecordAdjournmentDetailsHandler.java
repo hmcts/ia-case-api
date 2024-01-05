@@ -49,6 +49,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        addressStaleOptionalInformation(asylumCase);
         preserveAdjournmentDetailsHistory(asylumCase);
         buildCurrentAdjournmentDetail(asylumCase);
         setFloatSuitability(asylumCase);
@@ -118,6 +119,20 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
                 optionalIsAppealSuitableToFloat.isPresent() &&
                 optionalIsAppealSuitableToFloat.get().equals(YES)) {
             asylumCase.write(IS_APPEAL_SUITABLE_TO_FLOAT, NO);
+        }
+    }
+
+    private void addressStaleOptionalInformation(AsylumCase asylumCase) {
+        boolean anyAdditionalInfo = asylumCase.read(ANY_ADDITIONAL_ADJOURNMENT_INFO, YesOrNo.class)
+            .map(additionalInfo -> YES == additionalInfo).orElse(false);
+        if (!anyAdditionalInfo) {
+            asylumCase.clear(ADDITIONAL_ADJOURNMENT_INFO);
+        }
+
+        boolean reserveOrExcludeJudge = asylumCase.read(SHOULD_RESERVE_OR_EXCLUDE_JUDGE, YesOrNo.class)
+            .map(reserveOrExclude -> YES == reserveOrExclude).orElse(false);
+        if (!reserveOrExcludeJudge) {
+            asylumCase.clear(RESERVE_OR_EXCLUDE_JUDGE);
         }
     }
 
