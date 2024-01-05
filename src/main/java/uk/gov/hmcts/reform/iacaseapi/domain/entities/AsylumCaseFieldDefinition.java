@@ -2064,10 +2064,7 @@ public enum AsylumCaseFieldDefinition {
         "hearingReasonToUpdate", new TypeReference<DynamicList>(){}),
 
     IS_APPEAL_SUITABLE_TO_FLOAT(
-            "isAppealSuitableToFloat", new TypeReference<YesOrNo>(){}),
-
-    INTERPRETER_BOOKING_STATUS_DESCRIPTION_LABEL(
-            "interpreterBookingStatusDescriptionLabel", new TypeReference<String>(){});
+            "isAppealSuitableToFloat", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
