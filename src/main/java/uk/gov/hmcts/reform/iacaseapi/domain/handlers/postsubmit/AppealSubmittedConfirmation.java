@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @Slf4j
@@ -58,10 +57,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
-    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
-        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
@@ -96,10 +93,6 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
-
-        if (!HandlerUtils.isAipJourney(asylumCase)) {
-            sendPaymentCallback(callback);
-        }
 
         postSubmitResponse.setConfirmationHeader(
             submissionOutOfTime == NO ? DEFAULT_HEADER : ""
@@ -232,8 +225,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String payForAppeal = "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
-                                     + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+        String payForAppeal = "You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[Generate service request](/case/IA/Asylum/"
+                + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO
@@ -246,8 +239,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
-                              + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+        String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)" +
+                " and paying via the Service Request tab.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO
@@ -267,17 +260,5 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             return List.of(EA, HU, PA, EU).contains(appealType);
         }
         return false;
-    }
-
-    private void sendPaymentCallback(Callback<AsylumCase> callback) {
-
-        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
-            callback.getCaseDetails(),
-            callback.getCaseDetailsBefore(),
-            Event.SUBMIT_APPEAL
-        );
-        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
-        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
-
     }
 }
