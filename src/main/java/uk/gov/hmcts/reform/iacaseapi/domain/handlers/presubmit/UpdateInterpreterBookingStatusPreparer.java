@@ -100,7 +100,6 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     public static String WITNESS = "Witness";
     private AsylumCase asylumCase;
 
-
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
