@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -51,8 +50,6 @@ class AppealSubmittedConfirmationTest {
     private AsylumCase asylumCase;
     @Mock
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    @Mock
-    private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation;
 
@@ -62,7 +59,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(ccdSupplementaryUpdater);
     }
 
     @Test
@@ -297,7 +294,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/");
+                "You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[Generate service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -331,7 +328,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/");
+                    "You can do this by selecting [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest) and paying via the Service Request tab.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -366,7 +363,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
+                    "You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[Generate service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)"
             );
     }
 
@@ -399,7 +396,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
+                "You can do this by selecting [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest) and paying via the Service Request tab."
             );
     }
 
@@ -787,8 +784,6 @@ class AppealSubmittedConfirmationTest {
 
         PostSubmitCallbackResponse callbackResponse =
             appealSubmittedConfirmation.handle(callback);
-
-        verify(asylumCasePostFeePaymentService, times(1)).ccdSubmitted(any(Callback.class));
 
         assertNotNull(callbackResponse);
 
