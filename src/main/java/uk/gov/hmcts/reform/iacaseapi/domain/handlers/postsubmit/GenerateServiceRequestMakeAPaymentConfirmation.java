@@ -8,16 +8,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
 @Component
 public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
-    public GenerateServiceRequestMakeAPaymentConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService) {
-        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
-    }
+    public GenerateServiceRequestMakeAPaymentConfirmation() {}
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -37,12 +33,13 @@ public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmi
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
-            callback.getCaseDetails(),
-            callback.getCaseDetailsBefore(),
-            Event.GENERATE_SERVICE_REQUEST
+        postSubmitResponse.setConfirmationHeader("# You have generated a service request");
+        postSubmitResponse.setConfirmationBody(
+                "### Do this next\n\n"
+                        + "You need to go to the service request tab to pay for your appeal.\n\n"
+                        + "[Service Requests](cases/case-details/"
+                        + callback.getCaseDetails().getId() + "#Service%20Request)\n\n"
         );
-        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
 
         return postSubmitResponse;
     }
