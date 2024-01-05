@@ -13,7 +13,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
 
-    public GenerateServiceRequestMakeAPaymentConfirmation() {}
+    public GenerateServiceRequestMakeAPaymentConfirmation() {
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback

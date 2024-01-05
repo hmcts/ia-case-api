@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 import java.time.LocalDate;
 
@@ -54,7 +53,8 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         String dayOfServiceRequestReferenceRelease = "2024-01-05";
         if (LocalDate.parse(appealSubmissionDate).isBefore(LocalDate.parse(dayOfServiceRequestReferenceRelease))) {
             response.addError(
-                    "Event not usable on case as it was submitted before " + dayOfServiceRequestReferenceRelease +"."
+                    "Event not usable on case as it was submitted before "
+                            + dayOfServiceRequestReferenceRelease + "."
             );
             return response;
         }
