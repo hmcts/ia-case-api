@@ -28,8 +28,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.LocationRefD
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
-@TestPropertySource(locations = {"classpath:application.properties"})
-@PactTestFor(providerName = "referenceData_locations", port = "8991")
+@TestPropertySource(locations = {"classpath:application.properties"}, properties = {"location.ref.data.url=http://localhost:8991"})
+@PactTestFor(providerName = "referenceData_court_venues", port = "8991")
 @ContextConfiguration(classes = {RefDataConsumerApplication.class})
 public class LocationRefDataConsumerTest {
 
@@ -44,7 +44,7 @@ public class LocationRefDataConsumerTest {
     @Autowired
     LocationRefDataApi locationRefDataApi;
 
-    @Pact(provider = "referenceData_locations", consumer = "ia_caseApi")
+    @Pact(provider = "referenceData_court_venues", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
 
         return builder
