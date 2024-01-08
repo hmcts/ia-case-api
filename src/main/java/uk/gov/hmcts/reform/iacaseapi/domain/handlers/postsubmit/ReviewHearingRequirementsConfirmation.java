@@ -1,29 +1,46 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 
 @Component
 public class ReviewHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+
+    public ReviewHearingRequirementsConfirmation(LocationBasedFeatureToggler locationBasedFeatureToggler) {
+        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return Arrays.asList(
-            Event.REVIEW_HEARING_REQUIREMENTS,
-            Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-            Event.UPDATE_HEARING_ADJUSTMENTS
-        ).contains(callback.getEvent());
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        Event event = callback.getEvent();
+
+        boolean isAutoHearingRequestDisabled = !Objects.equals(
+            locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase),
+            YesOrNo.YES);
+
+        return Set.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_ADJUSTMENTS).contains(event)
+               || (LIST_CASE_WITHOUT_HEARING_REQUIREMENTS.equals(event) && isAutoHearingRequestDisabled);
     }
 
     public PostSubmitCallbackResponse handle(
@@ -40,8 +57,8 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
         StringBuilder messageContentString = new StringBuilder("#### What happens next\n\n");
 
         if (Arrays.asList(
-                Event.REVIEW_HEARING_REQUIREMENTS,
-                Event.UPDATE_HEARING_ADJUSTMENTS
+                REVIEW_HEARING_REQUIREMENTS,
+                UPDATE_HEARING_ADJUSTMENTS
         ).contains(callback.getEvent())) {
             String addCaseFlagUrl =
                     "/case/IA/Asylum/"

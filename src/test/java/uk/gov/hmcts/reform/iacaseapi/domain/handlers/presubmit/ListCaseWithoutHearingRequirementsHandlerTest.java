@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 
 import java.util.Optional;
@@ -33,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -42,7 +45,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -59,13 +65,22 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     @Mock
     private FeatureToggler featureToggler;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
 
     private ListCaseWithoutHearingRequirementsHandler listCaseWithoutHearingRequirementsHandler;
 
     @BeforeEach
     public void setUp() {
         listCaseWithoutHearingRequirementsHandler =
-            new ListCaseWithoutHearingRequirementsHandler(previousRequirementsAndRequestsAppender, featureToggler);
+            new ListCaseWithoutHearingRequirementsHandler(
+                previousRequirementsAndRequestsAppender,
+                featureToggler,
+                locationBasedFeatureToggler,
+                iaHearingsApiService
+            );
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -164,6 +179,38 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         verify(asylumCase, times(0)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(0)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
+    }
+
+    @Test
+    void should_call_ia_hearings_api_successfully() {
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_write_asylum_field_when_call_unsuccessful() {
+        when(iaHearingsApiService.aboutToSubmit(callback))
+            .thenThrow(new AsylumCaseServiceResponseException("Error", new RestClientException("Original error")));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.YES);
+    }
+
+    @Test
+    void should_skip_call_to_ia_hearings_api_if_auto_listing_not_enabled() {
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
     }
 
     @Test
