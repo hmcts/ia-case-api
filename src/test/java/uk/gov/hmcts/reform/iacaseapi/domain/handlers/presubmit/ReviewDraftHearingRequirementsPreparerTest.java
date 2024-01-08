@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,13 +21,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -32,6 +39,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -47,13 +56,21 @@ class ReviewDraftHearingRequirementsPreparerTest {
     private List<IdValue<WitnessDetails>> witnessDetails;
     @Mock
     private List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private LocationRefDataService locationRefDataService;
+    @Captor
+    private ArgumentCaptor<YesOrNo> autoHearingRequestEnabledCaptor;
+    @Captor
+    private ArgumentCaptor<DynamicList> hearingLocationsCaptor;
 
     private ReviewDraftHearingRequirementsPreparer reviewDraftHearingRequirementsPreparer;
 
     @BeforeEach
     public void setUp() {
         reviewDraftHearingRequirementsPreparer =
-            new ReviewDraftHearingRequirementsPreparer();
+            new ReviewDraftHearingRequirementsPreparer(locationBasedFeatureToggler, locationRefDataService);
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -168,6 +185,73 @@ class ReviewDraftHearingRequirementsPreparerTest {
 
         verify(asylumCase, times(0)).read(WITNESS_DETAILS);
         verify(asylumCase, times(0)).read(INTERPRETER_LANGUAGE);
+    }
+
+    @Test
+    void should_set_auto_hearing_request_enabled_to_yes() {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
+        assertEquals(YesOrNo.YES, autoHearingRequestEnabledCaptor.getValue());
+    }
+
+    @Test
+    void should_not_set_auto_hearing_request_enabled() {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never())
+            .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
+    }
+
+    @Test
+    void should_set_hearing_location_dynamic_list() {
+        DynamicList hearingLocations =
+            new DynamicList(new Value("", ""), List.of(new Value("key1", "value1")));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingLocations);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(eq(HEARING_LOCATION), hearingLocationsCaptor.capture());
+        DynamicList actual = hearingLocationsCaptor.getValue();
+        assertEquals("key1", actual.getListItems().get(0).getCode());
+        assertEquals("value1", actual.getListItems().get(0).getLabel());
+    }
+
+    @Test
+    void should_not_set_hearing_location_dynamic_list() {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never())
+            .write(eq(HEARING_LOCATION), any());
     }
 
     @Test
