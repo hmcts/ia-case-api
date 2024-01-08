@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class GenerateServiceRequestPreparerTest {
+class GenerateServiceRequestPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -66,7 +66,7 @@ public class GenerateServiceRequestPreparerTest {
                 serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         String dayOfServiceRequestReferenceRelease = serviceRequestPreparer.getDayOfServiceRequestReferenceRelease();
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getErrors().size() == 1);
+        assertEquals(callbackResponse.getErrors().size(), 1);
         assertTrue(callbackResponse.getErrors().contains("Event not usable on case as it was submitted before "
                 + dayOfServiceRequestReferenceRelease + "."));
     }
@@ -84,7 +84,7 @@ public class GenerateServiceRequestPreparerTest {
                 serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getErrors().size() == 1);
+        assertEquals(callbackResponse.getErrors().size(), 1);
         assertTrue(callbackResponse.getErrors().contains("A service request has already been created for this case, please pay via the Service Request tab."));
     }
 

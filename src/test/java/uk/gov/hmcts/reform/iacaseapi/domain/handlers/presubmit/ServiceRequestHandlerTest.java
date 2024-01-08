@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ServiceRequestHandlerTest {
+class ServiceRequestHandlerTest {
 
     @Mock
     private FeePayment<AsylumCase> feePayment;
@@ -118,7 +118,8 @@ public class ServiceRequestHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
-        assertThatThrownBy(() -> new ServiceRequestHandler(false, feePayment).handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        ServiceRequestHandler feePayDisabledServiceRequestHandler = new ServiceRequestHandler(false, feePayment);
+        assertThatThrownBy(() -> feePayDisabledServiceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }

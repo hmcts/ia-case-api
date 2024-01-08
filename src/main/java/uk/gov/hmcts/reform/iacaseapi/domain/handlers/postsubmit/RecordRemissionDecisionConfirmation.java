@@ -14,10 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 @Component
 public class RecordRemissionDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-
-    public RecordRemissionDecisionConfirmation() {
-    }
-
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
