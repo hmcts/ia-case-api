@@ -21,4 +21,11 @@
         <notes>Until gov notify client is updated</notes>
         <cve>CVE-2023-5072</cve>
     </suppress>
+    <suppress until="2024-02-28">
+        <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
+        <cve>CVE-2023-33202</cve>
+    </suppress>
+    <suppress until="2024-01-31">
+        <cve>CVE-2023-35116</cve>
+    </suppress>
 </suppressions>
