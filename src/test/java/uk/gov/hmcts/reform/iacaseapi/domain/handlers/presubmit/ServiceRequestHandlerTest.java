@@ -51,7 +51,7 @@ public class ServiceRequestHandlerTest {
     }
 
     @Test
-    void lr_should_make_feePayment_submit_callback() {
+    void no_journey_type_should_make_feePayment_submit_callback() {
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -63,6 +63,25 @@ public class ServiceRequestHandlerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void lr_should_make_feePayment_submit_callback() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+
+        AsylumCase responseAsylumCase = mock(AsylumCase.class);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(responseAsylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
 
@@ -97,6 +116,11 @@ public class ServiceRequestHandlerTest {
         assertThatThrownBy(() -> serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        assertThatThrownBy(() -> new ServiceRequestHandler(false, feePayment).handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
