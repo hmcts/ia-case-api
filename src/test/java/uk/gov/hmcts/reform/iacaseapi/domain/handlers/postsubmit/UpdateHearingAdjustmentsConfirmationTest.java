@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,19 +23,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class ReviewHearingRequirementsConfirmationTest {
+class UpdateHearingAdjustmentsConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    private ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
+    private UpdateHearingAdjustmentsConfirmation handler;
 
     @BeforeEach
     public void setUp() {
-        reviewHearingRequirementsConfirmation =
-            new ReviewHearingRequirementsConfirmation();
+        handler =
+            new UpdateHearingAdjustmentsConfirmation();
     }
 
     @Test
@@ -44,10 +44,10 @@ class ReviewHearingRequirementsConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         long caseId = 1234;
         when(caseDetails.getId()).thenReturn(caseId);
-        when(callback.getEvent()).thenReturn(REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(UPDATE_HEARING_ADJUSTMENTS);
 
         PostSubmitCallbackResponse callbackResponse =
-            reviewHearingRequirementsConfirmation.handle(callback);
+            handler.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -57,18 +57,17 @@ class ReviewHearingRequirementsConfirmationTest {
             callbackResponse.getConfirmationHeader().get())
             .contains("You've recorded the agreed hearing adjustments");
 
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
+            callbackResponse.getConfirmationBody().get())
+            .contains("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
-
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
+            callbackResponse.getConfirmationBody().get())
+            .contains("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -82,7 +81,7 @@ class ReviewHearingRequirementsConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
-        assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.handle(callback))
+        assertThatThrownBy(() -> handler.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -94,9 +93,9 @@ class ReviewHearingRequirementsConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = reviewHearingRequirementsConfirmation.canHandle(callback);
+            boolean canHandle = handler.canHandle(callback);
 
-            if (event == REVIEW_HEARING_REQUIREMENTS) {
+            if (event == UPDATE_HEARING_ADJUSTMENTS) {
                 assertTrue(canHandle);
             } else {
                 assertFalse(canHandle);
@@ -109,11 +108,11 @@ class ReviewHearingRequirementsConfirmationTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.canHandle(null))
+        assertThatThrownBy(() -> handler.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.handle(null))
+        assertThatThrownBy(() -> handler.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

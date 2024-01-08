@@ -55,6 +55,8 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
             asylumCase.write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
         }
 
+
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
