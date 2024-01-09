@@ -318,6 +318,7 @@ class SendNotificationHandlerTest {
                         Event.APPLY_FOR_COSTS,
                         Event.RESPOND_TO_COSTS,
                         Event.ADD_EVIDENCE_FOR_COSTS,
+                        Event.CONSIDER_MAKING_COSTS_ORDER,
                         Event.DECIDE_COSTS_APPLICATION
                     ).contains(event)) {
 
