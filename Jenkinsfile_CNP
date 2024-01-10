@@ -11,8 +11,13 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 def type = "java"
 def product = "ia"
 def component = "case-api"
+def dmnBranch = "ia-task-configuration-naba"
+def bpmnBranch = "master"
 
 def secrets = [
+    'rpx-${env}': [
+            secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+    ],
     'ia-${env}': [
 
         secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
@@ -43,6 +48,21 @@ def secrets = [
         secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
         secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 
+        secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
+        secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
+        secret('wa-test-caseofficer-a-username', 'IA_WA_CASEOFFICER_USERNAME'),
+        secret('wa-test-caseofficer-a-password', 'IA_WA_CASEOFFICER_PASSWORD'),
+        secret('wa-test-ctsc-admin-username', 'IA_WA_CTSC_ADMIN_USERNAME'),
+        secret('wa-test-ctsc-admin-password', 'IA_WA_CTSC_ADMIN_PASSWORD'),
+        secret('wa-test-adminofficer-username-1', 'IA_WA_ADMINOFFICER_USERNAME_1'),
+        secret('wa-test-adminofficer-password-1', 'IA_WA_ADMINOFFICER_PASSWORD_1'),
+        secret('wa-test-caseofficer-stcw-username', 'IA_WA_CASEOFFICER_USERNAME_STCW'),
+        secret('wa-test-caseofficer-stcw-password', 'IA_WA_CASEOFFICER_PASSWORD_STCW'),
+        secret('wa-test-judge-username', 'IA_WA_JUDGE_USERNAME'),
+        secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
+        secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
+        secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
+
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
         secret('s2s-secret', 'IA_S2S_SECRET'),
@@ -69,7 +89,8 @@ def secrets = [
         secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
         secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
         secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
-        secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY')
+        secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
+        secret('microservicekey-iac', 'IAC_S2S_KEY')
     ],
     'ccd-${env}'      : [
         secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
@@ -124,12 +145,24 @@ withPipeline(type, product, component) {
     afterSuccess('akschartsinstall') {
         onPR {
             githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
-githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+            githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+            env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+            sh """
+            ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+            ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+        """
         }
     }
 
     afterAlways('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+        env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        sh """
+      ./bin/add-org-roles-to-users.sh
+    """
     }
 
     afterAlways('functionalTest:aat') {
