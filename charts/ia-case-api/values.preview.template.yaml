@@ -1116,10 +1116,6 @@ wa:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
       environment:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-  wa-workflow-api:
-    java:
-      environment:
-         DB_READER_USERNAME: "hmcts"
   wa:
     postgresql:
       enabled: false
