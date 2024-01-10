@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
@@ -73,6 +74,8 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
         if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
             asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, YES);
             asylumCase.write(HEARING_LOCATION, locationRefDataService.getHearingLocationsDynamicList());
+        } else {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, NO);
         }
 
         decorateWitnessAndInterpreterDetails(asylumCase);

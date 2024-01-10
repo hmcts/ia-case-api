@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,6 +17,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -29,8 +29,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,6 +49,8 @@ public class RecordAdjournmentDetailsPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private IaHearingsApiService iaHearingsApiService;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     private RecordAdjournmentDetailsPreparer recordAdjournmentDetailsPreparer;
 
@@ -53,7 +58,7 @@ public class RecordAdjournmentDetailsPreparerTest {
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        recordAdjournmentDetailsPreparer = new RecordAdjournmentDetailsPreparer(iaHearingsApiService);
+        recordAdjournmentDetailsPreparer = new RecordAdjournmentDetailsPreparer(iaHearingsApiService, locationBasedFeatureToggler);
 
         DynamicList adjournmentDetailsHearing =
             new DynamicList(new Value("code", "adjournmentDetailsHearing"), Collections.emptyList());
@@ -166,5 +171,22 @@ public class RecordAdjournmentDetailsPreparerTest {
 
         assertEquals(NO_HEARINGS_ERROR_MESSAGE,
             recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback).getErrors().iterator().next());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"NO", "YES"})
+    void should_check_set_value_in_auto_hearing_enabled_field(YesOrNo value) {
+        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(value);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(
+                AUTO_HEARING_REQUEST_ENABLED,
+                value);
     }
 }
