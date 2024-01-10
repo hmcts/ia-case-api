@@ -153,8 +153,8 @@ class ListCaseWithoutHearingRequirementsPreparerTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, never())
-            .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
+        verify(asylumCase,  times(1))
+                .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
     }
 
     @Test
