@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 @Component
 public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    private static final String WHAT_HAPPENS_NEXT_LABEL = "### What happens next\n\n";
+    private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
     private final LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     public ListCaseWithoutHearingRequirementsConfirmation(LocationBasedFeatureToggler locationBasedFeatureToggler) {
@@ -60,7 +60,7 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
 
         if (hearingRequestSuccessful) {
             postSubmitResponse.setConfirmationHeader("# Hearing listed");
-            postSubmitResponse.setConfirmationBody("#### What happens next\n\n"
+            postSubmitResponse.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                                                    + "The hearing request has been created and is visible on the [Hearings tab]"
                                                    + "(/cases/case-details/" + caseId + "/hearings)");
         } else {
@@ -68,6 +68,7 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
             postSubmitResponse.setConfirmationBody(
                     "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
                     + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
+                    + "\n\n"
                     + WHAT_HAPPENS_NEXT_LABEL
                     + "The hearing could not be auto-requested. Please manually request the "
                     + "hearing via the [Hearings tab](/cases/case-details/" + caseId + "/hearings)");
@@ -83,7 +84,8 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
 
         postSubmitResponse.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\nThe listing team will now list the case."
+            WHAT_HAPPENS_NEXT_LABEL
+            + "The listing team will now list the case."
             + " All parties will be notified when the Hearing Notice is available to view.<br><br>"
         );
 

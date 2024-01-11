@@ -1,0 +1,29 @@
+{
+  "description": "RIA-7987 review hearing requirements auto request hearing (Succeeded request)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7987,
+      "eventId": "reviewHearingRequirements",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "manualCreHearingRequired": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Hearing listed",
+      "body": "#### What happens next\n\nThe hearing request has been created and is visible on the [Hearings tab](/cases/case-details/7987/hearings)"
+    }
+  }
+}

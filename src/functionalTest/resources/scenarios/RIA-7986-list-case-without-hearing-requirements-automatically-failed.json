@@ -25,7 +25,7 @@
     "status": 200,
     "confirmation": {
       "header": "",
-      "body": "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)### What happens next\n\nThe hearing could not be auto-requested. Please manually request the hearing via the [Hearings tab](/cases/case-details/7986/hearings)"
+      "body": "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)\n\n#### What happens next\n\nThe hearing could not be auto-requested. Please manually request the hearing via the [Hearings tab](/cases/case-details/7986/hearings)"
     }
   }
 }
