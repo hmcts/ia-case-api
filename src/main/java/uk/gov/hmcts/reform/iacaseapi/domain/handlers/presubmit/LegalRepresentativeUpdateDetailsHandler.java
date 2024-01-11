@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_REPRESENTATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService.resetLegalRepPartyId;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +59,7 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
 
         if (changeOrganisationRequest.isPresent()) {
             writeToPreviousRepresentations(callback);
+            resetLegalRepPartyId(asylumCase);
         }
 
         String company = asylumCase.read(

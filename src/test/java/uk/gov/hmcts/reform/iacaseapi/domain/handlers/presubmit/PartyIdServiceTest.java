@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
@@ -255,6 +256,18 @@ class PartyIdServiceTest {
         PartyIdService.setSponsorPartyId(asylumCase);
 
         verify(asylumCase, never()).write(eq(SPONSOR_PARTY_ID), anyString());
+
+    }
+
+    @Test
+    void should_reset_legal_rep_partyId_when_aip_journey() {
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+
+        PartyIdService.resetLegalRepPartyId(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(LEGAL_REP_INDIVIDUAL_PARTY_ID), anyString());
+        verify(asylumCase, times(1)).write(eq(LEGAL_REP_ORGANISATION_PARTY_ID), anyString());
 
     }
 }

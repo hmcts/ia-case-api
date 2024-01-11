@@ -69,6 +69,13 @@ public class PartyIdService {
         }
     }
 
+    public static void resetLegalRepPartyId(AsylumCase asylumCase) {
+        if (!HandlerUtils.isAipJourney(asylumCase)) {
+            asylumCase.write(LEGAL_REP_INDIVIDUAL_PARTY_ID, HearingPartyIdGenerator.generate());
+            asylumCase.write(LEGAL_REP_ORGANISATION_PARTY_ID, HearingPartyIdGenerator.generate());
+        }
+    }
+
     public static void setSponsorPartyId(AsylumCase asylumCase) {
 
         boolean isAppealOutOfCountry = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
