@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -39,7 +40,7 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+        if (shouldAutoRequestHearing(asylumCase)) {
             boolean hearingRequestSuccessful = asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)
                 .map(manualCreateRequired -> NO == manualCreateRequired)
                 .orElse(true);
@@ -96,5 +97,13 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
         );
 
         return postSubmitResponse;
+    }
+
+    private boolean shouldAutoRequestHearing(AsylumCase asylumCase) {
+        boolean autoRequestHearing = asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)
+            .map(autoRequest -> YES == autoRequest).orElse(false);
+        boolean autoRequestHearingEnabled = locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES;
+
+        return autoRequestHearingEnabled && autoRequestHearing;
     }
 }

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -54,6 +55,7 @@ class ReviewHearingRequirementsConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(REVIEW_HEARING_REQUIREMENTS);
         when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YES);
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         handler =
             new ReviewHearingRequirementsConfirmation(locationBasedFeatureToggler);
@@ -108,6 +110,7 @@ class ReviewHearingRequirementsConfirmationTest {
     void should_return_confirmation_when_auto_request_not_enabled() {
 
         when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(NO);
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);

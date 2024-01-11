@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7987 review hearing requirements auto request hearing (Succeeded request)",
+  "description": "RIA-7987 RIA-7988 review hearing requirements auto request hearing (Succeeded request)",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "autoRequestHearing": "Yes",
           "caseManagementLocation": {
             "region": "1",
             "baseLocation": "366559"
