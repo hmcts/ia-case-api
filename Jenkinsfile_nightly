@@ -94,7 +94,7 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(secrets)
 
-//  enableFortifyScan()
+  enableFortifyScan()
   enableSecurityScan()
   enableMutationTest()
   enableSlackNotifications('#ia-tech')
@@ -110,8 +110,16 @@ withNightlyPipeline(type, product, component) {
       reportName           : 'Dependency Check Report'
     ])
   }
-  
-  after('fortify-scan') {
+
+  afterAlways('fortify-scan') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "Fortify Scan",
+      reportFiles          : "FortifyScanReport.html",
+      reportName           : "Fortify Scan Report"
+    ]
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 

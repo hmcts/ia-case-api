@@ -3,6 +3,9 @@ ARG APP_INSIGHTS_AGENT_VERSION=3.4.13
 # Application image
 FROM hmctspublic.azurecr.io/base/java:17-distroless
 
+# Change to non-root privilege
+USER hmcts
+
 COPY lib/applicationinsights.json /opt/app/
 COPY build/libs/ia-bail-case-api.jar /opt/app/
 
