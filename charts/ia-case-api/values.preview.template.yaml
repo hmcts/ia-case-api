@@ -343,7 +343,6 @@ ia-bail-case-api:
     # image: hmctspublic.azurecr.io/ia/bail-case-api:latest
     image: hmctspublic.azurecr.io/ia/bail-case-api:pr-442
     applicationPort: 8686
-    aadIdentityName: ia
     readinessPath: '/health/readiness'
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
@@ -392,7 +391,6 @@ ia-bail-case-api:
             alias: app-insights-connection-string
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
-
 
 ia-timed-event-service:
   enabled: true
