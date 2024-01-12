@@ -349,13 +349,13 @@ ia-bail-case-api:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
-      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     keyVaults:
       ia:
