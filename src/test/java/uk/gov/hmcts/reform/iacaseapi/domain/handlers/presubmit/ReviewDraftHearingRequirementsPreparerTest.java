@@ -214,7 +214,7 @@ class ReviewDraftHearingRequirementsPreparerTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, never())
+        verify(asylumCase,  times(1))
             .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
     }
 

@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Component
 public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -22,9 +24,11 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
     public static final String NO_HEARINGS_ERROR_MESSAGE =
         "You've made an invalid request. You must request a substantive hearing before you can adjourn a hearing.";
     private final IaHearingsApiService iaHearingsApiService;
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
-    public RecordAdjournmentDetailsPreparer(IaHearingsApiService iaHearingsApiService) {
+    public RecordAdjournmentDetailsPreparer(IaHearingsApiService iaHearingsApiService, LocationBasedFeatureToggler locationBasedFeatureToggler) {
         this.iaHearingsApiService = iaHearingsApiService;
+        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
     }
 
     public boolean canHandle(
@@ -50,6 +54,8 @@ public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandle
         clearAdjournmentDetails(callback);
 
         AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
+
+        HandlerUtils.checkAndUpdateAutoHearingRequestEnabled(locationBasedFeatureToggler, asylumCase);
 
         if (hasNoHearings(asylumCase)) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);

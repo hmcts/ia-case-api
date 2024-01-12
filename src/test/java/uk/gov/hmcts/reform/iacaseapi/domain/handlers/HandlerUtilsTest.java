@@ -2,18 +2,24 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -21,6 +27,8 @@ class HandlerUtilsTest {
 
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     @Test
     void given_journey_type_aip_returns_true() {
@@ -68,6 +76,18 @@ class HandlerUtilsTest {
             .thenReturn(Optional.of("FamilyName"));
 
         assertEquals("FirstName SecondName FamilyName", HandlerUtils.getAppellantFullName(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"NO", "YES"})
+    void should_check_set_value_in_auto_hearing_enabled_field(YesOrNo value) {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(value);
+
+        HandlerUtils.checkAndUpdateAutoHearingRequestEnabled(locationBasedFeatureToggler, asylumCase);
+
+        verify(asylumCase, times(1)).write(
+                AUTO_HEARING_REQUEST_ENABLED,
+                value);
     }
 
     @Test

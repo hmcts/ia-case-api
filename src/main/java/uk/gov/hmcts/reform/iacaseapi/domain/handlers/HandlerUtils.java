@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 public class HandlerUtils {
 
@@ -70,5 +73,13 @@ public class HandlerUtils {
         String decision = asylumCase.read(decisionDefinition, String.class).orElse(null);
 
         return !(response == null || decision == null) ? Optional.of(decision + " - " + response) : Optional.empty();
+    }
+
+    public static void checkAndUpdateAutoHearingRequestEnabled(LocationBasedFeatureToggler locationBasedFeatureToggler, AsylumCase asylumCase) {
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, YES);
+        } else {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, NO);
+        }
     }
 }
