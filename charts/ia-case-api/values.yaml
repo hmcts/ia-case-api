@@ -71,8 +71,6 @@ ia-case-notifications-api:
   enabled: false
 ia-home-office-integration-api:
   enabled: false
-ia-bail-case-api:
-  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:
