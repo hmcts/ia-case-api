@@ -64,7 +64,6 @@ services:
       - ia-case-notifications-api
       - ia-case-payments-api
       - ia-home-office-integration-api
-      - ia-bail-case-api
     ports:
       - ${SERVER_PORT:-8090}:${SERVER_PORT:-8090}
 networks:
