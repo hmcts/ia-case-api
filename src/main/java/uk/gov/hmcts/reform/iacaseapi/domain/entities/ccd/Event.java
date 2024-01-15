@@ -129,6 +129,7 @@ public enum Event {
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     TRIGGER_CMR_LISTED("triggerCmrListed"),
+    DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

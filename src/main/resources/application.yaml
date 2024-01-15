@@ -408,6 +408,7 @@ security:
       - "triggerCmrUpdated"
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
+      - "decisionWithoutHearingListed"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
