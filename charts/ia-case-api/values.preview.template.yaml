@@ -342,8 +342,6 @@ ia-bail-case-api:
     imagePullPolicy: Always
     # image: hmctspublic.azurecr.io/ia/bail-case-api:latest
     image: hmctspublic.azurecr.io/ia/bail-case-api:pr-442
-    applicationPort: 8686
-    readinessPath: '/health/readiness'
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     devcpuRequests: 500m
