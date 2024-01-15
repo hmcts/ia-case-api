@@ -67,5 +67,10 @@
 ./bin/utils/ccd-add-role.sh "ia_specific_access_judge_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "ia_specific_access_ctsc_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "ia_caselinks_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
- ./bin/utils/ccd-add-role.sh "ia_caseflags_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
- ./bin/utils/ccd-add-role.sh "ia_caseflags_readonly_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "ia_caseflags_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "ia_caseflags_readonly_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
+
+./bin/utils/ccd-add-role.sh "ia_bail_caselinks_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "caseworker-ia-bails" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "caseworker-ia-homeofficebail" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "ia_bail_caseflags_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
