@@ -424,7 +424,7 @@ ia-home-office-integration-api:
   java:
     imagePullPolicy: Always
 #    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-396
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-373
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
