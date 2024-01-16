@@ -88,6 +88,8 @@ replace_mapping_dict = {
     "language": "English",
     "languagedialect": "redacted",
     "legalaidaccountNumber": "OG123V1",
+    "appellantPhoneNumber": "07451111111",
+    "givenName": "redacted",
 
 }
 
@@ -129,5 +131,5 @@ def get_replace_term(key):
 
 
 redact_values_from_file(
-    '4919_latest_data.json', replace_mapping_keys
+    '/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/SNi_tickets/SNI-5296/latest_data.json', replace_mapping_keys
 )
