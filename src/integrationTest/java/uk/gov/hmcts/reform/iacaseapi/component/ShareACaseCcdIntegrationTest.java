@@ -57,7 +57,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     @BeforeEach
     public void setupReferenceDataStub() throws IOException {
-
         prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
 
@@ -67,7 +66,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
-
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
@@ -101,7 +99,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_failure_when_user_is_invalid() {
-
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
@@ -114,7 +111,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
         long caseId = 9999L;
         URI uri = buildUri(idamUserId, String.valueOf(caseId));
         addReferenceCreatedStub(server, uri.getPath());
-
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(SHARE_A_CASE)
             .caseDetails(someCaseDetailsWith()
