@@ -364,14 +364,11 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.3'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.83'
-
     implementation group: 'com.google.guava', name: 'guava'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
 
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.81'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.81'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
