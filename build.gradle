@@ -237,8 +237,6 @@ pitest {
     mutationThreshold = 90
 }
 
-
-
 project.tasks['pitest'].group = "Verification"
 
 sonarqube {
