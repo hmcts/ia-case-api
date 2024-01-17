@@ -13,7 +13,6 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode
 @ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Document {
 
     private String documentUrl;
