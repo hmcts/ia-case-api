@@ -7,15 +7,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+
+import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -24,15 +31,19 @@ class ForceCaseProgressionToCaseUnderReviewConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock private AsylumCase asylumCase;
+    @Mock private CaseDetails caseDetails;
 
     private ForceCaseProgressionToCaseUnderReviewConfirmation forceCaseProgressionToCaseUnderReviewConfirmation =
         new ForceCaseProgressionToCaseUnderReviewConfirmation();
 
     @Test
-    void should_return_confirmation() {
+    void should_return_LR_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_CASE_UNDER_REVIEW);
-
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(REP));
         PostSubmitCallbackResponse callbackResponse =
             forceCaseProgressionToCaseUnderReviewConfirmation.handle(callback);
 
@@ -47,7 +58,29 @@ class ForceCaseProgressionToCaseUnderReviewConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Legal representative will be notified by email.");
+    }
 
+    @Test
+    void should_return_AiP_confirmation() {
+
+        when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_CASE_UNDER_REVIEW);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
+        PostSubmitCallbackResponse callbackResponse =
+                forceCaseProgressionToCaseUnderReviewConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# You have forced the case progression to case under review");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("Appellant will be notified by email.");
     }
 
     @Test

@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import feign.FeignException;
@@ -74,4 +78,31 @@ class TimedEventServiceSchedulerTest {
             .isInstanceOf(AsylumCaseServiceResponseException.class)
             .hasCauseInstanceOf(FeignException.class);
     }
+
+    @Test
+    void should_invoke_delete_api_successfully() {
+        // Given
+        doNothing().when(timedEventServiceApi).deleteTimedEvent(authToken, s2sToken, "1234567");
+
+        // When
+        boolean result = timedEventServiceScheduler.deleteSchedule("1234567");
+
+        // Then
+        verify(timedEventServiceApi).deleteTimedEvent(authToken, s2sToken, "1234567");
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_invoke_delete_api_with_failure() {
+        // Given
+        doThrow(FeignException.class).when(timedEventServiceApi).deleteTimedEvent(authToken, s2sToken, "1234567");
+
+        // When
+        boolean result = timedEventServiceScheduler.deleteSchedule("1234567");
+
+        // Then
+        verify(timedEventServiceApi).deleteTimedEvent(authToken, s2sToken, "1234567");
+        assertThat(result).isFalse();
+    }
+
 }
