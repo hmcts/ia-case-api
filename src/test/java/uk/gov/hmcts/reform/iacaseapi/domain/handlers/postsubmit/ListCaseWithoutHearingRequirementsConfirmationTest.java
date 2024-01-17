@@ -9,14 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -33,31 +32,36 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ListCaseWithoutHearingRequirementsAutomaticallyConfirmationTest {
+class ListCaseWithoutHearingRequirementsConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
-    private ListCaseWithoutHearingRequirementsAutomaticallyConfirmation confirmation;
+    private ListCaseWithoutHearingRequirementsConfirmation handler;
 
     @BeforeEach
-    void setup() {
+    public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        confirmation = new ListCaseWithoutHearingRequirementsAutomaticallyConfirmation(locationBasedFeatureToggler);
-    }
-
-    @Test
-    void should_return_successful_confirmation() {
-
         when(caseDetails.getId()).thenReturn(1L);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YES);
 
+        handler =
+            new ListCaseWithoutHearingRequirementsConfirmation(locationBasedFeatureToggler);
+    }
+
+    @Test
+    void should_return_successful_confirmation_when_auto_request_enabled() {
+
         PostSubmitCallbackResponse callbackResponse =
-            confirmation.handle(callback);
+            handler.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -75,17 +79,12 @@ class ListCaseWithoutHearingRequirementsAutomaticallyConfirmationTest {
     }
 
     @Test
-    void should_return_failed_confirmation() {
+    void should_return_failed_confirmation_when_auto_request_enabled() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(1L);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YES);
 
         PostSubmitCallbackResponse callbackResponse =
-            confirmation.handle(callback);
+            handler.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -104,27 +103,62 @@ class ListCaseWithoutHearingRequirementsAutomaticallyConfirmationTest {
     }
 
     @Test
+    void should_return_confirmation_when_auto_request_not_enabled() {
+
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+
+        PostSubmitCallbackResponse callbackResponse =
+            handler.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the agreed hearing adjustments");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .doesNotContain("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
+
+        long caseId = 1234;
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .doesNotContain("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .doesNotContain("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.");
+
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> confirmation.handle(callback))
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        assertThatThrownBy(() -> handler.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = YesOrNo.class, names = { "YES", "NO" })
-    void it_can_handle_callback(YesOrNo autoHearingEnabled) {
+    @Test
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(autoHearingEnabled);
 
-            boolean canHandle = confirmation.canHandle(callback);
+            boolean canHandle = handler.canHandle(callback);
 
-            if (event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS && autoHearingEnabled == YES) {
+            if (event == LIST_CASE_WITHOUT_HEARING_REQUIREMENTS) {
 
                 assertTrue(canHandle);
             } else {
@@ -138,12 +172,13 @@ class ListCaseWithoutHearingRequirementsAutomaticallyConfirmationTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> confirmation.canHandle(null))
+        assertThatThrownBy(() -> handler.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> confirmation.handle(null))
+        assertThatThrownBy(() -> handler.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
 }

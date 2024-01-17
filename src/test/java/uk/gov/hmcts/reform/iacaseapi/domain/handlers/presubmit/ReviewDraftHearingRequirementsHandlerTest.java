@@ -31,6 +31,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -46,20 +48,26 @@ class ReviewDraftHearingRequirementsHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private FeatureToggler featureToggler;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
 
     private ReviewDraftHearingRequirementsHandler reviewDraftHearingRequirementsHandler;
 
     @BeforeEach
     public void setup() {
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
         reviewDraftHearingRequirementsHandler =
-            new ReviewDraftHearingRequirementsHandler(featureToggler);
+            new ReviewDraftHearingRequirementsHandler(
+                featureToggler, locationBasedFeatureToggler, iaHearingsApiService);
     }
 
     @Test
     void should_submit_review_hearing_requirements() {
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -75,9 +83,6 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Test
     void should_set_list_case_hearing_length_visible_field_for_reheard_appeal() {
 
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -90,9 +95,6 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Test
     void should_not_set_list_case_hearing_length_visible_field_for_normal_appeal() {
 
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -105,9 +107,6 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Test
     void should_not_set_list_case_hearing_length_visible_field_fwhen_feature_flag_disabled() {
 
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -118,9 +117,6 @@ class ReviewDraftHearingRequirementsHandlerTest {
 
     @Test
     void should_update_hearing_adjustment_responses() {
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(VULNERABILITIES_TRIBUNAL_RESPONSE, String.class)).thenReturn(Optional.of("Response to vulnerabilities"));
         when(asylumCase.read(IS_VULNERABILITIES_ALLOWED, String.class)).thenReturn(Optional.of("Granted"));
         when(asylumCase.read(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE, String.class)).thenReturn(Optional.of("Response to remote call"));
@@ -143,6 +139,16 @@ class ReviewDraftHearingRequirementsHandlerTest {
         verify(asylumCase, never()).write(eq(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY), anyString());
         verify(asylumCase, times(1)).write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, "Refused - Response to in camera court");
         verify(asylumCase, never()).write(eq(OTHER_DECISION_FOR_DISPLAY), anyString());
+    }
+
+    @Test
+    void should_call_ia_hearings_api_successfully() {
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
     }
 
     @Test

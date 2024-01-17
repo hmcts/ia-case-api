@@ -2,7 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -14,16 +18,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
-
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
-
-    public ReviewDraftHearingRequirementsHandler(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
-    }
+    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final IaHearingsApiService iaHearingsApiService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -53,6 +59,20 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
         if (featureToggler.getValue("reheard-feature", false)
             && asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
             asylumCase.write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
+        }
+
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+            try {
+                AsylumCase updatedAsylumCase = iaHearingsApiService.aboutToSubmit(callback);
+                return new PreSubmitCallbackResponse<>(updatedAsylumCase);
+
+            } catch (AsylumCaseServiceResponseException e) {
+                log.error("Failure in call to IA-HEARINGS-API during event {} with error: {}",
+                    callback.getEvent().toString(),
+                    e.getMessage());
+
+                asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.YES);
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

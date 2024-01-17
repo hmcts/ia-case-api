@@ -2071,7 +2071,9 @@ public enum AsylumCaseFieldDefinition {
 
     AUTO_HEARING_REQUEST_ENABLED("autoHearingRequestEnabled", new TypeReference<YesOrNo>(){}),
 
-    HEARING_LOCATION("hearingLocation", new TypeReference<DynamicList>(){});
+    HEARING_LOCATION("hearingLocation", new TypeReference<DynamicList>(){}),
+
+    AUTO_REQUEST_HEARING("autoRequestHearing", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
