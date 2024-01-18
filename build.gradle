@@ -182,6 +182,7 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
 
     systemProperty "scenario", System.getProperty('scenario')
+    systemProperty "file.encoding", "UTF-8"
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
     finalizedBy aggregate
@@ -227,7 +228,7 @@ jacocoTestReport {
 }
 
 pitest {
-    print('./gradlew --version'.execute().text.trim())
+    //print('./gradlew --version'.execute().text.trim())
     junit5PluginVersion = '1.1.2'
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
