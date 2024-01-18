@@ -73,7 +73,11 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
             DRAFT_DECISION_AND_REASONS_DOCUMENTS,
             FINAL_DECISION_AND_REASONS_DOCUMENTS,
             UPLOAD_SENSITIVE_DOCS,
-            FTPA_APPELLANT_DOCUMENTS
+            ALL_FTPA_APPELLANT_DECISION_DOCS,
+            FTPA_APPELLANT_DOCUMENTS,
+            ALL_FTPA_RESPONDENT_DECISION_DOCS,
+            FTPA_RESPONDENT_DOCUMENTS,
+            UPPER_TRIBUNAL_DOCUMENTS
         );
     }
 

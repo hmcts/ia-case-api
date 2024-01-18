@@ -75,7 +75,11 @@ public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<AsylumC
             RESPONDENT_DOCUMENTS,
             DRAFT_DECISION_AND_REASONS_DOCUMENTS,
             FINAL_DECISION_AND_REASONS_DOCUMENTS,
-            FTPA_APPELLANT_DOCUMENTS
+            ALL_FTPA_APPELLANT_DECISION_DOCS,
+            FTPA_APPELLANT_DOCUMENTS,
+            ALL_FTPA_RESPONDENT_DECISION_DOCS,
+            FTPA_RESPONDENT_DOCUMENTS,
+            UPPER_TRIBUNAL_DOCUMENTS
         );
     }
 
