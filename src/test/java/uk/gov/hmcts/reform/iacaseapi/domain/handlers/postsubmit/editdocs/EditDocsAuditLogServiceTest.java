@@ -46,11 +46,11 @@ class EditDocsAuditLogServiceTest {
 
         assertEquals("user-id-124", actualAuditDetails.getIdamUserId());
         assertEquals("some forename some surname", actualAuditDetails.getUser());
-        assertEquals(Arrays.asList("id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10", "id11", "id12", "id13", "id14", "id15", "id16"),
+        assertEquals(Arrays.asList("id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10", "id11", "id12", "id13", "id14", "id15"),
             actualAuditDetails.getDocumentIds());
         assertEquals(Arrays.asList(
             "docName1", "docName2", "docName3", "docName4", "docName5", "docName6", "docName7", "docName8",
-            "docName9", "docName10", "docName11", "docName12", "docName13", "docName14", "docName15", "docName16"),
+            "docName9", "docName10", "docName11", "docName12", "docName13", "docName14", "docName15"),
             actualAuditDetails.getDocumentNames()
         );
         assertEquals(1L, actualAuditDetails.getCaseId());
