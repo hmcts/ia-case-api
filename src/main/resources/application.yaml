@@ -94,19 +94,19 @@ featureFlag:
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:false}
   isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
-legalRepresentativeBuildCase.dueInDays: 28
-legalRepresentativeBuildCaseAda.dueInDay: 13
-legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
-legalRepresentativeHearingRequirements.dueInDays: 5
-legalRepresentativeReview.dueInDays: 5
-requestRespondentEvidence.dueInDays: 14
-requestRespondentEvidence.dueInDaysAda: 3
-requestRespondentReview.dueInDays: 14
-requestRespondentReviewAda.dueInDays: 2
-appellantReasonsForAppeal.dueInDays: 28
-paymentAfterRemissionRejection.dueInMinutes: 20160
-paymentEaHuNoRemission.dueInMinutes: 20160
-adaCaseListedDirection.dueInDaysSinceSubmission: 15
+legalRepresentativeBuildCase.dueInDays: ${LEGAL_REP_BUILD_CASE_DUE_IN_DAYS:28}
+legalRepresentativeBuildCaseAda.dueInDay: ${LEGAL_REP_BUILD_CASE_ADA_DUE_IN_DAYS:13}
+legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: ${LEGAL_REP_BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE:42}
+legalRepresentativeHearingRequirements.dueInDays: ${LEGAL_REP_HEARING_REQUIREMENTS_DUE_IN_DAYS:5}
+legalRepresentativeReview.dueInDays: ${LEGAL_REP_REVIEW_DUE_IN_DAYS:5}
+requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:14}
+requestRespondentEvidence.dueInDaysAda: ${REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS:3}
+requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
+requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
+appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
+paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
+paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
+adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -282,11 +282,6 @@ security:
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
       - "markAppealPaid"
-      - "transferOutOfAda"
-      - "markAppealAsAda"
-      - "removeDetainedStatus"
-      - "markAppealAsDetained"
-      - "markAsReadyForUtTransfer"
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
