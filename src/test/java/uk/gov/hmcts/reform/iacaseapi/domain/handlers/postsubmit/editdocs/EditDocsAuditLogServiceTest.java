@@ -79,6 +79,9 @@ class EditDocsAuditLogServiceTest {
             .thenReturn(Collections.singletonList("id10"))
             .thenReturn(Collections.singletonList("id11"))
             .thenReturn(Collections.singletonList("id12"))
+            .thenReturn(Collections.singletonList("id13"))
+            .thenReturn(Collections.singletonList("id14"))
+            .thenReturn(Collections.singletonList("id15"))
             .thenThrow(new RuntimeException("no more calls expected"));
 
         when(editDocsAuditService.getUpdatedAndDeletedDocNamesForGivenField(any(AsylumCase.class),
@@ -95,6 +98,9 @@ class EditDocsAuditLogServiceTest {
             .thenReturn(Collections.singletonList("docName10"))
             .thenReturn(Collections.singletonList("docName11"))
             .thenReturn(Collections.singletonList("docName12"))
+            .thenReturn(Collections.singletonList("docName13"))
+            .thenReturn(Collections.singletonList("docName14"))
+            .thenReturn(Collections.singletonList("docName15"))
             .thenThrow(new RuntimeException("no more calls expected"));
     }
 
