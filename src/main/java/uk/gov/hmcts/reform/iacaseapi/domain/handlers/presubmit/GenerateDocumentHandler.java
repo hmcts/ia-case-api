@@ -60,6 +60,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         List<Event> allowedEvents = Lists.newArrayList(
             Event.SUBMIT_APPEAL,
             Event.DRAFT_HEARING_REQUIREMENTS,
@@ -85,6 +87,9 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             if (!isSaveAndContinueEnabled) {
                 allowedEvents.add(Event.BUILD_CASE);
             }
+        }
+        if (!relistCaseImmediately(asylumCase)) {
+            allowedEvents.add(Event.RECORD_ADJOURNMENT_DETAILS);
         }
 
         return isDocmosisEnabled
@@ -177,5 +182,11 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
                 asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentState);
             }
         }
+    }
+
+    private boolean relistCaseImmediately(AsylumCase asylumCase) {
+        return asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YesOrNo.YES))
+            .orElse(false);
     }
 }
