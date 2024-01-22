@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -37,29 +40,38 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     private DecisionAndReasonsStartedSubStateProgression decisionAndReasonsStartSubStateProgression;
 
     @BeforeEach
     public void setUp() {
         decisionAndReasonsStartSubStateProgression =
-            new DecisionAndReasonsStartedSubStateProgression();
+            new DecisionAndReasonsStartedSubStateProgression(iaHearingsApiService, locationBasedFeatureToggler);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
-    void should_set_flag_decision_and_reasons_available_flag_to_no() {
+    void should_handle() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
+            .thenReturn(YES);
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
-
-        assertEquals(asylumCase, callbackResponse.getData());
     }
 
     @Test
