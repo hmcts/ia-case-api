@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
@@ -60,6 +64,8 @@ class ListCaseWithoutHearingRequirementsPreparerTest {
     @Captor
     private ArgumentCaptor<DynamicList> hearingLocationsCaptor;
 
+    private final MockedStatic<HandlerUtils> handlerUtilsMock = Mockito.mockStatic(HandlerUtils.class);
+
     private ListCaseWithoutHearingRequirementsPreparer listCaseWithoutHearingRequirementsPreparer;
 
     @BeforeEach
@@ -70,6 +76,11 @@ class ListCaseWithoutHearingRequirementsPreparerTest {
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    }
+
+    @AfterEach
+    void tearDown() {
+        handlerUtilsMock.close();
     }
 
     @Test
@@ -189,5 +200,16 @@ class ListCaseWithoutHearingRequirementsPreparerTest {
 
         verify(asylumCase, never())
             .write(eq(HEARING_LOCATION), any());
+    }
+
+    @Test
+    void should_set_auto_list_hearing_value() {
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCaseWithoutHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.setDefaultAutoListHearingValue(asylumCase),
+            times(1)
+        );
     }
 }

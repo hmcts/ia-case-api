@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
@@ -53,6 +54,8 @@ public class ListCaseWithoutHearingRequirementsPreparer implements PreSubmitCall
         }
 
         setDefaultHearingLengthForAppealType(asylumCase);
+
+        HandlerUtils.setDefaultAutoListHearingValue(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

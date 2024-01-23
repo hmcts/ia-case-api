@@ -1,17 +1,36 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.PRESIDENTIAL_PANEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 public class HandlerUtils {
+
+    public static final String ON_THE_PAPERS = "ONPPRS";
 
     private HandlerUtils() {
     }
@@ -81,5 +100,55 @@ public class HandlerUtils {
         } else {
             asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, NO);
         }
+    }
+
+    public static void setDefaultAutoListHearingValue(AsylumCase asylumCase) {
+        boolean isHearingOnThePaper = asylumCase.read(HEARING_CHANNEL, DynamicList.class)
+            .map(hearingChannels -> hearingChannels.getListItems().stream()
+                .anyMatch(c -> c.getCode().equals(ON_THE_PAPERS)))
+            .orElse(false);
+
+        List<String> flagTypesToCheck = List.of(
+            SIGN_LANGUAGE_INTERPRETER.getFlagCode(), FOREIGN_NATIONAL_OFFENDER.getFlagCode(),
+            AUDIO_VIDEO_EVIDENCE.getFlagCode(), LITIGATION_FRIEND.getFlagCode(),
+            LACKING_CAPACITY.getFlagCode(), PRESIDENTIAL_PANEL.getFlagCode()
+        );
+
+        if (isHearingOnThePaper || hasActiveFlagOfTypes(asylumCase, flagTypesToCheck)) {
+            asylumCase.write(AUTO_LIST_HEARING, YES);
+        } else {
+            asylumCase.write(AUTO_LIST_HEARING, NO);
+        }
+    }
+
+    private static List<StrategicCaseFlag> getStrategicFlagList(Optional<List<PartyFlagIdValue>> optionalInterpreterFlags) {
+        return optionalInterpreterFlags.map(flags -> flags.stream().map(PartyFlagIdValue::getValue).toList())
+            .orElse(Collections.emptyList());
+    }
+
+    private static boolean hasActiveFlagOfTypes(AsylumCase asylumCase, List<String> flagTypesToCheck) {
+        List<StrategicCaseFlag> witnessFlags = getStrategicFlagList(asylumCase.read(WITNESS_LEVEL_FLAGS));
+        List<StrategicCaseFlag> interpreterFlags = getStrategicFlagList(asylumCase.read(INTERPRETER_LEVEL_FLAGS));
+
+        List<StrategicCaseFlag> appellantLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .map(List::of).orElse(Collections.emptyList());
+
+        List<StrategicCaseFlag> caseLevelFlag = asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .map(List::of).orElse(Collections.emptyList());
+
+        List<StrategicCaseFlag> allCaseFlags = new ArrayList<>();
+        Stream.of(witnessFlags, interpreterFlags, appellantLevelFlags, caseLevelFlag).forEach(allCaseFlags::addAll);
+
+        if (allCaseFlags.isEmpty()) {
+            return false;
+        }
+
+        List<CaseFlagDetail> flagDetails = allCaseFlags.stream()
+            .filter(flag -> !isEmpty(flag.getDetails()))
+            .flatMap(flag -> flag.getDetails().stream())
+            .collect(Collectors.toList());
+
+        return flagDetails.stream().anyMatch(detail -> flagTypesToCheck.contains(detail.getValue().getFlagCode())
+            && ACTIVE_STATUS.equals(detail.getValue().getStatus()));
     }
 }

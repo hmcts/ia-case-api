@@ -7,16 +7,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
@@ -24,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HandlerUtilsTest {
+    private static final String ON_THE_PAPERS = "ONPPRS";
 
     @Mock
     private AsylumCase asylumCase;
@@ -111,5 +120,59 @@ class HandlerUtilsTest {
         assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
             .hasMessage("Appellant given names required")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "true, false, false, false, true, Active, RA0042, YES", // Only witnessLevelFlags present
+        "false, true, false, false, true, Active, PF0012, YES", // Only interpreterLevelFlags present
+        "false, false, true, false, true, Active, PF0014, YES", // Only appellantLevelFlags present
+        "false, false, false, true, true, Active, PF0017, YES", // Only caseLevelFlags present
+        "true, true, true, true, true, Active, CF0011, YES", // All flags active and present
+        "true, true, false, false, false, Inactive, PF0018, NO", // Only inactive flags present
+        "false, false, false, false, false, Inactive, CF0011, NO", // No flags present
+        "false, false, false, false, true, Active, CF0011, YES", // No flags present and Hearing is on the papers
+    })
+    void setDefaultAutoListHearingValue_ActiveFlagPresent(boolean hasWitnessFlags, boolean hasInterpreterFlags,
+                                                          boolean hasAppellantFlags, boolean hasCaseFlags,
+                                                          boolean isHearingOnThePaper, String active,
+                                                          String flagCode, String expected) {
+        when(asylumCase.read(HEARING_CHANNEL, DynamicList.class)).thenReturn(
+            isHearingOnThePaper ?
+                Optional.of(new DynamicList(new Value(ON_THE_PAPERS, "On the Papers"),
+                    List.of(new Value(ON_THE_PAPERS, "On the Papers"))))
+                : Optional.empty());
+
+        List<CaseFlagDetail> existingFlags = List.of(
+            new CaseFlagDetail("1",
+                CaseFlagValue
+                    .builder()
+                    .flagCode(flagCode)
+                    .name("flagName")
+                    .status(active)
+                    .build())
+        );
+
+        when(asylumCase.read(WITNESS_LEVEL_FLAGS)).thenReturn(
+            hasWitnessFlags ? Optional.of(List.of(new PartyFlagIdValue("id",
+                new StrategicCaseFlag("name", "role", existingFlags))))
+                : Optional.empty());
+
+        when(asylumCase.read(INTERPRETER_LEVEL_FLAGS)).thenReturn(
+            hasInterpreterFlags ? Optional.of(List.of(new PartyFlagIdValue("id",
+                new StrategicCaseFlag("name", "role", existingFlags))))
+                : Optional.empty());
+
+        when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(
+            hasAppellantFlags ? Optional.of(new StrategicCaseFlag("name", "role", existingFlags))
+                : Optional.empty());
+
+        when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(
+            hasCaseFlags ? Optional.of(new StrategicCaseFlag("name", "role", existingFlags))
+                : Optional.empty());
+
+        HandlerUtils.setDefaultAutoListHearingValue(asylumCase);
+
+        verify(asylumCase, times(1)).write(AUTO_LIST_HEARING, YesOrNo.valueOf(expected));
     }
 }
