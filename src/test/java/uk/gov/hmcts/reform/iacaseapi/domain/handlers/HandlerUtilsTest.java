@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
@@ -124,17 +123,18 @@ class HandlerUtilsTest {
 
     @ParameterizedTest
     @CsvSource({
-        "true, false, false, false, true, Active, RA0042, YES", // Only witnessLevelFlags present
-        "false, true, false, false, true, Active, PF0012, YES", // Only interpreterLevelFlags present
-        "false, false, true, false, true, Active, PF0014, YES", // Only appellantLevelFlags present
-        "false, false, false, true, true, Active, PF0017, YES", // Only caseLevelFlags present
-        "true, true, true, true, true, Active, CF0011, YES", // All flags active and present
-        "true, true, false, false, false, Inactive, PF0018, NO", // Only inactive flags present
-        "false, false, false, false, false, Inactive, CF0011, NO", // No flags present
-        "false, false, false, false, true, Active, CF0011, YES", // No flags present and Hearing is on the papers
+        "true, false, true, Active, RA0042, NO", // Only appellantLevelFlag RA0042 present
+        "true, false, true, Active, PF0012, NO", // Only appellantLevelFlag PF0012 present
+        "true, false, true, Active, PF0014, NO", // Only appellantLevelFlags PF0014 present
+        "true, false, true, Active, PF0017, NO", // Only appellantLevelFlags PF0017 present
+        "true, false, true, Active, PF0018, NO", // Only appellantLevelFlags PF0018 present
+        "false, true, true, Active, CF0011, NO", // Only caseLevelFlags CF0011 present
+        "true, true, true, Active, CF0011, NO", // All flags active and present
+        "false, false, false, Inactive, PF0018, YES", // Only inactive flags present
+        "false, false, false, Inactive, CF0011, YES", // No flags present
+        "false, false, true, Active, CF0011, NO", // No flags present and Hearing is on the papers
     })
-    void setDefaultAutoListHearingValue_ActiveFlagPresent(boolean hasWitnessFlags, boolean hasInterpreterFlags,
-                                                          boolean hasAppellantFlags, boolean hasCaseFlags,
+    void setDefaultAutoListHearingValue_ActiveFlagPresent(boolean hasAppellantFlags, boolean hasCaseFlags,
                                                           boolean isHearingOnThePaper, String active,
                                                           String flagCode, String expected) {
         when(asylumCase.read(HEARING_CHANNEL, DynamicList.class)).thenReturn(
@@ -152,16 +152,6 @@ class HandlerUtilsTest {
                     .status(active)
                     .build())
         );
-
-        when(asylumCase.read(WITNESS_LEVEL_FLAGS)).thenReturn(
-            hasWitnessFlags ? Optional.of(List.of(new PartyFlagIdValue("id",
-                new StrategicCaseFlag("name", "role", existingFlags))))
-                : Optional.empty());
-
-        when(asylumCase.read(INTERPRETER_LEVEL_FLAGS)).thenReturn(
-            hasInterpreterFlags ? Optional.of(List.of(new PartyFlagIdValue("id",
-                new StrategicCaseFlag("name", "role", existingFlags))))
-                : Optional.empty());
 
         when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(
             hasAppellantFlags ? Optional.of(new StrategicCaseFlag("name", "role", existingFlags))

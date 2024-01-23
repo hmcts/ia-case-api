@@ -13,17 +13,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
@@ -108,47 +105,46 @@ public class HandlerUtils {
                 .anyMatch(c -> c.getCode().equals(ON_THE_PAPERS)))
             .orElse(false);
 
-        List<String> flagTypesToCheck = List.of(
-            SIGN_LANGUAGE_INTERPRETER.getFlagCode(), FOREIGN_NATIONAL_OFFENDER.getFlagCode(),
-            AUDIO_VIDEO_EVIDENCE.getFlagCode(), LITIGATION_FRIEND.getFlagCode(),
-            LACKING_CAPACITY.getFlagCode(), PRESIDENTIAL_PANEL.getFlagCode()
-        );
-
-        if (isHearingOnThePaper || hasActiveFlagOfTypes(asylumCase, flagTypesToCheck)) {
-            asylumCase.write(AUTO_LIST_HEARING, YES);
-        } else {
+        if (isHearingOnThePaper || hasActiveFlags(asylumCase)) {
             asylumCase.write(AUTO_LIST_HEARING, NO);
+        } else {
+            asylumCase.write(AUTO_LIST_HEARING, YES);
         }
     }
 
-    private static List<StrategicCaseFlag> getStrategicFlagList(Optional<List<PartyFlagIdValue>> optionalInterpreterFlags) {
-        return optionalInterpreterFlags.map(flags -> flags.stream().map(PartyFlagIdValue::getValue).toList())
-            .orElse(Collections.emptyList());
-    }
-
-    private static boolean hasActiveFlagOfTypes(AsylumCase asylumCase, List<String> flagTypesToCheck) {
-        List<StrategicCaseFlag> witnessFlags = getStrategicFlagList(asylumCase.read(WITNESS_LEVEL_FLAGS));
-        List<StrategicCaseFlag> interpreterFlags = getStrategicFlagList(asylumCase.read(INTERPRETER_LEVEL_FLAGS));
-
+    private static boolean hasActiveFlags(AsylumCase asylumCase) {
         List<StrategicCaseFlag> appellantLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
             .map(List::of).orElse(Collections.emptyList());
 
         List<StrategicCaseFlag> caseLevelFlag = asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
             .map(List::of).orElse(Collections.emptyList());
 
-        List<StrategicCaseFlag> allCaseFlags = new ArrayList<>();
-        Stream.of(witnessFlags, interpreterFlags, appellantLevelFlags, caseLevelFlag).forEach(allCaseFlags::addAll);
+        boolean hasActiveFlags = false;
 
-        if (allCaseFlags.isEmpty()) {
-            return false;
+        List<String> flagTypesToCheck = List.of(
+            SIGN_LANGUAGE_INTERPRETER.getFlagCode(), FOREIGN_NATIONAL_OFFENDER.getFlagCode(),
+            AUDIO_VIDEO_EVIDENCE.getFlagCode(), LITIGATION_FRIEND.getFlagCode(), LACKING_CAPACITY.getFlagCode()
+        );
+
+        if (!appellantLevelFlags.isEmpty()) {
+            hasActiveFlags = generateFlagDetailsList(appellantLevelFlags)
+                .stream().anyMatch(detail -> flagTypesToCheck.contains(detail.getValue().getFlagCode())
+                    && ACTIVE_STATUS.equals(detail.getValue().getStatus()));
         }
 
-        List<CaseFlagDetail> flagDetails = allCaseFlags.stream()
+        if (!caseLevelFlag.isEmpty()) {
+            hasActiveFlags |= generateFlagDetailsList(caseLevelFlag)
+                .stream().anyMatch(detail -> PRESIDENTIAL_PANEL.getFlagCode().equals(detail.getValue().getFlagCode())
+                    && ACTIVE_STATUS.equals(detail.getValue().getStatus()));
+        }
+
+        return hasActiveFlags;
+    }
+
+    private static List<CaseFlagDetail> generateFlagDetailsList(List<StrategicCaseFlag> allCaseFlags) {
+        return allCaseFlags.stream()
             .filter(flag -> !isEmpty(flag.getDetails()))
             .flatMap(flag -> flag.getDetails().stream())
             .collect(Collectors.toList());
-
-        return flagDetails.stream().anyMatch(detail -> flagTypesToCheck.contains(detail.getValue().getFlagCode())
-            && ACTIVE_STATUS.equals(detail.getValue().getStatus()));
     }
 }
