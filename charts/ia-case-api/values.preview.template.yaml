@@ -8,7 +8,7 @@ java:
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
-    IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+    IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api-pr-806.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
@@ -102,8 +102,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-806
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
