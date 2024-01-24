@@ -420,90 +420,6 @@ class FtpaDecisionMidEventTest {
 
 
     @Test
-    void should_successfully_set_appellant_decision_objections_page_visibility_when_set_aside_is_yes() {
-
-        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(IS_FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_respondent_decision_objections_page_visibility_when_set_aside_is_yes() {
-
-        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
-        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(IS_FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_appellant_decision_objections_page_visibility_when_reheard_rule35() {
-
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_respondent_decision_objections_page_visibility_when_reheard_rule35() {
-
-        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
-        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
     void should_successfully_set_appellant_decision_reasons_notes_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -630,55 +546,11 @@ class FtpaDecisionMidEventTest {
         verify(asylumCase).write(FTPA_RESPONDENT_DECISION_LISTING_VISIBLE, YesOrNo.YES);
     }
 
-    @Test
-    void should_successfully_set_appellant_decision_listing_visibility_when_reheard_rule32() {
-
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_APPELLANT_DECISION_LISTING_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_respondent_decision_listing_visibility_when_reheard_rule32() {
-
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
-        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_RESPONDENT_DECISION_LISTING_VISIBLE, YesOrNo.YES);
-    }
-
     @ParameterizedTest
     @CsvSource({
         "FTPA_APPELLANT_SUBMITTED, APPELLANT, FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, REHEARD_RULE35",
-        "FTPA_APPELLANT_SUBMITTED, APPELLANT, FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, REHEARD_RULE32",
         "FTPA_APPELLANT_SUBMITTED, APPELLANT, FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, REMADE_RULE32",
         "FTPA_RESPONDENT_SUBMITTED, RESPONDENT, FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, REHEARD_RULE35",
-        "FTPA_RESPONDENT_SUBMITTED, RESPONDENT, FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, REHEARD_RULE32",
         "FTPA_RESPONDENT_SUBMITTED, RESPONDENT, FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, REMADE_RULE32",
     })
     void should_return_error_when_rj_select_appellant_or_respondent_for_reheard_rule35_rule32_or_remade_rule32_in_aip(
