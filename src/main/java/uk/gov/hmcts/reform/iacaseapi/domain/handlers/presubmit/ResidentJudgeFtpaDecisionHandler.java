@@ -55,7 +55,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION;
+               && callback.getEvent() == Event.DECIDE_FTPA_APPLICATION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

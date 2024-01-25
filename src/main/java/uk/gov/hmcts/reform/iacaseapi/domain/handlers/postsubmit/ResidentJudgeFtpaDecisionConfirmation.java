@@ -18,7 +18,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION;
+        return callback.getEvent() == Event.DECIDE_FTPA_APPLICATION;
     }
 
     public PostSubmitCallbackResponse handle(

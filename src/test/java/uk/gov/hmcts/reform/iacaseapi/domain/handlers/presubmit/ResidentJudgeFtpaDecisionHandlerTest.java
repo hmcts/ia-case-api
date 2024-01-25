@@ -139,7 +139,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
@@ -202,7 +202,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
@@ -267,7 +267,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
@@ -302,7 +302,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         assertThatThrownBy(
             () -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -314,7 +314,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     void should_throw_if_ftpa_decision_outcome_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         assertThatThrownBy(
@@ -350,7 +350,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
                 boolean canHandle = residentJudgeFtpaDecisionHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION
+                if (event == Event.DECIDE_FTPA_APPLICATION
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

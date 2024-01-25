@@ -45,7 +45,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_return_grant_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("granted"));
@@ -75,7 +75,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_return_partially_granted_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
@@ -106,7 +106,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_return_refused_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("refused"));
@@ -136,7 +136,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_return_reheardRule32_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
@@ -167,7 +167,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_return_reheardRule35_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
@@ -199,7 +199,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_return_remadeRule32_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
@@ -229,7 +229,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
             .hasMessage("FtpaApplicantType is not present")
@@ -261,7 +261,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
 
                 boolean canHandle = residentJudgeFtpaDecisionConfirmation.canHandle(callback);
 
-                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION) {
+                if (event == Event.DECIDE_FTPA_APPLICATION) {
 
                     assertTrue(canHandle);
                 } else {

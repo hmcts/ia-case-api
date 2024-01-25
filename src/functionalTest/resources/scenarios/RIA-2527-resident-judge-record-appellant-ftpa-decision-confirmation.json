@@ -4,7 +4,7 @@
     "uri": "/asylum/ccdSubmitted",
     "credentials": "Judge",
     "input": {
-      "eventId": "residentJudgeFtpaDecision",
+      "eventId": "decideFtpaApplication",
       "ftpaAppellantDecisionRemadeRule32": "allowed",
       "state": "ftpaSubmitted",
       "id": 1234,
