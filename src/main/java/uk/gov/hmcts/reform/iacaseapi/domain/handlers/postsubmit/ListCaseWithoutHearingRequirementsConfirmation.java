@@ -45,7 +45,7 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
         if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
             boolean hearingRequestSuccessful = asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)
                 .map(manualCreateRequired -> NO == manualCreateRequired)
-                .orElse(true);
+                .orElse(false);
 
             return buildAutoHearingRequestConfirmationResponse(callback.getCaseDetails().getId(), hearingRequestSuccessful);
         } else {

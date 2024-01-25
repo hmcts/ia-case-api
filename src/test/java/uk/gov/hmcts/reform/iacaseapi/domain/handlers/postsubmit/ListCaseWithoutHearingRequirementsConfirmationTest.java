@@ -10,6 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
@@ -59,6 +60,8 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
 
     @Test
     void should_return_successful_confirmation_when_auto_request_enabled() {
+
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
