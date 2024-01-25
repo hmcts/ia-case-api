@@ -1,17 +1,18 @@
 import os
 import json
+import csv
 
 """
-Script for redacting data from a case data JSON.
+Script for redacting data from a case data JSON or CSV.
 
 Usage: 
 
-Replace filepath with absolute filepath of JSON requiring redacting at the bottom of this file where 
-redact_values_from_file function is called.
+Replace filepath with absolute filepath of JSON/CSV requiring redacting at the bottom of this file where 
+desired function is called (comment out other if not needed).
 
 Run python bin/utils/python_scripts/redact_info_from_json.py while in ia/case/api directory
  
-Script will output redacted JSON file in the same directory as original
+Script will output redacted JSON/CSV file in the same directory as original
 with '_redacted' suffix.
 
 Notes:
@@ -96,7 +97,7 @@ replace_mapping_dict = {
 replace_mapping_keys = list(replace_mapping_dict.keys())
 
 
-def redact_values_from_file(file_path, keys_to_redact):
+def redact_values_from_json(file_path, keys_to_redact):
     with open(file_path, 'r') as file:
         json_data = json.load(file)
 
@@ -120,6 +121,29 @@ def redact_values(json_data, keys_to_redact):
             redact_values(item, keys_to_redact)
 
 
+def redact_values_from_csv(input_file_path, keys_to_redact):
+    with open(input_file_path, 'r', newline='') as input_file:
+        reader = csv.DictReader(input_file)
+        rows = list(reader)
+
+    redact_csv_rows(rows, keys_to_redact)
+    output_file_path = get_redacted_file_path(input_file_path)
+
+    with open(output_file_path, 'w', newline='') as output_file:
+        fieldnames = reader.fieldnames
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def redact_csv_rows(rows, keys_to_redact):
+    for row in rows:
+        for key, value in row.items():
+            if key.lower() in keys_to_redact:
+                replace_term = get_replace_term(key)
+                row[key] = replace_term
+
+
 def get_redacted_file_path(original_file_path):
     base_name, extension = os.path.splitext(original_file_path)
     return f"{base_name}_redacted{extension}"
@@ -130,6 +154,8 @@ def get_replace_term(key):
     return replace_mapping_dict.get(key, 'redacted')
 
 
-redact_values_from_file(
+redact_values_from_json(
     '/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/SNi_tickets/SNI-5296/latest_data.json', replace_mapping_keys
 )
+
+redact_values_from_csv('/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/example.csv', replace_mapping_keys)
