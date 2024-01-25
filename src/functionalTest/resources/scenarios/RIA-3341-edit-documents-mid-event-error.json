@@ -39,7 +39,7 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["If you add a new document you must complete the fields related to that document, or remove it, before you can submit your changes."],
+    "errors": ["If you are adding a new document please ensure all fields including the document and date fields are filled in and completed or you have selected 'remove'  before submitting your changes."],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
