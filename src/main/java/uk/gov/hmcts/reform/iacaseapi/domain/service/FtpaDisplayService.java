@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECOND_FTPA_DECISION_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.google.common.collect.ImmutableMap;
@@ -20,7 +21,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -153,6 +157,43 @@ public class FtpaDisplayService {
             updateCaseFlags(asylumCase);
         }
 
+
+    }
+
+    public void mapFtpaDecision(AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
+        ftpaApplication.setIsFtpaNoticeOfDecisionSetAside(asylumCase
+                .read(valueOf(String.format("IS_FTPA_%s_NOTICE_OF_DECISION_SET_ASIDE", ftpaApplicantType)), YesOrNo.class)
+                .orElse(YesOrNo.NO));
+
+        String ftpaDecisionOutcomeType = asylumCase.read(
+                        valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType)), String.class)
+                .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
+
+        if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
+            asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType)), String.class)
+                    .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32);
+        }
+
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionAndReasonsDocument = asylumCase.read(
+                valueOf(String.format("FTPA_%s_DECISION_DOCUMENT", ftpaApplicantType)));
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
+                valueOf(String.format("FTPA_%s_NOTICE_DOCUMENT", ftpaApplicantType)));
+        final Optional<FtpaDecisionCheckValues<String>> maybeDecisionNotesPoints =
+                asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_NOTES_POINTS", ftpaApplicantType)));
+
+        ftpaApplication.setFtpaDecisionOutcomeType(ftpaDecisionOutcomeType);
+        maybeFtpaDecisionAndReasonsDocument.ifPresent(ftpaApplication::setFtpaDecisionDocument);
+        maybeFtpaDecisionNoticeDocument.ifPresent(ftpaApplication::setFtpaNoticeDocument);
+        maybeDecisionNotesPoints.ifPresent(ftpaApplication::setFtpaDecisionNotesPoints);
+
+        asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_OBJECTIONS", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionObjections);
+        asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_LST_INS", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionLstIns);
+        asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_NOTES_DESCRIPTION", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionNotesDescription);
+        asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionDate);
 
     }
 
