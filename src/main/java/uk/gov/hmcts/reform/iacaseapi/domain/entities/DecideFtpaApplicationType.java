@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum DecideFtpaApplicationType {
     PARTIALLY_GRANTED("partiallyGranted"),
     GRANTED("granted"),
-    PARTIALLY_GRANTED("partiallyGranted"),
     REFUSED("refused"),
     APPLICATION_NOT_ADMITTED("notAdmitted"),
     WITHDRAWN("withdrawn"),
