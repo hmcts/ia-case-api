@@ -95,7 +95,7 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
                 .filter(questionAnswerIdValue -> questionAnswerIdValue.getId().equals(questionId))
                 .findFirst();
 
-        return clarifyingQuestionAnswer.isPresent() && isEmpty(clarifyingQuestionAnswer.get().getValue().getAnswer());
+        return clarifyingQuestionAnswer.isEmpty() || isEmpty(clarifyingQuestionAnswer.get().getValue().getAnswer());
     }
 
     private IdValue<ClarifyingQuestionAnswer> mapDefaultAnswer(IdValue<ClarifyingQuestion> clarifyingQuestion, Direction direction, Event event) {
