@@ -47,7 +47,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaDecisionOutcomeType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaResidentJudgeDecisionOutcomeType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecideFtpaApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -300,7 +300,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -321,7 +321,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.PARTIALLY_GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -342,7 +342,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REFUSED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REFUSED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -363,7 +363,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -469,7 +469,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -490,7 +490,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -511,7 +511,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -532,7 +532,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -553,7 +553,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.PARTIALLY_GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -574,7 +574,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.PARTIALLY_GRANTED.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -596,7 +596,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -617,7 +617,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -638,7 +638,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE32.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -659,7 +659,7 @@ class FtpaDecisionMidEventTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
 
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE32.toString()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -685,7 +685,7 @@ class FtpaDecisionMidEventTest {
             AsylumCaseFieldDefinition ftpaSubmitted,
             Parties party,
             AsylumCaseFieldDefinition ftpaRjDecisionOutcomeType,
-            FtpaResidentJudgeDecisionOutcomeType selection
+            DecideFtpaApplicationType selection
     ) {
         when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(asylumCase.read(ftpaSubmitted, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
@@ -717,7 +717,7 @@ class FtpaDecisionMidEventTest {
             AsylumCaseFieldDefinition ftpaSubmitted,
             Parties party,
             AsylumCaseFieldDefinition ftpaRjDecisionOutcomeType,
-            FtpaResidentJudgeDecisionOutcomeType selection
+            DecideFtpaApplicationType selection
     ) {
         when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(asylumCase.read(ftpaSubmitted, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));

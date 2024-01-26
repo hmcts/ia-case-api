@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class DecideFtpaApplicationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         Callback<AsylumCase> callback

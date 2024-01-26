@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @Component
-public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
@@ -33,7 +33,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     private final FtpaDisplayService ftpaDisplayService;
     private final FeatureToggler featureToggler;
 
-    public ResidentJudgeFtpaDecisionHandler(
+    public DecideFtpaApplicationDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,

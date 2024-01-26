@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class ResidentJudgeFtpaDecisionConfirmationTest {
+class DecideFtpaApplicationConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -38,8 +38,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation =
-        new ResidentJudgeFtpaDecisionConfirmation();
+    private DecideFtpaApplicationConfirmation decideFtpaApplicationConfirmation =
+        new DecideFtpaApplicationConfirmation();
 
     @Test
     void should_return_grant_confirmation() {
@@ -51,7 +51,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("granted"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+            decideFtpaApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -82,7 +82,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("partiallyGranted"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+            decideFtpaApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -112,7 +112,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("refused"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+            decideFtpaApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -143,7 +143,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("reheardRule32"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+            decideFtpaApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -174,7 +174,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("reheardRule35"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+            decideFtpaApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -206,7 +206,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("remadeRule32"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+            decideFtpaApplicationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -231,7 +231,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
+        assertThatThrownBy(() -> decideFtpaApplicationConfirmation.handle(callback))
             .hasMessage("FtpaApplicantType is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -239,12 +239,12 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
+        assertThatThrownBy(() -> decideFtpaApplicationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
+        assertThatThrownBy(() -> decideFtpaApplicationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
@@ -259,7 +259,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = residentJudgeFtpaDecisionConfirmation.canHandle(callback);
+                boolean canHandle = decideFtpaApplicationConfirmation.canHandle(callback);
 
                 if (event == Event.DECIDE_FTPA_APPLICATION) {
 
@@ -276,11 +276,11 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.canHandle(null))
+        assertThatThrownBy(() -> decideFtpaApplicationConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(null))
+        assertThatThrownBy(() -> decideFtpaApplicationConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

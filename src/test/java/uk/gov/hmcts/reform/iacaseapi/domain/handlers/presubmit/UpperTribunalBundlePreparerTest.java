@@ -45,7 +45,7 @@ class UpperTribunalBundlePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE32.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -63,7 +63,7 @@ class UpperTribunalBundlePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -81,7 +81,7 @@ class UpperTribunalBundlePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REMADE_RULE32.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -102,7 +102,7 @@ class UpperTribunalBundlePreparerTest {
             .thenReturn(Optional.empty());
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE32.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -123,7 +123,7 @@ class UpperTribunalBundlePreparerTest {
             .thenReturn(Optional.empty());
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -144,7 +144,7 @@ class UpperTribunalBundlePreparerTest {
             .thenReturn(Optional.empty());
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString()));
+            .thenReturn(Optional.of(DecideFtpaApplicationType.REMADE_RULE32.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
