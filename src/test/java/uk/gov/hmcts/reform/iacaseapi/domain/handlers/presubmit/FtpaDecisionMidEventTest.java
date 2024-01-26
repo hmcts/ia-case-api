@@ -85,7 +85,7 @@ class FtpaDecisionMidEventTest {
 
                 boolean canHandle = ftpaDecisionMidEvent.canHandle(callbackStage, callback);
 
-                if ( event == Event.DECIDE_FTPA_APPLICATION
+                if (event == Event.DECIDE_FTPA_APPLICATION
                     && callbackStage == MID_EVENT) {
 
                     assertTrue(canHandle);
