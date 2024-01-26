@@ -23,17 +23,17 @@ public class ApplyForCostsFeatureTogglerPreparer implements PreSubmitCallbackHan
     private final DateProvider dateProvider;
 
     public ApplyForCostsFeatureTogglerPreparer(
-            FeatureToggler featureToggler,
-            @Value("${appealOutOfTimeDaysOoc}") int applicationOutOfTimeDays,
-            DateProvider dateProvider) {
+        FeatureToggler featureToggler,
+        @Value("${appealOutOfTimeDaysOoc}") int applicationOutOfTimeDays,
+        DateProvider dateProvider) {
         this.featureToggler = featureToggler;
         this.applicationOutOfTimeDays = applicationOutOfTimeDays;
         this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -42,8 +42,8 @@ public class ApplyForCostsFeatureTogglerPreparer implements PreSubmitCallbackHan
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -52,7 +52,7 @@ public class ApplyForCostsFeatureTogglerPreparer implements PreSubmitCallbackHan
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         boolean isApplyForCostsFeatureEnabled
-                = featureToggler.getValue("apply-for-costs-feature", false);
+            = featureToggler.getValue("apply-for-costs-feature", false);
 
         asylumCase.write(IS_APPLY_FOR_COSTS_OOT, applyForCostsOot(asylumCase));
 
@@ -72,12 +72,12 @@ public class ApplyForCostsFeatureTogglerPreparer implements PreSubmitCallbackHan
 
         if (!endAppealDate.isEmpty()) {
             return LocalDate.parse(endAppealDate).plusDays(applicationOutOfTimeDays).isBefore(applyForCostsDate)
-                    ? YesOrNo.YES
-                    : YesOrNo.NO;
+                ? YesOrNo.YES
+                : YesOrNo.NO;
         } else if (!sendDecisionAndReasonsDate.isEmpty()) {
             return LocalDate.parse(sendDecisionAndReasonsDate).plusDays(applicationOutOfTimeDays).isBefore(applyForCostsDate)
-                    ? YesOrNo.YES
-                    : YesOrNo.NO;
+                ? YesOrNo.YES
+                : YesOrNo.NO;
         }
 
         return YesOrNo.NO;

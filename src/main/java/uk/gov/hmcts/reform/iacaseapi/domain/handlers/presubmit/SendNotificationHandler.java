@@ -148,7 +148,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.MAINTAIN_CASE_LINKS,
             Event.UPDATE_PAYMENT_STATUS,
             Event.MARK_AS_READY_FOR_UT_TRANSFER,
-            Event.UPDATE_DETENTION_LOCATION
+            Event.UPDATE_DETENTION_LOCATION,
+            Event.APPLY_FOR_COSTS,
+            Event.RESPOND_TO_COSTS,
+            Event.ADD_EVIDENCE_FOR_COSTS,
+            Event.CONSIDER_MAKING_COSTS_ORDER,
+            Event.DECIDE_COSTS_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -215,8 +220,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.CHANGE_DIRECTION_DUE_DATE,
                 Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                 Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                Event.UPLOAD_ADDENDUM_EVIDENCE
-        );
+                Event.UPLOAD_ADDENDUM_EVIDENCE,
+                Event.TURN_ON_NOTIFICATIONS,
+                Event.DECISION_WITHOUT_HEARING,
+                Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+                Event.REMOVE_APPEAL_FROM_ONLINE,
+                Event.ADJOURN_HEARING_WITHOUT_DATE
+                );
 
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);

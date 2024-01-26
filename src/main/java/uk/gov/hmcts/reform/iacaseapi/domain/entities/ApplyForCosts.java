@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -11,14 +13,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @EqualsAndHashCode
 @ToString
+@Getter
+@Setter
 public class ApplyForCosts {
+    //Applicant fields
     private String appliedCostsType;
     private String argumentsAndEvidenceDetails;
     private List<IdValue<Document>> argumentsAndEvidenceDocuments;
     private List<IdValue<Document>> scheduleOfCostsDocuments;
     private YesOrNo applyForCostsHearingType;
     private String applyForCostsHearingTypeExplanation;
-    private String applyForCostsDecision;
     private String applyForCostsApplicantType;
     private String applyForCostsCreationDate;
     private String respondentToCostsOrder;
@@ -26,8 +30,59 @@ public class ApplyForCosts {
     private List<IdValue<Document>> ootUploadEvidenceDocuments;
     private YesOrNo isApplyForCostsOot;
 
+    //Respondent fields
+    private String applyForCostsRespondentRole;
+    private String responseToApplication;
+    private YesOrNo responseHearingType;
+    private String responseHearingTypeExplanation; //only if type of hearing is yes
+    private List<IdValue<Document>> responseEvidence;
+
+    //Both(applicant and respondent) additional evidence
+    private List<IdValue<Document>> applicantAdditionalEvidence;
+    private List<IdValue<Document>> respondentAdditionalEvidence;
+    private String loggedUserRole;
+
+    //Judge decision fields
+    private String applyForCostsDecision;
+    private String costsDecisionType;
+    private String costsOralHearingDate; // only if costsDecisionType is "with an oral hearing"
+    private List<IdValue<Document>> uploadCostsOrder;
+    private String dateOfDecision;
+
+    //Judge consideration fields
+    private String tribunalConsideringReason;
+    private List<IdValue<Document>> judgeEvidenceForCostsOrder;
+
     public ApplyForCosts() {
         // noop -- for deserializer
+    }
+
+    public ApplyForCosts(
+        String applyForCostsDecision,
+        String appliedCostsType,
+        String applyForCostsApplicantType,
+        String tribunalConsideringReason,
+        List<IdValue<Document>> judgeEvidenceForCostsOrder,
+        String applyForCostsCreationDate,
+        String respondentToCostsOrder,
+        String applyForCostsRespondentRole
+    ) {
+        requireNonNull(applyForCostsDecision);
+        requireNonNull(appliedCostsType);
+        requireNonNull(applyForCostsApplicantType);
+        requireNonNull(tribunalConsideringReason);
+        requireNonNull(applyForCostsCreationDate);
+        requireNonNull(respondentToCostsOrder);
+        requireNonNull(applyForCostsRespondentRole);
+
+        this.applyForCostsDecision = applyForCostsDecision;
+        this.appliedCostsType = appliedCostsType;
+        this.applyForCostsApplicantType = applyForCostsApplicantType;
+        this.tribunalConsideringReason = tribunalConsideringReason;
+        this.judgeEvidenceForCostsOrder = judgeEvidenceForCostsOrder;
+        this.applyForCostsCreationDate = applyForCostsCreationDate;
+        this.respondentToCostsOrder = respondentToCostsOrder;
+        this.applyForCostsRespondentRole = applyForCostsRespondentRole;
     }
 
     public ApplyForCosts(
@@ -43,7 +98,8 @@ public class ApplyForCosts {
             String respondentToCostsOrder,
             String applyForCostsOotExplanation,
             List<IdValue<Document>> ootUploadEvidenceDocuments,
-            YesOrNo isApplyForCostsOot
+            YesOrNo isApplyForCostsOot,
+            String applyForCostsRespondentRole
     ) {
         requireNonNull(appliedCostsType);
         requireNonNull(argumentsAndEvidenceDocuments);
@@ -74,72 +130,6 @@ public class ApplyForCosts {
         this.applyForCostsOotExplanation = applyForCostsOotExplanation;
         this.ootUploadEvidenceDocuments = ootUploadEvidenceDocuments;
         this.isApplyForCostsOot = isApplyForCostsOot;
-    }
-
-
-    public String getAppliedCostsType() {
-        requireNonNull(appliedCostsType);
-        return appliedCostsType;
-    }
-
-    public String getArgumentsAndEvidenceDetails() {
-        return argumentsAndEvidenceDetails;
-    }
-
-    public List<IdValue<Document>> getArgumentsAndEvidenceDocuments() {
-        requireNonNull(argumentsAndEvidenceDocuments);
-        return argumentsAndEvidenceDocuments;
-    }
-
-    public List<IdValue<Document>> getScheduleOfCostsDocuments() {
-        return scheduleOfCostsDocuments;
-    }
-
-    public YesOrNo getApplyForCostsHearingType() {
-        requireNonNull(applyForCostsHearingType);
-        return applyForCostsHearingType;
-    }
-
-    public String getApplyForCostsHearingTypeExplanation() {
-        if (getApplyForCostsHearingType().equals(YesOrNo.YES)) {
-            requireNonNull(applyForCostsHearingTypeExplanation);
-        }
-        return applyForCostsHearingTypeExplanation;
-    }
-
-
-    public String getApplyForCostsDecision() {
-        requireNonNull(applyForCostsDecision);
-        return applyForCostsDecision;
-    }
-
-    public String getApplyForCostsApplicantType() {
-        requireNonNull(applyForCostsApplicantType);
-        return applyForCostsApplicantType;
-    }
-
-    public String getApplyForCostsCreationDate() {
-        requireNonNull(applyForCostsCreationDate);
-        return applyForCostsCreationDate;
-    }
-
-    public String getRespondentToCostsOrder() {
-        requireNonNull(respondentToCostsOrder);
-        return respondentToCostsOrder;
-    }
-
-    public String getApplyForCostsOotExplanation() {
-        if (isApplyForCostsOot.equals(YesOrNo.YES)) {
-            requireNonNull(applyForCostsOotExplanation);
-        }
-        return applyForCostsOotExplanation;
-    }
-
-    public List<IdValue<Document>> getOotUploadEvidenceDocuments() {
-        return ootUploadEvidenceDocuments;
-    }
-
-    public YesOrNo getIsApplyForCostsOot() {
-        return isApplyForCostsOot;
+        this.applyForCostsRespondentRole = applyForCostsRespondentRole;
     }
 }

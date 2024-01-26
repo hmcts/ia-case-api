@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.IAUT_2_FORM;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
@@ -81,8 +83,8 @@ public class UploadEjpDocumentsHandler implements PreSubmitCallbackHandler<Asylu
         renameDocuments(ejpAppealFormDocs, appellantName, appealReferenceNumber, iaut2AppealFormSuffix);
 
         List<DocumentWithMetadata> documentsWithMetadata = new ArrayList<>();
-        documentsWithMetadata.addAll(fetchDocumentWithMetadata(utOrderDocs));
-        documentsWithMetadata.addAll(fetchDocumentWithMetadata(ejpAppealFormDocs));
+        documentsWithMetadata.addAll(fetchDocumentWithMetadata(utOrderDocs, UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT));
+        documentsWithMetadata.addAll(fetchDocumentWithMetadata(ejpAppealFormDocs, IAUT_2_FORM));
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingTribunalDocuments =
                 asylumCase.read(TRIBUNAL_DOCUMENTS);
@@ -123,11 +125,12 @@ public class UploadEjpDocumentsHandler implements PreSubmitCallbackHandler<Asylu
         }
     }
     
-    private List<DocumentWithMetadata> fetchDocumentWithMetadata(List<IdValue<Document>> docsToPrepend) {
+    private List<DocumentWithMetadata> fetchDocumentWithMetadata(List<IdValue<Document>> docsToPrepend,
+                                                                 DocumentTag documentTag) {
         return docsToPrepend
                 .stream()
                 .map(IdValue::getValue)
-                .map(document -> documentReceiver.receive(document, "", DocumentTag.INTERNAL_EJP_DOCUMENT))
+                .map(document -> documentReceiver.receive(document, "", documentTag))
                 .collect(Collectors.toList());
     }
 }

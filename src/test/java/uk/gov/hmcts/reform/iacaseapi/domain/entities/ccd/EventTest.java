@@ -72,6 +72,7 @@ class EventTest {
         assertEquals("reviewTimeExtension", Event.REVIEW_TIME_EXTENSION.toString());
         assertEquals("sendDirectionWithQuestions", Event.SEND_DIRECTION_WITH_QUESTIONS.toString());
         assertEquals("flagCase", Event.FLAG_CASE.toString());
+        assertEquals("createFlag", Event.CREATE_FLAG.toString());
         assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("reviewCmaRequirements", Event.REVIEW_CMA_REQUIREMENTS.toString());
@@ -127,10 +128,14 @@ class EventTest {
         assertEquals("updateDetentionLocation", Event.UPDATE_DETENTION_LOCATION.toString());
         assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
         assertEquals("turnOnNotifications", Event.TURN_ON_NOTIFICATIONS.toString());
+        assertEquals("respondToCosts", Event.RESPOND_TO_COSTS.toString());
+        assertEquals("addEvidenceForCosts", Event.ADD_EVIDENCE_FOR_COSTS.toString());
+        assertEquals("decideCostsApplication", Event.DECIDE_COSTS_APPLICATION.toString());
+        assertEquals("considerMakingCostsOrder", Event.CONSIDER_MAKING_COSTS_ORDER.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(124, Event.values().length);
+        assertEquals(130, Event.values().length);
     }
 }

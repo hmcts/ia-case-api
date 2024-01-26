@@ -1675,9 +1675,21 @@ public enum AsylumCaseFieldDefinition {
 
     REMOVAL_ORDER_DATE(
         "removalOrderDate", new TypeReference<String>(){}),
-    
+
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
+    }),
+
+    CASE_LEVEL_FLAGS(
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
+    // This is not actually a real case field. It is used to determine
+    // the case flag id for the purpose of functional test
+    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
+
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
 
     LISTING_AVAILABLE_FOR_ADA(
         "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
@@ -1805,7 +1817,7 @@ public enum AsylumCaseFieldDefinition {
         "appliesForCosts", new TypeReference<List<IdValue<ApplyForCosts>>>(){}),
 
     APPLY_FOR_COSTS_DECISION(
-            "applyForCostsDecision", new TypeReference<String>(){}),
+            "applyForCostsDecision", new TypeReference<CostsDecision>(){}),
 
     APPLY_FOR_COSTS_APPLICANT_TYPE(
             "applyForCostsApplicantType", new TypeReference<String>(){}),
@@ -1815,9 +1827,6 @@ public enum AsylumCaseFieldDefinition {
 
     IS_APPLIED_FOR_COSTS(
             "isAppliedForCosts", new TypeReference<String>(){}),
-
-    RESPONDENT_TO_COSTS_ORDER(
-            "respondentToCostsOrder", new TypeReference<String>(){}),
 
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
@@ -1856,7 +1865,53 @@ public enum AsylumCaseFieldDefinition {
             "applyForCostsOotExplanation", new TypeReference<String>(){}),
 
     OOT_UPLOAD_EVIDENCE_DOCUMENTS(
-            "ootUploadEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){});
+            "ootUploadEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    RESPOND_TO_COSTS_LIST(
+        "respondToCostsList", new TypeReference<DynamicList>(){}),
+
+    RESPONSE_TO_APPLICATION_TEXT_AREA(
+        "responseToApplicationTextArea", new TypeReference<String>(){}),
+
+    RESPONSE_TO_APPLICATION_EVIDENCE(
+        "responseToApplicationEvidence", new TypeReference<List<IdValue<Document>>>(){}),
+
+    TYPE_OF_HEARING_OPTION(
+        "typeOfHearingOption", new TypeReference<YesOrNo>(){}),
+
+    TYPE_OF_HEARING_EXPLANATION(
+        "typeOfHearingExplanation", new TypeReference<String>(){}),
+
+    ADD_EVIDENCE_FOR_COSTS_LIST(
+        "addEvidenceForCostsList", new TypeReference<DynamicList>(){}),
+
+    ADDITIONAL_EVIDENCE_FOR_COSTS(
+        "additionalEvidenceForCosts", new TypeReference<List<IdValue<Document>>>(){}),
+
+    DECIDE_COSTS_APPLICATION_LIST(
+        "decideCostsApplicationList", new TypeReference<DynamicList>(){}),
+
+    COSTS_DECISION_TYPE(
+        "costsDecisionType", new TypeReference<CostsDecisionType>(){}),
+
+    COSTS_ORAL_HEARING_DATE(
+        "costsOralHearingDate", new TypeReference<String>(){}),
+
+    UPLOAD_COSTS_ORDER(
+        "uploadCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
+
+    JUDGE_APPLIED_COSTS_TYPES(
+        "judgeAppliedCostsTypes", new TypeReference<DynamicList>(){}),
+
+    RESPONDENT_TO_COSTS_ORDER(
+        "respondentToCostsOrder", new TypeReference<String>(){}),
+
+    TRIBUNAL_CONSIDERING_REASON(
+    "tribunalConsideringReason", new TypeReference<String>(){}),
+
+    JUDGE_EVIDENCE_FOR_COSTS_ORDER(
+    "judgeEvidenceForCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
+    ;
 
     private final String value;
     private final TypeReference typeReference;
