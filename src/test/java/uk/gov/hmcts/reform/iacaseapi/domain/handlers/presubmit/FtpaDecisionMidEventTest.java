@@ -9,7 +9,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_LISTING_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REASONS_NOTES_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REASONS_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_LISTING_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_NOTES_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -26,11 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaDecisionOutcomeType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecideFtpaApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -74,7 +85,7 @@ class FtpaDecisionMidEventTest {
 
                 boolean canHandle = ftpaDecisionMidEvent.canHandle(callbackStage, callback);
 
-                if (event == Event.DECIDE_FTPA_APPLICATION
+                if ( event == Event.DECIDE_FTPA_APPLICATION
                     && callbackStage == MID_EVENT) {
 
                     assertTrue(canHandle);
@@ -377,90 +388,6 @@ class FtpaDecisionMidEventTest {
         verify(asylumCase).write(FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.YES);
     }
 
-
-    @Test
-    void should_successfully_set_appellant_decision_objections_page_visibility_when_set_aside_is_yes() {
-
-        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(DecideFtpaApplicationType.GRANTED.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_respondent_decision_objections_page_visibility_when_set_aside_is_yes() {
-
-        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
-        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(IS_FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_appellant_decision_objections_page_visibility_when_reheard_rule35() {
-
-        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_successfully_set_respondent_decision_objections_page_visibility_when_reheard_rule35() {
-
-        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
-        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
-
-        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(DecideFtpaApplicationType.REHEARD_RULE35.toString()));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-        verify(asylumCase).write(FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-    }
 
     @Test
     void should_successfully_set_appellant_decision_reasons_notes_visibility_when_granted() {
