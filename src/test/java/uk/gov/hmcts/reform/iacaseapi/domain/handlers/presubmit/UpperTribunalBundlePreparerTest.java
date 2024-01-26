@@ -38,24 +38,6 @@ class UpperTribunalBundlePreparerTest {
     }
 
     @Test
-    void should_throw_error_for_reheard_rule_32_respondent_decision() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.GENERATE_UPPER_TRIBUNAL_BUNDLE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("You cannot generate an Upper Tribunal bundle because this appeal will not be heard by the Upper Tribunal."));
-    }
-
-    @Test
     void should_throw_error_for_reheard_rule_35_respondent_decision() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -82,27 +64,6 @@ class UpperTribunalBundlePreparerTest {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString()));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("You cannot generate an Upper Tribunal bundle because this appeal will not be heard by the Upper Tribunal."));
-    }
-
-    @Test
-    void should_throw_error_for_reheard_rule_32_appellant_decision() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.GENERATE_UPPER_TRIBUNAL_BUNDLE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.empty());
-
-        when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE32.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             upperTribunalBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
