@@ -1,16 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_PDF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService.getIdFromDocUrl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -25,17 +27,39 @@ public class EditDocsService {
     public void cleanUpOverviewTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> deletedFinalDecisionAndReasonsDocIds = getDeletedDocIds(asylumCase, asylumCaseBefore);
         Document currentFinalDecisionAndReasonPdf = asylumCase.read(FINAL_DECISION_AND_REASONS_PDF, Document.class)
-            .orElse(null);
+                .orElse(null);
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantDecisionAndReasonDocuments = asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT);
+        Optional<List<IdValue<DocumentWithDescription>>>  currentFTPARespondentDecisionAndReasonDocuments = asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT);
+
         if (currentFinalDecisionAndReasonPdf != null
-            && doWeHaveToCleanUpOverviewTabDoc(deletedFinalDecisionAndReasonsDocIds, currentFinalDecisionAndReasonPdf)) {
+                && doWeHaveToCleanUpOverviewTabDoc(deletedFinalDecisionAndReasonsDocIds, currentFinalDecisionAndReasonPdf)) {
             asylumCase.clear(FINAL_DECISION_AND_REASONS_PDF);
         }
+
+        currentFTPAAppellantDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFinalDecisionAndReasonsDocIds, idValue.getId())
+            );
+            asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, documentWithDescriptionList);
+        });
+
+        currentFTPARespondentDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFinalDecisionAndReasonsDocIds, idValue.getId())
+            );
+            asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, documentWithDescriptionList);
+        });
     }
 
     private boolean doWeHaveToCleanUpOverviewTabDoc(List<String> deletedFinalDecisionAndReasonsDocIds,
                                                     Document currentFinalDecisionAndReasonPdf) {
         String currentFinalDecisionAndReasonPdfId = getIdFromDocUrl(currentFinalDecisionAndReasonPdf.getDocumentUrl());
         return deletedFinalDecisionAndReasonsDocIds.contains(currentFinalDecisionAndReasonPdfId);
+    }
+
+    private boolean doWeHaveToCleanUpOverviewTabFTPADoc(List<String> deletedFinalDecisionAndReasonsDocIds,
+                                                        String currentFTPADecisionAndReasonDocumentId) {
+        return deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId);
     }
 
     private List<String> getDeletedDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
