@@ -43,6 +43,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
+import javax.validation.constraints.NotNull;
+
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -81,20 +83,7 @@ class CompleteClarifyingQuestionsHandlerTest {
         List<IdValue<ClarifyingQuestion>> clarifyingQuestions = Collections.singletonList(
             new IdValue<>("1", new ClarifyingQuestion("question 1"))
         );
-        IdValue<Direction> directionWithQuestions = new IdValue<>(
-            "1",
-            new Direction(
-                "You need to answer some questions about your appeal.",
-                Parties.APPELLANT,
-                "2020-02-16",
-                "2020-02-02",
-                DirectionTag.REQUEST_CLARIFYING_QUESTIONS,
-                Collections.emptyList(),
-                clarifyingQuestions,
-                "uniqueId",
-                "directionType"
-            )
-        );
+        IdValue<Direction> directionWithQuestions = createDirectionWithQuestion(clarifyingQuestions, "uniqueId");
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(
             Optional.of(Collections.singletonList(directionWithQuestions)));
 
@@ -109,6 +98,72 @@ class CompleteClarifyingQuestionsHandlerTest {
         assertEquals(1, answers.size());
         assertEquals(expectedAnswer,
             answers.get(0).getValue().getAnswer());
+    }
+
+    @Test
+    void should_not_set_default_answer_to_answered_clarifying_questions_for_event_complete_clarifying_questions() {
+        should_not_set_default_answer_to_answered_clarifying_questions(COMPLETE_CLARIFY_QUESTIONS);
+    }
+
+    @Test
+    void should_not_set_default_answer_to_answered_clarifying_questions_for_event_nocRequest() {
+        should_not_set_default_answer_to_answered_clarifying_questions(NOC_REQUEST);
+    }
+
+    private void should_not_set_default_answer_to_answered_clarifying_questions(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS);
+
+        List<IdValue<ClarifyingQuestion>> clarifyingQuestions1 = List.of(
+                new IdValue<>("q1", new ClarifyingQuestion("question 1"))
+        );
+        IdValue<Direction> directionWithQuestions1 = createDirectionWithQuestion(
+                clarifyingQuestions1, "uniqueId1");
+
+        ClarifyingQuestionAnswer clarifyingQuestionAnswer = new ClarifyingQuestionAnswer(
+                "2020-02-01",
+                "2020-03-01",
+                "2020-02-16",
+                "question 1",
+                "answer 1",
+                "uniqueId1",
+                Collections.emptyList()
+        );
+        List<IdValue<ClarifyingQuestionAnswer>> clarifyingQuestionAnswers =
+                Collections.singletonList(new IdValue<>("q1", clarifyingQuestionAnswer));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
+                .thenReturn(Optional.of(Collections.singletonList(directionWithQuestions1)));
+        when(asylumCase.read(CLARIFYING_QUESTIONS_ANSWERS)).thenReturn(Optional.of(clarifyingQuestionAnswers));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+                handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(asylumCase).isEqualTo(returnedCallbackResponse.getData());
+        verify(asylumCase).write(eq(CLARIFYING_QUESTIONS_ANSWERS), answersCaptor.capture());
+
+        List<IdValue<ClarifyingQuestionAnswer>> answers = answersCaptor.getValue();
+        assertEquals(1, answers.size());
+        assertEquals(clarifyingQuestionAnswer.getAnswer(), answers.get(0).getValue().getAnswer());
+    }
+
+    @NotNull
+    private IdValue<Direction> createDirectionWithQuestion(List<IdValue<ClarifyingQuestion>> clarifyingQuestions1, String uniqueId) {
+        return new IdValue<>(
+                "1",
+                new Direction(
+                        "You need to answer some questions about your appeal.",
+                        Parties.APPELLANT,
+                        "2020-02-16",
+                        "2020-02-02",
+                        DirectionTag.REQUEST_CLARIFYING_QUESTIONS,
+                        Collections.emptyList(),
+                        clarifyingQuestions1,
+                        uniqueId,
+                        "directionType"
+                )
+        );
     }
 
     @Test
