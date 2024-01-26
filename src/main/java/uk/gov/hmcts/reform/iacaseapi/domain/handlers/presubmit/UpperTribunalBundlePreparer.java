@@ -44,14 +44,12 @@ public class UpperTribunalBundlePreparer implements PreSubmitCallbackHandler<Asy
 
         boolean setAsideRespondentDecisionExists =
             ftpaRespondentRjDecisionOutcomeType.isPresent()
-            && (ftpaRespondentRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE32.toString())
-                || ftpaRespondentRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())
+            && (ftpaRespondentRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())
                 || ftpaRespondentRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REMADE_RULE32.toString()));
 
         boolean setAsideAppellantDecisionExists =
             ftpaAppellantRjDecisionOutcomeType.isPresent()
-            && (ftpaAppellantRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE32.toString())
-                || ftpaAppellantRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())
+            && (ftpaAppellantRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())
                 || ftpaAppellantRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REMADE_RULE32.toString()));
 
         if (setAsideRespondentDecisionExists || setAsideAppellantDecisionExists) {
