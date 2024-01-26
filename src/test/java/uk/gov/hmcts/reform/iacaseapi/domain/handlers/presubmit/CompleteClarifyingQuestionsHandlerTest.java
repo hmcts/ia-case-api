@@ -48,7 +48,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 @SuppressWarnings("unchecked")
 class CompleteClarifyingQuestionsHandlerTest {
 
-
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
