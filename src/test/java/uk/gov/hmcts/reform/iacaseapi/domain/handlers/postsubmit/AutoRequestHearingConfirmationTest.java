@@ -24,7 +24,7 @@ public class AutoRequestHearingConfirmationTest {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
             .buildAutoHearingRequestConfirmationResponse(1L, false, true, EVENT);
 
-        assertEquals("# Event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
+        assertEquals("# Hearing listed", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals(WHAT_HAPPENS_NEXT_LABEL
                      + "The hearing request has been created and is visible on the [Hearings tab]"
                      + "(/cases/case-details/1/hearings)", postSubmitCallbackResponse.getConfirmationBody().orElse(""));
@@ -35,7 +35,7 @@ public class AutoRequestHearingConfirmationTest {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
             .buildAutoHearingRequestConfirmationResponse(1L, false, true, EVENT);
 
-        assertEquals("# Event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
+        assertEquals("# Hearing listed", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals(WHAT_HAPPENS_NEXT_LABEL
                      + "The hearing request has been created and is visible on the [Hearings tab]"
                      + "(/cases/case-details/1/hearings)",
@@ -47,7 +47,7 @@ public class AutoRequestHearingConfirmationTest {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
             .buildAutoHearingRequestConfirmationResponse(1L, true, true, EVENT);
 
-        assertEquals("# Event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
+        assertEquals("# This event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals(WHAT_HAPPENS_NEXT_LABEL
                      + "The listing team will now list the case. All parties will be notified when "
                      + "the Hearing Notice is available to view",
