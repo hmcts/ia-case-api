@@ -4,7 +4,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -52,17 +51,5 @@ public class EditDocsCaseNoteService {
             auditDetails.getDocumentNames(),
             auditDetails.getReason()
         );
-    }
-
-    private AuditDetails buildAuditDetails(long caseId, AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
-        return AuditDetails.builder()
-                .caseId(caseId)
-                .documentIds(getDeletedDocIds(asylumCase, asylumCaseBefore))
-                .documentNames(getDeletedDocumentNames(asylumCase, asylumCaseBefore))
-                .idamUserId(userDetails.getId())
-                .user(getIdamUserName(userDetails))
-                .reason(asylumCase.read(EDIT_DOCUMENTS_REASON, String.class).orElse(null))
-                .dateTime(LocalDateTime.now())
-                .build();
     }
 }
