@@ -197,6 +197,63 @@ class RequestHearingRequirementsDirectionTest {
         verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
+    @ParameterizedTest
+    @MethodSource("caseTypeScenariosEjp")
+    void should_append_new_direction_to_existing_directions_for_the_case_ejp_unrep_non_detained(
+        YesOrNo isEjp,
+        YesOrNo appellantInDetention,
+        YesOrNo isLegallyRepresentedEjp,
+        Parties party
+    ) {
+
+        final List<IdValue<Direction>> existingDirections = new ArrayList<>();
+        final List<IdValue<Direction>> allDirections = new ArrayList<>();
+
+        final String expectedExplanationPart =
+            "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.";
+        final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isEjp));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isLegallyRepresentedEjp));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(REP));
+
+        when(directionAppender.append(
+            eq(asylumCase),
+            eq(existingDirections),
+            contains(expectedExplanationPart),
+            eq(party),
+            eq(expectedDateDue),
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
+        )).thenReturn(allDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(directionAppender, times(1)).append(
+            eq(asylumCase),
+            eq(existingDirections),
+            contains(expectedExplanationPart),
+            eq(party),
+            eq(expectedDateDue),
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
+        );
+
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
+    }
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
@@ -266,5 +323,11 @@ class RequestHearingRequirementsDirectionTest {
                 Arguments.of(YES, YES, REP, Parties.LEGAL_REPRESENTATIVE),
                 Arguments.of(NO, NO, REP, Parties.LEGAL_REPRESENTATIVE),
                 Arguments.of(NO, YES, REP, Parties.LEGAL_REPRESENTATIVE));
+    }
+
+    static Stream<Arguments> caseTypeScenariosEjp() {
+        return Stream.of(
+            Arguments.of(YES, NO, NO, Parties.APPELLANT),
+            Arguments.of(NO, NO, NO, Parties.LEGAL_REPRESENTATIVE));
     }
 }

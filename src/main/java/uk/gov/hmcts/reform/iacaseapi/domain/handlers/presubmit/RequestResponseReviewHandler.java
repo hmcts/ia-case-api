@@ -54,11 +54,10 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
                        + "If you do not respond by the date indicated below, the case will automatically go to hearing."
         );
 
-        if (
-                isInternalCase(asylumCase)
-                && isAppellantInDetention(asylumCase)
-                && !isAcceleratedDetainedAppeal(asylumCase)
-        ) {
+        boolean isInternalDetainedNonAda = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase));
+        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
+
+        if (isInternalDetainedNonAda || isEjpUnrepNonDetained) {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
         } else {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);

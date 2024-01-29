@@ -86,6 +86,26 @@ class RequestCaseEditPreparerTest {
     }
 
     @Test
+    void should_prepare_send_direction_parties_field_appellant_ejp_unrep_non_detained() {
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        final Parties expectedParties = Parties.APPELLANT;
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestCaseEditPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestCaseEditPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))

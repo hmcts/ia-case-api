@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,9 @@ public class DirectionPartiesResolver {
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        boolean isInternalDetained = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase));
+        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
+
         switch (callback.getEvent()) {
 
             case LIST_CASE:
@@ -29,7 +31,7 @@ public class DirectionPartiesResolver {
             case FORCE_REQUEST_CASE_BUILDING:
             case REQUEST_RESPONSE_REVIEW:
             case REQUEST_NEW_HEARING_REQUIREMENTS:
-                return isInternalCase(asylumCase) && isAppellantInDetention(asylumCase)
+                return (isInternalDetained || isEjpUnrepNonDetained)
                         ? Parties.APPELLANT
                         : Parties.LEGAL_REPRESENTATIVE;
 
