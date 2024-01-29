@@ -7,18 +7,19 @@ public interface AutoRequestHearingConfirmation {
     String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
 
     /*
-    isPanelRequired = Yes then no automatic hearing request
-    If isPanelRequired != Yes then automatic hearing request can be successful or failing
+    if isPanelRequired = Yes then no automatic hearing request
+    If isPanelRequired != Yes then execute automatic hearing request (can be successful or failing)
      */
     default PostSubmitCallbackResponse buildAutoHearingRequestConfirmationResponse(long caseId,
                                                                                    boolean isPanelRequired,
-                                                                                   boolean hearingRequestSuccessful) {
+                                                                                   boolean hearingRequestSuccessful,
+                                                                                   String eventDescription) {
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
         if (isPanelRequired) {
-            postSubmitResponse.setConfirmationHeader("# Hearing listed");
+            postSubmitResponse.setConfirmationHeader("# " + eventDescription + " complete");
             postSubmitResponse.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                                                    + "The listing team will now list the case. All parties will be notified when "
                                                    + "the Hearing Notice is available to view");
@@ -40,5 +41,6 @@ public interface AutoRequestHearingConfirmation {
 
         return postSubmitResponse;
     }
+
 
 }

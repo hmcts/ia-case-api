@@ -93,7 +93,7 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("Hearing listed");
+            .contains("List without requirements complete");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

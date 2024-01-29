@@ -97,7 +97,7 @@ class ReviewHearingRequirementsConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("Hearing listed");
+            .contains("Hearing requirements complete");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

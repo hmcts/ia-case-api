@@ -52,7 +52,8 @@ public class ListCaseWithoutHearingRequirementsConfirmation
             return buildAutoHearingRequestConfirmationResponse(
                 callback.getCaseDetails().getId(),
                 isPanelRequired(asylumCase),
-                hearingRequestSuccessful
+                hearingRequestSuccessful,
+                "List without requirements"
             );
         } else {
             return buildConfirmationResponse();

@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 public class AutoRequestHearingConfirmationTest {
 
+    private static final String EVENT = "This event";
+
     AutoRequestHearingConfirmation autoRequestHearingConfirmation;
 
     @BeforeEach
@@ -20,9 +22,9 @@ public class AutoRequestHearingConfirmationTest {
     @Test
     void should_build_auto_hearing_request_confirmation_response() {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
-            .buildAutoHearingRequestConfirmationResponse(1L, false, true);
+            .buildAutoHearingRequestConfirmationResponse(1L, false, true, EVENT);
 
-        assertEquals("# Hearing listed", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
+        assertEquals("# Event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals(WHAT_HAPPENS_NEXT_LABEL
                      + "The hearing request has been created and is visible on the [Hearings tab]"
                      + "(/cases/case-details/1/hearings)", postSubmitCallbackResponse.getConfirmationBody().orElse(""));
@@ -31,9 +33,9 @@ public class AutoRequestHearingConfirmationTest {
     @Test
     void should_build_confirmation_response_when_no_panel_and_successful_call() {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
-            .buildAutoHearingRequestConfirmationResponse(1L, false, true);
+            .buildAutoHearingRequestConfirmationResponse(1L, false, true, EVENT);
 
-        assertEquals("# Hearing listed", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
+        assertEquals("# Event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals(WHAT_HAPPENS_NEXT_LABEL
                      + "The hearing request has been created and is visible on the [Hearings tab]"
                      + "(/cases/case-details/1/hearings)",
@@ -43,9 +45,9 @@ public class AutoRequestHearingConfirmationTest {
     @Test
     void should_build_confirmation_response_with_panel() {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
-            .buildAutoHearingRequestConfirmationResponse(1L, true, true);
+            .buildAutoHearingRequestConfirmationResponse(1L, true, true, EVENT);
 
-        assertEquals("# Hearing listed", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
+        assertEquals("# Event complete", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals(WHAT_HAPPENS_NEXT_LABEL
                      + "The listing team will now list the case. All parties will be notified when "
                      + "the Hearing Notice is available to view",
@@ -55,7 +57,7 @@ public class AutoRequestHearingConfirmationTest {
     @Test
     void should_build_confirmation_response_with_no_panel_and_unsuccessful_call() {
         PostSubmitCallbackResponse postSubmitCallbackResponse = autoRequestHearingConfirmation
-            .buildAutoHearingRequestConfirmationResponse(1L, false, false);
+            .buildAutoHearingRequestConfirmationResponse(1L, false, false, EVENT);
 
         assertEquals("", postSubmitCallbackResponse.getConfirmationHeader().orElse(""));
         assertEquals("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"

@@ -48,7 +48,10 @@ public class ReviewHearingRequirementsConfirmation
                 .orElse(true);
 
             return buildAutoHearingRequestConfirmationResponse(
-                callback.getCaseDetails().getId(), isPanelRequired(asylumCase), hearingRequestSuccessful);
+                callback.getCaseDetails().getId(),
+                isPanelRequired(asylumCase),
+                hearingRequestSuccessful,
+                "Hearing requirements");
         } else {
             return buildConfirmationResponse(callback.getCaseDetails().getId());
         }

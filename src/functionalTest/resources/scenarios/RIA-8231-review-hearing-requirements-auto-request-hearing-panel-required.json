@@ -24,7 +24,7 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# Hearing listed",
+      "header": "# Hearing requirements complete",
       "body": "#### What happens next\n\nThe listing team will now list the case. All parties will be notified when the Hearing Notice is available to view"
     }
   }
