@@ -158,7 +158,7 @@ class EditDocsMidEventHandlerTest {
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
         assertTrue(errors.contains(
-            "If you are adding a new document please ensure all fields including the document and date fields are filled in and completed or you have selected 'remove'  before submitting your changes."));
+            "If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change."));
 
     }
 
@@ -184,7 +184,7 @@ class EditDocsMidEventHandlerTest {
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
         assertTrue(errors.contains(
-            "If you are adding a new document please ensure all fields including the document and date fields are filled in and completed or you have selected 'remove'  before submitting your changes."));
+            "If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change."));
 
     }
 
