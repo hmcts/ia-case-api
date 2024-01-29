@@ -1,18 +1,17 @@
 {
-  "description": "RIA-7986 List case without hearing requirements automatically (Succeeded request)",
+  "description": "RIA-8231 review hearing requirements auto request hearing (Panel required)",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
     "input": {
-      "id": 7986,
-      "eventId": "listCaseWithoutHearingRequirements",
-      "state": "listed",
+      "id": 82311,
+      "eventId": "reviewHearingRequirements",
+      "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "uploadAdditionalEvidenceActionAvailable": "Yes",
-          "isPanelRequired": "No",
-          "listCaseHearingLength": "90",
+          "autoRequestHearing": "Yes",
+          "isPanelRequired": "Yes",
           "caseManagementLocation": {
             "region": "1",
             "baseLocation": "366559"
@@ -26,7 +25,7 @@
     "status": 200,
     "confirmation": {
       "header": "# Hearing listed",
-      "body": "#### What happens next\n\nThe hearing request has been created and is visible on the [Hearings tab](/cases/case-details/7986/hearings)"
+      "body": "#### What happens next\n\nThe listing team will now list the case. All parties will be notified when the Hearing Notice is available to view"
     }
   }
 }

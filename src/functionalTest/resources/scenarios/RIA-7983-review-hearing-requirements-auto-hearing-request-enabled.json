@@ -27,6 +27,7 @@
             ]
           },
           "autoHearingRequestEnabled": "Yes",
+          "isPanelRequired": "No",
           "listCaseHearingCentre": "glasgow",
           "reviewedHearingRequirements": "No",
           "listCaseHearingLength": "300",

@@ -11,6 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "autoRequestHearing": "Yes",
+          "isPanelRequired": "No",
           "caseManagementLocation": {
             "region": "1",
             "baseLocation": "366559"
