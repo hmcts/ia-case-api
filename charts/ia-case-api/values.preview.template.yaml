@@ -387,8 +387,8 @@ ia-timed-event-service:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
-    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
+    # image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-159
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:

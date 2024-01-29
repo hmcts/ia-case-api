@@ -4,9 +4,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -17,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDoc
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @Service
+@Slf4j
 public class EditDocsCaseNoteService {
 
     @Autowired
@@ -31,6 +35,7 @@ public class EditDocsCaseNoteService {
             buildNewCaseNote(auditDetails), maybeExistingCaseNotes.orElse(Collections.emptyList()));
         asylumCase.write(CASE_NOTES, allCaseNotes);
         asylumCase.clear(EDIT_DOCUMENTS_REASON);
+        log.info("EditDocsCaseNoteService: ");
     }
 
     private CaseNote buildNewCaseNote(AuditDetails auditDetails) {
@@ -47,5 +52,17 @@ public class EditDocsCaseNoteService {
             auditDetails.getDocumentNames(),
             auditDetails.getReason()
         );
+    }
+
+    private AuditDetails buildAuditDetails(long caseId, AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        return AuditDetails.builder()
+                .caseId(caseId)
+                .documentIds(getDeletedDocIds(asylumCase, asylumCaseBefore))
+                .documentNames(getDeletedDocumentNames(asylumCase, asylumCaseBefore))
+                .idamUserId(userDetails.getId())
+                .user(getIdamUserName(userDetails))
+                .reason(asylumCase.read(EDIT_DOCUMENTS_REASON, String.class).orElse(null))
+                .dateTime(LocalDateTime.now())
+                .build();
     }
 }
