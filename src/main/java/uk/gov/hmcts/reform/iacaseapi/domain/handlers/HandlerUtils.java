@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 public class HandlerUtils {
@@ -146,5 +147,10 @@ public class HandlerUtils {
             .filter(flag -> !isEmpty(flag.getDetails()))
             .flatMap(flag -> flag.getDetails().stream())
             .collect(Collectors.toList());
+    }
+
+    public static boolean isPanelRequired(AsylumCase asylumCase) {
+        return asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)
+            .map(yesOrNo -> YES == yesOrNo).orElse(false);
     }
 }
