@@ -163,31 +163,6 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
         }
     }
 
-    private void setDecisionObjectionsPageVisibility(
-        final AsylumCase asylumCase,
-        final YesOrNo isFtpaAppellantNoticeOfDecisionSetAside,
-        final String ftpaAppellantRjDecisionOutcomeType,
-        final YesOrNo isFtpaRespondentNoticeOfDecisionSetAside,
-        final String ftpaRespondentRjDecisionOutcomeType
-    ) {
-
-        if (isFtpaAppellantNoticeOfDecisionSetAside.equals(YesOrNo.YES)
-            || ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())) {
-
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-        } else {
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.NO);
-        }
-
-        if (isFtpaRespondentNoticeOfDecisionSetAside.equals(YesOrNo.YES)
-            || ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())) {
-
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.YES);
-        } else {
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE, YesOrNo.NO);
-        }
-    }
-
     private void setNoticeOfDecisionSetAsideVisibility(
         final AsylumCase asylumCase,
         final String ftpaAppellantRjDecisionOutcomeType,
