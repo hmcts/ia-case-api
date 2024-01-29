@@ -61,6 +61,7 @@ class EditDocsServiceTest {
         given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), any()))
                 .willReturn(new ArrayList<>());
     }
+
     @ParameterizedTest
     @MethodSource({
         "documentIsDeletedScenario",
