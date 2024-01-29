@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_PANEL_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -62,7 +63,7 @@ class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    void should_return_successful_confirmation_when_auto_request_enabled() {
+    void should_return_successful_confirmation_when_auto_request_enabled_and_panel_not_required() {
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
@@ -79,6 +80,29 @@ class ReviewHearingRequirementsConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("The hearing request has been created and is visible on the [Hearings tab]"
                       + "(/cases/case-details/1/hearings)");
+
+    }
+
+    @Test
+    void should_return_different_confirmation_when_auto_request_enabled_and_panel_required() {
+
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PostSubmitCallbackResponse callbackResponse =
+            handler.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("Hearing listed");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("The listing team will now list the case. All parties will be notified when "
+                      + "the Hearing Notice is available to view");
 
     }
 
