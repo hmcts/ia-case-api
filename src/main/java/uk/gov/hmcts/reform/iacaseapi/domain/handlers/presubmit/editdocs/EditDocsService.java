@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService;
 
+@Slf4j
 @Service
 public class EditDocsService {
 
@@ -28,22 +30,38 @@ public class EditDocsService {
 
     public void cleanUpOverviewTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> deletedFinalDecisionAndReasonsDocIds = getDeletedDocIds(asylumCase, asylumCaseBefore);
+        for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
+            log.info(somethingToLog);
+        };
         List<String> deletedFtpaDocIds = getDeletedFtpaDocIds(asylumCase, asylumCaseBefore);
+        for (String somethingToLog: deletedFtpaDocIds) {
+            log.info(somethingToLog);
+        };
         Document currentFinalDecisionAndReasonPdf = asylumCase.read(FINAL_DECISION_AND_REASONS_PDF, Document.class)
                 .orElse(null);
         Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantDecisionAndReasonDocuments = asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT);
         Optional<List<IdValue<DocumentWithDescription>>>  currentFTPARespondentDecisionAndReasonDocuments = asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT);
-
+        log.info(String.valueOf(currentFTPAAppellantDecisionAndReasonDocuments));
+        log.info(String.valueOf(currentFTPARespondentDecisionAndReasonDocuments));
         if (currentFinalDecisionAndReasonPdf != null
                 && doWeHaveToCleanUpOverviewTabDoc(deletedFinalDecisionAndReasonsDocIds, currentFinalDecisionAndReasonPdf)) {
             asylumCase.clear(FINAL_DECISION_AND_REASONS_PDF);
         }
 
         currentFTPAAppellantDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
+            log.info("currentFTPAAppellantDecisionAndReasonDocuments is present");
             documentWithDescriptionList.removeIf(idValue ->
                     doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, idValue.getId())
             );
+            log.info(String.valueOf(documentWithDescriptionList.size()));
+            for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
+                log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
+            };
             asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, documentWithDescriptionList);
+            log.info(String.valueOf(documentWithDescriptionList.size()));
+            for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
+                log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
+            };
         });
 
         currentFTPARespondentDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
@@ -62,6 +80,11 @@ public class EditDocsService {
 
     private boolean doWeHaveToCleanUpOverviewTabFTPADoc(List<String> deletedFinalDecisionAndReasonsDocIds,
                                                         String currentFTPADecisionAndReasonDocumentId) {
+        log.info("Yes we need to clean up overview tab");
+        for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
+            log.info(somethingToLog);
+        };
+        log.info(currentFTPADecisionAndReasonDocumentId);
         return deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId);
     }
 
