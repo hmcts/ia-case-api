@@ -32,11 +32,11 @@ public class EditDocsService {
         List<String> deletedFinalDecisionAndReasonsDocIds = getDeletedDocIds(asylumCase, asylumCaseBefore);
         for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
             log.info(somethingToLog);
-        };
+        }
         List<String> deletedFtpaDocIds = getDeletedFtpaDocIds(asylumCase, asylumCaseBefore);
         for (String somethingToLog: deletedFtpaDocIds) {
             log.info(somethingToLog);
-        };
+        }
         Document currentFinalDecisionAndReasonPdf = asylumCase.read(FINAL_DECISION_AND_REASONS_PDF, Document.class)
                 .orElse(null);
         Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantDecisionAndReasonDocuments = asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT);
@@ -56,12 +56,12 @@ public class EditDocsService {
             log.info(String.valueOf(documentWithDescriptionList.size()));
             for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
                 log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
-            };
+            }
             asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, documentWithDescriptionList);
             log.info(String.valueOf(documentWithDescriptionList.size()));
             for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
                 log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
-            };
+            }
         });
 
         currentFTPARespondentDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
@@ -83,7 +83,7 @@ public class EditDocsService {
         log.info("Yes we need to clean up overview tab");
         for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
             log.info(somethingToLog);
-        };
+        }
         log.info(currentFTPADecisionAndReasonDocumentId);
         return deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId);
     }
