@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +45,13 @@ public class UpperTribunalBundlePreparer implements PreSubmitCallbackHandler<Asy
 
         boolean setAsideRespondentDecisionExists =
             ftpaRespondentRjDecisionOutcomeType.isPresent()
-            && (ftpaRespondentRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())
-                || ftpaRespondentRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REMADE_RULE32.toString()));
+            && (ftpaRespondentRjDecisionOutcomeType.get().equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())
+                || ftpaRespondentRjDecisionOutcomeType.get().equals(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString()));
 
         boolean setAsideAppellantDecisionExists =
             ftpaAppellantRjDecisionOutcomeType.isPresent()
-            && (ftpaAppellantRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REHEARD_RULE35.toString())
-                || ftpaAppellantRjDecisionOutcomeType.get().equals(DecideFtpaApplicationType.REMADE_RULE32.toString()));
+            && (ftpaAppellantRjDecisionOutcomeType.get().equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())
+                || ftpaAppellantRjDecisionOutcomeType.get().equals(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString()));
 
         if (setAsideRespondentDecisionExists || setAsideAppellantDecisionExists) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);

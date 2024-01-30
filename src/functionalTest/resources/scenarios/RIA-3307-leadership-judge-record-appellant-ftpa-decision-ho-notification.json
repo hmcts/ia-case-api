@@ -1,26 +1,23 @@
 {
-  "description": "RIA-3307 Resident judge record FTPA respondent decision - HO notification - remade 32 (Dismissed)",
+  "description": "RIA-3307 Leadership judge record FTPA appellant decision - HO notification",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
     "input": {
       "id": 1234,
-      "eventId": "residentJudgeFtpaDecision",
-      "state": "ftpaDecided",
+      "eventId": "leadershipJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "homeOfficeSearchStatus": "SUCCESS",
           "homeOfficeNotificationsEligible": "Yes",
-          "ftpaApplicantType": "respondent",
-          "ftpaRespondentSubmitted": "Yes",
-          "ftpaRespondentRjDecisionOutcomeType": "remadeRule32",
-          "ftpaRespondentDecisionRemadeRule32": "dismissed",
-          "ariaListingReference": "987654321",
-          "listCaseHearingCentre": "taylorHouse",
-          "ftpaRespondentDecisionDocument": [
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantSubmitted": "Yes",
+          "ftpaAppellantDecisionOutcomeType": "partiallyGranted",
+          "ftpaAppellantDecisionDocument": [
             {
               "id": "1",
               "value": {
@@ -33,20 +30,7 @@
               }
             }
           ],
-          "ftpaRespondentNoticeDocument": [
-            {
-              "id": "2",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-appellant-notice.pdf"
-                },
-                "description": "Some FTPA appellant notice"
-              }
-            }
-          ],
-          "allFtpaRespondentDecisionDocuments": []
+          "allFtpaAppellantDecisionDocuments": []
         }
       }
     }
@@ -60,11 +44,11 @@
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "homeOfficeSearchStatus": "SUCCESS",
         "homeOfficeNotificationsEligible": "Yes",
-        "ftpaRespondentDecisionDate": "{$TODAY}",
-        "isFtpaRespondentDecided": "Yes",
-        "allFtpaRespondentDecisionDocs": [
+        "ftpaAppellantDecisionDate": "{$TODAY}",
+        "isFtpaAppellantDecided": "Yes",
+        "allFtpaAppellantDecisionDocs": [
           {
-            "id": "2",
+            "id": "1",
             "value": {
               "document": {
                 "document_url": "http://document-store/BBB",
@@ -75,23 +59,10 @@
               "dateUploaded": "{$TODAY}",
               "tag": "ftpaDecisionAndReasons"
             }
-          },
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-ftpa-appellant-notice.pdf"
-              },
-              "description": "Some FTPA appellant notice",
-              "dateUploaded": "{$TODAY}",
-              "tag": "ftpaDecisionAndReasons"
-            }
           }
         ],
         "sendDirectionActionAvailable": "No",
-        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
+        "homeOfficeFtpaAppellantDecidedInstructStatus": "OK"
       }
     }
   }

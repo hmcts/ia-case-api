@@ -6,7 +6,7 @@
     "credentials": "Judge",
     "input": {
       "id": 1234,
-      "eventId": "decideFtpaApplication",
+      "eventId": "residentJudgeFtpaDecision",
       "state": "ftpaSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",

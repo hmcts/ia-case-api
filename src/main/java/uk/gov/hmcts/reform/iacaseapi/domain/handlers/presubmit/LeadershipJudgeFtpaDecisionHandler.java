@@ -10,11 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @Component
-public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
@@ -33,7 +33,7 @@ public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHa
     private final FtpaDisplayService ftpaDisplayService;
     private final FeatureToggler featureToggler;
 
-    public DecideFtpaApplicationDecisionHandler(
+    public LeadershipJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
@@ -47,6 +47,11 @@ public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHa
         this.featureToggler = featureToggler;
     }
 
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLY;
+    }
+
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -55,7 +60,7 @@ public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.DECIDE_FTPA_APPLICATION;
+               && callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -80,13 +85,9 @@ public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHa
             valueOf(String.format("FTPA_%s_DECISION_DOCUMENT", ftpaApplicantType.toUpperCase())));
         final List<IdValue<DocumentWithDescription>> existingFtpaDecisionAndReasonsDocuments = maybeFtpaDecisionAndReasonsDocument.orElse(Collections.emptyList());
 
-        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
-            valueOf(String.format("FTPA_%s_NOTICE_DOCUMENT", ftpaApplicantType.toUpperCase())));
-        final List<IdValue<DocumentWithDescription>> existingFtpaDecisionNoticeDocuments = maybeFtpaDecisionNoticeDocument.orElse(Collections.emptyList());
-
         final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaDecisionDocuments = asylumCase.read(
             valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantType.toUpperCase())));
-        final List<IdValue<DocumentWithMetadata>> existingAllFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
+        final List<IdValue<DocumentWithMetadata>> existingFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
 
         List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments = new ArrayList<>();
         ftpaDecisionAndReasonsDocuments.addAll(
@@ -97,73 +98,42 @@ public class DecideFtpaApplicationDecisionHandler implements PreSubmitCallbackHa
                 )
         );
 
-        ftpaDecisionAndReasonsDocuments.addAll(
-            documentReceiver
-                .tryReceiveAll(
-                    existingFtpaDecisionNoticeDocuments,
-                    DocumentTag.FTPA_DECISION_AND_REASONS
-                )
-        );
-
         List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
             documentsAppender.append(
-                existingAllFtpaDecisionDocuments,
+                existingFtpaDecisionDocuments,
                 ftpaDecisionAndReasonsDocuments
             );
 
-        String ftpaDecisionOutcomeType = asylumCase.read(
-            valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
+        String ftpaDecisionOutcomeType = asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
-        if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
-            || ftpaDecisionOutcomeType.equals("reheardRule32") || ftpaDecisionOutcomeType.equals("reheardRule35")) {
+
+        if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")) {
 
             asylumCase.write(valueOf(String.format("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL", ftpaApplicantType.toUpperCase())), YES);
 
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
+
+            asylumCase.write(valueOf(String.format("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf(String.format("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
         }
 
-        if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
-
-            String ftpaNewDecisionOfAppeal = asylumCase.read(
-                valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType.toUpperCase())), String.class)
-                .orElse("");
-
-            if (!ftpaNewDecisionOfAppeal.isEmpty()) {
-
-                asylumCase.write(
-                    valueOf(String.format("FTPA_%s_RJ_NEW_DECISION_OF_APPEAL", ftpaApplicantType.toUpperCase())),
-                    StringUtils.capitalize(ftpaNewDecisionOfAppeal));
-
-                asylumCase.write(valueOf(String.format("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL", ftpaApplicantType.toUpperCase())), YES);
-            }
-
-            asylumCase.write(FTPA_FINAL_DECISION_REMADE_RULE_32, ftpaNewDecisionOfAppeal);
-        }
         asylumCase.write(
-            valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantType.toUpperCase())),
-            allFtpaDecisionDocuments);
-
-        asylumCase.write(valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType.toUpperCase())),
-            dateProvider.now().toString());
-        asylumCase.write(valueOf(String.format("IS_FTPA_%s_DECIDED", ftpaApplicantType.toUpperCase())),
-            YES);
+            valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantType.toUpperCase())), allFtpaDecisionDocuments);
+        asylumCase.write(
+            valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType.toUpperCase())), dateProvider.now().toString());
+        asylumCase.write(
+            valueOf(String.format("IS_FTPA_%s_DECIDED", ftpaApplicantType.toUpperCase())), YES);
 
         String currentDecision =
             asylumCase.read(
-                valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
+                valueOf(String.format("FTPA_%s_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
                 .orElse("");
 
         String ftpaFirstDecision =
