@@ -51,7 +51,7 @@ public class LocationRefDataConsumerTest {
             .given("Service ID")
             .uponReceiving("A request for court venues")
             .path("/refdata/location/court-venues/services")
-            .matchQuery("service-code", "some-id")
+            .matchQuery("service_code", "some-id")
             .method("GET")
             .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER, AUTHORIZATION_TOKEN)
             .willRespondWith()
