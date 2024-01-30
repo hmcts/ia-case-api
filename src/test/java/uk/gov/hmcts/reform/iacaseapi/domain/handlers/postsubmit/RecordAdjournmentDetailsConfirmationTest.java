@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +43,8 @@ class RecordAdjournmentDetailsConfirmationTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     private final Long caseId = 112233L;
 
@@ -52,15 +56,15 @@ class RecordAdjournmentDetailsConfirmationTest {
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
-        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
+            .thenReturn(YesOrNo.YES);
 
         recordAdjournmentDetailsConfirmation =
-            new RecordAdjournmentDetailsConfirmation();
+            new RecordAdjournmentDetailsConfirmation(locationBasedFeatureToggler);
     }
 
     @Test
-    void should_return_success_confirmation_before_hearing_date_and_relist() {
+    void should_return_hearing_update_success_confirmation() {
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
@@ -87,18 +91,12 @@ class RecordAdjournmentDetailsConfirmationTest {
     }
 
     @Test
-    void should_return_success_confirmation_when_update_request_failed() {
-        String hearingRequirementsTabUrl =
-                "(/cases/case-details/"
-                        + callback.getCaseDetails().getId()
-                        + "#Hearing%20and%20appointment)";
+    void should_return_hearing_update_request_failed_confirmation() {
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
                 .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.NO));
 
         PostSubmitCallbackResponse callbackResponse =
                 recordAdjournmentDetailsConfirmation.handle(callback);
@@ -120,11 +118,13 @@ class RecordAdjournmentDetailsConfirmationTest {
     }
 
     @Test
-    void should_return_success_confirmation_before_hearing_date_and_not_relist() {
+    void should_return_hearing_cancellation_success_confirmation() {
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.NO));
 
         PostSubmitCallbackResponse callbackResponse =
@@ -146,7 +146,60 @@ class RecordAdjournmentDetailsConfirmationTest {
     }
 
     @Test
-    void should_return_success_confirmation_on_hearing_date_and_relist() {
+    void should_return_hearing_cancellation_failed_confirmation() {
+
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordAdjournmentDetailsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(callbackResponse.getConfirmationHeader().get())
+            .contains("# You have recorded the adjournment details");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next\n\n"
+                      + "All parties will be informed of the decision to adjourn without a date.\n\n"
+                      + "The hearing could not be automatically cancelled. "
+                      + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)\n\n"
+                      + "The adjournment details are available on the "
+                      + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment).");
+    }
+
+    @Test
+    void should_return_auto_hearing_request_success_confirmation() {
+
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordAdjournmentDetailsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(callbackResponse.getConfirmationHeader().get())
+            .contains("# You have recorded the adjournment details");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next\n\n"
+                      + "The hearing request has been created and is visible on the [Hearings tab]"
+                      + "(/cases/case-details/" + caseId + "/hearings)");
+    }
+
+    @Test
+    void should_return_auto_hearing_request_failed_confirmation() {
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
@@ -164,16 +217,16 @@ class RecordAdjournmentDetailsConfirmationTest {
             .contains("# You have recorded the adjournment details");
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### Do this next\n\n"
-                + "The hearing will be adjourned using the details recorded.\n\n"
-                + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                + caseId + "#Hearing%20and%20appointment).\n\n"
-                + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
-                + caseId + "/hearings).");
+            .contains("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
+                      + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
+                      + "\n\n"
+                      + "#### Do this next\n\n"
+                      + "The hearing could not be auto-requested. Please manually request the "
+                      + "hearing via the [Hearings tab](/cases/case-details/" + caseId + "/hearings)");
     }
 
     @Test
-    void should_return_success_confirmation_on_hearing_date_and_not_relist() {
+    void should_return_default_confirmation() {
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
@@ -192,11 +245,40 @@ class RecordAdjournmentDetailsConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### Do this next\n\n"
-                + "The hearing will be adjourned using the details recorded.\n\n"
-                + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                + caseId + "#Hearing%20and%20appointment).\n\n"
-                + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
-                + caseId + "/hearings).");
+                      + "The hearing will be adjourned using the details recorded.\n\n"
+                      + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                      + caseId + "#Hearing%20and%20appointment).\n\n"
+                      + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
+                      + caseId + "/hearings).");
+    }
+
+    @Test
+    void should_return_default_confirmation_when_auto_request_hearing_is_not_enabled() {
+
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
+            .thenReturn(YesOrNo.NO);
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordAdjournmentDetailsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(callbackResponse.getConfirmationHeader().get())
+            .contains("# You have recorded the adjournment details");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next\n\n"
+                      + "The hearing will be adjourned using the details recorded.\n\n"
+                      + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                      + caseId + "#Hearing%20and%20appointment).\n\n"
+                      + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
+                      + caseId + "/hearings).");
     }
 
     @Test
@@ -239,59 +321,5 @@ class RecordAdjournmentDetailsConfirmationTest {
         assertThatThrownBy(() -> recordAdjournmentDetailsConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void should_return_confirmation_if_manual_cancel_hearing_required() {
-
-        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
-            .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
-        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-
-        PostSubmitCallbackResponse callbackResponse =
-            recordAdjournmentDetailsConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(callbackResponse.getConfirmationHeader().get())
-            .contains("# You have recorded the adjournment details");
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### Do this next\n\n"
-                + "All parties will be informed of the decision to adjourn without a date.\n\n"
-                + "The hearing could not be automatically cancelled. "
-                + "The hearing can be cancelled on the [Hearings tab](/cases/case-details/" + caseId + "/hearings)\n\n"
-                + "The adjournment details are available on the "
-                + "[Hearing requirements tab](/cases/case-details/" + caseId + "#Hearing%20and%20appointment).");
-    }
-
-    @Test
-    void should_return_default_confirmation_if_manual_cancel_hearing_does_not_exists() {
-
-        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
-                .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
-        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
-
-        PostSubmitCallbackResponse callbackResponse =
-                recordAdjournmentDetailsConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(callbackResponse.getConfirmationHeader().get())
-                .contains("# You have recorded the adjournment details");
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### Do this next\n\n"
-                        + "The hearing will be adjourned using the details recorded.\n\n"
-                        + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-                        + caseId + "#Hearing%20and%20appointment).");
     }
 }
