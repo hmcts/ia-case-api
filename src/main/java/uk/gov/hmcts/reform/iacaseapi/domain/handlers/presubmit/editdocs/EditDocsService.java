@@ -126,12 +126,12 @@ public class EditDocsService {
 
     private List<String> getEditedFtpaDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> updatedAndDeletedDocIdsForGivenField = new ArrayList<>();
-        List<String> updatedDocIdsForGivenField = new ArrayList<>();
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, ALL_FTPA_APPELLANT_DECISION_DOCS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, ALL_FTPA_RESPONDENT_DECISION_DOCS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_APPELLANT_DOCUMENTS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DOCUMENTS);
 
+        List<String> updatedDocIdsForGivenField = new ArrayList<>();
         addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(ALL_FTPA_APPELLANT_DECISION_DOCS));
         addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS));
         addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(FTPA_APPELLANT_DOCUMENTS));
