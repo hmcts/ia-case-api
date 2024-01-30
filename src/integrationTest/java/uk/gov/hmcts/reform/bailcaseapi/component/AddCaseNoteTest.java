@@ -23,12 +23,11 @@ import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 
-
-public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
+class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void adds_a_case_note() {
+    void adds_a_case_note() {
 
         addAdminOfficerUserDetailsStub(server);
 

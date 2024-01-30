@@ -53,7 +53,10 @@ spring:
   profiles:
     include:
       - hearingcentre-mapping
-
+  cache:
+    cache-names: userInfoCache, accessTokenCache
+    caffeine:
+      spec: expireAfterAccess=3600s
 
 security:
   anonymousPaths:

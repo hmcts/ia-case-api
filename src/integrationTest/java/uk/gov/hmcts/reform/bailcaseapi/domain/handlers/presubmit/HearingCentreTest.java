@@ -8,13 +8,12 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.service.HearingCentreFinder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-public class HearingCentreTest extends SpringBootIntegrationTest {
+class HearingCentreTest extends SpringBootIntegrationTest {
 
     @Autowired private HearingCentreFinder hearingCentreFinder;
 
     @Test
-    public void should_derive_hearing_centres() {
+    void should_derive_hearing_centres() {
 
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("Ashwell"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("Aylesbury"));

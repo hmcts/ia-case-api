@@ -8,13 +8,13 @@ import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegration
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class BadRequestsTest extends SpringBootIntegrationTest {
+class BadRequestsTest extends SpringBootIntegrationTest {
 
     private static final String ABOUT_TO_SUBMIT_PATH = "/bail/ccdAboutToSubmit";
     private static final String SUBMITTED_PATH = "/bail/ccdSubmitted";
 
     @Test
-    public void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {
+    void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {
 
         runClientRequest(
             ABOUT_TO_SUBMIT_PATH,

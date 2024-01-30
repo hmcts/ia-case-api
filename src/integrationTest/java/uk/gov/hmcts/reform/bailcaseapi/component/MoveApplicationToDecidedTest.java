@@ -20,12 +20,11 @@ import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
 
-
-public class MoveApplicationToDecidedTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
+class MoveApplicationToDecidedTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void move_application_to_decided() {
+    void move_application_to_decided() {
 
         addAdminOfficerUserDetailsStub(server);
 

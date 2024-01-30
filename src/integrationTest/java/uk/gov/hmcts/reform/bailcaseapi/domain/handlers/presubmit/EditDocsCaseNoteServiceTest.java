@@ -32,8 +32,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit.editdocs.Audit
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.EditDocsCaseNoteService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.idam.IdamUserDetails;
 
-
-public class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
+class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
 
     @MockBean
     private UserDetailsProvider userDetailsProvider;
@@ -42,7 +41,7 @@ public class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
     private EditDocsCaseNoteService editDocsCaseNoteService;
 
     @Test
-    public void shouldWriteAuditCaseNote() {
+    void shouldWriteAuditCaseNote() {
         BailCase bailCaseBefore = new BailCase();
         mockBailCaseBeforeToHaveOneDocument(bailCaseBefore);
         mockUserDetailsProvider();
@@ -140,5 +139,4 @@ public class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
             "some surname");
         BDDMockito.given(userDetailsProvider.getUserDetails()).willReturn(userDetails);
     }
-
 }
