@@ -44,12 +44,12 @@ class EditDocsServiceTest {
     private static final String DOCUMENT_DESCRIPTION = "some-document-description";
     private static final List<String> DOC_ID_LIST = new ArrayList<>(Collections.singletonList(DOC_ID));
     private static final List<IdValue<DocumentWithDescription>> DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
-            new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
+        new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
 
     private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
-            new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
+        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
     private static final List<IdValue<DocumentWithMetadata>> ANOTHER_DOC_ID_VALUE_LIST_2 = new ArrayList<>(Collections.singletonList(
-            new IdValue<>(ANOTHER_DOC_ID, new DocumentWithMetadata(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_APPELLANT))));
+        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithMetadata(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_APPELLANT))));
     private AsylumCase asylumCase;
     @Mock
     private EditDocsAuditService editDocsAuditService;
@@ -60,7 +60,7 @@ class EditDocsServiceTest {
     public void setUp() {
         asylumCase = new AsylumCase();
         given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), any()))
-                .willReturn(new ArrayList<>());
+            .willReturn(new ArrayList<>());
     }
 
     @ParameterizedTest
@@ -71,9 +71,9 @@ class EditDocsServiceTest {
         "documentIsUpdatedScenario"
     })
     void cleanUpOverviewTabDocs(AsylumCase asylum,
-                                       AsylumCase asylumBefore,
-                                       List<String> updatedDeletedDocIdsList,
-                                       @Nullable Document expectedDocument) {
+                                AsylumCase asylumBefore,
+                                List<String> updatedDeletedDocIdsList,
+                                @Nullable Document expectedDocument) {
 
         given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(),
             eq(FINAL_DECISION_AND_REASONS_DOCUMENTS))).willReturn(updatedDeletedDocIdsList);
@@ -88,8 +88,8 @@ class EditDocsServiceTest {
     private static Object[] documentIsDeletedScenario() {
         AsylumCase asylumCase = buildCaseWithPopulatedFieldForGivenDoc(buildDocumentGivenDocId());
 
-        return new Object[] {
-            new Object[] {
+        return new Object[]{
+            new Object[]{
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(DOC_ID)),
@@ -102,8 +102,8 @@ class EditDocsServiceTest {
         asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, Collections.singletonList(buildIdValue()));
         Document expectedFinalDecisionAndReasonPdf = buildDocumentGivenDocId();
 
-        return new Object[] {
-            new Object[] {
+        return new Object[]{
+            new Object[]{
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(ANOTHER_DOC_ID)),
@@ -114,8 +114,8 @@ class EditDocsServiceTest {
     private static Object[] theOverviewTabFieldIsNullScenario() {
         AsylumCase asylumCase = buildCaseWithPopulatedFieldForGivenDoc(null);
 
-        return new Object[] {
-            new Object[] {
+        return new Object[]{
+            new Object[]{
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(DOC_ID)),
@@ -128,8 +128,8 @@ class EditDocsServiceTest {
         asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, Collections.singletonList(buildIdValue()));
         Document expectedFinalDecisionAndReasonPdf = buildDocumentGivenDocId();
 
-        return new Object[] {
-            new Object[] {
+        return new Object[]{
+            new Object[]{
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(DOC_ID)),
@@ -155,179 +155,97 @@ class EditDocsServiceTest {
         return new IdValue<>("1", buildDocWithMeta());
     }
 
-
-    @Test
-    void cleanUpOverviewTabDocsFtpaDecisionAppellantDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_APPELLANT_DECISION_DOCS)))
+    @ParameterizedTest
+    @MethodSource({
+        "appellantDecisionAndReasons",
+        "respondentDecisionAndReasons",
+        "appellantGroundsForAppeal",
+        "respondentGroundsForAppeal",
+        "appellantSupportingEvidence",
+        "respondentSupportingEvidence"
+    })
+    void cleanUpOverviewTabAndFtpaTabsDoesNotNeedCleaning(AsylumCaseFieldDefinition documentTabList, AsylumCaseFieldDefinition overviewTabList) {
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(documentTabList)))
             .willReturn(DOC_ID_LIST);
 
-        asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(ALL_FTPA_APPELLANT_DECISION_DOCS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
+        asylumCase.write(overviewTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
+        asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
 
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT));
+        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT));
+        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaDecisionAppellantNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_APPELLANT_DECISION_DOCS)))
+    @ParameterizedTest
+    @MethodSource({
+        "appellantDecisionAndReasons",
+        "respondentDecisionAndReasons",
+        "appellantGroundsForAppeal",
+        "respondentGroundsForAppeal",
+        "appellantSupportingEvidence",
+        "respondentSupportingEvidence"
+    })
+    void cleanUpOverviewTabAndFtpaTabsNeedsCleaning(AsylumCaseFieldDefinition documentTabList, AsylumCaseFieldDefinition overviewTabList) {
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(documentTabList)))
             .willReturn(DOC_ID_LIST);
 
-        asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, Optional.of(DOC_ID_VALUE_LIST));
+        asylumCase.write(overviewTabList, Optional.of(DOC_ID_VALUE_LIST));
 
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT));
+        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT));
+        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaDecisionRespondentDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_RESPONDENT_DECISION_DOCS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(ALL_FTPA_RESPONDENT_DECISION_DOCS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT));
+    private static Object[] appellantDecisionAndReasons() {
+        return new Object[]{
+            new Object[]{
+                ALL_FTPA_APPELLANT_DECISION_DOCS,
+                FTPA_APPELLANT_DECISION_DOCUMENT}
+        };
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaDecisionRespondentNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_RESPONDENT_DECISION_DOCS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, Optional.of(DOC_ID_VALUE_LIST));
-
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT));
+    private static Object[] respondentDecisionAndReasons() {
+        return new Object[]{
+            new Object[]{
+                ALL_FTPA_RESPONDENT_DECISION_DOCS,
+                FTPA_RESPONDENT_DECISION_DOCUMENT}
+        };
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaGroundsAppellantDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_APPELLANT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_APPELLANT_GROUNDS_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(FTPA_APPELLANT_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS));
+    private static Object[] appellantGroundsForAppeal() {
+        return new Object[]{
+            new Object[]{
+                FTPA_APPELLANT_DOCUMENTS,
+                FTPA_APPELLANT_GROUNDS_DOCUMENTS}
+        };
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaGroundsAppellantNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_APPELLANT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_APPELLANT_GROUNDS_DOCUMENTS, Optional.of(DOC_ID_VALUE_LIST));
-
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS));
+    private static Object[] respondentGroundsForAppeal() {
+        return new Object[]{
+            new Object[]{
+                FTPA_RESPONDENT_DOCUMENTS,
+                FTPA_RESPONDENT_GROUNDS_DOCUMENTS}
+        };
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaGroundsRespondentDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_RESPONDENT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_RESPONDENT_GROUNDS_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(FTPA_RESPONDENT_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_GROUNDS_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_GROUNDS_DOCUMENTS));
+    private static Object[] appellantSupportingEvidence() {
+        return new Object[]{
+            new Object[]{
+                FTPA_APPELLANT_DOCUMENTS,
+                FTPA_APPELLANT_EVIDENCE_DOCUMENTS}
+        };
     }
 
-    @Test
-    void cleanUpOverviewTabDocsFtpaGroundsRespondentNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_RESPONDENT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_RESPONDENT_GROUNDS_DOCUMENTS, Optional.of(DOC_ID_VALUE_LIST));
-
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_GROUNDS_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(FTPA_RESPONDENT_GROUNDS_DOCUMENTS));
-    }
-
-    @Test
-    void cleanUpOverviewTabDocsFtpaSupportingEvidenceAppellantDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_APPELLANT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_APPELLANT_EVIDENCE_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(FTPA_APPELLANT_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS));
-    }
-
-    @Test
-    void cleanUpOverviewTabDocsFtpaSupportingEvidenceAppellantNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_APPELLANT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_APPELLANT_EVIDENCE_DOCUMENTS, Optional.of(DOC_ID_VALUE_LIST));
-
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS));
-    }
-
-    @Test
-    void cleanUpOverviewTabDocsFtpaSupportingEvidenceRespondentDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_RESPONDENT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(FTPA_RESPONDENT_DOCUMENTS, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS));
-    }
-
-    @Test
-    void cleanUpOverviewTabDocsFtpaSupportingEvidenceRespondentNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_RESPONDENT_DOCUMENTS)))
-                .willReturn(DOC_ID_LIST);
-
-        asylumCase.write(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS, Optional.of(DOC_ID_VALUE_LIST));
-
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS));
-
-        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS));
+    private static Object[] respondentSupportingEvidence() {
+        return new Object[]{
+            new Object[]{
+                FTPA_RESPONDENT_DOCUMENTS,
+                FTPA_RESPONDENT_EVIDENCE_DOCUMENTS}
+        };
     }
 
     private void assertDocumentListEquality(List<IdValue<DocumentWithDescription>> expected, Optional<List<IdValue<DocumentWithDescription>>> actual) {
