@@ -81,7 +81,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class ResidentJudgeFtpaDecisionHandlerTest {
+class DecideFtpaApplicationDecisionHandlerTest {
 
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
@@ -115,12 +115,12 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private ResidentJudgeFtpaDecisionHandler residentJudgeFtpaDecisionHandler;
+    private DecideFtpaApplicationDecisionHandler decideFtpaApplicationDecisionHandler;
 
     @BeforeEach
     public void setUp() {
 
-        residentJudgeFtpaDecisionHandler = new ResidentJudgeFtpaDecisionHandler(
+        decideFtpaApplicationDecisionHandler = new DecideFtpaApplicationDecisionHandler(
             dateProvider,
             documentReceiver,
             documentsAppender,
@@ -139,7 +139,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
@@ -159,7 +159,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         final LocalDate now = LocalDate.now();
         when(dateProvider.now()).thenReturn(now);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -202,7 +202,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
@@ -224,7 +224,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         final LocalDate now = LocalDate.now();
         when(dateProvider.now()).thenReturn(now);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -267,7 +267,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
@@ -290,7 +290,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         final LocalDate now = LocalDate.now();
         when(dateProvider.now()).thenReturn(now);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -302,10 +302,10 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         assertThatThrownBy(
-            () -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("FtpaApplicantType is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -314,11 +314,11 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     void should_throw_if_ftpa_decision_outcome_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         assertThatThrownBy(
-            () -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("ftpaDecisionOutcomeType is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -327,13 +327,13 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
-            () -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+            () -> decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(
-            () -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
@@ -348,9 +348,9 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = residentJudgeFtpaDecisionHandler.canHandle(callbackStage, callback);
+                boolean canHandle = decideFtpaApplicationDecisionHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION
+                if (event == Event.DECIDE_FTPA_APPLICATION
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -366,20 +366,20 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> decideFtpaApplicationDecisionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> residentJudgeFtpaDecisionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+            () -> decideFtpaApplicationDecisionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionHandler.handle(null, callback))
+        assertThatThrownBy(() -> decideFtpaApplicationDecisionHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> decideFtpaApplicationDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

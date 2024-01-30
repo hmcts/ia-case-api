@@ -2,10 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum FtpaResidentJudgeDecisionOutcomeType {
-
-    GRANTED("granted"),
+public enum DecideFtpaApplicationType {
     PARTIALLY_GRANTED("partiallyGranted"),
+    GRANTED("granted"),
     REFUSED("refused"),
     APPLICATION_NOT_ADMITTED("notAdmitted"),
     WITHDRAWN("withdrawn"),
@@ -16,7 +15,7 @@ public enum FtpaResidentJudgeDecisionOutcomeType {
     @JsonValue
     private final String id;
 
-    FtpaResidentJudgeDecisionOutcomeType(String id) {
+    DecideFtpaApplicationType(String id) {
         this.id = id;
     }
 
