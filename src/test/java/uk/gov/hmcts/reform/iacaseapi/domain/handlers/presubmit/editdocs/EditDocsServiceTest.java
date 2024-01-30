@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_PDF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,15 +37,16 @@ class EditDocsServiceTest {
 
     public static final String DOC_ID = "5c39421f-e518-49da-987b-c4c48dffab43";
     public static final String ANOTHER_DOC_ID = "ad22bb0f-5b5a-4a39-bd6d-b966e8602072";
-    private static final String DOCUMENT_URL = "some-document-url";
+    private static final String DOCUMENT_URL = "https://dm-store/5c39421f-e518-49da-987b-c4c48dffab43";
+    private static final String ANOTHER_DOCUMENT_URL = "https://dm-store/ad22bb0f-5b5a-4a39-bd6d-b966e8602072";
     private static final String DOCUMENT_BINARY_URL = "some-document-binary-url";
     private static final String DOCUMENT_FILENAME = "some-document-filename";
     private static final String DOCUMENT_DESCRIPTION = "some-document-description";
-    private static final List<String> DOC_ID_LIST = Collections.singletonList(DOC_ID);
-    private static final List<IdValue<DocumentWithDescription>> DOC_ID_VALUE_LIST = Collections.singletonList(
-            new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION)));
-    private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = Collections.singletonList(
-            new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION)));
+    private static final List<String> DOC_ID_LIST = new ArrayList<>(Collections.singletonList(DOC_ID));
+    private static final List<IdValue<DocumentWithDescription>> DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
+            new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
+    private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
+            new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
     private AsylumCase asylumCase;
     @Mock
     private EditDocsAuditService editDocsAuditService;
@@ -157,8 +155,8 @@ class EditDocsServiceTest {
 
     @Test
     void cleanUpOverviewTabDocsFtpaAppellantDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_APPELLANT_DECISION_DOCUMENT)))
-                .willReturn(DOC_ID_LIST);
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_APPELLANT_DECISION_DOCS)))
+            .willReturn(DOC_ID_LIST);
 
         asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
 
@@ -171,8 +169,8 @@ class EditDocsServiceTest {
 
     @Test
     void cleanUpOverviewTabDocsFtpaAppellantNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_APPELLANT_DECISION_DOCUMENT)))
-                .willReturn(DOC_ID_LIST);
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_APPELLANT_DECISION_DOCS)))
+            .willReturn(DOC_ID_LIST);
 
         asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, Optional.of(DOC_ID_VALUE_LIST));
 
@@ -185,7 +183,7 @@ class EditDocsServiceTest {
 
     @Test
     void cleanUpOverviewTabDocsFtpaRespondentDoesNotNeedCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_RESPONDENT_DECISION_DOCUMENT)))
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_RESPONDENT_DECISION_DOCS)))
                 .willReturn(DOC_ID_LIST);
 
         asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
@@ -199,7 +197,7 @@ class EditDocsServiceTest {
 
     @Test
     void cleanUpOverviewTabDocsFtpaRespondentNeedsCleaning() {
-        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(FTPA_RESPONDENT_DECISION_DOCUMENT)))
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(ALL_FTPA_RESPONDENT_DECISION_DOCS)))
                 .willReturn(DOC_ID_LIST);
 
         asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, Optional.of(DOC_ID_VALUE_LIST));

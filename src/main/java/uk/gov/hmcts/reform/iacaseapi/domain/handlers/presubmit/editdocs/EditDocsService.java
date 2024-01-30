@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_PDF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService.getIdFromDocUrl;
 
 import java.util.ArrayList;
@@ -50,13 +47,13 @@ public class EditDocsService {
 
         currentFTPAAppellantDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
             log.info("currentFTPAAppellantDecisionAndReasonDocuments is present");
-            documentWithDescriptionList.removeIf(idValue ->
-                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, idValue.getId())
-            );
             log.info(String.valueOf(documentWithDescriptionList.size()));
             for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
                 log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
             }
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+            );
             asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, documentWithDescriptionList);
             log.info(String.valueOf(documentWithDescriptionList.size()));
             for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
@@ -66,7 +63,7 @@ public class EditDocsService {
 
         currentFTPARespondentDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
             documentWithDescriptionList.removeIf(idValue ->
-                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, idValue.getId())
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
             );
             asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, documentWithDescriptionList);
         });
@@ -80,11 +77,12 @@ public class EditDocsService {
 
     private boolean doWeHaveToCleanUpOverviewTabFTPADoc(List<String> deletedFinalDecisionAndReasonsDocIds,
                                                         String currentFTPADecisionAndReasonDocumentId) {
-        log.info("Yes we need to clean up overview tab");
+        log.info("Do we need to clean up overview tab?");
         for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
             log.info(somethingToLog);
         }
         log.info(currentFTPADecisionAndReasonDocumentId);
+        log.info(String.valueOf(deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId)));
         return deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId);
     }
 
@@ -110,13 +108,13 @@ public class EditDocsService {
 
     private List<String> getDeletedFtpaDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> updatedAndDeletedDocIdsForGivenField = docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
-                asylumCase, asylumCaseBefore, FTPA_APPELLANT_DECISION_DOCUMENT);
+                asylumCase, asylumCaseBefore, ALL_FTPA_APPELLANT_DECISION_DOCS);
         updatedAndDeletedDocIdsForGivenField.addAll(docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
-                asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DECISION_DOCUMENT));
+                asylumCase, asylumCaseBefore, ALL_FTPA_RESPONDENT_DECISION_DOCS));
         Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaAppellantDecisionDocument = asylumCase.read(
-                FTPA_APPELLANT_DECISION_DOCUMENT);
+                ALL_FTPA_APPELLANT_DECISION_DOCS);
         Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaRespondentDecisionDocument = asylumCase.read(
-                FTPA_RESPONDENT_DECISION_DOCUMENT);
+                ALL_FTPA_RESPONDENT_DECISION_DOCS);
         List<String> ftpaAppellantDecisionDocIds = new ArrayList<>();
         List<String> ftpaRespondentDecisionDocIds = new ArrayList<>();
         if (optionalFtpaAppellantDecisionDocument.isPresent()) {
