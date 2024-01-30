@@ -53,6 +53,7 @@ public class EditDocsService {
             documentWithDescriptionList.removeIf(idValue ->
                 doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
             );
+            log.info("Size of edited list = " + editedFtpaDecisionDocIds.size());
             for (String id : editedFtpaDecisionDocIds) {
                 log.info(id);
             }
@@ -136,7 +137,7 @@ public class EditDocsService {
         addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(FTPA_APPELLANT_DOCUMENTS));
         addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(FTPA_RESPONDENT_DOCUMENTS));
 
-        return updatedAndDeletedDocIdsForGivenField;
+        return updatedDocIdsForGivenField;
     }
 
     private void addToUpdatedAndDeletedDocIds(List<String> list, AsylumCase asylumCase, AsylumCase asylumCaseBefore, AsylumCaseFieldDefinition documentType) {
