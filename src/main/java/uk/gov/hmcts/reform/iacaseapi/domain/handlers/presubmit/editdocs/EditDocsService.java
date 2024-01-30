@@ -1,17 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_FTPA_APPELLANT_DECISION_DOCS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_FTPA_RESPONDENT_DECISION_DOCS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_PDF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService.getIdFromDocUrl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,45 +26,61 @@ public class EditDocsService {
 
     public void cleanUpOverviewTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> deletedFinalDecisionAndReasonsDocIds = getDeletedDocIds(asylumCase, asylumCaseBefore);
-        for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
-            log.info(somethingToLog);
-        }
-        List<String> deletedFtpaDocIds = getDeletedFtpaDocIds(asylumCase, asylumCaseBefore);
-        for (String somethingToLog: deletedFtpaDocIds) {
-            log.info(somethingToLog);
-        }
+        List<String> deletedFtpaDecisionDocIds = getDeletedFtpaDocIds(asylumCase, asylumCaseBefore);
+
         Document currentFinalDecisionAndReasonPdf = asylumCase.read(FINAL_DECISION_AND_REASONS_PDF, Document.class)
                 .orElse(null);
-        Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantDecisionAndReasonDocuments = asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT);
-        Optional<List<IdValue<DocumentWithDescription>>>  currentFTPARespondentDecisionAndReasonDocuments = asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT);
-        log.info(String.valueOf(currentFTPAAppellantDecisionAndReasonDocuments));
-        log.info(String.valueOf(currentFTPARespondentDecisionAndReasonDocuments));
         if (currentFinalDecisionAndReasonPdf != null
                 && doWeHaveToCleanUpOverviewTabDoc(deletedFinalDecisionAndReasonsDocIds, currentFinalDecisionAndReasonPdf)) {
             asylumCase.clear(FINAL_DECISION_AND_REASONS_PDF);
         }
 
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantDecisionAndReasonDocuments = asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT);
         currentFTPAAppellantDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
-            log.info("currentFTPAAppellantDecisionAndReasonDocuments is present");
-            log.info(String.valueOf(documentWithDescriptionList.size()));
-            for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
-                log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
-            }
             documentWithDescriptionList.removeIf(idValue ->
-                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
             );
             asylumCase.write(FTPA_APPELLANT_DECISION_DOCUMENT, documentWithDescriptionList);
-            log.info(String.valueOf(documentWithDescriptionList.size()));
-            for (IdValue<DocumentWithDescription> somethingToLog: documentWithDescriptionList) {
-                log.info(somethingToLog.getValue().getDocument().get().getDocumentFilename());
-            }
         });
 
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPARespondentDecisionAndReasonDocuments = asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT);
         currentFTPARespondentDecisionAndReasonDocuments.ifPresent(documentWithDescriptionList -> {
             documentWithDescriptionList.removeIf(idValue ->
-                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
             );
             asylumCase.write(FTPA_RESPONDENT_DECISION_DOCUMENT, documentWithDescriptionList);
+        });
+
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantGroundsDocuments = asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        currentFTPAAppellantGroundsDocuments.ifPresent(documentWithDescriptionList -> {
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+            );
+            asylumCase.write(FTPA_APPELLANT_GROUNDS_DOCUMENTS, documentWithDescriptionList);
+        });
+
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPARespondentGroundsDocuments = asylumCase.read(FTPA_RESPONDENT_GROUNDS_DOCUMENTS);
+        currentFTPARespondentGroundsDocuments.ifPresent(documentWithDescriptionList -> {
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+            );
+            asylumCase.write(FTPA_RESPONDENT_GROUNDS_DOCUMENTS, documentWithDescriptionList);
+        });
+
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPAAppellantEvidenceDocuments = asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        currentFTPAAppellantEvidenceDocuments.ifPresent(documentWithDescriptionList -> {
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+            );
+            asylumCase.write(FTPA_APPELLANT_EVIDENCE_DOCUMENTS, documentWithDescriptionList);
+        });
+
+        Optional<List<IdValue<DocumentWithDescription>>> currentFTPARespondentEvidenceDocuments = asylumCase.read(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS);
+        currentFTPARespondentEvidenceDocuments.ifPresent(documentWithDescriptionList -> {
+            documentWithDescriptionList.removeIf(idValue ->
+                    doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
+            );
+            asylumCase.write(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS, documentWithDescriptionList);
         });
     }
 
@@ -82,12 +92,6 @@ public class EditDocsService {
 
     private boolean doWeHaveToCleanUpOverviewTabFTPADoc(List<String> deletedFinalDecisionAndReasonsDocIds,
                                                         String currentFTPADecisionAndReasonDocumentId) {
-        log.info("Do we need to clean up overview tab?");
-        for (String somethingToLog: deletedFinalDecisionAndReasonsDocIds) {
-            log.info(somethingToLog);
-        }
-        log.info(currentFTPADecisionAndReasonDocumentId);
-        log.info(String.valueOf(deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId)));
         return deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId);
     }
 
@@ -108,7 +112,7 @@ public class EditDocsService {
         List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonDocuments) {
         return finalDecisionAndReasonDocuments.stream()
             .map(idValue -> getIdFromDocUrl(idValue.getValue().getDocument().getDocumentUrl()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<String> getDeletedFtpaDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
@@ -116,27 +120,45 @@ public class EditDocsService {
                 asylumCase, asylumCaseBefore, ALL_FTPA_APPELLANT_DECISION_DOCS);
         updatedAndDeletedDocIdsForGivenField.addAll(docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
                 asylumCase, asylumCaseBefore, ALL_FTPA_RESPONDENT_DECISION_DOCS));
-        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaAppellantDecisionDocument = asylumCase.read(
+        updatedAndDeletedDocIdsForGivenField.addAll(docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                asylumCase, asylumCaseBefore, FTPA_APPELLANT_DOCUMENTS));
+        updatedAndDeletedDocIdsForGivenField.addAll(docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DOCUMENTS));
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaAppellantDecisionDocument = asylumCase.read(
                 ALL_FTPA_APPELLANT_DECISION_DOCS);
-        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaRespondentDecisionDocument = asylumCase.read(
-                ALL_FTPA_RESPONDENT_DECISION_DOCS);
         List<String> ftpaAppellantDecisionDocIds = new ArrayList<>();
-        List<String> ftpaRespondentDecisionDocIds = new ArrayList<>();
         if (optionalFtpaAppellantDecisionDocument.isPresent()) {
-            ftpaAppellantDecisionDocIds = getFtpaDecisionDocIds(optionalFtpaAppellantDecisionDocument.get());
+            ftpaAppellantDecisionDocIds = getFtpaDocIds(optionalFtpaAppellantDecisionDocument.get());
         }
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaRespondentDecisionDocument = asylumCase.read(
+                ALL_FTPA_RESPONDENT_DECISION_DOCS);
+        List<String> ftpaRespondentDecisionDocIds = new ArrayList<>();
         if (optionalFtpaRespondentDecisionDocument.isPresent()) {
-            ftpaRespondentDecisionDocIds = getFtpaDecisionDocIds(optionalFtpaRespondentDecisionDocument.get());
+            ftpaRespondentDecisionDocIds = getFtpaDocIds(optionalFtpaRespondentDecisionDocument.get());
+        }
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaAppellantDocuments = asylumCase.read(
+                FTPA_APPELLANT_DOCUMENTS);
+        List<String> ftpaAppellantDocIds = new ArrayList<>();
+        if (optionalFtpaAppellantDocuments.isPresent()) {
+            ftpaAppellantDocIds = getFtpaDocIds(optionalFtpaAppellantDocuments.get());
+        }
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaRespondentDocuments = asylumCase.read(
+                FTPA_RESPONDENT_DOCUMENTS);
+        List<String> ftpaRespondentDocIds = new ArrayList<>();
+        if (optionalFtpaRespondentDocuments.isPresent()) {
+            ftpaRespondentDocIds = getFtpaDocIds(optionalFtpaRespondentDocuments.get());
         }
         updatedAndDeletedDocIdsForGivenField.removeAll(ftpaAppellantDecisionDocIds);
         updatedAndDeletedDocIdsForGivenField.removeAll(ftpaRespondentDecisionDocIds);
+        updatedAndDeletedDocIdsForGivenField.removeAll(ftpaAppellantDocIds);
+        updatedAndDeletedDocIdsForGivenField.removeAll(ftpaRespondentDocIds);
         return updatedAndDeletedDocIdsForGivenField;
     }
 
-    private List<String> getFtpaDecisionDocIds(
-            List<IdValue<DocumentWithDescription>> ftpaDecisionDocuments) {
-        return ftpaDecisionDocuments.stream()
-                .map(idValue -> getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
-                .collect(Collectors.toList());
+    private List<String> getFtpaDocIds(
+            List<IdValue<DocumentWithMetadata>> ftpaDocuments) {
+        return ftpaDocuments.stream()
+                .map(idValue -> getIdFromDocUrl(idValue.getValue().getDocument().getDocumentUrl()))
+                .toList();
     }
 }
