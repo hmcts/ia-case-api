@@ -18,6 +18,6 @@ public interface LocationRefDataApi {
     CourtLocationCategory getCourtVenues(
             @RequestHeader(AUTHORIZATION) String authorization,
             @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-            @RequestParam("service-code") String serviceCode
+            @RequestParam("service_code") String serviceCode
     );
 }
