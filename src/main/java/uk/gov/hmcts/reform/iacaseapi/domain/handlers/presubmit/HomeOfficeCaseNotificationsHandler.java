@@ -66,7 +66,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     Event.SEND_DECISION_AND_REASONS,
                     Event.APPLY_FOR_FTPA_APPELLANT,
                     Event.APPLY_FOR_FTPA_RESPONDENT,
-                    Event.DECIDE_FTPA_APPLICATION,
+                    Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+                    Event.RESIDENT_JUDGE_FTPA_DECISION,
                     Event.END_APPEAL,
                     Event.REQUEST_RESPONSE_AMEND
                 ).contains(callback.getEvent())

@@ -1,20 +1,17 @@
 {
-  "description": "RIA-2527 Resident judge record FTPA appellant decision confirmation",
+  "description": "RIA-1434 Leadership judge record FTPA appellant decision confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "Judge",
     "input": {
-      "eventId": "residentJudgeFtpaDecision",
-      "ftpaAppellantDecisionRemadeRule32": "allowed",
+      "eventId": "leadershipJudgeFtpaDecision",
       "state": "ftpaSubmitted",
       "id": 1234,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "ftpaApplicantType": "appellant",
-          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32",
-          "ariaListingReference": "987654321",
-          "listCaseHearingCentre": "taylorHouse"
+          "ftpaAppellantDecisionOutcomeType": "granted"
         }
 
       }
@@ -24,7 +21,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You've recorded the First-tier permission to appeal decision",
-      "body": "#### What happens next\n\nBoth parties have been notified of the decision.<br>"
+      "body": "#### What happens next\n\nBoth parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
     }
   }
 }
