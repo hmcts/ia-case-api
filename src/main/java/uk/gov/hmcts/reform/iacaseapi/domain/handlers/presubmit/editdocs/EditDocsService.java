@@ -125,15 +125,16 @@ public class EditDocsService {
 
     private List<String> getEditedFtpaDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> updatedAndDeletedDocIdsForGivenField = new ArrayList<>();
+        List<String> updatedDocIdsForGivenField = new ArrayList<>();
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, ALL_FTPA_APPELLANT_DECISION_DOCS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, ALL_FTPA_RESPONDENT_DECISION_DOCS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_APPELLANT_DOCUMENTS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DOCUMENTS);
 
-        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase.read(ALL_FTPA_APPELLANT_DECISION_DOCS));
-        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS));
-        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase.read(FTPA_APPELLANT_DOCUMENTS));
-        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase.read(FTPA_RESPONDENT_DOCUMENTS));
+        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(ALL_FTPA_APPELLANT_DECISION_DOCS));
+        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS));
+        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(FTPA_APPELLANT_DOCUMENTS));
+        addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(FTPA_RESPONDENT_DOCUMENTS));
 
         return updatedAndDeletedDocIdsForGivenField;
     }
@@ -149,14 +150,13 @@ public class EditDocsService {
         });
     }
 
-    private void addToUpdatedDocIds(List<String> updatedAndDeletedDocIds, Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments) {
+    private void addToUpdatedDocIds(List<String> updatedAndDeletedDocIds, List<String> updatedDocIds, Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments) {
         optionalFtpaDocuments.ifPresent(ftpaDocuments -> {
             List<String> ftpaDocIds = getFtpaDocIds(ftpaDocuments);
             List<String> commonDocIds = updatedAndDeletedDocIds.stream()
                 .filter(ftpaDocIds::contains)
                 .toList();
-            updatedAndDeletedDocIds.clear();
-            updatedAndDeletedDocIds.addAll(commonDocIds);
+            updatedDocIds.addAll(commonDocIds);
         });
     }
 
