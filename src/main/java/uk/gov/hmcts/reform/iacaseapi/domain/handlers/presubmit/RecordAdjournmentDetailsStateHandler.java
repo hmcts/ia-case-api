@@ -69,7 +69,8 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
         try {
             callbackResponse.setData(iaHearingsApiService.aboutToSubmit(callback));
         } catch (AsylumCaseServiceResponseException e) {
-            log.error("Failure in call to IA-HEARINGS-API during event {} with error: {}",
+            log.error("Failure in call to IA-HEARINGS-API for case ID {} during event {} with error: {}",
+                callback.getCaseDetails().getId(),
                 callback.getEvent().toString(),
                 e.getMessage());
         }
