@@ -93,6 +93,56 @@ class DirectionPartiesResolverTest {
             });
     }
 
+    @ParameterizedTest
+    @MethodSource("caseTypeScenariosEjp")
+    void should_return_parties_for_send_direction_events_ejp_unrep_non_detained(
+        YesOrNo isEjp,
+        YesOrNo appellantInDetention,
+        YesOrNo isLegallyRepresentedEjp,
+        Parties parties
+    ) {
+        Parties expectedDirectionParties = Parties.BOTH;
+        Map<Event, Parties> exampleInputOutputs =
+            ImmutableMap
+                .<Event, Parties>builder()
+                .put(Event.LIST_CASE, parties)
+                .put(Event.REQUEST_CASE_EDIT, parties)
+                .put(Event.REQUEST_CASE_BUILDING, parties)
+                .put(Event.FORCE_REQUEST_CASE_BUILDING, parties)
+                .put(Event.REQUEST_RESPONSE_REVIEW, parties)
+                .put(Event.REQUEST_NEW_HEARING_REQUIREMENTS, parties)
+                .put(Event.SEND_DIRECTION, expectedDirectionParties)
+                .put(Event.REQUEST_RESPONDENT_EVIDENCE, Parties.RESPONDENT)
+                .put(Event.REQUEST_RESPONDENT_REVIEW, Parties.RESPONDENT)
+                .put(Event.REQUEST_RESPONSE_AMEND, Parties.RESPONDENT)
+                .put(Event.REQUEST_REASONS_FOR_APPEAL, Parties.APPELLANT)
+                .build();
+
+        exampleInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final Event event = inputOutput.getKey();
+                final Parties expectedParties = inputOutput.getValue();
+
+                when(callback.getEvent()).thenReturn(event);
+
+                when(callback.getCaseDetails()).thenReturn(caseDetails);
+                when(caseDetails.getCaseData()).thenReturn(asylumCase);
+                when(asylumCase.read(SEND_DIRECTION_PARTIES)).thenReturn(Optional.of(expectedDirectionParties));
+
+                when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+                when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isEjp));
+                when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isLegallyRepresentedEjp));
+
+                Parties actualDirectionParties = directionPartiesResolver.resolve(callback);
+
+                assertEquals(expectedParties, actualDirectionParties);
+
+                reset(callback);
+            });
+    }
+
     @Test
     void should_throw_when_callback_is_not_for_sending_a_direction() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -119,4 +169,10 @@ class DirectionPartiesResolverTest {
         );
     }
 
+    static Stream<Arguments> caseTypeScenariosEjp() {
+        return Stream.of(
+            Arguments.of(YES, NO, NO, Parties.APPELLANT),
+            Arguments.of(NO, NO, NO, Parties.LEGAL_REPRESENTATIVE)
+        );
+    }
 }

@@ -1,0 +1,35 @@
+{
+  "description": "RIA-8074 Request case building - EJP Unrep Non-detained - Appellant party",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 8074,
+      "eventId": "requestCaseBuilding",
+      "state": "*",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "Test",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "uploadHomeOfficeBundleAvailable": "Yes",
+          "isAdmin": "Yes",
+          "isEjp": "Yes",
+          "appellantInDetention": "No",
+          "isLegallyRepresentedEjp": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadHomeOfficeBundleAvailable": "Yes",
+        "sendDirectionParties": "appellant"
+      }
+    }
+  }
+}

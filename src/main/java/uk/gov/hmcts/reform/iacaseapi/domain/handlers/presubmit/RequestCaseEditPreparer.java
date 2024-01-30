@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -41,8 +40,14 @@ public class RequestCaseEditPreparer implements PreSubmitCallbackHandler<AsylumC
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase)
-                ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE));
+        boolean isInternalDetained = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase));
+        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
+
+        if (isInternalDetained || isEjpUnrepNonDetained) {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
+        } else {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
