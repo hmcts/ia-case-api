@@ -115,7 +115,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                 valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
         if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
-            || ftpaDecisionOutcomeType.equals("reheardRule32") || ftpaDecisionOutcomeType.equals("reheardRule35")) {
+            || ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
             asylumCase.write(valueOf(String.format("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL", ftpaApplicantType.toUpperCase())), YES);
 
@@ -135,7 +135,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
         }
 
-        if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
+        if (ftpaDecisionOutcomeType.equals("remadeRule31")|| ftpaDecisionOutcomeType.equals("remadeRule32") ) {
 
             String ftpaNewDecisionOfAppeal = asylumCase.read(
                     valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType.toUpperCase())), String.class)

@@ -65,7 +65,6 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 );
                 break;
 
-            case "reheardRule32":
             case "reheardRule35":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
@@ -75,9 +74,11 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
             case "remadeRule31":
             case "remadeRule32":
+             case "remadeRule31":
+                postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
-                    + "Both parties have been notified of the decision.<br>"
+                    + "A Judge will update the decision.<br>"
                 );
                 break;
 
