@@ -558,7 +558,7 @@ aac-manage-case-assignment:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
-      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,xui_mo_webapp
+      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,iac,xui_mo_webapp
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
@@ -598,7 +598,7 @@ xui-webapp:
     memoryLimits: 1836Mi
     devmemoryRequests: 1Gi
     devcpuRequests: "1000m"
-    devmemoryLimits: 2Gi
+    devmemoryLimits: 4Gi
     devcpuLimits: "3500m"
     cpuLimits: 1900m
     environment:
