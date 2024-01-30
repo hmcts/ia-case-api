@@ -11,6 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "isPanelRequired": "No",
           "listCaseHearingLength": "90",
           "caseManagementLocation": {
             "region": "1",

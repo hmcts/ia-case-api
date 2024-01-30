@@ -143,14 +143,42 @@ class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    void should_call_ia_hearings_api_successfully() {
+    void should_call_ia_hearings_api_successfully_if_panel_not_required() {
         when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_not_call_ia_hearings_api_if_panel_required() {
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_not_call_ia_hearings_api_if_auto_request_not_enabled() {
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
     }
 
     @Test

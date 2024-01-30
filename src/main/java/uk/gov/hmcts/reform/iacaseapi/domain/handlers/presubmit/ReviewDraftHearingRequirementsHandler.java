@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +85,6 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
             .map(autoRequest -> YES == autoRequest).orElse(false);
         boolean autoRequestHearingEnabled = locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES;
 
-        return autoRequestHearingEnabled && autoRequestHearing;
+        return autoRequestHearingEnabled && autoRequestHearing && !isPanelRequired(asylumCase);
     }
 }

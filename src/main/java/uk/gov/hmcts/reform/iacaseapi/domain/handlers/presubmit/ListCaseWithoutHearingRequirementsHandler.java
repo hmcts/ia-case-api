@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
 import java.util.List;
 import java.util.Objects;
@@ -105,7 +107,7 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (Objects.equals(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase), YesOrNo.YES)) {
+        if (shouldAutoRequestHearing(asylumCase)) {
             try {
                 AsylumCase updatedAsylumCase = iaHearingsApiService.aboutToSubmit(callback);
                 return new PreSubmitCallbackResponse<>(updatedAsylumCase);
@@ -120,6 +122,12 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
         }
 
         return response;
+    }
+
+    private boolean shouldAutoRequestHearing(AsylumCase asylumCase) {
+
+        return !isPanelRequired(asylumCase)
+               && Objects.equals(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase), YES);
     }
 }
 

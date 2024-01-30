@@ -6,6 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
 import java.util.List;
 import java.util.Optional;
@@ -164,5 +166,13 @@ class HandlerUtilsTest {
         HandlerUtils.setDefaultAutoListHearingValue(asylumCase);
 
         verify(asylumCase, times(1)).write(AUTO_LIST_HEARING, YesOrNo.valueOf(expected));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void should_return_whether_panel_is_required(YesOrNo yesOrNo) {
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+        assertEquals(yesOrNo == YES, isPanelRequired(asylumCase));
     }
 }

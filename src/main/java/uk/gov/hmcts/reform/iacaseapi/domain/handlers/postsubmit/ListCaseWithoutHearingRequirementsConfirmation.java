@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -16,7 +17,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 
 @Component
-public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class ListCaseWithoutHearingRequirementsConfirmation
+    implements AutoRequestHearingConfirmation, PostSubmitCallbackHandler<AsylumCase> {
 
     private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
     private final LocationBasedFeatureToggler locationBasedFeatureToggler;
@@ -47,34 +49,15 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
                 .map(manualCreateRequired -> NO == manualCreateRequired)
                 .orElse(true);
 
-            return buildAutoHearingRequestConfirmationResponse(callback.getCaseDetails().getId(), hearingRequestSuccessful);
+            return buildAutoHearingRequestConfirmationResponse(
+                callback.getCaseDetails().getId(),
+                isPanelRequired(asylumCase),
+                hearingRequestSuccessful,
+                "List without requirements"
+            );
         } else {
             return buildConfirmationResponse();
         }
-    }
-
-    private PostSubmitCallbackResponse buildAutoHearingRequestConfirmationResponse(long caseId, boolean hearingRequestSuccessful) {
-
-        PostSubmitCallbackResponse postSubmitResponse =
-            new PostSubmitCallbackResponse();
-
-        if (hearingRequestSuccessful) {
-            postSubmitResponse.setConfirmationHeader("# Hearing listed");
-            postSubmitResponse.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
-                                                   + "The hearing request has been created and is visible on the [Hearings tab]"
-                                                   + "(/cases/case-details/" + caseId + "/hearings)");
-        } else {
-            postSubmitResponse.setConfirmationHeader("");
-            postSubmitResponse.setConfirmationBody(
-                    "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                    + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                    + "\n\n"
-                    + WHAT_HAPPENS_NEXT_LABEL
-                    + "The hearing could not be auto-requested. Please manually request the "
-                    + "hearing via the [Hearings tab](/cases/case-details/" + caseId + "/hearings)");
-        }
-
-        return postSubmitResponse;
     }
 
     private PostSubmitCallbackResponse buildConfirmationResponse() {

@@ -1,17 +1,17 @@
 {
-  "description": "RIA-7987 RIA-7988 review hearing requirements auto request hearing (Succeeded request)",
+  "description": "RIA-8231 review hearing requirements auto request hearing (Panel required)",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
     "input": {
-      "id": 7987,
+      "id": 82311,
       "eventId": "reviewHearingRequirements",
       "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "autoRequestHearing": "Yes",
-          "isPanelRequired": "No",
+          "isPanelRequired": "Yes",
           "caseManagementLocation": {
             "region": "1",
             "baseLocation": "366559"
@@ -24,8 +24,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# Hearing listed",
-      "body": "#### What happens next\n\nThe hearing request has been created and is visible on the [Hearings tab](/cases/case-details/7987/hearings)"
+      "header": "# Hearing requirements complete",
+      "body": "#### What happens next\n\nThe listing team will now list the case. All parties will be notified when the Hearing Notice is available to view"
     }
   }
 }

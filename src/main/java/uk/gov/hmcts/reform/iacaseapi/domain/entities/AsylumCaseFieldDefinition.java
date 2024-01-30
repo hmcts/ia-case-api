@@ -2075,7 +2075,9 @@ public enum AsylumCaseFieldDefinition {
 
     AUTO_REQUEST_HEARING("autoRequestHearing", new TypeReference<YesOrNo>(){}),
 
-    AUTO_LIST_HEARING("autoListHearing", new TypeReference<YesOrNo>(){});
+    AUTO_LIST_HEARING("autoListHearing", new TypeReference<YesOrNo>(){}),
+
+    IS_PANEL_REQUIRED("isPanelRequired", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
