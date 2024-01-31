@@ -88,6 +88,8 @@ xui-webapp:
   enabled: false
 ccd:
   enabled: false
+aac-manage-case-assignment:
+  enabled: false
 ia-aip-frontend:
   enabled: false
 ccd-case-document-am-api:
