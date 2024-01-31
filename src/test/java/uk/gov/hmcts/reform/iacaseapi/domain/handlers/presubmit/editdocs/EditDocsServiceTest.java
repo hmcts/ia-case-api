@@ -45,14 +45,24 @@ class EditDocsServiceTest {
     private static final String ANOTHER_DOCUMENT_BINARY_URL = "some-other-document-binary-url";
     private static final String ANOTHER_DOCUMENT_FILENAME = "some-other-document-filename";
     private static final List<String> DOC_ID_LIST = new ArrayList<>(Collections.singletonList(DOC_ID));
+    private static final List<String> MULTIPLE_DOC_ID_LIST = new ArrayList<>(List.of(DOC_ID, ANOTHER_DOC_ID));
     private static final List<IdValue<DocumentWithDescription>> DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
         buildIdValueWithDescriptionFromParams("", DOC_ID, DOCUMENT_DESCRIPTION)));
     private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
         buildIdValueWithDescriptionFromParams("", ANOTHER_DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION)));
+    private static final List<IdValue<DocumentWithDescription>> MULTIPLE_DOC_ID_VALUE_LIST = new ArrayList<>(List.of(
+        buildIdValueWithDescriptionFromParams("", DOC_ID, DOCUMENT_DESCRIPTION),
+        buildIdValueWithDescriptionFromParams("", ANOTHER_DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION)));
+    private static final List<IdValue<DocumentWithDescription>> MULTIPLE_EDITED_DOC_ID_VALUE_LIST = new ArrayList<>(List.of(
+        buildIdValueWithDescriptionFromParams("", DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION),
+        buildIdValueWithDescriptionFromParams("", ANOTHER_DOC_ID, DOCUMENT_DESCRIPTION)));
     private static final List<IdValue<DocumentWithMetadata>> DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
         buildIdValueWithMetadataFromParams("", DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_APPELLANT)));
     private static final List<IdValue<DocumentWithMetadata>> ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
         buildIdValueWithMetadataFromParams("", ANOTHER_DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_DECISION_AND_REASONS)));
+    private static final List<IdValue<DocumentWithMetadata>> MULTIPLE_EDITED_DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(List.of(
+        buildIdValueWithMetadataFromParams("", DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_DECISION_AND_REASONS),
+        buildIdValueWithMetadataFromParams("", ANOTHER_DOC_ID, DOCUMENT_DESCRIPTION, DocumentTag.FTPA_DECISION_AND_REASONS)));
     private AsylumCase asylumCase;
     @Mock
     private EditDocsAuditService editDocsAuditService;
@@ -261,6 +271,30 @@ class EditDocsServiceTest {
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
         assertDocumentWithDescriptionListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
+    }
+
+    @ParameterizedTest
+    @MethodSource({
+        "appellantDecisionAndReasons",
+        "respondentDecisionAndReasons",
+        "appellantGroundsForAppeal",
+        "respondentGroundsForAppeal",
+        "appellantSupportingEvidence",
+        "respondentSupportingEvidence"
+    })
+    void ftpaMultipleDecisionDocumentsAreUpdated(AsylumCaseFieldDefinition documentTabList, AsylumCaseFieldDefinition overviewTabList) {
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(documentTabList)))
+            .willReturn(MULTIPLE_DOC_ID_LIST);
+
+        asylumCase.write(overviewTabList, Optional.of(MULTIPLE_DOC_ID_VALUE_LIST));
+        asylumCase.write(documentTabList, Optional.of(MULTIPLE_EDITED_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
+
+        assertDocumentWithDescriptionListEquality(MULTIPLE_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithMetadataListEquality(MULTIPLE_EDITED_DOC_ID_VALUE_LIST_DOCUMENT_TAB, asylumCase.read(documentTabList));
+
+        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
+
+        assertDocumentWithDescriptionListEquality(MULTIPLE_EDITED_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
     }
 
     private static Object[] appellantDecisionAndReasons() {
