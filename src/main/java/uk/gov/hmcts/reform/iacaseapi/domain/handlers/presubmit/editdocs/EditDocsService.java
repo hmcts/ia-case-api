@@ -26,7 +26,7 @@ public class EditDocsService {
     public void cleanUpOverviewTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> deletedFinalDecisionAndReasonsDocIds = getDeletedDocIds(asylumCase, asylumCaseBefore);
         List<String> deletedFtpaDocIds = getDeletedFtpaDocIds(asylumCase, asylumCaseBefore);
-        List<String> editedFtpaNonDecisionDocIds = getEditedFtpaNonDecisionDocIds(asylumCase, asylumCaseBefore);
+        updateFtpaNonDecisionDocDescriptions(asylumCase, asylumCaseBefore);
 
         cleanUpDocumentList(asylumCase, FINAL_DECISION_AND_REASONS_PDF, deletedFinalDecisionAndReasonsDocIds);
 
@@ -104,12 +104,12 @@ public class EditDocsService {
         return updatedAndDeletedDocIdsForGivenField;
     }
 
-    private List<String> getEditedFtpaNonDecisionDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+    private List<String> updateFtpaNonDecisionDocDescriptions(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> updatedAndDeletedDocIdsForGivenField = new ArrayList<>();
 
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_APPELLANT_DOCUMENTS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DOCUMENTS);
-        updatedFtpaAppellantGroundsEvidenceDocDescriptions(asylumCase, updatedAndDeletedDocIdsForGivenField);
+        updateFtpaAppellantGroundsEvidenceDocDescriptions(asylumCase, asylumCaseBefore, updatedAndDeletedDocIdsForGivenField);
 
         return updatedAndDeletedDocIdsForGivenField;
     }
@@ -139,9 +139,9 @@ public class EditDocsService {
         });
     }
 
-    private void updatedFtpaAppellantGroundsEvidenceDocDescriptions(AsylumCase asylumCase, List<String> updatedAndDeletedDocIds) {
+    private void updateFtpaAppellantGroundsEvidenceDocDescriptions(AsylumCase asylumCase, AsylumCase asylumCaseBefore, List<String> updatedAndDeletedDocIds) {
         Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments = asylumCase.read(FTPA_APPELLANT_DOCUMENTS);
-        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription = asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription = asylumCaseBefore.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
         optionalFtpaDocuments.ifPresent(ftpaDocuments -> {
             optionalFtpaDocumentsDescription.ifPresent(ftpaDocumentsDescription -> {
                 updatedAndDeletedDocIds.forEach((updatedDocId) -> {
