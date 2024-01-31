@@ -172,11 +172,11 @@ class EditDocsServiceTest {
         asylumCase.write(overviewTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
         asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
 
-        // assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+//        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
-        // assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+//        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
     }
 
     @ParameterizedTest
