@@ -66,10 +66,10 @@ public class EditDocsService {
                     for (IdValue<DocumentWithDescription> idValue2 : currentDocumentsList.get()) {
                         log.info("3 " + idValue2.getValue().getDocument().get().getDocumentFilename());
                         // if (getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()).equals(getIdFromDocUrl(idValue2.getValue().getDocument().get().getDocumentUrl()))) {
-                        //     log.info("4 " + idValue2.getValue().getDocument().get().getDocumentFilename());
-                        //     idValue = idValue2;
-                        //     log.info("5 " + idValue.getValue().getDocument().get().getDocumentFilename());
-                        //     log.info("6 " + idValue2.getValue().getDocument().get().getDocumentFilename());
+                            // log.info("4 " + idValue2.getValue().getDocument().get().getDocumentFilename());
+                            // idValue = idValue2;
+                            // log.info("5 " + idValue.getValue().getDocument().get().getDocumentFilename());
+                            // log.info("6 " + idValue2.getValue().getDocument().get().getDocumentFilename());
                         // }
                     }
                 }
