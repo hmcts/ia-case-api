@@ -16,7 +16,7 @@ java:
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    CCD_URL: "http://ccd-data-store-api-{{ .Release.Name }}.preview.platform.hmcts.net"
+    CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
     CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
@@ -26,7 +26,7 @@ java:
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
     CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
-    AAC_URL: "http://aac-${SERVICE_NAME}.preview.platform.hmcts.net"
+    AAC_URL: "http://aac-{{ .Release.Name }}.preview.platform.hmcts.net"
   keyVaults:
     ia:
       secrets:
@@ -560,8 +560,8 @@ aac-manage-case-assignment:
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: ccd_data,xui_webapp,ia,iac,xui_mo_webapp
-      CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-${SERVICE_NAME}.preview.platform.hmcts.net
-      CCD_DEFINITION_STORE_API_BASE_URL: http://ccd-definition-store-${SERVICE_NAME}.preview.platform.hmcts.net
+      CCD_DATA_STORE_API_BASE_URL: http://${{ .Release.Name }}-ccd-data-store-api
+      CCD_DEFINITION_STORE_API_BASE_URL: http://${{ .Release.Name }}-ccd-definition-store
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
