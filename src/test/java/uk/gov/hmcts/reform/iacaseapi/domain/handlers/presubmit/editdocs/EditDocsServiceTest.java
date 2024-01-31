@@ -49,6 +49,8 @@ class EditDocsServiceTest {
         new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
     private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
         new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, ANOTHER_DOCUMENT_BINARY_URL, ANOTHER_DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION))));
+    private static final List<IdValue<DocumentWithMetadata>> DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
+        new IdValue<>("1", new DocumentWithMetadata(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_APPELLANT))));
     private static final List<IdValue<DocumentWithMetadata>> ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
         new IdValue<>(ANOTHER_DOC_ID, new DocumentWithMetadata(new Document(ANOTHER_DOCUMENT_URL, ANOTHER_DOCUMENT_BINARY_URL, ANOTHER_DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_DECISION_AND_REASONS))));
     private AsylumCase asylumCase;
@@ -172,11 +174,11 @@ class EditDocsServiceTest {
         asylumCase.write(overviewTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
         asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
 
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithDescriptionListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithDescriptionListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
     }
 
     @ParameterizedTest
@@ -194,11 +196,11 @@ class EditDocsServiceTest {
 
         asylumCase.write(overviewTabList, Optional.of(DOC_ID_VALUE_LIST));
 
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithDescriptionListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
-        assertDocumentListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
+        assertDocumentWithDescriptionListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
     }
 
     @ParameterizedTest
@@ -210,14 +212,56 @@ class EditDocsServiceTest {
         asylumCase.write(overviewTabList, Optional.of(DOC_ID_VALUE_LIST));
         asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
 
-        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
-        assertThat(asylumCase.read(documentTabList)).isEqualTo(Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
+        assertDocumentWithDescriptionListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithMetadataListEquality(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB, asylumCase.read(documentTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
-        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithDescriptionListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
     }
 
+    @ParameterizedTest
+    @MethodSource({
+        "appellantGroundsForAppeal",
+        "respondentGroundsForAppeal",
+        "appellantSupportingEvidence",
+        "respondentSupportingEvidence"
+    })
+    void ftpaNonDecisionDocumentDescriptionsAreUpdated(AsylumCaseFieldDefinition documentTabList, AsylumCaseFieldDefinition overviewTabList) {
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(documentTabList)))
+            .willReturn(DOC_ID_LIST);
+        asylumCase.write(overviewTabList, Optional.of(DOC_ID_VALUE_LIST));
+        asylumCase.write(documentTabList, Optional.of(DOC_ID_VALUE_LIST_DOCUMENT_TAB));
+
+        assertDocumentWithDescriptionListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithMetadataListEquality(DOC_ID_VALUE_LIST_DOCUMENT_TAB, asylumCase.read(documentTabList));
+
+        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
+        List<IdValue<DocumentWithDescription>> expected_value = new ArrayList<>(Collections.singletonList(
+            new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION))));
+        assertDocumentWithDescriptionListEquality(expected_value, asylumCase.read(overviewTabList));
+    }
+
+    @ParameterizedTest
+    @MethodSource({
+        "appellantGroundsForAppeal",
+        "respondentGroundsForAppeal",
+        "appellantSupportingEvidence",
+        "respondentSupportingEvidence"
+    })
+    void ftpaNonDecisionDocumentsAreRemovedFromOverviewIfDocumentChanges(AsylumCaseFieldDefinition documentTabList, AsylumCaseFieldDefinition overviewTabList) {
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(), any(), eq(documentTabList)))
+            .willReturn(DOC_ID_LIST);
+        asylumCase.write(overviewTabList, Optional.of(DOC_ID_VALUE_LIST));
+        asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
+
+        assertDocumentWithDescriptionListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertDocumentWithMetadataListEquality(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB, asylumCase.read(documentTabList));
+
+        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
+
+        assertDocumentWithDescriptionListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
+    }
     private static Object[] appellantDecisionAndReasons() {
         return new Object[]{
             new Object[]{
@@ -266,7 +310,11 @@ class EditDocsServiceTest {
         };
     }
 
-    private void assertDocumentListEquality(List<IdValue<DocumentWithDescription>> expected, Optional<List<IdValue<DocumentWithDescription>>> actual) {
+    private void assertDocumentWithDescriptionListEquality(List<IdValue<DocumentWithDescription>> expected, Optional<List<IdValue<DocumentWithDescription>>> actual) {
+        assertThat(actual).isEqualTo(Optional.of(expected));
+    }
+
+    private void assertDocumentWithMetadataListEquality(List<IdValue<DocumentWithMetadata>> expected, Optional<List<IdValue<DocumentWithMetadata>>> actual) {
         assertThat(actual).isEqualTo(Optional.of(expected));
     }
 
