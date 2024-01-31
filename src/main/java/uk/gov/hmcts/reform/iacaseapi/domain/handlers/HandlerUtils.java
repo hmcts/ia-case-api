@@ -89,4 +89,9 @@ public class HandlerUtils {
     public static boolean isEjpCase(AsylumCase asylumCase) {
         return asylumCase.read(IS_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
+
+    // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
+    public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
+        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
 }

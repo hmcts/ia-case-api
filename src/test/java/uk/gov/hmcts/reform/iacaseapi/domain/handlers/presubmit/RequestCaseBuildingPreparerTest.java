@@ -112,6 +112,51 @@ class RequestCaseBuildingPreparerTest {
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
     }
 
+    @ParameterizedTest
+    @MethodSource("caseTypeScenariosEjp")
+    void should_prepare_send_direction_fields_ejp(
+        YesOrNo isEjp,
+        YesOrNo appellantInDetention,
+        YesOrNo isLegallyRepresentedEjp,
+        Parties party
+    ) {
+        final String expectedExplanationContains =
+            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
+
+        final String expectedDueDate = "2019-10-08";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-09-10"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2019-08-10"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_BUILDING);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isEjp));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isLegallyRepresentedEjp));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
+
+        assertThat(
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
+
+        assertThat(
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+            .contains(expectedDueDate);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, party);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
+    }
+
     @Test
     void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(() -> requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -238,6 +283,13 @@ class RequestCaseBuildingPreparerTest {
         return Stream.of(
                 Arguments.of(YES, Parties.APPELLANT),
                 Arguments.of(NO, Parties.LEGAL_REPRESENTATIVE)
+        );
+    }
+
+    static Stream<Arguments> caseTypeScenariosEjp() {
+        return Stream.of(
+            Arguments.of(YES, NO, NO, Parties.APPELLANT),
+            Arguments.of(NO, NO, NO, Parties.LEGAL_REPRESENTATIVE)
         );
     }
 

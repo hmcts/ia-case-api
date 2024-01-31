@@ -108,6 +108,50 @@ class RequestResponseReviewHandlerTest {
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
     }
 
+    @ParameterizedTest
+    @MethodSource("caseTypeScenariosEjp")
+    void should_prepare_send_direction_fields_ejp_unrep_non_detained(
+        YesOrNo isEjp,
+        YesOrNo appellantInDetention,
+        YesOrNo isLegallyRepresentedEjp,
+        Parties parties
+    ) {
+
+        final String expectedExplanationContains =
+            "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
+        final String expectedDueDate = "2019-09-30";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-09-25"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isEjp));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isLegallyRepresentedEjp));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
+
+        assertThat(
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
+
+        assertThat(
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+            .contains(expectedDueDate);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, parties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
+    }
+
     @Test
     void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(() -> requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -166,6 +210,13 @@ class RequestResponseReviewHandlerTest {
                 Arguments.of(YES, NO, Parties.APPELLANT),
                 Arguments.of(NO, NO, Parties.LEGAL_REPRESENTATIVE),
                 Arguments.of(NO, YES, Parties.LEGAL_REPRESENTATIVE)
+        );
+    }
+
+    static Stream<Arguments> caseTypeScenariosEjp() {
+        return Stream.of(
+            Arguments.of(YES, NO, NO, Parties.APPELLANT),
+            Arguments.of(NO, NO, NO, Parties.LEGAL_REPRESENTATIVE)
         );
     }
 }

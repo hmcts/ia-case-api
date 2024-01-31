@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegallyRepresentedEjpCase;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -76,6 +76,8 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
         );
 
         boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+        boolean isInternalDetained = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase));
+        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
 
         if (isAcceleratedDetainedAppeal) {
             ZonedDateTime dueDateTime = dueDateService.calculateDueDate(ZonedDateTime.now(), legalRepresentativeBuildCaseDueInDaysAda);
@@ -86,7 +88,7 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
             asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
         }
 
-        if (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase)) {
+        if (isInternalDetained || isEjpUnrepNonDetained) {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
         } else {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
