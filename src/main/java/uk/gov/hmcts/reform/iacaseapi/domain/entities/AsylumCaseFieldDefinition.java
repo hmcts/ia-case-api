@@ -1585,7 +1585,10 @@ public enum AsylumCaseFieldDefinition {
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
 
     S94B_STATUS(
-        "s94bStatus", new TypeReference<YesOrNo>(){});
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
+
+    IS_DLRM_SET_ASIDE_ENABLED(
+        "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;

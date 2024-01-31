@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class HandlerUtils {
 
@@ -31,5 +31,9 @@ public class HandlerUtils {
     public static boolean isAipToRepJourney(AsylumCase asylumCase) {
         return (asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class).orElse(null) == JourneyType.AIP)
             && isRepJourney(asylumCase);
+    }
+
+    public static boolean isDlrmSetAsideEnabled(AsylumCase asylumCase){
+        return (asylumCase.read(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 }
