@@ -15,6 +15,7 @@
             "region": "1",
             "baseLocation": "366559"
           },
+          "isIntegrated": "Yes",
           "manualCreHearingRequired": "No",
           "relistCaseImmediately": "Yes",
           "hearingAdjournmentWhen": "onHearingDate"

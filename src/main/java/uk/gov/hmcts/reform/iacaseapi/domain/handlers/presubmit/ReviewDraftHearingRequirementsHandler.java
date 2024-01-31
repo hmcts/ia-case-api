@@ -19,10 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Slf4j
 @Component
@@ -30,8 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceRes
 public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
-    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
-    private final IaHearingsApiService iaHearingsApiService;
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -63,28 +60,19 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
             asylumCase.write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
         }
 
-        if (shouldAutoRequestHearing(asylumCase)) {
-            try {
-                AsylumCase updatedAsylumCase = iaHearingsApiService.aboutToSubmit(callback);
-                return new PreSubmitCallbackResponse<>(updatedAsylumCase);
-
-            } catch (AsylumCaseServiceResponseException e) {
-                log.error("Failure in call to IA-HEARINGS-API during event {} with error: {}",
-                    callback.getEvent().toString(),
-                    e.getMessage());
-
-                asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.YES);
-            }
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoRequest(asylumCase))) {
+            return new PreSubmitCallbackResponse<>(
+                autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean shouldAutoRequestHearing(AsylumCase asylumCase) {
+    private boolean canAutoRequest(AsylumCase asylumCase) {
+
         boolean autoRequestHearing = asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)
             .map(autoRequest -> YES == autoRequest).orElse(true);
-        boolean autoRequestHearingEnabled = locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES;
 
-        return autoRequestHearingEnabled && autoRequestHearing && !isPanelRequired(asylumCase);
+        return autoRequestHearing && !isPanelRequired(asylumCase);
     }
 }

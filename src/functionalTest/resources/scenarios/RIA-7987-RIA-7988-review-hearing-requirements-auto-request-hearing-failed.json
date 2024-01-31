@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isIntegrated": "Yes",
           "autoRequestHearing": "Yes",
           "caseManagementLocation": {
             "region": "1",

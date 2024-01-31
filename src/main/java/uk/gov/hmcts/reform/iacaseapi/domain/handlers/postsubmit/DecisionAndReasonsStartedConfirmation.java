@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Component
@@ -23,7 +24,7 @@ public class DecisionAndReasonsStartedConfirmation implements PostSubmitCallback
     public static final String CONFIRMATION_HEADER_TEXT = "# You have started the decision and reasons process";
     public static final String COMPLETE_DECISION_TEXT = "The judge can now download and complete the decision and reasons document.";
 
-    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -42,7 +43,7 @@ public class DecisionAndReasonsStartedConfirmation implements PostSubmitCallback
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase)) {
             boolean hearingRequestSuccessful = asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)
                 .map(manualCreateRequired -> NO == manualCreateRequired)
                 .orElse(true);

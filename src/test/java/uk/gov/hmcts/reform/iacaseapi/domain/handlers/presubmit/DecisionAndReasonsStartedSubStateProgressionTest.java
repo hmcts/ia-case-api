@@ -4,13 +4,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -41,16 +41,14 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private IaHearingsApiService iaHearingsApiService;
-    @Mock
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private AutoRequestHearingService autoRequestHearingService;
 
     private DecisionAndReasonsStartedSubStateProgression decisionAndReasonsStartSubStateProgression;
 
     @BeforeEach
     public void setUp() {
         decisionAndReasonsStartSubStateProgression =
-            new DecisionAndReasonsStartedSubStateProgression(iaHearingsApiService, locationBasedFeatureToggler);
+            new DecisionAndReasonsStartedSubStateProgression(autoRequestHearingService);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
@@ -61,15 +59,34 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
-            .thenReturn(YES);
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(true);
+        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+            .thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+        verify(autoRequestHearingService, times(1))
+            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
+    }
+
+    @Test
+    void should_not_auto_request_hearing() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(autoRequestHearingService, never())
+            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
         verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
     }

@@ -12,8 +12,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ADJOURNED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
@@ -24,11 +26,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -37,7 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +58,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     @Mock
-    private IaHearingsApiService iaHearingsApiService;
+    private AutoRequestHearingService autoRequestHearingService;
     private RecordAdjournmentDetailsStateHandler recordAdjournmentDetailsStateHandler;
 
     private final String listCaseHearingDate = "4023-12-28T09:47:22.000";
@@ -67,7 +72,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
         when(callback.getCaseDetails().getState()).thenReturn(currentAppealState);
 
         recordAdjournmentDetailsStateHandler =
-            new RecordAdjournmentDetailsStateHandler(iaHearingsApiService);
+            new RecordAdjournmentDetailsStateHandler(autoRequestHearingService);
     }
 
     @Test
@@ -75,6 +80,8 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(NO));
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(ON_HEARING_DATE));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
             .thenReturn(Optional.of(listCaseHearingDate));
 
@@ -91,6 +98,8 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(NO));
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(ON_HEARING_DATE));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
             .thenReturn(Optional.of(listCaseHearingDate));
 
@@ -108,6 +117,8 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .thenReturn(Optional.of(listCaseHearingDate));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(NO));
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(ON_HEARING_DATE));
 
         PreSubmitCallbackResponse<AsylumCase> response = recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -119,16 +130,15 @@ class RecordAdjournmentDetailsStateHandlerTest {
     @Test
     void should_not_set_appeal_as_adjourned_when_relist_immediately() {
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
-            .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
+            .thenReturn(Optional.of(ON_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YES));
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response = recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
-        assertThat(response.getState()).isEqualTo(LISTING);
+        assertThat(response.getState()).isEqualTo(currentAppealState);
     }
 
     @Test
@@ -144,11 +154,24 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
     @Test
     void should_throw_if_relist_immediately_is_not_present() {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(ON_HEARING_DATE));
 
         assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Response to relist case immediately is not present");
+    }
+
+    @Test
+    void should_throw_if_hearing_adjournment_day_is_not_present() {
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+
+        assertThatThrownBy(() -> recordAdjournmentDetailsStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("'Hearing adjournment when' is not present");
     }
 
     @Test
@@ -202,15 +225,44 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void should_call_hearings_api() {
+    @ParameterizedTest
+    @CsvSource({"NO, BEFORE_HEARING_DATE, MANUAL_CANCEL_HEARINGS_REQUIRED",
+        "YES, BEFORE_HEARING_DATE, UPDATE_HMC_REQUEST_SUCCESS"})
+    void should_make_hearing_update_and_cancellation_request(
+        YesOrNo relistImmediately, HearingAdjournmentDay adjournmentDay, AsylumCaseFieldDefinition statusField) {
+
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
-            .thenReturn(Optional.of(YES));
+            .thenReturn(Optional.of(relistImmediately));
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(adjournmentDay));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of(listCaseHearingDate));
+        when(autoRequestHearingService.makeAutoHearingRequest(callback, statusField))
+            .thenReturn(asylumCase);
 
         recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+        verify(autoRequestHearingService, times(1)).makeAutoHearingRequest(callback, statusField);
+    }
+
+    @Test
+    void should_make_create_hearing_request() {
+
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(ON_HEARING_DATE));
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(true);
+        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+            .thenReturn(asylumCase);
+
+        recordAdjournmentDetailsStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        verify(autoRequestHearingService, times(1))
+            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
     }
 
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,6 +14,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -44,10 +45,11 @@ class ReviewHearingRequirementsConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private AutoRequestHearingService autoRequestHearingService;
 
     private ReviewHearingRequirementsConfirmation handler;
     private final long caseId = 1L;
+    private final Map<String, String> confirmation = new HashMap<>();
 
     @BeforeEach
     public void setUp() {
@@ -55,38 +57,45 @@ class ReviewHearingRequirementsConfirmationTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(REVIEW_HEARING_REQUIREMENTS);
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YES);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true)).thenReturn(true);
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         handler =
-            new ReviewHearingRequirementsConfirmation(locationBasedFeatureToggler);
+            new ReviewHearingRequirementsConfirmation(autoRequestHearingService);
     }
 
     @Test
-    void should_return_successful_confirmation_when_auto_request_enabled_and_panel_not_required() {
+    void should_return_successful_confirmation_for_auto_request_hearing() {
+        confirmation.put("header", "Hearing listed");
+        confirmation.put("body", """
+            #### What happens next
 
-        PostSubmitCallbackResponse callbackResponse =
-            handler.handle(callback);
+            The hearing request has been created and is visible on the [Hearings tab](/cases/case-details/1/hearings)""");
+
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, caseId))
+            .thenReturn(confirmation);
+
+        PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("Hearing listed");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The hearing request has been created and is visible on the [Hearings tab]"
-                      + "(/cases/case-details/1/hearings)");
-
+        assertEquals(confirmation.get("header"), callbackResponse.getConfirmationHeader().get());
+        assertEquals(confirmation.get("body"), callbackResponse.getConfirmationBody().get());
     }
 
     @Test
-    void should_return_different_confirmation_when_auto_request_enabled_and_panel_required() {
+    void should_return_confirmation_when_panel_required() {
+        confirmation.put("header", "# Hearing requirements complete");
+        confirmation.put("body", """
+            #### What happens next
+
+            The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view""");
 
         when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false)).thenReturn(false);
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
@@ -95,45 +104,47 @@ class ReviewHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("Hearing requirements complete");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The listing team will now list the case. All parties will be notified when "
-                      + "the Hearing Notice is available to view");
-
+        assertEquals(confirmation.get("header"), callbackResponse.getConfirmationHeader().get());
+        assertEquals(confirmation.get("body"), callbackResponse.getConfirmationBody().get());
     }
 
     @Test
-    void should_return_failed_confirmation_when_auto_request_enabled() {
+    void should_return_failed_confirmation_for_auto_request_hearing() {
+        confirmation.put("body", "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
+                                 + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
+                                 + "\n\n"
+                                 + "#### What happens next\n\n"
+                                 + "The hearing could not be auto-requested. Please manually request the "
+                                 + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
 
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, caseId))
+            .thenReturn(confirmation);
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertEquals("", callbackResponse.getConfirmationHeader().get());
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("hearingCouldNotBeListed.png");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The hearing could not be auto-requested. Please manually request the "
-                      + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        assertEquals(confirmation.get("body"), callbackResponse.getConfirmationBody().get());
     }
 
     @Test
-    void should_return_confirmation_when_auto_request_not_enabled() {
+    void should_return_confirmation_when_panel_not_required() {
+        confirmation.put("header", "# You've recorded the agreed hearing adjustments");
+        confirmation.put("body", "#### What happens next\n\n"
+                                 + "You should ensure that the case flags reflect "
+                                 + "the hearing requests that have been approved. "
+                                 + "This may require adding new case flags or making active flags inactive.\n\n"
+                                 + "[Add case flag](/case/IA/Asylum/1/trigger/createFlag)<br>"
+                                 + "[Manage case flags](/case/IA/Asylum/1/trigger/manageFlags)<br><br>"
+                                 + "The listing team will now list the case. "
+                                 + "All parties will be notified when the Hearing Notice is available to view.<br><br>"
+        );
 
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(NO);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false)).thenReturn(false);
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PostSubmitCallbackResponse callbackResponse =
@@ -143,28 +154,8 @@ class ReviewHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the agreed hearing adjustments");
-
-
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
-
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
-
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.");
-
+        assertEquals(confirmation.get("header"), callbackResponse.getConfirmationHeader().get());
+        assertEquals(confirmation.get("body"), callbackResponse.getConfirmationBody().get());
     }
 
     @Test

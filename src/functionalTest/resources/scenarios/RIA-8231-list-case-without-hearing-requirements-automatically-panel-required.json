@@ -12,6 +12,7 @@
         "replacements": {
           "uploadAdditionalEvidenceActionAvailable": "Yes",
           "isPanelRequired": "Yes",
+          "isIntegrated": "Yes",
           "listCaseHearingLength": "90",
           "caseManagementLocation": {
             "region": "1",

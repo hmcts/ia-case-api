@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,7 +15,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -44,9 +49,10 @@ class RecordAdjournmentDetailsConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private AutoRequestHearingService autoRequestHearingService;
 
     private final Long caseId = 112233L;
+    private final Map<String, String> confirmation = new HashMap<>();
 
     private RecordAdjournmentDetailsConfirmation recordAdjournmentDetailsConfirmation;
 
@@ -56,11 +62,11 @@ class RecordAdjournmentDetailsConfirmationTest {
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
-            .thenReturn(YesOrNo.YES);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(true);
 
         recordAdjournmentDetailsConfirmation =
-            new RecordAdjournmentDetailsConfirmation(locationBasedFeatureToggler);
+            new RecordAdjournmentDetailsConfirmation(autoRequestHearingService);
     }
 
     @Test
@@ -174,55 +180,58 @@ class RecordAdjournmentDetailsConfirmationTest {
 
     @Test
     void should_return_auto_hearing_request_success_confirmation() {
+        confirmation.put("header", "# You have recorded the adjournment details");
+        confirmation.put("body", """
+            #### What happens next
 
+            The hearing request has been created and is visible on the [Hearings tab](/cases/case-details/112233/hearings)""");
+
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, caseId))
+            .thenReturn(confirmation);
 
-        PostSubmitCallbackResponse callbackResponse =
+        PostSubmitCallbackResponse response =
             recordAdjournmentDetailsConfirmation.handle(callback);
 
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertNotNull(response);
+        assertTrue(response.getConfirmationHeader().isPresent());
+        assertTrue(response.getConfirmationBody().isPresent());
 
-        assertThat(callbackResponse.getConfirmationHeader().get())
-            .contains("# You have recorded the adjournment details");
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### Do this next\n\n"
-                      + "The hearing request has been created and is visible on the [Hearings tab]"
-                      + "(/cases/case-details/" + caseId + "/hearings)");
+        assertEquals(confirmation.get("header"), response.getConfirmationHeader().get());
+        assertEquals(confirmation.get("body"), response.getConfirmationBody().get());
     }
 
     @Test
     void should_return_auto_hearing_request_failed_confirmation() {
+        confirmation.put("header", "# You have recorded the adjournment details");
+        confirmation.put("body", "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
+                                 + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
+                                 + "\n\n"
+                                 + "#### What happens next\n\n"
+                                 + "The hearing could not be auto-requested. Please manually request the "
+                                 + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
 
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, caseId))
+            .thenReturn(confirmation);
 
-        PostSubmitCallbackResponse callbackResponse =
+        PostSubmitCallbackResponse response =
             recordAdjournmentDetailsConfirmation.handle(callback);
 
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertNotNull(response);
+        assertTrue(response.getConfirmationHeader().isPresent());
+        assertTrue(response.getConfirmationBody().isPresent());
 
-        assertThat(callbackResponse.getConfirmationHeader().get())
-            .contains("# You have recorded the adjournment details");
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                      + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                      + "\n\n"
-                      + "#### Do this next\n\n"
-                      + "The hearing could not be auto-requested. Please manually request the "
-                      + "hearing via the [Hearings tab](/cases/case-details/" + caseId + "/hearings)");
+        assertEquals(confirmation.get("header"), response.getConfirmationHeader().get());
+        assertEquals(confirmation.get("body"), response.getConfirmationBody().get());
     }
 
     @Test
@@ -259,8 +268,8 @@ class RecordAdjournmentDetailsConfirmationTest {
             .thenReturn(Optional.of(HearingAdjournmentDay.ON_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
-            .thenReturn(YesOrNo.NO);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(false);
 
         PostSubmitCallbackResponse callbackResponse =
             recordAdjournmentDetailsConfirmation.handle(callback);

@@ -12,6 +12,7 @@
         "replacements": {
           "autoRequestHearing": "Yes",
           "isPanelRequired": "No",
+          "isIntegrated": "Yes",
           "caseManagementLocation": {
             "region": "1",
             "baseLocation": "366559"

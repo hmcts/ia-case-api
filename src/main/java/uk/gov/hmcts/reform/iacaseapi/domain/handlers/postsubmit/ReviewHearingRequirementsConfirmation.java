@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -15,15 +15,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @Component
 @RequiredArgsConstructor
-public class ReviewHearingRequirementsConfirmation
-    implements AutoRequestHearingConfirmation, PostSubmitCallbackHandler<AsylumCase> {
+public class ReviewHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
-    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -40,50 +39,55 @@ public class ReviewHearingRequirementsConfirmation
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
+
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean isAutoRequestHearing = autoRequestHearingService
+            .shouldAutoRequestHearing(asylumCase, canAutoRequest(asylumCase));
 
-        if (shouldAutoRequestHearing(asylumCase)) {
-            boolean hearingRequestSuccessful = asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)
-                .map(manualCreateRequired -> NO == manualCreateRequired)
-                .orElse(true);
+        Map<String, String> confirmation = isAutoRequestHearing
+            ? autoRequestHearingService
+                .buildAutoHearingRequestConfirmation(asylumCase, callback.getCaseDetails().getId())
+            : buildConfirmationResponse(isPanelRequired(asylumCase), callback.getCaseDetails().getId());
 
-            return buildAutoHearingRequestConfirmationResponse(
-                callback.getCaseDetails().getId(),
-                isPanelRequired(asylumCase),
-                hearingRequestSuccessful,
-                "Hearing requirements");
+        response.setConfirmationHeader(confirmation.get("header"));
+        response.setConfirmationBody(confirmation.get("body"));
+
+        return response;
+    }
+
+    private Map<String, String> buildConfirmationResponse(boolean panelRequired, long caseId) {
+
+        Map<String, String> confirmation = new HashMap<>();
+
+        if (panelRequired) {
+            confirmation.put("header", "# Hearing requirements complete");
+            confirmation.put("body", WHAT_HAPPENS_NEXT_LABEL
+                                     + "The listing team will now list the case. All parties will be notified when "
+                                     + "the Hearing Notice is available to view");
         } else {
-            return buildConfirmationResponse(callback.getCaseDetails().getId());
+            String addCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/createFlag";
+            String manageCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/manageFlags";
+
+            confirmation.put("header", "# You've recorded the agreed hearing adjustments");
+            confirmation.put("body", WHAT_HAPPENS_NEXT_LABEL
+                + "You should ensure that the case flags reflect the hearing requests that have been approved. "
+                + "This may require adding new case flags or making active flags inactive.\n\n"
+                + "[Add case flag](" + addCaseFlagUrl + ")<br>"
+                + "[Manage case flags](" + manageCaseFlagUrl + ")<br><br>"
+                + "The listing team will now list the case. "
+                + "All parties will be notified when the Hearing Notice is available to view.<br><br>"
+            );
         }
+
+        return confirmation;
     }
 
-    private PostSubmitCallbackResponse buildConfirmationResponse(long caseId) {
+    private boolean canAutoRequest(AsylumCase asylumCase) {
 
-        PostSubmitCallbackResponse postSubmitResponse =
-            new PostSubmitCallbackResponse();
-
-        String addCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/createFlag";
-        String manageCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/manageFlags";
-
-        postSubmitResponse.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
-        postSubmitResponse.setConfirmationBody(
-            WHAT_HAPPENS_NEXT_LABEL
-            + "You should ensure that the case flags reflect the hearing requests that have been approved. "
-            + "This may require adding new case flags or making active flags inactive.\n\n"
-            + "[Add case flag](" + addCaseFlagUrl + ")<br>"
-            + "[Manage case flags](" + manageCaseFlagUrl + ")<br><br>"
-            + "The listing team will now list the case. "
-            + "All parties will be notified when the Hearing Notice is available to view.<br><br>"
-        );
-
-        return postSubmitResponse;
-    }
-
-    private boolean shouldAutoRequestHearing(AsylumCase asylumCase) {
         boolean autoRequestHearing = asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)
             .map(autoRequest -> YES == autoRequest).orElse(false);
-        boolean autoRequestHearingEnabled = locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES;
 
-        return autoRequestHearingEnabled && autoRequestHearing;
+        return autoRequestHearing && !isPanelRequired(asylumCase);
     }
 }

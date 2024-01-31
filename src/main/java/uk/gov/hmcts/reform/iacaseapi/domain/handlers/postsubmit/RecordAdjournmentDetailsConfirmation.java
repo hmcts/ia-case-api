@@ -1,32 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @Component
 @RequiredArgsConstructor
 public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -62,7 +59,8 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
             + caseId + "/hearings).";
 
         if (shouldAutoRequestHearing(asylumCase)) {
-            confirmationBody = buildAutoCreateHearingConfirmationBody(asylumCase, caseId);
+            confirmationBody = autoRequestHearingService
+                .buildAutoHearingRequestConfirmation(asylumCase, caseId).get("body");
         } else if (shouldUpdateHearing(asylumCase)) {
             confirmationBody = buildUpdateHearingConfirmationBody(asylumCase, caseId);
         } else if (shouldDeleteHearing(asylumCase)) {
@@ -74,36 +72,21 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
         return postSubmitResponse;
     }
 
-    private boolean relistCaseImmediately(AsylumCase asylumCase) {
-        return asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
-            .map(relist -> YES == relist)
-            .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
-    }
-
-    private HearingAdjournmentDay getHearingAdjournmentDay(AsylumCase asylumCase) {
-        return asylumCase
-            .read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
-            .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
-    }
-
     private boolean shouldUpdateHearing(AsylumCase asylumCase) {
-        return relistCaseImmediately(asylumCase)
-               && (getHearingAdjournmentDay(asylumCase) == BEFORE_HEARING_DATE);
+        return relistCaseImmediately(asylumCase, true)
+               && adjournedBeforeHearingDay(asylumCase);
     }
 
     private boolean shouldDeleteHearing(AsylumCase asylumCase) {
-        return !relistCaseImmediately(asylumCase)
-               && (getHearingAdjournmentDay(asylumCase) == BEFORE_HEARING_DATE);
+        return !relistCaseImmediately(asylumCase, true)
+               && adjournedBeforeHearingDay(asylumCase);
     }
 
     private boolean shouldAutoRequestHearing(AsylumCase asylumCase) {
-        boolean adjournedOnHearingDay = getHearingAdjournmentDay(asylumCase) == ON_HEARING_DATE;
-        boolean autoRequestHearingEnabled =
-            locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES;
 
-        return autoRequestHearingEnabled
-               && relistCaseImmediately(asylumCase)
-               && adjournedOnHearingDay;
+        boolean canAutoCreate = relistCaseImmediately(asylumCase, true)
+                                 && adjournedOnHearingDay(asylumCase);
+        return autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoCreate);
     }
 
     private String buildUpdateHearingConfirmationBody(AsylumCase asylumCase, long caseId) {
@@ -151,23 +134,4 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
         }
     }
 
-    private String buildAutoCreateHearingConfirmationBody(AsylumCase asylumCase, long caseId) {
-
-        boolean autoHearingRequestSuccessful = asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)
-            .map(manualCreateRequired -> NO == manualCreateRequired)
-            .orElse(false);
-
-        if (autoHearingRequestSuccessful) {
-            return "#### Do this next\n\n"
-                   + "The hearing request has been created and is visible on the [Hearings tab]"
-                   + "(/cases/case-details/" + caseId + "/hearings)";
-        } else {
-            return "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                   + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                   + "\n\n"
-                   + "#### Do this next\n\n"
-                   + "The hearing could not be auto-requested. Please manually request the "
-                   + "hearing via the [Hearings tab](/cases/case-details/" + caseId + "/hearings)";
-        }
-    }
 }

@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +36,7 @@ class DecisionAndReasonsStartedConfirmationTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private AutoRequestHearingService autoRequestHearingService;
     @Mock
     private AsylumCase asylumCase;
     @Mock
@@ -49,8 +49,8 @@ class DecisionAndReasonsStartedConfirmationTest {
     void should_return_confirmation_if_auto_hearing_request_disabled() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
-            .thenReturn(NO);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase))
+            .thenReturn(false);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
 
         PostSubmitCallbackResponse callbackResponse =
@@ -74,8 +74,8 @@ class DecisionAndReasonsStartedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(1L);
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
-            .thenReturn(YES);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase))
+            .thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
 
@@ -103,8 +103,8 @@ class DecisionAndReasonsStartedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(1L);
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase))
-            .thenReturn(YES);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase))
+            .thenReturn(true);;
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
 

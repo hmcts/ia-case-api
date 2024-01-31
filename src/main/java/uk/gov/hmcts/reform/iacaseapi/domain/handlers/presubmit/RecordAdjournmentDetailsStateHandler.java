@@ -3,11 +3,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -15,20 +20,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
-    private IaHearingsApiService iaHearingsApiService;
-
-    public RecordAdjournmentDetailsStateHandler(IaHearingsApiService iaHearingsApiService) {
-        this.iaHearingsApiService = iaHearingsApiService;
-    }
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -50,31 +50,50 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean relistImmediately = relistCaseImmediately(callback.getCaseDetails().getCaseData(), true);
 
-        final State currentState = callback.getCaseDetails().getState();
+        State state = trySetCaseToAdjourned(callback, relistImmediately);
 
-        boolean relistCaseImmediately = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)
-            .map(relist -> YES == relist)
-            .orElseThrow(() -> new IllegalStateException("Response to relist case immediately is not present"));
+        return new PreSubmitCallbackResponse<>(makeAutoHearingRequest(callback, relistImmediately), state);
+    }
 
-        if (!relistCaseImmediately) {
+    private State trySetCaseToAdjourned(Callback<AsylumCase> callback, boolean relistImmediately) {
+        State state = callback.getCaseDetails().getState();
+        if (relistImmediately) {
+
+            return state;
+        } else {
+            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
             String currentHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
                 .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing"));
-            asylumCase.write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, currentState.toString());
+            asylumCase.write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, callback.getCaseDetails().getState().toString());
             asylumCase.write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, currentHearingDate);
+
+            return State.ADJOURNED;
         }
 
-        // Delegate hearing update/cancellation/auto create to hearings API
-        try {
-            callbackResponse.setData(iaHearingsApiService.aboutToSubmit(callback));
-        } catch (AsylumCaseServiceResponseException e) {
-            log.error("Failure in call to IA-HEARINGS-API for case ID {} during event {} with error: {}",
-                callback.getCaseDetails().getId(),
-                callback.getEvent().toString(),
-                e.getMessage());
+    }
+
+    private AsylumCase makeAutoHearingRequest(Callback<AsylumCase> callback, boolean relistCaseImmediately) {
+
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        boolean canAutoCreate = relistCaseImmediately && adjournedOnHearingDay(asylumCase);
+
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoCreate)) {
+            // Auto create hearing
+            asylumCase = autoRequestHearingService
+                .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        } else if (relistCaseImmediately && adjournedBeforeHearingDay(asylumCase)) {
+            // Auto update hearing
+            asylumCase = autoRequestHearingService
+                .makeAutoHearingRequest(callback, UPDATE_HMC_REQUEST_SUCCESS);
+        } else if (!relistCaseImmediately && adjournedBeforeHearingDay(asylumCase)) {
+            // Auto cancel hearing
+            asylumCase = autoRequestHearingService
+                .makeAutoHearingRequest(callback, MANUAL_CANCEL_HEARINGS_REQUIRED);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase, relistCaseImmediately ? currentState : State.ADJOURNED);
+        return asylumCase;
     }
 }
