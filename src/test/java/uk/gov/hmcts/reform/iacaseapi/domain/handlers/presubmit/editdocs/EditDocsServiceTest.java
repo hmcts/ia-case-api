@@ -262,6 +262,7 @@ class EditDocsServiceTest {
 
         assertDocumentWithDescriptionListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
     }
+
     private static Object[] appellantDecisionAndReasons() {
         return new Object[]{
             new Object[]{
