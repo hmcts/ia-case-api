@@ -142,23 +142,21 @@ public class EditDocsService {
     private void updateFtpaDocDescriptions(AsylumCase asylumCase, List<String> updatedAndDeletedDocIds, List<String> deletedFtpaDocIds, AsylumCaseFieldDefinition docTabDocuments, AsylumCaseFieldDefinition ftpaTabDocuments) {
         Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments = asylumCase.read(docTabDocuments);
         Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription = asylumCase.read(ftpaTabDocuments);
-        optionalFtpaDocuments.ifPresent(ftpaDocuments -> {
-            optionalFtpaDocumentsDescription.ifPresent(ftpaDocumentsDescription -> {
-                updatedAndDeletedDocIds.forEach((updatedDocId) -> {
-                    List<String> currentFtpaDocDescriptionIds = getFtpaDocDescriptionIds(ftpaDocumentsDescription);
-                    if (currentFtpaDocDescriptionIds.contains(updatedDocId) && !deletedFtpaDocIds.contains(updatedDocId)) {
-                        IdValue<DocumentWithDescription> oldIdValue = ftpaDocumentsDescription.stream().filter((document) -> getIdFromDocUrl(document.getValue().getDocument().get().getDocumentUrl()).equals(updatedDocId))
-                            .findFirst().get();
-                        String newDescription = ftpaDocuments.stream().filter((document) -> getIdFromDocUrl(document.getValue().getDocument().getDocumentUrl()).equals(updatedDocId))
-                            .findFirst().get().getValue().getDescription();
-                        IdValue<DocumentWithDescription> newIdValue = new IdValue<>(oldIdValue.getId(), new DocumentWithDescription(oldIdValue.getValue().getDocument().get(), newDescription));
-                        ftpaDocumentsDescription.remove(oldIdValue);
-                        ftpaDocumentsDescription.add(newIdValue);
-                    }
-                });
-                asylumCase.write(ftpaTabDocuments, ftpaDocumentsDescription);
+        optionalFtpaDocuments.ifPresent(ftpaDocuments -> optionalFtpaDocumentsDescription.ifPresent(ftpaDocumentsDescription -> {
+            updatedAndDeletedDocIds.forEach(updatedDocId -> {
+                List<String> currentFtpaDocDescriptionIds = getFtpaDocDescriptionIds(ftpaDocumentsDescription);
+                if (currentFtpaDocDescriptionIds.contains(updatedDocId) && !deletedFtpaDocIds.contains(updatedDocId)) {
+                    IdValue<DocumentWithDescription> oldIdValue = ftpaDocumentsDescription.stream().filter(document -> getIdFromDocUrl(document.getValue().getDocument().get().getDocumentUrl()).equals(updatedDocId))
+                        .findFirst().get();
+                    String newDescription = ftpaDocuments.stream().filter(document -> getIdFromDocUrl(document.getValue().getDocument().getDocumentUrl()).equals(updatedDocId))
+                        .findFirst().get().getValue().getDescription();
+                    IdValue<DocumentWithDescription> newIdValue = new IdValue<>(oldIdValue.getId(), new DocumentWithDescription(oldIdValue.getValue().getDocument().get(), newDescription));
+                    ftpaDocumentsDescription.remove(oldIdValue);
+                    ftpaDocumentsDescription.add(newIdValue);
+                }
             });
-        });
+            asylumCase.write(ftpaTabDocuments, ftpaDocumentsDescription);
+        }));
     }
 
     private List<String> getFtpaDocIds(List<IdValue<DocumentWithMetadata>> ftpaDocuments) {
