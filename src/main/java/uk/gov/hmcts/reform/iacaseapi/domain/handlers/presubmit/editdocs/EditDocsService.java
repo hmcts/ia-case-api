@@ -4,7 +4,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService.getIdFromDocUrl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,7 +108,10 @@ public class EditDocsService {
 
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_APPELLANT_DOCUMENTS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DOCUMENTS);
-        updateFtpaAppellantGroundsEvidenceDocDescriptions(asylumCase, updatedAndDeletedDocIdsForGivenField, deletedFtpaDocIds);
+        updateFtpaDocDescriptions(asylumCase, updatedAndDeletedDocIdsForGivenField, deletedFtpaDocIds, FTPA_APPELLANT_DOCUMENTS, FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        updateFtpaDocDescriptions(asylumCase, updatedAndDeletedDocIdsForGivenField, deletedFtpaDocIds, FTPA_APPELLANT_DOCUMENTS, FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        updateFtpaDocDescriptions(asylumCase, updatedAndDeletedDocIdsForGivenField, deletedFtpaDocIds, FTPA_RESPONDENT_DOCUMENTS, FTPA_RESPONDENT_GROUNDS_DOCUMENTS);
+        updateFtpaDocDescriptions(asylumCase, updatedAndDeletedDocIdsForGivenField, deletedFtpaDocIds, FTPA_RESPONDENT_DOCUMENTS, FTPA_RESPONDENT_EVIDENCE_DOCUMENTS);
 
         return updatedAndDeletedDocIdsForGivenField;
     }
@@ -117,15 +119,15 @@ public class EditDocsService {
     private void updateFtpaDecision(AsylumCase asylumCase, AsylumCaseFieldDefinition documentList, AsylumCaseFieldDefinition document) {
         Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDecisionDocs = asylumCase.read(documentList);
         optionalFtpaDecisionDocs.ifPresent(ftpaDecisionDocs -> {
-            ftpaDecisionDocs.stream()
+            List<IdValue<DocumentWithDescription>> newDecisionDocuments = ftpaDecisionDocs.stream()
                 .filter(idValue -> idValue.getValue().getTag().equals(DocumentTag.FTPA_DECISION_AND_REASONS))
                 .map(idValue -> new IdValue<>(
                     idValue.getId(),
                     new DocumentWithDescription(idValue.getValue().getDocument(), idValue.getValue().getDescription())
                 ))
-                .forEach(ftpaDecisionDocument -> asylumCase.write(document, Collections.singletonList(ftpaDecisionDocument)));
+                .toList();
+            asylumCase.write(document, newDecisionDocuments);
         });
-
     }
 
     private void addToUpdatedAndDeletedDocIds(List<String> list, AsylumCase asylumCase, AsylumCase asylumCaseBefore, AsylumCaseFieldDefinition documentType) {
@@ -139,9 +141,9 @@ public class EditDocsService {
         });
     }
 
-    private void updateFtpaAppellantGroundsEvidenceDocDescriptions(AsylumCase asylumCase, List<String> updatedAndDeletedDocIds, List<String> deletedFtpaDocIds) {
-        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments = asylumCase.read(FTPA_APPELLANT_DOCUMENTS);
-        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription = asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+    private void updateFtpaDocDescriptions(AsylumCase asylumCase, List<String> updatedAndDeletedDocIds, List<String> deletedFtpaDocIds, AsylumCaseFieldDefinition docTabDocuments, AsylumCaseFieldDefinition ftpaTabDocuments) {
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments = asylumCase.read(docTabDocuments);
+        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription = asylumCase.read(ftpaTabDocuments);
         optionalFtpaDocuments.ifPresent(ftpaDocuments -> {
             optionalFtpaDocumentsDescription.ifPresent(ftpaDocumentsDescription -> {
                 updatedAndDeletedDocIds.forEach((updatedDocId) -> {
@@ -156,7 +158,7 @@ public class EditDocsService {
                         ftpaDocumentsDescription.add(newIdValue);
                     }
                 });
-                asylumCase.write(FTPA_APPELLANT_EVIDENCE_DOCUMENTS, ftpaDocumentsDescription);
+                asylumCase.write(ftpaTabDocuments, ftpaDocumentsDescription);
             });
         });
     }
