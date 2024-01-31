@@ -41,14 +41,16 @@ class EditDocsServiceTest {
     private static final String DOCUMENT_BINARY_URL = "some-document-binary-url";
     private static final String DOCUMENT_FILENAME = "some-document-filename";
     private static final String DOCUMENT_DESCRIPTION = "some-document-description";
+    private static final String ANOTHER_DOCUMENT_DESCRIPTION = "some-other-document-description";
+    private static final String ANOTHER_DOCUMENT_BINARY_URL = "some-other-document-binary-url";
+    private static final String ANOTHER_DOCUMENT_FILENAME = "some-other-document-filename";
     private static final List<String> DOC_ID_LIST = new ArrayList<>(Collections.singletonList(DOC_ID));
     private static final List<IdValue<DocumentWithDescription>> DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
         new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
-
     private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
-        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
-    private static final List<IdValue<DocumentWithMetadata>> ANOTHER_DOC_ID_VALUE_LIST_2 = new ArrayList<>(Collections.singletonList(
-        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithMetadata(new Document(ANOTHER_DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_APPELLANT))));
+        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, ANOTHER_DOCUMENT_BINARY_URL, ANOTHER_DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION))));
+    private static final List<IdValue<DocumentWithMetadata>> ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
+        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithMetadata(new Document(ANOTHER_DOCUMENT_URL, ANOTHER_DOCUMENT_BINARY_URL, ANOTHER_DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_DECISION_AND_REASONS))));
     private AsylumCase asylumCase;
     @Mock
     private EditDocsAuditService editDocsAuditService;
@@ -168,7 +170,7 @@ class EditDocsServiceTest {
             .willReturn(DOC_ID_LIST);
 
         asylumCase.write(overviewTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST));
-        asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_2));
+        asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
 
         assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
 
@@ -197,6 +199,23 @@ class EditDocsServiceTest {
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
 
         assertDocumentListEquality(new ArrayList<>(), asylumCase.read(overviewTabList));
+    }
+
+    @ParameterizedTest
+    @MethodSource({
+        "appellantDecisionAndReasons",
+        "respondentDecisionAndReasons"
+    })
+    void ftpaDecisionDocumentIsUpdated(AsylumCaseFieldDefinition documentTabList, AsylumCaseFieldDefinition overviewTabList) {
+        asylumCase.write(overviewTabList, Optional.of(DOC_ID_VALUE_LIST));
+        asylumCase.write(documentTabList, Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
+
+        assertDocumentListEquality(DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
+        assertThat(asylumCase.read(documentTabList)).isEqualTo(Optional.of(ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB));
+
+        editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
+
+        assertDocumentListEquality(ANOTHER_DOC_ID_VALUE_LIST, asylumCase.read(overviewTabList));
     }
 
     private static Object[] appellantDecisionAndReasons() {
@@ -250,4 +269,6 @@ class EditDocsServiceTest {
     private void assertDocumentListEquality(List<IdValue<DocumentWithDescription>> expected, Optional<List<IdValue<DocumentWithDescription>>> actual) {
         assertThat(actual).isEqualTo(Optional.of(expected));
     }
+
+
 }
