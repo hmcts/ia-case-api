@@ -46,13 +46,13 @@ class EditDocsServiceTest {
     private static final String ANOTHER_DOCUMENT_FILENAME = "some-other-document-filename";
     private static final List<String> DOC_ID_LIST = new ArrayList<>(Collections.singletonList(DOC_ID));
     private static final List<IdValue<DocumentWithDescription>> DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
-        new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), DOCUMENT_DESCRIPTION))));
+        buildIdValueWithDescriptionFromParams("", DOC_ID, DOCUMENT_DESCRIPTION)));
     private static final List<IdValue<DocumentWithDescription>> ANOTHER_DOC_ID_VALUE_LIST = new ArrayList<>(Collections.singletonList(
-        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithDescription(new Document(ANOTHER_DOCUMENT_URL, ANOTHER_DOCUMENT_BINARY_URL, ANOTHER_DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION))));
+        buildIdValueWithDescriptionFromParams("", ANOTHER_DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION)));
     private static final List<IdValue<DocumentWithMetadata>> DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
-        new IdValue<>("1", new DocumentWithMetadata(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_APPELLANT))));
+        buildIdValueWithMetadataFromParams("", DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_APPELLANT)));
     private static final List<IdValue<DocumentWithMetadata>> ANOTHER_DOC_ID_VALUE_LIST_DOCUMENT_TAB = new ArrayList<>(Collections.singletonList(
-        new IdValue<>(ANOTHER_DOC_ID, new DocumentWithMetadata(new Document(ANOTHER_DOCUMENT_URL, ANOTHER_DOCUMENT_BINARY_URL, ANOTHER_DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION, "10-02-2023", DocumentTag.FTPA_DECISION_AND_REASONS))));
+        buildIdValueWithMetadataFromParams("", ANOTHER_DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_DECISION_AND_REASONS)));
     private AsylumCase asylumCase;
     @Mock
     private EditDocsAuditService editDocsAuditService;
@@ -237,9 +237,9 @@ class EditDocsServiceTest {
         assertDocumentWithMetadataListEquality(DOC_ID_VALUE_LIST_DOCUMENT_TAB, asylumCase.read(documentTabList));
 
         editDocsService.cleanUpOverviewTabDocs(asylumCase, asylumCase);
-        List<IdValue<DocumentWithDescription>> expected_value = new ArrayList<>(Collections.singletonList(
-            new IdValue<>(DOC_ID, new DocumentWithDescription(new Document(DOCUMENT_URL, DOCUMENT_BINARY_URL, DOCUMENT_FILENAME), ANOTHER_DOCUMENT_DESCRIPTION))));
-        assertDocumentWithDescriptionListEquality(expected_value, asylumCase.read(overviewTabList));
+        List<IdValue<DocumentWithDescription>> expectedValue = new ArrayList<>(Collections.singletonList(
+            buildIdValueWithDescriptionFromParams("", DOC_ID, ANOTHER_DOCUMENT_DESCRIPTION)));
+        assertDocumentWithDescriptionListEquality(expectedValue, asylumCase.read(overviewTabList));
     }
 
     @ParameterizedTest
@@ -318,5 +318,12 @@ class EditDocsServiceTest {
         assertThat(actual).isEqualTo(Optional.of(expected));
     }
 
+    private static IdValue<DocumentWithMetadata> buildIdValueWithMetadataFromParams(String idValue, String docId, String description, DocumentTag tag) {
+        return new IdValue<>(idValue, new DocumentWithMetadata(new Document("https://dm-store/" + docId, "https://dm-store/" + docId + "/binary", DOCUMENT_FILENAME), description, "10-02-2023", tag));
+    }
+
+    private static IdValue<DocumentWithDescription> buildIdValueWithDescriptionFromParams(String idValue, String docId, String description) {
+        return new IdValue<>(idValue, new DocumentWithDescription(new Document("https://dm-store/" + docId, "https://dm-store/" + docId + "/binary", DOCUMENT_FILENAME), description));
+    }
 
 }
