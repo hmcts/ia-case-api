@@ -53,16 +53,11 @@ public class EditDocsService {
             documentWithDescriptionList.removeIf(idValue ->
                 doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
             );
-            for (String id : editedFtpaDecisionDocIds) {
-                log.info(id);
-            }
-            for (IdValue<DocumentWithDescription> idValue : documentWithDescriptionList) {
+            for (IdValue<DocumentWithDescription> idValue: documentWithDescriptionList) {
                 log.info("1 " + idValue.getValue().getDocument().get().getDocumentFilename());
-                log.info(documentType.value());
-                log.info(getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()));
                 if (editedFtpaDecisionDocIds.contains(getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))) {
                     log.info("2 " + idValue.getValue().getDocument().get().getDocumentFilename());
-                    for (IdValue<DocumentWithDescription> idValue2 : currentDocumentsList.get()) {
+                    for (IdValue<DocumentWithDescription> idValue2: currentDocumentsList.get()) {
                         log.info("3 " + idValue2.getValue().getDocument().get().getDocumentFilename());
                         if (getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()).equals(getIdFromDocUrl(idValue2.getValue().getDocument().get().getDocumentUrl()))) {
                             log.info("4 " + idValue2.getValue().getDocument().get().getDocumentFilename());
@@ -162,7 +157,7 @@ public class EditDocsService {
 
     private List<String> getFtpaDocIds(List<IdValue<DocumentWithMetadata>> ftpaDocuments) {
         return ftpaDocuments.stream()
-            .map(idValue -> getIdFromDocUrl(idValue.getValue().getDocument().getDocumentUrl()))
-            .toList();
+                .map(idValue -> getIdFromDocUrl(idValue.getValue().getDocument().getDocumentUrl()))
+                .toList();
     }
 }
