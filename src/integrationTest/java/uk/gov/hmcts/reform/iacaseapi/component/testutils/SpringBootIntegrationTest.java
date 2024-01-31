@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsA
     "OPEN_ID_IDAM_URL=http://127.0.0.1:8990/userAuth",
     "IA_CASE_DOCUMENTS_API_URL=http://localhost:8990/ia-case-documents-api",
     "IA_CASE_NOTIFICATIONS_API_URL=http://localhost:8990/ia-case-notifications-api",
-    "PROF_REF_DATA_URL=http://localhost:8990",
+    "prof.ref.data.url=http://localhost:8990",
     "CCD_URL=http://127.0.0.1:8990/ccd-data-store",
     "AAC_URL=http://127.0.0.1:8990",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
