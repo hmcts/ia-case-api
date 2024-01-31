@@ -33,7 +33,7 @@ public class HandlerUtils {
             && isRepJourney(asylumCase);
     }
 
-    public static boolean isDlrmSetAsideEnabled(AsylumCase asylumCase){
+    public static boolean isDlrmSetAsideEnabled(AsylumCase asylumCase) {
         return (asylumCase.read(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 }
