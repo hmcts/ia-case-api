@@ -265,15 +265,24 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_DOCUMENT(
         "ftpaAppellantDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    DECIDE_FTPA_APPELLANT_DECISION_DOCUMENT(
+        "decideFtpaAppellantDecisionDocument", new TypeReference<Document>(){}),
     FTPA_APPELLANT_NOTICE_DOCUMENT(
         "ftpaAppellantNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    DECIDE_FTPA_APPELLANT_NOTICE_DOCUMENT(
+        "decideFtpaAppellantNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     FTPA_RESPONDENT_DECISION_DOCUMENT(
         "ftpaRespondentDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    DECIDE_FTPA_RESPONDENT_DECISION_DOCUMENT(
+        "decideFtpaRespondentDecisionDocument", new TypeReference<Document>(){}),
     FTPA_RESPONDENT_NOTICE_DOCUMENT(
         "ftpaRespondentNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    DECIDE_FTPA_RESPONDENT_NOTICE_DOCUMENT(
+        "decideFtpaRespondentNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
     ALL_FTPA_APPELLANT_DECISION_DOCS(
         "allFtpaAppellantDecisionDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
@@ -298,8 +307,14 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE(
         "ftpaRespondentNoticeOfDecisionSetAsideVisible", new TypeReference<YesOrNo>(){}),
 
+    DECIDE_FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE(
+        "decideFtpaRespondentNoticeOfDecisionSetAsideVisible", new TypeReference<YesOrNo>(){}),
+
     FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE(
         "ftpaAppellantDecisionObjectionsVisible", new TypeReference<YesOrNo>(){}),
+
+    DECIDE_FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE(
+        "decideFtpaAppellantDecisionObjectionsVisible", new TypeReference<YesOrNo>(){}),
 
     FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE(
         "ftpaRespondentDecisionObjectionsVisible", new TypeReference<YesOrNo>(){}),
@@ -340,12 +355,17 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE(
         "ftpaAppellantRjDecisionOutcomeType", new TypeReference<String>(){}),
 
+    DECIDE_FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE(
+        "decideFtpaAppellantRjDecisionOutcomeType", new TypeReference<String>(){}),
+
     FTPA_RESPONDENT_DECISION_OUTCOME_TYPE(
         "ftpaRespondentDecisionOutcomeType", new TypeReference<String>(){}),
 
     FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE(
         "ftpaRespondentRjDecisionOutcomeType", new TypeReference<String>(){}),
 
+    DECIDE_FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE(
+        "decideFtpaRespondentRjDecisionOutcomeType", new TypeReference<String>(){}),
     HOME_OFFICE_BUNDLE(
         "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
