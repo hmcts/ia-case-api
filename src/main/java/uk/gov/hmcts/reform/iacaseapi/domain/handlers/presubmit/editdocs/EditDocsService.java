@@ -130,8 +130,9 @@ public class EditDocsService {
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, ALL_FTPA_RESPONDENT_DECISION_DOCS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_APPELLANT_DOCUMENTS);
         addToUpdatedAndDeletedDocIds(updatedAndDeletedDocIdsForGivenField, asylumCase, asylumCaseBefore, FTPA_RESPONDENT_DOCUMENTS);
+        log.info("WHATS ALL THIS? ");
         for (String string: updatedAndDeletedDocIdsForGivenField) {
-            log.info("WHATS ALL THIS? " + string);
+            log.info(string);
         }
         List<String> updatedDocIdsForGivenField = new ArrayList<>();
         addToUpdatedDocIds(updatedAndDeletedDocIdsForGivenField, updatedDocIdsForGivenField, asylumCase.read(ALL_FTPA_APPELLANT_DECISION_DOCS));
@@ -159,7 +160,8 @@ public class EditDocsService {
         optionalFtpaDocuments.ifPresent(ftpaDocuments -> {
             List<String> ftpaDocIds = getFtpaDocIds(ftpaDocuments);
             for (String value : updatedAndDeletedDocIds) {
-                log.info("HELLO THERE " + value);
+                log.info("HELLO THERE");
+                log.info(value);
                 if (ftpaDocIds.contains(value)) {
                     updatedDocIds.add(value);
                     log.info("WEEEEEEEEE");
