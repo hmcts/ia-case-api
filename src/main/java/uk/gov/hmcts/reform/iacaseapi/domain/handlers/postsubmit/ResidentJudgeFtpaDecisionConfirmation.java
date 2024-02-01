@@ -18,7 +18,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION;
+        return callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION || callback.getEvent() == Event.DECIDE_FTPA_APPLICATION;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -72,6 +72,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 );
                 break;
 
+            case "remadeRule31":
             case "remadeRule32":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"

@@ -18,6 +18,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_NOTICE_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_APPELLANT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_RESPONDENT_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REMADE_RULE_32;
@@ -49,14 +51,19 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.DLRM_SETASIDE_FEATURE_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -71,6 +78,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
@@ -85,6 +93,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
+    @Mock
+    Document maybeFtpaApplicationDecisionAndReasonsDocument;
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
     @Mock
@@ -129,21 +139,38 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         );
     }
 
-    @Test
-    void should_append_all_ftpa_appellant_decision_documents() {
+    @ParameterizedTest
+    @CsvSource({
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "DECIDE_FTPA_APPLICATION",
+    })
+    void should_append_all_ftpa_appellant_decision_documents(Event event) {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+
+        if (event.equals(Event.DECIDE_FTPA_APPLICATION)) {
+            when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
+            when(asylumCase.read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class))
+                .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
+            when(documentReceiver.receive(maybeFtpaApplicationDecisionAndReasonsDocument,
+                FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION,
+                DocumentTag.FTPA_DECISION_AND_REASONS
+            )).thenReturn(ftpaAppellantDecisionDocument);
+        } else {
+            when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
+                .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+            when(documentReceiver.tryReceiveAll(maybeFtpaDecisionAndReasonsDocument,
+                DocumentTag.FTPA_DECISION_AND_REASONS))
+                .thenReturn(singletonList(ftpaAppellantDecisionDocument));
+        }
         List<DocumentWithMetadata> ftpaAppellantDecisionAndReasonsDocument =
             Arrays.asList(
                 ftpaAppellantDecisionDocument,
                 ftpaAppellantDecisionNoticeDocument
             );
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
-            .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
         when(asylumCase.read(FTPA_APPELLANT_NOTICE_DOCUMENT)).thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
         when(asylumCase.read(ALL_FTPA_APPELLANT_DECISION_DOCS))
             .thenReturn(Optional.of(existingFtpaDecisionAndReasonsDocuments));
@@ -164,12 +191,20 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(FTPA_APPELLANT_DECISION_DOCUMENT);
+        if (event.equals(Event.DECIDE_FTPA_APPLICATION)) {
+            verify(asylumCase, times(1)).read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class);
+            verify(documentReceiver, times(1))
+                .receive(maybeFtpaApplicationDecisionAndReasonsDocument,
+                    FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_DECISION_AND_REASONS);
+        } else {
+            verify(asylumCase, times(1)).read(FTPA_APPELLANT_DECISION_DOCUMENT);
+            verify(documentReceiver, times(1))
+                .tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS);
+        }
+
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_NOTICE_DOCUMENT);
         verify(asylumCase, times(1)).read(ALL_FTPA_APPELLANT_DECISION_DOCS);
 
-        verify(documentReceiver, times(1))
-            .tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS);
         verify(documentReceiver, times(1))
             .tryReceiveAll(maybeFtpaDecisionNoticeDocument, DocumentTag.FTPA_DECISION_AND_REASONS);
 
@@ -192,8 +227,32 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED, YES);
     }
 
-    @Test
-    void should_append_all_ftpa_respondent_decision_documents() {
+    @ParameterizedTest
+    @CsvSource({
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "DECIDE_FTPA_APPLICATION",
+    })
+    void should_append_all_ftpa_respondent_decision_documents(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        if (event.equals(Event.DECIDE_FTPA_APPLICATION)) {
+            when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
+            when(asylumCase.read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class))
+                .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
+            when(documentReceiver.receive(maybeFtpaApplicationDecisionAndReasonsDocument,
+                FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION,
+                DocumentTag.FTPA_DECISION_AND_REASONS
+            )).thenReturn(ftpaRespondentDecisionDocument);
+        } else {
+            when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
+                .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+            when(documentReceiver.tryReceiveAll(maybeFtpaDecisionAndReasonsDocument,
+                DocumentTag.FTPA_DECISION_AND_REASONS))
+                .thenReturn(singletonList(ftpaRespondentDecisionDocument));
+        }
 
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
@@ -201,20 +260,12 @@ class ResidentJudgeFtpaDecisionHandlerTest {
                 ftpaRespondentDecisionNoticeDocument
             );
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
-        when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
-            .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
         when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT)).thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
         when(asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS))
             .thenReturn(Optional.of(existingFtpaDecisionAndReasonsDocuments));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("granted"));
 
-        when(documentReceiver.tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS))
-            .thenReturn(singletonList(ftpaRespondentDecisionDocument));
         when(documentReceiver.tryReceiveAll(maybeFtpaDecisionNoticeDocument, DocumentTag.FTPA_DECISION_AND_REASONS))
             .thenReturn(singletonList(ftpaRespondentDecisionNoticeDocument));
         when(
@@ -229,12 +280,21 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(FTPA_RESPONDENT_DECISION_DOCUMENT);
+
+        if (event.equals(Event.DECIDE_FTPA_APPLICATION)) {
+            verify(asylumCase, times(1)).read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class);
+            verify(documentReceiver, times(1))
+                .receive(maybeFtpaApplicationDecisionAndReasonsDocument,
+                    FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION, DocumentTag.FTPA_DECISION_AND_REASONS);
+        } else {
+            verify(asylumCase, times(1)).read(FTPA_RESPONDENT_DECISION_DOCUMENT);
+            verify(documentReceiver, times(1))
+                .tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS);
+        }
+
         verify(asylumCase, times(1)).read(FTPA_RESPONDENT_NOTICE_DOCUMENT);
         verify(asylumCase, times(1)).read(ALL_FTPA_RESPONDENT_DECISION_DOCS);
 
-        verify(documentReceiver, times(1))
-            .tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS);
         verify(documentReceiver, times(1))
             .tryReceiveAll(maybeFtpaDecisionNoticeDocument, DocumentTag.FTPA_DECISION_AND_REASONS);
 
@@ -350,7 +410,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
                 boolean canHandle = residentJudgeFtpaDecisionHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION
+                if ((event == Event.RESIDENT_JUDGE_FTPA_DECISION ||
+                    event == Event.DECIDE_FTPA_APPLICATION)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

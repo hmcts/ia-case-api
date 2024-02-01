@@ -10,6 +10,7 @@ public enum FtpaResidentJudgeDecisionOutcomeType {
     APPLICATION_NOT_ADMITTED("notAdmitted"),
     WITHDRAWN("withdrawn"),
     REHEARD_RULE35("reheardRule35"),
+    REHEARD_RULE32("reheardRule32"),
     REMADE_RULE31("remadeRule31"),
     REMADE_RULE32("remadeRule32");
 
