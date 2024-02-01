@@ -58,6 +58,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 break;
 
             case "refused":
+            case "notAdmitted":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
