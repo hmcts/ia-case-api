@@ -37,7 +37,7 @@ java:
     APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS: 28
     PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 20160
     PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 20160
-  postgresql:    
+  postgresql:
     auth:
       username: ia_case_api
       password: ia_case_api
@@ -88,8 +88,6 @@ xui-webapp:
   enabled: false
 ccd:
   enabled: false
-aac-manage-case-assignment:
-  enabled: false
 ia-aip-frontend:
   enabled: false
 ccd-case-document-am-api:
@@ -97,4 +95,8 @@ ccd-case-document-am-api:
 em-ccdorc:
   enabled: false
 em-stitching:
+  enabled: false
+aac-manage-case-assignment:
+  enabled: false
+xui-mo-webapp:
   enabled: false

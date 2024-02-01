@@ -189,7 +189,8 @@ public class CcdCaseAssignment {
                 + aacUrl + applyNocAssignmentsApiPath
             );
 
-            ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(2);
+            ZonedDateTime scheduledDate =
+                    ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(2);
             timedEventServiceScheduler.schedule(
                 new TimedEvent(
                     "",
