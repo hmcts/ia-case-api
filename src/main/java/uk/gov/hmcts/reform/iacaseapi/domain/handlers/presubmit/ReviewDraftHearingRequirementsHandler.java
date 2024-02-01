@@ -82,7 +82,7 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
 
     private boolean shouldAutoRequestHearing(AsylumCase asylumCase) {
         boolean autoRequestHearing = asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)
-            .map(autoRequest -> YES == autoRequest).orElse(false);
+            .map(autoRequest -> YES == autoRequest).orElse(true);
         boolean autoRequestHearingEnabled = locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES;
 
         return autoRequestHearingEnabled && autoRequestHearing && !isPanelRequired(asylumCase);
