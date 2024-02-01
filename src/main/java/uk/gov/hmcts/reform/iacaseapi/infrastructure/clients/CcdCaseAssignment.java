@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Maps;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
+
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REPEAT_APPLY_NOC;
 
 
 @Slf4j
@@ -27,24 +34,31 @@ public class CcdCaseAssignment {
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
+    private final TimedEventServiceScheduler timedEventServiceScheduler;
+    private final DateProvider dateProvider;
     private final String ccdUrl;
     private final String aacUrl;
     private final String ccdAssignmentsApiPath;
     private final String aacAssignmentsApiPath;
     private final String applyNocAssignmentsApiPath;
 
-    public CcdCaseAssignment(RestTemplate restTemplate,
-                             AuthTokenGenerator serviceAuthTokenGenerator,
-                             UserDetailsProvider userDetailsProvider,
-                             @Value("${core_case_data_api_assignments_url}") String ccdUrl,
-                             @Value("${assign_case_access_api_url}") String aacUrl,
-                             @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
-                             @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath,
-                             @Value("${apply_noc_access_api_assignments_path}") String applyNocAssignmentsApiPath
+    public CcdCaseAssignment(
+        RestTemplate restTemplate,
+        AuthTokenGenerator serviceAuthTokenGenerator,
+        UserDetailsProvider userDetailsProvider,
+        TimedEventServiceScheduler timedEventServiceScheduler,
+        DateProvider dateProvider,
+        @Value("${core_case_data_api_assignments_url}") String ccdUrl,
+        @Value("${assign_case_access_api_url}") String aacUrl,
+        @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
+        @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath,
+        @Value("${apply_noc_access_api_assignments_path}") String applyNocAssignmentsApiPath
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
+        this.timedEventServiceScheduler = timedEventServiceScheduler;
+        this.dateProvider = dateProvider;
         this.ccdUrl = ccdUrl;
         this.aacUrl = aacUrl;
         this.ccdAssignmentsApiPath = ccdAssignmentsApiPath;
@@ -164,19 +178,29 @@ public class CcdCaseAssignment {
                     requestEntity,
                     Object.class
                 );
-            
+
+            log.info("Apply NoC. Http status received from AAC API; {} for case {}",
+                    response.getStatusCodeValue(), callback.getCaseDetails().getId());
         } catch (RestClientResponseException e) {
-            throw new CcdDataIntegrationException(
+            log.error(
                 "Couldn't apply noc AAC case assignment for case ["
                 + callback.getCaseDetails().getId()
                 + "] using API: "
-                + aacUrl + applyNocAssignmentsApiPath,
-                e
+                + aacUrl + applyNocAssignmentsApiPath
+            );
+
+            ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(2);
+            timedEventServiceScheduler.schedule(
+                new TimedEvent(
+                    "",
+                    REPEAT_APPLY_NOC,
+                    scheduledDate,
+                    "IA",
+                    "Asylum",
+                    callback.getCaseDetails().getId()
+                )
             );
         }
-
-        log.info("Apply NoC. Http status received from AAC API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
     }
 
     public Map<String, Object> buildRevokeAccessPayload(String organisationIdentifier, long caseId, String idamUserId) {

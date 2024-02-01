@@ -18,11 +18,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 
@@ -42,6 +45,8 @@ class CcdCaseAssignmentTest {
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private TimedEventServiceScheduler timedEventServiceScheduler;
+    @Mock private DateProvider dateProvider;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
 
@@ -56,6 +61,8 @@ class CcdCaseAssignmentTest {
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider,
+            timedEventServiceScheduler,
+            dateProvider,
             ccdUrl,
             aacUrl,
             ccdAssignmentsApiPath,
@@ -253,14 +260,9 @@ class CcdCaseAssignmentTest {
                 eq(Object.class)
             )
         ).thenThrow(restClientResponseEx);
+        when(dateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
-        assertThatThrownBy(() -> ccdCaseAssignment.applyNoc(callback))
-            .isInstanceOf(CcdDataIntegrationException.class)
-            .hasMessage("Couldn't apply noc AAC case assignment for case ["
-                        + caseDetails.getId()
-                        + "] using API: "
-                        + aacUrl + nocAssignmentsApiPath)
-            .hasCauseInstanceOf(RestClientResponseException.class);
+        ccdCaseAssignment.applyNoc(callback);
 
         verify(restTemplate)
             .exchange(
@@ -269,6 +271,7 @@ class CcdCaseAssignmentTest {
                 any(HttpEntity.class),
                 eq(Object.class)
             );
+        verify(timedEventServiceScheduler).schedule(any(TimedEvent.class));
     }
 
     @Test
