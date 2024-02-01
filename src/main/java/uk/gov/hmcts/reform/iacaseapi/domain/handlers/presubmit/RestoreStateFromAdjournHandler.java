@@ -7,6 +7,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESTORE_STATE_FROM_ADJOURN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -15,9 +17,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class RestoreStateFromAdjournHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+
+    private final AutoRequestHearingService autoRequestHearingService;
+
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
@@ -50,6 +58,12 @@ public class RestoreStateFromAdjournHandler implements PreSubmitCallbackStateHan
         State previousState = State.valueOf(LOWER_CAMEL.to(UPPER_UNDERSCORE, maybePreviousStateId));
 
         asylumCase.clear(STATE_BEFORE_ADJOURN_WITHOUT_DATE);
+
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase)) {
+
+            asylumCase = autoRequestHearingService
+                .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase, previousState);
     }

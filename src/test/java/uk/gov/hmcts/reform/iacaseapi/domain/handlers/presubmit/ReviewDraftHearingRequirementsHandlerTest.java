@@ -87,8 +87,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }
@@ -99,19 +98,17 @@ class ReviewDraftHearingRequirementsHandlerTest {
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(NO));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }
 
     @Test
-    void should_not_set_list_case_hearing_length_visible_field_fwhen_feature_flag_disabled() {
+    void should_not_set_list_case_hearing_length_visible_field_when_feature_flag_disabled() {
 
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }

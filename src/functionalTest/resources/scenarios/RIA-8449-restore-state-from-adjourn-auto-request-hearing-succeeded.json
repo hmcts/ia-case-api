@@ -1,0 +1,30 @@
+{
+  "description": "RIA-8449 restore state from adjourn auto request hearing (Succeeded request)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 84491,
+      "eventId": "restoreStateFromAdjourn",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isIntegrated": "Yes",
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "manualCreHearingRequired": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Hearing listed",
+      "body": "#### What happens next\n\nThe hearing request has been created and is visible on the [Hearings tab](/cases/case-details/84491/hearings)"
+    }
+  }
+}
