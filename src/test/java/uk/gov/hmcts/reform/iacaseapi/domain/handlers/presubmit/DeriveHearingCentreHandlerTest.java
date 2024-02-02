@@ -184,7 +184,7 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class)).thenReturn(Optional.of(
+        when(asylumCase.read(LEGAL_PRACTICE_ADDRESS_EJP, AddressUk.class)).thenReturn(Optional.of(
             sponsorOrCompanyAddressUk));
         when(sponsorOrCompanyAddressUk.getPostCode()).thenReturn(Optional.of("A456 4XY"));
         when(hearingCentreFinder.find("A456 4XY")).thenReturn(hearingCentre);
