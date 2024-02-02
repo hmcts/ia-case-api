@@ -90,7 +90,6 @@ class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
         when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
