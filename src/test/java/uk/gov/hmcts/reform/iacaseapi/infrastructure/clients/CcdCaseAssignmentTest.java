@@ -18,14 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 
@@ -45,8 +42,7 @@ class CcdCaseAssignmentTest {
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private TimedEventServiceScheduler timedEventServiceScheduler;
-    @Mock private DateProvider dateProvider;
+    @Mock private InfrastructureErrorHandler infrastructureErrorHandler;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
 
@@ -61,8 +57,7 @@ class CcdCaseAssignmentTest {
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider,
-            timedEventServiceScheduler,
-            dateProvider,
+            infrastructureErrorHandler,
             ccdUrl,
             aacUrl,
             ccdAssignmentsApiPath,
@@ -221,11 +216,9 @@ class CcdCaseAssignmentTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
 
-        when(dateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
-
         ccdCaseAssignment.applyNoc(callback);
 
-        verify(timedEventServiceScheduler).schedule(any(TimedEvent.class));
+        verify(infrastructureErrorHandler).retryCall(callback);
     }
 
     @Test

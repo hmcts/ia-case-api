@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Maps;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -15,14 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
-
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REPEAT_APPLY_NOC;
 
 
 @Slf4j
@@ -35,8 +29,7 @@ public class CcdCaseAssignment {
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
-    private final TimedEventServiceScheduler timedEventServiceScheduler;
-    private final DateProvider dateProvider;
+    private final InfrastructureErrorHandler infrastructureErrorHandler;
     private final String ccdUrl;
     private final String aacUrl;
     private final String ccdAssignmentsApiPath;
@@ -47,8 +40,7 @@ public class CcdCaseAssignment {
         RestTemplate restTemplate,
         AuthTokenGenerator serviceAuthTokenGenerator,
         UserDetailsProvider userDetailsProvider,
-        TimedEventServiceScheduler timedEventServiceScheduler,
-        DateProvider dateProvider,
+        InfrastructureErrorHandler infrastructureErrorHandler,
         @Value("${core_case_data_api_assignments_url}") String ccdUrl,
         @Value("${assign_case_access_api_url}") String aacUrl,
         @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
@@ -58,8 +50,7 @@ public class CcdCaseAssignment {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
-        this.timedEventServiceScheduler = timedEventServiceScheduler;
-        this.dateProvider = dateProvider;
+        this.infrastructureErrorHandler = infrastructureErrorHandler;
         this.ccdUrl = ccdUrl;
         this.aacUrl = aacUrl;
         this.ccdAssignmentsApiPath = ccdAssignmentsApiPath;
@@ -182,27 +173,7 @@ public class CcdCaseAssignment {
                 + "] using API: "
                 + aacUrl + applyNocAssignmentsApiPath
             );
-
-            ZonedDateTime scheduledDate =
-                    ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(MINUTES);
-            timedEventServiceScheduler.schedule(
-                new TimedEvent(
-                    "",
-                    REPEAT_APPLY_NOC,
-                    scheduledDate,
-                    "IA",
-                    "Asylum",
-                    callback.getCaseDetails().getId()
-                )
-            );
-
-            log.info(
-                REPEAT_APPLY_NOC
-                + " event will be raised after"
-                + MINUTES
-                + " minutes at "
-                + scheduledDate
-            );
+            infrastructureErrorHandler.retryCall(callback);
         }
     }
 

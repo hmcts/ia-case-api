@@ -16,14 +16,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.TimedEventServiceScheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.InfrastructureErrorHandler;
 
 
 @ExtendWith(SpringExtension.class)
@@ -38,9 +37,7 @@ public class CcdCaseAssignmentProviderBaseTest {
     @MockBean
     UserDetailsProvider userDetailsProvider;
     @MockBean
-    TimedEventServiceScheduler timedEventServiceScheduler;
-    @MockBean
-    DateProvider dateProvider;
+    InfrastructureErrorHandler infrastructureErrorHandler;
     @Value("${core_case_data_api_assignments_url}")
     String ccdUrl;
     @Value("${assign_case_access_api_url}")
@@ -75,8 +72,7 @@ public class CcdCaseAssignmentProviderBaseTest {
                 new RestTemplate(),
                 serviceAuthTokenGenerator,
                 userDetailsProvider,
-                timedEventServiceScheduler,
-                dateProvider,
+                infrastructureErrorHandler,
                 ccdUrl,
                 aacUrl,
                 ccdAssignmentsApiPath,
