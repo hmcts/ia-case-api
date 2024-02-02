@@ -62,7 +62,7 @@ public class RestoreStateFromAdjournHandler implements PreSubmitCallbackStateHan
         if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase)) {
 
             asylumCase = autoRequestHearingService
-                .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+                .autoCreateHearing(callback);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase, previousState);

@@ -144,13 +144,13 @@ class ReviewDraftHearingRequirementsHandlerTest {
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
             .thenReturn(true);
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+        when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(autoRequestHearingService, times(1))
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+            .autoCreateHearing(callback);
     }
 
     @Test
@@ -175,7 +175,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(autoRequestHearingService, never())
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+            .autoCreateHearing(callback);
     }
 
     @Test
@@ -188,7 +188,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(autoRequestHearingService, never())
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+            .autoCreateHearing(callback);
     }
 
     @Test

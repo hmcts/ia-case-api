@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 
 import java.util.Optional;
@@ -179,13 +178,13 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     void should_auto_request_hearing() {
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
             .thenReturn(true);
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+        when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(autoRequestHearingService, times(1))
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+            .autoCreateHearing(callback);
     }
 
     @Test
@@ -196,7 +195,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(autoRequestHearingService, never())
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+            .autoCreateHearing(callback);
     }
 
     @Test

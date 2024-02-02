@@ -12,9 +12,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ADJOURNED;
@@ -26,14 +26,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -225,25 +222,40 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @ParameterizedTest
-    @CsvSource({"NO, BEFORE_HEARING_DATE, MANUAL_CANCEL_HEARINGS_REQUIRED",
-        "YES, BEFORE_HEARING_DATE, UPDATE_HMC_REQUEST_SUCCESS"})
-    void should_make_hearing_update_and_cancellation_request(
-        YesOrNo relistImmediately, HearingAdjournmentDay adjournmentDay, AsylumCaseFieldDefinition statusField) {
+    @Test
+    void should_make_hearing_update_request() {
 
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
-            .thenReturn(Optional.of(relistImmediately));
+            .thenReturn(Optional.of(YES));
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
-            .thenReturn(Optional.of(adjournmentDay));
+            .thenReturn(Optional.of(BEFORE_HEARING_DATE));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
             .thenReturn(Optional.of(listCaseHearingDate));
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, statusField))
+        when(autoRequestHearingService.autoUpdateHearing(callback))
             .thenReturn(asylumCase);
 
         recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        verify(autoRequestHearingService, times(1)).makeAutoHearingRequest(callback, statusField);
+        verify(autoRequestHearingService, times(1)).autoUpdateHearing(callback);
+    }
+
+    @Test
+    void should_make_hearing_cancellation_request() {
+
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(NO));
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(BEFORE_HEARING_DATE));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of(listCaseHearingDate));
+        when(autoRequestHearingService.autoCancelHearing(callback))
+            .thenReturn(asylumCase);
+
+        recordAdjournmentDetailsStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        verify(autoRequestHearingService, times(1)).autoCancelHearing(callback);
     }
 
     @Test
@@ -255,14 +267,12 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .thenReturn(Optional.of(ON_HEARING_DATE));
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
             .thenReturn(true);
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
-            .thenReturn(asylumCase);
+        when(autoRequestHearingService.autoCreateHearing(callback)).thenReturn(asylumCase);
 
         recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        verify(autoRequestHearingService, times(1))
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        verify(autoRequestHearingService, times(1)).autoCreateHearing(callback);
     }
 
 }

@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -90,7 +89,7 @@ class RestoreStateFromAdjournHandlerTest {
     void should_auto_request_hearing() {
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(true);
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+        when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
@@ -98,8 +97,7 @@ class RestoreStateFromAdjournHandlerTest {
 
         assertNotNull(returnedCallbackResponse);
 
-        verify(autoRequestHearingService, times(1))
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        verify(autoRequestHearingService, times(1)).autoCreateHearing(callback);
 
     }
 
@@ -113,8 +111,7 @@ class RestoreStateFromAdjournHandlerTest {
 
         assertNotNull(returnedCallbackResponse);
 
-        verify(autoRequestHearingService, never())
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        verify(autoRequestHearingService, never()).autoCreateHearing(callback);
 
     }
 

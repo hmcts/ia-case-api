@@ -3,10 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
@@ -83,15 +80,15 @@ public class RecordAdjournmentDetailsStateHandler implements PreSubmitCallbackSt
         if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoCreate)) {
             // Auto create hearing
             asylumCase = autoRequestHearingService
-                .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+                .autoCreateHearing(callback);
         } else if (relistCaseImmediately && adjournedBeforeHearingDay(asylumCase)) {
             // Auto update hearing
             asylumCase = autoRequestHearingService
-                .makeAutoHearingRequest(callback, UPDATE_HMC_REQUEST_SUCCESS);
+                .autoUpdateHearing(callback);
         } else if (!relistCaseImmediately && adjournedBeforeHearingDay(asylumCase)) {
             // Auto cancel hearing
             asylumCase = autoRequestHearingService
-                .makeAutoHearingRequest(callback, MANUAL_CANCEL_HEARINGS_REQUIRED);
+                .autoCancelHearing(callback);
         }
 
         return asylumCase;

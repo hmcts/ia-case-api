@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
@@ -62,7 +61,7 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
 
         if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoRequest(asylumCase))) {
             return new PreSubmitCallbackResponse<>(
-                autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED));
+                autoRequestHearingService.autoCreateHearing(callback));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

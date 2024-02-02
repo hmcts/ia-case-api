@@ -95,7 +95,7 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
         if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, !isPanelRequired(asylumCase))) {
 
             return new PreSubmitCallbackResponse<>(
-                autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED));
+                autoRequestHearingService.autoCreateHearing(callback));
         }
 
         return response;

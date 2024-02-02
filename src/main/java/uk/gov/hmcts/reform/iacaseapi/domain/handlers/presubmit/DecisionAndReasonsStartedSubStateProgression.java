@@ -45,7 +45,7 @@ public class DecisionAndReasonsStartedSubStateProgression implements PreSubmitCa
 
         if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase)) {
             asylumCase = autoRequestHearingService
-                .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+                .autoCreateHearing(callback);
         }
 
         asylumCase.write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);

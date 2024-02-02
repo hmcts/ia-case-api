@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,15 +59,14 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(true);
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+        when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(autoRequestHearingService, times(1))
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        verify(autoRequestHearingService, times(1)).autoCreateHearing(callback);
         verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
     }
@@ -85,8 +83,7 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
             decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(autoRequestHearingService, never())
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+        verify(autoRequestHearingService, never()).autoCreateHearing(callback);
         verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
     }

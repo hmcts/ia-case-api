@@ -39,38 +39,31 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
-
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         boolean isAutoRequestHearing = autoRequestHearingService
             .shouldAutoRequestHearing(asylumCase, canAutoRequest(asylumCase));
 
-        Map<String, String> confirmation = isAutoRequestHearing
-            ? autoRequestHearingService
-                .buildAutoHearingRequestConfirmation(asylumCase, callback.getCaseDetails().getId())
+        return isAutoRequestHearing
+            ? autoRequestHearingService.buildAutoHearingRequestConfirmation(
+                asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
             : buildConfirmationResponse(isPanelRequired(asylumCase), callback.getCaseDetails().getId());
-
-        response.setConfirmationHeader(confirmation.get("header"));
-        response.setConfirmationBody(confirmation.get("body"));
-
-        return response;
     }
 
-    private Map<String, String> buildConfirmationResponse(boolean panelRequired, long caseId) {
+    private PostSubmitCallbackResponse buildConfirmationResponse(boolean panelRequired, long caseId) {
 
-        Map<String, String> confirmation = new HashMap<>();
+        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
 
         if (panelRequired) {
-            confirmation.put("header", "# Hearing requirements complete");
-            confirmation.put("body", WHAT_HAPPENS_NEXT_LABEL
+            response.setConfirmationHeader("# Hearing requirements complete");
+            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                                      + "The listing team will now list the case. All parties will be notified when "
                                      + "the Hearing Notice is available to view");
         } else {
             String addCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/createFlag";
             String manageCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/manageFlags";
 
-            confirmation.put("header", "# You've recorded the agreed hearing adjustments");
-            confirmation.put("body", WHAT_HAPPENS_NEXT_LABEL
+            response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
+            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                 + "You should ensure that the case flags reflect the hearing requests that have been approved. "
                 + "This may require adding new case flags or making active flags inactive.\n\n"
                 + "[Add case flag](" + addCaseFlagUrl + ")<br>"
@@ -80,7 +73,7 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
             );
         }
 
-        return confirmation;
+        return response;
     }
 
     private boolean canAutoRequest(AsylumCase asylumCase) {

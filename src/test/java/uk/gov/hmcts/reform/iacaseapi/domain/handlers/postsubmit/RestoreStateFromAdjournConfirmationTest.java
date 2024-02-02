@@ -12,8 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESTORE_ST
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +45,7 @@ class RestoreStateFromAdjournConfirmationTest {
 
     private RestoreStateFromAdjournConfirmation handler;
     private final long caseId = 1L;
-    private final Map<String, String> confirmation = new HashMap<>();
+    private PostSubmitCallbackResponse expectedResponse = new PostSubmitCallbackResponse();
 
     @BeforeEach
     public void setUp() {
@@ -63,15 +61,16 @@ class RestoreStateFromAdjournConfirmationTest {
 
     @Test
     void should_return_successful_confirmation() {
-        confirmation.put("header", "Hearing listed");
-        confirmation.put("body", """
+        String header = "# Hearing listed";
+        expectedResponse.setConfirmationHeader(header);
+        expectedResponse.setConfirmationBody("""
             #### What happens next
 
             The hearing request has been created and is visible on the [Hearings tab](/cases/case-details/1/hearings)""");
 
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, caseId))
-            .thenReturn(confirmation);
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, header, caseId))
+            .thenReturn(expectedResponse);
 
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
@@ -79,13 +78,13 @@ class RestoreStateFromAdjournConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertEquals(confirmation.get("header"), callbackResponse.getConfirmationHeader().get());
-        assertEquals(confirmation.get("body"), callbackResponse.getConfirmationBody().get());
+        assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
+        assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }
 
     @Test
     void should_return_failed_confirmation() {
-        confirmation.put("body", "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
+        expectedResponse.setConfirmationBody("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
                                  + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
                                  + "\n\n"
                                  + "#### What happens next\n\n"
@@ -93,8 +92,8 @@ class RestoreStateFromAdjournConfirmationTest {
                                  + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
 
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, caseId))
-            .thenReturn(confirmation);
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, "# Hearing listed", caseId))
+            .thenReturn(expectedResponse);
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
@@ -103,7 +102,7 @@ class RestoreStateFromAdjournConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertEquals(confirmation.get("body"), callbackResponse.getConfirmationBody().get());
+        assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }
 
     @Test

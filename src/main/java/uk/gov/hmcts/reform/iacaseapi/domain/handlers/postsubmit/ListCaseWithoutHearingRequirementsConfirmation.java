@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -38,39 +36,32 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
-
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         boolean isAutoRequestHearing = autoRequestHearingService
             .shouldAutoRequestHearing(asylumCase, !isPanelRequired(asylumCase));
 
-        Map<String, String> confirmation = isAutoRequestHearing
-            ? autoRequestHearingService
-                .buildAutoHearingRequestConfirmation(asylumCase, callback.getCaseDetails().getId())
+        return isAutoRequestHearing
+            ? autoRequestHearingService.buildAutoHearingRequestConfirmation(
+                asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
             : buildConfirmationResponse(isPanelRequired(asylumCase));
-
-        response.setConfirmationHeader(confirmation.get("header"));
-        response.setConfirmationBody(confirmation.get("body"));
-
-        return response;
     }
 
-    private Map<String, String> buildConfirmationResponse(boolean panelRequired) {
+    private PostSubmitCallbackResponse buildConfirmationResponse(boolean panelRequired) {
 
-        Map<String, String> confirmation = new HashMap<>();
+        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
         if (panelRequired) {
-            confirmation.put("header", "# List without requirements complete");
-            confirmation.put("body", WHAT_HAPPENS_NEXT_LABEL
+            response.setConfirmationHeader("# List without requirements complete");
+            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                                      + "The listing team will now list the case. All parties will be notified when "
                                      + "the Hearing Notice is available to view");
         } else {
-            confirmation.put("header", "# You've recorded the agreed hearing adjustments");
-            confirmation.put("body", WHAT_HAPPENS_NEXT_LABEL
+            response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
+            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                 + "The listing team will now list the case."
                 + " All parties will be notified when the Hearing Notice is available to view.<br><br>"
             );
         }
 
-        return confirmation;
+        return response;
     }
 }

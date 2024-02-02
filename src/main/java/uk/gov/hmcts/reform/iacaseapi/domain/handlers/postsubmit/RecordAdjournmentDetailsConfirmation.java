@@ -42,34 +42,29 @@ public class RecordAdjournmentDetailsConfirmation implements PostSubmitCallbackH
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        PostSubmitCallbackResponse postSubmitResponse =
-                new PostSubmitCallbackResponse();
-
-
-        postSubmitResponse.setConfirmationHeader("# You have recorded the adjournment details");
-
         long caseId = callback.getCaseDetails().getId();
+        String confirmationHeader = "# You have recorded the adjournment details";
+        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
 
-        String confirmationBody =
-            "#### Do this next\n\n"
-            + "The hearing will be adjourned using the details recorded.\n\n"
-            + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
-            + caseId + "#Hearing%20and%20appointment).\n\n"
-            + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
-            + caseId + "/hearings).";
+        response.setConfirmationHeader(confirmationHeader);
 
         if (shouldAutoRequestHearing(asylumCase)) {
-            confirmationBody = autoRequestHearingService
-                .buildAutoHearingRequestConfirmation(asylumCase, caseId).get("body");
+            response = autoRequestHearingService
+                .buildAutoHearingRequestConfirmation(asylumCase, confirmationHeader, caseId);
         } else if (shouldUpdateHearing(asylumCase)) {
-            confirmationBody = buildUpdateHearingConfirmationBody(asylumCase, caseId);
+            response.setConfirmationBody(buildUpdateHearingConfirmationBody(asylumCase, caseId));
         } else if (shouldDeleteHearing(asylumCase)) {
-            confirmationBody = buildCancelHearingConfirmationBody(asylumCase, caseId);
+            response.setConfirmationBody(buildCancelHearingConfirmationBody(asylumCase, caseId));
+        } else {
+            response.setConfirmationBody("#### Do this next\n\n"
+                                         + "The hearing will be adjourned using the details recorded.\n\n"
+                                         + "The adjournment details are available on the [Hearing requirements tab](/cases/case-details/"
+                                         + caseId + "#Hearing%20and%20appointment).\n\n"
+                                         + "You must now [update the hearing actuals in the hearings tab](/cases/case-details/"
+                                         + caseId + "/hearings).");
         }
 
-        postSubmitResponse.setConfirmationBody(confirmationBody);
-
-        return postSubmitResponse;
+        return response;
     }
 
     private boolean shouldUpdateHearing(AsylumCase asylumCase) {
