@@ -131,6 +131,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
     }
+
     @Test
     void should_return_not_admitted_confirmation() {
 
@@ -161,6 +162,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
     }
+
     @Test
     void should_return_reheardRule32_confirmation() {
 
