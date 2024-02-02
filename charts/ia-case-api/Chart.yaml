@@ -34,6 +34,10 @@ dependencies:
     version: 0.0.26
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-documents-api.enabled
+  - name: ia-timed-event-service
+    version: 0.0.26
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-timed-event-service.enabled
   - name: ia-case-notifications-api
     version: 0.0.37
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
