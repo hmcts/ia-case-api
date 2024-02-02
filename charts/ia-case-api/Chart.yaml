@@ -18,10 +18,6 @@ dependencies:
     version: ~1.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-webapp.enabled
-  - name: aac-manage-case-assignment
-    version: ~0.2.9
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: aac-manage-case-assignment.enabled
   - name: ia-case-payments-api
     version: 0.0.15
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
