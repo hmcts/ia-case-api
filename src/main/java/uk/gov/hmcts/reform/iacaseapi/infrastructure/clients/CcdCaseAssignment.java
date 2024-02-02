@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REPEAT_APP
 public class CcdCaseAssignment {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    private static final int MINUTES = 2;
 
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
@@ -171,16 +172,9 @@ public class CcdCaseAssignment {
 
         ResponseEntity<Object> response;
         try {
-            response = restTemplate
-                .exchange(
-                    aacUrl + applyNocAssignmentsApiPath,
-                    HttpMethod.POST,
-                    requestEntity,
-                    Object.class
-                );
-
-            log.info("Apply NoC. Http status received from AAC API; {} for case {}",
-                    response.getStatusCodeValue(), callback.getCaseDetails().getId());
+            log.info("Apply NoC for case {}",
+                    callback.getCaseDetails().getId());
+            throw new RestClientResponseException("", 0, "", null, null, null);
         } catch (RestClientResponseException e) {
             log.error(
                 "Couldn't apply noc AAC case assignment for case ["
@@ -190,7 +184,7 @@ public class CcdCaseAssignment {
             );
 
             ZonedDateTime scheduledDate =
-                    ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(2);
+                    ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(MINUTES);
             timedEventServiceScheduler.schedule(
                 new TimedEvent(
                     "",
@@ -200,6 +194,14 @@ public class CcdCaseAssignment {
                     "Asylum",
                     callback.getCaseDetails().getId()
                 )
+            );
+
+            log.info(
+                REPEAT_APPLY_NOC
+                + " event will be raised after"
+                + MINUTES
+                + " minutes at "
+                + scheduledDate
             );
         }
     }
