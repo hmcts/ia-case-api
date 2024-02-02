@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_PANEL_REQUIRED;
@@ -81,6 +83,34 @@ class ReviewHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
+        verify(autoRequestHearingService, times(1))
+            .buildAutoHearingRequestConfirmation(asylumCase, header, caseId);
+        assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
+        assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
+    }
+
+    @Test
+    void should_return_successful_confirmation_when_auto_request_not_set() {
+        String header = "# Hearing listed";
+        expectedResponse.setConfirmationHeader(header);
+        expectedResponse.setConfirmationBody("""
+            #### What happens next
+
+            The hearing request has been created and is visible on the [Hearings tab](/cases/case-details/1/hearings)""");
+
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, header, caseId))
+            .thenReturn(expectedResponse);
+
+        PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        verify(autoRequestHearingService, times(1))
+            .buildAutoHearingRequestConfirmation(asylumCase, header, caseId);
         assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
         assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }
@@ -129,6 +159,8 @@ class ReviewHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
+        verify(autoRequestHearingService, times(1))
+            .buildAutoHearingRequestConfirmation(asylumCase, header, caseId);
         assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
         assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }

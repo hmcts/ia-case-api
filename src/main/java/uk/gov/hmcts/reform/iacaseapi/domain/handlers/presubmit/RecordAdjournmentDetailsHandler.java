@@ -8,10 +8,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJ
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AdjournmentDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -23,9 +27,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @Component
+@RequiredArgsConstructor
 public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -54,7 +62,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
         buildCurrentAdjournmentDetail(asylumCase);
         setFloatSuitability(asylumCase);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(makeAutoHearingRequest(callback));
     }
 
     private void preserveAdjournmentDetailsHistory(AsylumCase asylumCase) {
@@ -134,6 +142,31 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
         if (!reserveOrExcludeJudge) {
             asylumCase.clear(RESERVE_OR_EXCLUDE_JUDGE);
         }
+    }
+
+    private AsylumCase makeAutoHearingRequest(Callback<AsylumCase> callback) {
+
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        boolean relistImmediately = relistCaseImmediately(asylumCase, true);
+
+        boolean canAutoCreate = relistImmediately && adjournedOnHearingDay(asylumCase);
+
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoCreate)) {
+
+            asylumCase = autoRequestHearingService
+                .autoCreateHearing(callback);
+        } else if (relistImmediately && adjournedBeforeHearingDay(asylumCase)) {
+
+            asylumCase = autoRequestHearingService
+                .autoUpdateHearing(callback);
+        } else if (!relistImmediately && adjournedBeforeHearingDay(asylumCase)) {
+
+            asylumCase = autoRequestHearingService
+                .autoCancelHearing(callback);
+        }
+
+        return asylumCase;
     }
 
 }

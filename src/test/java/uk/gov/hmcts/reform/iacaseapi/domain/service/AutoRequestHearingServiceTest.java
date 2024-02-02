@@ -71,6 +71,16 @@ class AutoRequestHearingServiceTest {
     }
 
     @Test
+    void autoCreateHearing_should_successfully_call_hearings_service() {
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        autoRequestHearingService.autoCreateHearing(callback);
+
+        verify(asylumCase, times(1)).write(MANUAL_CREATE_HEARING_REQUIRED, NO);
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
     void autoCreateHearing_should_set_request_status_when_call_fails() {
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
 

@@ -37,65 +37,71 @@ public class AutoRequestHearingService {
 
     public AsylumCase autoCreateHearing(Callback<AsylumCase> callback) {
 
+        AsylumCase asylumCase;
         try {
 
-            return iaHearingsApiService.aboutToSubmit(callback);
+            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, NO);
 
         } catch (AsylumCaseServiceResponseException e) {
 
-            log.error("Failure in call to IA-HEARINGS-API for case ID {} during event {} with error: {}",
+            log.error("Failed to auto create hearing for case ID {} during event {} with error: {}",
                 callback.getCaseDetails().getId(),
                 callback.getEvent().toString(),
                 e.getMessage());
 
-            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            asylumCase = callback.getCaseDetails().getCaseData();
             asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, YES);
 
-            return asylumCase;
-
         }
+
+        return asylumCase;
     }
 
     public AsylumCase autoUpdateHearing(Callback<AsylumCase> callback) {
 
+        AsylumCase asylumCase;
         try {
 
-            return iaHearingsApiService.aboutToSubmit(callback);
+            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, YES);
 
         } catch (AsylumCaseServiceResponseException e) {
 
-            log.error("Failure in call to IA-HEARINGS-API for case ID {} during event {} with error: {}",
+            log.error("Failed to update hearing for case ID {} during event {} with error: {}",
                 callback.getCaseDetails().getId(),
                 callback.getEvent().toString(),
                 e.getMessage());
 
-            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            asylumCase = callback.getCaseDetails().getCaseData();
             asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, NO);
 
-            return asylumCase;
-
         }
+
+        return asylumCase;
     }
 
     public AsylumCase autoCancelHearing(Callback<AsylumCase> callback) {
 
+        AsylumCase asylumCase;
         try {
 
-            return iaHearingsApiService.aboutToSubmit(callback);
+            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, NO);
 
         } catch (AsylumCaseServiceResponseException e) {
 
-            log.error("Failure in call to IA-HEARINGS-API for case ID {} during event {} with error: {}",
+            log.error("Failed to cancel hearing for case ID {} during event {} with error: {}",
                 callback.getCaseDetails().getId(),
                 callback.getEvent().toString(),
                 e.getMessage());
 
-            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            asylumCase = callback.getCaseDetails().getCaseData();
             asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
 
-            return asylumCase;
-
         }
+
+        return asylumCase;
     }
 
     public PostSubmitCallbackResponse buildAutoHearingRequestConfirmation(

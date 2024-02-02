@@ -157,13 +157,13 @@ class ReviewDraftHearingRequirementsHandlerTest {
     void should_auto_request_hearing_when_autoRequest_is_not_set() {
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
             .thenReturn(true);
-        when(autoRequestHearingService.makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED))
+        when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(autoRequestHearingService, times(1))
-            .makeAutoHearingRequest(callback, MANUAL_CREATE_HEARING_REQUIRED);
+            .autoCreateHearing(callback);
     }
 
     @Test

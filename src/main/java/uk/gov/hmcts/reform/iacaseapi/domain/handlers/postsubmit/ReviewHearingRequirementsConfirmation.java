@@ -77,7 +77,7 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
     private boolean canAutoRequest(AsylumCase asylumCase) {
 
         boolean autoRequestHearing = asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)
-            .map(autoRequest -> YES == autoRequest).orElse(false);
+            .map(autoRequest -> YES == autoRequest).orElse(true);
 
         return autoRequestHearing && !isPanelRequired(asylumCase);
     }
