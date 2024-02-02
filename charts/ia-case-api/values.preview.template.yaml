@@ -117,8 +117,7 @@ ia-case-documents-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       EM_BUNDLER_URL: https://em-ccdorc-${SERVICE_FQDN}
       EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
-      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment
-        }}.platform.hmcts.net/
+      IA_AIP_FRONTEND_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
@@ -160,8 +159,7 @@ ia-case-notifications-api:
       IA_GOV_NOTIFY_KEY: "test_key-7f72d0fb-2bc4-421b-bceb-1bf5bf350ff9-3df5a74b-f25b-4052-b00f-3f71d33cd0eb"
       IA_BAIL_GOV_NOTIFY_KEY: "testkey-b9593914-99e1-484e-ad63-a51d7b4c164f-b817a2e5-7a30-4938-98f0-6099110c2879"
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
-      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment
-        }}.platform.hmcts.net/
+      IA_AIP_FRONTEND_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
