@@ -22,7 +22,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.InfrastructureErrorHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ApplyNocRetryableExecutor;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.ApplyNocSender;
 
 
 @ExtendWith(SpringExtension.class)
@@ -37,7 +38,7 @@ public class CcdCaseAssignmentProviderBaseTest {
     @MockBean
     UserDetailsProvider userDetailsProvider;
     @MockBean
-    InfrastructureErrorHandler infrastructureErrorHandler;
+    ApplyNocSender applyNocSender;
     @Value("${core_case_data_api_assignments_url}")
     String ccdUrl;
     @Value("${assign_case_access_api_url}")
@@ -72,7 +73,7 @@ public class CcdCaseAssignmentProviderBaseTest {
                 new RestTemplate(),
                 serviceAuthTokenGenerator,
                 userDetailsProvider,
-                infrastructureErrorHandler,
+                applyNocSender,
                 ccdUrl,
                 aacUrl,
                 ccdAssignmentsApiPath,

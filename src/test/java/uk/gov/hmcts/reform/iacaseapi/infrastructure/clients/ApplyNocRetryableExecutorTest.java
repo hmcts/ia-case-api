@@ -14,8 +14,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class InfrastructureErrorHandlerTest {
-    private InfrastructureErrorHandler infrastructureErrorHandler;
+class ApplyNocRetryableExecutorTest {
+    private ApplyNocRetryableExecutor applyNocRetryableExecutor;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -27,7 +27,7 @@ class InfrastructureErrorHandlerTest {
 
     @BeforeEach
     void setUp() {
-        infrastructureErrorHandler = new InfrastructureErrorHandler();
+        applyNocRetryableExecutor = new ApplyNocRetryableExecutor();
     }
 
     @Test
@@ -35,7 +35,7 @@ class InfrastructureErrorHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         assertThatThrownBy(
-                () -> infrastructureErrorHandler.retryCall(callback)
+                () -> applyNocRetryableExecutor.retryCall(callback)
         ).isInstanceOf(RestClientResponseException.class);
     }
 }

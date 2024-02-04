@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.ApplyNocSender;
 
 import java.util.Map;
 
@@ -42,7 +43,7 @@ class CcdCaseAssignmentTest {
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private InfrastructureErrorHandler infrastructureErrorHandler;
+    @Mock private ApplyNocSender applyNocSender;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
 
@@ -57,7 +58,7 @@ class CcdCaseAssignmentTest {
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider,
-            infrastructureErrorHandler,
+            applyNocSender,
             ccdUrl,
             aacUrl,
             ccdAssignmentsApiPath,
@@ -208,17 +209,12 @@ class CcdCaseAssignmentTest {
     @Test
     void should_handle_when_rest_exception_thrown_for_apply_noc() {
 
-        RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
-
-        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
 
         ccdCaseAssignment.applyNoc(callback);
 
-        verify(infrastructureErrorHandler).retryCall(callback);
+        verify(applyNocSender).sendApplyNoc(callback);
     }
 
     @Test

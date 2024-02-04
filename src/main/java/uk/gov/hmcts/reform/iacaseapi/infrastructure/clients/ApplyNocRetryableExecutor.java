@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @Slf4j
 @Service
-public class InfrastructureErrorHandler {
-    @Retryable(maxAttempts = 3, backoff = @Backoff(3000))
+public class ApplyNocRetryableExecutor {
+    @Retryable(maxAttempts = 3, backoff = @Backoff(60000))
     public void retryCall(final Callback<AsylumCase> callback) {
         log.info("Apply NoC for case {}",
                 callback.getCaseDetails().getId());
