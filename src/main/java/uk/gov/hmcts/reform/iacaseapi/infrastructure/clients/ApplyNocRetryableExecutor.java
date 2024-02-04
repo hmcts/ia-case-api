@@ -11,10 +11,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @Slf4j
 @Service
 public class ApplyNocRetryableExecutor {
-    @Retryable(maxAttempts = 3, backoff = @Backoff(60000))
+    @Retryable(maxAttempts = 4, backoff = @Backoff(60000))
     public void retryCall(final Callback<AsylumCase> callback) {
-        log.info("Apply NoC for case {}",
-                callback.getCaseDetails().getId());
+        log.info(
+            "Executing Apply NoC for case {}",
+            callback.getCaseDetails().getId()
+        );
+
         throw new RestClientResponseException("", 0, "", null, null, null);
     }
 }
