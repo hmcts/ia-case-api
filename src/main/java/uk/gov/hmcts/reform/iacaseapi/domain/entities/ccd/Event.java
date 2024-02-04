@@ -106,6 +106,7 @@ public enum Event {
     RECORD_REMISSION_DECISION("recordRemissionDecision"),
     MANAGE_FEE_UPDATE("manageFeeUpdate"),
     NOC_REQUEST("nocRequest"),
+    REPEAT_APPLY_NOC("repeatApplyNoc"),
     REMOVE_REPRESENTATION("removeRepresentation"),
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),

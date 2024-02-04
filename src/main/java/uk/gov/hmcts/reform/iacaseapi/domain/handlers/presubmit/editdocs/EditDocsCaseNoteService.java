@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDoc
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @Service
+@Slf4j
 public class EditDocsCaseNoteService {
 
     @Autowired
@@ -31,6 +34,7 @@ public class EditDocsCaseNoteService {
             buildNewCaseNote(auditDetails), maybeExistingCaseNotes.orElse(Collections.emptyList()));
         asylumCase.write(CASE_NOTES, allCaseNotes);
         asylumCase.clear(EDIT_DOCUMENTS_REASON);
+        log.info("EditDocsCaseNoteService: ");
     }
 
     private CaseNote buildNewCaseNote(AuditDetails auditDetails) {

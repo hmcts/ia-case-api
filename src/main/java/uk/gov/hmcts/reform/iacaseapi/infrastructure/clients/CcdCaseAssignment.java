@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Maps;
+
 import java.util.ArrayList;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.ApplyNocSender;
 
 
 @Slf4j
@@ -23,28 +25,33 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 public class CcdCaseAssignment {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    private static final int MINUTES = 2;
 
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
+    private final ApplyNocSender applyNocSender;
     private final String ccdUrl;
     private final String aacUrl;
     private final String ccdAssignmentsApiPath;
     private final String aacAssignmentsApiPath;
     private final String applyNocAssignmentsApiPath;
 
-    public CcdCaseAssignment(RestTemplate restTemplate,
-                             AuthTokenGenerator serviceAuthTokenGenerator,
-                             UserDetailsProvider userDetailsProvider,
-                             @Value("${core_case_data_api_assignments_url}") String ccdUrl,
-                             @Value("${assign_case_access_api_url}") String aacUrl,
-                             @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
-                             @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath,
-                             @Value("${apply_noc_access_api_assignments_path}") String applyNocAssignmentsApiPath
+    public CcdCaseAssignment(
+        RestTemplate restTemplate,
+        AuthTokenGenerator serviceAuthTokenGenerator,
+        UserDetailsProvider userDetailsProvider,
+        ApplyNocSender applyNocSender,
+        @Value("${core_case_data_api_assignments_url}") String ccdUrl,
+        @Value("${assign_case_access_api_url}") String aacUrl,
+        @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
+        @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath,
+        @Value("${apply_noc_access_api_assignments_path}") String applyNocAssignmentsApiPath
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
+        this.applyNocSender = applyNocSender;
         this.ccdUrl = ccdUrl;
         this.aacUrl = aacUrl;
         this.ccdAssignmentsApiPath = ccdAssignmentsApiPath;
@@ -145,38 +152,9 @@ public class CcdCaseAssignment {
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
-        final UserDetails userDetails = userDetailsProvider.getUserDetails();
-        final String accessToken = userDetails.getAccessToken();
+        applyNocSender.sendApplyNoc(callback);
 
-        HttpEntity<Callback<AsylumCase>> requestEntity =
-            new HttpEntity<>(
-                callback,
-                setHeaders(serviceAuthorizationToken, accessToken)
-            );
-
-        ResponseEntity<Object> response;
-        try {
-            response = restTemplate
-                .exchange(
-                    aacUrl + applyNocAssignmentsApiPath,
-                    HttpMethod.POST,
-                    requestEntity,
-                    Object.class
-                );
-            
-        } catch (RestClientResponseException e) {
-            throw new CcdDataIntegrationException(
-                "Couldn't apply noc AAC case assignment for case ["
-                + callback.getCaseDetails().getId()
-                + "] using API: "
-                + aacUrl + applyNocAssignmentsApiPath,
-                e
-            );
-        }
-
-        log.info("Apply NoC. Http status received from AAC API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+        log.info("applyNoc sent for case {}", callback.getCaseDetails().getId());
     }
 
     public Map<String, Object> buildRevokeAccessPayload(String organisationIdentifier, long caseId, String idamUserId) {

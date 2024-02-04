@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.ApplyNocSender;
 
 import java.util.Map;
 
@@ -42,6 +43,7 @@ class CcdCaseAssignmentTest {
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private ApplyNocSender applyNocSender;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
 
@@ -56,6 +58,7 @@ class CcdCaseAssignmentTest {
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider,
+            applyNocSender,
             ccdUrl,
             aacUrl,
             ccdAssignmentsApiPath,
@@ -121,37 +124,6 @@ class CcdCaseAssignmentTest {
             .exchange(
                 anyString(),
                 eq(HttpMethod.DELETE),
-                any(HttpEntity.class),
-                eq(Object.class)
-            );
-    }
-
-    @Test
-    void should_send_post_to_apply_noc_and_receive_201() {
-
-        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(123L);
-
-        when(restTemplate
-            .exchange(
-                anyString(),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                eq(Object.class)
-            )
-        ).thenReturn(responseEntity);
-
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
-
-        ccdCaseAssignment.applyNoc(callback);
-
-        verify(restTemplate)
-            .exchange(
-                anyString(),
-                eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Object.class)
             );
@@ -237,38 +209,12 @@ class CcdCaseAssignmentTest {
     @Test
     void should_handle_when_rest_exception_thrown_for_apply_noc() {
 
-        RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
-
-        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
 
-        when(restTemplate
-            .exchange(
-                eq(aacUrl + nocAssignmentsApiPath),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                eq(Object.class)
-            )
-        ).thenThrow(restClientResponseEx);
+        ccdCaseAssignment.applyNoc(callback);
 
-        assertThatThrownBy(() -> ccdCaseAssignment.applyNoc(callback))
-            .isInstanceOf(CcdDataIntegrationException.class)
-            .hasMessage("Couldn't apply noc AAC case assignment for case ["
-                        + caseDetails.getId()
-                        + "] using API: "
-                        + aacUrl + nocAssignmentsApiPath)
-            .hasCauseInstanceOf(RestClientResponseException.class);
-
-        verify(restTemplate)
-            .exchange(
-                anyString(),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                eq(Object.class)
-            );
+        verify(applyNocSender).sendApplyNoc(callback);
     }
 
     @Test
