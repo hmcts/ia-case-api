@@ -35,7 +35,7 @@ class ApplyNocRetryableExecutorTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
         assertThatThrownBy(
-                () -> applyNocRetryableExecutor.retryCall(callback)
+                () -> applyNocRetryableExecutor.retryApplyNoc(callback)
         ).isInstanceOf(RestClientResponseException.class);
     }
 }

@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @Service
 public class ApplyNocRetryableExecutor {
     @Retryable(maxAttempts = 4, backoff = @Backoff(60000))
-    public void retryCall(final Callback<AsylumCase> callback) {
+    public void retryApplyNoc(final Callback<AsylumCase> callback) {
         log.info(
             "Executing Apply NoC for case {}",
             callback.getCaseDetails().getId()

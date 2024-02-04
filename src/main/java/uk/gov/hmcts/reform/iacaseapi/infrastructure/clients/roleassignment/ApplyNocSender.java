@@ -25,6 +25,6 @@ public class ApplyNocSender {
                 callback.getCaseDetails().getId()
         );
 
-        applyNocRetryableExecutor.retryCall(callback);
+        applyNocRetryableExecutor.retryApplyNoc(callback);
     }
 }
