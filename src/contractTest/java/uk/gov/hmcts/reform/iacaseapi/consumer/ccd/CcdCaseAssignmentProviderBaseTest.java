@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ApplyNocRetryableExecutor;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.ApplyNocSender;
 
 
