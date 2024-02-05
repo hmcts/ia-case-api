@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
+class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
 
     @MockBean
     UserDetailsProvider userDetailsProvider;
@@ -39,7 +39,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void sets_flag_to_indicate_the_hearing_details_have_been_recorded() {
+    void sets_flag_to_indicate_the_hearing_details_have_been_recorded() {
 
         addServiceAuthStub(server);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
@@ -62,7 +62,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
-    public void returns_confirmation_page_content() {
+    void returns_confirmation_page_content() {
 
         LDValue defaultValue = LDValue.parse("{\"epimsIds\":[]}");
 

@@ -73,7 +73,7 @@ ia-case-payments-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-payments-api:pr-270
+#    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-275
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -355,7 +355,7 @@ ia-bail-case-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
-    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
+#    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-345
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -405,7 +405,7 @@ ia-timed-event-service:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
-    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
+#    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -445,7 +445,7 @@ ia-home-office-integration-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
-    # image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-293
+#    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-373
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -589,10 +589,12 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
+    memoryLimits: 1836Mi
     devmemoryRequests: 6Gi
     devcpuRequests: 2000m
     devmemoryLimits: 8Gi
     devcpuLimits: 4500m
+    cpuLimits: 1900m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health

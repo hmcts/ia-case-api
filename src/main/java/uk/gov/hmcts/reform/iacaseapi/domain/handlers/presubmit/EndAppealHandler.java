@@ -73,6 +73,15 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
         }
 
+        State previousState = callback
+                .getCaseDetailsBefore()
+                .map(CaseDetails::getState)
+                .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
+
+        if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && previousState == State.ENDED) {
+            throw new IllegalStateException("Appeal has already been ended!");
+        }
+
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
 
@@ -85,11 +94,6 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
 
         changeWithdrawApplicationsToCompleted(asylumCase);
-
-        State previousState = callback
-            .getCaseDetailsBefore()
-            .map(CaseDetails::getState)
-            .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
 
         asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
 
