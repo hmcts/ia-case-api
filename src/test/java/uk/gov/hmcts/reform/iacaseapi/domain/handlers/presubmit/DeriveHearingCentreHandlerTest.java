@@ -163,20 +163,20 @@ class DeriveHearingCentreHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
-        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER, true",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER, true",
 
-        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE, false",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE, false",
 
-        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS, true",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS, true",
 
-        "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
-        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle, , false",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle, , false"
     })
     void should_derive_hearing_centre_from_legal_rep_company_postcode(
-        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation, boolean isEjp) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
@@ -184,8 +184,14 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(LEGAL_PRACTICE_ADDRESS_EJP, AddressUk.class)).thenReturn(Optional.of(
-            sponsorOrCompanyAddressUk));
+        if (isEjp) {
+            when(asylumCase.read(LEGAL_PRACTICE_ADDRESS_EJP, AddressUk.class)).thenReturn(Optional.of(
+                sponsorOrCompanyAddressUk));
+        } else {
+            when(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class)).thenReturn(Optional.of(
+                sponsorOrCompanyAddressUk));
+        }
+
         when(sponsorOrCompanyAddressUk.getPostCode()).thenReturn(Optional.of("A456 4XY"));
         when(hearingCentreFinder.find("A456 4XY")).thenReturn(hearingCentre);
 
