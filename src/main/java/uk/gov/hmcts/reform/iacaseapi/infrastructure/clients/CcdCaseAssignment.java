@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.Apply
 public class CcdCaseAssignment {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-    private static final int MINUTES = 2;
 
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
@@ -35,7 +34,6 @@ public class CcdCaseAssignment {
     private final String aacUrl;
     private final String ccdAssignmentsApiPath;
     private final String aacAssignmentsApiPath;
-    private final String applyNocAssignmentsApiPath;
 
     public CcdCaseAssignment(
         RestTemplate restTemplate,
@@ -45,8 +43,7 @@ public class CcdCaseAssignment {
         @Value("${core_case_data_api_assignments_url}") String ccdUrl,
         @Value("${assign_case_access_api_url}") String aacUrl,
         @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
-        @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath,
-        @Value("${apply_noc_access_api_assignments_path}") String applyNocAssignmentsApiPath
+        @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
@@ -56,7 +53,6 @@ public class CcdCaseAssignment {
         this.aacUrl = aacUrl;
         this.ccdAssignmentsApiPath = ccdAssignmentsApiPath;
         this.aacAssignmentsApiPath = aacAssignmentsApiPath;
-        this.applyNocAssignmentsApiPath = applyNocAssignmentsApiPath;
     }
 
     public void revokeAccessToCase(

@@ -46,8 +46,6 @@ public class CcdCaseAssignmentProviderBaseTest {
     String ccdAssignmentsApiPath;
     @Value("${assign_case_access_api_assignments_path}")
     String aacAssignmentsApiPath;
-    @Value("${apply_noc_access_api_assignments_path}")
-    String applyNocAssignmentsApiPath;
 
     CcdCaseAssignment ccdCaseAssignment;
 
@@ -76,8 +74,7 @@ public class CcdCaseAssignmentProviderBaseTest {
                 ccdUrl,
                 aacUrl,
                 ccdAssignmentsApiPath,
-                aacAssignmentsApiPath,
-                applyNocAssignmentsApiPath
+                aacAssignmentsApiPath
             );
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);

@@ -21,8 +21,8 @@ public class ApplyNocSender {
     @Async
     public void sendApplyNoc(Callback<AsylumCase> callback) {
         log.info(
-                "Apply NoC for case {}",
-                callback.getCaseDetails().getId()
+            "Apply NoC for case {}",
+            callback.getCaseDetails().getId()
         );
 
         applyNocRetryableExecutor.retryApplyNoc(callback);

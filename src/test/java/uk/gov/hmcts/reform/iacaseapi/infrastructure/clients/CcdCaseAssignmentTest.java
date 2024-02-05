@@ -39,7 +39,6 @@ class CcdCaseAssignmentTest {
     private final String aacUrl = "some-aac-host";
     private final String ccdAssignmentsApiPath = "some-path";
     private final String aacAssignmentsApiPath = "some-aac-path";
-    private final String nocAssignmentsApiPath = "some-noc-path";
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private UserDetailsProvider userDetailsProvider;
@@ -62,8 +61,8 @@ class CcdCaseAssignmentTest {
             ccdUrl,
             aacUrl,
             ccdAssignmentsApiPath,
-            aacAssignmentsApiPath,
-            nocAssignmentsApiPath);
+            aacAssignmentsApiPath
+        );
     }
 
     @Test
