@@ -24,6 +24,7 @@ def secrets = [
     secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
     secret('app-insights-connection-string', 'app-insights-connection-string'),
     secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET'),
+    secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
 
     secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
     secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),

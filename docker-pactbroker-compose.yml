@@ -10,7 +10,7 @@ services:
       - "5433:5433"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${GENERIC_DOCKER_PACT_BROKER_YAML_PASS}
       POSTGRES_DB: postgres
 
   broker_app:
@@ -21,7 +21,7 @@ services:
       - "9292:9292"
     environment:
       PACT_BROKER_DATABASE_USERNAME: postgres
-      PACT_BROKER_DATABASE_PASSWORD: password
+      PACT_BROKER_DATABASE_PASSWORD: ${GENERIC_DOCKER_PACT_BROKER_YAML_PASS}
       PACT_BROKER_DATABASE_HOST: postgres
       PACT_BROKER_DATABASE_NAME: postgres
       PACT_BROKER_WEBHOOK_SCHEME_WHITELIST: http
