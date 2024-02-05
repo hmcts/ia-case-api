@@ -469,8 +469,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1032
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     memoryRequests: 256Mi
