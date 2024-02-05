@@ -87,8 +87,8 @@ class ReviewHearingRequirementsConfirmationTest {
 
     @Test
     void should_return_confirmation_when_panel_required() {
-        String header = "# Hearing requirements complete";
-        String body = """
+        final String header = "# Hearing requirements complete";
+        final String body = """
             #### What happens next
 
             The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view""";
@@ -115,25 +115,28 @@ class ReviewHearingRequirementsConfirmationTest {
                                  + "#### What happens next\n\n"
                                  + "The hearing could not be auto-requested. Please manually request the "
                                  + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        String header = "# Hearing listed";
+        expectedResponse.setConfirmationHeader(header);
 
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, "# Hearing listed", caseId))
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, header, caseId))
             .thenReturn(expectedResponse);
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
+        assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
         assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }
 
     @Test
     void should_return_confirmation_when_panel_not_required() {
-        String header = "# You've recorded the agreed hearing adjustments";
-        String body = "#### What happens next\n\n"
+        final String header = "# You've recorded the agreed hearing adjustments";
+        final String body = "#### What happens next\n\n"
                                  + "You should ensure that the case flags reflect "
                                  + "the hearing requests that have been approved. "
                                  + "This may require adding new case flags or making active flags inactive.\n\n"

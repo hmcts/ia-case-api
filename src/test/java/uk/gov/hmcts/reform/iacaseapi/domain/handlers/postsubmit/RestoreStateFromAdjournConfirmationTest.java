@@ -90,18 +90,20 @@ class RestoreStateFromAdjournConfirmationTest {
                                  + "#### What happens next\n\n"
                                  + "The hearing could not be auto-requested. Please manually request the "
                                  + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        String header = "# Hearing listed";
+        expectedResponse.setConfirmationHeader(header);
 
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, "# Hearing listed", caseId))
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, header, caseId))
             .thenReturn(expectedResponse);
 
-        PostSubmitCallbackResponse callbackResponse =
-            handler.handle(callback);
+        PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
+        assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
         assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }
 

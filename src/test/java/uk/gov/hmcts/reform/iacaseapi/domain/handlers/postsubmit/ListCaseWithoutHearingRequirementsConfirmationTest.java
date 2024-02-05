@@ -114,25 +114,28 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
                                  + "#### What happens next\n\n"
                                  + "The hearing could not be auto-requested. Please manually request the "
                                  + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        String header = "# Hearing listed";
+        expectedResponse.setConfirmationHeader(header);
 
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, "# Hearing listed", caseId))
+        when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, header, caseId))
             .thenReturn(expectedResponse);
 
         PostSubmitCallbackResponse callbackResponse =
             handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
+        assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
     }
 
     @Test
     void should_return_confirmation_when_panel_not_required() {
-        String header = "# You've recorded the agreed hearing adjustments";
-        String body = "#### What happens next\n\n"
+        final String header = "# You've recorded the agreed hearing adjustments";
+        final String body = "#### What happens next\n\n"
                                  + "The listing team will now list the case."
                                  + " All parties will be notified when the Hearing Notice is available to view.<br><br>";
 

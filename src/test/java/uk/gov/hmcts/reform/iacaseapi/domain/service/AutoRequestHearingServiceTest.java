@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -117,7 +116,7 @@ class AutoRequestHearingServiceTest {
             .buildAutoHearingRequestConfirmation(asylumCase, header, 1L);
 
         assertEquals(response.getConfirmationHeader().orElse(null), header);
-        assertEquals(response.getConfirmationHeader().orElse(null), body);
+        assertEquals(response.getConfirmationBody().orElse(null), body);
     }
 
     @Test
@@ -135,8 +134,8 @@ class AutoRequestHearingServiceTest {
         PostSubmitCallbackResponse response = autoRequestHearingService
             .buildAutoHearingRequestConfirmation(asylumCase, header, 1L);
 
-        assertTrue(response.getConfirmationHeader().isEmpty());
-        assertEquals(response.getConfirmationHeader().orElse(null), body);
+        assertEquals(header, response.getConfirmationHeader().orElse(null));
+        assertEquals(body, response.getConfirmationBody().orElse(null));
     }
 
 }
