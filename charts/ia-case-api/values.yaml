@@ -43,7 +43,7 @@ java:
   postgresql:    
     auth:
       username: ia_case_api
-      password: ia_case_api
+      password: ${PG_AUTH_VALUES_YAML_PASS}
       database: ia_case_api
     service:
       port: 5432
@@ -76,6 +76,8 @@ java:
           alias: spring.datasource.password
         - name: app-insights-connection-string
           alias: app-insights-connection-string
+        - name: postgres-auth-values-password
+          alias: PG_AUTH_VALUES_YAML_PASS
 
 ia-case-payments-api:
   enabled: false

@@ -59,6 +59,9 @@ def secrets = [
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
         secret('app-insights-connection-string', 'app-insights-connection-string'),
+        secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
+        secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
+        secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
 
         secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
         secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
