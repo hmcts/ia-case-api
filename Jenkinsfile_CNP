@@ -54,6 +54,9 @@ def secrets = [
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
         secret('app-insights-connection-string', 'app-insights-connection-string'),
+        secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
+        secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
+        secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
 
         secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
         secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
@@ -62,8 +65,9 @@ def secrets = [
         secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
         secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
         secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
-        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW')
-
+        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
+        secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
+        secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
     ],
     's2s-${env}'      : [
         secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),

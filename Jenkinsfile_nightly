@@ -12,6 +12,7 @@ properties([
 ])
 
 @Library("Infrastructure")
+import uk.gov.hmcts.contino.GradleBuilder
 
 def type = "java"
 def product = "ia"
@@ -58,6 +59,9 @@ def secrets = [
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
         secret('app-insights-connection-string', 'app-insights-connection-string'),
+        secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
+        secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
+        secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
 
         secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
         secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
@@ -66,7 +70,10 @@ def secrets = [
         secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
         secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
         secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
-        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW')
+        secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
+
+        secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
+        secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
 
     ]
 ]
@@ -79,6 +86,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
      envVariable: envVar
     ]
 }
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
@@ -101,10 +110,92 @@ withNightlyPipeline(type, product, component) {
     env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
 
     loadVaultSecrets(secrets)
-
+    enableFortifyScan()
     enableSecurityScan()
     enableMutationTest()
     enableSlackNotifications('#ia-tech')
     enableFullFunctionalTest()
 
+    afterAlways('DependencyCheckNightly') {
+        publishHTML([
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports",
+        reportFiles          : 'dependency-check-report.html',
+        reportName           : 'Dependency Check Report'
+        ])
+    }
+
+    afterAlways('fortify-scan') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "Fortify Scan",
+                reportFiles          : "FortifyScanReport.html",
+                reportName           : "Fortify Scan Report"
+        ]
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+    }
+
+    afterAlways('mutationTest') {
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/pitest",
+                reportFiles          : 'index.html',
+                reportName           : 'Mutation Test Report'
+        ])
+    }
+
+    before('fullFunctionalTest') {
+        try {
+            builder.gradle('test')
+            builder.gradle('integration')
+            builder.gradle('smoke')
+        } finally {
+            junit '**/test-results/**/*.xml'
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/test",
+                    reportFiles          : "index.html",
+                    reportName           : "Unit Test Report"
+            ]
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/smoke",
+                    reportFiles          : "index.html",
+                    reportName           : "Smoke Test Report"
+            ]
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/integration",
+                    reportFiles          : "index.html",
+                    reportName           : "Integration Test Report"
+            ]
+        }
+    }
+
+    afterAlways('fullFunctionalTest') {
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/functional",
+                reportFiles          : 'index.html',
+                reportName           : 'Functional Test Report'
+        ])
+
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
+    }
 }
