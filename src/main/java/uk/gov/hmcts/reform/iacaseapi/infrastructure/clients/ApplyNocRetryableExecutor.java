@@ -17,8 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-
-import static java.util.Objects.requireNonNull;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.RetryCounter;
 
 @Slf4j
 @Service
@@ -29,6 +28,7 @@ public class ApplyNocRetryableExecutor {
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
+    private final RetryCounter retryCounter;
     private final String aacUrl;
     private final String applyNocAssignmentsApiPath;
 
@@ -36,28 +36,25 @@ public class ApplyNocRetryableExecutor {
         RestTemplate restTemplate,
         AuthTokenGenerator serviceAuthTokenGenerator,
         UserDetailsProvider userDetailsProvider,
+        RetryCounter retryCounter,
         @Value("${assign_case_access_api_url}") String aacUrl,
         @Value("${apply_noc_access_api_assignments_path}") String applyNocAssignmentsApiPath
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
+        this.retryCounter = retryCounter;
         this.aacUrl = aacUrl;
         this.applyNocAssignmentsApiPath = applyNocAssignmentsApiPath;
     }
 
-    @Retryable(maxAttempts = 4, backoff = @Backoff(60000))
+    @Retryable(maxAttempts = 5, backoff = @Backoff(60000))
     public void retryApplyNoc(final Callback<AsylumCase> callback) {
-        requireNonNull(callback, "callback must not be null");
-
         log.info(
-            "Executing Apply NoC for case {}",
-            callback.getCaseDetails().getId()
+            "Executing Apply NoC for case {}, retry {}",
+            callback.getCaseDetails().getId(),
+            retryCounter.getContext().getRetryCount()
         );
-
-        /*if (RetrySynchronizationManager.getContext().getRetryCount() < 2) {
-            throw new RestClientResponseException("", 0, "", null, null, null);
-        }*/
 
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
         final UserDetails userDetails = userDetailsProvider.getUserDetails();

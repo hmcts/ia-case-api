@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.RetryContext;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.RetryCounter;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,6 +50,12 @@ class ApplyNocRetryableExecutorTest {
     private UserDetailsProvider userDetailsProvider;
 
     @Mock
+    private RetryCounter retryCounter;
+
+    @Mock
+    private RetryContext retryContext;
+
+    @Mock
     private Callback<AsylumCase> callback;
 
     @Mock
@@ -56,31 +64,23 @@ class ApplyNocRetryableExecutorTest {
     @Mock
     private UserDetails userDetails;
 
-    private static final long caseId = 456L;
-
     @BeforeEach
     void setUp() {
         applyNocRetryableExecutor = new ApplyNocRetryableExecutor(
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider,
+            retryCounter,
             aacUrl,
             nocAssignmentsApiPath
         );
     }
 
-    /*@Test
-    void retryCall() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
-        assertThatThrownBy(
-                () -> applyNocRetryableExecutor.retryApplyNoc(callback)
-        ).isInstanceOf(RestClientResponseException.class);
-    }*/
-
     @Test
     void should_send_post_to_retry_apply_noc_and_receive_201() {
 
+        when(retryCounter.getContext()).thenReturn(retryContext);
+        when(retryContext.getRetryCount()).thenReturn(1);
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
@@ -113,6 +113,8 @@ class ApplyNocRetryableExecutorTest {
     void should_handle_when_rest_exception_thrown_for_retry_apply_noc() {
         RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
 
+        when(retryCounter.getContext()).thenReturn(retryContext);
+        when(retryContext.getRetryCount()).thenReturn(1);
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);

@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ApplyNocRetryableExecutor;
 
+import static java.util.Objects.requireNonNull;
+
 @Slf4j
 @Service
 public class ApplyNocSender {
@@ -20,6 +22,8 @@ public class ApplyNocSender {
 
     @Async
     public void sendApplyNoc(Callback<AsylumCase> callback) {
+        requireNonNull(callback, "callback must not be null");
+
         log.info(
             "Apply NoC for case {}",
             callback.getCaseDetails().getId()
