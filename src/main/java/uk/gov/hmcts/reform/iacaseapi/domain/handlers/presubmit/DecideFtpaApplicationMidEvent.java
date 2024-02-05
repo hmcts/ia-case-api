@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaDecisionOutcomeType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaResidentJudgeDecisionOutcomeType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -17,11 +16,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties.APPELLANT;
@@ -89,10 +86,6 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
             }
         }
 
-        // Leadership judge page visibility flags
-        setFtpaDecisionReasonsNotesVisibility(asylumCase);
-
-        // Resident judge page visibility flags
         setResidentJudgeDecisionPagesVisibility(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -145,28 +138,6 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_NOTES_VISIBLE, YesOrNo.YES);
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_NOTES_VISIBLE, YesOrNo.NO);
-        }
-    }
-
-    private void setFtpaDecisionReasonsNotesVisibility(AsylumCase asylumCase) {
-
-        final String ftpaAppellantDecisionOutcomeType = asylumCase.read(FTPA_APPELLANT_DECISION_OUTCOME_TYPE, String.class).orElse("");
-        final String ftpaRespondentDecisionOutcomeType = asylumCase.read(FTPA_RESPONDENT_DECISION_OUTCOME_TYPE, String.class).orElse("");
-
-        if (ftpaAppellantDecisionOutcomeType.equals(FtpaDecisionOutcomeType.GRANTED.toString())
-            || ftpaAppellantDecisionOutcomeType.equals(FtpaDecisionOutcomeType.PARTIALLY_GRANTED.toString())) {
-
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REASONS_VISIBLE, YesOrNo.YES);
-        } else {
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REASONS_VISIBLE, YesOrNo.NO);
-        }
-
-        if (ftpaRespondentDecisionOutcomeType.equals(FtpaDecisionOutcomeType.GRANTED.toString())
-            || ftpaRespondentDecisionOutcomeType.equals(FtpaDecisionOutcomeType.PARTIALLY_GRANTED.toString())) {
-
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_VISIBLE, YesOrNo.YES);
-        } else {
-            asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_VISIBLE, YesOrNo.NO);
         }
     }
 
