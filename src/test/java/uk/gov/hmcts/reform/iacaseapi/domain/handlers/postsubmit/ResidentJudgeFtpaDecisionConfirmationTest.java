@@ -133,6 +133,37 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
+    void should_return_not_admitted_confirmation() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of(
+            "notAdmitted"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            residentJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
+    }
+
+    @Test
     void should_return_reheardRule32_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -194,6 +225,35 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .contains("#### What happens next");
     }
 
+    @Test
+    void should_return_remadeRule31_confirmation() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
+            .thenReturn(Optional.of("remadeRule31"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            residentJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties have been notified of the decision.<br>");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
+    }
 
     @Test
     void should_return_remadeRule32_confirmation() {
@@ -261,7 +321,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
 
                 boolean canHandle = residentJudgeFtpaDecisionConfirmation.canHandle(callback);
 
-                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION) {
+                if (event == Event.RESIDENT_JUDGE_FTPA_DECISION || event == Event.DECIDE_FTPA_APPLICATION) {
 
                     assertTrue(canHandle);
                 } else {
