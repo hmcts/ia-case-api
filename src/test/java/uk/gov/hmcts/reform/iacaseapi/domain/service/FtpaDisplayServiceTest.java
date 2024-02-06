@@ -17,6 +17,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -39,6 +42,8 @@ class FtpaDisplayServiceTest {
     private CaseFlagAppender caseFlagAppender;
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
+    @Mock
+    Document maybeFtpaApplicationDecisionAndReasonsDocument;
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
 
@@ -286,16 +291,23 @@ class FtpaDisplayServiceTest {
         verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
     }
 
-    @Test
-    void should_map_ftpa_decision_respondent_maximum_data() {
+    @ParameterizedTest
+    @ValueSource(booleans =  {true, false})
+    void should_map_ftpa_decision_respondent_maximum_data(boolean isMigration) {
         final FtpaApplications ftpaApplication = FtpaApplications.builder().ftpaApplicant("respondent").build();
 
         when(asylumCase.read(IS_FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE, YesOrNo.class))
                 .thenReturn(Optional.of(YES));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
                 .thenReturn(Optional.of("granted"));
-        when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
-                .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        if (isMigration) {
+            when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
+                    .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        } else {
+            when(asylumCase.read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class))
+                    .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
+        }
+
         when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT))
                 .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_OBJECTIONS, String.class))
@@ -309,11 +321,15 @@ class FtpaDisplayServiceTest {
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_NOTES_POINTS))
                 .thenReturn(Optional.of(ftpaCheckValues));
 
-        ftpaDisplayService.mapFtpaDecision(asylumCase, "RESPONDENT", ftpaApplication);
+        ftpaDisplayService.mapFtpaDecision(isMigration, asylumCase, "RESPONDENT", ftpaApplication);
 
         assertEquals(YES, ftpaApplication.getIsFtpaNoticeOfDecisionSetAside());
         assertEquals("granted", ftpaApplication.getFtpaDecisionOutcomeType());
-        assertEquals(maybeFtpaDecisionAndReasonsDocument, ftpaApplication.getFtpaDecisionDocument());
+        if (isMigration) {
+            assertEquals(maybeFtpaDecisionAndReasonsDocument, ftpaApplication.getFtpaLegacyDecisionDocument());
+        } else {
+            assertEquals(maybeFtpaApplicationDecisionAndReasonsDocument, ftpaApplication.getFtpaNewDecisionDocument());
+        }
         assertEquals(maybeFtpaDecisionNoticeDocument, ftpaApplication.getFtpaNoticeDocument());
         assertEquals("Objection description example", ftpaApplication.getFtpaDecisionObjections());
         assertEquals("Listing instructions example", ftpaApplication.getFtpaDecisionLstIns());
@@ -322,15 +338,22 @@ class FtpaDisplayServiceTest {
         assertEquals(ftpaCheckValues, ftpaApplication.getFtpaDecisionNotesPoints());
     }
 
-    @Test
-    void should_map_ftpa_decision_appellant_minimum_data() {
+    @ParameterizedTest
+    @ValueSource(booleans =  {true, false})
+    void should_map_ftpa_decision_appellant_minimum_data(boolean isMigration) {
         final FtpaApplications ftpaApplication = FtpaApplications.builder().ftpaApplicant("appellant").build();
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
                 .thenReturn(Optional.of("remadeRule32"));
         when(asylumCase.read(FTPA_APPELLANT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
-        when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
-                .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        if (isMigration) {
+            when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
+                    .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        } else {
+            when(asylumCase.read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class))
+                    .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
+        }
+
         when(asylumCase.read(FTPA_APPELLANT_NOTICE_DOCUMENT))
                 .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
         when(asylumCase.read(FTPA_APPELLANT_DECISION_OBJECTIONS, String.class))
@@ -344,12 +367,17 @@ class FtpaDisplayServiceTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_NOTES_POINTS))
                 .thenReturn(Optional.empty());
 
-        ftpaDisplayService.mapFtpaDecision(asylumCase, "APPELLANT", ftpaApplication);
+        ftpaDisplayService.mapFtpaDecision(isMigration, asylumCase, "APPELLANT", ftpaApplication);
 
         assertEquals(NO, ftpaApplication.getIsFtpaNoticeOfDecisionSetAside());
         assertEquals("Allowed", ftpaApplication.getFtpaDecisionRemadeRule32());
         assertEquals("remadeRule32", ftpaApplication.getFtpaDecisionOutcomeType());
-        assertEquals(maybeFtpaDecisionAndReasonsDocument, ftpaApplication.getFtpaDecisionDocument());
+
+        if (isMigration) {
+            assertEquals(maybeFtpaDecisionAndReasonsDocument, ftpaApplication.getFtpaLegacyDecisionDocument());
+        } else {
+            assertEquals(maybeFtpaApplicationDecisionAndReasonsDocument, ftpaApplication.getFtpaNewDecisionDocument());
+        }
         assertEquals(maybeFtpaDecisionNoticeDocument, ftpaApplication.getFtpaNoticeDocument());
         assertNull(ftpaApplication.getFtpaDecisionObjections());
         assertNull(ftpaApplication.getFtpaDecisionLstIns());

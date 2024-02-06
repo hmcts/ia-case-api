@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FINAL_DECISION_REMADE_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FIRST_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_LIST_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -253,12 +252,12 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                         .orElseThrow(() -> new IllegalStateException(ftpaApplicantType + " application is not present in FTPA list"))
                         .getValue();
 
-                ftpaDisplayService.mapFtpaDecision(asylumCase, ftpaApplicantType.toUpperCase(), ftpaApplication);
+                ftpaDisplayService.mapFtpaDecision(false, asylumCase, ftpaApplicantType.toUpperCase(), ftpaApplication);
 
                 asylumCase.write(FTPA_LIST, existingFtpaApplictions);
             }
 
-            asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
+            //asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
         }
     }
 }

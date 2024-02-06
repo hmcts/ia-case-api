@@ -174,7 +174,7 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
                     ftpaAppender.append(newFtpaApplication, maybeExistingFtpaApplictions.orElse(emptyList()));
 
             asylumCase.write(FTPA_LIST, allApplications);
-            asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
+            //asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

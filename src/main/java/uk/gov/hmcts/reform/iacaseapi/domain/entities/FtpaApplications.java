@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -27,7 +28,8 @@ public class FtpaApplications {
     private String ftpaApplicationDate;
     private String ftpaDecisionOutcomeType;
     private String ftpaDecisionRemadeRule32;
-    private List<IdValue<DocumentWithDescription>> ftpaDecisionDocument;
+    private List<IdValue<DocumentWithDescription>> ftpaLegacyDecisionDocument;
+    private Document ftpaNewDecisionDocument;
     private FtpaDecisionCheckValues<String> ftpaDecisionNotesPoints;
     private String ftpaDecisionNotesDescription;
     private String ftpaDecisionDate;

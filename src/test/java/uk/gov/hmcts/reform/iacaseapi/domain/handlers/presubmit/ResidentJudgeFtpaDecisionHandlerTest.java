@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -388,9 +389,9 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(ftpaDisplayService, times(1)).mapFtpaDecision(any(AsylumCase.class), anyString(), any(FtpaApplications.class));
+        verify(ftpaDisplayService, times(1)).mapFtpaDecision(anyBoolean(), any(AsylumCase.class), anyString(), any(FtpaApplications.class));
         verify(asylumCase, times(1)).write(FTPA_LIST, ftpaApplications);
-        verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
+        //verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
     }
 
     @Test

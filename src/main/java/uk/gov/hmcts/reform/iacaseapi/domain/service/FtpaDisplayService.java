@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -160,7 +161,7 @@ public class FtpaDisplayService {
 
     }
 
-    public void mapFtpaDecision(AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
+    public void mapFtpaDecision(boolean isMigration, AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
         ftpaApplication.setIsFtpaNoticeOfDecisionSetAside(asylumCase
                 .read(valueOf(String.format("IS_FTPA_%s_NOTICE_OF_DECISION_SET_ASIDE", ftpaApplicantType)), YesOrNo.class)
                 .orElse(YesOrNo.NO));
@@ -174,15 +175,14 @@ public class FtpaDisplayService {
                     .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32);
         }
 
-        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionAndReasonsDocument = asylumCase.read(
-                valueOf(String.format("FTPA_%s_DECISION_DOCUMENT", ftpaApplicantType)));
+        addFtpaDecisionAndReasons(isMigration, asylumCase, ftpaApplicantType, ftpaApplication);
+
         final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
                 valueOf(String.format("FTPA_%s_NOTICE_DOCUMENT", ftpaApplicantType)));
         final Optional<FtpaDecisionCheckValues<String>> maybeDecisionNotesPoints =
                 asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_NOTES_POINTS", ftpaApplicantType)));
 
         ftpaApplication.setFtpaDecisionOutcomeType(ftpaDecisionOutcomeType);
-        maybeFtpaDecisionAndReasonsDocument.ifPresent(ftpaApplication::setFtpaDecisionDocument);
         maybeFtpaDecisionNoticeDocument.ifPresent(ftpaApplication::setFtpaNoticeDocument);
         maybeDecisionNotesPoints.ifPresent(ftpaApplication::setFtpaDecisionNotesPoints);
 
@@ -195,6 +195,25 @@ public class FtpaDisplayService {
         asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType)), String.class)
                 .ifPresent(ftpaApplication::setFtpaDecisionDate);
 
+    }
+
+    private void addFtpaDecisionAndReasons(boolean isMigration, AsylumCase asylumCase,
+                                           String ftpaApplicantType, FtpaApplications ftpaApplication) {
+
+        if (isMigration) {
+            final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionAndReasonsDocument = asylumCase.read(
+                    valueOf(String.format("FTPA_%s_DECISION_DOCUMENT", ftpaApplicantType)));
+            maybeFtpaDecisionAndReasonsDocument.ifPresent(ftpaApplication::setFtpaLegacyDecisionDocument);
+        } else {
+            final Document ftpaDecisionDocument =
+                    asylumCase.read(
+                            valueOf(String.format("FTPA_APPLICATION_%s_DOCUMENT", ftpaApplicantType)), Document.class)
+                            .orElseThrow(
+                                    () -> new IllegalStateException(String.format("FTPA_APPLICATION_%s_DOCUMENT is not present",
+                                            ftpaApplicantType)));
+
+            ftpaApplication.setFtpaNewDecisionDocument(ftpaDecisionDocument);
+        }
     }
 
     protected void updateCaseFlags(AsylumCase asylumCase) {

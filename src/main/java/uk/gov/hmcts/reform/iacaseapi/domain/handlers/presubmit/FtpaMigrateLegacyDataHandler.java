@@ -155,7 +155,7 @@ public class FtpaMigrateLegacyDataHandler implements PreSubmitCallbackHandler<As
                         .ftpaApplicant(ftpaApplicantType)
                         .build();
 
-        ftpaDisplayService.mapFtpaDecision(asylumCaseBefore, ftpaApplicantUpperCase, newFtpaApplication);
+        ftpaDisplayService.mapFtpaDecision(true, asylumCaseBefore, ftpaApplicantUpperCase, newFtpaApplication);
 
         return ftpaAppender.append(newFtpaApplication, existingApplications);
     }

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
@@ -137,7 +138,7 @@ class FtpaMigrateLegacyDataHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(ftpaDisplayService, times(1)).mapFtpaDecision(any(AsylumCase.class), anyString(), any(FtpaApplications.class));
+        verify(ftpaDisplayService, times(1)).mapFtpaDecision(anyBoolean(), any(AsylumCase.class), anyString(), any(FtpaApplications.class));
         verify(asylumCase, times(1)).write(FTPA_LIST, ftpaApplications);
         assertEquals("2024-02-01", newFtpaApplication.getFtpaApplicationDate());
         assertEquals(groundsOfApplicationDocuments, newFtpaApplication.getFtpaGroundsDocuments());
@@ -175,7 +176,7 @@ class FtpaMigrateLegacyDataHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(ftpaDisplayService, times(0)).mapFtpaDecision(any(AsylumCase.class), anyString(), any(FtpaApplications.class));
+        verify(ftpaDisplayService, times(0)).mapFtpaDecision(anyBoolean(), any(AsylumCase.class), anyString(), any(FtpaApplications.class));
         verify(ftpaAppender, times(1))
                 .append(newFtpaCaptor.capture(), existingFtpasCaptor.capture());
         FtpaApplications capturedFtpa = newFtpaCaptor.getValue();
@@ -202,7 +203,7 @@ class FtpaMigrateLegacyDataHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(ftpaDisplayService, times(0)).mapFtpaDecision(any(AsylumCase.class), anyString(), any(FtpaApplications.class));
+        verify(ftpaDisplayService, times(0)).mapFtpaDecision(anyBoolean(), any(AsylumCase.class), anyString(), any(FtpaApplications.class));
         verify(ftpaAppender, times(2)).append(newFtpaCaptor.capture(), existingFtpasCaptor.capture());
         assertEquals(2, existingFtpasCaptor.getAllValues().size());
         verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
