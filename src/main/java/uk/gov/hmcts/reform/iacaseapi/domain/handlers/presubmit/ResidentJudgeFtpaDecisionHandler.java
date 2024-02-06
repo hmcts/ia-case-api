@@ -2,7 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FINAL_DECISION_REMADE_RULE_32;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FIRST_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_LIST_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -27,7 +32,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @Component
 public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -185,28 +193,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             currentDecision
         );
 
-        boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
-
-        if (isDlrmSetAside) {
-            Optional<List<IdValue<FtpaApplications>>> maybeExistingFtpaApplictions =
-                    asylumCase.read(FTPA_LIST);
-
-            List<IdValue<FtpaApplications>> existingFtpaApplictions = maybeExistingFtpaApplictions.orElse(emptyList());
-
-            if (!existingFtpaApplictions.isEmpty()) {
-                FtpaApplications ftpaApplication = existingFtpaApplictions.stream()
-                        .filter(ftpaApp -> ftpaApp.getValue().getFtpaApplicant().equals(ftpaApplicantType))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException(ftpaApplicantType + " application is not present in FTPA list"))
-                        .getValue();
-
-                ftpaDisplayService.mapFtpaDecision(asylumCase, ftpaApplicantUpperCase, ftpaApplication);
-
-                asylumCase.write(FTPA_LIST, existingFtpaApplictions);
-            }
-
-            asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
-        }
+        addToFtpaList(asylumCase, ftpaApplicantType);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -247,6 +234,31 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                         DocumentTag.FTPA_DECISION_AND_REASONS
                     )
             );
+        }
+    }
+
+    private void addToFtpaList(AsylumCase asylumCase, String ftpaApplicantType) {
+        boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
+
+        if (isDlrmSetAside) {
+            Optional<List<IdValue<FtpaApplications>>> maybeExistingFtpaApplictions =
+                    asylumCase.read(FTPA_LIST);
+
+            List<IdValue<FtpaApplications>> existingFtpaApplictions = maybeExistingFtpaApplictions.orElse(emptyList());
+
+            if (!existingFtpaApplictions.isEmpty()) {
+                FtpaApplications ftpaApplication = existingFtpaApplictions.stream()
+                        .filter(ftpaApp -> ftpaApp.getValue().getFtpaApplicant().equals(ftpaApplicantType))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException(ftpaApplicantType + " application is not present in FTPA list"))
+                        .getValue();
+
+                ftpaDisplayService.mapFtpaDecision(asylumCase, ftpaApplicantType.toUpperCase(), ftpaApplication);
+
+                asylumCase.write(FTPA_LIST, existingFtpaApplictions);
+            }
+
+            asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
         }
     }
 }

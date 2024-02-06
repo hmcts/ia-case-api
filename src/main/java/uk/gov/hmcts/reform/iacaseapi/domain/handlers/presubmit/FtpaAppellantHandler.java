@@ -157,6 +157,17 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
 
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
 
+        addToFtpaList(asylumCase, currentDate, ftpaAppellantGrounds, ftpaAppellantEvidence,
+                maybeOutOfTimeDocuments, ftpaAppellantOutOfTimeExplanation);
+
+        return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void addToFtpaList(AsylumCase asylumCase, String currentDate,
+                               List<IdValue<DocumentWithDescription>> ftpaAppellantGrounds,
+                               List<IdValue<DocumentWithDescription>> ftpaAppellantEvidence,
+                               Optional<List<IdValue<DocumentWithDescription>>> maybeOutOfTimeDocuments,
+                               String ftpaAppellantOutOfTimeExplanation) {
         boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
 
         if (isDlrmSetAside) {
@@ -182,7 +193,5 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
             asylumCase.write(FTPA_LIST, allApplications);
             asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
         }
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
