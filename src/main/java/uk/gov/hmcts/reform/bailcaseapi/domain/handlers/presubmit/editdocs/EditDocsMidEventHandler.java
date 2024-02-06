@@ -57,9 +57,7 @@ public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<BailCas
                         documentWithMetadataIdValue.getValue().getDocument();
                         documentWithMetadataIdValue.getValue().getDateUploaded();
                     } catch (NullPointerException npe) {
-                        bailCasePreSubmitCallbackResponse.addError("If you add a new document you must complete the "
-                                                                   + "fields related to that document, or remove it, "
-                                                                    + "before you can submit your changes.");
+                        bailCasePreSubmitCallbackResponse.addError("If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change.");
                         return bailCasePreSubmitCallbackResponse;
                     }
                 }
