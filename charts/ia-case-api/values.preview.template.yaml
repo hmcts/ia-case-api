@@ -5,7 +5,7 @@ java:
     POSTGRES_HOST: ${SERVICE_NAME}-postgresql
     POSTGRES_NAME: ia-case-api
     POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: hmcts
+    POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
@@ -65,14 +65,14 @@ java:
             CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
       username: hmcts
-      password: hmcts
+      password: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
 
 ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-payments-api:pr-270
+#    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-275
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -103,7 +103,7 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-586
+#    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-569
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     environment:
@@ -149,8 +149,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-799
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+#    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-826
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     environment:
@@ -342,7 +342,7 @@ ia-bail-case-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
-    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
+#    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-345
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     environment:
@@ -388,7 +388,7 @@ ia-timed-event-service:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
-    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
+#    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:
@@ -664,7 +664,7 @@ ccd:
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: hmcts
+        DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
@@ -794,7 +794,7 @@ em-stitching:
     environment:
       SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
       SPRING_DATASOURCE_USERNAME: hmcts
-      SPRING_DATASOURCE_PASSWORD: hmcts
+      SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_NAME: emstitch
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true

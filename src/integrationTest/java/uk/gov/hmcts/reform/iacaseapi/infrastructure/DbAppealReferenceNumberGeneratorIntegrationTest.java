@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -21,18 +20,19 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTe
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
-
-public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootIntegrationTest {
+class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootIntegrationTest {
 
     @MockBean
     private DateProvider dateProvider;
+
     @Autowired
     private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         deleteAnyTestAppealReferenceNumbers();
 
@@ -40,7 +40,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_start_from_offset_to_skip_any_live_cases_when_2019() {
+    void should_start_from_offset_to_skip_any_live_cases_when_2019() {
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 12, 31));
 
@@ -55,7 +55,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_generate_sequential_appeal_reference_number_for_protection_appeal() {
+    void should_generate_sequential_appeal_reference_number_for_protection_appeal() {
 
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
@@ -72,7 +72,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_generate_sequential_appeal_reference_number_for_revocation_appeal() {
+    void should_generate_sequential_appeal_reference_number_for_revocation_appeal() {
 
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.RP);
@@ -89,7 +89,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_use_distinct_number_range_for_each_appeal_type() {
+    void should_use_distinct_number_range_for_each_appeal_type() {
 
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
@@ -110,7 +110,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_always_return_same_appeal_reference_number_for_same_case() {
+    void should_always_return_same_appeal_reference_number_for_same_case() {
 
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
@@ -127,7 +127,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_reset_number_range_using_seed_for_new_years() {
+    void should_reset_number_range_using_seed_for_new_years() {
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2022, 12, 31));
 
@@ -150,7 +150,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_not_create_duplicate_appeal_reference_numbers_when_used_concurrently()
+    void should_not_create_duplicate_appeal_reference_numbers_when_used_concurrently()
         throws InterruptedException, ExecutionException {
 
         Set<String> appealReferenceNumbers =
@@ -170,7 +170,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_appeal_type() {
+    void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_appeal_type() {
 
         final String originalAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
@@ -183,7 +183,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootI
     }
 
     @Test
-    public void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_year() {
+    void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_year() {
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2018, 12, 31));
 
