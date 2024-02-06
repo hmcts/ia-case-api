@@ -1933,6 +1933,8 @@ public enum AsylumCaseFieldDefinition {
     STATE_OF_THE_APPEAL(
         "stateOfTheAppeal", new TypeReference<String>(){}),
 
+    LEGAL_PRACTICE_ADDRESS_EJP(
+        "legalPracticeAddressEjp", new TypeReference<AddressUk>(){}),
     ;
 
     private final String value;

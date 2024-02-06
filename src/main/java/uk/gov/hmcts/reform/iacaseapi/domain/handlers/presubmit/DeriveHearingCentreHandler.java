@@ -117,21 +117,23 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             }
         }
 
-        if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
-                .orElse(NO) == YES) {
+        Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
-            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
-
-            if (optionalAppellantAddress.isPresent()) {
-                AddressUk appellantAddress = optionalAppellantAddress.get();
-                return appellantAddress.getPostCode();
-            }
+        if (optionalAppellantAddress.isPresent()) {
+            AddressUk appellantAddress = optionalAppellantAddress.get();
+            return appellantAddress.getPostCode();
         }
 
         Optional<AddressUk> optionalLegalRepCompanyAddress =
                 asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class);
         if (optionalLegalRepCompanyAddress.isPresent()) {
             return optionalLegalRepCompanyAddress.get().getPostCode();
+        }
+
+        Optional<AddressUk> optionalEjpLegalPracticeAddress =
+            asylumCase.read(LEGAL_PRACTICE_ADDRESS_EJP, AddressUk.class);
+        if (optionalEjpLegalPracticeAddress.isPresent()) {
+            return optionalEjpLegalPracticeAddress.get().getPostCode();
         }
 
         return Optional.empty();
