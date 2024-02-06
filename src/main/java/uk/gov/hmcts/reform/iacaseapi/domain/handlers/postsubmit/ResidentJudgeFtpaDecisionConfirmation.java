@@ -2,16 +2,30 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    public static final String DLRM_SETASIDE_FEATURE_FLAG = "dlrm-setaside-feature-flag";
+    private final FeatureToggler featureToggler;
+
+    ResidentJudgeFtpaDecisionConfirmation(
+        FeatureToggler featureToggler
+    ){
+        this.featureToggler = featureToggler;
+
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -65,6 +79,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 );
                 break;
 
+            case "reheardRule32":
             case "reheardRule35":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
@@ -74,12 +89,21 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
             case "remadeRule31":
             case "remadeRule32":
-             case "remadeRule31":
-                postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
-                postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "A Judge will update the decision.<br>"
-                );
+                YesOrNo isDlrmSetAsideEnabled
+                    = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false) ? YES : NO;
+                if (isDlrmSetAsideEnabled.equals(YES)) {
+                    postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
+                    postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\n"
+                            + "A Judge will update the decision.<br>"
+                    );
+                } else {
+                    postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\n"
+                            + "Both parties have been notified of the decision.<br>"
+                    );
+                }
+
                 break;
 
             default:
