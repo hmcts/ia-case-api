@@ -22,7 +22,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
     ResidentJudgeFtpaDecisionConfirmation(
         FeatureToggler featureToggler
-    ){
+    ) {
         this.featureToggler = featureToggler;
 
     }
@@ -67,7 +67,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             case "partiallyGranted":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
-                    + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
+                        + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
@@ -75,7 +75,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             case "notAdmitted":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
-                    + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
+                        + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
@@ -83,7 +83,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             case "reheardRule35":
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
-                    + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
+                        + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
                 );
                 break;
 

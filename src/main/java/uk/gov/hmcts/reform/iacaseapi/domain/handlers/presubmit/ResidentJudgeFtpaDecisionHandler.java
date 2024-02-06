@@ -135,7 +135,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
         }
 
-        if (ftpaDecisionOutcomeType.equals("remadeRule31")|| ftpaDecisionOutcomeType.equals("remadeRule32") ) {
+        if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
 
             String ftpaNewDecisionOfAppeal = asylumCase.read(
                     valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType.toUpperCase())), String.class)
