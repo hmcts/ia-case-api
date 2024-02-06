@@ -1911,6 +1911,9 @@ public enum AsylumCaseFieldDefinition {
 
     JUDGE_EVIDENCE_FOR_COSTS_ORDER(
     "judgeEvidenceForCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
+
+    LEGAL_PRACTICE_ADDRESS_EJP(
+        "legalPracticeAddressEjp", new TypeReference<AddressUk>(){}),
     ;
 
     private final String value;
