@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -216,11 +217,14 @@ class HearingTypeHandlerTest {
         assertThat(hearingTypeResult.getValue()).isEqualTo(YesOrNo.NO);
     }
 
-    @Test
-    void should_set_hearing_type_no_fee_for_ejp_cases_start_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL"
+    })
+    void should_set_hearing_type_no_fee_for_ejp_cases(Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
             .thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
         when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
