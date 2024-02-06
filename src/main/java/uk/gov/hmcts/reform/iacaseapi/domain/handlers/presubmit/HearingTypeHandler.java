@@ -69,9 +69,10 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
             }
 
-            boolean isRpDcAda = appealTypeForDisplay != null
-                    && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
-                    || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
+            isRpDcAdaEjp = appealTypeForDisplay != null
+                                   && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
+                                       || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES
+                                       || sourceOfAppealEjp(asylumCase));
 
             Optional<YesOrNo> isAcceleratedDetainedAppeal =
                     asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
@@ -83,7 +84,7 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
             boolean isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
 
-            if (isRpDcAda && !isAgeAssessmentAppeal) {
+            if (isRpDcAdaEjp && !isAgeAssessmentAppeal) {
                 //No fee
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
