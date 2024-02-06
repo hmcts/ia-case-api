@@ -74,7 +74,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(NOT_ADMITTED, REFUSED), REFUSED)
         .put(new ImmutablePair<>(NOT_ADMITTED, NOT_ADMITTED), APPEAL_DECISION)
         .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_35), REHEARD_RULE_35)
-            .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_32), REHEARD_RULE_32)
         .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_32), REMADE_RULE_32)
 
