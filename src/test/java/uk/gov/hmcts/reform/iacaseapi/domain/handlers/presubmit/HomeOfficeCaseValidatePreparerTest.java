@@ -91,7 +91,7 @@ class HomeOfficeCaseValidatePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
@@ -154,7 +154,7 @@ class HomeOfficeCaseValidatePreparerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);

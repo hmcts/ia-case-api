@@ -62,10 +62,10 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        boolean aaaOrDetained = HandlerUtils.isAppellantInDetention(asylumCase)
+        boolean aaaOrEjpCase = HandlerUtils.isEjpCase(asylumCase)
             || HandlerUtils.isAgeAssessmentAppeal(asylumCase);
 
-        if ((callback.getEvent() == REQUEST_HOME_OFFICE_DATA) && aaaOrDetained) {
+        if ((callback.getEvent() == REQUEST_HOME_OFFICE_DATA) && aaaOrEjpCase) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
             response.addError("You cannot request Home Office data for this appeal");
 
@@ -88,7 +88,7 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             boolean homeOfficeUanFeatureEnabled = featureToggler.getValue("home-office-uan-feature", false);
 
             if (homeOfficeUanFeatureEnabled
-                && appealTypeEnabled && !aaaOrDetained) {
+                && appealTypeEnabled && !aaaOrEjpCase) {
                 asylumCase = homeOfficeApi.aboutToStart(callback);
             }
         } else {

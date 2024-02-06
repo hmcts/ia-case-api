@@ -154,7 +154,7 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
