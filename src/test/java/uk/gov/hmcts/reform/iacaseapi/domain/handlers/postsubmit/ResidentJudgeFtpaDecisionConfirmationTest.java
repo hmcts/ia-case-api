@@ -48,10 +48,11 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
 
 
     @BeforeEach
-    void setup(){
+    void setup() {
         residentJudgeFtpaDecisionConfirmation =
             new ResidentJudgeFtpaDecisionConfirmation(featureToggler);
     }
+
     @Test
     void should_return_grant_confirmation() {
 
