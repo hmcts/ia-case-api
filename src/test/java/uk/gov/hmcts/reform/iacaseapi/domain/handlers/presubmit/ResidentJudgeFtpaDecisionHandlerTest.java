@@ -332,8 +332,14 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_DECIDED, YES);
     }
 
-    @Test
-    void should_setup_appeal_field_on_remedy_rule_32() {
+    @ParameterizedTest
+    @CsvSource({
+        "remadeRule31",
+        "remadeRule32"
+    })
+    void should_setup_appeal_field_on_remedy_rule_31_and_32(
+        String decisionOutcomeType
+    ) {
 
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
@@ -348,7 +354,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS))
             .thenReturn(Optional.of(existingFtpaDecisionAndReasonsDocuments));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of("remadeRule32"));
+            .thenReturn(Optional.of(decisionOutcomeType));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
 
         when(documentReceiver.tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS))
