@@ -135,6 +135,7 @@ class SendNotificationHandlerTest {
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.UPDATE_PAYMENT_STATUS,
             Event.CREATE_CASE_LINK,
+            Event.DECIDE_FTPA_APPLICATION,
             Event.MAINTAIN_CASE_LINKS
         ).forEach(event -> {
 
@@ -287,6 +288,7 @@ class SendNotificationHandlerTest {
                         Event.END_APPEAL_AUTOMATICALLY,
                         Event.UPDATE_PAYMENT_STATUS,
                         Event.CREATE_CASE_LINK,
+                        Event.DECIDE_FTPA_APPLICATION,
                         Event.MAINTAIN_CASE_LINKS
                     ).contains(event)) {
 
