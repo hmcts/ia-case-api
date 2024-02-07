@@ -10,7 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
@@ -29,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -37,7 +35,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +49,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock
-    private IaHearingsApiService iaHearingsApiService;
+
     private RecordAdjournmentDetailsStateHandler recordAdjournmentDetailsStateHandler;
 
     private final String listCaseHearingDate = "4023-12-28T09:47:22.000";
@@ -66,8 +62,7 @@ class RecordAdjournmentDetailsStateHandlerTest {
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails().getState()).thenReturn(currentAppealState);
 
-        recordAdjournmentDetailsStateHandler =
-            new RecordAdjournmentDetailsStateHandler(iaHearingsApiService);
+        recordAdjournmentDetailsStateHandler = new RecordAdjournmentDetailsStateHandler();
     }
 
     @Test
@@ -118,17 +113,14 @@ class RecordAdjournmentDetailsStateHandlerTest {
 
     @Test
     void should_not_set_appeal_as_adjourned_when_relist_immediately() {
-        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
-            .thenReturn(Optional.of(HearingAdjournmentDay.BEFORE_HEARING_DATE));
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(YES));
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response = recordAdjournmentDetailsStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
-        assertThat(response.getState()).isEqualTo(LISTING);
+        assertThat(response.getState()).isEqualTo(currentAppealState);
     }
 
     @Test
@@ -200,17 +192,6 @@ class RecordAdjournmentDetailsStateHandlerTest {
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void should_call_hearings_api() {
-        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
-            .thenReturn(Optional.of(YES));
-
-        recordAdjournmentDetailsStateHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
     }
 
 }

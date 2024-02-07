@@ -1,31 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 
 @Component
-public class ListCaseWithoutHearingRequirementsConfirmation
-    implements AutoRequestHearingConfirmation, PostSubmitCallbackHandler<AsylumCase> {
+@RequiredArgsConstructor
+public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
-    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
 
-    public ListCaseWithoutHearingRequirementsConfirmation(LocationBasedFeatureToggler locationBasedFeatureToggler) {
-        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
-    }
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -43,35 +37,31 @@ public class ListCaseWithoutHearingRequirementsConfirmation
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean isAutoRequestHearing = autoRequestHearingService
+            .shouldAutoRequestHearing(asylumCase, !isPanelRequired(asylumCase));
 
-        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
-            boolean hearingRequestSuccessful = asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)
-                .map(manualCreateRequired -> NO == manualCreateRequired)
-                .orElse(false);
-
-            return buildAutoHearingRequestConfirmationResponse(
-                callback.getCaseDetails().getId(),
-                isPanelRequired(asylumCase),
-                hearingRequestSuccessful,
-                "List without requirements"
-            );
-        } else {
-            return buildConfirmationResponse();
-        }
+        return isAutoRequestHearing
+            ? autoRequestHearingService.buildAutoHearingRequestConfirmation(
+                asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
+            : buildConfirmationResponse(isPanelRequired(asylumCase));
     }
 
-    private PostSubmitCallbackResponse buildConfirmationResponse() {
+    private PostSubmitCallbackResponse buildConfirmationResponse(boolean panelRequired) {
 
-        PostSubmitCallbackResponse postSubmitResponse =
-            new PostSubmitCallbackResponse();
+        PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
+        if (panelRequired) {
+            response.setConfirmationHeader("# List without requirements complete");
+            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
+                                     + "The listing team will now list the case. All parties will be notified when "
+                                     + "the Hearing Notice is available to view");
+        } else {
+            response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
+            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
+                + "The listing team will now list the case."
+                + " All parties will be notified when the Hearing Notice is available to view.<br><br>"
+            );
+        }
 
-        postSubmitResponse.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
-        postSubmitResponse.setConfirmationBody(
-            WHAT_HAPPENS_NEXT_LABEL
-            + "The listing team will now list the case."
-            + " All parties will be notified when the Hearing Notice is available to view.<br><br>"
-        );
-
-        return postSubmitResponse;
+        return response;
     }
 }

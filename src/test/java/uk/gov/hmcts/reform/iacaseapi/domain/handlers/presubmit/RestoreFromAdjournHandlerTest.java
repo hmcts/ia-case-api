@@ -1,17 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +30,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
-@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
-class DecisionAndReasonsStartedSubStateProgressionTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+class RestoreFromAdjournHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -41,69 +42,58 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
     private AsylumCase asylumCase;
     @Mock
     private AutoRequestHearingService autoRequestHearingService;
-
-    private DecisionAndReasonsStartedSubStateProgression decisionAndReasonsStartSubStateProgression;
+    private RestoreFromAdjournHandler restoreFromAdjournHandler;
 
     @BeforeEach
     public void setUp() {
-        decisionAndReasonsStartSubStateProgression =
-            new DecisionAndReasonsStartedSubStateProgression(autoRequestHearingService);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RESTORE_STATE_FROM_ADJOURN);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        restoreFromAdjournHandler = new RestoreFromAdjournHandler(autoRequestHearingService);
     }
 
     @Test
-    void should_handle() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    void should_auto_request_hearing() {
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(true);
         when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            restoreFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertNotNull(returnedCallbackResponse);
+
         verify(autoRequestHearingService, times(1)).autoCreateHearing(callback);
-        verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
+
     }
 
     @Test
     void should_not_auto_request_hearing() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(false);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            restoreFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertNotNull(returnedCallbackResponse);
+
         verify(autoRequestHearingService, never()).autoCreateHearing(callback);
-        verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
+
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(
-            () -> decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
-
-        when(callback.getEvent()).thenReturn(Event.GENERATE_DECISION_AND_REASONS);
-        assertThatThrownBy(
-            () -> decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> restoreFromAdjournHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
@@ -112,9 +102,9 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = decisionAndReasonsStartSubStateProgression.canHandle(callbackStage, callback);
+                boolean canHandle = restoreFromAdjournHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.DECISION_AND_REASONS_STARTED)
+                if (event == Event.RESTORE_STATE_FROM_ADJOURN
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -125,5 +115,26 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void should_not_allow_null_arguments() {
+
+        assertThatThrownBy(() -> restoreFromAdjournHandler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> restoreFromAdjournHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> restoreFromAdjournHandler.handle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(
+            () -> restoreFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

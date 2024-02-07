@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -152,5 +155,33 @@ public class HandlerUtils {
     public static boolean isPanelRequired(AsylumCase asylumCase) {
         return asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)
             .map(yesOrNo -> YES == yesOrNo).orElse(false);
+    }
+
+    public static boolean isIntegrated(AsylumCase asylumCase) {
+        return asylumCase.read(IS_INTEGRATED, YesOrNo.class)
+            .map(integrated -> YES == integrated).orElse(false);
+    }
+
+    public static boolean relistCaseImmediately(AsylumCase asylumCase, boolean required) {
+        Optional<YesOrNo> relistOptional = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class);
+        if (relistOptional.isPresent() || !required) {
+            return relistOptional.map(relist -> YES == relist).orElse(false);
+        } else {
+            throw new IllegalStateException("Response to relist case immediately is not present");
+        }
+    }
+
+    public static boolean adjournedBeforeHearingDay(AsylumCase asylumCase) {
+        return asylumCase
+            .read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+            .map(adjournedDay -> BEFORE_HEARING_DATE == adjournedDay)
+            .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
+    }
+
+    public static boolean adjournedOnHearingDay(AsylumCase asylumCase) {
+        return asylumCase
+            .read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+            .map(adjournedDay -> ON_HEARING_DATE == adjournedDay)
+            .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
     }
 }

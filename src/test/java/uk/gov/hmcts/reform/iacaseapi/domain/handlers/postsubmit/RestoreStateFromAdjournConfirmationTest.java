@@ -7,9 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_PANEL_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESTORE_STATE_FROM_ADJOURN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -31,9 +30,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ListCaseWithoutHearingRequirementsConfirmationTest {
+@SuppressWarnings("unchecked")
+class RestoreStateFromAdjournConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -44,24 +43,24 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
     @Mock
     private AutoRequestHearingService autoRequestHearingService;
 
-    private ListCaseWithoutHearingRequirementsConfirmation handler;
+    private RestoreStateFromAdjournConfirmation handler;
     private final long caseId = 1L;
     private PostSubmitCallbackResponse expectedResponse = new PostSubmitCallbackResponse();
 
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
-        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true)).thenReturn(true);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(RESTORE_STATE_FROM_ADJOURN);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(true);
 
         handler =
-            new ListCaseWithoutHearingRequirementsConfirmation(autoRequestHearingService);
+            new RestoreStateFromAdjournConfirmation(autoRequestHearingService);
     }
 
     @Test
-    void should_return_successful_confirmation_when_for_auto_request_hearing() {
+    void should_return_successful_confirmation() {
         String header = "# Hearing listed";
         expectedResponse.setConfirmationHeader(header);
         expectedResponse.setConfirmationBody("""
@@ -84,30 +83,7 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_when_panel_required() {
-        String header = "# List without requirements complete";
-        expectedResponse.setConfirmationHeader(header);
-        expectedResponse.setConfirmationBody("""
-            #### What happens next
-
-            The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view""");
-
-        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false)).thenReturn(false);
-
-        PostSubmitCallbackResponse callbackResponse =
-            handler.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
-        assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
-    }
-
-    @Test
-    void should_return_failed_confirmation_for_auto_request_hearing() {
+    void should_return_failed_confirmation() {
         expectedResponse.setConfirmationBody("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
                                  + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
                                  + "\n\n"
@@ -121,41 +97,19 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
         when(autoRequestHearingService.buildAutoHearingRequestConfirmation(asylumCase, header, caseId))
             .thenReturn(expectedResponse);
 
-        PostSubmitCallbackResponse callbackResponse =
-            handler.handle(callback);
+        PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
         assertEquals(expectedResponse.getConfirmationHeader().get(), callbackResponse.getConfirmationHeader().get());
-    }
-
-    @Test
-    void should_return_confirmation_when_panel_not_required() {
-        final String header = "# You've recorded the agreed hearing adjustments";
-        final String body = "#### What happens next\n\n"
-                                 + "The listing team will now list the case."
-                                 + " All parties will be notified when the Hearing Notice is available to view.<br><br>";
-
-        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true)).thenReturn(false);
-
-        PostSubmitCallbackResponse callbackResponse =
-            handler.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertEquals(header, callbackResponse.getConfirmationHeader().get());
-        assertEquals(body, callbackResponse.getConfirmationBody().get());
+        assertEquals(expectedResponse.getConfirmationBody().get(), callbackResponse.getConfirmationBody().get());
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         assertThatThrownBy(() -> handler.handle(callback))
@@ -172,8 +126,7 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
 
             boolean canHandle = handler.canHandle(callback);
 
-            if (event == LIST_CASE_WITHOUT_HEARING_REQUIREMENTS) {
-
+            if (event == RESTORE_STATE_FROM_ADJOURN) {
                 assertTrue(canHandle);
             } else {
                 assertFalse(canHandle);

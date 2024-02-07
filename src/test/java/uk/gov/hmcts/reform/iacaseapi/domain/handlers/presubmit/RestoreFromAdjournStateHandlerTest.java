@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -22,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -29,11 +32,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
 
 @ExtendWith(MockitoExtension.class)
-class RestoreStateFromAdjournHandlerTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+class RestoreFromAdjournStateHandlerTest {
 
     private final String listCaseHearingDate = "05/05/2020";
     @Mock
@@ -44,16 +46,10 @@ class RestoreStateFromAdjournHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    private RestoreStateFromAdjournHandler restoreStateFromAdjournHandler;
+    private RestoreFromAdjournStateHandler restoreFromAdjournStateHandler;
 
     @BeforeEach
     public void setUp() {
-        restoreStateFromAdjournHandler = new RestoreStateFromAdjournHandler();
-    }
-
-    @Test
-    void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESTORE_STATE_FROM_ADJOURN);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -62,14 +58,20 @@ class RestoreStateFromAdjournHandlerTest {
         when(asylumCase.read(DATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
             .thenReturn(Optional.of(listCaseHearingDate));
 
+        restoreFromAdjournStateHandler = new RestoreFromAdjournStateHandler();
+    }
+
+    @Test
+    void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
+
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            restoreFromAdjournStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PREPARE_FOR_HEARING);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YES);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_DATE, listCaseHearingDate);
         verify(asylumCase, times(1)).clear(DATE_BEFORE_ADJOURN_WITHOUT_DATE);
         verify(asylumCase, times(1)).clear(STATE_BEFORE_ADJOURN_WITHOUT_DATE);
@@ -79,7 +81,7 @@ class RestoreStateFromAdjournHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> restoreStateFromAdjournHandler
+        assertThatThrownBy(() -> restoreFromAdjournStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -95,7 +97,7 @@ class RestoreStateFromAdjournHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = restoreStateFromAdjournHandler.canHandle(callbackStage, callback);
+                boolean canHandle = restoreFromAdjournStateHandler.canHandle(callbackStage, callback);
 
                 if (event == Event.RESTORE_STATE_FROM_ADJOURN
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
@@ -113,20 +115,20 @@ class RestoreStateFromAdjournHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> restoreStateFromAdjournHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> restoreFromAdjournStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> restoreStateFromAdjournHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> restoreFromAdjournStateHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> restoreStateFromAdjournHandler.handle(null, callback, callbackResponse))
+        assertThatThrownBy(() -> restoreFromAdjournStateHandler.handle(null, callback, callbackResponse))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
+            () -> restoreFromAdjournStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

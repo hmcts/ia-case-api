@@ -105,7 +105,7 @@ class DecideAnApplicationConfirmationTest {
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
         when(asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class))
             .thenReturn(Optional.of(ReasonForLinkAppealOptions.BAIL));
-        when(asylumCase.read(IS_INTEGRATED)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
 
@@ -186,7 +186,7 @@ class DecideAnApplicationConfirmationTest {
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
         when(asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class))
             .thenReturn(Optional.of(ReasonForLinkAppealOptions.BAIL));
-        when(asylumCase.read(IS_INTEGRATED)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
 

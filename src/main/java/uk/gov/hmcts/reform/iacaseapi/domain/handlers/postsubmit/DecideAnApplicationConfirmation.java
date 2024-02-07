@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.getTypeFrom;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
@@ -9,19 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.getTypeFrom;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Component
 public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
@@ -76,7 +74,7 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
     }
 
     private static String getGrantedConfirmationBody(String applicationType, AsylumCase asylumCase, long caseId) {
-        boolean isListAssisted = asylumCase.read(IS_INTEGRATED).map(yesOrNo -> yesOrNo.equals(YES)).orElse(false);
+        boolean isListAssisted = HandlerUtils.isIntegrated(asylumCase);
 
         String body = getTypeFrom(applicationType).map(type -> switch (type) {
             case LINK_OR_UNLINK -> {

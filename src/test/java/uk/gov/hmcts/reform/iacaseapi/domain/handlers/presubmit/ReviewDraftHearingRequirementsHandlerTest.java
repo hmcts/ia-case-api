@@ -19,13 +19,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -38,9 +34,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -57,9 +52,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Mock
     private FeatureToggler featureToggler;
     @Mock
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
-    @Mock
-    private IaHearingsApiService iaHearingsApiService;
+    private AutoRequestHearingService autoRequestHearingService;
 
     private ReviewDraftHearingRequirementsHandler reviewDraftHearingRequirementsHandler;
 
@@ -71,7 +64,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
 
         reviewDraftHearingRequirementsHandler =
             new ReviewDraftHearingRequirementsHandler(
-                featureToggler, locationBasedFeatureToggler, iaHearingsApiService);
+                featureToggler, autoRequestHearingService);
     }
 
     @Test
@@ -94,8 +87,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }
@@ -106,19 +98,17 @@ class ReviewDraftHearingRequirementsHandlerTest {
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(NO));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }
 
     @Test
-    void should_not_set_list_case_hearing_length_visible_field_fwhen_feature_flag_disabled() {
+    void should_not_set_list_case_hearing_length_visible_field_when_feature_flag_disabled() {
 
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }
@@ -150,68 +140,55 @@ class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    void should_call_ia_hearings_api_successfully_if_panel_not_required() {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+    void should_auto_request_hearing_when_autoRequest_is_yes() {
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(true);
+        when(autoRequestHearingService.autoCreateHearing(callback))
+            .thenReturn(asylumCase);
 
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-    }
-
-    static Stream<Arguments> autoRequestHearing() {
-        return Stream.of(
-            Arguments.of(Optional.of(YES)),
-            Arguments.of(Optional.empty()),
-            Arguments.of(Optional.of(NO))
-            );
-    }
-
-    @ParameterizedTest
-    @MethodSource("autoRequestHearing")
-    void should_call_ia_hearings_api_successfully_if_autoRequestHearing_is_not_no(Optional<YesOrNo> autoRequest) {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
-        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(autoRequest);
-        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
-
-        reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        if (autoRequest.equals(Optional.of(YES)) || autoRequest.isEmpty()) {
-            verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-        } else {
-            verify(iaHearingsApiService, never()).aboutToSubmit(callback);
-        }
+        verify(autoRequestHearingService, times(1))
+            .autoCreateHearing(callback);
     }
 
     @Test
-    void should_not_call_ia_hearings_api_if_panel_required() {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
-        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+    void should_auto_request_hearing_when_autoRequest_is_not_set() {
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(true);
+        when(autoRequestHearingService.autoCreateHearing(callback))
+            .thenReturn(asylumCase);
 
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
+        verify(autoRequestHearingService, times(1))
+            .autoCreateHearing(callback);
     }
 
     @Test
-    void should_not_call_ia_hearings_api_if_auto_request_not_enabled() {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(NO);
-        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
+    void should_not_auto_request_hearing_when_auto_request_is_no() {
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false))
+            .thenReturn(false);
 
         reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
+        verify(autoRequestHearingService, never())
+            .autoCreateHearing(callback);
+    }
+
+    @Test
+    void should_not_auto_request_hearing_when_panel_is_required() {
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false))
+            .thenReturn(false);
+
+        reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(autoRequestHearingService, never())
+            .autoCreateHearing(callback);
     }
 
     @Test

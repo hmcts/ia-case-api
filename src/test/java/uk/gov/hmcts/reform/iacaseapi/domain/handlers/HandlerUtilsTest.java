@@ -6,8 +6,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
@@ -174,5 +181,48 @@ class HandlerUtilsTest {
         when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
         assertEquals(yesOrNo == YES, isPanelRequired(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void isIntegrated_should_work_as_expected(YesOrNo integrated) {
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(integrated));
+
+        assertEquals(integrated == YES, isIntegrated(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void relistCaseImmediately_should_work_as_expected(YesOrNo relist) {
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(relist));
+
+        assertEquals(relist == YES, relistCaseImmediately(asylumCase, false));
+    }
+
+    @Test
+    void relistCaseImmediately_should_throw_exception() {
+
+        assertThatThrownBy(() -> relistCaseImmediately(asylumCase, true))
+            .hasMessage("Response to relist case immediately is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE","BEFORE_HEARING_DATE"})
+    void adjournBeforeHearingDay_should_work_as_expected(HearingAdjournmentDay adjournmentDay) {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(adjournmentDay));
+
+        assertEquals(adjournmentDay == BEFORE_HEARING_DATE, adjournedBeforeHearingDay(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE","BEFORE_HEARING_DATE"})
+    void adjournOnHearingDay_should_work_as_expected(HearingAdjournmentDay adjournmentDay) {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(adjournmentDay));
+
+        assertEquals(adjournmentDay == ON_HEARING_DATE, adjournedOnHearingDay(asylumCase));
     }
 }
