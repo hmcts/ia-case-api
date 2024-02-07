@@ -211,7 +211,7 @@ class FtpaMigrateLegacyDataHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "APPLY_FOR_FTPA_APPELLANT", "APPLY_FOR_FTPA_RESPONDENT", "RESIDENT_JUDGE_FTPA_DECISION"
+        "APPLY_FOR_FTPA_APPELLANT", "APPLY_FOR_FTPA_RESPONDENT", "DECIDE_FTPA_APPLICATION"
     })
     void should_not_write_ftpa_list_if_list_exist(Event event) {
 
@@ -242,7 +242,7 @@ class FtpaMigrateLegacyDataHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "APPLY_FOR_FTPA_APPELLANT", "APPLY_FOR_FTPA_RESPONDENT", "RESIDENT_JUDGE_FTPA_DECISION"
+        "APPLY_FOR_FTPA_APPELLANT", "APPLY_FOR_FTPA_RESPONDENT", "DECIDE_FTPA_APPLICATION"
     })
     void cannot_handle_if_feature_flag_disabled(Event event) {
 
@@ -296,7 +296,7 @@ class FtpaMigrateLegacyDataHandlerTest {
                 if (Arrays.asList(
                         Event.APPLY_FOR_FTPA_APPELLANT,
                         Event.APPLY_FOR_FTPA_RESPONDENT,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION)
+                        Event.DECIDE_FTPA_APPLICATION)
                         .contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
@@ -323,7 +323,7 @@ class FtpaMigrateLegacyDataHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "APPLY_FOR_FTPA_APPELLANT", "APPLY_FOR_FTPA_RESPONDENT", "RESIDENT_JUDGE_FTPA_DECISION"
+        "APPLY_FOR_FTPA_APPELLANT", "APPLY_FOR_FTPA_RESPONDENT", "DECIDE_FTPA_APPLICATION"
     })
     void should_throw_exception_if_previous_case_data_not_found(Event event) {
 

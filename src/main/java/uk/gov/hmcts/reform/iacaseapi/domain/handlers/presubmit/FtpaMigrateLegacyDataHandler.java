@@ -58,7 +58,7 @@ public class FtpaMigrateLegacyDataHandler implements PreSubmitCallbackHandler<As
                 && Arrays.asList(
                 Event.APPLY_FOR_FTPA_APPELLANT,
                 Event.APPLY_FOR_FTPA_RESPONDENT,
-                Event.RESIDENT_JUDGE_FTPA_DECISION
+                Event.DECIDE_FTPA_APPLICATION
         ).contains(callback.getEvent());
     }
 
