@@ -12,8 +12,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.DLRM_SETASIDE_FEATURE_FLAG;
 
 import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -37,9 +41,17 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
 
-    private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation =
-        new ResidentJudgeFtpaDecisionConfirmation();
+    private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation;
+
+
+    @BeforeEach
+    void setup() {
+        residentJudgeFtpaDecisionConfirmation =
+            new ResidentJudgeFtpaDecisionConfirmation(featureToggler);
+    }
 
     @Test
     void should_return_grant_confirmation() {
@@ -264,6 +276,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("remadeRule32"));
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(false);
+
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -279,6 +293,37 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Both parties have been notified of the decision.<br>");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
+    }
+
+    @Test
+    void should_return_remadeRule32_confirmation_dlrm() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
+            .thenReturn(Optional.of("remadeRule32"));
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
+
+        PostSubmitCallbackResponse callbackResponse =
+            residentJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You've disposed of the application");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("A Judge will update the decision.<br>");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

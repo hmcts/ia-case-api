@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECOND_FTPA_DECISION_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.google.common.collect.ImmutableMap;
@@ -20,7 +21,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -35,7 +40,9 @@ public class FtpaDisplayService {
     private static final String REFUSED = "refused";
     private static final String NOT_ADMITTED = "notAdmitted";
     private static final String REHEARD_RULE_35 = "reheardRule35";
+
     private static final String REHEARD_RULE_32 = "reheardRule32";
+    private static final String REMADE_RULE_31 = "remadeRule31";
     private static final String REMADE_RULE_32 = "remadeRule32";
     private static final String APPEAL_DECISION = "appealDecision";
 
@@ -46,6 +53,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(GRANTED, NOT_ADMITTED), GRANTED)
         .put(new ImmutablePair<>(GRANTED, REHEARD_RULE_35), GRANTED)
         .put(new ImmutablePair<>(GRANTED, REHEARD_RULE_32), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, REMADE_RULE_31), GRANTED)
         .put(new ImmutablePair<>(GRANTED, REMADE_RULE_32), GRANTED)
 
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, GRANTED), GRANTED)
@@ -54,6 +62,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, NOT_ADMITTED), GRANTED)
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, REHEARD_RULE_35), GRANTED)
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, REHEARD_RULE_32), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, REMADE_RULE_31), GRANTED)
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, REMADE_RULE_32), GRANTED)
 
         .put(new ImmutablePair<>(REFUSED, GRANTED), GRANTED)
@@ -62,6 +71,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REFUSED, NOT_ADMITTED), NOT_ADMITTED)
         .put(new ImmutablePair<>(REFUSED, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REFUSED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REFUSED, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REFUSED, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(NOT_ADMITTED, GRANTED), GRANTED)
@@ -70,6 +80,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(NOT_ADMITTED, NOT_ADMITTED), APPEAL_DECISION)
         .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(REHEARD_RULE_35, GRANTED), GRANTED)
@@ -78,6 +89,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REHEARD_RULE_35, NOT_ADMITTED), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REHEARD_RULE_35, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REHEARD_RULE_35, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REHEARD_RULE_35, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(REHEARD_RULE_32, GRANTED), GRANTED)
@@ -86,7 +98,17 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REHEARD_RULE_32, NOT_ADMITTED), REHEARD_RULE_32)
         .put(new ImmutablePair<>(REHEARD_RULE_32, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REHEARD_RULE_32, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REHEARD_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
+
+        .put(new ImmutablePair<>(REMADE_RULE_31, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REMADE_RULE_31, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REFUSED), REMADE_RULE_31)
+        .put(new ImmutablePair<>(REMADE_RULE_31, NOT_ADMITTED), REMADE_RULE_31)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REMADE_RULE_31), REMADE_RULE_31)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(REMADE_RULE_32, GRANTED), GRANTED)
         .put(new ImmutablePair<>(REMADE_RULE_32, PARTIALLY_GRANTED), GRANTED)
@@ -94,6 +116,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REMADE_RULE_32, NOT_ADMITTED), REMADE_RULE_32)
         .put(new ImmutablePair<>(REMADE_RULE_32, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REMADE_RULE_32, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_32, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REMADE_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
         .build();
 
@@ -154,6 +177,61 @@ public class FtpaDisplayService {
         }
 
 
+    }
+
+    public void mapFtpaDecision(boolean isMigration, AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
+        ftpaApplication.setIsFtpaNoticeOfDecisionSetAside(asylumCase
+                .read(valueOf(String.format("IS_FTPA_%s_NOTICE_OF_DECISION_SET_ASIDE", ftpaApplicantType)), YesOrNo.class)
+                .orElse(YesOrNo.NO));
+
+        String ftpaDecisionOutcomeType = asylumCase.read(
+                        valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType)), String.class)
+                .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
+
+        if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
+            asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType)), String.class)
+                    .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32);
+        }
+
+        addFtpaDecisionAndReasons(isMigration, asylumCase, ftpaApplicantType, ftpaApplication);
+
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
+                valueOf(String.format("FTPA_%s_NOTICE_DOCUMENT", ftpaApplicantType)));
+        final Optional<FtpaDecisionCheckValues<String>> maybeDecisionNotesPoints =
+                asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_NOTES_POINTS", ftpaApplicantType)));
+
+        ftpaApplication.setFtpaDecisionOutcomeType(ftpaDecisionOutcomeType);
+        maybeFtpaDecisionNoticeDocument.ifPresent(ftpaApplication::setFtpaNoticeDocument);
+        maybeDecisionNotesPoints.ifPresent(ftpaApplication::setFtpaDecisionNotesPoints);
+
+        asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_OBJECTIONS", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionObjections);
+        asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_LST_INS", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionLstIns);
+        asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_NOTES_DESCRIPTION", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionNotesDescription);
+        asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionDate);
+
+    }
+
+    private void addFtpaDecisionAndReasons(boolean isMigration, AsylumCase asylumCase,
+                                           String ftpaApplicantType, FtpaApplications ftpaApplication) {
+
+        if (isMigration) {
+            final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionAndReasonsDocument = asylumCase.read(
+                    valueOf(String.format("FTPA_%s_DECISION_DOCUMENT", ftpaApplicantType)));
+            maybeFtpaDecisionAndReasonsDocument.ifPresent(ftpaApplication::setFtpaLegacyDecisionDocument);
+        } else {
+            final Document ftpaDecisionDocument =
+                    asylumCase.read(
+                            valueOf(String.format("FTPA_APPLICATION_%s_DOCUMENT", ftpaApplicantType)), Document.class)
+                            .orElseThrow(
+                                    () -> new IllegalStateException(String.format("FTPA_APPLICATION_%s_DOCUMENT is not present",
+                                            ftpaApplicantType)));
+
+            ftpaApplication.setFtpaNewDecisionDocument(ftpaDecisionDocument);
+        }
     }
 
     protected void updateCaseFlags(AsylumCase asylumCase) {

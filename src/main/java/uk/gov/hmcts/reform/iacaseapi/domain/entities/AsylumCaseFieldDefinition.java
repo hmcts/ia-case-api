@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -1590,7 +1588,37 @@ public enum AsylumCaseFieldDefinition {
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
 
     S94B_STATUS(
-        "s94bStatus", new TypeReference<YesOrNo>(){});
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_DECISION_OBJECTIONS(
+            "ftpaAppellantDecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_OBJECTIONS(
+            "ftpaRespondentDecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_LST_INS(
+            "ftpaAppellantDecisionLstIns", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_LST_INS(
+            "ftpaRespondentDecisionLstIns", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_NOTES_POINTS(
+            "ftpaAppellantRjDecisionNotesPoints", new TypeReference<FtpaDecisionCheckValues<String>>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_NOTES_POINTS(
+            "ftpaRespondentRjDecisionNotesPoints", new TypeReference<FtpaDecisionCheckValues<String>>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_NOTES_DESCRIPTION(
+            "ftpaAppellantRjDecisionNotesDescription", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION(
+            "ftpaRespondentRjDecisionNotesDescription", new TypeReference<String>(){}),
+
+    FTPA_LIST(
+            "ftpaList", new TypeReference<List<IdValue<FtpaApplications>>>(){}),
+
+    IS_FTPA_LIST_VISIBLE(
+            "isFtpaListVisible", new TypeReference<YesOrNo>(){}),;
 
     private final String value;
     private final TypeReference typeReference;
