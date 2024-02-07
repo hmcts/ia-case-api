@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2527 Decide FT{A application appellant",
+  "description": "RIA-2527 Decide FTPA application appellant",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -29,7 +29,7 @@
               }
             }
           ],
-          "ftpaAppellantNoticeDocument": [
+          "ftpaApplicationApellantDocument": [
             {
               "id": "2",
               "value": {

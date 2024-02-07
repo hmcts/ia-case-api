@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecideFtpaApplicationOutcomeType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaResidentJudgeDecisionOutcomeType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -61,8 +61,8 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
 
         if (!HandlerUtils.isRepJourney(asylumCase) && ftpaRjDecisionOutcomeType.isPresent()) {
             String ftpaRjDecisionOutcomeTypeValue = ftpaRjDecisionOutcomeType.get();
-            if (ftpaRjDecisionOutcomeTypeValue.equals(DecideFtpaApplicationOutcomeType.REHEARD_RULE35.toString())
-                || ftpaRjDecisionOutcomeTypeValue.equals(DecideFtpaApplicationOutcomeType.REMADE_RULE32.toString())) {
+            if (ftpaRjDecisionOutcomeTypeValue.equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())
+                || ftpaRjDecisionOutcomeTypeValue.equals(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString())) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                 response.addError("For Legal Representative Journey Only");
                 return response;
@@ -109,13 +109,13 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
 
     private void setDecisionListingVisibility(AsylumCase asylumCase, String ftpaAppellantRjDecisionOutcomeType, String ftpaRespondentRjDecisionOutcomeType) {
 
-        if (ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.REHEARD_RULE35.toString())) {
+        if (ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())) {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_LISTING_VISIBLE, YesOrNo.YES);
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_LISTING_VISIBLE, YesOrNo.NO);
         }
 
-        if (ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.REHEARD_RULE35.toString())) {
+        if (ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())) {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_LISTING_VISIBLE, YesOrNo.YES);
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_LISTING_VISIBLE, YesOrNo.NO);
@@ -124,16 +124,16 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
 
     private void setDecisionReasonsNotesVisibility(AsylumCase asylumCase, String ftpaAppellantRjDecisionOutcomeType, String ftpaRespondentRjDecisionOutcomeType) {
 
-        if (ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.GRANTED.toString())
-            || ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString())) {
+        if (ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString())
+            || ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString())) {
 
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REASONS_NOTES_VISIBLE, YesOrNo.YES);
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REASONS_NOTES_VISIBLE, YesOrNo.NO);
         }
 
-        if (ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.GRANTED.toString())
-            || ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString())) {
+        if (ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString())
+            || ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString())) {
 
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REASONS_NOTES_VISIBLE, YesOrNo.YES);
         } else {
@@ -147,20 +147,20 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
         final String ftpaRespondentRjDecisionOutcomeType
     ) {
 
-        if (ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.GRANTED.toString())
-            || ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString())
-            || ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.REFUSED.toString())
-            || ftpaAppellantRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.APPLICATION_NOT_ADMITTED.toString())) {
+        if (ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString())
+            || ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString())
+            || ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.REFUSED.toString())
+            || ftpaAppellantRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.APPLICATION_NOT_ADMITTED.toString())) {
 
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.YES);
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.NO);
         }
 
-        if (ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.GRANTED.toString())
-            || ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.PARTIALLY_GRANTED.toString())
-            || ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.REFUSED.toString())
-            || ftpaRespondentRjDecisionOutcomeType.equals(DecideFtpaApplicationOutcomeType.APPLICATION_NOT_ADMITTED.toString())) {
+        if (ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.GRANTED.toString())
+            || ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.PARTIALLY_GRANTED.toString())
+            || ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.REFUSED.toString())
+            || ftpaRespondentRjDecisionOutcomeType.equals(FtpaResidentJudgeDecisionOutcomeType.APPLICATION_NOT_ADMITTED.toString())) {
 
             asylumCase.write(AsylumCaseFieldDefinition.FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.YES);
         } else {
