@@ -100,6 +100,24 @@ class HomeOfficeCaseValidatePreparerTest {
         assertThat(response.getErrors()).contains("You cannot request Home Office data for this appeal");
     }
 
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "AG" })
+    void handle_should_return_error_for_ejp_appeals(AppealType appealType) {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for this appeal");
+    }
+
     @Test
     void handle_should_return_error_for_aaa_appeals() {
 
@@ -174,6 +192,22 @@ class HomeOfficeCaseValidatePreparerTest {
                     IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             }
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void handler_should_not_invoke_homeoffice_api_for_ejp(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        verify(homeOfficeApi, times(0)).aboutToStart(callback);
     }
 
     @ParameterizedTest

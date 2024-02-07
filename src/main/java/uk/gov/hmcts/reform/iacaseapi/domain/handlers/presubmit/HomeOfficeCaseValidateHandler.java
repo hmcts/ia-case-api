@@ -83,7 +83,9 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
 
-            if (HandlerUtils.isAppellantInDetention(asylumCase) || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
+            if (HandlerUtils.isAppellantInDetention(asylumCase)
+                || HandlerUtils.isEjpCase(asylumCase)
+                || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
@@ -145,7 +147,6 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(APPELLANT_NATIONALITIES_DESCRIPTION, nationalitiesForDisplay.toString());
             asylumCase.write(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE,
                 featureToggler.getValue(HO_NOTIFICATION_FEATURE, false) ? YesOrNo.YES : YesOrNo.NO);
-
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
