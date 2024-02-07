@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -146,7 +145,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantUpperCase)), NO);
         }
 
-        if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
+        if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
 
             String ftpaNewDecisionOfAppeal = asylumCase.read(
                 valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantUpperCase)), String.class)
@@ -199,10 +198,10 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
     private void addFtpaDecisionAndReasonsDocument(AsylumCase asylumCase, String ftpaApplicantType,
                                                    List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments) {
-        YesOrNo isDlrmSetAsideEnabled
-            = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false) ? YES : NO;
+        boolean isDlrmSetAside
+            = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
-        if (isDlrmSetAsideEnabled.equals(YES)) {
+        if (isDlrmSetAside) {
             final Document caseArgumentDocument =
                 asylumCase
                     .read(

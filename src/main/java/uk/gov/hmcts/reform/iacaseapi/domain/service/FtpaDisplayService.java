@@ -40,7 +40,9 @@ public class FtpaDisplayService {
     private static final String REFUSED = "refused";
     private static final String NOT_ADMITTED = "notAdmitted";
     private static final String REHEARD_RULE_35 = "reheardRule35";
+
     private static final String REHEARD_RULE_32 = "reheardRule32";
+    private static final String REMADE_RULE_31 = "remadeRule31";
     private static final String REMADE_RULE_32 = "remadeRule32";
     private static final String APPEAL_DECISION = "appealDecision";
 
@@ -51,6 +53,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(GRANTED, NOT_ADMITTED), GRANTED)
         .put(new ImmutablePair<>(GRANTED, REHEARD_RULE_35), GRANTED)
         .put(new ImmutablePair<>(GRANTED, REHEARD_RULE_32), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, REMADE_RULE_31), GRANTED)
         .put(new ImmutablePair<>(GRANTED, REMADE_RULE_32), GRANTED)
 
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, GRANTED), GRANTED)
@@ -59,6 +62,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, NOT_ADMITTED), GRANTED)
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, REHEARD_RULE_35), GRANTED)
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, REHEARD_RULE_32), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, REMADE_RULE_31), GRANTED)
         .put(new ImmutablePair<>(PARTIALLY_GRANTED, REMADE_RULE_32), GRANTED)
 
         .put(new ImmutablePair<>(REFUSED, GRANTED), GRANTED)
@@ -67,6 +71,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REFUSED, NOT_ADMITTED), NOT_ADMITTED)
         .put(new ImmutablePair<>(REFUSED, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REFUSED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REFUSED, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REFUSED, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(NOT_ADMITTED, GRANTED), GRANTED)
@@ -75,6 +80,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(NOT_ADMITTED, NOT_ADMITTED), APPEAL_DECISION)
         .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(REHEARD_RULE_35, GRANTED), GRANTED)
@@ -83,6 +89,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REHEARD_RULE_35, NOT_ADMITTED), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REHEARD_RULE_35, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REHEARD_RULE_35, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REHEARD_RULE_35, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(REHEARD_RULE_32, GRANTED), GRANTED)
@@ -91,7 +98,17 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REHEARD_RULE_32, NOT_ADMITTED), REHEARD_RULE_32)
         .put(new ImmutablePair<>(REHEARD_RULE_32, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REHEARD_RULE_32, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REHEARD_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
+
+        .put(new ImmutablePair<>(REMADE_RULE_31, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REMADE_RULE_31, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REFUSED), REMADE_RULE_31)
+        .put(new ImmutablePair<>(REMADE_RULE_31, NOT_ADMITTED), REMADE_RULE_31)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REMADE_RULE_31), REMADE_RULE_31)
+        .put(new ImmutablePair<>(REMADE_RULE_31, REMADE_RULE_32), REMADE_RULE_32)
 
         .put(new ImmutablePair<>(REMADE_RULE_32, GRANTED), GRANTED)
         .put(new ImmutablePair<>(REMADE_RULE_32, PARTIALLY_GRANTED), GRANTED)
@@ -99,6 +116,7 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REMADE_RULE_32, NOT_ADMITTED), REMADE_RULE_32)
         .put(new ImmutablePair<>(REMADE_RULE_32, REHEARD_RULE_35), REHEARD_RULE_35)
         .put(new ImmutablePair<>(REMADE_RULE_32, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_32, REMADE_RULE_31), REMADE_RULE_31)
         .put(new ImmutablePair<>(REMADE_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
         .build();
 
