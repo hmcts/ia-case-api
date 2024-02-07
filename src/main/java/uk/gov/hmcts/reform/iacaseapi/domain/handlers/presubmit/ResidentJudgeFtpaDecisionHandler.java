@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -199,10 +198,10 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
     private void addFtpaDecisionAndReasonsDocument(AsylumCase asylumCase, String ftpaApplicantType,
                                                    List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments) {
-        YesOrNo isDlrmSetAsideEnabled
-            = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false) ? YES : NO;
+        boolean isDlrmSetAside
+            = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
-        if (isDlrmSetAsideEnabled.equals(YES)) {
+        if (isDlrmSetAside) {
             final Document caseArgumentDocument =
                 asylumCase
                     .read(
