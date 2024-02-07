@@ -54,7 +54,7 @@ public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<AsylumC
                         documentWithMetadataIdValue.getValue().getDocument();
                         documentWithMetadataIdValue.getValue().getDateUploaded();
                     } catch (NullPointerException npe) {
-                        asylumCasePreSubmitCallbackResponse.addError("If you add a new document you must complete the fields related to that document, or remove it, before you can submit your changes.");
+                        asylumCasePreSubmitCallbackResponse.addError("If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change.");
                         return asylumCasePreSubmitCallbackResponse;
                     }
                 }
