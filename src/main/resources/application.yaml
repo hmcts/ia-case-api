@@ -311,6 +311,8 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "reTriggerWaTasks"
+      - "reTriggerWaBulkTasks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -386,8 +388,6 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
-      - "reTriggerWaTasks"
-      - "reTriggerWaBulkTasks"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
