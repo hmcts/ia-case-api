@@ -440,6 +440,6 @@ launchDarkly:
   socketTimeout: 5000
 
 timed-event-service:
-  url: https://ia-timed-event-service-pr-162.preview.platform.hmcts.net
+  url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
 
 caseIdListJsonLocation: caseIdForRetrigger.json
