@@ -16,17 +16,6 @@
         If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
         ]]</notes>
         <cve>CVE-2022-45688</cve>
-    </suppress>
-    <suppress until="2024-02-28">
-        <notes>Until gov notify client is updated</notes>
         <cve>CVE-2023-5072</cve>
-    </suppress>
-    <suppress until="2024-01-31">
-        <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
-        <cve>CVE-2023-33202</cve>
-    </suppress>
-    <suppress>
-        <notes>Until Jackson Databind release a 2.15.4</notes>
-        <cve>CVE-2023-35116</cve>
     </suppress>
 </suppressions>

@@ -5,8 +5,8 @@ java:
   aadIdentityName: ia
   environment:
     POSTGRES_PORT: 5432
-    POSTGRES_HOST: ia-case-api-postgres-11-db-{{ .Values.global.environment }}.postgres.database.azure.com
-    POSTGRES_USERNAME: ia_case_api@ia-case-api-postgres-11-db-{{ .Values.global.environment }}
+    POSTGRES_HOST: ia-case-api-postgres-db-v15-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_USERNAME: pgadmin
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
     PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     REF_DATA_CASE_WORKER_URL: "http://rd-caseworker-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -40,29 +40,42 @@ java:
   postgresql:    
     auth:
       username: ia_case_api
-      password: ia_case_api
+      password: ${PG_AUTH_VALUES_YAML_PASS}
       database: ia_case_api
     service:
       port: 5432
   keyVaults:
     ia:
       secrets:
-        - docmosis-enabled
-        - em-stitching-enabled
-        - submit-hearing-requirements-enabled
-        - system-username
-        - system-password
-        - idam-client-id
-        - idam-secret
-        - s2s-secret
-        - s2s-microservice
-        - prof-ref-data-url
-        - docmosis-enabled
-        - em-stitching-enabled
-        - launch-darkly-sdk-key
-        - case-api-POSTGRES-PASS-11
-        - app-insights-connection-string
-        
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: submit-hearing-requirements-enabled
+          alias: IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: case-api-POSTGRES-PASS-15
+          alias: spring.datasource.password
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+        - name: postgres-auth-values-password
+          alias: PG_AUTH_VALUES_YAML_PASS
+
 ia-case-payments-api:
   enabled: false
 ia-case-documents-api:
