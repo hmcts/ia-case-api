@@ -337,7 +337,7 @@ class SendNotificationHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "LEADERSHIP_JUDGE_FTPA_DECISION", "RESIDENT_JUDGE_FTPA_DECISION", "DECIDE_FTPA_APPLICATION"
+        "LEADERSHIP_JUDGE_FTPA_DECISION", "RESIDENT_JUDGE_FTPA_DECISION", "DECIDE_FTPA_APPLICATION"
     })
     void should_set_dlrm_set_aside_feature_flag(Event event) {
         when(callback.getEvent()).thenReturn(event);
