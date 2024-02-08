@@ -729,19 +729,19 @@ ccd:
         ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
         ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role_assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
-        LAUNCH_DARKLY_ENV: pr
-        ENABLE_DB_MIGRATE: true
-        BYPASS_ORG_DROOL_RULE: true
-        RUN_DB_MIGRATION_ON_STARTUP: true
-
       keyVaults:
         am:
           secrets:
-            - am-role-assignment-service-s2s-secret
-            - app-insights-connection-string
-            - role-assignment-service-IDAM-CLIENT-SECRET
-            - role-assignment-service-IDAM-ADMIN-SECRET
-            - role-assignment-service-LD-SDK-KEY
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
 
   ccd-admin-web:
     nodejs:
@@ -1188,12 +1188,18 @@ am-org-role-mapping-service:
     keyVaults:
       am:
         secrets:
-          - app-insights-connection-string
-          - am-org-role-mapping-service-s2s-secret
-          - role-assignment-service-LD-SDK-KEY
-          - orm-IDAM-CLIENT-ID
-          - orm-IDAM-CLIENT-SECRET
-          - orm-IDAM-ADMIN-SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: am-org-role-mapping-service-s2s-secret
+            alias: AM_ORG_ROLE_MAPPING_SERVICE_SECRET
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: orm-IDAM-CLIENT-ID
+            alias: ORM_IDAM_CLIENT_ID
+          - name: orm-IDAM-CLIENT-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
+          - name: orm-IDAM-ADMIN-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
     environment:
       IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
       S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -1216,6 +1222,7 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
+      TESTING_SUPPORT_ENABLED: true
             
 
 
