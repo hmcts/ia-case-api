@@ -11,12 +11,12 @@ Replace filepath with absolute filepath of JSON/CSV requiring redacting at the b
 desired function is called (comment out other if not needed).
 
 Run python bin/utils/python_scripts/redact_info_from_json.py while in ia/case/api directory
- 
+
 Script will output redacted JSON/CSV file in the same directory as original
 with '_redacted' suffix.
 
 Notes:
- 
+
 Fields to be redacted are hardcoded in replace mapping dict, so use with caution and double check redacted JSON 
 (I suggest comparing two files in IDE) as it's only been tested on a few cases' data.
 
@@ -88,23 +88,17 @@ replace_mapping_dict = {
     "appellantnationalitiesdescription": "France",
     "language": "English",
     "languagedialect": "redacted",
-    "legalaidaccountNumber": "OG123V1",
-    "appellantPhoneNumber": "07451111111",
-    "givenName": "redacted",
-    "appellantfullname": "redacted",
-    "endappealapprovername": "redacted",
-    
-    # Refactor to separate list for CSV rows
+    "legalaidaccountnumber": "OG123V1",
+    "appellantphonenumber": "07451111111",
+    "givenname": "redacted",
     "data": "redacted",
-}
+    "witnessname": "redacted",
+    "witnessdetailsreadonly": "redacted",
+    "multimediaTribunalResponse": "redacted",
 
-csv_rows_to_redact = {
-    "user_first_name": "redacted",
-    "user_last_name": "redacted"
 }
 
 replace_mapping_keys = list(replace_mapping_dict.keys())
-replace_csv_mapping_keys = list(csv_rows_to_redact.keys())
 
 
 def redact_values_from_json(file_path, keys_to_redact):
@@ -131,7 +125,7 @@ def redact_values(json_data, keys_to_redact):
             redact_values(item, keys_to_redact)
 
 
-def redact_values_from_csv(input_file_path, keys_to_redact):
+def redact_values_from_csv(input_file_path, keys_to_redact = replace_mapping_keys) -> str:
     with open(input_file_path, 'r', newline='') as input_file:
         reader = csv.DictReader(input_file)
         rows = list(reader)
@@ -143,6 +137,7 @@ def redact_values_from_csv(input_file_path, keys_to_redact):
         writer = csv.DictWriter(output_file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+    return output_file_path
 
 
 def redact_csv_rows(rows, keys_to_redact):
@@ -155,10 +150,7 @@ def redact_csv_rows(rows, keys_to_redact):
                     redact_values(json_value, keys_to_redact)
                     row[key] = json.dumps(json_value)
                 except json.JSONDecodeError:
-                    print(f'Not a valid json within CSV field: {key}')
                     pass
-            elif key.lower() in replace_csv_mapping_keys:
-                row[key] = 'redacted'
             else:
                 pass
 
@@ -174,7 +166,8 @@ def get_replace_term(key):
 
 
 # redact_values_from_json(
-#     '/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/SNi_tickets/SNI-5296/latest_data.json', replace_mapping_keys
+#     'latest_data.json', replace_mapping_keys
 # )
 
-redact_values_from_csv('/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/SNi_tickets/SNI_5340/case_event_202401261547.csv', replace_mapping_keys)
+redact_values_from_csv(
+    'case_event_202401261547.csv')
