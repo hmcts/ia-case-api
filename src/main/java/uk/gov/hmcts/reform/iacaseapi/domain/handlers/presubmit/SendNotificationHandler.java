@@ -93,7 +93,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_CASE_EDIT,
             Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-            Event.SUBMIT_TIME_EXTENSION,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
@@ -116,13 +115,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_DECISION,
             Event.REQUEST_FEE_REMISSION,
             Event.MANAGE_FEE_UPDATE,
-            Event.REQUEST_FEE_REMISSION,
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.END_APPEAL_AUTOMATICALLY,
             Event.UPDATE_PAYMENT_STATUS,
             Event.CREATE_CASE_LINK,
             Event.MAINTAIN_CASE_LINKS,
-            Event.UPDATE_PAYMENT_STATUS
+            Event.DECIDE_FTPA_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
