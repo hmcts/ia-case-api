@@ -6,6 +6,13 @@ from redact_info_from_json import redact_values_from_csv
 
 
 def prep_import_data(directory: str = os.path.dirname(os.path.abspath(__file__)), events_to_get_individual_json: list[int] = None):
+    """
+    Function to prep exported CSV data for importing. Redacts and transforms most recent exported files within
+    python_scripts directory. Run while in python_scripts directory.
+
+    Exported files should be in format: case_event_202402080516.csv and case_data_202402080518.csv
+    (default export pattern)
+    """
     latest_case_event_data = get_latest_file(directory, 'case_event')
     latest_case_data = get_latest_file(directory, 'case_data')
     if events_to_get_individual_json:
