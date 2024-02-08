@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_VENUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -41,8 +41,8 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                || callbackStage == PreSubmitCallbackStage.MID_EVENT)
+        return (callbackStage == ABOUT_TO_START
+                || callbackStage == MID_EVENT)
                 && Objects.equals(Event.UPDATE_HEARING_REQUEST, callback.getEvent());
     }
 
@@ -67,7 +67,6 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
             }
         } else {
             asylumCase = getHearingDetails(callback);
-            setHearingLocationDetails(asylumCase);
         }
 
         asylumCase.clear(MANUAL_UPDATE_HEARING_REQUIRED);
@@ -91,13 +90,5 @@ public class HearingsUpdateHearingRequest implements PreSubmitCallbackHandler<As
 
     private AsylumCase getHearingDetails(Callback<AsylumCase> callback) {
         return iaHearingsApiService.midEvent(callback);
-    }
-
-    private static void setHearingLocationDetails(AsylumCase asylumCase) {
-        Optional<String> hearingLocation = asylumCase.read(CHANGE_HEARING_VENUE);
-        if (hearingLocation.isPresent()) {
-            String hearingCenterValue = HearingCentre.getValueByEpimsId(hearingLocation.get());
-            asylumCase.write(CHANGE_HEARING_VENUE, hearingCenterValue);
-        }
     }
 }
