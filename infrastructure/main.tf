@@ -59,12 +59,6 @@ module "ia-case-api-db-v15" {
   force_user_permissions_trigger = "1"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-11" {
-  name         = "${var.component}-POSTGRES-PASS-11"
-  value        = module.ia_case_api_database_11.postgresql_password
-  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
-}
-
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-15" {
   name         = "${var.component}-POSTGRES-PASS-15"
   value        = module.ia-case-api-db-v15.password
