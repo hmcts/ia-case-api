@@ -11,15 +11,18 @@ def prep_import_data(directory: str = os.path.dirname(os.path.abspath(__file__))
     if events_to_get_individual_json:
         create_jsons_from_csv(latest_case_event_data, events=events_to_get_individual_json)
     redacted_case_data = redact_values_from_csv(latest_case_data)
+    os.chmod(redacted_case_data, 0o777)
     case_data_id = input(
-        'Import the redacted case data CSV and retrieve the correct case id.\nEnter the new case data id:')
+        'Import the redacted case data CSV and retrieve the correct case id.\nEnter the new case data id:')\
+        .encode('utf-8').decode('utf-8')
     redacted_case_event_data = redact_values_from_csv(latest_case_event_data)
-    replace_case_data_id(case_data_id, redacted_case_event_data)
+    redacted_replaced_event_data = replace_case_data_id(case_data_id, redacted_case_event_data)
+    os.chmod(redacted_replaced_event_data, 0o777)
 
 
 def get_latest_file(dir_path: str, file_prefix: str) -> str:
     dir_files = os.listdir(dir_path)
-    files = [file for file in dir_files if file_prefix in file]
+    files = [file for file in dir_files if file_prefix in file and 'redacted' not in file]
     times = []
     for file in files:
         file = file.split('.')[0]
@@ -47,6 +50,7 @@ def replace_case_data_id(new_id: str, file_path: str):
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(data_list)
+    return file_path
 
 
-prep_import_data()
+prep_import_data(events_to_get_individual_json=range(1,10))

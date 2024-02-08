@@ -3,7 +3,7 @@ import json
 import os
 
 
-def create_jsons_from_csv(csv_file, events: list[int] = None, output_dir_name_prefix: str = ''):
+def create_jsons_from_csv(csv_file, events: list[int] = None, output_dir_name_prefix: str = 'latest_case_data'):
     with open(csv_file, 'r') as file:
         csv_reader = csv.DictReader(file)
         events_counter = 1
@@ -15,6 +15,7 @@ def create_jsons_from_csv(csv_file, events: list[int] = None, output_dir_name_pr
                 full_filepath = os.path.join(dir_name, filename)
                 with open(full_filepath, 'w') as json_file:
                     json.dump(data, json_file, indent=2)
+                os.chmod(full_filepath, 0o777)
             events_counter += 1
 
 
@@ -22,6 +23,7 @@ def make_output_dir(case_name: str) -> str:
     directory_name = f'output_{case_name}_jsons'
     if not os.path.exists(directory_name):
         os.makedirs(directory_name)
+    os.chmod(directory_name, 0o777)
     return directory_name
 
 # create_jsons_from_csv('case_event_202402071630.csv', events=list(range(1, 7)), output_dir_name_prefix='5405')
