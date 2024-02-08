@@ -1623,7 +1623,10 @@ public enum AsylumCaseFieldDefinition {
             "ftpaList", new TypeReference<List<IdValue<FtpaApplications>>>(){}),
 
     IS_FTPA_LIST_VISIBLE(
-            "isFtpaListVisible", new TypeReference<YesOrNo>(){}),;
+            "isFtpaListVisible", new TypeReference<YesOrNo>(){}),
+
+    IS_DLRM_SET_ASIDE_ENABLED(
+            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),;
 
     private final String value;
     private final TypeReference typeReference;
