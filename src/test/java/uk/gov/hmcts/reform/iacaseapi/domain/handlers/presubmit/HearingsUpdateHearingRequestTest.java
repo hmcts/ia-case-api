@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARINGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_VENUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.BRADFORD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
@@ -89,7 +89,7 @@ public class HearingsUpdateHearingRequestTest {
 
         when(iaHearingsApiService.midEvent(callback)).thenReturn(asylumCase);
 
-        when(asylumCase.read(CHANGE_HEARING_LOCATION))
+        when(asylumCase.read(CHANGE_HEARING_VENUE))
                 .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -108,7 +108,7 @@ public class HearingsUpdateHearingRequestTest {
                 .thenReturn(Optional.of(new DynamicList("hearing 1")));
         when(iaHearingsApiService.midEvent(callback)).thenReturn(asylumCase);
 
-        when(asylumCase.read(CHANGE_HEARING_LOCATION))
+        when(asylumCase.read(CHANGE_HEARING_VENUE))
                 .thenReturn(Optional.of(BRADFORD.getEpimsId()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -117,7 +117,7 @@ public class HearingsUpdateHearingRequestTest {
         assertNotNull(callbackResponse);
         verify(iaHearingsApiService, times(1)).midEvent(callback);
 
-        verify(asylumCase).write(CHANGE_HEARING_LOCATION, BRADFORD.getValue());
+        verify(asylumCase).write(CHANGE_HEARING_VENUE, BRADFORD.getValue());
         verify(asylumCase).clear(MANUAL_UPDATE_HEARING_REQUIRED);
     }
 
