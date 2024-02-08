@@ -5,15 +5,17 @@ from create_jsons_from_event_csv import create_jsons_from_csv
 from redact_info_from_json import redact_values_from_csv
 
 
-def prep_import_data(directory: str = os.getcwd(), events_to_get_individual_json: list[int] = None):
+def prep_import_data(directory: str = os.path.dirname(os.path.abspath(__file__)), events_to_get_individual_json: list[int] = None):
     latest_case_event_data = get_latest_file(directory, 'case_event')
     latest_case_data = get_latest_file(directory, 'case_data')
     if events_to_get_individual_json:
         create_jsons_from_csv(latest_case_event_data, events=events_to_get_individual_json)
     redacted_case_data = redact_values_from_csv(latest_case_data)
-    case_data_id = input('Import the redacted case data CSV.\n Enter the new case data id:')
+    case_data_id = input(
+        'Import the redacted case data CSV and retrieve the correct case id.\nEnter the new case data id:')
     redacted_case_event_data = redact_values_from_csv(latest_case_event_data)
     replace_case_data_id(case_data_id, redacted_case_event_data)
+
 
 def get_latest_file(dir_path: str, file_prefix: str) -> str:
     dir_files = os.listdir(dir_path)
@@ -23,7 +25,10 @@ def get_latest_file(dir_path: str, file_prefix: str) -> str:
         file = file.split('.')[0]
         times.append(int(file[-12:]))
     latest = max(times)
-    return f"{file_prefix}_{latest}.csv"
+    filename = f"{file_prefix}_{latest}.csv"
+    full_filepath = os.path.join(dir_path, filename)
+    return full_filepath
+
 
 def replace_case_data_id(new_id: str, file_path: str):
     # Read the CSV file and create a list of dictionaries

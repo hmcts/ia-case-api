@@ -169,5 +169,5 @@ def get_replace_term(key):
 #     'latest_data.json', replace_mapping_keys
 # )
 
-redact_values_from_csv(
-    'case_event_202401261547.csv')
+# redact_values_from_csv(
+#     'case_event_202401261547.csv')

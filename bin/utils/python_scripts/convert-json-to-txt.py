@@ -17,4 +17,4 @@ def convert_json_to_txt(file_path):
         text_file.write(text_data)
 
 
-convert_json_to_txt("event_1.json")
+# convert_json_to_txt("event_1.json")

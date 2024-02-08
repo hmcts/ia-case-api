@@ -24,4 +24,4 @@ def make_output_dir(case_name: str) -> str:
         os.makedirs(directory_name)
     return directory_name
 
-create_jsons_from_csv('case_event_202402071630.csv', events=list(range(1, 7)), output_dir_name_prefix='5405')
+# create_jsons_from_csv('case_event_202402071630.csv', events=list(range(1, 7)), output_dir_name_prefix='5405')
