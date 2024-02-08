@@ -135,8 +135,8 @@ class SendNotificationHandlerTest {
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.UPDATE_PAYMENT_STATUS,
             Event.CREATE_CASE_LINK,
-            Event.DECIDE_FTPA_APPLICATION,
-            Event.MAINTAIN_CASE_LINKS
+            Event.MAINTAIN_CASE_LINKS,
+            Event.DECIDE_FTPA_APPLICATION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -262,7 +262,6 @@ class SendNotificationHandlerTest {
                         Event.REQUEST_CASE_EDIT,
                         Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
                         Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                        Event.SUBMIT_TIME_EXTENSION,
                         Event.ADJOURN_HEARING_WITHOUT_DATE,
                         Event.RESTORE_STATE_FROM_ADJOURN,
                         Event.REQUEST_CMA_REQUIREMENTS,
@@ -288,8 +287,8 @@ class SendNotificationHandlerTest {
                         Event.END_APPEAL_AUTOMATICALLY,
                         Event.UPDATE_PAYMENT_STATUS,
                         Event.CREATE_CASE_LINK,
-                        Event.DECIDE_FTPA_APPLICATION,
-                        Event.MAINTAIN_CASE_LINKS
+                        Event.MAINTAIN_CASE_LINKS,
+                        Event.DECIDE_FTPA_APPLICATION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
