@@ -20,7 +20,7 @@ Notes:
 Fields to be redacted are hardcoded in replace mapping dict, so use with caution and double check redacted JSON 
 (I suggest comparing two files in IDE) as it's only been tested on a few cases' data.
 
-Add any additionally required fields (in full lowercase) to be redacted in replace_mapping_dict with their corresponding
+Add any additionally required fields to be redacted in replace_mapping_dict with their corresponding
 replace data
 
 Replaces all document filenames so if testing any specifics you may want to manually change the filenames
@@ -105,8 +105,8 @@ csv_rows_to_redact = {
     "user_last_name": "redacted"
 }
 
-replace_mapping_keys = list(replace_mapping_dict.keys())
-replace_csv_mapping_keys = list(csv_rows_to_redact.keys())
+replace_mapping_keys = [x.lower() for x in list(replace_mapping_dict.keys())]
+replace_csv_mapping_keys = [x.lower() for x in list(csv_rows_to_redact.keys())]
 
 
 def redact_values_from_json(file_path, keys_to_redact):

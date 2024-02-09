@@ -3,7 +3,7 @@ import json
 import os
 
 
-def create_jsons_from_csv(csv_file, events: list[int] = None, output_dir_name_prefix: str = 'latest_case_data'):
+def create_jsons_from_csv(csv_file, events: list[int] = None, output_dir_name_prefix: str = 'latest'):
     with open(csv_file, 'r') as file:
         csv_reader = csv.DictReader(file)
         events_counter = 1
