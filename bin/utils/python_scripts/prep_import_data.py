@@ -32,8 +32,12 @@ def get_latest_file(dir_path: str, file_prefix: str) -> str:
     files = [file for file in dir_files if file_prefix in file and 'redacted' not in file]
     times = []
     for file in files:
-        file = file.split('.')[0]
-        times.append(int(file[-12:]))
+        try:
+            file = file.split('.')[0]
+            times.append(int(file[-12:]))
+        except Exception as e:
+            print(e)
+            pass
     latest = max(times)
     filename = f"{file_prefix}_{latest}.csv"
     full_filepath = os.path.join(dir_path, filename)

@@ -95,10 +95,18 @@ replace_mapping_dict = {
     "witnessname": "redacted",
     "witnessdetailsreadonly": "redacted",
     "multimediaTribunalResponse": "redacted",
+    "appellantfullname": "redacted",
+    "endappealapprovername": "redacted",
 
 }
 
+csv_rows_to_redact = {
+    "user_first_name": "redacted",
+    "user_last_name": "redacted"
+}
+
 replace_mapping_keys = list(replace_mapping_dict.keys())
+replace_csv_mapping_keys = list(csv_rows_to_redact.keys())
 
 
 def redact_values_from_json(file_path, keys_to_redact):
@@ -151,6 +159,8 @@ def redact_csv_rows(rows, keys_to_redact):
                     row[key] = json.dumps(json_value)
                 except json.JSONDecodeError:
                     pass
+            elif key.lower() in replace_csv_mapping_keys:
+                row[key] = 'redacted'
             else:
                 pass
 
