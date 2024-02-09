@@ -260,6 +260,27 @@ class DecideFtpaApplicationMidEventTest {
 
 
     @Test
+    void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_reheard35() {
+
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
+        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
+
+        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
+                .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                decideFtpaApplicationMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+        verify(asylumCase).write(FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.YES);
+    }
+
+    @Test
     void should_successfully_set_appellant_decision_reasons_notes_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);

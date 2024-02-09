@@ -215,6 +215,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule35"));
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(false);
+
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -235,6 +237,39 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+    }
+
+    @Test
+    void should_return_reheardRule35_confirmation_dlrm() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
+                .thenReturn(Optional.of("reheardRule35"));
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
+
+
+        PostSubmitCallbackResponse callbackResponse =
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>");
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test

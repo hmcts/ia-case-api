@@ -58,6 +58,9 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
         String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") == true ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
+        boolean isDlrmSetAside
+                = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
+
         switch (ftpaOutcomeType) {
 
             case "granted":
@@ -78,16 +81,22 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
             case "reheardRule32":
             case "reheardRule35":
+                if (isDlrmSetAside) {
+                    postSubmitResponse.setConfirmationBody(
+                            "#### What happens next\n\n"
+                                    + "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>"
+                    );
+                } else {
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                         + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
                 );
+                }
                 break;
 
             case "remadeRule31":
             case "remadeRule32":
-                boolean isDlrmSetAside
-                    = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
+
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
                     postSubmitResponse.setConfirmationBody(
