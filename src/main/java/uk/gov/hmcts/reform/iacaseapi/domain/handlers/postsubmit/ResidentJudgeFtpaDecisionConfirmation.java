@@ -87,10 +87,10 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                                     + "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>"
                     );
                 } else {
-                postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                        + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
-                );
+                    postSubmitResponse.setConfirmationBody(
+                            "#### What happens next\n\n"
+                                    + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
+                    );
                 }
                 break;
 
