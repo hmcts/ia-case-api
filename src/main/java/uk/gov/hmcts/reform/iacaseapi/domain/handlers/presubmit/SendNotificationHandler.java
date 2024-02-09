@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
@@ -93,7 +95,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_CASE_EDIT,
             Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-            Event.SUBMIT_TIME_EXTENSION,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
@@ -116,13 +117,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_DECISION,
             Event.REQUEST_FEE_REMISSION,
             Event.MANAGE_FEE_UPDATE,
-            Event.REQUEST_FEE_REMISSION,
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.END_APPEAL_AUTOMATICALLY,
             Event.UPDATE_PAYMENT_STATUS,
             Event.CREATE_CASE_LINK,
             Event.MAINTAIN_CASE_LINKS,
-            Event.UPDATE_PAYMENT_STATUS
+            Event.DECIDE_FTPA_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -150,6 +150,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+        AsylumCase asylumCase =
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
+
+        setDlrmSetAsideFeatureFlag(callback.getEvent(), asylumCase);
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
@@ -161,5 +167,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             .read(PAYMENT_STATUS, PaymentStatus.class)
             .map(paymentStatus -> paymentStatus.equals(PaymentStatus.PAID))
             .orElse(false);
+    }
+
+    private void setDlrmSetAsideFeatureFlag(Event event, AsylumCase asylumCase) {
+        if (List.of(Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+                Event.RESIDENT_JUDGE_FTPA_DECISION,
+                Event.DECIDE_FTPA_APPLICATION).contains(event)) {
+            asylumCase.write(IS_DLRM_SET_ASIDE_ENABLED,
+                    featureToggler.getValue("dlrm-setaside-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
+        }
     }
 }
