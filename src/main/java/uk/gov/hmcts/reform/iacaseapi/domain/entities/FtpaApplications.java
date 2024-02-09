@@ -28,6 +28,7 @@ public class FtpaApplications {
     private String ftpaApplicationDate;
     private String ftpaDecisionOutcomeType;
     private String ftpaDecisionRemadeRule32;
+    private String ftpaDecisionRemadeRule32Text;
     private List<IdValue<DocumentWithDescription>> ftpaLegacyDecisionDocument;
     private Document ftpaNewDecisionDocument;
     private FtpaDecisionCheckValues<String> ftpaDecisionNotesPoints;

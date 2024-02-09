@@ -9,15 +9,18 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.DLRM_SETASIDE_FEATURE_FLAG;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,18 +49,21 @@ class FtpaDisplayServiceTest {
     Document maybeFtpaApplicationDecisionAndReasonsDocument;
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
+    @Mock
+    private FeatureToggler featureToggler;
+
 
     private FtpaDisplayService ftpaDisplayService;
     private final LocalDate now = LocalDate.now();
     private final FtpaDecisionCheckValues ftpaCheckValues =
-            new FtpaDecisionCheckValues(List.of("specialReasons"),
-                    List.of("countryGuidance"),
-                    List.of("specialDifficulty"));
+        new FtpaDecisionCheckValues(List.of("specialReasons"),
+            List.of("countryGuidance"),
+            List.of("specialDifficulty"));
 
     @BeforeEach
     public void setUp() {
 
-        ftpaDisplayService = new FtpaDisplayService(caseFlagAppender);
+        ftpaDisplayService = new FtpaDisplayService(caseFlagAppender, featureToggler);
     }
 
     @Test
@@ -306,34 +312,34 @@ class FtpaDisplayServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans =  {true, false})
+    @ValueSource(booleans = {true, false})
     void should_map_ftpa_decision_respondent_maximum_data(boolean isMigration) {
         final FtpaApplications ftpaApplication = FtpaApplications.builder().ftpaApplicant("respondent").build();
 
         when(asylumCase.read(IS_FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE, YesOrNo.class))
-                .thenReturn(Optional.of(YES));
+            .thenReturn(Optional.of(YES));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-                .thenReturn(Optional.of("granted"));
+            .thenReturn(Optional.of("granted"));
         if (isMigration) {
             when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
-                    .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+                .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
         } else {
             when(asylumCase.read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class))
-                    .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
+                .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
         }
 
         when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT))
-                .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
+            .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_OBJECTIONS, String.class))
-                .thenReturn(Optional.of("Objection description example"));
+            .thenReturn(Optional.of("Objection description example"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_LST_INS, String.class))
-                .thenReturn(Optional.of("Listing instructions example"));
+            .thenReturn(Optional.of("Listing instructions example"));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION, String.class))
-                .thenReturn(Optional.of("Information for UT example"));
+            .thenReturn(Optional.of("Information for UT example"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_DATE, String.class))
-                .thenReturn(Optional.of(now.toString()));
+            .thenReturn(Optional.of(now.toString()));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_NOTES_POINTS))
-                .thenReturn(Optional.of(ftpaCheckValues));
+            .thenReturn(Optional.of(ftpaCheckValues));
 
         ftpaDisplayService.mapFtpaDecision(isMigration, asylumCase, "RESPONDENT", ftpaApplication);
 
@@ -353,38 +359,54 @@ class FtpaDisplayServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans =  {true, false})
-    void should_map_ftpa_decision_appellant_minimum_data(boolean isMigration) {
+    @CsvSource({
+        "false, false",
+        "true, false",
+        "false, true",
+        "true, true",
+    })
+    void should_map_ftpa_decision_appellant_minimum_data(boolean isMigration, boolean dlrmActivated) {
         final FtpaApplications ftpaApplication = FtpaApplications.builder().ftpaApplicant("appellant").build();
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(dlrmActivated);
 
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-                .thenReturn(Optional.of("remadeRule32"));
-        when(asylumCase.read(FTPA_APPELLANT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
+            .thenReturn(Optional.of("remadeRule32"));
+        if (dlrmActivated) {
+            when(asylumCase.read(FTPA_APPELLANT_DECISION_REMADE_RULE_32_TEXT, String.class)).thenReturn(Optional.of("Some" +
+                " free text"));
+        } else {
+            when(asylumCase.read(FTPA_APPELLANT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
+        }
+
         if (isMigration) {
             when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
-                    .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+                .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
         } else {
             when(asylumCase.read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class))
-                    .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
+                .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
         }
 
         when(asylumCase.read(FTPA_APPELLANT_NOTICE_DOCUMENT))
-                .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
+            .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
         when(asylumCase.read(FTPA_APPELLANT_DECISION_OBJECTIONS, String.class))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         when(asylumCase.read(FTPA_APPELLANT_DECISION_LST_INS, String.class))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_NOTES_DESCRIPTION, String.class))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         when(asylumCase.read(FTPA_APPELLANT_DECISION_DATE, String.class))
-                .thenReturn(Optional.of(now.toString()));
+            .thenReturn(Optional.of(now.toString()));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_NOTES_POINTS))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         ftpaDisplayService.mapFtpaDecision(isMigration, asylumCase, "APPELLANT", ftpaApplication);
 
         assertEquals(NO, ftpaApplication.getIsFtpaNoticeOfDecisionSetAside());
-        assertEquals("Allowed", ftpaApplication.getFtpaDecisionRemadeRule32());
+        if (dlrmActivated) {
+            assertEquals("Some free text", ftpaApplication.getFtpaDecisionRemadeRule32Text());
+        } else {
+            assertEquals("Allowed", ftpaApplication.getFtpaDecisionRemadeRule32());
+        }
         assertEquals("remadeRule32", ftpaApplication.getFtpaDecisionOutcomeType());
 
         if (isMigration) {
