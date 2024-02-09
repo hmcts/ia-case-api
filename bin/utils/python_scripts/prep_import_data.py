@@ -1,14 +1,15 @@
 import os
 import csv
 
+from filepath_settings import settings
 from create_jsons_from_event_csv import create_jsons_from_csv
 from redact_info_from_json import redact_values_from_csv
 
 
-def prep_import_data(directory: str = os.path.dirname(os.path.abspath(__file__)), events_to_get_individual_json: list[int] = None):
+def prep_import_data(directory: str = settings.exported_csv_dir, events_to_get_individual_json: list[int] = None):
     """
     Function to prep exported CSV data for importing. Redacts and transforms most recent exported files within
-    python_scripts directory. Run while in python_scripts directory.
+    python_scripts directory.
 
     Exported files should be in format: case_event_202402080516.csv and case_data_202402080518.csv
     (default export pattern)
@@ -29,7 +30,7 @@ def prep_import_data(directory: str = os.path.dirname(os.path.abspath(__file__))
 
 def get_latest_file(dir_path: str, file_prefix: str) -> str:
     dir_files = os.listdir(dir_path)
-    files = [file for file in dir_files if file_prefix in file and 'redacted' not in file]
+    files = [file for file in dir_files if file_prefix in file]
     times = []
     for file in files:
         try:
@@ -64,4 +65,4 @@ def replace_case_data_id(new_id: str, file_path: str):
     return file_path
 
 
-prep_import_data(events_to_get_individual_json=range(1,10))
+prep_import_data(events_to_get_individual_json=range(1,13))
