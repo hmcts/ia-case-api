@@ -120,8 +120,14 @@ public class FtpaDisplayService {
         .put(new ImmutablePair<>(REMADE_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
         .build();
 
-    public FtpaDisplayService(CaseFlagAppender caseFlagAppender) {
+    private final FeatureToggler featureToggler;
+
+    public FtpaDisplayService(CaseFlagAppender caseFlagAppender,
+                              FeatureToggler featureToggler
+    ) {
         this.caseFlagAppender = caseFlagAppender;
+        this.featureToggler = featureToggler;
+
     }
 
     public String getFinalDisplayDecision(AsylumCase asylumCase, String firstDecision, String secondDecision) {
@@ -180,6 +186,8 @@ public class FtpaDisplayService {
     }
 
     public void mapFtpaDecision(boolean isMigration, AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
+        boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
+
         ftpaApplication.setIsFtpaNoticeOfDecisionSetAside(asylumCase
                 .read(valueOf(String.format("IS_FTPA_%s_NOTICE_OF_DECISION_SET_ASIDE", ftpaApplicantType)), YesOrNo.class)
                 .orElse(YesOrNo.NO));
@@ -188,9 +196,17 @@ public class FtpaDisplayService {
                         valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType)), String.class)
                 .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
-        if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
-            asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType)), String.class)
+        if (isDlrmSetAside) {
+            if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
+                asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32_TEXT", ftpaApplicantType)),
+                        String.class)
+                    .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32Text);
+            }
+        } else {
+            if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
+                asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType)), String.class)
                     .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32);
+            }
         }
 
         addFtpaDecisionAndReasons(isMigration, asylumCase, ftpaApplicantType, ftpaApplication);
@@ -226,9 +242,7 @@ public class FtpaDisplayService {
             final Document ftpaDecisionDocument =
                     asylumCase.read(
                             valueOf(String.format("FTPA_APPLICATION_%s_DOCUMENT", ftpaApplicantType)), Document.class)
-                            .orElseThrow(
-                                    () -> new IllegalStateException(String.format("FTPA_APPLICATION_%s_DOCUMENT is not present",
-                                            ftpaApplicantType)));
+                            .orElse(null);
 
             ftpaApplication.setFtpaNewDecisionDocument(ftpaDecisionDocument);
         }

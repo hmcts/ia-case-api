@@ -18,8 +18,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_FTPA_RESPONDENT_DECISION_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REMADE_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_NOTICE_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_APPELLANT_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_RESPONDENT_DOCUMENT;
@@ -372,6 +374,88 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "remadeRule31",
+        "remadeRule32"
+    })
+    void should_not_append_ftpa_application_respondent_document_on_remedy_rule_31_and_32(
+        String decisionOutcomeType
+    ) {
+        when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
+
+        List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
+            Arrays.asList(
+                ftpaRespondentDecisionDocument,
+                ftpaRespondentDecisionNoticeDocument
+            );
+
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT))
+            .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT)).thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
+        when(asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS))
+            .thenReturn(Optional.of(existingFtpaDecisionAndReasonsDocuments));
+        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
+            .thenReturn(Optional.of(decisionOutcomeType));
+        when(asylumCase.read(FTPA_RESPONDENT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
+
+        when(
+            documentsAppender.append(existingFtpaDecisionAndReasonsDocuments, ftpaRespondentDecisionAndReasonsDocument))
+            .thenReturn(allFtpaDecisionDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
+        verify(asylumCase, times(0)).read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class);
+
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "remadeRule31",
+        "remadeRule32"
+    })
+    void should_not_append_ftpa_application_appellant_document_on_remedy_rule_31_and_32(
+        String decisionOutcomeType
+    ) {
+        when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
+
+        List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
+            Arrays.asList(
+                ftpaRespondentDecisionDocument,
+                ftpaRespondentDecisionNoticeDocument
+            );
+
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_DECISION_DOCUMENT))
+            .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        when(asylumCase.read(FTPA_APPELLANT_NOTICE_DOCUMENT)).thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
+        when(asylumCase.read(ALL_FTPA_APPELLANT_DECISION_DOCS))
+            .thenReturn(Optional.of(existingFtpaDecisionAndReasonsDocuments));
+        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
+            .thenReturn(Optional.of(decisionOutcomeType));
+        when(asylumCase.read(FTPA_APPELLANT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
+
+        when(
+            documentsAppender.append(existingFtpaDecisionAndReasonsDocuments, ftpaRespondentDecisionAndReasonsDocument))
+            .thenReturn(allFtpaDecisionDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
+        verify(asylumCase, times(0)).read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class);
+
     }
 
     @Test
