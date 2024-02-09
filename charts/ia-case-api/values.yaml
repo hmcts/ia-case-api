@@ -98,7 +98,3 @@ em-ccdorc:
   enabled: false
 em-stitching:
   enabled: false
-aac-manage-case-assignment:
-  enabled: false
-xui-mo-webapp:
-  enabled: false
