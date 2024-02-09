@@ -186,6 +186,9 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     classpath = sourceSets.functionalTest.runtimeClasspath
     finalizedBy aggregate
     testLogging {
+        showStandardStreams = true
+        showCauses = true
+        showExceptions = true
         showStackTraces = true
     }
 }
