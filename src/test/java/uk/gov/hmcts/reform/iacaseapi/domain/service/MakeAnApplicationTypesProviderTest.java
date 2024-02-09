@@ -62,7 +62,6 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
-            new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
