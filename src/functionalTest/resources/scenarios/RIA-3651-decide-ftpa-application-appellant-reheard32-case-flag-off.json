@@ -16,19 +16,11 @@
           "ftpaAppellantRjDecisionOutcomeType": "reheardRule32",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse",
-          "ftpaAppellantDecisionDocument": [
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
-                },
-                "description": "Some FTPA appellant decision and reasons"
-              }
-            }
-          ],
+          "ftpaApplicationAppellantDocument": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+          },
           "ftpaAppellantNoticeDocument": [
             {
               "id": "2",
