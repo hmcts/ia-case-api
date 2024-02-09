@@ -119,10 +119,11 @@ class EventTest {
         assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
+        assertEquals("decideFtpaApplication", Event.DECIDE_FTPA_APPLICATION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(117, Event.values().length);
+        assertEquals(118, Event.values().length);
     }
 }

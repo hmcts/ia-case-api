@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -265,11 +263,16 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_DOCUMENT(
         "ftpaAppellantDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    FTPA_APPLICATION_APPELLANT_DOCUMENT(
+        "ftpaApplicationAppellantDocument", new TypeReference<Document>(){}),
     FTPA_APPELLANT_NOTICE_DOCUMENT(
         "ftpaAppellantNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     FTPA_RESPONDENT_DECISION_DOCUMENT(
         "ftpaRespondentDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_APPLICATION_RESPONDENT_DOCUMENT(
+        "ftpaApplicationRespondentDocument", new TypeReference<Document>(){}),
 
     FTPA_RESPONDENT_NOTICE_DOCUMENT(
         "ftpaRespondentNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
@@ -370,12 +373,17 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_REMADE_RULE_32(
         "ftpaAppellantDecisionRemadeRule32", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_DECISION_REMADE_RULE_32_TEXT(
+        "ftpaAppellantDecisionRemadeRule32Text", new TypeReference<String>(){}),
+
     FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL(
         "ftpaRespondentRjNewDecisionOfAppeal", new TypeReference<String>(){}),
 
     FTPA_RESPONDENT_DECISION_REMADE_RULE_32(
         "ftpaRespondentDecisionRemadeRule32", new TypeReference<String>(){}),
 
+    FTPA_RESPONDENT_DECISION_REMADE_RULE_32_TEXT(
+        "ftpaRespondentDecisionRemadeRule32Text", new TypeReference<String>(){}),
     FTPA_FIRST_DECISION(
         "ftpaFirstDecision", new TypeReference<String>() {}),
 
@@ -1585,7 +1593,40 @@ public enum AsylumCaseFieldDefinition {
     CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
 
     S94B_STATUS(
-        "s94bStatus", new TypeReference<YesOrNo>(){});
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_DECISION_OBJECTIONS(
+            "ftpaAppellantDecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_OBJECTIONS(
+            "ftpaRespondentDecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_LST_INS(
+            "ftpaAppellantDecisionLstIns", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_LST_INS(
+            "ftpaRespondentDecisionLstIns", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_NOTES_POINTS(
+            "ftpaAppellantRjDecisionNotesPoints", new TypeReference<FtpaDecisionCheckValues<String>>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_NOTES_POINTS(
+            "ftpaRespondentRjDecisionNotesPoints", new TypeReference<FtpaDecisionCheckValues<String>>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_NOTES_DESCRIPTION(
+            "ftpaAppellantRjDecisionNotesDescription", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION(
+            "ftpaRespondentRjDecisionNotesDescription", new TypeReference<String>(){}),
+
+    FTPA_LIST(
+            "ftpaList", new TypeReference<List<IdValue<FtpaApplications>>>(){}),
+
+    IS_FTPA_LIST_VISIBLE(
+            "isFtpaListVisible", new TypeReference<YesOrNo>(){}),
+
+    IS_DLRM_SET_ASIDE_ENABLED(
+            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),;
 
     private final String value;
     private final TypeReference typeReference;

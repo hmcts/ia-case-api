@@ -1,0 +1,39 @@
+{
+  "description": "RIA-8102 Decide Ftpa Application record FTPA respondent reheard rule 35 decision - mid event",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentSubmitted": "Yes",
+          "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "ftpaRespondentDecisionListingVisible": "Yes",
+        "ftpaRespondentDecisionReasonsNotesVisible": "No",
+        "ftpaRespondentNoticeOfDecisionSetAsideVisible": "No"
+      }
+    }
+  }
+}
