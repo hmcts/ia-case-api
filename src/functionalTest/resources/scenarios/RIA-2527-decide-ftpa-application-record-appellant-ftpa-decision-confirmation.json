@@ -1,0 +1,31 @@
+{
+  "description": "RIA-2527 Decide FTPA application appellant decision confirmation",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "decideFtpaApplication",
+      "ftpaAppellantDecisionRemadeRule32": "allowed",
+      "state": "ftpaSubmitted",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
+        }
+
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've recorded the First-tier permission to appeal decision",
+      "body": "#### What happens next\n\nBoth parties have been notified of the decision.<br>"
+    }
+  }
+}

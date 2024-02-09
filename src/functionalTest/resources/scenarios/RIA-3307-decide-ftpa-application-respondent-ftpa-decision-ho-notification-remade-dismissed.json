@@ -1,19 +1,23 @@
 {
-  "description": "RIA-3651 Resident judge record respondent FTPA decision (Reheard Rule 35) - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
+  "description": "RIA-3307 Decide FTPA application respondent decision - HO notification - remade 32 (Dismissed)",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
     "input": {
       "id": 1234,
-      "eventId": "residentJudgeFtpaDecision",
-      "state": "ftpaSubmitted",
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaDecided",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "ftpaApplicantType": "respondent",
           "ftpaRespondentSubmitted": "Yes",
-          "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
+          "ftpaRespondentRjDecisionOutcomeType": "remadeRule32",
+          "ftpaRespondentDecisionRemadeRule32": "dismissed",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse",
           "ftpaRespondentDecisionDocument": [
@@ -23,9 +27,9 @@
                 "document": {
                   "document_url": "http://document-store/BBB",
                   "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
+                  "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
                 },
-                "description": "Some FTPA respondent decision and reasons"
+                "description": "Some FTPA appellant decision and reasons"
               }
             }
           ],
@@ -36,9 +40,9 @@
                 "document": {
                   "document_url": "http://document-store/BBB",
                   "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-respondent-notice.pdf"
+                  "document_filename": "some-ftpa-appellant-notice.pdf"
                 },
-                "description": "Some FTPA respondent notice"
+                "description": "Some FTPA appellant notice"
               }
             }
           ],
@@ -53,8 +57,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isReheardAppealEnabled": "Yes",
-        "caseFlagSetAsideReheardExists": "Yes",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "ftpaRespondentDecisionDate": "{$TODAY}",
         "isFtpaRespondentDecided": "Yes",
         "allFtpaRespondentDecisionDocs": [
@@ -64,9 +69,9 @@
               "document": {
                 "document_url": "http://document-store/BBB",
                 "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
+                "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
               },
-              "description": "Some FTPA respondent decision and reasons",
+              "description": "Some FTPA appellant decision and reasons",
               "dateUploaded": "{$TODAY}",
               "tag": "ftpaDecisionAndReasons"
             }
@@ -77,15 +82,16 @@
               "document": {
                 "document_url": "http://document-store/BBB",
                 "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-ftpa-respondent-notice.pdf"
+                "document_filename": "some-ftpa-appellant-notice.pdf"
               },
-              "description": "Some FTPA respondent notice",
+              "description": "Some FTPA appellant notice",
               "dateUploaded": "{$TODAY}",
               "tag": "ftpaDecisionAndReasons"
             }
           }
         ],
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
       }
     }
   }
