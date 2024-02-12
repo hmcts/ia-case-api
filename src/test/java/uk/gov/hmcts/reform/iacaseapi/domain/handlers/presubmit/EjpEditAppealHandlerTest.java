@@ -118,6 +118,43 @@ class EjpEditAppealHandlerTest {
     }
 
     @Test
+    void should_clear_legal_rep_address_ejp_field_when_editing_to_unrepped_case() {
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = ejpEditAppealHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        verify(asylumCase, times(1)).clear(LEGAL_PRACTICE_ADDRESS_EJP);
+    }
+
+    @Test
+    void should_clear_appellant_address_for_non_detained_repped_with_fixed_address() {
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response = ejpEditAppealHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        verify(asylumCase, times(1)).clear(LEGAL_PRACTICE_ADDRESS_EJP);
+    }
+
+    @Test
+    void should_clear_legal_rep_ejp_address_for_non_detained_repped_with_no_fixed_address() {
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = ejpEditAppealHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        verify(asylumCase, times(1)).clear(APPELLANT_ADDRESS);
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ejpEditAppealHandler.handle(MID_EVENT, callback))

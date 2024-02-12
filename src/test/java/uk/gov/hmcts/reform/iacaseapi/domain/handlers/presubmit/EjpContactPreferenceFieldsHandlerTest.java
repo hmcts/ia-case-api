@@ -8,19 +8,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference.WANTS_EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -47,15 +49,18 @@ class EjpContactPreferenceFieldsHandlerTest {
     public void setUp() {
 
         ejpContactPreferenceFieldsHandler = new EjpContactPreferenceFieldsHandler();
-        when(callback.getEvent()).thenReturn(START_APPEAL);
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
     }
 
-    @Test
-    void handler_should_write_emailUnrep_and_mobileNumberUnrep_to_email_and_mobileNumber_fields_for_unrep_ejp() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL"
+    })
+    void handler_should_write_emailUnrep_and_mobileNumberUnrep_to_email_and_mobileNumber_fields_for_unrep_ejp(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(EMAIL_UNREP, String.class)).thenReturn(Optional.of(emailUnrep));
         when(asylumCase.read(MOBILE_NUMBER_UNREP, String.class)).thenReturn(Optional.of(mobileNumberUnrep));
         when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -69,10 +74,9 @@ class EjpContactPreferenceFieldsHandlerTest {
     }
 
     @Test
-    void handler_should_clear_unrep_email_and_mobileNumber_fields_after_write() {
-        when(asylumCase.read(EMAIL_UNREP, String.class)).thenReturn(Optional.of(emailUnrep));
-        when(asylumCase.read(MOBILE_NUMBER_UNREP, String.class)).thenReturn(Optional.of(mobileNumberUnrep));
-        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+    void handler_should_clear_unrep_contact_preference_fields_when_edited_to_repped_case() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             ejpContactPreferenceFieldsHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -80,27 +84,49 @@ class EjpContactPreferenceFieldsHandlerTest {
         assertThat(response).isNotNull();
         verify(asylumCase, times(1)).clear(EMAIL_UNREP);
         verify(asylumCase, times(1)).clear(MOBILE_NUMBER_UNREP);
+        verify(asylumCase, times(1)).clear(CONTACT_PREFERENCE_UNREP);
     }
 
-    @Test
-    void it_can_handle_callback_for_all_events() {
+    @ParameterizedTest
+    @EnumSource(value = ContactPreference.class, names = { "WANTS_EMAIL", "WANTS_SMS" })
+    void handler_should_clear_email_or_sms_depending_on_contactPreference_field_selected(ContactPreference preference) {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(CONTACT_PREFERENCE, ContactPreference.class)).thenReturn(Optional.of(preference));
 
-        for (Event event : Event.values()) {
+        PreSubmitCallbackResponse<AsylumCase> response =
+            ejpContactPreferenceFieldsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+
+        if (preference.equals(WANTS_EMAIL)) {
+            verify(asylumCase, times(1)).clear(MOBILE_NUMBER);
+
+        } else {
+            verify(asylumCase, times(1)).clear(EMAIL);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_can_handle_callback(Event event) {
+
+        for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
             when(callback.getEvent()).thenReturn(event);
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = ejpContactPreferenceFieldsHandler.canHandle(callbackStage, callback);
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && callback.getEvent() == START_APPEAL) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
+            boolean canHandle = ejpContactPreferenceFieldsHandler.canHandle(stage, callback);
+
+            if (stage == ABOUT_TO_SUBMIT && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL)) {
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
             }
         }
     }
 
-    @Test
-    void should_not_allow_null_arguments() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void should_not_allow_null_arguments(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
         assertThatThrownBy(() -> ejpContactPreferenceFieldsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -119,8 +145,10 @@ class EjpContactPreferenceFieldsHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void handling_should_throw_if_cannot_actually_handle() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void handling_should_throw_if_cannot_actually_handle(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
         assertThatThrownBy(() -> ejpContactPreferenceFieldsHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
