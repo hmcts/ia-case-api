@@ -84,6 +84,8 @@ ia-case-notifications-api:
   enabled: false
 ia-home-office-integration-api:
   enabled: false
+ia-bail-case-api:
+  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:
@@ -97,4 +99,16 @@ ccd-case-document-am-api:
 em-ccdorc:
   enabled: false
 em-stitching:
+  enabled: false
+wa:
+  enabled: false
+servicebus:
+  enabled: false
+ccd-message-publisher:
+  enabled: false
+aac-manage-case-assignment:
+  enabled: false
+am-org-role-mapping-service:
+  enabled: false
+redis:
   enabled: false
