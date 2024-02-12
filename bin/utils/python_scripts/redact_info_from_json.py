@@ -91,11 +91,20 @@ replace_mapping_dict = {
     "legalaidaccountNumber": "OG123V1",
     "appellantPhoneNumber": "07451111111",
     "givenName": "redacted",
-    "data": "redacted"
+    "appellantfullname": "redacted",
+    "endappealapprovername": "redacted",
+    
+    # Refactor to separate list for CSV rows
+    "data": "redacted",
+}
 
+csv_rows_to_redact = {
+    "user_first_name": "redacted",
+    "user_last_name": "redacted"
 }
 
 replace_mapping_keys = list(replace_mapping_dict.keys())
+replace_csv_mapping_keys = list(csv_rows_to_redact.keys())
 
 
 def redact_values_from_json(file_path, keys_to_redact):
@@ -148,6 +157,8 @@ def redact_csv_rows(rows, keys_to_redact):
                 except json.JSONDecodeError:
                     print(f'Not a valid json within CSV field: {key}')
                     pass
+            elif key.lower() in replace_csv_mapping_keys:
+                row[key] = 'redacted'
             else:
                 pass
 
