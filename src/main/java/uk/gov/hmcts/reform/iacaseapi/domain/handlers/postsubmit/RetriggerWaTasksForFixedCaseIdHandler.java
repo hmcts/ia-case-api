@@ -92,10 +92,10 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
                                     Long.parseLong(caseIdList.get(i))
                             )
                     );
+                    log.info("Scheduled event " + Event.RE_TRIGGER_WA_TASKS + " for case ID " + caseIdList.get(i));
                 } catch (AsylumCaseServiceResponseException e) {
                     log.info(e.getMessage());
                 }
-                log.info("Scheduled event " + Event.RE_TRIGGER_WA_TASKS + " for case ID " + caseIdList.get(i));
             }
         }
 
