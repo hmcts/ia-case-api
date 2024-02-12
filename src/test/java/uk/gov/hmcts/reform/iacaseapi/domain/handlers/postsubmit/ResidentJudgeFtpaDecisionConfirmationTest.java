@@ -238,13 +238,13 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
                 callbackResponse.getConfirmationBody().get())
                 .contains("#### What happens next");
 
-        if(toggleDlrmFlag) {
+        if (toggleDlrmFlag) {
             assertThat(
                     callbackResponse.getConfirmationBody().get())
                     .contains(
                             "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>");
 
-        }else{
+        } else {
             assertThat(
                     callbackResponse.getConfirmationBody().get())
                     .contains(
