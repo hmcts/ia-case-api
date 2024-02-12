@@ -15,10 +15,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.DLRM_SETASIDE_FEATURE_FLAG;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -206,8 +210,9 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .contains("#### What happens next");
     }
 
-    @Test
-    void should_return_reheardRule35_confirmation() {
+    @ParameterizedTest
+    @MethodSource("toggleDlrmSwitchMode")
+    void should_return_reheardRule35_confirmation(boolean toggleDlrmFlag) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -215,7 +220,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule35"));
-        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(false);
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(toggleDlrmFlag);
 
 
         PostSubmitCallbackResponse callbackResponse =
@@ -230,46 +235,21 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
-    }
-
-    @Test
-    void should_return_reheardRule35_confirmation_dlrm() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-                .thenReturn(Optional.of("reheardRule35"));
-        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
-
-
-        PostSubmitCallbackResponse callbackResponse =
-                residentJudgeFtpaDecisionConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("You've recorded the First-tier permission to appeal decision");
-
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>");
-
-        assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("#### What happens next");
+
+        if(toggleDlrmFlag) {
+            assertThat(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
+                            "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>");
+
+        }else{
+            assertThat(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
+                            "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
+        }
     }
 
     @Test
@@ -423,6 +403,13 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    private static Stream<Arguments> toggleDlrmSwitchMode() {
+        return Stream.of(
+                Arguments.of(true),
+                Arguments.of(false)
+        );
     }
 
 
