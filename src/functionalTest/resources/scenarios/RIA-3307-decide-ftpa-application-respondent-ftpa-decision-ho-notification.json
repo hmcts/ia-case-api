@@ -16,22 +16,14 @@
           "homeOfficeNotificationsEligible": "Yes",
           "ftpaApplicantType": "respondent",
           "ftpaRespondentSubmitted": "Yes",
-          "ftpaRespondentRjDecisionOutcomeType": "reheardRule32",
+          "ftpaRespondentRjDecisionOutcomeType": "granted",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse",
-          "ftpaRespondentDecisionDocument": [
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
-                },
-                "description": "Some FTPA appellant decision and reasons"
-              }
-            }
-          ],
+          "ftpaApplicationRespondentDocument": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
+          },
           "ftpaRespondentNoticeDocument": [
             {
               "id": "2",
@@ -39,13 +31,22 @@
                 "document": {
                   "document_url": "http://document-store/BBB",
                   "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-appellant-notice.pdf"
+                  "document_filename": "some-ftpa-respondent-notice.pdf"
                 },
-                "description": "Some FTPA appellant notice"
+                "description": "Some FTPA respondent notice"
               }
             }
           ],
           "allFtpaRespondentDecisionDocuments": []
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentSubmitted": "Yes",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
         }
       }
     }
@@ -68,9 +69,9 @@
               "document": {
                 "document_url": "http://document-store/BBB",
                 "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+                "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
               },
-              "description": "Some FTPA appellant decision and reasons",
+              "description": "ftpaDecisionsAndReasonsDocumentDescription",
               "dateUploaded": "{$TODAY}",
               "tag": "ftpaDecisionAndReasons"
             }
@@ -81,9 +82,9 @@
               "document": {
                 "document_url": "http://document-store/BBB",
                 "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-ftpa-appellant-notice.pdf"
+                "document_filename": "some-ftpa-respondent-notice.pdf"
               },
-              "description": "Some FTPA appellant notice",
+              "description": "Some FTPA respondent notice",
               "dateUploaded": "{$TODAY}",
               "tag": "ftpaDecisionAndReasons"
             }
