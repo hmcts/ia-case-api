@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -259,6 +262,40 @@ class DecideFtpaApplicationMidEventTest {
     }
 
 
+    @ParameterizedTest
+    @MethodSource("applicantType")
+    void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_reheard35(String applicantType) {
+
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
+
+        if (applicantType.equals("appellant")) {
+            when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
+
+            when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
+                    .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+        } else {
+            when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of(YesOrNo.YES.toString()));
+
+            when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
+                    .thenReturn(Optional.of(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString()));
+        }
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                decideFtpaApplicationMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+        if (applicantType.equals("appellant")) {
+            verify(asylumCase).write(FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.YES);
+        } else {
+            verify(asylumCase).write(FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE, YesOrNo.YES);
+        }
+    }
+
     @Test
     void should_successfully_set_appellant_decision_reasons_notes_visibility_when_granted() {
 
@@ -447,6 +484,13 @@ class DecideFtpaApplicationMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    private static Stream<Arguments> applicantType() {
+        return Stream.of(
+                Arguments.of(Parties.RESPONDENT.toString()),
+                Arguments.of(Parties.APPELLANT.toString())
+        );
     }
 
 }
