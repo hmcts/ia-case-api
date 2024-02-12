@@ -19,10 +19,11 @@ class MakeAnApplicationTypesTest {
         assertEquals("Update appeal details", MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS.toString());
         assertEquals("Reinstate an ended appeal", MakeAnApplicationTypes.REINSTATE.toString());
         assertEquals("Other", MakeAnApplicationTypes.OTHER.toString());
+        assertEquals("Application under rule 31 or rule 32", MakeAnApplicationTypes.APPLICATION_UNDER_RULE_31_OR_RULE_32.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(11, MakeAnApplicationTypes.values().length);
+        assertEquals(12, MakeAnApplicationTypes.values().length);
     }
 }

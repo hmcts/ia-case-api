@@ -11,14 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TIME_EXTENSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,6 +76,7 @@ class MakeAnApplicationMidEventTest {
         "JUDGE_REVIEW",
         "REINSTATE",
         "WITHDRAW",
+        "APPLICATION_UNDER_RULE_31_OR_RULE_32",
         "OTHER"
     })
     void should_return_valid_make_an_application_types(String type) {
@@ -96,7 +90,8 @@ class MakeAnApplicationMidEventTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
-            new Value(OTHER.name(), OTHER.toString()));
+            new Value(OTHER.name(), OTHER.toString()),
+            new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
             new DynamicList(values.get(0), values);
 
@@ -183,6 +178,11 @@ class MakeAnApplicationMidEventTest {
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Describe the application you are making and explain the reasons for the application.");
+                break;
+            case APPLICATION_UNDER_RULE_31_OR_RULE_32:
+                verify(asylumCase, times(1))
+                    .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                        "Explain why the decision should be set aside or changed.");
                 break;
             default:
                 break;
