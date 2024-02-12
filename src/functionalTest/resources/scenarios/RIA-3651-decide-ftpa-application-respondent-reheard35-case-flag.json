@@ -16,19 +16,6 @@
           "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse",
-          "ftpaRespondentDecisionDocument": [
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
-                },
-                "description": "Some FTPA respondent decision and reasons"
-              }
-            }
-          ],
           "ftpaRespondentNoticeDocument": [
             {
               "id": "2",
@@ -44,6 +31,15 @@
           ],
           "allFtpaRespondentDecisionDocuments": []
         }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantSubmitted": "Yes",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
+        }
       }
     }
   },
@@ -58,19 +54,6 @@
         "ftpaRespondentDecisionDate": "{$TODAY}",
         "isFtpaRespondentDecided": "Yes",
         "allFtpaRespondentDecisionDocs": [
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
-              },
-              "description": "Some FTPA respondent decision and reasons",
-              "dateUploaded": "{$TODAY}",
-              "tag": "ftpaDecisionAndReasons"
-            }
-          },
           {
             "id": "1",
             "value": {
