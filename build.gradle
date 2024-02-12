@@ -339,7 +339,6 @@ dependencies {
 
     implementation group: 'org.springframework.security', name: 'spring-security-test'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
     implementation group: 'org.springframework', name: 'spring-context-support'
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
@@ -397,7 +396,6 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-crypto'
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7'
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
