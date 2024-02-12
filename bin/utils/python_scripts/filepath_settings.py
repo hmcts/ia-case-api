@@ -89,12 +89,11 @@ class Settings:
         "sponsorNameForDisplay": "redacted",
         "sponsorAddressForDisplay": "10 street",
         "sponsorMobileNumber": "07451111111",
-        "Name": "redacteds",
+        "Name": "redacted",
         "attendingAppellant": "redacted",
         "attendingHomeOfficeLegalRepresentative": "redacted",
-        "attendingAppellantsLegalRepresentative": "redacted"
-
-
+        "attendingAppellantsLegalRepresentative": "redacted",
+        "newMatters": "redacted"
     }
 
     csv_rows_to_redact = {
