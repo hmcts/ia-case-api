@@ -2012,8 +2012,8 @@ public enum AsylumCaseFieldDefinition {
     RELIST_CASE_IMMEDIATELY(
         "relistCaseImmediately", new TypeReference<YesOrNo>(){}),
 
-    NEXT_HEARING_LOCATION(
-        "nextHearingLocation", new TypeReference<String>(){}),
+    NEXT_HEARING_VENUE(
+        "nextHearingVenue", new TypeReference<DynamicList>(){}),
 
     NEXT_HEARING_DURATION(
         "nextHearingDuration", new TypeReference<String>(){}),

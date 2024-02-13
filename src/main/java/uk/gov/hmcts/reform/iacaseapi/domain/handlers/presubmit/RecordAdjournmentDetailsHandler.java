@@ -56,7 +56,6 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
         addressStaleOptionalInformation(asylumCase);
         preserveAdjournmentDetailsHistory(asylumCase);
         buildCurrentAdjournmentDetail(asylumCase);
@@ -102,7 +101,8 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
                         .map(YesOrNo::toString).orElse(""))
                 .nextHearingFormat(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class)
                         .map(dynamicList -> dynamicList.getValue().getLabel()).orElse(""))
-                .nextHearingLocation(asylumCase.read(NEXT_HEARING_LOCATION, String.class).orElse(""))
+                .nextHearingVenue(asylumCase.read(NEXT_HEARING_VENUE, DynamicList.class)
+                        .map(dynamicList -> dynamicList.getValue().getLabel()).orElse(""))
                 .nextHearingDuration(asylumCase.read(NEXT_HEARING_DURATION, String.class).orElse(""))
                 .nextHearingDate(asylumCase.read(NEXT_HEARING_DATE, String.class).orElse(""))
                 .nextHearingDateFixed(asylumCase.read(NEXT_HEARING_DATE_FIXED, String.class).orElse(""))

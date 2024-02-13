@@ -6,7 +6,7 @@
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "recordAdjournmentDetails",
-      "state": "preHearing",
+      "state": "prepareForHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -24,6 +24,22 @@
             ]
           },
           "listCaseHearingLength": "60",
+          "nextHearingVenue": {
+            "value": {
+              "code": "366559",
+              "label": "Glasgow"
+            },
+            "list_items": [
+              {
+                "code": "366559",
+                "label": "Glasgow"
+              },
+              {
+                "code": "366796",
+                "label": "Newcastle"
+              }
+            ]
+          },
           "listCaseHearingCentre": "glasgowTribunalsCentre"
         }
       }
@@ -49,7 +65,22 @@
           ]
         },
         "nextHearingDuration": "60",
-        "nextHearingLocation": "glasgowTribunalsCentre"
+        "nextHearingVenue": {
+          "value": {
+            "code": "366559",
+            "label": "Glasgow"
+          },
+          "list_items": [
+            {
+              "code": "366559",
+              "label": "Glasgow"
+            },
+            {
+              "code": "366796",
+              "label": "Newcastle"
+            }
+          ]
+        }
       }
     }
   }
