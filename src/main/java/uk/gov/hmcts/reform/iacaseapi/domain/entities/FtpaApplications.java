@@ -27,10 +27,12 @@ public class FtpaApplications {
     private List<IdValue<DocumentWithDescription>> ftpaEvidenceDocuments;
     private String ftpaApplicationDate;
     private String ftpaDecisionOutcomeType;
+    private String ftpaDecisionOutcomeTypeR35;
     private String ftpaDecisionRemadeRule32;
     private String ftpaDecisionRemadeRule32Text;
     private List<IdValue<DocumentWithDescription>> ftpaLegacyDecisionDocument;
     private Document ftpaNewDecisionDocument;
+    private Document ftpaR35Document;
     private FtpaDecisionCheckValues<String> ftpaDecisionNotesPoints;
     private String ftpaDecisionNotesDescription;
     private String ftpaDecisionDate;
