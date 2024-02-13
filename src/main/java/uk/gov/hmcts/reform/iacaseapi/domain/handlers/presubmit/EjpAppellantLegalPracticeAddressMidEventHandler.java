@@ -28,7 +28,7 @@ public class EjpAppellantLegalPracticeAddressMidEventHandler implements PreSubmi
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.START_APPEAL
+               && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
                && callback.getPageId().equals(NATIONALITIES_PAGE_ID)
                && sourceOfAppealEjp(callback.getCaseDetails().getCaseData()));
     }

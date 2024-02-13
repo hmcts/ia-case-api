@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 /*
@@ -47,8 +48,10 @@ public class EjpEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase
                 .getCaseDetails()
                 .getCaseData();
 
-        Boolean ejpCase = sourceOfAppealEjp(asylumCase);
-        Boolean isLegallyRepresentedEjp = isLegallyRepresentedEjpCase(asylumCase);
+        boolean ejpCase = sourceOfAppealEjp(asylumCase);
+        boolean isLegallyRepresentedEjp = isLegallyRepresentedEjpCase(asylumCase);
+        boolean isDetained = isAppellantInDetention(asylumCase);
+        YesOrNo appellantHasFixedAddress = asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class).orElse(YesOrNo.NO);
 
         if (ejpCase) {
             // EJP case repped to unrepped scenario
@@ -59,6 +62,19 @@ public class EjpEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase
                 asylumCase.clear(LEGAL_REP_EMAIL_EJP);
                 asylumCase.clear(LEGAL_REP_REFERENCE_EJP);
             }
+
+            // EJP case non-detained repped to unrepped
+            if (!isDetained && !isLegallyRepresentedEjp) {
+                asylumCase.clear(LEGAL_PRACTICE_ADDRESS_EJP);
+                asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
+            } else if (!isDetained && isLegallyRepresentedEjp) {
+                if (appellantHasFixedAddress.equals(YesOrNo.YES)) {
+                    asylumCase.clear(LEGAL_PRACTICE_ADDRESS_EJP);
+                } else {
+                    asylumCase.clear(APPELLANT_ADDRESS);
+                }
+            }
+
             // Paper form to EJP scenario - clears paper form fields not in EJP flow
             asylumCase.clear(TRIBUNAL_RECEIVED_DATE);
             asylumCase.clear(HOME_OFFICE_DECISION_DATE);

@@ -29,7 +29,7 @@ public class EjpContactPreferenceFieldMidEventHandler implements PreSubmitCallba
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && callback.getEvent() == Event.START_APPEAL
+                && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
                 && callback.getPageId().equals(ADDRESS_PAGE_ID)
                 && sourceOfAppealEjp(callback.getCaseDetails().getCaseData()));
     }
