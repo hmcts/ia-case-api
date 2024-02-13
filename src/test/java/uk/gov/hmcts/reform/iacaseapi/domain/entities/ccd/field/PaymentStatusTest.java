@@ -12,6 +12,7 @@ class PaymentStatusTest {
         assertEquals("Failed", PaymentStatus.FAILED.toString());
         assertEquals("Payment pending", PaymentStatus.PAYMENT_PENDING.toString());
         assertEquals("Timeout", PaymentStatus.TIMEOUT.toString());
+        assertEquals("Not paid", PaymentStatus.NOT_PAID.toString());
     }
 
     @Test
