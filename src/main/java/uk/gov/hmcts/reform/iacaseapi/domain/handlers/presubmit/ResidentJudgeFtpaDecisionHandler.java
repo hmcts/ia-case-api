@@ -166,9 +166,9 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
         if (ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
-                asylumCase.write(
-                        valueOf(String.format("FTPA_%s_REASON_REHEARING", ftpaApplicantUpperCase)),
-                        "Set aside and to be reheard under rule 35");
+            asylumCase.write(
+                valueOf(String.format("FTPA_%s_REASON_REHEARING", ftpaApplicantUpperCase)),
+                "Set aside and to be reheard under rule 35");
 
 
         }
