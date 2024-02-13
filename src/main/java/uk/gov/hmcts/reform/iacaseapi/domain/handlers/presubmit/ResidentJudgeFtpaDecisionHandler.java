@@ -163,6 +163,16 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             asylumCase.write(FTPA_FINAL_DECISION_REMADE_RULE_32, ftpaNewDecisionOfAppeal);
         }
+
+        if (ftpaDecisionOutcomeType.equals("reheardRule35")) {
+
+                asylumCase.write(
+                        valueOf(String.format("FTPA_%s_REASON_REHEARING", ftpaApplicantUpperCase)),
+                        "Set aside and to be reheard under rule 35");
+
+
+        }
+
         asylumCase.write(
             valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)),
             allFtpaDecisionDocuments);
@@ -190,6 +200,11 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             asylumCase,
             featureToggler.getValue("reheard-feature", false),
             currentDecision
+        );
+
+        ftpaDisplayService.setFtpaCaseDlrmFlag(
+            asylumCase,
+            featureToggler.getValue("dlrm-setaside-feature-flag", false)
         );
 
         addToFtpaList(asylumCase, ftpaApplicantType);

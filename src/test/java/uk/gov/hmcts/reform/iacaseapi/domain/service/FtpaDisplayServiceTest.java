@@ -283,6 +283,22 @@ class FtpaDisplayServiceTest {
     }
 
     @Test
+    void should_write_dlrm_flag_to_asylum_case_when_feature_flag_is_enabled() {
+
+        ftpaDisplayService.setFtpaCaseDlrmFlag(asylumCase, true);
+        verify(asylumCase, times(1)).write(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.YES);
+
+    }
+
+    @Test
+    void should_not_write_dlrm_flag_value_to_asylum_case_when_feature_flag_is_disabled() {
+
+        ftpaDisplayService.setFtpaCaseDlrmFlag(asylumCase, false);
+        verify(asylumCase, times(1)).write(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.NO);
+
+    }
+
+    @Test
     void should_not_write_ftpa_case_flag_to_asylum_case_for_a_decision_that_is_not_reheard() {
 
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "granted");

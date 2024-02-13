@@ -1619,6 +1619,12 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION(
             "ftpaRespondentRjDecisionNotesDescription", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_REASON_REHEARING(
+            "ftpaAppellantReasonRehearing", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_REASON_REHEARING(
+            "ftpaRespondentReasonRehearing", new TypeReference<String>(){}),
+
     FTPA_LIST(
             "ftpaList", new TypeReference<List<IdValue<FtpaApplications>>>(){}),
 
