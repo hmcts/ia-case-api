@@ -99,7 +99,7 @@ public class RecordAdjournmentDetailsHandlerTest {
             .additionalAdjournmentInfo("")
             .relistCaseImmediately("No")
             .nextHearingFormat("")
-            .nextHearingLocation("")
+            .nextHearingVenue("")
             .nextHearingDuration("")
             .nextHearingDate("")
             .nextHearingDateFixed("")

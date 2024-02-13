@@ -16,7 +16,7 @@ public class AdjournmentDetail {
     private String additionalAdjournmentInfo;
     private String relistCaseImmediately;
     private String nextHearingFormat;
-    private String nextHearingLocation;
+    private String nextHearingVenue;
     private String nextHearingDuration;
     private String nextHearingDate;
     private String nextHearingDateFixed;

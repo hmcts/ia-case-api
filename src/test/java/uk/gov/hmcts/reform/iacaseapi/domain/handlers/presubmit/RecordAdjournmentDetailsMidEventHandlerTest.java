@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_VENUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
@@ -56,6 +56,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
@@ -77,11 +78,16 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
     private CommonDataResponse commonDataResponse;
     @Mock
     private CategoryValues categoryValues;
+    @Mock
+    private LocationRefDataService locationRefDataService;
     private RecordAdjournmentDetailsMidEventHandler handler;
 
     private final DynamicList hearingChannel = new DynamicList(new Value("INTER", "In Person"),
             List.of(new Value("INTER",
                     "In Person")));
+    private final DynamicList nextHearingVenue = new DynamicList(new Value("366559", "Glasgow"),
+            List.of(new Value("366559",
+                    "Glasgow")));
 
     @BeforeEach
     public void setup() {
@@ -93,7 +99,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         when(refDataUserService.retrieveCategoryValues(CASE_MANAGEMENT_CANCELLATION_REASONS, IS_CHILD_REQUIRED))
                 .thenReturn(commonDataResponse);
 
-        handler = new RecordAdjournmentDetailsMidEventHandler(refDataUserService);
+        handler = new RecordAdjournmentDetailsMidEventHandler(refDataUserService, locationRefDataService);
 
     }
 
@@ -103,6 +109,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         initializeCommonHearingValues();
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(nextHearingVenue);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(MID_EVENT, callback);
@@ -111,8 +118,8 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, hearingChannel);
         verify(asylumCase, times(1)).write(NEXT_HEARING_DURATION, "60");
-        verify(asylumCase, times(1))
-                .write(NEXT_HEARING_LOCATION, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
+        verify(asylumCase, times(2))
+                .write(NEXT_HEARING_VENUE, nextHearingVenue);
     }
 
     @Test
@@ -146,7 +153,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         verify(asylumCase, never()).write(eq(NEXT_HEARING_FORMAT), any());
         verify(asylumCase, never()).write(eq(NEXT_HEARING_DURATION), any());
-        verify(asylumCase, never()).write(eq(NEXT_HEARING_LOCATION), any());
+        verify(asylumCase, times(1)).write(eq(NEXT_HEARING_VENUE), any());
     }
 
 
