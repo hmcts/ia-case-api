@@ -1626,7 +1626,19 @@ public enum AsylumCaseFieldDefinition {
             "isFtpaListVisible", new TypeReference<YesOrNo>(){}),
 
     IS_DLRM_SET_ASIDE_ENABLED(
-            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),;
+            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_R35_LISTING_ADDITIONAL_INS(
+            "ftpaAppellantR35ListingAdditionalIns", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_R35_LISTING_ADDITIONAL_INS(
+            "ftpaRespondentR35ListingAdditionalIns", new TypeReference<String>(){}),
+
+    FTPA_R35_APPELLANT_DOCUMENT(
+            "ftpaR35AppellantDocument", new TypeReference<Document>(){}),
+
+    FTPA_R35_RESPONDENT_DOCUMENT(
+            "ftpaR35RespondentDocument", new TypeReference<Document>(){}),;
 
     private final String value;
     private final TypeReference typeReference;
