@@ -116,12 +116,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                 )
         );
 
-        List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
-            documentsAppender.append(
-                existingAllFtpaDecisionDocuments,
-                ftpaDecisionAndReasonsDocuments
-            );
-
         String ftpaDecisionOutcomeType = asylumCase.read(
                 valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantUpperCase)), String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
@@ -172,6 +166,12 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
 
         }
+
+        List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
+                documentsAppender.append(
+                        existingAllFtpaDecisionDocuments,
+                        ftpaDecisionAndReasonsDocuments
+                );
 
         asylumCase.write(
             valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)),
