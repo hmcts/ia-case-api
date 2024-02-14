@@ -125,6 +125,46 @@ withNightlyPipeline(type, product, component) {
     if (!params.skipMutationTests) {
         enableMutationTest()
     }
+
+    if (!params.skipSmokeTest) {
+        stage('Smoke Test') {
+            builder.gradle('smoke')
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/smoke",
+                    reportFiles          : "index.html",
+                    reportName           : "Smoke Test Report"
+            ]
+        }
+    }
+    if (!params.skipUnitTests) {
+        stage('Unit Tests') {
+            builder.gradle('test')
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/test",
+                    reportFiles          : "index.html",
+                    reportName           : "Unit Test Report"
+            ]
+        }
+    }
+    if (!params.skipIntegrationTests) {
+        stage('Integration Tests') {
+            builder.gradle('integration')
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/integration",
+                    reportFiles          : "index.html",
+                    reportName           : "Integration Test Report"
+            ]
+        }
+    }
     if (!params.skipFullFunctionalTests) {
         enableFullFunctionalTest()
     }
@@ -161,48 +201,6 @@ withNightlyPipeline(type, product, component) {
                 reportFiles          : 'index.html',
                 reportName           : 'Mutation Test Report'
         ])
-    }
-
-    before('fullFunctionalTest') {
-        if (!params.skipSmokeTest) {
-            stage('Smoke Test') {
-                builder.gradle('smoke')
-                publishHTML target: [
-                        allowMissing         : true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : "build/reports/tests/smoke",
-                        reportFiles          : "index.html",
-                        reportName           : "Smoke Test Report"
-                ]
-            }
-        }
-        if (!params.skipUnitTests) {
-            stage('Unit Tests') {
-                builder.gradle('test')
-                publishHTML target: [
-                        allowMissing         : true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : "build/reports/tests/test",
-                        reportFiles          : "index.html",
-                        reportName           : "Unit Test Report"
-                ]
-            }
-        }
-        if (!params.skipIntegrationTests) {
-            stage('Integration Tests') {
-                builder.gradle('integration')
-                publishHTML target: [
-                        allowMissing         : true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : "build/reports/tests/integration",
-                        reportFiles          : "index.html",
-                        reportName           : "Integration Test Report"
-                ]
-            }
-        }
     }
 
     afterAlways('fullFunctionalTest') {
