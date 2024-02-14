@@ -178,6 +178,13 @@ public class FtpaDisplayService {
         }
     }
 
+    public void setFtpaCaseDlrmFlag(AsylumCase asylumCase, boolean isDlrmFeatureEnabled) {
+
+        asylumCase.write(AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED,
+            isDlrmFeatureEnabled ? YesOrNo.YES : YesOrNo.NO);
+
+    }
+
     public void mapFtpaDecision(boolean isMigration, AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
 
         ftpaApplication.setIsFtpaNoticeOfDecisionSetAside(asylumCase
