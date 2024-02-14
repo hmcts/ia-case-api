@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.annotation.RequestScope;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetailsProvider;
@@ -17,11 +18,13 @@ public class UserDetailsProviderConfiguration {
     @Primary
     public UserDetailsProvider getRequestUserDetailsProvider(
         RequestUserAccessTokenProvider requestUserAccessTokenProvider,
-        IdamApi idamApi
+        IdamApi idamApi,
+        IdamService idamService
     ) {
         return new IdamUserDetailsProvider(
             requestUserAccessTokenProvider,
-            idamApi
+            idamApi,
+            idamService
         );
     }
 
