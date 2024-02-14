@@ -125,46 +125,6 @@ withNightlyPipeline(type, product, component) {
     if (!params.skipMutationTests) {
         enableMutationTest()
     }
-
-    if (!params.skipSmokeTest) {
-        stage('Smoke Test') {
-            builder.gradle('smoke')
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/smoke",
-                    reportFiles          : "index.html",
-                    reportName           : "Smoke Test Report"
-            ]
-        }
-    }
-    if (!params.skipUnitTests) {
-        stage('Unit Tests') {
-            builder.gradle('test')
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/test",
-                    reportFiles          : "index.html",
-                    reportName           : "Unit Test Report"
-            ]
-        }
-    }
-    if (!params.skipIntegrationTests) {
-        stage('Integration Tests') {
-            builder.gradle('integration')
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/integration",
-                    reportFiles          : "index.html",
-                    reportName           : "Integration Test Report"
-            ]
-        }
-    }
     if (!params.skipFullFunctionalTests) {
         enableFullFunctionalTest()
     }
@@ -178,6 +138,54 @@ withNightlyPipeline(type, product, component) {
         reportFiles          : 'dependency-check-report.html',
         reportName           : 'Dependency Check Report'
         ])
+        if (!params.skipSmokeTest) {
+            stage('Smoke Test') {
+                try {
+                    builder.gradle('smoke')
+                } finally {
+                    publishHTML target: [
+                            allowMissing         : true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : "build/reports/tests/smoke",
+                            reportFiles          : "index.html",
+                            reportName           : "Smoke Test Report"
+                    ]
+                }
+            }
+        }
+        if (!params.skipUnitTests) {
+            stage('Unit Tests') {
+                try {
+                    builder.gradle('test')
+                } finally {
+                    publishHTML target: [
+                            allowMissing         : true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : "build/reports/tests/test",
+                            reportFiles          : "index.html",
+                            reportName           : "Unit Test Report"
+                    ]
+                }
+            }
+        }
+        if (!params.skipIntegrationTests) {
+            stage('Integration Tests') {
+                try {
+                    builder.gradle('integration')
+                } finally {
+                    publishHTML target: [
+                            allowMissing         : true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : "build/reports/tests/integration",
+                            reportFiles          : "index.html",
+                            reportName           : "Integration Test Report"
+                    ]
+                }
+            }
+        }
     }
 
     afterAlways('fortify-scan') {
