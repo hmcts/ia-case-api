@@ -8,6 +8,13 @@ properties([
         string(name: 'SecurityRules',
             defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
             description: 'The URL you want to run these tests against'),
+        booleanParam(name: 'skipFortifyScan', defaultValue: false, description: 'Tick the checkbox to skip Fortify Scan stage'),
+        booleanParam(name: 'skipSecurityScan', defaultValue: false, description: 'Tick the checkbox to skip Security Scan stage'),
+        booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox to skip Mutation Tests stage'),
+        booleanParam(name: 'skipSmokeTest', defaultValue: false, description: 'Tick the checkbox to skip Smoke Test stage'),
+        booleanParam(name: 'skipUnitTests', defaultValue: false, description: 'Tick the checkbox to skip Unit Tests stage'),
+        booleanParam(name: 'skipIntegrationTests', defaultValue: false, description: 'Tick the checkbox to skip Integration Tests stage'),
+        booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox to skip Full Functional Tests stage'),
     ])
 ])
 
@@ -109,11 +116,18 @@ withNightlyPipeline(type, product, component) {
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
 
     loadVaultSecrets(secrets)
-    enableFortifyScan()
-    enableSecurityScan()
-    enableMutationTest()
-    enableSlackNotifications('#ia-tech')
-    enableFullFunctionalTest()
+    if (!params.skipFortifyScan) {
+        enableFortifyScan()
+    }
+    if (!params.skipSecurityScan) {
+        enableSecurityScan()
+    }
+    if (!params.skipMutationTests) {
+        enableMutationTest()
+    }
+    if (!params.skipFullFunctionalTests) {
+        enableFullFunctionalTest()
+    }
 
     afterAlways('DependencyCheckNightly') {
         publishHTML([
@@ -150,38 +164,44 @@ withNightlyPipeline(type, product, component) {
     }
 
     before('fullFunctionalTest') {
-        stage('Smoke Test') {
-            builder.gradle('smoke')
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/smoke",
-                    reportFiles          : "index.html",
-                    reportName           : "Smoke Test Report"
-            ]
+        if (!params.skipSmokeTest) {
+            stage('Smoke Test') {
+                builder.gradle('smoke')
+                publishHTML target: [
+                        allowMissing         : true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : "build/reports/tests/smoke",
+                        reportFiles          : "index.html",
+                        reportName           : "Smoke Test Report"
+                ]
+            }
         }
-        stage('Unit Tests') {
-            builder.gradle('test')
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/test",
-                    reportFiles          : "index.html",
-                    reportName           : "Unit Test Report"
-            ]
+        if (!params.skipUnitTests) {
+            stage('Unit Tests') {
+                builder.gradle('test')
+                publishHTML target: [
+                        allowMissing         : true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : "build/reports/tests/test",
+                        reportFiles          : "index.html",
+                        reportName           : "Unit Test Report"
+                ]
+            }
         }
-        stage('Integration Tests') {
-            builder.gradle('integration')
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/integration",
-                    reportFiles          : "index.html",
-                    reportName           : "Integration Test Report"
-            ]
+        if (!params.skipIntegrationTests) {
+            stage('Integration Tests') {
+                builder.gradle('integration')
+                publishHTML target: [
+                        allowMissing         : true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : "build/reports/tests/integration",
+                        reportFiles          : "index.html",
+                        reportName           : "Integration Test Report"
+                ]
+            }
         }
     }
 
