@@ -47,6 +47,8 @@ class FtpaDisplayServiceTest {
     Document maybeFtpaApplicationDecisionAndReasonsDocument;
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
+    @Mock
+    List<IdValue<DocumentWithDescription>> maybeFtpaR35DecisionNoticeDocument;
 
     @Mock
     Document maybeFtpaRule35Document;
@@ -430,17 +432,21 @@ class FtpaDisplayServiceTest {
                     .thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
             when(asylumCase.read(FTPA_RESPONDENT_DECISION_LST_INS, String.class))
                     .thenReturn(Optional.of("Listing instructions example legacy"));
+            when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT))
+                    .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
+            when(asylumCase.read(FTPA_RESPONDENT_DECISION_OBJECTIONS, String.class))
+                    .thenReturn(Optional.of("Objection description example"));
         } else {
             when(asylumCase.read(FTPA_RESPONDENT_R35_LISTING_ADDITIONAL_INS, String.class))
                     .thenReturn(Optional.of("Listing instructions example r35"));
             when(asylumCase.read(FTPA_R35_RESPONDENT_DOCUMENT, Document.class))
                     .thenReturn(Optional.of(maybeFtpaRule35Document));
+            when(asylumCase.read(FTPA_RESPONDENT_R35_NOTICE_DOCUMENT))
+                    .thenReturn(Optional.of(maybeFtpaR35DecisionNoticeDocument));
+            when(asylumCase.read(FTPA_RESPONDENT_R35_DECISION_OBJECTIONS, String.class))
+                    .thenReturn(Optional.of("Objection description example rule 35"));
         }
 
-        when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT))
-                .thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
-        when(asylumCase.read(FTPA_RESPONDENT_DECISION_OBJECTIONS, String.class))
-                .thenReturn(Optional.of("Objection description example"));
         when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION, String.class))
                 .thenReturn(Optional.of("Information for UT example"));
         when(asylumCase.read(FTPA_RESPONDENT_DECISION_DATE, String.class))
@@ -456,6 +462,8 @@ class FtpaDisplayServiceTest {
             assertEquals("Listing instructions example legacy", ftpaApplication.getFtpaDecisionLstIns());
             assertNull(ftpaApplication.getFtpaR35Document());
             assertNull(ftpaApplication.getFtpaDecisionOutcomeTypeR35());
+            assertEquals(maybeFtpaDecisionNoticeDocument, ftpaApplication.getFtpaNoticeDocument());
+            assertEquals("Objection description example", ftpaApplication.getFtpaDecisionObjections());
         } else {
             assertNull(ftpaApplication.getIsFtpaNoticeOfDecisionSetAside());
             assertNull(ftpaApplication.getFtpaDecisionOutcomeType());
@@ -463,9 +471,10 @@ class FtpaDisplayServiceTest {
             assertEquals(maybeFtpaRule35Document, ftpaApplication.getFtpaR35Document());
             assertEquals("Review decision under rule 35", ftpaApplication.getFtpaDecisionOutcomeTypeR35());
             assertEquals("Listing instructions example r35", ftpaApplication.getFtpaDecisionLstIns());
+            assertEquals(maybeFtpaR35DecisionNoticeDocument, ftpaApplication.getFtpaNoticeDocument());
+            assertEquals("Objection description example rule 35", ftpaApplication.getFtpaDecisionObjections());
         }
-        assertEquals(maybeFtpaDecisionNoticeDocument, ftpaApplication.getFtpaNoticeDocument());
-        assertEquals("Objection description example", ftpaApplication.getFtpaDecisionObjections());
+
         assertEquals("Information for UT example", ftpaApplication.getFtpaDecisionNotesDescription());
         assertEquals(now.toString(), ftpaApplication.getFtpaDecisionDate());
         assertEquals(ftpaCheckValues, ftpaApplication.getFtpaDecisionNotesPoints());
