@@ -150,20 +150,8 @@ withNightlyPipeline(type, product, component) {
     }
 
     before('fullFunctionalTest') {
-        try {
-            builder.gradle('test')
-            builder.gradle('integration')
+        stage('Smoke Test') {
             builder.gradle('smoke')
-        } finally {
-            junit '**/test-results/**/*.xml'
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/test",
-                    reportFiles          : "index.html",
-                    reportName           : "Unit Test Report"
-            ]
             publishHTML target: [
                     allowMissing         : true,
                     alwaysLinkToLastBuild: true,
@@ -172,6 +160,20 @@ withNightlyPipeline(type, product, component) {
                     reportFiles          : "index.html",
                     reportName           : "Smoke Test Report"
             ]
+        }
+        stage('Unit Tests') {
+            builder.gradle('test')
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/test",
+                    reportFiles          : "index.html",
+                    reportName           : "Unit Test Report"
+            ]
+        }
+        stage('Integration Tests') {
+            builder.gradle('integration')
             publishHTML target: [
                     allowMissing         : true,
                     alwaysLinkToLastBuild: true,
