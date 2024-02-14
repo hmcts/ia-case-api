@@ -195,25 +195,6 @@ public class FtpaDisplayService {
                         valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType)), String.class)
                 .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
         ftpaApplication.setFtpaDecisionOutcomeType(ftpaDecisionOutcomeType);
-
-        if (!isMigration) {
-            if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
-                asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32_TEXT", ftpaApplicantType)),
-                        String.class)
-                    .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32Text);
-            }
-            if (ftpaDecisionOutcomeType.equals("reheardRule35")) {
-                addRule35Data(asylumCase, ftpaApplicantType, ftpaApplication);
-            }
-        } else {
-            if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
-                asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType)), String.class)
-                    .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32);
-            }
-            asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_LST_INS", ftpaApplicantType)), String.class)
-                    .ifPresent(ftpaApplication::setFtpaDecisionLstIns);
-        }
-
         addFtpaDecisionAndReasons(isMigration, asylumCase, ftpaApplicantType, ftpaApplication);
 
         final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
@@ -231,6 +212,24 @@ public class FtpaDisplayService {
         asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType)), String.class)
                 .ifPresent(ftpaApplication::setFtpaDecisionDate);
 
+        if (!isMigration) {
+            if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
+                asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32_TEXT", ftpaApplicantType)),
+                                String.class)
+                        .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32Text);
+            }
+            if (ftpaDecisionOutcomeType.equals("reheardRule35")) {
+                addRule35Data(asylumCase, ftpaApplicantType, ftpaApplication);
+            }
+        } else {
+            if (ftpaDecisionOutcomeType.equals("remadeRule32")) {
+                asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_REMADE_RULE_32", ftpaApplicantType)), String.class)
+                        .ifPresent(ftpaApplication::setFtpaDecisionRemadeRule32);
+            }
+            asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_LST_INS", ftpaApplicantType)), String.class)
+                    .ifPresent(ftpaApplication::setFtpaDecisionLstIns);
+        }
+
     }
 
     private void addRule35Data(AsylumCase asylumCase, String ftpaApplicantType, FtpaApplications ftpaApplication) {
@@ -239,12 +238,18 @@ public class FtpaDisplayService {
                         valueOf(String.format("FTPA_R35_%s_DOCUMENT", ftpaApplicantType)), Document.class)
                         .orElse(null);
 
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaR35DecisionNoticeDocument =
+                asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", ftpaApplicantType)));
+
+        maybeFtpaR35DecisionNoticeDocument.ifPresent(ftpaApplication::setFtpaNoticeDocument);
         ftpaApplication.setFtpaR35Document(rule35NoticeDocument);
         ftpaApplication.setFtpaDecisionOutcomeTypeR35("Review decision under rule 35");
         ftpaApplication.setFtpaDecisionOutcomeType(null);
         ftpaApplication.setIsFtpaNoticeOfDecisionSetAside(null);
         asylumCase.read(valueOf(String.format("FTPA_%s_R35_LISTING_ADDITIONAL_INS", ftpaApplicantType)), String.class)
                 .ifPresent(ftpaApplication::setFtpaDecisionLstIns);
+        asylumCase.read(valueOf(String.format("FTPA_%s_R35_DECISION_OBJECTIONS", ftpaApplicantType)), String.class)
+                .ifPresent(ftpaApplication::setFtpaDecisionObjections);
     }
 
     private void addFtpaDecisionAndReasons(boolean isMigration, AsylumCase asylumCase,
