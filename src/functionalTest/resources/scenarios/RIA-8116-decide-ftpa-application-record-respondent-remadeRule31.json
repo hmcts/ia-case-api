@@ -1,0 +1,114 @@
+{
+  "description": "RIA-8116 Decide FTPA application respondent (remadeRule31) - FTPA list",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8116,
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentSubmitted": "Yes",
+          "ftpaRespondentRjDecisionOutcomeType": "remadeRule31",
+          "ftpaRespondentDecisionRemadeRule32Text": "Rule 31 decision text",
+          "allFtpaRespondentDecisionDocuments": [],
+          "ftpaList": [
+            {
+              "id": "1",
+              "value": {
+                "ftpaApplicant": "respondent",
+                "ftpaOutOfTimeDocuments": [],
+                "ftpaGroundsDocuments": [
+                  {
+                    "id": "2",
+                    "value": {
+                      "document": {
+                        "document_url": "http://document-store/BBB",
+                        "document_binary_url": "http://document-store/BBB/binary",
+                        "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                      },
+                      "description": "Some FTPA respondent grounds of application"
+                    }
+                  }
+                ],
+                "ftpaEvidenceDocuments": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document": {
+                        "document_url": "http://document-store/CCC",
+                        "document_binary_url": "http://document-store/CCC/binary",
+                        "document_filename": "some-ftpa-respondent-evidence.pdf"
+                      },
+                      "description": "Some FTPA respondent application evidence"
+                    }
+                  }
+                ],
+                "ftpaApplicationDate": "{$TODAY}"
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaRespondentDecisionDate": "{$TODAY}",
+        "isFtpaRespondentDecided": "Yes",
+        "sendDirectionActionAvailable": "No",
+        "ftpaList": [
+          {
+            "id": "1",
+            "value": {
+              "ftpaApplicant": "respondent",
+              "isFtpaNoticeOfDecisionSetAside": "No",
+              "ftpaOutOfTimeDocuments": [],
+              "ftpaGroundsDocuments": [
+                {
+                  "id": "2",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                    },
+                    "description": "Some FTPA respondent grounds of application"
+                  }
+                }
+              ],
+              "ftpaEvidenceDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/CCC",
+                      "document_binary_url": "http://document-store/CCC/binary",
+                      "document_filename": "some-ftpa-respondent-evidence.pdf"
+                    },
+                    "description": "Some FTPA respondent application evidence"
+                  }
+                }
+              ],
+              "ftpaApplicationDate": "{$TODAY}",
+              "ftpaDecisionOutcomeType": "remadeRule31",
+              "ftpaDecisionRemadeRule32Text": "Rule 31 decision text",
+              "ftpaDecisionDate": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
