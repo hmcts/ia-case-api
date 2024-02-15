@@ -67,7 +67,7 @@ ia-case-payments-api:
     disableTraefikTls: true
     devcpuRequests: 1000m
     devmemoryRequests: 2Gi
-    devcpuLimits: 1
+    devcpuLimits: 2
     devmemoryLimits: 6Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -101,7 +101,7 @@ ia-case-documents-api:
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 1000m
     devmemoryRequests: 2Gi
-    devcpuLimits: 1
+    devcpuLimits: 2
     devmemoryLimits: 6Gi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
@@ -151,7 +151,7 @@ ia-case-notifications-api:
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 1000m
     devmemoryRequests: 2Gi
-    devcpuLimits: 1
+    devcpuLimits: 2
     devmemoryLimits: 6Gi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
@@ -347,7 +347,7 @@ ia-bail-case-api:
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     devcpuRequests: 1000m
     devmemoryRequests: 2Gi
-    devcpuLimits: 1
+    devcpuLimits: 2
     devmemoryLimits: 6Gi
     environment:
       CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -431,7 +431,7 @@ ia-home-office-integration-api:
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 1000m
     devmemoryRequests: 2Gi
-    devcpuLimits: 1
+    devcpuLimits: 2
     devmemoryLimits: 6Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -481,7 +481,7 @@ ia-aip-frontend:
     applicationPort: 3000
     devcpuRequests: 1000m
     devmemoryRequests: 2Gi
-    devcpuLimits: 1
+    devcpuLimits: 2
     devmemoryLimits: 6Gi
     environment:
       HTTP_PROTOCOL: http
@@ -578,7 +578,7 @@ xui-webapp:
     devmemoryRequests: 7Gi
     devcpuRequests: 3000m
     devmemoryLimits: 10Gi
-    devcpuLimits: 6000m
+    devcpuLimits: 60002
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
@@ -666,7 +666,7 @@ ccd:
       imagePullPolicy: Always
       devcpuRequests: 1000m
       devmemoryRequests: 2Gi
-      devcpuLimits: 1
+      devcpuLimits: 2
       devmemoryLimits: 6Gi
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
@@ -766,7 +766,7 @@ ccd:
       imagePullPolicy: Always
       devcpuRequests: 1000m
       devmemoryRequests: 1Gi
-      devcpuLimits: 1
+      devcpuLimits: 2
       devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
