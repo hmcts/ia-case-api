@@ -55,20 +55,6 @@ public class DecideFtpaApplicationMidEvent implements PreSubmitCallbackHandler<A
             .read(FTPA_APPLICANT_TYPE, String.class)
             .orElseThrow(() -> new IllegalStateException("FtpaApplicantType is not present"));
 
-        Optional<String> ftpaRjDecisionOutcomeType = asylumCase.read(ftpaApplicantType.equals(APPELLANT.toString())
-            ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE
-            : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class);
-
-        if (!HandlerUtils.isRepJourney(asylumCase) && ftpaRjDecisionOutcomeType.isPresent()) {
-            String ftpaRjDecisionOutcomeTypeValue = ftpaRjDecisionOutcomeType.get();
-            if (ftpaRjDecisionOutcomeTypeValue.equals(FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35.toString())
-                || ftpaRjDecisionOutcomeTypeValue.equals(FtpaResidentJudgeDecisionOutcomeType.REMADE_RULE32.toString())) {
-                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("For Legal Representative Journey Only");
-                return response;
-            }
-        }
-
         Optional<String> ftpaSubmitted = asylumCase.read(
             ftpaApplicantType.equals(APPELLANT.toString()) ? FTPA_APPELLANT_SUBMITTED : FTPA_RESPONDENT_SUBMITTED, String.class);
 
