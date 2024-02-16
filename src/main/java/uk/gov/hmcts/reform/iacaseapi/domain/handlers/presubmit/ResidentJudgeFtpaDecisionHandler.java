@@ -104,40 +104,39 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         boolean isDlrmSetAside
                 = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
-        if (!ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
-            List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments = new ArrayList<>();
+        List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments = new ArrayList<>();
 
-            addFtpaDecisionAndReasonsDocument(asylumCase, ftpaApplicantType, ftpaDecisionAndReasonsDocuments);
+        addFtpaDecisionAndReasonsDocument(asylumCase, ftpaApplicantType, ftpaDecisionAndReasonsDocuments);
 
-            final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
-                    valueOf(String.format("FTPA_%s_NOTICE_DOCUMENT", ftpaApplicantUpperCase)));
-            final List<IdValue<DocumentWithDescription>> existingFtpaDecisionNoticeDocuments = maybeFtpaDecisionNoticeDocument.orElse(Collections.emptyList());
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
+                valueOf(String.format("FTPA_%s_NOTICE_DOCUMENT", ftpaApplicantUpperCase)));
+        final List<IdValue<DocumentWithDescription>> existingFtpaDecisionNoticeDocuments = maybeFtpaDecisionNoticeDocument.orElse(Collections.emptyList());
 
-            ftpaDecisionAndReasonsDocuments.addAll(
-                    documentReceiver
-                            .tryReceiveAll(
-                                    existingFtpaDecisionNoticeDocuments,
-                                    DocumentTag.FTPA_DECISION_AND_REASONS
-                            )
-            );
+        ftpaDecisionAndReasonsDocuments.addAll(
+                documentReceiver
+                        .tryReceiveAll(
+                                existingFtpaDecisionNoticeDocuments,
+                                DocumentTag.FTPA_DECISION_AND_REASONS
+                        )
+        );
 
-            final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaDecisionDocuments = asylumCase.read(
-                    valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)));
-            final List<IdValue<DocumentWithMetadata>> existingAllFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
+        final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaDecisionDocuments = asylumCase.read(
+                valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)));
+        final List<IdValue<DocumentWithMetadata>> existingAllFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
 
 
-            List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
-                    documentsAppender.append(
-                            existingAllFtpaDecisionDocuments,
-                            ftpaDecisionAndReasonsDocuments
-                    );
+        List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
+                documentsAppender.append(
+                        existingAllFtpaDecisionDocuments,
+                        ftpaDecisionAndReasonsDocuments
+                );
 
-            asylumCase.write(
-                    valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)),
-                    allFtpaDecisionDocuments);
+        asylumCase.write(
+                valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)),
+                allFtpaDecisionDocuments);
 
-        }
+
 
         if (isDlrmSetAside && ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
