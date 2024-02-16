@@ -177,7 +177,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
         verify(scheduler, times(10)).schedule(timedEventArgumentCaptor.capture());
 
-        ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
+        ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(1);
         TimedEvent finalResult = timedEventArgumentCaptor.getValue();
         TimedEvent expectedFinalTimedEvent = new TimedEvent(
                 timedEventId,
