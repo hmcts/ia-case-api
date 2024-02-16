@@ -97,13 +97,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
         final String ftpaApplicantUpperCase = ftpaApplicantType.toUpperCase();
 
-        String ftpaDecisionOutcomeType = asylumCase.read(
-                        valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantUpperCase)), String.class)
-                .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
-
-        boolean isDlrmSetAside
-                = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
-
         List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments = new ArrayList<>();
 
         addFtpaDecisionAndReasonsDocument(asylumCase, ftpaApplicantType, ftpaDecisionAndReasonsDocuments);
@@ -133,6 +126,13 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         asylumCase.write(
                 valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)),
                 allFtpaDecisionDocuments);
+
+        String ftpaDecisionOutcomeType = asylumCase.read(
+                        valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantUpperCase)), String.class)
+                .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
+
+        boolean isDlrmSetAside
+                = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
         if (isDlrmSetAside && ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
