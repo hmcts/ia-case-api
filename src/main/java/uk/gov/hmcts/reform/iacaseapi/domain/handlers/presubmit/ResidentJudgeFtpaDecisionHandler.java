@@ -104,7 +104,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         boolean isDlrmSetAside
                 = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
-
         List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments = new ArrayList<>();
 
         addFtpaDecisionAndReasonsDocument(asylumCase, ftpaApplicantType, ftpaDecisionAndReasonsDocuments);
@@ -125,7 +124,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                 valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)));
         final List<IdValue<DocumentWithMetadata>> existingAllFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
 
-
         List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
                 documentsAppender.append(
                         existingAllFtpaDecisionDocuments,
@@ -135,8 +133,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         asylumCase.write(
                 valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantUpperCase)),
                 allFtpaDecisionDocuments);
-
-
 
         if (isDlrmSetAside && ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
