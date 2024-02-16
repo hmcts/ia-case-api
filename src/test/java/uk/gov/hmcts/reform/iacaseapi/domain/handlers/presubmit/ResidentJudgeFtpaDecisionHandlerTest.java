@@ -17,14 +17,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJu
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import com.google.common.collect.Lists;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -308,8 +306,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "appellant",
-            "respondent",
+        "appellant",
+        "respondent",
     })
     void should_append_all_ftpa_set_aside_documents(String applicantType) {
 
@@ -512,8 +510,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "appellant",
-            "respondent",
+        "appellant",
+        "respondent",
     })
     void should_update_ftpa_application_with_reason_rehearing_r35(String applicantType) {
         when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
