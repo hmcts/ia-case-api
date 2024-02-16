@@ -6,6 +6,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -245,17 +246,19 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private void handleInCountryAppeal(AsylumCase asylumCase) {
 
         Optional<String> homeOfficeDecisionDateOptional = asylumCase.read(HOME_OFFICE_DECISION_DATE);
-        LocalDate decisionDate =
-            parse(homeOfficeDecisionDateOptional
-                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
 
-        if (decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
-            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
-        } else {
-            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
-            asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
-            asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
-            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+        if (!isEjpCase(asylumCase)) {
+            LocalDate decisionDate =
+                parse(homeOfficeDecisionDateOptional
+                    .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
+            if (decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+            } else {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+                asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+                asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+                asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+            }
         }
     }
 

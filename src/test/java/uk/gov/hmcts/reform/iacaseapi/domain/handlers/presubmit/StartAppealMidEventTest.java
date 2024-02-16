@@ -347,7 +347,7 @@ class StartAppealMidEventTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "START_APPEAL", "EDIT_APPEAL"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_error_when_upper_tribunal_reference_number_format_is_wrong(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -366,7 +366,7 @@ class StartAppealMidEventTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "START_APPEAL", "EDIT_APPEAL"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_validate_as_correct_format_for_upper_tribunal_reference_number(Event event) {
         when(callback.getEvent()).thenReturn(event);
