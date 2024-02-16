@@ -1633,6 +1633,8 @@ public enum AsylumCaseFieldDefinition {
 
     IS_DLRM_SET_ASIDE_ENABLED(
             "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),
+    IS_DLRM_FEE_REMISSION_ENABLED(
+        "isDlrmFeeRemissionEnabled", new TypeReference<YesOrNo>(){}),
 
     FTPA_APPELLANT_R35_LISTING_ADDITIONAL_INS(
             "ftpaAppellantR35ListingAdditionalIns", new TypeReference<String>(){}),
