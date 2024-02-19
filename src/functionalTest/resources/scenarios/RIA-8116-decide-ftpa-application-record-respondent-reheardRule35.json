@@ -1,0 +1,175 @@
+{
+  "description": "RIA-8116 Decide FTPA application respondent (reheardRule35) - FTPA list",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8116,
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentSubmitted": "Yes",
+          "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
+          "allFtpaRespondentDecisionDocuments": [],
+          "ftpaRespondentR35ListingJudgeExclude": "Some judge to exclude",
+          "ftpaRespondentR35ListingAdditionalIns": "Some listing instructions",
+          "ftpaRespondentR35DecisionObjections": "Some rule 35 decision objections",
+          "ftpaR35RespondentDocument": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "ftpa-r35-document.pdf"
+          },
+          "ftpaRespondentR35NoticeDocument": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "some-ftpa-r35-notice-document-2.pdf"
+                },
+                "description": "Some R35 Notice 2"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-r35-notice-document-1.pdf"
+                },
+                "description": "Some R35 Notice 1"
+              }
+            }
+          ],
+          "ftpaList": [
+            {
+              "id": "1",
+              "value": {
+                "ftpaApplicant": "respondent",
+                "ftpaOutOfTimeDocuments": [],
+                "ftpaGroundsDocuments": [
+                  {
+                    "id": "2",
+                    "value": {
+                      "document": {
+                        "document_url": "http://document-store/BBB",
+                        "document_binary_url": "http://document-store/BBB/binary",
+                        "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                      },
+                      "description": "Some FTPA respondent grounds of application"
+                    }
+                  }
+                ],
+                "ftpaEvidenceDocuments": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document": {
+                        "document_url": "http://document-store/CCC",
+                        "document_binary_url": "http://document-store/CCC/binary",
+                        "document_filename": "some-ftpa-respondent-evidence.pdf"
+                      },
+                      "description": "Some FTPA respondent application evidence"
+                    }
+                  }
+                ],
+                "ftpaApplicationDate": "{$TODAY}"
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaRespondentDecisionDate": "{$TODAY}",
+        "isFtpaRespondentDecided": "Yes",
+        "ftpaRespondentReasonRehearing": "Set aside and to be reheard under rule 35",
+        "sendDirectionActionAvailable": "No",
+        "ftpaList": [
+          {
+            "id": "1",
+            "value": {
+              "ftpaApplicant": "respondent",
+              "ftpaOutOfTimeDocuments": [],
+              "ftpaGroundsDocuments": [
+                {
+                  "id": "2",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                    },
+                    "description": "Some FTPA respondent grounds of application"
+                  }
+                }
+              ],
+              "ftpaEvidenceDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/CCC",
+                      "document_binary_url": "http://document-store/CCC/binary",
+                      "document_filename": "some-ftpa-respondent-evidence.pdf"
+                    },
+                    "description": "Some FTPA respondent application evidence"
+                  }
+                }
+              ],
+              "ftpaNoticeDocument": [
+                {
+                  "id": "2",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/AAA",
+                      "document_binary_url": "http://document-store/AAA/binary",
+                      "document_filename": "some-ftpa-r35-notice-document-2.pdf"
+                    },
+                    "description": "Some R35 Notice 2"
+                  }
+                },
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/CCC",
+                      "document_binary_url": "http://document-store/CCC/binary",
+                      "document_filename": "some-ftpa-r35-notice-document-1.pdf"
+                    },
+                    "description": "Some R35 Notice 1"
+                  }
+                }
+              ],
+              "ftpaR35Document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "ftpa-r35-document.pdf"
+              },
+              "ftpaApplicationDate": "{$TODAY}",
+              "ftpaDecisionOutcomeTypeR35": "Review decision under rule 35",
+              "ftpaDecisionObjections": "Some rule 35 decision objections",
+              "ftpaDecisionLstIns": "Some listing instructions",
+              "ftpaDecisionDate": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
