@@ -24,6 +24,7 @@ public enum DocumentTag {
     FTPA_APPELLANT("ftpaAppellant"),
     FTPA_RESPONDENT("ftpaRespondent"),
     FTPA_DECISION_AND_REASONS("ftpaDecisionAndReasons"),
+    FTPA_SET_ASIDE("ftpaSetAside"),
     HO_DECISION_LETTER("homeOfficeDecisionLetter"),
     SENSITIVE_DOCUMENT("sensitiveDocument"),
     RECORD_OUT_OF_TIME_DECISION_DOCUMENT("recordOutOfTimeDecisionDocument"),

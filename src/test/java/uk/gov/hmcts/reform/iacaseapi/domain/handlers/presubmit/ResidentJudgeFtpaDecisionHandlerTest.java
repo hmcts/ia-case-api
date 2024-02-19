@@ -9,11 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -66,11 +62,20 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     @Mock
     Document maybeFtpaApplicationDecisionAndReasonsDocument;
     @Mock
+    Document maybeFtpaSetAsideR35Document;
+    @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
+    @Mock
+    List<IdValue<DocumentWithDescription>> maybeFtpaR35CommunicationNoticeDocument;
     @Mock
     List<IdValue<DocumentWithMetadata>> existingFtpaDecisionAndReasonsDocuments;
     @Mock
+    List<IdValue<DocumentWithMetadata>> existingFtpaSetAsideDocuments;
+
+    @Mock
     List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments;
+    @Mock
+    List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments;
     @Mock
     DocumentWithMetadata ftpaAppellantDecisionDocument;
     @Mock
@@ -78,7 +83,11 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     @Mock
     DocumentWithMetadata ftpaRespondentDecisionDocument;
     @Mock
+    DocumentWithMetadata ftpaSetAsideR35Document;
+    @Mock
     DocumentWithMetadata ftpaRespondentDecisionNoticeDocument;
+    @Mock
+    DocumentWithMetadata ftpaSetAsideR35NoticeDocument;
     @Mock
     private DocumentReceiver documentReceiver;
     @Mock
@@ -294,6 +303,60 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_DECIDED, YES);
     }
 
+
+    @ParameterizedTest
+    @CsvSource({
+        "appellant",
+        "respondent",
+    })
+    void should_append_all_ftpa_set_aside_documents(String applicantType) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.DECIDE_FTPA_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
+        when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
+        when(asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
+
+        when(asylumCase.read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class))
+                .thenReturn(Optional.of(maybeFtpaSetAsideR35Document));
+
+        when(documentReceiver.receive(maybeFtpaSetAsideR35Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR35Document);
+        when(asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
+        when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
+                .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
+
+        when(asylumCase.read(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase()))))
+                .thenReturn(Optional.of(existingFtpaSetAsideDocuments));
+
+
+        List<DocumentWithMetadata> ftpaSetAsideNewDocuments2 =
+                Arrays.asList(
+                        documentReceiver.receive(ftpaSetAsideR35Document.getDocument(),"",DocumentTag.FTPA_SET_ASIDE),
+                        documentReceiver.receive(ftpaSetAsideR35NoticeDocument.getDocument(),"",DocumentTag.FTPA_SET_ASIDE)
+                );
+
+        when(documentsAppender.append(existingFtpaSetAsideDocuments, ftpaSetAsideNewDocuments2)).thenReturn(allFtpaSetAsideDocuments);
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class);
+        verify(documentReceiver, times(1)).receive(maybeFtpaSetAsideR35Document, "", DocumentTag.FTPA_SET_ASIDE);
+
+        verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())));
+        verify(asylumCase, times(1)).read(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase())));
+
+
+        verify(documentsAppender, times(1)).append(existingFtpaSetAsideDocuments, ftpaSetAsideNewDocuments2);
+
+        verify(asylumCase, times(1)).write(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase())), allFtpaSetAsideDocuments);
+
+    }
+
     @ParameterizedTest
     @CsvSource({
         "remadeRule31",
@@ -349,7 +412,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
                 ftpaRespondentDecisionDocument,
-                ftpaRespondentDecisionNoticeDocument
+               ftpaRespondentDecisionNoticeDocument
             );
 
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
@@ -445,26 +508,42 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
 
-    @Test
-    void should_update_ftpa_application_with_reason_rehearing_r35() {
+    @ParameterizedTest
+    @CsvSource({
+        "appellant",
+        "respondent",
+    })
+    void should_update_ftpa_application_with_reason_rehearing_r35(String applicantType) {
         when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
-        List<IdValue<FtpaApplications>> ftpaApplications = Lists.newArrayList(new IdValue<>("1",
-                FtpaApplications.builder()
-                        .ftpaApplicant("respondent")
-                        .build()));
 
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
-        when(asylumCase.read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class))
-                .thenReturn(Optional.of(maybeFtpaApplicationDecisionAndReasonsDocument));
-        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class))
-                .thenReturn(Optional.of("reheardRule35"));
-        when(asylumCase.read(FTPA_LIST)).thenReturn(Optional.of(ftpaApplications));
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
+        when(asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
+
+        when(asylumCase.read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class))
+                .thenReturn(Optional.of(maybeFtpaSetAsideR35Document));
+
+        when(documentReceiver.receive(maybeFtpaSetAsideR35Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR35Document);
+        when(asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
+        when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
+                .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
+
+        when(asylumCase.read(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase()))))
+                .thenReturn(Optional.of(existingFtpaSetAsideDocuments));
+
+
+        List<DocumentWithMetadata> ftpaSetAsideNewDocuments2 =
+                Arrays.asList(
+                        documentReceiver.receive(ftpaSetAsideR35Document.getDocument(),"",DocumentTag.FTPA_SET_ASIDE),
+                        documentReceiver.receive(ftpaSetAsideR35NoticeDocument.getDocument(),"",DocumentTag.FTPA_SET_ASIDE)
+                );
+
+        when(documentsAppender.append(existingFtpaSetAsideDocuments, ftpaSetAsideNewDocuments2)).thenReturn(allFtpaSetAsideDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(FTPA_RESPONDENT_REASON_REHEARING,"Set aside and to be reheard under rule 35");
+        verify(asylumCase, times(1)).write(valueOf(String.format("FTPA_%s_REASON_REHEARING", applicantType.toUpperCase())),"Set aside and to be reheard under rule 35");
     }
 
     @Test

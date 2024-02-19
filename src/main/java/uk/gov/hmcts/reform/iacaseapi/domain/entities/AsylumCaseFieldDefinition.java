@@ -1658,7 +1658,13 @@ public enum AsylumCaseFieldDefinition {
             "ftpaAppellantR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     FTPA_RESPONDENT_R35_NOTICE_DOCUMENT(
-            "ftpaRespondentR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),;
+            "ftpaRespondentR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    ALL_SET_ASIDE_APPELLANT_DOCS(
+            "allSetAsideAppellantDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    ALL_SET_ASIDE_RESPONDENT_DOCS(
+            "allSetAsideRespondentDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),;
 
     private final String value;
     private final TypeReference typeReference;
