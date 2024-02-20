@@ -504,7 +504,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(ftpaDisplayService, times(1)).mapFtpaDecision(anyBoolean(), any(AsylumCase.class), anyString(), any(FtpaApplications.class));
         verify(ftpaDisplayService, times(1)).setFtpaCaseDlrmFlag(any(AsylumCase.class), anyBoolean());
         verify(asylumCase, times(1)).write(FTPA_LIST, ftpaApplications);
-        //verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
+        verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
     }
 
 

@@ -100,6 +100,7 @@
         "isFtpaRespondentDecided": "Yes",
         "ftpaRespondentReasonRehearing": "Set aside and to be reheard under rule 35",
         "sendDirectionActionAvailable": "No",
+        "isFtpaListVisible": "Yes",
         "ftpaList": [
           {
             "id": "1",
