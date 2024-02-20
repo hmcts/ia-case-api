@@ -68,6 +68,7 @@
         "ftpaRespondentDecisionDate": "{$TODAY}",
         "isFtpaRespondentDecided": "Yes",
         "sendDirectionActionAvailable": "No",
+        "isFtpaListVisible": "Yes",
         "ftpaList": [
           {
             "id": "1",

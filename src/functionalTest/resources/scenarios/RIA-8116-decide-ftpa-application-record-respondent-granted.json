@@ -87,6 +87,7 @@
           }
         ],
         "sendDirectionActionAvailable": "No",
+        "isFtpaListVisible": "Yes",
         "ftpaList": [
           {
             "id": "1",

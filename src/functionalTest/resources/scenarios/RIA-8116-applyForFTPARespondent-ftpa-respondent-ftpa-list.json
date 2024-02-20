@@ -94,7 +94,8 @@
               "ftpaApplicationDate": "{$TODAY}"
             }
           }
-        ]
+        ],
+        "isFtpaListVisible": "Yes"
       }
     }
   }
