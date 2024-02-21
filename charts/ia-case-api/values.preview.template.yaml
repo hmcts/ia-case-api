@@ -73,7 +73,7 @@ ia-case-payments-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
-#    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-275
+#    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-343
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
