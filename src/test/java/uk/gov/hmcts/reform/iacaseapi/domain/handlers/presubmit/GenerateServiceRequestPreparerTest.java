@@ -95,7 +95,6 @@ class GenerateServiceRequestPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)).thenReturn(Optional.of("aServiceRequestReference"));
-        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
