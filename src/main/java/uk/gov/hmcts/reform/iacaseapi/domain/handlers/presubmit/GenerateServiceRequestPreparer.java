@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -8,22 +7,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-import java.time.LocalDate;
-
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SERVICE_REQUEST_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @Component
 public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isFeePaymentEnabled;
-
-    // TODO: update day of release when releasing
-    @Getter
-    private String dayOfServiceRequestReferenceRelease = "2024-01-05";
 
     public GenerateServiceRequestPreparer(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled) {
@@ -53,16 +46,8 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse("2000-01-01");
-        if (LocalDate.parse(appealSubmissionDate).isBefore(LocalDate.parse(dayOfServiceRequestReferenceRelease))) {
-            response.addError(
-                    "Event not usable on case as it was submitted before "
-                            + dayOfServiceRequestReferenceRelease + "."
-            );
-            return response;
-        }
-
-        if (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()) {
+        if (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
+        || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
             response.addError(
                     "A service request has already been created for this case, please pay via the Service Request tab."
             );

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ class GenerateServiceRequestPreparerTest {
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2024-01-05"));
+
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -55,20 +56,36 @@ class GenerateServiceRequestPreparerTest {
     }
 
     @Test
-    void should_return_error_for_old_case_with_no_existing_service_request() {
+    void should_return_no_errors_for_case_with_no_existing_service_request() {
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2023-01-05"));
+        when(asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-        String dayOfServiceRequestReferenceRelease = serviceRequestPreparer.getDayOfServiceRequestReferenceRelease();
+            serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());
+    }
+
+    @Test
+    void should_return_error_for_old_case_with_existing_service_request() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("Event not usable on case as it was submitted before "
-                + dayOfServiceRequestReferenceRelease + "."));
+        assertTrue(callbackResponse.getErrors().contains("A service request has already been created for this case, please pay via the Service Request tab."));
     }
 
     @Test
@@ -77,8 +94,8 @@ class GenerateServiceRequestPreparerTest {
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of(serviceRequestPreparer.getDayOfServiceRequestReferenceRelease()));
         when(asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)).thenReturn(Optional.of("aServiceRequestReference"));
+        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
