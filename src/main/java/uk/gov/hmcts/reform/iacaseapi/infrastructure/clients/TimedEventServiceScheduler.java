@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @Service
+@Slf4j
 public class TimedEventServiceScheduler implements Scheduler {
 
     private final AuthTokenGenerator serviceAuthTokenGenerator;
@@ -50,5 +52,25 @@ public class TimedEventServiceScheduler implements Scheduler {
                 e
             );
         }
+    }
+
+    public boolean deleteSchedule(String timedEventId) {
+        String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        String accessToken = accessTokenProvider.getAccessToken();
+
+        try {
+            timedEventServiceApi.deleteTimedEvent(
+                accessToken,
+                serviceAuthorizationToken,
+                timedEventId
+            );
+        } catch (FeignException ex) {
+            log.warn("The schedule with id {} could not be deleted. This should not happen and may cause problems. " +
+                    "Check that the schedule ID is correct.",
+                timedEventId);
+            return false;
+        }
+
+        return true;
     }
 }
