@@ -13,10 +13,7 @@ import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -159,8 +156,12 @@ public class PreSubmitCallbackController {
 
     @PostMapping(path = "/ccdMidEvent")
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdMidEvent(
-        @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
+        @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback,
+        @RequestParam(name = "pageId", required = false) String pageId
     ) {
+        if (pageId != null) {
+            callback.setPageId(pageId);
+        }
         return performStageRequest(PreSubmitCallbackStage.MID_EVENT, callback);
     }
 

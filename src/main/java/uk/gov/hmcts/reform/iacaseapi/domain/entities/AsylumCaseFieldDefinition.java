@@ -1626,7 +1626,18 @@ public enum AsylumCaseFieldDefinition {
             "isFtpaListVisible", new TypeReference<YesOrNo>(){}),
 
     IS_DLRM_SET_ASIDE_ENABLED(
-            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),;
+            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),
+
+    TYPES_OF_UPDATE_TRIBUNAL_DECISION(
+        "typesOfUpdateTribunalDecision", new TypeReference<DynamicList>(){}),
+
+    DECISION_AND_REASON_DOC_UPLOAD(
+        "decisionAndReasonDocsUpload", new TypeReference<Document>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_AND_REASONS(
+        "updateTribunalDecisionAndReasons", new TypeReference<YesOrNo>(){}),
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;
