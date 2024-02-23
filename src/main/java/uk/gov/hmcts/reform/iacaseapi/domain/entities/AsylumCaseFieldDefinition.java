@@ -1619,6 +1619,12 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION(
             "ftpaRespondentRjDecisionNotesDescription", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_REASON_REHEARING(
+            "ftpaAppellantReasonRehearing", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_REASON_REHEARING(
+            "ftpaRespondentReasonRehearing", new TypeReference<String>(){}),
+
     FTPA_LIST(
             "ftpaList", new TypeReference<List<IdValue<FtpaApplications>>>(){}),
 
@@ -1628,6 +1634,39 @@ public enum AsylumCaseFieldDefinition {
     IS_DLRM_SET_ASIDE_ENABLED(
             "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),
 
+    IS_DLRM_FEE_REMISSION_ENABLED(
+        "isDlrmFeeRemissionEnabled", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_R35_LISTING_ADDITIONAL_INS(
+            "ftpaAppellantR35ListingAdditionalIns", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_R35_LISTING_ADDITIONAL_INS(
+            "ftpaRespondentR35ListingAdditionalIns", new TypeReference<String>(){}),
+
+    FTPA_R35_APPELLANT_DOCUMENT(
+            "ftpaR35AppellantDocument", new TypeReference<Document>(){}),
+
+    FTPA_R35_RESPONDENT_DOCUMENT(
+            "ftpaR35RespondentDocument", new TypeReference<Document>(){}),
+
+    FTPA_APPELLANT_R35_DECISION_OBJECTIONS(
+            "ftpaAppellantR35DecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_R35_DECISION_OBJECTIONS(
+            "ftpaRespondentR35DecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_R35_NOTICE_DOCUMENT(
+            "ftpaAppellantR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_R35_NOTICE_DOCUMENT(
+            "ftpaRespondentR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    ALL_SET_ASIDE_APPELLANT_DOCS(
+            "allSetAsideAppellantDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    ALL_SET_ASIDE_RESPONDENT_DOCS(
+            "allSetAsideRespondentDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
     TYPES_OF_UPDATE_TRIBUNAL_DECISION(
         "typesOfUpdateTribunalDecision", new TypeReference<DynamicList>(){}),
 
@@ -1635,9 +1674,7 @@ public enum AsylumCaseFieldDefinition {
         "decisionAndReasonDocsUpload", new TypeReference<Document>(){}),
 
     UPDATE_TRIBUNAL_DECISION_AND_REASONS(
-        "updateTribunalDecisionAndReasons", new TypeReference<YesOrNo>(){}),
-
-    ;
+        "updateTribunalDecisionAndReasons", new TypeReference<YesOrNo>(){}),;
 
     private final String value;
     private final TypeReference typeReference;

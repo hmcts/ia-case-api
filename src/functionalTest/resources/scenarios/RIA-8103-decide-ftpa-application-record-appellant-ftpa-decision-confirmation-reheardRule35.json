@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2527 Decide FTPA application appellant decision confirmation",
+  "description": "RIA-8103 Decide FTPA application appellant decision confirmation (reheardRule35)",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
@@ -8,12 +8,12 @@
       "eventId": "decideFtpaApplication",
       "ftpaAppellantDecisionRemadeRule32": "allowed",
       "state": "ftpaSubmitted",
-      "id": 1234,
+      "id": 8103,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "ftpaApplicantType": "appellant",
-          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32",
+          "ftpaAppellantRjDecisionOutcomeType": "reheardRule35",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse"
         }
@@ -25,7 +25,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You've recorded the First-tier permission to appeal decision",
-      "body": "#### What happens next\n\nBoth parties have been notified of the decision.<br>"
+      "body": "#### What happens next\n\nBoth parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>"
     }
   }
 }

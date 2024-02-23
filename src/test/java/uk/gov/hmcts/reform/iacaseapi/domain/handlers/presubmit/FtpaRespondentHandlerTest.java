@@ -247,7 +247,7 @@ class FtpaRespondentHandlerTest {
         assertThat(existingFtpasCaptor.getValue()).isEqualTo(existingFtpas);
 
         verify(asylumCase, times(1)).write(FTPA_LIST, allAppendedFtpas);
-
+        verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
         assertThat(callbackResponse.getData()).isEqualTo(callbackResponse.getData());
     }
 
