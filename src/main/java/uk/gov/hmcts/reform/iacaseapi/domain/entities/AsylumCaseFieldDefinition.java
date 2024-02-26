@@ -2077,7 +2077,15 @@ public enum AsylumCaseFieldDefinition {
 
     AUTO_LIST_HEARING("autoListHearing", new TypeReference<YesOrNo>(){}),
 
-    IS_PANEL_REQUIRED("isPanelRequired", new TypeReference<YesOrNo>(){});
+    IS_PANEL_REQUIRED("isPanelRequired", new TypeReference<YesOrNo>(){}),
+
+    CHANGE_HEARING_DATE_YES_NO("changeHearingDateYesNo", new TypeReference<String>(){}),
+
+    CHANGE_HEARING_DATE_TYPE("changeHearingDateType", new TypeReference<String>(){}),
+
+    CHANGE_HEARING_DATE_RANGE_EARLIEST("changeHearingDateRangeEarliest", new TypeReference<String>(){}),
+
+    CHANGE_HEARING_DATE_RANGE_LATEST("changeHearingDateRangeLatest", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
