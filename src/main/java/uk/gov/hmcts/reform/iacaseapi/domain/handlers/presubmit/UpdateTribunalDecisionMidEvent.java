@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.ArrayList;
 import java.util.List;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
@@ -34,7 +35,8 @@ public class UpdateTribunalDecisionMidEvent implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
+               && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION
+               && callback.getPageId().equals("tribunalDecisionType");
     }
 
     @Override

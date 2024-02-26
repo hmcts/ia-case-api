@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -11,9 +15,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+@Component
 public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Override
@@ -23,7 +29,7 @@ public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHand
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION
-               && callback.getPageId().equals("tribunalDecisionAndReasonsQuestion");
+               && callback.getPageId().equals("decisionAndReasonsDocumentUploadPage");
     }
 
     @Override
@@ -35,15 +41,54 @@ public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHand
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        YesOrNo isDecisionAndReasonBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS, YesOrNo.class)
+        final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOC_UPLOAD, Document.class);
+
+        YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
             .orElse(NO);
         Optional<DynamicList> optionalTypesOfUpdateTribunalDecision = asylumCase.read(AsylumCaseFieldDefinition.TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class);
 
-        if (isDecisionAndReasonBeingUpdated == NO &&
+        if (isDecisionAndReasonDocumentBeingUpdated == YES) {
+
+            if (decisionAndReasonsDoc.isEmpty()) {
+                response.addError("Amended Decision And Reasons Document must be present");
+                return response;
+            }
+
+            if (!decisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
+                response.addError("The Decision and reasons document must be a PDF file");
+                return response;
+            }
+
+            Document previousDecisionAndReasonsDoc = decisionAndReasonsDoc.get();
+
+            Document amendedDecisionAndReasonsDoc = new Document(previousDecisionAndReasonsDoc.getDocumentUrl(), previousDecisionAndReasonsDoc.getDocumentBinaryUrl(),getDecisionAndReasonsFilename(asylumCase));
+
+            asylumCase.write(DECISION_AND_REASON_DOC_UPLOAD, amendedDecisionAndReasonsDoc);
+            return new PreSubmitCallbackResponse<>(asylumCase);
+
+        }else if (isDecisionAndReasonDocumentBeingUpdated == NO &&
             optionalTypesOfUpdateTribunalDecision.isPresent() &&
             "No".equals(optionalTypesOfUpdateTribunalDecision.get().getValue().getLabel())) {
-            response.addError("You must update the decision or the Decision and Reasons document to continue");
+                response.addError("You must update the decision or the Decision and Reasons document to continue");
         }
+
         return response;
-            }
-        }
+    }
+
+    private String getDecisionAndReasonsFilename(AsylumCase asylumCase) {
+
+        String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appeal reference number not present"));
+
+        String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class)
+                .orElseThrow(() -> new IllegalStateException("appellant family name not present"));
+
+        return appealReferenceNumber.replace("/", " ")
+                + "-"
+                + appellantFamilyName
+                + "-"
+                + "Decision-and-reasons"
+                + "-"
+                +"AMENDED.pdf";
+    }
+}

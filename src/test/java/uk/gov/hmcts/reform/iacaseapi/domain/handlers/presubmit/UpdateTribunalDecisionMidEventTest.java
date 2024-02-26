@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
@@ -22,6 +23,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
+import java.util.Optional;
+
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -38,6 +41,7 @@ class UpdateTribunalDecisionMidEventTest {
     @Mock
     private AsylumCase asylumCase;
     private UpdateTribunalDecisionMidEvent updateTribunalDecisionMidEvent;
+    private String testPage = "tribunalDecisionType";
 
     @BeforeEach
     public void setUp() {
@@ -46,9 +50,13 @@ class UpdateTribunalDecisionMidEventTest {
             userDetails
         );
 
+        when(callback.getPageId()).thenReturn(testPage);
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, String.class))
+                .thenReturn(Optional.of("underRule31"));
     }
 
     @Test
@@ -57,13 +65,15 @@ class UpdateTribunalDecisionMidEventTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getPageId()).thenReturn(testPage);
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
                 boolean canHandle = updateTribunalDecisionMidEvent.canHandle(callbackStage, callback);
 
                 if (event == Event.UPDATE_TRIBUNAL_DECISION
-                    && callbackStage == PreSubmitCallbackStage.MID_EVENT) {
+                    && callbackStage == PreSubmitCallbackStage.MID_EVENT
+                    && callback.getPageId().equals("tribunalDecisionType")) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
