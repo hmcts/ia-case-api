@@ -14,8 +14,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_VENUE;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -28,11 +30,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
 @Component
+@RequiredArgsConstructor
 public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
     public static final String INITIALIZE_FIELDS_PAGE_ID = "relistCaseImmediately";
     public static final String CHECK_HEARING_DATE_PAGE_ID = "nextHearingDate";
@@ -45,14 +49,8 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
     public static final String IS_CHILD_REQUIRED = "N";
 
     private final RefDataUserService refDataUserService;
-
     private final LocationRefDataService locationRefDataService;
-
-    public RecordAdjournmentDetailsMidEventHandler(RefDataUserService refDataUserService,
-                                                   LocationRefDataService locationRefDataService) {
-        this.refDataUserService = refDataUserService;
-        this.locationRefDataService = locationRefDataService;
-    }
+    private final IaHearingsApiService iaHearingsApiService;
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -68,62 +66,71 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        DynamicList refDataHearingLocationList = locationRefDataService.getHearingLocationsDynamicList();
-        asylumCase.read(NEXT_HEARING_VENUE, DynamicList.class).ifPresent(nextHearingVenue -> {
-            refDataHearingLocationList.setValue(nextHearingVenue.getValue());
-        });
-        asylumCase.write(NEXT_HEARING_VENUE, refDataHearingLocationList);
-
-        if (callback.getPageId().equals(INITIALIZE_FIELDS_PAGE_ID)) {
-            prePopulateCancellationOrUpdateReasons(asylumCase);
-            prePopulateHearingDetails(asylumCase, refDataHearingLocationList);
+        switch (callback.getPageId()) {
+            case CHECK_HEARING_DATE_PAGE_ID -> {
+                if (isDateRange(asylumCase) && !isValidDateRange(asylumCase)) {
+                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                    response.addError(NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE);
+                    return response;
+                }
+            }
+            case INITIALIZE_FIELDS_PAGE_ID -> {
+                asylumCase = prePopulateHearingVenue(callback);
+                prePopulateCancellationOrUpdateReasons(asylumCase);
+                prePopulateNextHearingFormat(asylumCase);
+                prePopulateNextHearingDuration(asylumCase);
+            }
+            default -> { }
         }
 
-        return validateHearingDateRange(callback, asylumCase);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private static void prePopulateHearingDetails(AsylumCase asylumCase, DynamicList refDataHearingLocationList) {
+    private void prePopulateNextHearingFormat(AsylumCase asylumCase) {
+
         asylumCase.read(HEARING_CHANNEL, DynamicList.class)
-                .ifPresent(hearingChannel -> {
-                    Optional<DynamicList> nextHearingFormat = asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class);
-                    nextHearingFormat.ifPresent(it -> it.setValue(hearingChannel.getValue()));
-                    asylumCase.write(NEXT_HEARING_FORMAT, nextHearingFormat.get());
-                });
+            .ifPresent(hearingChannel -> asylumCase.write(NEXT_HEARING_FORMAT, hearingChannel));
+    }
+
+    private void prePopulateNextHearingDuration(AsylumCase asylumCase) {
 
         asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
-                .ifPresent(hearingLength -> asylumCase.write(NEXT_HEARING_DURATION, hearingLength));
-
-        asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
-                .ifPresent(hearingCentre -> {
-                    if (refDataHearingLocationList != null && refDataHearingLocationList.getListItems() != null
-                            && !refDataHearingLocationList.getListItems().isEmpty()) {
-                        refDataHearingLocationList.getListItems().forEach(hearingLocation -> {
-                            if (hearingLocation.getCode().equals(hearingCentre.getEpimsId())) {
-                                refDataHearingLocationList.setValue(hearingLocation);
-                                asylumCase.write(NEXT_HEARING_VENUE, refDataHearingLocationList);
-                            }
-                        });
-                    }
-                });
+            .ifPresent(hearingLength -> asylumCase.write(NEXT_HEARING_DURATION, hearingLength));
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> validateHearingDateRange(Callback<AsylumCase> callback,
-                                                                           AsylumCase asylumCase) {
+    private AsylumCase prePopulateHearingVenue(Callback<AsylumCase> callback) {
+        DynamicList refDataHearingLocationList = locationRefDataService.getHearingLocationsDynamicList();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        Optional<HearingCentre> hearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
 
-        PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-        if (callback.getPageId().equals(CHECK_HEARING_DATE_PAGE_ID)) {
-            asylumCase.read(NEXT_HEARING_DATE, String.class).ifPresent(nextHearingDate -> {
-                if (nextHearingDate.equals(NEXT_HEARING_DATE_CHOOSE_DATE_RANGE)) {
-                    if (asylumCase.read(NEXT_HEARING_DATE_RANGE_EARLIEST, String.class).isEmpty()
-                            && asylumCase.read(NEXT_HEARING_DATE_RANGE_LATEST, String.class).isEmpty()) {
-                        preSubmitCallbackResponse.addError(NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE);
-                    }
-                }
-            });
+        if (hearingCentre.isPresent()) {
+            Value hearingLocationValue = refDataHearingLocationList.getListItems().stream()
+                .filter(location -> Objects.equals(location.getCode(), hearingCentre.get().getEpimsId()))
+                .findAny().orElseGet(() -> new Value("", ""));
+            refDataHearingLocationList.setValue(hearingLocationValue);
+            asylumCase.write(NEXT_HEARING_VENUE, refDataHearingLocationList);
+        } else {
+            asylumCase.write(NEXT_HEARING_VENUE, refDataHearingLocationList);
+            asylumCase = iaHearingsApiService.midEvent(callback);
         }
-        return preSubmitCallbackResponse;
+
+        return asylumCase;
+    }
+
+    private boolean isValidDateRange(AsylumCase asylumCase) {
+
+        return asylumCase.read(NEXT_HEARING_DATE_RANGE_EARLIEST, String.class).isPresent()
+               || asylumCase.read(NEXT_HEARING_DATE_RANGE_LATEST, String.class).isPresent();
+    }
+
+    private boolean isDateRange(AsylumCase asylumCase) {
+
+        return asylumCase.read(NEXT_HEARING_DATE, String.class)
+            .map(NEXT_HEARING_DATE_CHOOSE_DATE_RANGE::equals)
+            .orElse(false);
     }
 
     private void prePopulateCancellationOrUpdateReasons(AsylumCase asylumCase) {
