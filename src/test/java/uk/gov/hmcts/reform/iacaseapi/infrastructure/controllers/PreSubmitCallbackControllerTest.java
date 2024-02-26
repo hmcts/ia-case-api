@@ -126,6 +126,7 @@ class PreSubmitCallbackControllerTest {
         );
         assertEquals(pageIdParam, callback.getPageId());
     }
+
     @Test
     void should_not_allow_null_constructor_arguments() {
 

@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class UpdateTribunalDecisionErrorMidEventHandlerTest {
+class UpdateTribunalDecisionErrorRule31MidEventTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -38,11 +38,11 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
     private AsylumCase asylumCase;
     private String testPage = "decisionAndReasonsDocumentUploadPage";
 
-    private UpdateTribunalDecisonErrorMidEvent updateTribunalDecisonErrorMidEvent;
+    private UpdateTribunalDecisionErrorRule31MidEvent updateTribunalDecisionErrorRule31MidEvent;
 
     @BeforeEach
     public void setUp() {
-        updateTribunalDecisonErrorMidEvent = new UpdateTribunalDecisonErrorMidEvent();
+        updateTribunalDecisionErrorRule31MidEvent = new UpdateTribunalDecisionErrorRule31MidEvent();
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -60,7 +60,7 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
             when(callback.getPageId()).thenReturn(testPage);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = updateTribunalDecisonErrorMidEvent.canHandle(callbackStage, callback);
+                boolean canHandle = updateTribunalDecisionErrorRule31MidEvent.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.MID_EVENT
                     && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION
@@ -74,6 +74,7 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
             reset(callback);
         }
     }
+
     @Test
     void handle_should_return_error_when_document_is_null() {
 
@@ -82,13 +83,13 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.read(DECISION_AND_REASON_DOC_UPLOAD, Document.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)).thenReturn(Optional.empty());
 
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisonErrorMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());
@@ -104,14 +105,14 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         Document decisionAndReasonsDocument = new Document("documentUrl", "binaryUrl", "documentFilename.docx");
-        when(asylumCase.read(DECISION_AND_REASON_DOC_UPLOAD, Document.class))
+        when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class))
             .thenReturn(Optional.of(decisionAndReasonsDocument));
 
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisonErrorMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());
@@ -137,12 +138,13 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
                 .thenReturn(Optional.of(dynamicList));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisonErrorMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());
         assert (callbackResponse.getErrors()).contains("You must update the decision or the Decision and Reasons document to continue");
     }
+
     @Test
     void handle_should_allow_pdf_document() {
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
@@ -153,11 +155,11 @@ class UpdateTribunalDecisionErrorMidEventHandlerTest {
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("TestName"));
 
         Document decisionAndReasonsDocument = new Document("documentUrl", "binaryUrl", "documentFilename.pdf");
-        when(asylumCase.read(DECISION_AND_REASON_DOC_UPLOAD, Document.class))
+        when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class))
             .thenReturn(Optional.of(decisionAndReasonsDocument));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisonErrorMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());

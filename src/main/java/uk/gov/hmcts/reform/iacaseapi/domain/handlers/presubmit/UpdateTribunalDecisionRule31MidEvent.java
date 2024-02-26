@@ -18,13 +18,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class UpdateTribunalDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
+public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final UserDetailsHelper userDetailsHelper;
     private final UserDetails userDetails;
     static final String ROLE_JUDGE = "caseworker-ia-iacjudge";
 
-    public UpdateTribunalDecisionMidEvent(UserDetailsHelper userDetailsHelper, UserDetails userDetails) {
+    public UpdateTribunalDecisionRule31MidEvent(UserDetailsHelper userDetailsHelper, UserDetails userDetails) {
         this.userDetailsHelper = userDetailsHelper;
         this.userDetails = userDetails;
     }

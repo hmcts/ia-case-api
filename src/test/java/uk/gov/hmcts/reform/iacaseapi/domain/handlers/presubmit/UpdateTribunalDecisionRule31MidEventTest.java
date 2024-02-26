@@ -28,7 +28,7 @@ import java.util.Optional;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class UpdateTribunalDecisionMidEventTest {
+class UpdateTribunalDecisionRule31MidEventTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -40,12 +40,12 @@ class UpdateTribunalDecisionMidEventTest {
     private UserDetails userDetails;
     @Mock
     private AsylumCase asylumCase;
-    private UpdateTribunalDecisionMidEvent updateTribunalDecisionMidEvent;
+    private UpdateTribunalDecisionRule31MidEvent updateTribunalDecisionRule31MidEvent;
     private String testPage = "tribunalDecisionType";
 
     @BeforeEach
     public void setUp() {
-        updateTribunalDecisionMidEvent = new UpdateTribunalDecisionMidEvent(
+        updateTribunalDecisionRule31MidEvent = new UpdateTribunalDecisionRule31MidEvent(
             userDetailsHelper,
             userDetails
         );
@@ -69,7 +69,7 @@ class UpdateTribunalDecisionMidEventTest {
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
-                boolean canHandle = updateTribunalDecisionMidEvent.canHandle(callbackStage, callback);
+                boolean canHandle = updateTribunalDecisionRule31MidEvent.canHandle(callbackStage, callback);
 
                 if (event == Event.UPDATE_TRIBUNAL_DECISION
                     && callbackStage == PreSubmitCallbackStage.MID_EVENT
@@ -86,11 +86,11 @@ class UpdateTribunalDecisionMidEventTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> updateTribunalDecisionMidEvent.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionRule31MidEvent.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> updateTribunalDecisionMidEvent.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionRule31MidEvent.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -98,11 +98,11 @@ class UpdateTribunalDecisionMidEventTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> updateTribunalDecisionMidEvent.canHandle(null, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionRule31MidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalDecisionMidEvent.canHandle(MID_EVENT, null))
+        assertThatThrownBy(() -> updateTribunalDecisionRule31MidEvent.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
+public class UpdateTribunalDecisionErrorRule31MidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -41,7 +41,7 @@ public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHand
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOC_UPLOAD, Document.class);
+        final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
 
         YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
             .orElse(NO);
@@ -63,13 +63,13 @@ public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHand
 
             Document amendedDecisionAndReasonsDoc = new Document(previousDecisionAndReasonsDoc.getDocumentUrl(), previousDecisionAndReasonsDoc.getDocumentBinaryUrl(),getDecisionAndReasonsFilename(asylumCase));
 
-            asylumCase.write(DECISION_AND_REASON_DOC_UPLOAD, amendedDecisionAndReasonsDoc);
+            asylumCase.write(DECISION_AND_REASON_DOCS_UPLOAD, amendedDecisionAndReasonsDoc);
             return new PreSubmitCallbackResponse<>(asylumCase);
 
-        }else if (isDecisionAndReasonDocumentBeingUpdated == NO &&
+        } else if (isDecisionAndReasonDocumentBeingUpdated == NO &&
             optionalTypesOfUpdateTribunalDecision.isPresent() &&
             "No".equals(optionalTypesOfUpdateTribunalDecision.get().getValue().getLabel())) {
-                response.addError("You must update the decision or the Decision and Reasons document to continue");
+            response.addError("You must update the decision or the Decision and Reasons document to continue");
         }
 
         return response;
@@ -89,6 +89,6 @@ public class UpdateTribunalDecisonErrorMidEvent implements PreSubmitCallbackHand
                 + "-"
                 + "Decision-and-reasons"
                 + "-"
-                +"AMENDED.pdf";
+                + "AMENDED.pdf";
     }
 }

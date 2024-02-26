@@ -1670,7 +1670,7 @@ public enum AsylumCaseFieldDefinition {
     TYPES_OF_UPDATE_TRIBUNAL_DECISION(
         "typesOfUpdateTribunalDecision", new TypeReference<DynamicList>(){}),
 
-    DECISION_AND_REASON_DOC_UPLOAD(
+    DECISION_AND_REASON_DOCS_UPLOAD(
         "decisionAndReasonDocsUpload", new TypeReference<Document>(){}),
     UPDATE_TRIBUNAL_DECISION_LIST(
             "updateTribunalDecisionList", new TypeReference<String>(){}),
