@@ -123,11 +123,6 @@ class UpdateTribunalDecisionRule31MidEventTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
-        DynamicList dynamicList = new DynamicList(new Value("", ""),
-                List.of(
-                        new Value("ALLOWED", "Yes, change decision to Dismissed"),
-                        new Value("DISMISSED", "No")));
-
         when(asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
                 .thenReturn(Optional.of(AppealDecision.ALLOWED));
 
@@ -138,6 +133,11 @@ class UpdateTribunalDecisionRule31MidEventTest {
                 updateTribunalDecisionRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
+
+        DynamicList dynamicList = new DynamicList(new Value("", ""),
+                List.of(
+                        new Value("ALLOWED", "Yes, change decision to Dismissed"),
+                        new Value("DISMISSED", "No")));
 
         assertNotNull(callbackResponse);
         assertThat(asylumExtractorCaptor.getValue()).isEqualTo(TYPES_OF_UPDATE_TRIBUNAL_DECISION);
