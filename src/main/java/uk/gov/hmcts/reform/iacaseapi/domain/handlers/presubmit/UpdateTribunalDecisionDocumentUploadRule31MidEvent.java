@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class UpdateTribunalDecisionErrorRule31MidEvent implements PreSubmitCallbackHandler<AsylumCase> {
+public class UpdateTribunalDecisionDocumentUploadRule31MidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -47,12 +47,7 @@ public class UpdateTribunalDecisionErrorRule31MidEvent implements PreSubmitCallb
             .orElse(NO);
         Optional<DynamicList> optionalTypesOfUpdateTribunalDecision = asylumCase.read(AsylumCaseFieldDefinition.TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class);
 
-        if (isDecisionAndReasonDocumentBeingUpdated == YES) {
-
-            if (decisionAndReasonsDoc.isEmpty()) {
-                response.addError("Amended Decision And Reasons Document must be present");
-                return response;
-            }
+        if (isDecisionAndReasonDocumentBeingUpdated.equals(YES)) {
 
             if (!decisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
                 response.addError("The Decision and reasons document must be a PDF file");
@@ -66,10 +61,10 @@ public class UpdateTribunalDecisionErrorRule31MidEvent implements PreSubmitCallb
             asylumCase.write(DECISION_AND_REASON_DOCS_UPLOAD, amendedDecisionAndReasonsDoc);
             return new PreSubmitCallbackResponse<>(asylumCase);
 
-        } else if (isDecisionAndReasonDocumentBeingUpdated == NO &&
+        } else if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) &&
             optionalTypesOfUpdateTribunalDecision.isPresent() &&
-            "No".equals(optionalTypesOfUpdateTribunalDecision.get().getValue().getLabel())) {
-            response.addError("You must update the decision or the Decision and Reasons document to continue");
+            optionalTypesOfUpdateTribunalDecision.get().getValue().getLabel().equals("No")) {
+            response.addError("You must update the decision or the Decision and Reasons document to continue.");
         }
 
         return response;

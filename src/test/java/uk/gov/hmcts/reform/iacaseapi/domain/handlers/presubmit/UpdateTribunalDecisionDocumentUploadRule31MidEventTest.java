@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class UpdateTribunalDecisionErrorRule31MidEventTest {
+class UpdateTribunalDecisionDocumentUploadRule31MidEventTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -38,11 +41,11 @@ class UpdateTribunalDecisionErrorRule31MidEventTest {
     private AsylumCase asylumCase;
     private String testPage = "decisionAndReasonsDocumentUploadPage";
 
-    private UpdateTribunalDecisionErrorRule31MidEvent updateTribunalDecisionErrorRule31MidEvent;
+    private UpdateTribunalDecisionDocumentUploadRule31MidEvent updateTribunalDecisionDocumentUploadRule31MidEvent;
 
     @BeforeEach
     public void setUp() {
-        updateTribunalDecisionErrorRule31MidEvent = new UpdateTribunalDecisionErrorRule31MidEvent();
+        updateTribunalDecisionDocumentUploadRule31MidEvent = new UpdateTribunalDecisionDocumentUploadRule31MidEvent();
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -60,7 +63,7 @@ class UpdateTribunalDecisionErrorRule31MidEventTest {
             when(callback.getPageId()).thenReturn(testPage);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = updateTribunalDecisionErrorRule31MidEvent.canHandle(callbackStage, callback);
+                boolean canHandle = updateTribunalDecisionDocumentUploadRule31MidEvent.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.MID_EVENT
                     && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION
@@ -76,24 +79,35 @@ class UpdateTribunalDecisionErrorRule31MidEventTest {
     }
 
     @Test
-    void handle_should_return_error_when_document_is_null() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
-        when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
-        when(callback.getPageId()).thenReturn(testPage);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        assertThatThrownBy(() -> updateTribunalDecisionDocumentUploadRule31MidEvent.handle(ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> updateTribunalDecisionDocumentUploadRule31MidEvent.handle(ABOUT_TO_START, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
+    }
 
-        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+    @Test
+    void should_not_allow_null_arguments() {
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+        assertThatThrownBy(() -> updateTribunalDecisionDocumentUploadRule31MidEvent.canHandle(null, callback))
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
-        assertNotNull(callbackResponse);
-        assertNotNull(callbackResponse.getErrors());
-        assert (callbackResponse.getErrors()).contains("Amended Decision And Reasons Document must be present");
+        assertThatThrownBy(() -> updateTribunalDecisionDocumentUploadRule31MidEvent.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> updateTribunalDecisionDocumentUploadRule31MidEvent.handle(null, callback))
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> updateTribunalDecisionDocumentUploadRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -112,7 +126,7 @@ class UpdateTribunalDecisionErrorRule31MidEventTest {
                 .thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionDocumentUploadRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());
@@ -138,11 +152,11 @@ class UpdateTribunalDecisionErrorRule31MidEventTest {
                 .thenReturn(Optional.of(dynamicList));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionDocumentUploadRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());
-        assert (callbackResponse.getErrors()).contains("You must update the decision or the Decision and Reasons document to continue");
+        assert (callbackResponse.getErrors()).contains("You must update the decision or the Decision and Reasons document to continue.");
     }
 
     @Test
@@ -159,7 +173,7 @@ class UpdateTribunalDecisionErrorRule31MidEventTest {
             .thenReturn(Optional.of(decisionAndReasonsDocument));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisionErrorRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                updateTribunalDecisionDocumentUploadRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());

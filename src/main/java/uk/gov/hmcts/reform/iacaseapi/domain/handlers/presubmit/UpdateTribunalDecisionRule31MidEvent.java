@@ -68,6 +68,6 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
     private boolean isDecisionAllowed(AsylumCase asylumCase) {
         return asylumCase
             .read(IS_DECISION_ALLOWED, AppealDecision.class)
-            .map(type -> type == ALLOWED).orElse(false);
+            .map(type -> type.equals(ALLOWED)).orElse(false);
     }
 }

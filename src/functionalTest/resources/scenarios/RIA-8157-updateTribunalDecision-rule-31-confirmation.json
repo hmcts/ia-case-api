@@ -1,0 +1,22 @@
+{
+  "description": "RIA-8157 Update Tribunal Decision confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "id": 8157,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have updated the decision",
+      "body": "#### What happens next?\n\nAll parties have been notified and the relevant appeal details have been updated."
+    }
+  }
+}

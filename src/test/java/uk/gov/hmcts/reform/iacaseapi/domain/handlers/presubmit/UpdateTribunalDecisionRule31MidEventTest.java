@@ -1,28 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_LIST;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole.JUDGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
+import java.util.List;
 import java.util.Optional;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -40,6 +44,10 @@ class UpdateTribunalDecisionRule31MidEventTest {
     private UserDetails userDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Captor
+    private ArgumentCaptor<DynamicList> asylumValueCaptor;
+    @Captor
+    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
     private UpdateTribunalDecisionRule31MidEvent updateTribunalDecisionRule31MidEvent;
     private String testPage = "tribunalDecisionType";
 
@@ -67,7 +75,7 @@ class UpdateTribunalDecisionRule31MidEventTest {
             when(callback.getEvent()).thenReturn(event);
             when(callback.getPageId()).thenReturn(testPage);
 
-            for (PreSubmitCallbackStage callbackStage : values()) {
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = updateTribunalDecisionRule31MidEvent.canHandle(callbackStage, callback);
 
@@ -105,5 +113,34 @@ class UpdateTribunalDecisionRule31MidEventTest {
         assertThatThrownBy(() -> updateTribunalDecisionRule31MidEvent.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void handler_should_populate_dynamic_current_decision() {
+
+        when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
+        when(callback.getPageId()).thenReturn(testPage);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
+        DynamicList dynamicList = new DynamicList(new Value("", ""),
+                List.of(
+                        new Value("ALLOWED", "Yes, change decision to Dismissed"),
+                        new Value("DISMISSED", "No")));
+
+        when(asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails))
+                .thenReturn(JUDGE);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                updateTribunalDecisionRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
+
+        assertNotNull(callbackResponse);
+        assertThat(asylumExtractorCaptor.getValue()).isEqualTo(TYPES_OF_UPDATE_TRIBUNAL_DECISION);
+        assertThat(asylumValueCaptor.getValue()).isEqualTo(dynamicList);
     }
 }

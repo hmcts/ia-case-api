@@ -164,8 +164,6 @@ homeOfficeApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
-decisionAndReasonsAmendedPdf.fileName: "Decision-and-reasons"
-
 security:
   anonymousPaths:
     - "/"
