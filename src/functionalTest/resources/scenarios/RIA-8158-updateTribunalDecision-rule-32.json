@@ -1,0 +1,44 @@
+{
+  "description": "RIA-8157 Update Tribunal Decision Rule 32",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8157,
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "updateTribunalDecisionList": "underRule32",
+          "rule32ListingJudgeExclude": "Judge John Doe",
+          "rule32ListingAdditionalIns": "Rule 32 listing instruction example",
+          "rule32NoticeDocument": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "updateTribunalDecisionList": "underRule32",
+        "rule32ListingJudgeExclude": "Judge John Doe",
+        "rule32ListingAdditionalIns": "Rule 32 listing instruction example",
+        "rule32NoticeDocument": {
+          "document_url": "http://document-store/BBB",
+          "document_binary_url": "http://document-store/BBB/binary",
+          "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
+        },
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
