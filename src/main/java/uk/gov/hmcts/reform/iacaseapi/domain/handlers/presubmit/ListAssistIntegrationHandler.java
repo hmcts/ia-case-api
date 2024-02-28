@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -10,11 +11,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumFieldLegalRepNameFixer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class ListAssistIntegrationHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private AsylumFieldLegalRepNameFixer asylumFieldLegalRepNameFixer;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -36,6 +41,8 @@ public class ListAssistIntegrationHandler implements PreSubmitCallbackHandler<As
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        asylumFieldLegalRepNameFixer.fix(asylumCase);
 
         PartyIdService.setAppellantPartyId(asylumCase);
         PartyIdService.setLegalRepPartyId(asylumCase);
