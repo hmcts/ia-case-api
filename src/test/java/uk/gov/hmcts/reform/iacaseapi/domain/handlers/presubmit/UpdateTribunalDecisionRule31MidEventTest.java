@@ -12,6 +12,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -115,8 +117,12 @@ class UpdateTribunalDecisionRule31MidEventTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void handler_should_populate_dynamic_current_decision() {
+    @ParameterizedTest
+    @CsvSource({
+        "ALLOWED, 'Yes, change decision to Dismissed'",
+        "DISMISSED, 'Yes, change decision to Allowed'"
+    })
+    void handler_should_populate_dynamic_current_decision(AppealDecision decision, String expectedValue) {
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getPageId()).thenReturn(testPage);
@@ -124,7 +130,7 @@ class UpdateTribunalDecisionRule31MidEventTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
-                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+                .thenReturn(Optional.of(decision));
 
         when(userDetailsHelper.getLoggedInUserRole(userDetails))
                 .thenReturn(JUDGE);
@@ -136,7 +142,7 @@ class UpdateTribunalDecisionRule31MidEventTest {
 
         DynamicList dynamicList = new DynamicList(new Value("", ""),
                 List.of(
-                        new Value("ALLOWED", "Yes, change decision to Dismissed"),
+                        new Value("ALLOWED", expectedValue),
                         new Value("DISMISSED", "No")));
 
         assertNotNull(callbackResponse);
