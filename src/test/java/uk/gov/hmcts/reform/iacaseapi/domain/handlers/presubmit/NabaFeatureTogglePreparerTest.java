@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ADA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED_OOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
@@ -51,12 +52,13 @@ class NabaFeatureTogglePreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
-    void handler_checks_age_assessment_feature_flag_set_value(Event event) {
+    void handler_checks_naba_ada_feature_flag_set_value(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("naba-feature-flag", false)).thenReturn(true);
+        when(featureToggler.getValue("naba-ada-feature-flag", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 nabaFeatureTogglePreparer.handle(ABOUT_TO_START, callback);
@@ -69,11 +71,13 @@ class NabaFeatureTogglePreparerTest {
                 IS_NABA_ENABLED, YesOrNo.YES);
         Mockito.verify(asylumCase, times(1)).write(
             IS_NABA_ENABLED_OOC, YesOrNo.YES);
+        Mockito.verify(asylumCase, times(1)).write(
+            IS_NABA_ADA_ENABLED, YesOrNo.YES);
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
-    void handler_checks_age_assessment_flag_not_set(Event event) {
+    void handler_checks_naba_ada_flag_not_set(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -90,6 +94,8 @@ class NabaFeatureTogglePreparerTest {
                 IS_NABA_ENABLED, YesOrNo.NO);
         Mockito.verify(asylumCase, times(1)).write(
             IS_NABA_ENABLED_OOC, YesOrNo.NO);
+        Mockito.verify(asylumCase, times(1)).write(
+            IS_NABA_ADA_ENABLED, YesOrNo.NO);
     }
 
     @Test
