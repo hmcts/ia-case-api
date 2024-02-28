@@ -1,8 +1,8 @@
 {
-  "description": "RIA-8157 Update Tribunal Decision Rule 31 Error",
+  "description": "RIA-8157 Update Tribunal Decision Document Rule 31 Normal",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdMidEvent?pageId=decisionAndReasonsDocumentUploadPage",
     "credentials": "Judge",
     "input": {
       "id": 8157,
@@ -12,23 +12,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "updateTribunalDecisionList": "underRule31",
-          "updateTribunalDecisionAndReasonsFinalCheck": "No",
-          "typesOfUpdateTribunalDecision": {
-            "value": {
-              "code": "dismissed",
-              "label": "No"
-            },
-            "list_items": [
-              {
-                "code": "allowed",
-                "label": "Yes, change decision to Allowed"
-              },
-              {
-                "code": "dismissed",
-                "label": "No"
-              }
-            ]
-          },
+          "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
           "decisionAndReasonDocsUpload": {
             "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
             "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
@@ -40,28 +24,12 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You must update the decision or the Decision and Reasons document to continue"],
+    "errors": [],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "updateTribunalDecisionList": "underRule31",
-        "updateTribunalDecisionAndReasonsFinalCheck": "No",
-        "typesOfUpdateTribunalDecision": {
-          "value": {
-            "code": "dismissed",
-            "label": "No"
-          },
-          "list_items": [
-            {
-              "code": "allowed",
-              "label": "Yes, change decision to Allowed"
-            },
-            {
-              "code": "dismissed",
-              "label": "No"
-            }
-          ]
-        },
+        "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
         "decisionAndReasonDocsUpload": {
           "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
           "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",

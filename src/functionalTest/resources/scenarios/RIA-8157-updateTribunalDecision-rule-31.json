@@ -2,7 +2,7 @@
   "description": "RIA-8157 Update Tribunal Decision Rule 31",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdMidEvent?pageId=tribunalDecisionType",
     "credentials": "Judge",
     "input": {
       "id": 8157,
@@ -13,26 +13,10 @@
         "replacements": {
           "updateTribunalDecisionList": "underRule31",
           "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
-          "typesOfUpdateTribunalDecision": {
-            "value": {
-              "code": "dismissed",
-              "label": "No"
-            },
-            "list_items": [
-              {
-                "code": "allowed",
-                "label": "Yes, change decision to Allowed"
-              },
-              {
-                "code": "dismissed",
-                "label": "No"
-              }
-            ]
-          },
           "decisionAndReasonDocsUpload": {
             "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
             "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
-            "document_filename": "sample-name.pdf"
+            "document_filename": "PA 12345 2024-Awan-Decision-and-reasons-AMENDED.pdf"
           }
         }
       }
@@ -46,26 +30,10 @@
       "replacements": {
         "updateTribunalDecisionList": "underRule31",
         "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
-        "typesOfUpdateTribunalDecision": {
-          "value": {
-            "code": "dismissed",
-            "label": "No"
-          },
-          "list_items": [
-            {
-              "code": "allowed",
-              "label": "Yes, change decision to Allowed"
-            },
-            {
-              "code": "dismissed",
-              "label": "No"
-            }
-          ]
-        },
         "decisionAndReasonDocsUpload": {
           "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
           "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
-          "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
+          "document_filename": "PA 12345 2024-Awan-Decision-and-reasons-AMENDED.pdf"
         }
       }
     }
