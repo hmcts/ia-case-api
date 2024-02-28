@@ -24,6 +24,7 @@
   },
   "expectation": {
     "status": 200,
+    "errors": [],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
