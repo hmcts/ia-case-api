@@ -79,7 +79,10 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
 
                 YesOrNo isDetained = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
                 // If non-accelerated Detained or non Detained - remove Decision Receive date
-                if ((isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(NO))) || isDetained.equals(NO)) {
+                Boolean isDetainedNonAda = isDetained.equals(YES)
+                    && ((isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(NO)))
+                    || isAcceleratedDetainedAppeal.isEmpty());
+                if (isDetainedNonAda || isDetained.equals(NO)) {
                     asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
                 } else {
                     // if Accelerated Detained
