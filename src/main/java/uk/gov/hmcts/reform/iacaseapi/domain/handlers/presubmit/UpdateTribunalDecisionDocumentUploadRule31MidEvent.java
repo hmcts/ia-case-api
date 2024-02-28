@@ -49,7 +49,8 @@ public class UpdateTribunalDecisionDocumentUploadRule31MidEvent implements PreSu
 
         if (isDecisionAndReasonDocumentBeingUpdated.equals(YES)) {
 
-            if (!decisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
+            if (decisionAndReasonsDoc.isPresent() &&
+                    !decisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
                 response.addError("The Decision and reasons document must be a PDF file");
                 return response;
             }
