@@ -1633,6 +1633,7 @@ public enum AsylumCaseFieldDefinition {
 
     IS_DLRM_SET_ASIDE_ENABLED(
             "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),
+
     IS_DLRM_FEE_REMISSION_ENABLED(
         "isDlrmFeeRemissionEnabled", new TypeReference<YesOrNo>(){}),
 
@@ -1664,7 +1665,17 @@ public enum AsylumCaseFieldDefinition {
             "allSetAsideAppellantDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     ALL_SET_ASIDE_RESPONDENT_DOCS(
-            "allSetAsideRespondentDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),;
+            "allSetAsideRespondentDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    TYPES_OF_UPDATE_TRIBUNAL_DECISION(
+        "typesOfUpdateTribunalDecision", new TypeReference<DynamicList>(){}),
+
+    DECISION_AND_REASON_DOCS_UPLOAD(
+        "decisionAndReasonDocsUpload", new TypeReference<Document>(){}),
+    UPDATE_TRIBUNAL_DECISION_LIST(
+            "updateTribunalDecisionList", new TypeReference<String>(){}),
+    UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK(
+            "updateTribunalDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;

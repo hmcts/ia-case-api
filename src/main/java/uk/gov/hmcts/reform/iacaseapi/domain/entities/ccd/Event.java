@@ -123,6 +123,7 @@ public enum Event {
 
     PIP_ACTIVATION("pipActivation"),
     UPDATE_S94B_STATUS("updateS94bStatus"),
+    UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
