@@ -167,6 +167,8 @@ class UpdateTribunalDecisionDocumentUploadRule31MidEventTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("PA/12345/2021"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("TestName"));
+        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         Document decisionAndReasonsDocument = new Document("documentUrl", "binaryUrl", "documentFilename.pdf");
         when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class))
