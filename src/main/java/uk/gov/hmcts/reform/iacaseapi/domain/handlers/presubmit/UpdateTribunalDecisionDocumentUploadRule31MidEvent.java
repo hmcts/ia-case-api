@@ -49,17 +49,18 @@ public class UpdateTribunalDecisionDocumentUploadRule31MidEvent implements PreSu
 
         if (isDecisionAndReasonDocumentBeingUpdated.equals(YES)) {
 
-            if (decisionAndReasonsDoc.isPresent() &&
-                    !decisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
-                response.addError("The Decision and reasons document must be a PDF file");
-                return response;
+            if(decisionAndReasonsDoc.isPresent()) {
+                if (!decisionAndReasonsDoc.get().getDocumentFilename().endsWith(".pdf")) {
+                    response.addError("The Decision and reasons document must be a PDF file");
+                    return response;
+                }
+
+                Document previousDecisionAndReasonsDoc = decisionAndReasonsDoc.get();
+
+                Document amendedDecisionAndReasonsDoc = new Document(previousDecisionAndReasonsDoc.getDocumentUrl(), previousDecisionAndReasonsDoc.getDocumentBinaryUrl(), getDecisionAndReasonsFilename(asylumCase));
+
+                asylumCase.write(DECISION_AND_REASON_DOCS_UPLOAD, amendedDecisionAndReasonsDoc);
             }
-
-            Document previousDecisionAndReasonsDoc = decisionAndReasonsDoc.get();
-
-            Document amendedDecisionAndReasonsDoc = new Document(previousDecisionAndReasonsDoc.getDocumentUrl(), previousDecisionAndReasonsDoc.getDocumentBinaryUrl(),getDecisionAndReasonsFilename(asylumCase));
-
-            asylumCase.write(DECISION_AND_REASON_DOCS_UPLOAD, amendedDecisionAndReasonsDoc);
             return new PreSubmitCallbackResponse<>(asylumCase);
 
         } else if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) &&
