@@ -84,8 +84,14 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
 
     private void prePopulateNextHearingFormat(AsylumCase asylumCase) {
 
-        asylumCase.read(HEARING_CHANNEL, DynamicList.class)
-            .ifPresent(hearingChannel -> asylumCase.write(NEXT_HEARING_FORMAT, hearingChannel));
+        DynamicList hearingChannel = asylumCase.read(HEARING_CHANNEL, DynamicList.class).orElse(null);
+        if (hearingChannel == null) {
+            hearingChannel = provider.provideHearingChannels();
+        } else if (hearingChannel.getListItems() == null || hearingChannel.getListItems().isEmpty()) {
+            hearingChannel = new DynamicList(hearingChannel.getValue(), provider.provideHearingChannels().getListItems());
+        }
+
+        asylumCase.write(NEXT_HEARING_FORMAT, hearingChannel);
     }
 
     private void prePopulateNextHearingDuration(AsylumCase asylumCase) {

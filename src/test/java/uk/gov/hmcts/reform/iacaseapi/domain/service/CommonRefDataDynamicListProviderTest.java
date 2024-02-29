@@ -53,6 +53,8 @@ class CommonRefDataDynamicListProviderTest {
 
         DynamicList hearingChannels = provider.provideHearingChannels();
 
+        assertNotNull(hearingChannels);
+
         verify(refDataUserService, times(1))
             .retrieveCategoryValues(HEARING_CHANNEL_CATEGORY, IS_CHILD_REQUIRED);
         verify(refDataUserService, times(1))
@@ -60,7 +62,6 @@ class CommonRefDataDynamicListProviderTest {
         verify(refDataUserService, times(1))
             .mapCategoryValuesToDynamicListValues(categoryValuesList);
 
-        assertNotNull(hearingChannels);
         assertEquals(values, hearingChannels.getListItems());
     }
 
@@ -76,6 +77,8 @@ class CommonRefDataDynamicListProviderTest {
 
         DynamicList reasons = provider.provideChangeReasons();
 
+        assertNotNull(reasons);
+
         verify(refDataUserService, times(1))
             .retrieveCategoryValues(CHANGE_REASONS, IS_CHILD_REQUIRED);
         verify(refDataUserService, times(1))
@@ -83,7 +86,6 @@ class CommonRefDataDynamicListProviderTest {
         verify(refDataUserService, times(1))
             .mapCategoryValuesToDynamicListValues(categoryValuesList);
 
-        assertNotNull(reasons);
         assertEquals(values, reasons.getListItems());
     }
 
@@ -99,6 +101,8 @@ class CommonRefDataDynamicListProviderTest {
 
         DynamicList reasons = provider.provideCaseManagementCancellationReasons();
 
+        assertNotNull(reasons);
+
         verify(refDataUserService, times(1))
             .retrieveCategoryValues(CASE_MANAGEMENT_CANCELLATION_REASONS, IS_CHILD_REQUIRED);
         verify(refDataUserService, times(1))
@@ -106,7 +110,6 @@ class CommonRefDataDynamicListProviderTest {
         verify(refDataUserService, times(1))
             .mapCategoryValuesToDynamicListValues(categoryValuesList);
 
-        assertNotNull(reasons);
         assertEquals(values, reasons.getListItems());
     }
 

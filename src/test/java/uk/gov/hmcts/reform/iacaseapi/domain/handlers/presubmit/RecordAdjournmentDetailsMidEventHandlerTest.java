@@ -106,11 +106,24 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
         when(asylumCase.read(HEARING_CHANNEL, DynamicList.class))
             .thenReturn(Optional.of(hearingChannel));
-        when(asylumCase.read(NEXT_HEARING_FORMAT, DynamicList.class))
-            .thenReturn(Optional.of(hearingChannel));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(MID_EVENT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, hearingChannel);
+    }
+
+    @Test
+    void should_populate_next_hearing_format_from_ref_data() {
+
+        when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
+        when(provider.provideHearingChannels()).thenReturn(hearingChannel);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(MID_EVENT, callback);
+
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
@@ -178,19 +191,6 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         assertEquals(Set.of(NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE),
                 callbackResponse.getErrors());
-    }
-
-
-    @Test
-    void should_not_populate_next_hearing_format() {
-        when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(MID_EVENT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(eq(NEXT_HEARING_FORMAT), any());
     }
 
     @Test
