@@ -1672,10 +1672,15 @@ public enum AsylumCaseFieldDefinition {
 
     DECISION_AND_REASON_DOCS_UPLOAD(
         "decisionAndReasonDocsUpload", new TypeReference<Document>(){}),
+
     UPDATE_TRIBUNAL_DECISION_LIST(
-            "updateTribunalDecisionList", new TypeReference<String>(){}),
+            "updateTribunalDecisionList", new TypeReference<UpdateTribunalRules>(){}),
+
     UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK(
-            "updateTribunalDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){});
+            "updateTribunalDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){}),
+
+    UPDATED_APPEAL_DECISION(
+            "updatedAppealDecision", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

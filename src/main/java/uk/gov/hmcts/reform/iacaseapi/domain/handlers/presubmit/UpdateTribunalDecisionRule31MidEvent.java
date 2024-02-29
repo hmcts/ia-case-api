@@ -10,7 +10,6 @@ import java.util.List;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -19,15 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHandler<AsylumCase> {
-
-    private final UserDetailsHelper userDetailsHelper;
-    private final UserDetails userDetails;
-    static final String ROLE_JUDGE = "caseworker-ia-iacjudge";
-
-    public UpdateTribunalDecisionRule31MidEvent(UserDetailsHelper userDetailsHelper, UserDetails userDetails) {
-        this.userDetailsHelper = userDetailsHelper;
-        this.userDetails = userDetails;
-    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -46,18 +36,16 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        boolean isJudge = ROLE_JUDGE.contains(userDetailsHelper.getLoggedInUserRole(userDetails).toString());
         boolean isDecisionAllowed = isDecisionAllowed(asylumCase);
 
         final List<Value> values = new ArrayList<>();
-        if (isJudge && isDecisionAllowed) {
-            values.add(new Value(ALLOWED.name(), "Yes, change decision to Dismissed"));
-            values.add(new Value(DISMISSED.name(), "No"));
-        } else if (isJudge) {
-            values.add(new Value(ALLOWED.name(), "Yes, change decision to Allowed"));
-            values.add(new Value(DISMISSED.name(), "No"));
+        if (isDecisionAllowed) {
+            values.add(new Value(DISMISSED.getValue(), "Yes, change decision to Dismissed"));
+            values.add(new Value(ALLOWED.getValue(), "No"));
+        } else {
+            values.add(new Value(ALLOWED.getValue(), "Yes, change decision to Allowed"));
+            values.add(new Value(DISMISSED.getValue(), "No"));
         }
-
 
         DynamicList typesOfUpdateTribunalDecision = new DynamicList(new Value("", ""), values);
 
