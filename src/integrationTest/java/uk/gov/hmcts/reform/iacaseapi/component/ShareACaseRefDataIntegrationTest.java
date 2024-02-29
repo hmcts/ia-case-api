@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
-public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
@@ -44,7 +44,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data() throws Exception {
+    void should_get_users_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -87,7 +87,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
+    void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
 
         String prdResponseJsonNoOrgId =
             new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
@@ -130,7 +130,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
+    void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -164,7 +164,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
     @BeforeEach
     @SneakyThrows
     @SuppressWarnings("java:S2925")
-    public void makeAPause() {
+    void makeAPause() {
         /*
             We are not using Wiremock the way it's intended to be used. It should be used by
             starting a webserver at the beginning of all tests and taking it down at the end, but

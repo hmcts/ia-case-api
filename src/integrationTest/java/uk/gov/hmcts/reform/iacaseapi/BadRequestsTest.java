@@ -8,13 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 
-public class BadRequestsTest extends SpringBootIntegrationTest {
+class BadRequestsTest extends SpringBootIntegrationTest {
 
     private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
     private static final String SUBMITTED_PATH = "/asylum/ccdSubmitted";
 
     @Test
-    public void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {
+    void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {
 
         runClientRequest(
             ABOUT_TO_SUBMIT_PATH,
@@ -39,7 +39,7 @@ public class BadRequestsTest extends SpringBootIntegrationTest {
     }
 
     @Test
-    public void shouldMakeBadRequestsToServerAndReceiveHttp4xx() throws Exception {
+    void shouldMakeBadRequestsToServerAndReceiveHttp4xx() throws Exception {
 
         runClientRequest(
             ABOUT_TO_SUBMIT_PATH,

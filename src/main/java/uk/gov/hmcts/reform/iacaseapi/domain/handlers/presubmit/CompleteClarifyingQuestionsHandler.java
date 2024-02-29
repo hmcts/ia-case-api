@@ -4,9 +4,12 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS;
 
 import java.util.Collections;
+import static java.util.Collections.emptyList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -66,16 +69,33 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
             Direction direction = clarifyingQuestionsDirectionOptional.get().getValue();
             List<IdValue<ClarifyingQuestion>> questions = direction.getClarifyingQuestions();
 
-            List<IdValue<ClarifyingQuestionAnswer>> answers = questions
-                .stream().map(x -> mapDefaultAnswer(x, direction, callback.getEvent()))
-                .collect(Collectors.toList());
-
             Optional<List<IdValue<ClarifyingQuestionAnswer>>> existingAnswers = asylumCase.read(CLARIFYING_QUESTIONS_ANSWERS);
+
+            // set default answer for unanswered clarifying questions
+            List<IdValue<ClarifyingQuestionAnswer>> answers = questions.stream()
+                    .filter(question -> isClarifyingQuestionNotAnswered(existingAnswers.orElse(emptyList()), question.getId()))
+                    .map(question -> mapDefaultAnswer(question, direction, callback.getEvent()))
+                    .collect(Collectors.toList());
+
             existingAnswers.ifPresent(answers::addAll);
 
             asylumCase.write(AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS, answers);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isClarifyingQuestionNotAnswered(
+            List<IdValue<ClarifyingQuestionAnswer>> clarifyingQuestionsAnswers, String questionId) {
+
+        if (clarifyingQuestionsAnswers.isEmpty()) {
+            return true;
+        }
+
+        Optional<IdValue<ClarifyingQuestionAnswer>> clarifyingQuestionAnswer = clarifyingQuestionsAnswers.stream()
+                .filter(questionAnswerIdValue -> questionAnswerIdValue.getId().equals(questionId))
+                .findFirst();
+
+        return clarifyingQuestionAnswer.isEmpty() || isEmpty(clarifyingQuestionAnswer.get().getValue().getAnswer());
     }
 
     private IdValue<ClarifyingQuestionAnswer> mapDefaultAnswer(IdValue<ClarifyingQuestion> clarifyingQuestion, Direction direction, Event event) {

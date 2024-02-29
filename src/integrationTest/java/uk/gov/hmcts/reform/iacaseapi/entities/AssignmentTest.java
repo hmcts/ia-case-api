@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 
 
-public class AssignmentTest extends SpringBootIntegrationTest {
+class AssignmentTest extends SpringBootIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;

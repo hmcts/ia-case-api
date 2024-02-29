@@ -28,8 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
     "REF_DATA_CASE_WORKER_URL=http://127.0.0.1:8990"
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CaseWorkerServiceTest {
-
+class CaseWorkerServiceTest {
 
     private static WireMockServer server;
 
@@ -43,7 +42,7 @@ public class CaseWorkerServiceTest {
     public static final String ACTOR_ID = "e7013580-ac60-40fd-9cb5-8cd968db9201";
 
     @BeforeAll
-    public void spinUp() {
+    void spinUp() {
         server = new WireMockServer(WireMockConfiguration.options().port(8990));
         server.start();
     }
@@ -60,7 +59,7 @@ public class CaseWorkerServiceTest {
     }
 
     @AfterAll
-    public void shutDown() {
+    void shutDown() {
         server.stop();
     }
 }

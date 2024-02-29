@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 
 @Slf4j
-public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 
     private static final String ACTIVE_USER_ID = "6c4fd62d-9d3c-4d11-962c-57080df16871";
@@ -40,10 +40,10 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     private static final String CCD_ACCESS_API_PATH =
         "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users";
 
-    private Value value1 = new Value("another-user-id", "email@somewhere.com");
-    private Value value2 = new Value(ACTIVE_USER_ID, "email@somewhere.com");
+    private final Value value1 = new Value("another-user-id", "email@somewhere.com");
+    private final Value value2 = new Value(ACTIVE_USER_ID, "email@somewhere.com");
 
-    private List<Value> values = Lists.newArrayList(value1, value2);
+    private final List<Value> values = Lists.newArrayList(value1, value2);
 
     private DynamicList dynamicList;
 
@@ -56,7 +56,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     private String prdResponseJson;
 
     @BeforeEach
-    public void setupReferenceDataStub() throws IOException {
+    void setupReferenceDataStub() throws IOException {
         prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
 
@@ -65,7 +65,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
+    void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
@@ -98,7 +98,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_failure_when_user_is_invalid() {
+    void should_return_failure_when_user_is_invalid() {
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);

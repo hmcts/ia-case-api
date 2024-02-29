@@ -1,19 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @ExtendWith(MockitoExtension.class)
 class IdamServiceTest {
@@ -28,18 +34,25 @@ class IdamServiceTest {
     @Mock
     private IdamApi idamApi;
 
+    private IdamService idamService;
+
+    @BeforeEach
+    public void setUp() {
+
+        idamService = new IdamService(
+                SOME_SYSTEM_USER,
+                SYSTEM_USER_PASS,
+                REDIRECT_URL,
+                SCOPE,
+                CLIENT_ID,
+                CLIENT_SECRET,
+                idamApi
+        );
+    }
+
     @Test
     void getUserToken() {
 
-        IdamService idamService = new IdamService(
-            SOME_SYSTEM_USER,
-            SYSTEM_USER_PASS,
-            REDIRECT_URL,
-            SCOPE,
-            CLIENT_ID,
-            CLIENT_SECRET,
-            idamApi
-        );
 
         when(idamApi.token(anyMap())).thenReturn(new Token("some user token", SCOPE));
 
@@ -57,5 +70,36 @@ class IdamServiceTest {
         expectedIdamApiParameter.put("scope", SCOPE);
 
         verify(idamApi).token(eq(expectedIdamApiParameter));
+    }
+
+    @Test
+    void getUserDetails() {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList("role-1", "role-2");
+        String expectedEmailAddress = "john.doe@example.com";
+        String expectedForename = "John";
+        String expectedSurname = "Doe";
+        String expectedName = expectedForename + " " + expectedSurname;
+
+        UserInfo expecteduUerInfo = new UserInfo(
+                expectedEmailAddress,
+                expectedId,
+                expectedRoles,
+                expectedName,
+                expectedForename,
+                expectedSurname
+        );
+        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+
+        UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
+        verify(idamApi).userInfo(expectedAccessToken);
+
+        assertEquals(expectedId, actualUserInfo.getUid());
+        assertEquals(expectedRoles, actualUserInfo.getRoles());
+        assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
+        assertEquals(expectedForename, actualUserInfo.getGivenName());
+        assertEquals(expectedSurname, actualUserInfo.getFamilyName());
     }
 }

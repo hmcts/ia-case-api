@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithDocumentApiStub {
 
     @MockBean
@@ -39,7 +39,7 @@ public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest im
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
-    public void handles_generate_decision_and_reasons_event() {
+    void handles_generate_decision_and_reasons_event() {
 
         addServiceAuthStub(server);
         addDocumentApiTransformerStub(server);

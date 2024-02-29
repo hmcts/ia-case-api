@@ -32,8 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.AuditDe
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs.EditDocsCaseNoteService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetails;
 
-
-public class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
+class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
 
     @MockBean
     private UserDetailsProvider userDetailsProvider;
@@ -42,7 +41,7 @@ public class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
     private EditDocsCaseNoteService editDocsCaseNoteService;
 
     @Test
-    public void shouldWriteAuditCaseNote() {
+    void shouldWriteAuditCaseNote() {
         AsylumCase asylumCaseBefore = new AsylumCase();
         mockAsylumCaseBeforeToHaveOneDocument(asylumCaseBefore);
         mockUserDetailsProvider();

@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringJUnitWebConfig
 @SpringBootTest
 @ActiveProfiles("integration")
-public class OpenApiPublisher {
+class OpenApiPublisher {
 
     @Autowired
     private MockMvc mvc;
@@ -37,7 +37,7 @@ public class OpenApiPublisher {
     private WebApplicationContext wac;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         WebRequestTrackingFilter filter;
         filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
@@ -47,7 +47,7 @@ public class OpenApiPublisher {
     @DisplayName("Generate swagger documentation")
     @Test
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-    public void generateDocs() throws Exception {
+    void generateDocs() throws Exception {
         byte[] specs = mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
             .andReturn()
@@ -59,5 +59,4 @@ public class OpenApiPublisher {
         }
 
     }
-
 }
