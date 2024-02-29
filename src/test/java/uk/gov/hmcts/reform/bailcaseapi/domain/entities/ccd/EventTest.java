@@ -33,11 +33,12 @@ public class EventTest {
         assertEquals("createBailCaseLink", Event.CREATE_BAIL_CASE_LINK.toString());
         assertEquals("maintainBailCaseLinks", Event.MAINTAIN_BAIL_CASE_LINKS.toString());
         assertEquals("createFlag", Event.CREATE_FLAG.toString());
+        assertEquals("imaStatus", Event.IMA_STATUS.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(27, Event.values().length);
+        assertEquals(28, Event.values().length);
     }
 }

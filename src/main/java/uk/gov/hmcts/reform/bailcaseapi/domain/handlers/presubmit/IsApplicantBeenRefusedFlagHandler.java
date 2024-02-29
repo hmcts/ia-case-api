@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.bailcaseapi.domain.BailCaseUtils;
 import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -64,7 +65,9 @@ public class IsApplicantBeenRefusedFlagHandler implements PreSubmitCallbackHandl
         String recordDecisionType =
             caseDataBefore.read(RECORD_DECISION_TYPE, String.class).orElse("");
 
-        if (recordDecisionType.equals(DecisionType.REFUSED.toString())) {
+        if (recordDecisionType.equals(DecisionType.REFUSED.toString())
+            || (BailCaseUtils.isImaEnabled(caseDataBefore)
+            && recordDecisionType.equals(DecisionType.REFUSED_UNDER_IMA.toString()))) {
             String maybeRecordDecisionDate =
                 caseDataBefore.read(DECISION_DETAILS_DATE, String.class).orElse("");
 

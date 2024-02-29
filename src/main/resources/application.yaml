@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8099}
+  port: ${PORT:8686}
 
 management:
   endpoint:
@@ -110,6 +110,7 @@ security:
       - "createBailCaseLink"
       - "maintainBailCaseLinks"
       - "createFlag"
+      - "imaStatus"
     caseworker-ia-homeofficebail:
       - "startApplication"
       - "uploadBailSummary"

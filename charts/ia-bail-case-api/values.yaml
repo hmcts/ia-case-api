@@ -1,6 +1,6 @@
 java:
   image: 'hmctspublic.azurecr.io/ia/bail-case-api:latest'
-  applicationPort: 8099
+  applicationPort: 8686
   readinessPath: '/health/readiness'
   aadIdentityName: ia
   ingressHost: ia-bail-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal

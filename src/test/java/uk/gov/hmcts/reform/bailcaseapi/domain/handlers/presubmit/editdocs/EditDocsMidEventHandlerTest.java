@@ -116,7 +116,8 @@ class EditDocsMidEventHandlerTest {
     @Test
     void should_successfully_validate_edit_documents() {
 
-        DocumentWithMetadata validDocumentMetadata = new DocumentWithMetadata(document1, null, "22-07-2020", null);
+        DocumentWithMetadata validDocumentMetadata =
+            new DocumentWithMetadata(document1, null, "22-07-2020", null);
 
         List<IdValue<DocumentWithMetadata>> tribunalDocs =
             Arrays.asList(
@@ -158,7 +159,8 @@ class EditDocsMidEventHandlerTest {
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
         assertTrue(errors.contains(
-            "If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change."));
+            "If you add a new document you must complete the fields related to that document including Date "
+                + "uploaded, or remove it, before you can submit your change."));
 
     }
 
@@ -184,7 +186,8 @@ class EditDocsMidEventHandlerTest {
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
         assertTrue(errors.contains(
-            "If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change."));
+            "If you add a new document you must complete the fields related to that document including Date "
+                + "uploaded, or remove it, before you can submit your change."));
 
     }
 

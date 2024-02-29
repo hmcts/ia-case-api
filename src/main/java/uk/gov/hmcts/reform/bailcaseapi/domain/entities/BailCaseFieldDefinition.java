@@ -74,6 +74,10 @@ public enum BailCaseFieldDefinition {
         "hasAppealHearingPending", new TypeReference<String>(){}),
     APPEAL_REFERENCE_NUMBER(
         "appealReferenceNumber", new TypeReference<String>(){}),
+    HAS_APPEAL_HEARING_PENDING_UT(
+        "hasAppealHearingPendingUt", new TypeReference<String>(){}),
+    UT_APPEAL_REFERENCE_NUMBER(
+        "utAppealReferenceNumber", new TypeReference<String>(){}),
     HAS_PREV_BAIL_APPLICATION(
         "hasPreviousBailApplication", new TypeReference<String>(){}),
     PREV_BAIL_APPLICATION_NUMBER(
@@ -296,8 +300,14 @@ public enum BailCaseFieldDefinition {
         "uploadSignedDecisionNoticeDocument", new TypeReference<Document>(){}),
     DECISION_GRANTED_OR_REFUSED(
         "decisionGrantedOrRefused", new TypeReference<String>(){}),
+    //Once we switch the IMA feature on, we will be using this case field instead of the one above
+    DECISION_GRANTED_OR_REFUSED_IMA(
+        "decisionGrantedOrRefusedIma", new TypeReference<String>(){}),
     RECORD_THE_DECISION_LIST(
         "recordTheDecisionList", new TypeReference<String>(){}),
+    //Once we switch the IMA feature on, we will be using this case field instead of the one above
+    RECORD_THE_DECISION_LIST_IMA(
+        "recordTheDecisionListIma", new TypeReference<String>(){}),
     RELEASE_STATUS_YES_OR_NO(
         "releaseStatusYesOrNo", new TypeReference<YesOrNo>(){}),
     SS_CONSENT_DECISION(
@@ -453,8 +463,22 @@ public enum BailCaseFieldDefinition {
     APPELLANT_LEVEL_FLAGS(
         "appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {}),
     CASE_FLAGS(
-        "caseFlags", new TypeReference<StrategicCaseFlag>(){});
+        "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
+    HO_HAS_IMA_STATUS(
+        "hoHasImaStatus", new TypeReference<YesOrNo>(){}),
+    ADMIN_HAS_IMA_STATUS(
+        "adminHasImaStatus", new TypeReference<YesOrNo>(){}),
 
+    /*
+        ADMIN_SELECT_IMA_STATUS and HO_SELECT_IMA_STATUS used in the journey pages.
+        HO_HAS_IMA_STATUS and ADMIN_HAS_IMA_STATUS used for representation in summary pages with different titles.
+    */
+    ADMIN_SELECT_IMA_STATUS(
+        "adminSelectImaStatus", new TypeReference<YesOrNo>() {}),
+    HO_SELECT_IMA_STATUS(
+        "hoSelectImaStatus", new TypeReference<YesOrNo>() {}),
+    IS_IMA_ENABLED(
+        "isImaEnabled", new TypeReference<YesOrNo>() {}),;
 
     private final String value;
     private final TypeReference typeReference;

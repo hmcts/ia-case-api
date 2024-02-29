@@ -69,7 +69,8 @@ public class BailApplicationSubmittedConfirmation implements PostSubmitCallbackH
                     .getOrganisationIdentifier();
 
             log.info("PRD endpoint called for caseId [{}] orgId[{}]",
-                     callback.getCaseDetails().getId(), organisationIdentifier);
+                     callback.getCaseDetails().getId(), organisationIdentifier
+            );
 
             ccdCaseAssignment.assignAccessToCase(callback);
             ccdCaseAssignment.revokeAccessToCase(callback, organisationIdentifier);

@@ -8,6 +8,7 @@ public enum DecisionType {
     GRANTED("granted"),
     REFUSED("refused"),
     CONDITIONAL_GRANT("conditionalGrant"),
+    REFUSED_UNDER_IMA("refusedUnderIma"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

@@ -131,7 +131,8 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER.value(),
         BailCaseFieldDefinition.APPLICANT_PRISON_DETAILS.value(),
         BailCaseFieldDefinition.APPLICANT_ARRIVAL_IN_UK.value(),
-        BailCaseFieldDefinition.CASE_NOTES.value());
+        BailCaseFieldDefinition.CASE_NOTES.value(),
+        BailCaseFieldDefinition.IS_IMA_ENABLED.value());
 
     private static final List<String> VALID_ABOUT_TO_SUBMIT_MAKE_NEW_APPLICATION_FIELDS = List.of(
         BailCaseFieldDefinition.BAIL_REFERENCE_NUMBER.value(),
@@ -155,6 +156,8 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.APPLICANT_MOBILE_NUMBER.value(),
         BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING.value(),
         BailCaseFieldDefinition.APPEAL_REFERENCE_NUMBER.value(),
+        BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING_UT.value(),
+        BailCaseFieldDefinition.UT_APPEAL_REFERENCE_NUMBER.value(),
         BailCaseFieldDefinition.HAS_PREVIOUS_BAIL_APPLICATION.value(),
         BailCaseFieldDefinition.PREV_BAIL_APPLICATION_NUMBER.value(),
         BailCaseFieldDefinition.APPLICANT_BEEN_REFUSED_BAIL.value(),

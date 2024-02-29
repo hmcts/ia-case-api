@@ -1,20 +1,5 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,9 +7,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_IMA_ENABLED;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
+
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class MakeNewApplicationSubmitHandlerTest {
 
     @Mock
@@ -40,6 +46,8 @@ class MakeNewApplicationSubmitHandlerTest {
     @Mock
     private BailCase bailCaseBefore;
     @Mock
+    private FeatureToggler featureToggler;
+    @Mock
     private MakeNewApplicationService makeNewApplicationService;
 
     private MakeNewApplicationSubmitHandler makeNewApplicationSubmitHandler;
@@ -47,7 +55,7 @@ class MakeNewApplicationSubmitHandlerTest {
     @BeforeEach
     public void setUp() {
         makeNewApplicationSubmitHandler =
-            new MakeNewApplicationSubmitHandler(makeNewApplicationService);
+            new MakeNewApplicationSubmitHandler(makeNewApplicationService, featureToggler);
     }
 
     @Test
@@ -69,6 +77,7 @@ class MakeNewApplicationSubmitHandlerTest {
 
         verify(makeNewApplicationService, times(1)).clearFieldsAboutToSubmit(bailCase);
         verify(makeNewApplicationService, times(1)).appendPriorApplication(bailCase, bailCaseBefore);
+        when(featureToggler.getValue("ima-feature-flag", false)).thenReturn(false);
     }
 
     @Test
@@ -101,6 +110,20 @@ class MakeNewApplicationSubmitHandlerTest {
            makeNewApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .hasMessage("Case details before missing")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"true", "false"})
+    void should_set_ima_field(boolean featureFlag) {
+        when(featureToggler.getValue("ima-feature-flag", false)).thenReturn(featureFlag);
+        when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
+
+        makeNewApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+        verify(bailCase, times(1)).write(IS_IMA_ENABLED, featureFlag ? YesOrNo.YES : YesOrNo.NO);
     }
 
     @Test

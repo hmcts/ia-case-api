@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_COND_AMOUNT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.GROUNDS_FOR_BAIL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING_UT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.INTERPRETER_LANGUAGES;
@@ -51,11 +52,13 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REASON_FOR_REFUSAL_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST_IMA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_REFUSAL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OPTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_REFUSAL_REASON;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UT_APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.VIDEO_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.VIDEO_HEARING_YESNO;
 
@@ -70,6 +73,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.bailcaseapi.domain.BailCaseUtils;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
@@ -87,6 +91,9 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 @Service
 public class ShowPreviousApplicationService {
 
+    public ShowPreviousApplicationService() {
+        // Default constructor
+    }
 
     public String getDecisionLabel(BailCase previousBailCase, Value selectedApplicationValue) {
         String decisionDetails = selectedApplicationValue.getLabel().contains("Ended")
@@ -289,6 +296,21 @@ public class ShowPreviousApplicationService {
                 .append("|\n");
         }
 
+        if (BailCaseUtils.isImaEnabled(previousBailCase)) {
+            stringBuilder.append("|Pending appeal hearing in UT|")
+                .append(previousBailCase.read(HAS_APPEAL_HEARING_PENDING_UT).orElse(YesOrNo.NO))
+                .append("|\n");
+
+            if (previousBailCase.read(HAS_APPEAL_HEARING_PENDING_UT)
+                .orElse(YesOrNo.NO.toString()).equals(YesOrNo.YES.toString())) {
+                stringBuilder
+                    .append("|Pending appeal reference number in UT|")
+                    .append(previousBailCase.read(UT_APPEAL_REFERENCE_NUMBER)
+                                .orElseThrow(getErrorThrowable(UT_APPEAL_REFERENCE_NUMBER)))
+                    .append("|\n");
+            }
+        }
+
         stringBuilder.append("|Address if bail granted|")
             .append(previousBailCase.read(APPLICANT_HAS_ADDRESS, YesOrNo.class).orElse(YesOrNo.NO))
             .append("|\n");
@@ -483,8 +505,9 @@ public class ShowPreviousApplicationService {
             .equalsIgnoreCase("refused");
 
         if (isRefused) {
-            boolean isMindedToGrant = previousBailCase.read(RECORD_THE_DECISION_LIST, String.class)
-                .orElse("")
+            boolean isMindedToGrant = (BailCaseUtils.isImaEnabled(previousBailCase)
+                ? previousBailCase.read(RECORD_THE_DECISION_LIST_IMA, String.class).orElse("")
+                : previousBailCase.read(RECORD_THE_DECISION_LIST, String.class).orElse(""))
                 .equalsIgnoreCase("mindedToGrant");
 
             if (isMindedToGrant) {

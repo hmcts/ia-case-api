@@ -11,6 +11,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HO_HAS_IMA_STATUS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HO_SELECT_IMA_STATUS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_IMA_ENABLED;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_BAIL_SUMMARY_DOCS;
 
 import java.util.Arrays;
@@ -19,6 +22,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -35,6 +40,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentsAppender;
 
@@ -110,6 +116,10 @@ public class UploadBailSummaryDocumentHandlerTest {
         when(documentsAppender.append(existingBailSummaryDocuments, summaryList))
             .thenReturn(allBailSummaryDocuments);
 
+        when(bailCase.read(HO_SELECT_IMA_STATUS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(bailCase.read(IS_IMA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             uploadBailSummaryDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -124,6 +134,8 @@ public class UploadBailSummaryDocumentHandlerTest {
         verify(documentsAppender, times(1)).append(existingBailSummaryDocuments, summaryList);
 
         verify(bailCase, times(1)).write(HOME_OFFICE_DOCUMENTS_WITH_METADATA, allBailSummaryDocuments);
+
+        verify(bailCase, times(1)).write(HO_HAS_IMA_STATUS, YesOrNo.YES);
     }
 
     @Test
@@ -207,5 +219,19 @@ public class UploadBailSummaryDocumentHandlerTest {
         assertThatThrownBy(() -> uploadBailSummaryDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"YES, YES", "NO, YES", "YES, NO", "NO, NO"})
+    void set_ima_status(YesOrNo imaStatus, YesOrNo isImaEnabled) {
+        when(bailCase.read(HO_SELECT_IMA_STATUS, YesOrNo.class)).thenReturn(Optional.of(imaStatus));
+        when(bailCase.read(IS_IMA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isImaEnabled));
+        PreSubmitCallbackResponse<BailCase> response = uploadBailSummaryDocumentHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        if (isImaEnabled.equals(YesOrNo.YES)) {
+            verify(bailCase, times(1)).write(HO_HAS_IMA_STATUS, imaStatus);
+        } else {
+            verify(bailCase, times(1)).write(HO_HAS_IMA_STATUS, YesOrNo.NO);
+        }
     }
 }

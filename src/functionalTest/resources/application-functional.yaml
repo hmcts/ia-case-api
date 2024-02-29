@@ -1,4 +1,4 @@
-targetInstance: ${TEST_URL:http://localhost:8099}
+targetInstance: ${TEST_URL:http://localhost:8686}
 
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 

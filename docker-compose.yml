@@ -55,7 +55,7 @@ services:
       - ia-case-documents-api
       - ia-case-notifications-api
     ports:
-      - ${SERVER_PORT:-8099}:${SERVER_PORT:-8099}
+      - ${SERVER_PORT:-8686}:${SERVER_PORT:-8686}
 networks:
   compose_default:
     external: true
