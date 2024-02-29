@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import java.util.Arrays;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -19,17 +20,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Component
+@RequiredArgsConstructor
 public class RecordAdjournmentDetailsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final String NO_HEARINGS_ERROR_MESSAGE =
         "You've made an invalid request. You must request a substantive hearing before you can adjourn a hearing.";
     private final IaHearingsApiService iaHearingsApiService;
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
-
-    public RecordAdjournmentDetailsPreparer(IaHearingsApiService iaHearingsApiService, LocationBasedFeatureToggler locationBasedFeatureToggler) {
-        this.iaHearingsApiService = iaHearingsApiService;
-        this.locationBasedFeatureToggler = locationBasedFeatureToggler;
-    }
+    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
