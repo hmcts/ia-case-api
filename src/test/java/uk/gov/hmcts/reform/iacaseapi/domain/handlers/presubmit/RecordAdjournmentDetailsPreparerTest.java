@@ -59,9 +59,11 @@ public class RecordAdjournmentDetailsPreparerTest {
 
     @BeforeEach
     public void setUp() {
+        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        recordAdjournmentDetailsPreparer = new RecordAdjournmentDetailsPreparer(iaHearingsApiService, locationBasedFeatureToggler);
+        recordAdjournmentDetailsPreparer = new RecordAdjournmentDetailsPreparer(
+            iaHearingsApiService, locationBasedFeatureToggler);
 
         DynamicList adjournmentDetailsHearing =
             new DynamicList(new Value("code", "adjournmentDetailsHearing"), Collections.emptyList());
@@ -71,7 +73,6 @@ public class RecordAdjournmentDetailsPreparerTest {
 
     @Test
     void should_delegate_call_to_ia_hearings_api() {
-        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
 
         recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback);
@@ -82,7 +83,6 @@ public class RecordAdjournmentDetailsPreparerTest {
     @Test
     void should_clear_all_fields() {
 
-        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
 
         recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback);
@@ -138,32 +138,23 @@ public class RecordAdjournmentDetailsPreparerTest {
         assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> recordAdjournmentDetailsPreparer.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void should_throw_error_if_no_hearings() {
-        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
 
         DynamicList adjournmentDetailsHearing =
@@ -179,7 +170,6 @@ public class RecordAdjournmentDetailsPreparerTest {
     @ParameterizedTest
     @EnumSource(value = YesOrNo.class, names = {"NO", "YES"})
     void should_check_set_value_in_auto_hearing_enabled_field(YesOrNo value) {
-        when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
         when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
         when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(value);
 

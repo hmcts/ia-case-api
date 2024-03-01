@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.CommonDataRe
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RefDataUserService {
 
     private final AuthTokenGenerator authTokenGenerator;
@@ -23,20 +25,10 @@ public class RefDataUserService {
     public static final String SERVICE_ID = "BFA1";
     public static final String IS_ACTIVE_FLAG = "Y";
 
-    private CommonDataResponse commonDataResponse;
-
-    public RefDataUserService(AuthTokenGenerator authTokenGenerator,
-                              CommonDataRefApi commonDataRefApi,
-                              UserDetails userDetails) {
-        this.authTokenGenerator = authTokenGenerator;
-        this.commonDataRefApi = commonDataRefApi;
-        this.userDetails = userDetails;
-    }
-
     public CommonDataResponse retrieveCategoryValues(String categoryId, String isChildRequired) {
         log.info("retrieveCategoryValues {}", categoryId);
         try {
-            commonDataResponse = commonDataRefApi.getAllCategoryValuesByCategoryId(
+            return commonDataRefApi.getAllCategoryValuesByCategoryId(
                 userDetails.getAccessToken(),
                 authTokenGenerator.generate(),
                 categoryId,
@@ -46,44 +38,40 @@ public class RefDataUserService {
 
         } catch (Exception e) {
             log.error("Category Values look up failed {} ", e.getMessage());
+            return null;
         }
-        return commonDataResponse;
     }
 
-    public List<CategoryValues> filterCategoryValuesByCategoryId(CommonDataResponse commonDataResponse, String categoryId) {
-        List<CategoryValues> filteredCategoryValues = new ArrayList<>();
+    public List<CategoryValues> filterCategoryValuesByCategoryId(
+        CommonDataResponse commonDataResponse, String categoryId) {
 
-        if (null != commonDataResponse) {
-            filteredCategoryValues = commonDataResponse.getCategoryValues().stream()
-                    .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
-                    .collect(Collectors.toList());
+        return commonDataResponse == null
+            ? new ArrayList<>()
+            : commonDataResponse.getCategoryValues().stream()
+                .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
+                .sorted((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()))
+                .collect(Collectors.toList());
 
-            filteredCategoryValues.sort((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()));
-        }
-
-        return filteredCategoryValues;
     }
 
     public List<Value> mapCategoryValuesToDynamicListValues(List<CategoryValues> categoryValues) {
+
         return categoryValues
             .stream()
             .map(categoryValue -> new Value(categoryValue.getKey(), categoryValue.getValueEn()))
             .collect(Collectors.toList());
     }
 
-    public List<CategoryValues> filterCategoryValuesByCategoryIdWithActiveFlag(CommonDataResponse commonDataResponse, String categoryId) {
-        List<CategoryValues> filteredCategoryValues = new ArrayList<>();
+    public List<CategoryValues> filterCategoryValuesByCategoryIdWithActiveFlag(
+        CommonDataResponse commonDataResponse, String categoryId) {
 
-        if (null != commonDataResponse) {
-            filteredCategoryValues = commonDataResponse.getCategoryValues().stream()
-                    .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
-                    .filter(response -> IS_ACTIVE_FLAG.equals(response.getActiveFlag()))
-                    .collect(Collectors.toList());
-
-            filteredCategoryValues.sort((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()));
-        }
-
-        return filteredCategoryValues;
+        return commonDataResponse == null
+            ? new ArrayList<>()
+            : commonDataResponse.getCategoryValues().stream()
+                .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
+                .filter(response -> IS_ACTIVE_FLAG.equals(response.getActiveFlag()))
+                .sorted((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()))
+                .collect(Collectors.toList());
     }
 
 }

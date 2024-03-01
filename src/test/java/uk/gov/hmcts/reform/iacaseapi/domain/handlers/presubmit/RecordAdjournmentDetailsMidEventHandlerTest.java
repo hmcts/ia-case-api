@@ -26,11 +26,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJ
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.CASE_MANAGEMENT_CANCELLATION_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.CHANGE_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.CHECK_HEARING_DATE_PAGE_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.INITIALIZE_FIELDS_PAGE_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.IS_CHILD_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.NEXT_HEARING_DATE_CHOOSE_DATE_RANGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjournmentDetailsMidEventHandler.NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE;
 
@@ -56,11 +53,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -73,12 +68,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private RefDataUserService refDataUserService;
-
-    @Mock
-    private CommonDataResponse commonDataResponse;
-    @Mock
-    private CategoryValues categoryValues;
+    private CommonRefDataDynamicListProvider provider;
     @Mock
     private LocationRefDataService locationRefDataService;
     @Mock
@@ -99,17 +89,14 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(RECORD_ADJOURNMENT_DETAILS);
-        when(commonDataResponse.getCategoryValues()).thenReturn(List.of(categoryValues));
-        when(categoryValues.getKey()).thenReturn("cancellationKey1");
-        when(categoryValues.getValueEn()).thenReturn("cancellationKey1");
-        when(refDataUserService.retrieveCategoryValues(CASE_MANAGEMENT_CANCELLATION_REASONS, IS_CHILD_REQUIRED))
-                .thenReturn(commonDataResponse);
         when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(nextHearingVenue);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
+        when(provider.provideCaseManagementCancellationReasons()).thenReturn(new DynamicList(""));
+        when(provider.provideChangeReasons()).thenReturn(new DynamicList(""));
 
         handler = new RecordAdjournmentDetailsMidEventHandler(
-            refDataUserService, locationRefDataService, iaHearingsApiService);
+            provider, locationRefDataService, iaHearingsApiService);
 
     }
 
@@ -122,6 +109,21 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(MID_EVENT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, hearingChannel);
+    }
+
+    @Test
+    void should_populate_next_hearing_format_from_ref_data() {
+
+        when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
+        when(provider.provideHearingChannels()).thenReturn(hearingChannel);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(MID_EVENT, callback);
+
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
@@ -191,19 +193,6 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
                 callbackResponse.getErrors());
     }
 
-
-    @Test
-    void should_not_populate_next_hearing_format() {
-        when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                handler.handle(MID_EVENT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(eq(NEXT_HEARING_FORMAT), any());
-    }
-
     @Test
     void should_not_populate_next_hearing_duration() {
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
@@ -258,8 +247,9 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
     @Test
     void should_populate_cancellation_reasons_values() {
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
-        when(refDataUserService.retrieveCategoryValues(CHANGE_REASONS, IS_CHILD_REQUIRED))
-                .thenReturn(commonDataResponse);
+        List<Value> values = List.of(new Value("keyA", "valueA"));
+        DynamicList reasons = new DynamicList(new Value("", ""), values);
+        when(provider.provideCaseManagementCancellationReasons()).thenReturn(reasons);
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -267,16 +257,15 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        DynamicList cancellationList = new DynamicList(new Value("", ""),
-                List.of(new Value(categoryValues.getKey(), categoryValues.getValueEn())));
-        verify(asylumCase, times(1)).write(HEARING_REASON_TO_CANCEL, cancellationList);
+        verify(asylumCase, times(1)).write(HEARING_REASON_TO_CANCEL, reasons);
     }
 
     @Test
     void should_populate_update_reasons_values() {
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
-        when(refDataUserService.retrieveCategoryValues(CHANGE_REASONS, IS_CHILD_REQUIRED))
-                .thenReturn(commonDataResponse);
+        List<Value> values = List.of(new Value("keyA", "valueA"));
+        DynamicList reasons = new DynamicList(new Value("", ""), values);
+        when(provider.provideChangeReasons()).thenReturn(reasons);
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
@@ -286,8 +275,6 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        DynamicList cancellationList = new DynamicList(new Value("", ""),
-                List.of(new Value(categoryValues.getKey(), categoryValues.getValueEn())));
-        verify(asylumCase, times(1)).write(HEARING_REASON_TO_UPDATE, cancellationList);
+        verify(asylumCase, times(1)).write(HEARING_REASON_TO_UPDATE, reasons);
     }
 }

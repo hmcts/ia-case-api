@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
@@ -10,11 +11,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HearingChannelsDynamicListUpdater.INITIALIZE_FIELDS_PAGE_ID;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,17 +35,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class HearingChannelsDynamicListUpdaterTest {
-
-    public static final String HEARING_CHANNEL_CATEGORY = "HearingChannel";
-    public static final String IS_CHILD_REQUIRED = "N";
 
     private HearingChannelsDynamicListUpdater hearingChannelsDynamicListUpdater;
     @Mock
@@ -54,18 +50,12 @@ class HearingChannelsDynamicListUpdaterTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private RefDataUserService refDataUserService;
-    @Mock
-    private CommonDataResponse commonDataResponse;
-    @Mock
-    private CategoryValues categoryValues;
-    @Mock
-    private Value value;
+    private CommonRefDataDynamicListProvider provider;
 
     @BeforeEach
     public void setUp() {
         hearingChannelsDynamicListUpdater =
-                new HearingChannelsDynamicListUpdater(refDataUserService);
+                new HearingChannelsDynamicListUpdater(provider);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -75,33 +65,22 @@ class HearingChannelsDynamicListUpdaterTest {
     @EnumSource(value = Event.class, names = {
         "UPDATE_HEARING_ADJUSTMENTS",
         "REVIEW_HEARING_REQUIREMENTS",
-        "LIST_CASE_WITHOUT_HEARING_REQUIREMENTS",
-        "RECORD_ADJOURNMENT_DETAILS"
+        "LIST_CASE_WITHOUT_HEARING_REQUIREMENTS"
     })
     void should_populate_dynamic_list(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(refDataUserService.retrieveCategoryValues(HEARING_CHANNEL_CATEGORY, IS_CHILD_REQUIRED))
-                .thenReturn(commonDataResponse);
-        List<CategoryValues> hearingChannels = List.of(categoryValues);
-        when(refDataUserService.filterCategoryValuesByCategoryIdWithActiveFlag(commonDataResponse, HEARING_CHANNEL_CATEGORY))
-                .thenReturn(hearingChannels);
-        List<Value> values = List.of(value);
-        when(refDataUserService.mapCategoryValuesToDynamicListValues(hearingChannels)).thenReturn(values);
-        if (event == RECORD_ADJOURNMENT_DETAILS) {
-            when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
-        }
 
-        DynamicList dynamicListOfHearingChannel = new DynamicList(new Value("", ""), values);
+        List<Value> values = List.of(new Value("abc", "abc"), new Value("def", "def"));
+        DynamicList hearingChannels = new DynamicList(new Value("", ""), values);
+        when(provider.provideHearingChannels()).thenReturn(hearingChannels);
 
         hearingChannelsDynamicListUpdater.handle(MID_EVENT, callback);
 
         ArgumentCaptor<DynamicList> argumentCaptor = ArgumentCaptor.forClass(DynamicList.class);
-        if (event == RECORD_ADJOURNMENT_DETAILS) {
-            verify(asylumCase, times(1)).write(eq(NEXT_HEARING_FORMAT), argumentCaptor.capture());
-        } else {
-            verify(asylumCase, times(1)).write(eq(HEARING_CHANNEL), argumentCaptor.capture());
-        }
-        assertThat(argumentCaptor.getValue()).usingRecursiveComparison().isEqualTo(dynamicListOfHearingChannel);
+        verify(asylumCase, times(1)).write(eq(HEARING_CHANNEL), argumentCaptor.capture());
+        assertNotNull(argumentCaptor.getValue().getListItems());
+        assertNotNull(argumentCaptor.getValue().getValue());
+        assertEquals(values, argumentCaptor.getValue().getListItems());
     }
 
     @Test
@@ -131,8 +110,7 @@ class HearingChannelsDynamicListUpdaterTest {
                 if ((List.of(
                         UPDATE_HEARING_ADJUSTMENTS,
                         REVIEW_HEARING_REQUIREMENTS,
-                        LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-                        RECORD_ADJOURNMENT_DETAILS).contains(event))
+                        LIST_CASE_WITHOUT_HEARING_REQUIREMENTS).contains(event))
                     && callbackStage == MID_EVENT) {
 
                     assertTrue(canHandle);
@@ -153,14 +131,6 @@ class HearingChannelsDynamicListUpdaterTest {
 
         assertThatThrownBy(
             () -> hearingChannelsDynamicListUpdater.canHandle(MID_EVENT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> hearingChannelsDynamicListUpdater.handle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

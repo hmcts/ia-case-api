@@ -13,14 +13,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_FORMAT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_VENUE;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
@@ -30,10 +27,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
 @Component
 @RequiredArgsConstructor
@@ -44,11 +40,8 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
     public static final String NEXT_HEARING_DATE_CHOOSE_DATE_RANGE = "ChooseADateRange";
     public static final String NEXT_HEARING_DATE_RANGE_ERROR_MESSAGE = "You must provide one of the earliest or latest hearing " +
             "date";
-    public static final String CASE_MANAGEMENT_CANCELLATION_REASONS = "CaseManagementCancellationReasons";
-    public static final String CHANGE_REASONS = "ChangeReasons";
-    public static final String IS_CHILD_REQUIRED = "N";
 
-    private final RefDataUserService refDataUserService;
+    private final CommonRefDataDynamicListProvider provider;
     private final LocationRefDataService locationRefDataService;
     private final IaHearingsApiService iaHearingsApiService;
 
@@ -91,8 +84,14 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
 
     private void prePopulateNextHearingFormat(AsylumCase asylumCase) {
 
-        asylumCase.read(HEARING_CHANNEL, DynamicList.class)
-            .ifPresent(hearingChannel -> asylumCase.write(NEXT_HEARING_FORMAT, hearingChannel));
+        DynamicList hearingChannel = asylumCase.read(HEARING_CHANNEL, DynamicList.class).orElse(null);
+        if (hearingChannel == null) {
+            hearingChannel = provider.provideHearingChannels();
+        } else if (hearingChannel.getListItems() == null || hearingChannel.getListItems().isEmpty()) {
+            hearingChannel = new DynamicList(hearingChannel.getValue(), provider.provideHearingChannels().getListItems());
+        }
+
+        asylumCase.write(NEXT_HEARING_FORMAT, hearingChannel);
     }
 
     private void prePopulateNextHearingDuration(AsylumCase asylumCase) {
@@ -136,25 +135,9 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
     private void prePopulateCancellationOrUpdateReasons(AsylumCase asylumCase) {
 
         if (HandlerUtils.relistCaseImmediately(asylumCase, false)) {
-            populateDynamicList(asylumCase, CHANGE_REASONS, HEARING_REASON_TO_UPDATE);
+            asylumCase.write(HEARING_REASON_TO_UPDATE, provider.provideChangeReasons());
         } else {
-            populateDynamicList(asylumCase, CASE_MANAGEMENT_CANCELLATION_REASONS, HEARING_REASON_TO_CANCEL);
+            asylumCase.write(HEARING_REASON_TO_CANCEL, provider.provideCaseManagementCancellationReasons());
         }
-    }
-
-    private void populateDynamicList(AsylumCase asylumCase,
-                                     String cancellationUpdateReason,
-                                     AsylumCaseFieldDefinition reasonsFieldDefinition) {
-
-        CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
-                cancellationUpdateReason,
-                IS_CHILD_REQUIRED
-        );
-        List<Value> reasons = commonDataResponse.getCategoryValues()
-                .stream()
-                .map(categoryValues -> new Value(categoryValues.getKey(), categoryValues.getValueEn()))
-                .collect(Collectors.toList());
-
-        asylumCase.write(reasonsFieldDefinition, new DynamicList(new Value("", ""), reasons));
     }
 }
