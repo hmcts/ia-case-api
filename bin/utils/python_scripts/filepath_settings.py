@@ -93,12 +93,15 @@ class Settings:
         "attendingAppellant": "redacted",
         "attendingHomeOfficeLegalRepresentative": "redacted",
         "attendingAppellantsLegalRepresentative": "redacted",
-        "newMatters": "redacted"
+        "newMatters": "redacted",
+        "applicationOutOfTimeExplanation": "redacted",
+        "caseName": 'redacted'
     }
 
     csv_rows_to_redact = {
         "user_first_name": "redacted",
-        "user_last_name": "redacted"
+        "user_last_name": "redacted",
+        "caseName": 'redacted'
     }
 
 
