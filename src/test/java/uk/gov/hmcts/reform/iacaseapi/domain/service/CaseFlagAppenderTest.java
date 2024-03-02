@@ -38,7 +38,7 @@ class CaseFlagAppenderTest {
     @BeforeEach
     public void setUp() {
         caseFlagAppender = new CaseFlagAppender();
-        caseFlag1 = new LegacyCaseFlag(CaseFlagType.POTENTIALLY_VIOLENT_PERSON, "some info");
+        caseFlag1 = new LegacyCaseFlag(CaseFlagType.COMPLEX_CASE, "some info");
         caseFlag2 = new LegacyCaseFlag(CaseFlagType.UNACCOMPANIED_MINOR, "some info");
     }
 

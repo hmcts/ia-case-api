@@ -1,5 +1,8 @@
 targetInstance: ${TEST_URL:http://localhost:8090}
 
+# Can't use TEST_URL for FTs as it always point to Preview instance
+targetInstanceForHearingsTests: ${CASE_API_URL:http://localhost:8090}
+
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 
 spring.flyway.enabled: false
@@ -11,5 +14,29 @@ idam:
 feign:
   hystrix:
     enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 160000000
+        readTimeout: 160000000
 
 citizenEmail: ${TEST_CITIZEN_USERNAME:ia-citizen@fake.hmcts.net}
+
+core_case_data:
+  api:
+    url: ${CCD_URL:http://127.0.0.1:4452}
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${OPEN_ID_IDAM_URL:http://sidam-simulator:5000}/o
+        registration:
+          oidc:
+            client-id: ${IA_IDAM_CLIENT_ID:ia}
+            client-secret: ${IA_IDAM_SECRET:OOOOOOOOOOOOOOOO}
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${OPEN_ID_IDAM_URL:http://sidam-simulator:5000}/o/jwks

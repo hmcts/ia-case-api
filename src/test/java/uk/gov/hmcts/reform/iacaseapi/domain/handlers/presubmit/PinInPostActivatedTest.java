@@ -223,6 +223,8 @@ public class PinInPostActivatedTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.EMAIL);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);

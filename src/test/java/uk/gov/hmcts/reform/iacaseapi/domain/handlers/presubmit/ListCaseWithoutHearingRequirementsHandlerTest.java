@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,6 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
@@ -59,13 +61,19 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     @Mock
     private FeatureToggler featureToggler;
+    @Mock
+    private AutoRequestHearingService autoRequestHearingService;
 
     private ListCaseWithoutHearingRequirementsHandler listCaseWithoutHearingRequirementsHandler;
 
     @BeforeEach
     public void setUp() {
         listCaseWithoutHearingRequirementsHandler =
-            new ListCaseWithoutHearingRequirementsHandler(previousRequirementsAndRequestsAppender, featureToggler);
+            new ListCaseWithoutHearingRequirementsHandler(
+                previousRequirementsAndRequestsAppender,
+                featureToggler,
+                autoRequestHearingService
+            );
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -164,6 +172,30 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         verify(asylumCase, times(0)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(0)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
+    }
+
+    @Test
+    void should_auto_request_hearing() {
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(true);
+        when(autoRequestHearingService.autoCreateHearing(callback))
+            .thenReturn(asylumCase);
+
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(autoRequestHearingService, times(1))
+            .autoCreateHearing(callback);
+    }
+
+    @Test
+    void should_not_auto_request_hearing() {
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(false);
+
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(autoRequestHearingService, never())
+            .autoCreateHearing(callback);
     }
 
     @Test

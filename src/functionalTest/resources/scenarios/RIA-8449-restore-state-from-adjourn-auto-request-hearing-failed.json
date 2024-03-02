@@ -1,0 +1,30 @@
+{
+  "description": "RIA-8449 restore state from adjourn auto request hearing (Failed request)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 84492,
+      "eventId": "restoreStateFromAdjourn",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isIntegrated": "Yes",
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "manualCreHearingRequired": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "",
+      "body": "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)\n\n#### What happens next\n\nThe hearing could not be auto-requested. Please manually request the hearing via the [Hearings tab](/cases/case-details/84492/hearings)"
+    }
+  }
+}

@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_REPRESENTATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService.resetLegalRepPartyId;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,29 +59,41 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
 
         if (changeOrganisationRequest.isPresent()) {
             writeToPreviousRepresentations(callback);
+            resetLegalRepPartyId(asylumCase);
         }
 
         String company = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY, String.class)
-            .orElse("");
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY, String.class)
+                .orElse("");
         String name = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME, String.class)
-            .orElse("");
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME, String.class)
+                .orElse("");
+        String familyName = asylumCase.read(
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_FAMILY_NAME, String.class)
+                .orElse("");
         String email = asylumCase.read(
             AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class)
             .orElse("");
-        String reference = asylumCase.read(
-            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class)
+        String mobileNumber = asylumCase.read(
+            AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER, String.class)
             .orElse("");
+
+        String reference = asylumCase.read(
+                        AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, String.class)
+                .orElse("");
 
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME);
+        asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_FAMILY_NAME);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS);
+        asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER);
 
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY, company);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_NAME, name);
+        asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_FAMILY_NAME, familyName);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, email);
+        asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER, mobileNumber);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, reference);
 
         // remove the field which is used to suppress notifications after appeal is transferred to another Legal Rep firm

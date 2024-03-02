@@ -1,0 +1,45 @@
+{
+  "description": "RIA-8014 Record adjournment details hearing update confirmation",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 80141,
+      "eventId": "recordAdjournmentDetails",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "updateHmcRequestSuccess": "Yes",
+          "relistCaseImmediately": "Yes",
+          "hearingAdjournmentWhen": "beforeHearingDate"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have recorded the adjournment details",
+      "body": "#### Do this next\n\nThe hearing will be adjourned using the details recorded.\n\nThe adjournment details are available on the [Hearing requirements tab](/cases/case-details/80141#Hearing%20and%20appointment)."
+    },
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "366559"
+        },
+        "updateHmcRequestSuccess": "Yes",
+        "relistCaseImmediately": "Yes",
+        "hearingAdjournmentWhen": "beforeHearingDate",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

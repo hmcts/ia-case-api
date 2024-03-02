@@ -9,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseFlagId": "5184-7335-DEF",
           "appealType": "revocationOfProtection"
         }
       }
@@ -27,7 +26,7 @@
           "roleOnCase": null,
           "details": [
             {
-              "id": "5184-7335-DEF",
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
                 "name": "RRO (Restricted Reporting Order / Anonymisation)",
                 "flagCode": "CF0012",

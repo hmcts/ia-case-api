@@ -1,0 +1,34 @@
+{
+  "description": "RIA-8115 Set float suitability on case when adjourning on day of hearing",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7981,
+      "eventId": "recordAdjournmentDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "relistCaseImmediately": "Yes",
+          "hearingAdjournmentWhen": "onHearingDate",
+          "isAppealSuitableToFloat": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "adjourned",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "relistCaseImmediately": "Yes",
+        "hearingAdjournmentWhen": "onHearingDate",
+        "sendDirectionActionAvailable": "No",
+        "isAppealSuitableToFloat": "No"
+      }
+    }
+  }
+}

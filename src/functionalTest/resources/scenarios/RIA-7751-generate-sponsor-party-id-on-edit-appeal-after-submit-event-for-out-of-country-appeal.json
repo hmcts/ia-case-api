@@ -1,0 +1,64 @@
+{
+  "description": "RIA-7751 generate sponsor's party ID on editAppealAfterSubmit event for out of country appeal",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "editAppealAfterSubmit",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "homeOfficeReferenceNumber": "123456789",
+          "appealReferenceNumber": "DRAFT",
+          "appellantInUk": "No",
+          "dateEntryClearanceDecision":"{$TODAY-7}",
+          "gwfReferenceNumber": "GWF1234566",
+          "outOfCountryDecisionType":"refusalOfHumanRights",
+          "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+          "hasSponsor": "Yes",
+          "sponsorGivenNames": "test",
+          "sponsorFamilyName": "some-name",
+          "sponsorAddress": {
+            "AddressLine1": "line1",
+            "AddressLine2": "",
+            "PostTown": "town",
+            "County": "county",
+            "PostCode": "TS1 TST",
+            "Country": "UK"
+          },
+          "sponsorContactPreference": "wantsSms",
+          "sponsorMobileNumber": "07111111111",
+          "sponsorAuthorisation": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantInUk": "No",
+        "appealOutOfCountry": "Yes",
+        "dateEntryClearanceDecision":"{$TODAY-7}",
+        "gwfReferenceNumber": "GWF1234566",
+        "outOfCountryDecisionType":"refusalOfHumanRights",
+        "sponsorPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "sponsorFamilyName": "some-name",
+        "sponsorContactPreference": "wantsSms",
+        "sponsorMobileNumber": "07111111111",
+        "sponsorAuthorisation": "No",
+        "decisionLetterReceivedDate": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null,
+        "deportationOrderOptions": null,
+        "appellantHasFixedAddress": null,
+        "appellantAddress": null
+      }
+    }
+  }
+}

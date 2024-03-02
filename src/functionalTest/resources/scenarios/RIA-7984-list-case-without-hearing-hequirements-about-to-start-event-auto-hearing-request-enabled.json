@@ -1,0 +1,60 @@
+{
+  "description": "RIA-7353 list case without hearing requirements for retrieving hearing channel type mid event",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "listCaseWithoutHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "366559"
+        },
+        "hearingLocation": {
+          "value": {
+            "code": "",
+            "label": ""
+          },
+          "list_items": [
+            {"code": "783803", "label": "Manchester Magistrates Court"},
+            {"code": "227101", "label": "Newport Tribunal Centre - Columbus House"},
+            {"code": "231596", "label": "Birmingham Civil And Family Justice Centre"},
+            {"code": "28837", "label": "Harmondsworth Tribunal Hearing Centre"},
+            {"code": "366559", "label": "Atlantic Quay - Glasgow"},
+            {"code": "366796", "label": "Newcastle Civil And Family Courts And Tribunals Centre"},
+            {"code": "386417", "label": "Hatton Cross Tribunal Hearing Centre"},
+            {"code": "443257", "label": "North Tyneside Magistrates Court"},
+            {"code": "569737", "label": "Leeds Magistrates Court and Family Court"},
+            {"code": "698118", "label": "Bradford Tribunal Hearing Centre"},
+            {"code": "618632", "label": "Nottingham Magistrates Court"},
+            {"code": "649000", "label": "Yarls Wood Immigration And Asylum Hearing Centre"},
+            {"code": "745389", "label": "Hendon Magistrates Court"},
+            {"code": "765324", "label": "Taylor House Tribunal Hearing Centre"},
+            {"code": "787030", "label": "Coventry Magistrates Court"},
+            {"code": "999971", "label": "Alloa Sheriff Court"},
+            {"code": "999973", "label": "Belfast Laganside Court"}
+          ]
+        },
+        "autoHearingRequestEnabled": "Yes"
+      }
+    }
+  }
+}

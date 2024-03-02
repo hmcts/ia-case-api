@@ -23,6 +23,7 @@ spring:
         idam-url: IDAM_URL
         s2s-url: S2S_URL
         prof-ref-data-url: PROF_REF_DATA_URL
+        location-ref-data-url: LOCATION_REF_DATA_URL
         hearing-centre-activation-date-bradford: IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD
         hearing-centre-activation-date-manchester: IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER
         hearing-centre-activation-date-newport: IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT

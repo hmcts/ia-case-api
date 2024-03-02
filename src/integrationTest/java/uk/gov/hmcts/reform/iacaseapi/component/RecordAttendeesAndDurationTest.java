@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDet
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import com.launchdarkly.sdk.LDValue;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -62,6 +63,12 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
     void returns_confirmation_page_content() {
+
+        LDValue defaultValue = LDValue.parse("{\"epimsIds\":[]}");
+
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(featureToggler.getJsonValue("auto-hearing-request-locations-list", defaultValue))
+            .thenReturn(defaultValue);
 
         addServiceAuthStub(server);
         PostSubmitCallbackResponseForTest response = iaCaseApiClient.ccdSubmitted(callback()
