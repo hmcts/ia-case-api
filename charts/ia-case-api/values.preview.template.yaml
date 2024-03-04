@@ -561,7 +561,7 @@ xui-webapp:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     # temp fix 20 Feb 2024 - wait for XUI to merge
-    image: hmctspublic.azurecr.io/xui/webapp:pr-3536
+    image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     memoryRequests: 2Gi
     cpuRequests: 2000m
