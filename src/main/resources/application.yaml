@@ -386,6 +386,8 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
+      - "reTriggerWaTasks"
+      - "reTriggerWaBulkTasks"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -439,3 +441,5 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+caseIdListJsonLocation: caseIdForRetrigger.json
