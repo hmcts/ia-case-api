@@ -1679,6 +1679,9 @@ public enum AsylumCaseFieldDefinition {
     UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK(
             "updateTribunalDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){}),
 
+    UPDATED_APPEAL_DECISION(
+        "updatedAppealDecision", new TypeReference<String>(){}),
+
     REMISSION_OPTION(
         "remissionOption", new TypeReference<RemissionOption>(){}),
 
