@@ -70,7 +70,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        int scheduleDelayInMinutes = 1;
+        int scheduleDelayInMinutes = 5;
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
 
         try {
