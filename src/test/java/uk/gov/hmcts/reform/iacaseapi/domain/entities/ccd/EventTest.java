@@ -132,10 +132,12 @@ class EventTest {
         assertEquals("addEvidenceForCosts", Event.ADD_EVIDENCE_FOR_COSTS.toString());
         assertEquals("decideCostsApplication", Event.DECIDE_COSTS_APPLICATION.toString());
         assertEquals("considerMakingCostsOrder", Event.CONSIDER_MAKING_COSTS_ORDER.toString());
+        assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
+        assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(130, Event.values().length);
+        assertEquals(132, Event.values().length);
     }
 }

@@ -1,13 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class HandlerUtils {
 
@@ -93,5 +99,26 @@ public class HandlerUtils {
     // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
     public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
         return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    public static List<String> readJsonFileList(String filePath, String key) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClassPathResource fileResource = new ClassPathResource(filePath);
+        InputStream file = fileResource.getInputStream();
+
+        JsonNode rootNode = objectMapper.readTree(file);
+
+        JsonNode listNode = rootNode.get(key);
+        List<String> valueList = new ArrayList<>();
+
+        if (listNode != null && listNode.isArray()) {
+            Iterator<JsonNode> elements = listNode.elements();
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                valueList.add(element.asText());
+            }
+        }
+
+        return valueList;
     }
 }

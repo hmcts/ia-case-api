@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +51,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.StringResourceLoader;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
+@Slf4j
 @SpringBootTest
 @ActiveProfiles("functional")
 public class CcdScenarioRunnerTest {
@@ -121,9 +123,9 @@ public class CcdScenarioRunnerTest {
                 .load("/scenarios/" + scenarioPattern)
                 .values();
 
-        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
-        System.out.println((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
-        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
+        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
 
         for (String scenarioSource : scenarioSources) {
             for (int i = 0; i < 3; i++) {
@@ -162,11 +164,11 @@ public class CcdScenarioRunnerTest {
                     }
 
                     if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
-                        System.out.println((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
+                        log.info((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
                         continue;
                     }
 
-                    System.out.println((char) 27 + "[33m" + "SCENARIO: " + description);
+                    log.info((char) 27 + "[33m" + "SCENARIO: " + description);
 
                     Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
@@ -224,13 +226,13 @@ public class CcdScenarioRunnerTest {
                     );
                     break;
                 } catch (Error | RetryableException e) {
-                    System.out.println("Scenario failed with error " + e.getMessage());
+                    log.error("Scenario failed with error " + e.getMessage());
                 }
             }
         }
 
-        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
-        System.out.println((char) 27 + "[0m");
+        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "[0m");
     }
 
     private void loadPropertiesIntoMapValueExpander() {
