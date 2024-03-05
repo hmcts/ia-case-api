@@ -461,7 +461,7 @@ ia-case-access-api:
            - AppInsightsInstrumentationKey
            - ia-config-validator-secret
 
-ia-aip-frontend-refund:
+ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
