@@ -461,81 +461,12 @@ ia-case-access-api:
            - AppInsightsInstrumentationKey
            - ia-config-validator-secret
 
-ia-aip-frontend:
-  enabled: true
-  nodejs:
-    imagePullPolicy: Always
-#    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1038
-    ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
-    applicationPort: 3000
-    devcpuRequests: 500m
-    devmemoryRequests: 1Gi
-    devcpuLimits: 1
-    devmemoryLimits: 4Gi
-    environment:
-      HTTP_PROTOCOL: http
-      NODE_ENV: development
-      S2S_MICROSERVICE_NAME: iac
-      MICROSERVICE: iac
-      CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
-      #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
-      PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
-      IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
-      # IDAM_WEB_URL: https://xui-ia-case-api-pr-1389.preview.platform.hmcts.net
-      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      # IDAM_API_URL: http://{{ .Release.Name }}-xui-webapp
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      REDIS_URL: redis://{{ .Release.Name }}-redis-master
-      PCQ_URL: https://pcq.aat.platform.hmcts.net
-      # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
-      PCQ_RETURN_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/about-appeal
-      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SECURE_SESSION: false
-      TRACKING_SCRIPTS: false
-      TIMELINE_ENABLED: true
-    keyVaults:
-      ia:
-        secrets:
-          - idam-secret
-          - addressLookupToken
-          - s2s-secret
-          - ia-redis-access-key
-          - ia-redis-connection-string
-          - launch-darkly-sdk-key
-          - AppInsightsInstrumentationKey
-          - hearing-centre-bradford-email
-          - hearing-centre-manchester-email
-          - hearing-centre-newport-email
-          - hearing-centre-taylor-house-email
-          - hearing-centre-north-shields-email
-          - hearing-centre-birmingham-email
-          - hearing-centre-hatton-cross-email
-          - hearing-centre-glasgow-email
-          - pcq-token-key
-          - system-username
-          - system-password
-          - docmosis-access-key
-          - customer-services-telephone
-          - customer-services-email
-          - ia-config-validator-secret
-  redis:
-    enabled: false
-    architecture: standalone
-    master:
-      persistence:
-        enabled: false
-    auth:
-      enabled: false
-
 ia-aip-frontend-refund:
   enabled: true
   nodejs:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1069
-    ingressHost: ${SERVICE_NAME}-aip-frontend-refund.preview.platform.hmcts.net # override in public facing environments
+    ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
