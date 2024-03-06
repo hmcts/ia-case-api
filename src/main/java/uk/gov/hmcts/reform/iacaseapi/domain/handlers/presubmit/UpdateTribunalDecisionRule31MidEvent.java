@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
