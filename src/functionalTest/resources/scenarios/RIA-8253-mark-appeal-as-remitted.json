@@ -1,0 +1,44 @@
+{
+  "description": "RIA-8253 Mark Appeal as Remitted",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8253,
+      "eventId": "markAppealAsRemitted",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "judgesToExcludeNames": "Judge John Doe",
+          "additionalInstructions": "Listing instruction example",
+          "courtReferenceNumber": "CA-2023-000001",
+          "uploadRemittalDecisionDoc": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "judgesToExcludeNames": "Judge John Doe",
+        "additionalInstructions": "Listing instruction example",
+        "courtReferenceNumber": "CA-2023-000001",
+        "uploadRemittalDecisionDoc": {
+          "document_url": "http://document-store/BBB",
+          "document_binary_url": "http://document-store/BBB/binary",
+          "document_filename": "CA-2023-000001-Decision-to-remit.pdf"
+        },
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
