@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
@@ -44,12 +45,15 @@ class UpdateTribunalAppealDecisionRule31Test {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
 
     private UpdateTribunalAppealDecisionRule31 updateTribunalAppealDecisionRule31;
 
     @BeforeEach
     public void setUp() {
-        updateTribunalAppealDecisionRule31 = new UpdateTribunalAppealDecisionRule31();
+        updateTribunalAppealDecisionRule31 = new UpdateTribunalAppealDecisionRule31(
+            dateProvider);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

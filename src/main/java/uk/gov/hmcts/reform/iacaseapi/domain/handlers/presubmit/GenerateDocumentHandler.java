@@ -129,6 +129,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         );
         asylumCase.write(APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
+        asylumCase.clear(UPDATED_APPEAL_DECISION);
     }
 
     private void changeEditListingApplicationsToCompleted(AsylumCase asylumCase) {

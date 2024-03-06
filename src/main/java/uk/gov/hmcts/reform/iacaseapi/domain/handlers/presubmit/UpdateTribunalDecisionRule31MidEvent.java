@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -39,7 +40,18 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
         boolean isDecisionAllowed = isDecisionAllowed(asylumCase);
 
         final List<Value> values = new ArrayList<>();
-        if (isDecisionAllowed) {
+        if (asylumCase.read(UPDATED_APPEAL_DECISION, String.class).isPresent()) {
+            String updatedAppealDecision = asylumCase.read(UPDATED_APPEAL_DECISION, String.class).orElse("");
+
+            if ("Allowed".equals(updatedAppealDecision)) {
+                values.add(new Value(DISMISSED.getValue(), "Yes, change decision to Dismissed"));
+                values.add(new Value(ALLOWED.getValue(), "No"));
+            } else if ("Dismissed".equals(updatedAppealDecision)) {
+                values.add(new Value(ALLOWED.getValue(), "Yes, change decision to Allowed"));
+                values.add(new Value(DISMISSED.getValue(), "No"));
+            }
+
+        } else if (isDecisionAllowed) {
             values.add(new Value(DISMISSED.getValue(), "Yes, change decision to Dismissed"));
             values.add(new Value(ALLOWED.getValue(), "No"));
         } else {
@@ -59,3 +71,4 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
             .map(type -> type.equals(ALLOWED)).orElse(false);
     }
 }
+
