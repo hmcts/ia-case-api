@@ -10,11 +10,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TYPES_OF_UPDATE_TRIBUNAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,6 +71,9 @@ class UpdateTribunalAppealDecisionRule31Test {
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
                 .thenReturn(Optional.of(dynamicList));
 
+        LocalDate currentDate = LocalDate.now();
+        when(dateProvider.now()).thenReturn(currentDate);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -79,6 +81,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
+        verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, currentDate.toString());
     }
 
     @Test
@@ -90,6 +93,9 @@ class UpdateTribunalAppealDecisionRule31Test {
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
                 .thenReturn(Optional.of(dynamicList));
 
+        LocalDate currentDate = LocalDate.now();
+        when(dateProvider.now()).thenReturn(currentDate);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -97,6 +103,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Allowed");
+        verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, currentDate.toString());
     }
 
     @Test
