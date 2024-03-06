@@ -387,6 +387,7 @@ security:
       - "updatePaymentStatus"
       - "endAppealAutomatically"
       - "reTriggerWaTasks"
+    caseworker-ia-task-retrigger:
       - "reTriggerWaBulkTasks"
 
 ### dependency configuration
