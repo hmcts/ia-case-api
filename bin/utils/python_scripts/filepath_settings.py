@@ -43,9 +43,9 @@ class Settings:
         'explanation': 'redacted',
         'address': 'redacted',
         'bundlefilenameprefix': 'EA 50111 2023',
-        'casenamehmctsinternal': 'redacted',
-        'hmctscasenameinternal': 'redacted',
-        'appellantnamefordisplay': 'redacted',
+        'casenamehmctsinternal': 'redacted redacted',
+        'hmctscasenameinternal': 'redacted redacted',
+        'appellantnamefordisplay': 'redacted redacted',
         'reasonsforappealdecision': 'redacted',
         'description': 'redacted',
         'answer': 'redacted',
@@ -93,12 +93,15 @@ class Settings:
         "attendingAppellant": "redacted",
         "attendingHomeOfficeLegalRepresentative": "redacted",
         "attendingAppellantsLegalRepresentative": "redacted",
-        "newMatters": "redacted"
+        "newMatters": "redacted",
+        "applicationOutOfTimeExplanation": "redacted",
+        "caseName": 'redacted'
     }
 
     csv_rows_to_redact = {
         "user_first_name": "redacted",
-        "user_last_name": "redacted"
+        "user_last_name": "redacted",
+        "caseName": 'redacted'
     }
 
 
