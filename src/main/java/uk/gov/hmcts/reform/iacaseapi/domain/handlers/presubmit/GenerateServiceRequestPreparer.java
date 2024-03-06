@@ -49,7 +49,7 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         if (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
             || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
             response.addError(
-                    "A service request has already been created for this case, please pay via the Service Request tab."
+                    "***THIS CAN BE EDITED*** A service request has already been created for this case, please pay via the Service Request tab."
             );
             return response;
         }

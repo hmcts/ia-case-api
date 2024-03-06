@@ -225,7 +225,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String payForAppeal = "You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[Generate service request](/case/IA/Asylum/"
+        String payForAppeal = "*** THIS CAN BE CHANGED *** You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[LINK TO CREATE SERVICE REQUEST](/case/IA/Asylum/"
                 + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
@@ -239,7 +239,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)" +
+        String paPayNowPayLaterLabel = "*** THIS CAN BE CHANGED *** You still have to pay for this appeal.\n\nYou can do this by selecting [LINK TO CREATE SERVICE REQUEST](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)" +
                 " and paying via the Service Request tab.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
