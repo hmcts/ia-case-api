@@ -1681,10 +1681,18 @@ public enum AsylumCaseFieldDefinition {
 
     UPDATED_APPEAL_DECISION(
             "updatedAppealDecision", new TypeReference<String>(){}),
+
     UPLOAD_REMITTAL_DECISION_DOC(
         "uploadRemittalDecisionDoc", new TypeReference<Document>(){}),
+
     COURT_REFERENCE_NUMBER(
-        "courtReferenceNumber", new TypeReference<String>(){});
+        "courtReferenceNumber", new TypeReference<String>(){}),
+
+    REMISSION_OPTION(
+        "remissionOption", new TypeReference<RemissionOption>(){}),
+
+    HELP_WITH_FEES_OPTION(
+        "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){});
 
     private final String value;
     private final TypeReference typeReference;
