@@ -114,7 +114,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         LocalDate currentDate = LocalDate.now();
         when(dateProvider.now()).thenReturn(currentDate);
 
-        YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
+        final YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
             .orElse(NO);
 
         decisionsAndReasonDoc = "someTestDoc";
@@ -152,7 +152,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         LocalDate currentDate = LocalDate.now();
         when(dateProvider.now()).thenReturn(currentDate);
 
-        YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
+        final YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
             .orElse(NO);
 
         decisionsAndReasonDoc = "someTestDoc";
