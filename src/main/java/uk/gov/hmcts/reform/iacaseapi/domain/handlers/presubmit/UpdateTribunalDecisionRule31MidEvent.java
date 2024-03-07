@@ -39,18 +39,8 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
         boolean isDecisionAllowed = isDecisionAllowed(asylumCase);
 
         final List<Value> values = new ArrayList<>();
-        if (asylumCase.read(UPDATED_APPEAL_DECISION, String.class).isPresent()) {
-            String updatedAppealDecision = asylumCase.read(UPDATED_APPEAL_DECISION, String.class).orElse("");
 
-            if ("Allowed".equals(updatedAppealDecision)) {
-                values.add(new Value(DISMISSED.getValue(), "Yes, change decision to Dismissed"));
-                values.add(new Value(ALLOWED.getValue(), "No"));
-            } else if ("Dismissed".equals(updatedAppealDecision)) {
-                values.add(new Value(ALLOWED.getValue(), "Yes, change decision to Allowed"));
-                values.add(new Value(DISMISSED.getValue(), "No"));
-            }
-
-        } else if (isDecisionAllowed) {
+        if (isDecisionAllowed) {
             values.add(new Value(DISMISSED.getValue(), "Yes, change decision to Dismissed"));
             values.add(new Value(ALLOWED.getValue(), "No"));
         } else {
@@ -65,6 +55,11 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
     }
 
     private boolean isDecisionAllowed(AsylumCase asylumCase) {
+        if (asylumCase.read(UPDATED_APPEAL_DECISION, String.class).isPresent()) {
+            String updatedAppealDecision = asylumCase.read(UPDATED_APPEAL_DECISION, String.class).orElse("");
+            return updatedAppealDecision.equals("Allowed");
+        }
+
         return asylumCase
             .read(IS_DECISION_ALLOWED, AppealDecision.class)
             .map(type -> type.equals(ALLOWED)).orElse(false);
