@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 
 import java.util.Optional;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecisionAndReasons;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -31,8 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
@@ -42,14 +38,6 @@ public class UpdateTribunalAppealDecisionRule31 implements PreSubmitCallbackHand
 
     private final DateProvider dateProvider;
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
-
-    public UpdateTribunalAppealDecisionRule31(DateProvider dateProvider,
-        Appender<DecisionAndReasons> decisionAndReasonsAppender) {
-        this.dateProvider = dateProvider;
-        this.decisionAndReasonsAppender = decisionAndReasonsAppender;
-    }
-
-
 
     public UpdateTribunalAppealDecisionRule31(DateProvider dateProvider,
                                               Appender<DecisionAndReasons> decisionAndReasonsAppender) {
