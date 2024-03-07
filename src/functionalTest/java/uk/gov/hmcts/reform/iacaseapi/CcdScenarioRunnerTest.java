@@ -12,12 +12,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import lombok.SneakyThrows;
@@ -99,6 +96,7 @@ public class CcdScenarioRunnerTest {
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
         boolean haveAllPassed = true;
+        ArrayList<String> failedScenarios = new ArrayList<>();
         loadPropertiesIntoMapValueExpander();
 
         for (Fixture fixture : fixtures) {
@@ -129,12 +127,13 @@ public class CcdScenarioRunnerTest {
 
         for (String scenarioSource : scenarioSources) {
             boolean hasScenarioPassed = false;
+            String description = "";
             for (int i = 0; i < 3; i++) {
                 try {
                     Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                     final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
 
-                    String description = MapValueExtractor.extract(scenario, "description");
+                    description = MapValueExtractor.extract(scenario, "description");
 
                     Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
                         ? MapValueExtractor.extract(scenario, "launchDarklyKey")
@@ -231,13 +230,16 @@ public class CcdScenarioRunnerTest {
                     log.error("Scenario failed with error " + e.getMessage());
                 }
             }
-            haveAllPassed = hasScenarioPassed && haveAllPassed;
+            if (!hasScenarioPassed) {
+                failedScenarios.add(description);
+                haveAllPassed = false;
+            }
         }
 
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         log.info((char) 27 + "[0m");
         if (!haveAllPassed) {
-            throw new AssertionError("Not all scenarios passed");
+            throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + failedScenarios.stream().map(Object::toString).collect(Collectors.joining(";\n")));
         }
     }
 
