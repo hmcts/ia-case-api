@@ -71,7 +71,8 @@ public class CcdScenarioRunnerTest {
 
     @Autowired
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
-
+    private boolean haveAllPassed = true;
+    private final ArrayList<String> failedScenarios = new ArrayList<>();
     @MockBean
     RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
@@ -95,8 +96,6 @@ public class CcdScenarioRunnerTest {
 
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
-        boolean haveAllPassed = true;
-        ArrayList<String> failedScenarios = new ArrayList<>();
         loadPropertiesIntoMapValueExpander();
 
         for (Fixture fixture : fixtures) {
@@ -124,11 +123,10 @@ public class CcdScenarioRunnerTest {
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         log.info((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
-
+        int maxRetries = 3;
         for (String scenarioSource : scenarioSources) {
-            boolean hasScenarioPassed = false;
             String description = "";
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < maxRetries; i++) {
                 try {
                     Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                     final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
@@ -224,15 +222,14 @@ public class CcdScenarioRunnerTest {
                             actualResponse
                         )
                     );
-                    hasScenarioPassed = true;
                     break;
                 } catch (Error | RetryableException e) {
                     log.error("Scenario failed with error " + e.getMessage());
+                    if (i == maxRetries - 1) {
+                        this.failedScenarios.add(description);
+                        this.haveAllPassed = false;
+                    }
                 }
-            }
-            if (!hasScenarioPassed) {
-                failedScenarios.add(description);
-                haveAllPassed = false;
             }
         }
 
