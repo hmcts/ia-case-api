@@ -1688,6 +1688,12 @@ public enum AsylumCaseFieldDefinition {
     HELP_WITH_FEES_OPTION(
         "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
 
+    CORRECTED_DECISION_AND_REASONS(
+            "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
+
+    SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT(
+            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){}),
+
     APPEAL_DECISION_LABEL(
         "appealDecisionLabel", new TypeReference<String>(){}),
 
