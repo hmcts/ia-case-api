@@ -12,12 +12,14 @@ import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import lombok.SneakyThrows;
@@ -74,7 +76,8 @@ public class CcdScenarioRunnerTest {
 
     @Autowired
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
-
+    private boolean haveAllPassed = true;
+    private final ArrayList<String> failedScenarios = new ArrayList<>();
     @MockBean
     RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
@@ -98,7 +101,6 @@ public class CcdScenarioRunnerTest {
 
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
-        boolean haveAllPassed = true;
         loadPropertiesIntoMapValueExpander();
 
         for (Fixture fixture : fixtures) {
@@ -126,15 +128,15 @@ public class CcdScenarioRunnerTest {
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         log.info((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
-
+        int maxRetries = 3;
         for (String scenarioSource : scenarioSources) {
-            boolean hasScenarioPassed = false;
-            for (int i = 0; i < 3; i++) {
+            String description = "";
+            for (int i = 0; i < maxRetries; i++) {
                 try {
                     Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                     final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
 
-                    String description = MapValueExtractor.extract(scenario, "description");
+                    description = MapValueExtractor.extract(scenario, "description");
 
                     Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
                         ? MapValueExtractor.extract(scenario, "launchDarklyKey")
@@ -225,19 +227,21 @@ public class CcdScenarioRunnerTest {
                             actualResponse
                         )
                     );
-                    hasScenarioPassed = true;
                     break;
                 } catch (Error | RetryableException e) {
                     log.error("Scenario failed with error " + e.getMessage());
+                    if (i == maxRetries - 1) {
+                        this.failedScenarios.add(description);
+                        this.haveAllPassed = false;
+                    }
                 }
             }
-            haveAllPassed = hasScenarioPassed && haveAllPassed;
         }
 
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         log.info((char) 27 + "[0m");
         if (!haveAllPassed) {
-            throw new AssertionError("Not all scenarios passed");
+            throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + failedScenarios.stream().map(Object::toString).collect(Collectors.joining(";\n")));
         }
     }
 
