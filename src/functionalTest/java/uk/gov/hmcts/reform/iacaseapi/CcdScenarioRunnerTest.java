@@ -98,7 +98,7 @@ public class CcdScenarioRunnerTest {
 
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
-
+        boolean haveAllPassed = true;
         loadPropertiesIntoMapValueExpander();
 
         for (Fixture fixture : fixtures) {
@@ -128,6 +128,7 @@ public class CcdScenarioRunnerTest {
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
 
         for (String scenarioSource : scenarioSources) {
+            boolean hasScenarioPassed = false;
             for (int i = 0; i < 3; i++) {
                 try {
                     Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
@@ -224,15 +225,20 @@ public class CcdScenarioRunnerTest {
                             actualResponse
                         )
                     );
+                    hasScenarioPassed = true;
                     break;
                 } catch (Error | RetryableException e) {
                     log.error("Scenario failed with error " + e.getMessage());
                 }
             }
+            haveAllPassed = hasScenarioPassed && haveAllPassed;
         }
 
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         log.info((char) 27 + "[0m");
+        if (!haveAllPassed) {
+            throw new AssertionError("Not all scenarios passed");
+        }
     }
 
     private void loadPropertiesIntoMapValueExpander() {
