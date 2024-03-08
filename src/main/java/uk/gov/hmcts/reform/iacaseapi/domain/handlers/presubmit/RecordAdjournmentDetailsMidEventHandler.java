@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_UPDATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
@@ -14,7 +14,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_VENUE;
 
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -103,11 +102,13 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
     private AsylumCase prePopulateHearingVenue(Callback<AsylumCase> callback) {
         DynamicList refDataHearingLocationList = locationRefDataService.getHearingLocationsDynamicList();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<HearingCentre> hearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
+        String hearingCentreEpimsId = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+            .map(HearingCentre::getEpimsId)
+            .orElse("");
 
-        if (hearingCentre.isPresent()) {
+        if (!hearingCentreEpimsId.isBlank()) {
             Value hearingLocationValue = refDataHearingLocationList.getListItems().stream()
-                .filter(location -> Objects.equals(location.getCode(), hearingCentre.get().getEpimsId()))
+                .filter(location -> Objects.equals(location.getCode(), hearingCentreEpimsId))
                 .findAny().orElseGet(() -> new Value("", ""));
             refDataHearingLocationList.setValue(hearingLocationValue);
             asylumCase.write(NEXT_HEARING_VENUE, refDataHearingLocationList);

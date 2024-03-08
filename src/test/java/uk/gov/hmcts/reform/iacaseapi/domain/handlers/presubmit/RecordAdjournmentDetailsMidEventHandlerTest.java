@@ -12,8 +12,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_CANCEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REASON_TO_UPDATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
@@ -34,9 +34,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAdjo
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -148,6 +152,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
     void should_populate_next_hearing_venue_from_list_case_hearing_centre() {
 
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             handler.handle(MID_EVENT, callback);
@@ -160,12 +165,21 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         assertEquals(nextHearingVenue.getValue(), hearingVenueCaptor.getValue().getValue());
     }
 
-    @Test
-    void should_attempt_to_populate_next_hearing_venue_from_hmc_hearing_location() {
+    static Stream<Arguments> listCaseHearingCentre() {
+        return Stream.of(
+            Arguments.of(Optional.empty()),
+            Arguments.of(Optional.of(HearingCentre.REMOTE_HEARING)),
+            Arguments.of(Optional.of(HearingCentre.DECISION_WITHOUT_HEARING))
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("listCaseHearingCentre")
+    void should_attempt_to_get_location_from_hmc_if_epims_id_empty(Optional<HearingCentre> hearingCentre) {
 
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
-            .thenReturn(Optional.empty());
+            .thenReturn(hearingCentre);
         when(iaHearingsApiService.midEvent(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
