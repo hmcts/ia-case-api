@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CORRECTED_DECISION_AND_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASON_DOCS_UPLOAD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT;
@@ -10,9 +11,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecisionAndReasons;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -58,7 +61,7 @@ public class UpdateTribunalAppealDecisionRule31 implements PreSubmitCallbackHand
 
         if (isDecisionRule31(asylumCase)) {
             DynamicList updateTribunalDecisionValue = asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class)
-                    .orElseThrow(() -> new IllegalStateException("typesOfUpdateTribunalDecision is not present"));
+                .orElseThrow(() -> new IllegalStateException("typesOfUpdateTribunalDecision is not present"));
 
             asylumCase.write(UPDATED_APPEAL_DECISION, StringUtils.capitalize(updateTribunalDecisionValue.getValue().getCode()));
 
@@ -89,6 +92,19 @@ public class UpdateTribunalAppealDecisionRule31 implements PreSubmitCallbackHand
                     decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
 
             asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
+            final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
+
+            asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
+
+            YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
+                .orElse(NO);
+
+
+            if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
+                if (decisionAndReasonsDoc.isPresent()) {
+                    asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+                }
+            }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

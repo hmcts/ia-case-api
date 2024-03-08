@@ -14,6 +14,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CORRECTED_DECISION_AND_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASON_DOCS_UPLOAD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecisionAndReasons;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -67,18 +70,22 @@ class UpdateTribunalAppealDecisionRule31Test {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock private List<IdValue<DecisionAndReasons>> allAppendedDecisionAndReasosn;
-    @Mock private DecisionAndReasons existingDecision;
+    @Mock
+    private List<IdValue<DecisionAndReasons>> allAppendedDecisionAndReasosn;
+    @Mock
+    private DecisionAndReasons existingDecision;
+
     private final List<DecisionAndReasons> existingDecisions = singletonList(existingDecision);
     @Mock
     Document correctedDecisionDocument;
     @Captor
     private ArgumentCaptor<List<IdValue<DecisionAndReasons>>> existingDecisionsCaptor;
     @Captor private ArgumentCaptor<DecisionAndReasons> newDecisionCaptor;
-
     private UpdateTribunalAppealDecisionRule31 updateTribunalAppealDecisionRule31;
     private final LocalDate now = LocalDate.now();
     private final String summarisedChanges = "Summarise document example";
+
+    private String decisionsAndReasonDoc = "someTestDoc";
 
     @BeforeEach
     public void setUp() {
@@ -97,12 +104,20 @@ class UpdateTribunalAppealDecisionRule31Test {
     @Test
     void should_write_updated_appeal_decision_dismissed() {
         final DynamicList dynamicList = new DynamicList(
-                new Value("dismissed", "Yes, change decision to Dismissed"),
-                newArrayList()
+            new Value("dismissed", "Yes, change decision to Dismissed"),
+            newArrayList()
         );
 
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
-                .thenReturn(Optional.of(dynamicList));
+            .thenReturn(Optional.of(dynamicList));
+
+        LocalDate currentDate = LocalDate.now();
+        when(dateProvider.now()).thenReturn(currentDate);
+
+        final YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
+            .orElse(NO);
+
+        decisionsAndReasonDoc = "someTestDoc";
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -114,6 +129,12 @@ class UpdateTribunalAppealDecisionRule31Test {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
+        if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) && decisionsAndReasonDoc != null) {
+            asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+
+            verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
+            verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, currentDate.toString());
+        }
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
         verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
         assertThat(capturedDecision.getUpdatedDecisionDate()).isEqualTo(now.toString());
@@ -122,47 +143,60 @@ class UpdateTribunalAppealDecisionRule31Test {
     @Test
     void should_write_updated_appeal_decision_allowed() {
         final DynamicList dynamicList = new DynamicList(
-                new Value("allowed", "Yes, change decision to Allowed"),
-                newArrayList()
+            new Value("allowed", "Yes, change decision to Allowed"),
+            newArrayList()
         );
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
-                .thenReturn(Optional.of(dynamicList));
+            .thenReturn(Optional.of(dynamicList));
+
+        LocalDate currentDate = LocalDate.now();
+        when(dateProvider.now()).thenReturn(currentDate);
+
+        final YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
+            .orElse(NO);
+
+        decisionsAndReasonDoc = "someTestDoc";
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(decisionAndReasonsAppender, times(1))
+        if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) && decisionsAndReasonDoc != null) {
+            asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+
+            verify(decisionAndReasonsAppender, times(1))
                 .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
 
-        final DecisionAndReasons capturedDecision = newDecisionCaptor.getValue();
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+            final DecisionAndReasons capturedDecision = newDecisionCaptor.getValue();
+            assertNotNull(callbackResponse);
+            assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Allowed");
-        verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
-        assertThat(capturedDecision.getUpdatedDecisionDate()).isEqualTo(now.toString());
+            verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Allowed");
+            verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
+            verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, currentDate.toString());
+            assertThat(capturedDecision.getUpdatedDecisionDate()).isEqualTo(now.toString());
+        }
     }
 
     @Test
     void should_write_updated_decision_document_if_has_corrected_document() {
         final DynamicList dynamicList = new DynamicList(
-                new Value("allowed", "Yes, change decision to Allowed"),
-                newArrayList()
+            new Value("allowed", "Yes, change decision to Allowed"),
+            newArrayList()
         );
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
-                .thenReturn(Optional.of(dynamicList));
+            .thenReturn(Optional.of(dynamicList));
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+            .thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class))
-                .thenReturn(Optional.of(correctedDecisionDocument));
+            .thenReturn(Optional.of(correctedDecisionDocument));
         when(asylumCase.read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class))
-                .thenReturn(Optional.of(summarisedChanges));
+            .thenReturn(Optional.of(summarisedChanges));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(decisionAndReasonsAppender, times(1))
-                .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
+            .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
 
         final DecisionAndReasons capturedDecision = newDecisionCaptor.getValue();
         assertNotNull(callbackResponse);
@@ -175,6 +209,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         assertThat(capturedDecision.getDocumentAndReasonsDocument()).isEqualTo(correctedDecisionDocument);
         assertThat(capturedDecision.getSummariseChanges()).isEqualTo(summarisedChanges);
     }
+
 
     @Test
     void should_throw_on_missing_decision_and_reason_doc() {

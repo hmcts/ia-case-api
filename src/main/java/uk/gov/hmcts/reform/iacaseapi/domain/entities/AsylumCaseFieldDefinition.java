@@ -1692,7 +1692,15 @@ public enum AsylumCaseFieldDefinition {
             "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
 
     SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT(
-            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){});
+            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){}),
+
+    APPEAL_DECISION_LABEL(
+        "appealDecisionLabel", new TypeReference<String>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_DATE(
+        "updateTribunalDecisionDate", new TypeReference<String>(){}),
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;
