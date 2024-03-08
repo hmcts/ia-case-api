@@ -71,6 +71,49 @@ class RecordRemissionDecisionPreparerTest {
 
     }
 
+    @Test
+    void handle_should_return_error_if_no_remission_exists_for_aip_cases_to_record_remission_decision() {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            recordRemissionDecisionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors()).contains("You cannot record a remission decision because a remission has not been requested for this appeal");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    void handle_should_not_return_error_if_remission_exists_for_aip_cases_to_record_remission_decision(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE));
+        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            recordRemissionDecisionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
     @ParameterizedTest
     @MethodSource("appealWithRemissionTypesAndRemissionDecision")
     void should_return_error_for_remission_decision_is_present(

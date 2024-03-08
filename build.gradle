@@ -222,7 +222,7 @@ jacocoTestReport {
 }
 
 pitest {
-    //print('./gradlew --version'.execute().text.trim())
+//    print('./gradlew --version'.execute().text.trim())
     junit5PluginVersion = '1.1.2'
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
