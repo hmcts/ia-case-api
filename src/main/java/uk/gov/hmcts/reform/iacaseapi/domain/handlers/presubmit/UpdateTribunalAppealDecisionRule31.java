@@ -103,6 +103,7 @@ public class UpdateTribunalAppealDecisionRule31 implements PreSubmitCallbackHand
             if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
                 if (decisionAndReasonsDoc.isPresent()) {
                     asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+                    asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
                 }
             }
         }
