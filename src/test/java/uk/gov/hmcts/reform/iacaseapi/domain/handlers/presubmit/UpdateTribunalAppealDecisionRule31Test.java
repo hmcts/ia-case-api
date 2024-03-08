@@ -131,6 +131,7 @@ class UpdateTribunalAppealDecisionRule31Test {
 
         if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) && decisionsAndReasonDoc != null) {
             asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+            asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
 
             verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
             verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, currentDate.toString());
@@ -162,6 +163,7 @@ class UpdateTribunalAppealDecisionRule31Test {
 
         if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) && decisionsAndReasonDoc != null) {
             asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+            asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
 
             verify(decisionAndReasonsAppender, times(1))
                 .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
