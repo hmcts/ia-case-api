@@ -109,6 +109,26 @@ class UpdateTribunalDecisionRule31MidEventTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void should_return_true_when_updated_appeal_decision_is_Allowed() {
+
+        when(asylumCase.read(UPDATED_APPEAL_DECISION, String.class)).thenReturn(Optional.of("Allowed"));
+
+        boolean result = updateTribunalDecisionRule31MidEvent.isDecisionAllowed(asylumCase);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void should_return_false_when_updated_appeal_decision_is_not_Allowed() {
+
+        when(asylumCase.read(UPDATED_APPEAL_DECISION, String.class)).thenReturn(Optional.of("Dismissed"));
+
+        boolean result = updateTribunalDecisionRule31MidEvent.isDecisionAllowed(asylumCase);
+
+        assertFalse(result);
+    }
+
     @ParameterizedTest
     @CsvSource({
         "ALLOWED, 'Yes, change decision to Dismissed'",
@@ -137,6 +157,42 @@ class UpdateTribunalDecisionRule31MidEventTest {
         } else {
             dynamicList = new DynamicList(new Value("", ""),
                     List.of(new Value("allowed", expectedValue), new Value("dismissed", "No")));
+        }
+
+        assertNotNull(callbackResponse);
+        assertThat(asylumExtractorCaptor.getValue()).isEqualTo(TYPES_OF_UPDATE_TRIBUNAL_DECISION);
+        assertThat(asylumValueCaptor.getValue()).isEqualTo(dynamicList);
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+        "Allowed, 'Yes, change decision to Dismissed'",
+        "Dismissed, 'Yes, change decision to Allowed'"
+    })
+    void handler_should_populate_dynamic_updated_decision(String decision, String expectedValue) {
+
+        when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
+        when(callback.getPageId()).thenReturn(testPage);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(UPDATED_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(decision));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateTribunalDecisionRule31MidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
+
+        DynamicList dynamicList;
+
+        if (decision.equals("Allowed")) {
+            dynamicList = new DynamicList(new Value("", ""),
+                List.of(new Value("dismissed", expectedValue), new Value("allowed", "No")));
+        } else {
+            dynamicList = new DynamicList(new Value("", ""),
+                List.of(new Value("allowed", expectedValue), new Value("dismissed", "No")));
         }
 
         assertNotNull(callbackResponse);
