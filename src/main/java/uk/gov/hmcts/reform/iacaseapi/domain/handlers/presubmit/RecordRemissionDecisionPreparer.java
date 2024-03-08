@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
 
@@ -120,7 +121,7 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
 
         return (remissionOption.isPresent() && remissionOption.get() != NO_REMISSION)
-               || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() == WANT_TO_APPLY)
+               || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
                   && isDlrmFeeRemission;
     }
 
