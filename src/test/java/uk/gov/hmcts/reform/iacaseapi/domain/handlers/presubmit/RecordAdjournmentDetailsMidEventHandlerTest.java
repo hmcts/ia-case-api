@@ -79,11 +79,19 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
     private IaHearingsApiService iaHearingsApiService;
     @Captor
     private ArgumentCaptor<DynamicList> hearingVenueCaptor;
+    @Captor
+    private ArgumentCaptor<DynamicList> hearingChannelCaptor;
     private RecordAdjournmentDetailsMidEventHandler handler;
 
     private final DynamicList hearingChannel = new DynamicList(new Value("INTER", "In Person"),
-            List.of(new Value("INTER",
-                    "In Person")));
+            List.of(new Value("INTER", "In Person")));
+    private final DynamicList hearingChannelFromRefData = new DynamicList(new Value("", ""),
+        List.of(
+            new Value("TEL", "Telephone"),
+            new Value("INTER", "In Person"),
+            new Value("VID", "Video")
+        )
+    );
     private final DynamicList nextHearingVenue = new DynamicList(new Value("366559", "Glasgow"),
             List.of(new Value("366559",
                     "Glasgow")));
@@ -110,20 +118,25 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
         when(asylumCase.read(HEARING_CHANNEL, DynamicList.class))
             .thenReturn(Optional.of(hearingChannel));
+        when(provider.provideHearingChannels()).thenReturn(hearingChannelFromRefData);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 handler.handle(MID_EVENT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, hearingChannel);
+        verify(provider, times(1)).provideHearingChannels();
+        verify(asylumCase, times(1))
+            .write(eq(NEXT_HEARING_FORMAT), hearingChannelCaptor.capture());
+        assertEquals(hearingChannel.getValue(), hearingChannelCaptor.getValue().getValue());
+        assertEquals(hearingChannelFromRefData.getListItems(), hearingChannelCaptor.getValue().getListItems());
     }
 
     @Test
-    void should_populate_next_hearing_format_from_ref_data() {
+    void should_populate_next_hearing_format_when_hearing_channel_is_not_set() {
 
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
-        when(provider.provideHearingChannels()).thenReturn(hearingChannel);
+        when(provider.provideHearingChannels()).thenReturn(hearingChannelFromRefData);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             handler.handle(MID_EVENT, callback);
@@ -131,7 +144,11 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(NEXT_HEARING_FORMAT, hearingChannel);
+        verify(provider, times(1)).provideHearingChannels();
+        verify(asylumCase, times(1))
+            .write(eq(NEXT_HEARING_FORMAT), hearingChannelCaptor.capture());
+        assertEquals(hearingChannelFromRefData.getValue(), hearingChannelCaptor.getValue().getValue());
+        assertEquals(hearingChannelFromRefData.getListItems(), hearingChannelCaptor.getValue().getListItems());
     }
 
     @Test
