@@ -54,7 +54,7 @@ public class UpdateTribunalDecisionRule31MidEvent implements PreSubmitCallbackHa
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean isDecisionAllowed(AsylumCase asylumCase) {
+    boolean isDecisionAllowed(AsylumCase asylumCase) {
         if (asylumCase.read(UPDATED_APPEAL_DECISION, String.class).isPresent()) {
             String updatedAppealDecision = asylumCase.read(UPDATED_APPEAL_DECISION, String.class).orElse("");
             return updatedAppealDecision.equals("Allowed");
