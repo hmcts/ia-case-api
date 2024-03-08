@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
 
@@ -73,11 +74,12 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
                 Optional<RemissionOption> remissionOptionAip = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+                Optional<HelpWithFeesOption> helpWithFeesOptionAip = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
 
                 Optional<RemissionDecision> remissionDecision =
                     asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType) && !isRemissionExistsAip(remissionOptionAip)) {
+                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType) && !isRemissionExistsAip(remissionOptionAip, helpWithFeesOptionAip)) {
 
                     callbackResponse.addError("You cannot record a remission decision because a remission has not been requested for this appeal");
 
@@ -114,9 +116,12 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         return remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION;
     }
 
-    private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption) {
+    private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
         boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-        return remissionOption.isPresent() && remissionOption.get() != NO_REMISSION && isDlrmFeeRemission;
+
+        return (remissionOption.isPresent() && remissionOption.get() != NO_REMISSION)
+               || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() == WANT_TO_APPLY)
+                  && isDlrmFeeRemission;
     }
 
     private boolean isRemissionAmountLeftPaid(
