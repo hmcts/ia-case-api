@@ -123,8 +123,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPDATE_PAYMENT_STATUS,
             Event.CREATE_CASE_LINK,
             Event.MAINTAIN_CASE_LINKS,
-            Event.DECIDE_FTPA_APPLICATION,
-            Event.UPDATE_TRIBUNAL_DECISION
+            Event.DECIDE_FTPA_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);

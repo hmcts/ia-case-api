@@ -292,8 +292,7 @@ class SendNotificationHandlerTest {
                         Event.UPDATE_PAYMENT_STATUS,
                         Event.CREATE_CASE_LINK,
                         Event.MAINTAIN_CASE_LINKS,
-                        Event.DECIDE_FTPA_APPLICATION,
-                        Event.UPDATE_TRIBUNAL_DECISION
+                        Event.DECIDE_FTPA_APPLICATION
                     ).contains(event)) {
 
                     assertTrue(canHandle);

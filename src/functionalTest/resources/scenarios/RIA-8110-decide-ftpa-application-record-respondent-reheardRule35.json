@@ -15,7 +15,7 @@
           "ftpaRespondentSubmitted": "Yes",
           "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
           "allSetAsideRespondentDocs": [],
-          "judgesNamesToExclude": "Some judge to exclude",
+          "ftpaRespondentR35ListingJudgeExclude": "Some judge to exclude",
           "ftpaRespondentR35ListingAdditionalIns": "Some listing instructions",
           "ftpaRespondentR35DecisionObjections": "Some rule 35 decision objections",
           "ftpaR35RespondentDocument": {
