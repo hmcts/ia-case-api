@@ -118,6 +118,7 @@ class UpdateTribunalDecisionRule31MidEventTest {
 
         assertTrue(result);
     }
+
     @Test
     void should_return_false_when_updated_appeal_decision_is_not_Allowed() {
 
