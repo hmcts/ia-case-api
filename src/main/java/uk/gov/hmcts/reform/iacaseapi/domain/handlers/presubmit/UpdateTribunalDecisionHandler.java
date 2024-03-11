@@ -117,7 +117,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 asylumCase
                     .read(RULE_32_NOTICE_DOCUMENT,Document.class)
                     .orElseThrow(
-                    () -> new IllegalStateException("Rule 32 notice document is not present"));
+                        () -> new IllegalStateException("Rule 32 notice document is not present"));
 
 
             ftpaSetAsideDocuments.add(
