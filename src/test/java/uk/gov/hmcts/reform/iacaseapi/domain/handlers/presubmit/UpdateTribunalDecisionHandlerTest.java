@@ -49,7 +49,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class UpdateTribunalAppealDecisionHandlerTest {
+class UpdateTribunalDecisionHandlerTest {
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -83,7 +83,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
     @Captor
     private ArgumentCaptor<List<IdValue<DecisionAndReasons>>> existingDecisionsCaptor;
     @Captor private ArgumentCaptor<DecisionAndReasons> newDecisionCaptor;
-    private UpdateTribunalAppealDecisionHandler updateTribunalAppealDecisionHandler;
+    private UpdateTribunalDecisionHandler updateTribunalDecisionHandler;
     private final LocalDate now = LocalDate.now();
     private final String summarisedChanges = "Summarise document example";
 
@@ -91,7 +91,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        updateTribunalAppealDecisionHandler = new UpdateTribunalAppealDecisionHandler(dateProvider, decisionAndReasonsAppender,documentReceiver,documentsAppender);
+        updateTribunalDecisionHandler = new UpdateTribunalDecisionHandler(dateProvider, decisionAndReasonsAppender,documentReceiver,documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -122,7 +122,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
         decisionsAndReasonDoc = "someTestDoc";
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(decisionAndReasonsAppender, times(1))
                 .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
@@ -161,7 +161,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
         decisionsAndReasonDoc = "someTestDoc";
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) && decisionsAndReasonDoc != null) {
             asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
@@ -197,7 +197,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
             .thenReturn(Optional.of(summarisedChanges));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(decisionAndReasonsAppender, times(1))
             .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
@@ -235,7 +235,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
         when(documentsAppender.append(existingFtpaSetAsideDocuments, ftpaSetAsideNewDocuments)).thenReturn(allFtpaSetAsideDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -254,7 +254,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("decisionAndReasonDocsUpload is not present");
     }
@@ -272,7 +272,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
         when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class))
                 .thenReturn(Optional.of(correctedDecisionDocument));
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("summariseTribunalDecisionAndReasonsDocument is not present");
     }
@@ -282,7 +282,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("typesOfUpdateTribunalDecision is not present");
     }
@@ -290,7 +290,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -304,7 +304,7 @@ class UpdateTribunalAppealDecisionHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = updateTribunalAppealDecisionHandler.canHandle(callbackStage, callback);
+                boolean canHandle = updateTribunalDecisionHandler.canHandle(callbackStage, callback);
 
                 if (event == Event.UPDATE_TRIBUNAL_DECISION
                         && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
@@ -321,19 +321,19 @@ class UpdateTribunalAppealDecisionHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(null, callback))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

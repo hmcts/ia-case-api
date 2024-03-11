@@ -29,14 +29,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class UpdateTribunalAppealDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public UpdateTribunalAppealDecisionHandler(
+    public UpdateTribunalDecisionHandler(
             DateProvider dateProvider,
             Appender<DecisionAndReasons> decisionAndReasonsAppender,
             DocumentReceiver documentReceiver,
@@ -109,38 +109,38 @@ public class UpdateTribunalAppealDecisionHandler implements PreSubmitCallbackHan
                     asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
                 }
             }
-    } else if (isDecisionRule32(asylumCase)) {
+        } else if (isDecisionRule32(asylumCase)) {
 
-        List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
+            List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
 
-        final Document rule32Document =
+            final Document rule32Document =
                 asylumCase
-                        .read(RULE_32_NOTICE_DOCUMENT,Document.class)
-                        .orElseThrow(
-                                () -> new IllegalStateException("Rule 32 notice document is not present"));
+                    .read(RULE_32_NOTICE_DOCUMENT,Document.class)
+                    .orElseThrow(
+                    () -> new IllegalStateException("Rule 32 notice document is not present"));
 
 
-        ftpaSetAsideDocuments.add(
+            ftpaSetAsideDocuments.add(
                 documentReceiver
-                        .receive(
-                                rule32Document,
-                                "",
-                                DocumentTag.FTPA_SET_ASIDE
+                    .receive(
+                        rule32Document,
+                        "",
+                        DocumentTag.FTPA_SET_ASIDE
                         )
-        );
+            );
 
-        final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
-        final List<IdValue<DocumentWithMetadata>> existingAllFtpaSetAsideDocuments = maybeFtpaSetAsideDocuments.orElse(Collections.emptyList());
+            final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
+            final List<IdValue<DocumentWithMetadata>> existingAllFtpaSetAsideDocuments = maybeFtpaSetAsideDocuments.orElse(Collections.emptyList());
 
-        List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments =
+            List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments =
                 documentsAppender.append(
-                        existingAllFtpaSetAsideDocuments,
-                        ftpaSetAsideDocuments
+                    existingAllFtpaSetAsideDocuments,
+                    ftpaSetAsideDocuments
                 );
 
-        asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
+            asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
 
-    }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
