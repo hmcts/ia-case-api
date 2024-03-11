@@ -15,18 +15,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CORRECTED_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASON_DOCS_UPLOAD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TYPES_OF_UPDATE_TRIBUNAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,11 +34,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DecisionAndReasons;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -54,15 +43,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class UpdateTribunalAppealDecisionRule31Test {
+class UpdateTribunalAppealDecisionHandlerTest {
     @Mock
     private DateProvider dateProvider;
     @Mock
     private Appender<DecisionAndReasons> decisionAndReasonsAppender;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -74,14 +69,21 @@ class UpdateTribunalAppealDecisionRule31Test {
     private List<IdValue<DecisionAndReasons>> allAppendedDecisionAndReasosn;
     @Mock
     private DecisionAndReasons existingDecision;
-
+    @Mock
+    List<IdValue<DocumentWithMetadata>> existingFtpaSetAsideDocuments;
     private final List<DecisionAndReasons> existingDecisions = singletonList(existingDecision);
     @Mock
     Document correctedDecisionDocument;
+    @Mock
+    Document rule32Document;
+    @Mock
+    DocumentWithMetadata ftpaSetAsideR32Document;
+    @Mock
+    List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments;
     @Captor
     private ArgumentCaptor<List<IdValue<DecisionAndReasons>>> existingDecisionsCaptor;
     @Captor private ArgumentCaptor<DecisionAndReasons> newDecisionCaptor;
-    private UpdateTribunalAppealDecisionRule31 updateTribunalAppealDecisionRule31;
+    private UpdateTribunalAppealDecisionHandler updateTribunalAppealDecisionHandler;
     private final LocalDate now = LocalDate.now();
     private final String summarisedChanges = "Summarise document example";
 
@@ -89,7 +91,7 @@ class UpdateTribunalAppealDecisionRule31Test {
 
     @BeforeEach
     public void setUp() {
-        updateTribunalAppealDecisionRule31 = new UpdateTribunalAppealDecisionRule31(dateProvider, decisionAndReasonsAppender);
+        updateTribunalAppealDecisionHandler = new UpdateTribunalAppealDecisionHandler(dateProvider, decisionAndReasonsAppender,documentReceiver,documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -120,7 +122,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         decisionsAndReasonDoc = "someTestDoc";
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(decisionAndReasonsAppender, times(1))
                 .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
@@ -159,7 +161,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         decisionsAndReasonDoc = "someTestDoc";
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         if (isDecisionAndReasonDocumentBeingUpdated.equals(NO) && decisionsAndReasonDoc != null) {
             asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
@@ -195,7 +197,7 @@ class UpdateTribunalAppealDecisionRule31Test {
             .thenReturn(Optional.of(summarisedChanges));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(decisionAndReasonsAppender, times(1))
             .append(newDecisionCaptor.capture(), existingDecisionsCaptor.capture());
@@ -214,6 +216,34 @@ class UpdateTribunalAppealDecisionRule31Test {
 
 
     @Test
+    void should_write_set_aside_documents_if_is_r32() {
+
+        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class))
+                .thenReturn(Optional.of(UNDER_RULE_32));
+
+        when(asylumCase.read(RULE_32_NOTICE_DOCUMENT, Document.class))
+                .thenReturn(Optional.of(rule32Document));
+        when(asylumCase.read(ALL_SET_ASIDE_DOCS))
+                .thenReturn(Optional.of(existingFtpaSetAsideDocuments));
+
+        when(documentReceiver.receive(rule32Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR32Document);
+
+        List<DocumentWithMetadata> ftpaSetAsideNewDocuments =
+                Arrays.asList(
+                        documentReceiver.receive(rule32Document,"",DocumentTag.FTPA_SET_ASIDE));
+
+        when(documentsAppender.append(existingFtpaSetAsideDocuments, ftpaSetAsideNewDocuments)).thenReturn(allFtpaSetAsideDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(ALL_SET_ASIDE_DOCS, allFtpaSetAsideDocuments);
+
+    }
+
+    @Test
     void should_throw_on_missing_decision_and_reason_doc() {
         final DynamicList dynamicList = new DynamicList(
                 new Value("allowed", "Yes, change decision to Allowed"),
@@ -224,7 +254,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("decisionAndReasonDocsUpload is not present");
     }
@@ -242,7 +272,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class))
                 .thenReturn(Optional.of(correctedDecisionDocument));
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("summariseTribunalDecisionAndReasonsDocument is not present");
     }
@@ -252,7 +282,7 @@ class UpdateTribunalAppealDecisionRule31Test {
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("typesOfUpdateTribunalDecision is not present");
     }
@@ -260,7 +290,7 @@ class UpdateTribunalAppealDecisionRule31Test {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -274,7 +304,7 @@ class UpdateTribunalAppealDecisionRule31Test {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = updateTribunalAppealDecisionRule31.canHandle(callbackStage, callback);
+                boolean canHandle = updateTribunalAppealDecisionHandler.canHandle(callbackStage, callback);
 
                 if (event == Event.UPDATE_TRIBUNAL_DECISION
                         && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
@@ -291,19 +321,19 @@ class UpdateTribunalAppealDecisionRule31Test {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.canHandle(null, callback))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.handle(null, callback))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> updateTribunalAppealDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

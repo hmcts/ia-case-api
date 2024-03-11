@@ -1,0 +1,52 @@
+{
+  "description": "RIA-8220 Update Tribunal Decision Rule 32",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8220,
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "updateTribunalDecisionList": "underRule32",
+          "sendDirectionActionAvailable": "No",
+          "allSetAsideDocs": [],
+          "rule32NoticeDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "ftpa-r32-document.pdf"
+          }
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "updateTribunalDecisionList": "underRule32",
+        "sendDirectionActionAvailable": "No",
+        "allSetAsideDocs": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "ftpa-r32-document.pdf"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
