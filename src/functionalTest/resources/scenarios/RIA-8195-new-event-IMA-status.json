@@ -1,7 +1,7 @@
 {
   "description": "RIA-8195 Admin submits IMA status update event",
   "request": {
-    "uri": "/asylum/ccdSubmitted",
+    "uri": "/bail/ccdSubmitted",
     "credentials": "AdminOfficer",
     "input": {
       "eventId": "imaStatus",
@@ -17,8 +17,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "## What happens next\n\n",
-      "body": "## What happens next\\n\\n\". \"No further action is required.\\n\\n\""
+      "header": "# IMA status updated",
+      "body": "## What happens next\n\nNo further action is required.\n\n"
     }
   }
 }
