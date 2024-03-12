@@ -326,7 +326,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
                 .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
 
-        when(asylumCase.read(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase()))))
+        when(asylumCase.read(ALL_SET_ASIDE_DOCS))
                 .thenReturn(Optional.of(existingFtpaSetAsideDocuments));
 
 
@@ -348,12 +348,12 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(documentReceiver, times(1)).receive(maybeFtpaSetAsideR35Document, "", DocumentTag.FTPA_SET_ASIDE);
 
         verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())));
-        verify(asylumCase, times(1)).read(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase())));
+        verify(asylumCase, times(1)).read(ALL_SET_ASIDE_DOCS);
 
 
         verify(documentsAppender, times(1)).append(existingFtpaSetAsideDocuments, ftpaSetAsideNewDocuments2);
 
-        verify(asylumCase, times(1)).write(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase())), allFtpaSetAsideDocuments);
+        verify(asylumCase, times(1)).write(ALL_SET_ASIDE_DOCS, allFtpaSetAsideDocuments);
 
     }
 
@@ -527,7 +527,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
                 .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
 
-        when(asylumCase.read(valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", applicantType.toUpperCase()))))
+        when(asylumCase.read(ALL_SET_ASIDE_DOCS))
                 .thenReturn(Optional.of(existingFtpaSetAsideDocuments));
 
 
