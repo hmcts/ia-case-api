@@ -2,12 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
+@Slf4j
 public class RemissionDetailsAppender {
 
     private List<IdValue<RemissionDetails>> remissions;
