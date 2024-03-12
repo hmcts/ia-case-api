@@ -389,6 +389,7 @@ security:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-task-retrigger:
+      - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
 
 ### dependency configuration
