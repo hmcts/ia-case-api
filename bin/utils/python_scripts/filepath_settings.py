@@ -95,7 +95,9 @@ class Settings:
         "attendingAppellantsLegalRepresentative": "redacted",
         "newMatters": "redacted",
         "applicationOutOfTimeExplanation": "redacted",
-        "caseName": 'redacted'
+        "caseName": 'redacted',
+        "additionalRequestsDescription": "redacted",
+        "uploadedHomeOfficeBundleDocs": "redacted.pdf"
     }
 
     csv_rows_to_redact = {
