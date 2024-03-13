@@ -61,6 +61,10 @@ class IdamUserDetailsHelperTest {
                     assertEquals("Appellant", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
                     break;
 
+                case "caseworker-ia-task-retrigger":
+                    assertEquals("Task retrigger", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                    break;
+
                 default:
                     assertEquals("System", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
             }
