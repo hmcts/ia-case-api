@@ -10,6 +10,7 @@ public enum UserRoleLabel {
     HOME_OFFICE_GENERIC("Respondent"),
     LEGAL_REPRESENTATIVE("Legal representative"),
     SYSTEM("System"),
+    TASK_RETRIGGER("Task retrigger"),
     CITIZEN("Appellant");
 
     @JsonValue
