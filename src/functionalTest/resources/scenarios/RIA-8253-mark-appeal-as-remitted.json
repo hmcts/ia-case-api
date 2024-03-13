@@ -12,7 +12,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "judgesToExcludeNames": "Judge John Doe",
-          "additionalInstructions": "Listing instruction example",
+          "remittedAdditionalInstructions": "Listing instruction example",
           "courtReferenceNumber": "CA-2023-000001",
           "uploadRemittalDecisionDoc": {
             "document_url": "http://document-store/BBB",
@@ -30,7 +30,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "judgesToExcludeNames": "Judge John Doe",
-        "additionalInstructions": "Listing instruction example",
+        "remittedAdditionalInstructions": "Listing instruction example",
         "courtReferenceNumber": "CA-2023-000001",
         "uploadRemittalDecisionDoc": {
           "document_url": "http://document-store/BBB",
