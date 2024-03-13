@@ -389,6 +389,13 @@ security:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-task-retrigger:
+      - "requestHearingRequirementsFeature"
+      - "moveToPaymentPending"
+      - "rollbackPayment"
+      - "rollbackPaymentTimeout"
+      - "rollbackPaymentTimeoutToPaymentPending"
+      - "updatePaymentStatus"
+      - "endAppealAutomatically"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
 
