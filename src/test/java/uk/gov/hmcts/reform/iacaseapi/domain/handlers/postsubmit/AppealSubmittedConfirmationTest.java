@@ -291,11 +291,10 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
-        // TODO add this in with new content
-        // assertThat(
-        //     callbackResponse.getConfirmationBody().get())
-        //     .contains(
-        //         "You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[Generate service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)");
+         assertThat(
+             callbackResponse.getConfirmationBody().get())
+             .contains(
+                 "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -326,11 +325,10 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
-        // TODO add this in with new content
-        // assertThat(
-        //     callbackResponse.getConfirmationBody().get())
-        //     .contains(
-        //             "You can do this by selecting [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest) and paying via the Service Request tab.");
+         assertThat(
+             callbackResponse.getConfirmationBody().get())
+             .contains(
+                     "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -360,13 +358,12 @@ class AppealSubmittedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
-        // TODO add this in with new content
-        // assertThat(
-        //     callbackResponse.getConfirmationBody().get())
-        //     .contains(
-        //             "You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[Generate service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)"
-        //     );
+            .contains("#### Do this next");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                 "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
+            );
     }
 
     @Test
@@ -394,12 +391,11 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
-        // TODO add this in with new content
-        // assertThat(
-        // callbackResponse.getConfirmationBody().get())
-        //     .contains(
-        //         "You can do this by selecting [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest) and paying via the Service Request tab."
-        //     );
+         assertThat(
+         callbackResponse.getConfirmationBody().get())
+             .contains(
+                 "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
+             );
     }
 
     @ParameterizedTest

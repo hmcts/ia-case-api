@@ -52,13 +52,12 @@ class GenerateServiceRequestMakeAPaymentConfirmationTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getConfirmationHeader()).isPresent();
         assertThat(callbackResponse.getConfirmationBody()).isPresent();
-        // TODO add this in with new content
-        // assertThat(callbackResponse.getConfirmationHeader()).contains("# You have generated a service request");
-        // assertThat(callbackResponse.getConfirmationBody())
-        //         .contains("### Do this next\n\n"
-        //                 + "You need to go to the service request tab to pay for your appeal.\n\n"
-        //                 + "[Service Requests](cases/case-details/"
-        //                 + callback.getCaseDetails().getId() + "#Service%20Request)\n\n");
+         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have created a service request");
+         assertThat(callbackResponse.getConfirmationBody())
+                 .contains("### What happens next\n\n"
+                         + "You can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n"
+                         + "[Service requests](cases/case-details/"
+                         + callback.getCaseDetails().getId() + "#Service%20Request)\n\n");
     }
 
     @Test

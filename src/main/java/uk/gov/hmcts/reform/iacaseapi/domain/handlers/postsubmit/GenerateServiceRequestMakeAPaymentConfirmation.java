@@ -30,11 +30,11 @@ public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmi
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# ***THIS CAN BE CHANGED*** You have generated a service request");
+        postSubmitResponse.setConfirmationHeader("# You have created a service request");
         postSubmitResponse.setConfirmationBody(
-                "### Do this next\n\n"
-                        + "You need to go to the service request tab to pay for your appeal.\n\n"
-                        + "[Service Requests](cases/case-details/"
+                "### What happens next\n\n"
+                        + "You can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n"
+                        + "[Service requests](cases/case-details/"
                         + callback.getCaseDetails().getId() + "#Service%20Request)\n\n"
         );
 

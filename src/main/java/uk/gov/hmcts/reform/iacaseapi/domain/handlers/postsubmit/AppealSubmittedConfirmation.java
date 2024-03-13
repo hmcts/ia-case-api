@@ -35,6 +35,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String PAYMENT_OPTION_PAY_OFFLINE = "payOffline";
     private static final String PAYMENT_OPTION_PAY_LATER = "payLater";
     private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
+    private static final String DO_THIS_NEXT_LABEL = "#### Do this next\n\n";
     private static final String PA_PAY_APPEAL_LABEL =
         "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
     private static final String EU_HU_PAY_APPEAL_LABEL = PA_PAY_APPEAL_LABEL
@@ -48,6 +49,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String OUT_OF_TIME_PNG =
         "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
+    private static final String OUT_OF_TIME_DO_THIS_NEXT_LABEL = OUT_OF_TIME_PNG + DO_THIS_NEXT_LABEL;
     private static final String DEFAULT_LABEL =
         "You will receive an email confirming that this appeal has been submitted successfully.";
     private static final String OUT_OF_TIME_DEFAULT_LABEL =
@@ -225,13 +227,14 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String payForAppeal = "*** THIS CAN BE CHANGED *** You need to generate a service request and pay for your appeal via the Service Request tab.\n\n[LINK TO CREATE SERVICE REQUEST](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)\n\n";
+        String payForAppeal = "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/"
+                + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
+                + "selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO
-            ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
-            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
+            ? DO_THIS_NEXT_LABEL + payForAppeal
+            : OUT_OF_TIME_DO_THIS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
         );
     }
 
@@ -239,8 +242,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String paPayNowPayLaterLabel = "*** THIS CAN BE CHANGED *** You still have to pay for this appeal.\n\nYou can do this by selecting [LINK TO CREATE SERVICE REQUEST](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest)" +
-                " and paying via the Service Request tab.\n\n";
+        String paPayNowPayLaterLabel = "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/"
+            + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
+            + "selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO
