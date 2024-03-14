@@ -1,34 +1,51 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.COURT_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JUDGES_NAMES_TO_EXCLUDE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTED_ADDITIONAL_INSTRUCTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_REMITTAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_REMITTAL_DECISION_DOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_REMITTED;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfRemittal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -43,25 +60,47 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private MarkAppealAsRemittedUploadDecisionHandler markAppealAsRemittedUploadDecisionHandler;
+    @Mock
+    private Appender<CaseNote> caseNoteAppender;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private List allAppendedCaseNotes;
+    @Captor
+    private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
+    @Captor
+    private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
+
+    private final LocalDate now = LocalDate.now();
+    private final String judgeExcluded = "Judge Example";
+    private final String courtRefNumber = "CA-000001";
+    private final String additionalInstruction = "Additional instruction example";
+    private final Document remittalDocument =
+            new Document("http://localhost/documents/123456",
+                    "http://localhost/documents/123456",
+                    "remittalDecision.pdf");
 
     @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
 
-        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler();
+        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider);
+        when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
     void should_rename_remittal_decision_document() {
 
-        when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
-            .thenReturn(Optional.of(new Document("http://localhost/documents/123456", "http://localhost/documents/123456","remittalDecision.pdf")));
+            .thenReturn(Optional.of(remittalDocument));
         when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of("CA-000001"));
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            .thenReturn(Optional.of(courtRefNumber));
+        when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class))
+                .thenReturn(Optional.of(SourceOfRemittal.UPPER_TRIBUNAL));
+        when(dateProvider.now()).thenReturn(now);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -76,12 +115,47 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     }
 
     @Test
+    void should_add_remitted_case_note() {
+
+        final List<CaseNote> existingCaseNotes = new ArrayList<>();
+
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
+                .thenReturn(Optional.of(remittalDocument));
+        when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
+                .thenReturn(Optional.of(courtRefNumber));
+        when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class))
+                .thenReturn(Optional.of(SourceOfRemittal.COURT_OF_APPEAL));
+        when(asylumCase.read(JUDGES_NAMES_TO_EXCLUDE, String.class)).thenReturn(Optional.of(judgeExcluded));
+        when(asylumCase.read(REMITTED_ADDITIONAL_INSTRUCTIONS, String.class)).thenReturn(Optional.of(additionalInstruction));
+        when(dateProvider.now()).thenReturn(now);
+        when(asylumCase.read(CASE_NOTES)).thenReturn(Optional.of(existingCaseNotes));
+        when(caseNoteAppender.append(any(CaseNote.class), anyList())).thenReturn(allAppendedCaseNotes);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(caseNoteAppender, times(1)).append(
+                newCaseNoteCaptor.capture(),
+                existingCaseNotesCaptor.capture());
+
+        CaseNote capturedCaseNote = newCaseNoteCaptor.getValue();
+
+        assertThat(capturedCaseNote.getCaseNoteSubject()).isEqualTo("Appeal marked as remitted");
+        assertThat(capturedCaseNote.getUser()).isEqualTo("Admin");
+        assertThat(capturedCaseNote.getCaseNoteDescription())
+                .isEqualTo("Reason for rehearing: Remitted" + System.lineSeparator() +
+                        "Remitted from: Court Of Appeal" + System.lineSeparator() +
+                        "Court Of Appeal reference: CA-000001" + System.lineSeparator() +
+                        "Excluded judges: Judge Example" + System.lineSeparator() +
+                        "Listing instructions: Additional instruction example" + System.lineSeparator());
+        assertThat(capturedCaseNote.getDateAdded()).isEqualTo(now.toString());
+
+        verify(asylumCase, times(1)).write(CASE_NOTES, allAppendedCaseNotes);
+    }
+
+    @Test
     void should_throw_on_missing_remittal_decision() {
-
-        when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
             .thenReturn(Optional.empty());
 
@@ -89,6 +163,30 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
             .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("uploadRemittalDecisionDoc is not present");
+    }
+
+    @Test
+    void should_throw_on_missing_court_reference_number() {
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
+                .thenReturn(Optional.of(remittalDocument));
+
+        Assertions
+                .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("Court reference number not present");
+    }
+
+    @Test
+    void should_throw_on_missing_source_of_remittal() {
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
+                .thenReturn(Optional.of(remittalDocument));
+        when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
+                .thenReturn(Optional.of(courtRefNumber));
+
+        Assertions
+                .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("sourceOfRemittal is not present");
     }
 
     @Test
