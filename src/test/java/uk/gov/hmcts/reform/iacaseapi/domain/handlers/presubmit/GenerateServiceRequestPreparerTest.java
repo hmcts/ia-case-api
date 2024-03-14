@@ -85,7 +85,7 @@ class GenerateServiceRequestPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
-         assertTrue(callbackResponse.getErrors().contains("A service request has already been created for this case. Pay via the 'Service Request' tab."));
+        assertTrue(callbackResponse.getErrors().contains("A service request has already been created for this case. Pay via the 'Service Request' tab."));
     }
 
     @Test
@@ -97,11 +97,11 @@ class GenerateServiceRequestPreparerTest {
         when(asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)).thenReturn(Optional.of("aServiceRequestReference"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
-         assertTrue(callbackResponse.getErrors().contains("A service request has already been created for this case. Pay via the 'Service Request' tab."));
+        assertTrue(callbackResponse.getErrors().contains("A service request has already been created for this case. Pay via the 'Service Request' tab."));
     }
 
     @Test
