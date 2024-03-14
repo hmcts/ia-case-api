@@ -51,7 +51,7 @@ class MarkAppealAsRemittedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("All the parties have been notified and the relevant appeal details have been updated.");
+            .contains("All parties have been notified and the relevant appeal details have been updated.");
     }
 
     @Test
