@@ -1,18 +1,18 @@
 {
-  "description": "RIA-8157 Update Tribunal Decision Rule 32",
+  "description": "RIA-8158 Update Tribunal Decision Rule 32",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
     "input": {
-      "id": 8157,
+      "id": 8158,
       "eventId": "updateTribunalDecision",
       "state": "ftpaDecided",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "updateTribunalDecisionList": "underRule32",
-          "rule32ListingJudgeExclude": "Judge John Doe",
+          "judgesNamesToExclude": "Judge John Doe",
           "rule32ListingAdditionalIns": "Rule 32 listing instruction example",
           "rule32NoticeDocument": {
             "document_url": "http://document-store/BBB",
@@ -30,7 +30,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "updateTribunalDecisionList": "underRule32",
-        "rule32ListingJudgeExclude": "Judge John Doe",
+        "judgesNamesToExclude": "Judge John Doe",
         "rule32ListingAdditionalIns": "Rule 32 listing instruction example",
         "rule32NoticeDocument": {
           "document_url": "http://document-store/BBB",
