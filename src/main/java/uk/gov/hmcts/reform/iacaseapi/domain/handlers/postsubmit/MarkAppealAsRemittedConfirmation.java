@@ -35,7 +35,7 @@ public class MarkAppealAsRemittedConfirmation implements PostSubmitCallbackHandl
         postSubmitResponse.setConfirmationHeader("# You have marked the appeal as remitted");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-                + "All the parties have been notified and the relevant appeal details have been updated.<br>"
+                + "All parties have been notified and the relevant appeal details have been updated.<br>"
                 + "A Legal Officer will review the case and decide the next steps.<br>"
         );
 
