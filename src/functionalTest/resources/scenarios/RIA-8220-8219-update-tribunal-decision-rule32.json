@@ -1,5 +1,5 @@
 {
-  "description": "RIA-8220 Update Tribunal Decision Rule 32",
+  "description": "RIA-8220-8219 Update Tribunal Decision Rule 32",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -31,6 +31,8 @@
       "replacements": {
         "updateTribunalDecisionList": "underRule32",
         "sendDirectionActionAvailable": "No",
+        "reasonRehearingRule32": "Set aside and to be reheard under rule 32",
+        "updateTribunalDecisionDateRule32": "{$TODAY}",
         "allSetAsideDocs": [
           {
             "id": "1",
