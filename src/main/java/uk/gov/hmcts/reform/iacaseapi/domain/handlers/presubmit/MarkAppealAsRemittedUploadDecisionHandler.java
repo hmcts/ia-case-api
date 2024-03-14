@@ -92,7 +92,7 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
         final String additionalInst = asylumCase.read(REMITTED_ADDITIONAL_INSTRUCTIONS, String.class)
                 .orElse("");
 
-        String description = String.format( "Reason for rehearing: Remitted" + System.lineSeparator() +
+        String description = String.format("Reason for rehearing: Remitted" + System.lineSeparator() +
                 "Remitted from: %s" + System.lineSeparator() +
                 "%s reference: %s" + System.lineSeparator() +
                 "Excluded judges: %s" + System.lineSeparator() +
