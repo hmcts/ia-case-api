@@ -229,7 +229,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         String payForAppeal = "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/"
                 + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
-                + "selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
+                + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO
@@ -244,7 +244,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         String paPayNowPayLaterLabel = "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/"
             + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
-            + "selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
+            + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO

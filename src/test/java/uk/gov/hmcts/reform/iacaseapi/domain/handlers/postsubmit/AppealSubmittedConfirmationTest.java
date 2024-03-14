@@ -295,7 +295,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -329,7 +329,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
+                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -363,7 +363,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
             );
     }
 
@@ -395,7 +395,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
+                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
             );
     }
 
