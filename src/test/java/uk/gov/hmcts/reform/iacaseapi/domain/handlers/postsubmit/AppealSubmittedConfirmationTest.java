@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -291,10 +292,10 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
-         assertThat(
-             callbackResponse.getConfirmationBody().get())
-             .contains(
-                 "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -325,10 +326,10 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
-         assertThat(
-             callbackResponse.getConfirmationBody().get())
-             .contains(
-                     "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -362,7 +363,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                 "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
             );
     }
 
@@ -391,11 +392,11 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
-         assertThat(
-         callbackResponse.getConfirmationBody().get())
-             .contains(
-                 "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
-             );
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create Service Request' from the 'Next step' dropdown list. Then select 'Go'."
+            );
     }
 
     @ParameterizedTest
@@ -527,12 +528,12 @@ class AppealSubmittedConfirmationTest {
         if (flag.equals(NO.toString())) {
             assertThat(
                 callbackResponse.getConfirmationHeader().get()
-                .contains("# Your appeal has been submitted"));
+                    .contains("# Your appeal has been submitted"));
 
             assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                       + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.");
+                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.");
         }
         if (flag.equals(YES.toString())) {
             assertThat(
@@ -542,16 +543,16 @@ class AppealSubmittedConfirmationTest {
             assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                                + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                                + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                    + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
+                    + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
                 );
         }
 
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "NO", "YES" })
+    @ValueSource(strings = {"NO", "YES"})
     public void should_return_confirmation_for_help_with_fees(String flag) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
