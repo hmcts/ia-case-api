@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CORRECTED_DECISION_AND_REASONS;
@@ -13,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -32,17 +34,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
 public class UpdateTribunalAppealDecisionRule31 implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
+    private final DocumentReceiver documentReceiver;
+    private final DocumentsAppender documentsAppender;
+
 
     public UpdateTribunalAppealDecisionRule31(DateProvider dateProvider,
-                                              Appender<DecisionAndReasons> decisionAndReasonsAppender) {
+                                              Appender<DecisionAndReasons> decisionAndReasonsAppender,
+                                              DocumentReceiver documentReceiver,
+                                              DocumentsAppender documentsAppender) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
+        this.documentReceiver = documentReceiver;
+        this.documentsAppender = documentsAppender;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -92,13 +103,28 @@ public class UpdateTribunalAppealDecisionRule31 implements PreSubmitCallbackHand
                     decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
 
             asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
+
             final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
+
+            if (decisionAndReasonsDoc.isPresent()) {
+                DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
+                    decisionAndReasonsDoc.get(),
+                    "",
+                    DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
+                );
+
+                List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
+                    new ArrayList<>(),
+                    singletonList(updatedDecisionAndReasonsDocument)
+                );
+
+                asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
+            }
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
             YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
                 .orElse(NO);
-
 
             if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
                 if (decisionAndReasonsDoc.isPresent()) {
