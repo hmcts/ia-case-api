@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -84,6 +85,40 @@ public class RemissionDetailsAppender {
     ) {
         final RemissionDetails newRemissionDetails =
             new RemissionDetails(feeRemissionType, exceptionalCircumstances, remissionEcEvidenceDocuments);
+
+        return append(existingRemissionDetails, newRemissionDetails);
+    }
+
+    public List<IdValue<RemissionDetails>> appendAsylumSupportRefNumberRemissionDetails(
+        List<IdValue<RemissionDetails>> existingRemissionDetails,
+        String feeRemissionType,
+        String asylumSupportReference
+    ) {
+        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference);
+
+        return append(existingRemissionDetails, newRemissionDetails);
+    }
+
+    public List<IdValue<RemissionDetails>> appendRemissionOptionDetails(
+        List<IdValue<RemissionDetails>> existingRemissionDetails,
+        String feeRemissionType,
+        String helpWithFeesOption,
+        String helpWithFeesRefNumber
+    ) {
+        RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType);
+        if (feeRemissionType.equals("noneOfTheseStatements")) {
+            newRemissionDetails.setHelpWithFeesOption(helpWithFeesOption);
+            newRemissionDetails.setHelpWithFeesReferenceNumber(helpWithFeesRefNumber);
+        }
+        return append(existingRemissionDetails, newRemissionDetails);
+    }
+
+    public List<IdValue<RemissionDetails>> appendLocalAuthorityRemissionDetails(
+        List<IdValue<RemissionDetails>> existingRemissionDetails,
+        String feeRemissionType,
+        List<IdValue<DocumentWithMetadata>> localAuthorityLetter
+    ) {
+        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, localAuthorityLetter);
 
         return append(existingRemissionDetails, newRemissionDetails);
     }

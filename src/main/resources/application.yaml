@@ -350,6 +350,7 @@ security:
       - "uploadAddendumEvidenceLegalRep"
       - "pipActivation"
       - "applyForFTPAAppellant"
+      - "requestFeeRemission"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
