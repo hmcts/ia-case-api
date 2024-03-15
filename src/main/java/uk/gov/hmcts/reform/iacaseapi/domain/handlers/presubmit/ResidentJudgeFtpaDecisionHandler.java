@@ -2,12 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FINAL_DECISION_REMADE_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FIRST_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_LIST_VISIBLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -143,8 +138,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             addFtpaSetAsideDocuments(asylumCase, ftpaApplicantType, ftpaSetAsideDocuments,ftpaSetAsideParsedDocuments);
 
-            final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(
-                valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", ftpaApplicantUpperCase)));
+            final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
             final List<IdValue<DocumentWithMetadata>> existingAllFtpaSetAsideDocuments = maybeFtpaSetAsideDocuments.orElse(Collections.emptyList());
 
             List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments =
@@ -153,9 +147,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                     ftpaSetAsideParsedDocuments
                 );
 
-            asylumCase.write(
-                valueOf(String.format("ALL_SET_ASIDE_%s_DOCS", ftpaApplicantUpperCase)),
-                allFtpaSetAsideDocuments);
+            asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
 
         }
 
