@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -35,17 +37,20 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
+    private final FeatureToggler featureToggler;
 
     public UpdateTribunalDecisionHandler(
             DateProvider dateProvider,
             Appender<DecisionAndReasons> decisionAndReasonsAppender,
             DocumentReceiver documentReceiver,
-            DocumentsAppender documentsAppender
+            DocumentsAppender documentsAppender,
+            FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -119,7 +124,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     .orElseThrow(
                         () -> new IllegalStateException("Rule 32 notice document is not present"));
 
-
             ftpaSetAsideDocuments.add(
                 documentReceiver
                     .receive(
@@ -142,6 +146,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
             asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
+            setFtpaReheardCaseFlag(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -155,5 +160,16 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private boolean isDecisionRule32(AsylumCase asylumCase) {
         return asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class)
                 .map(type -> type.equals(UNDER_RULE_32)).orElse(false);
+    }
+
+    private void setFtpaReheardCaseFlag(AsylumCase asylumCase) {
+        boolean isReheardAppealEnabled = featureToggler.getValue("reheard-feature", false);
+        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
+                isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
+
+        if (isReheardAppealEnabled) {
+            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+            asylumCase.write(STITCHING_STATUS,"");
+        }
     }
 }
