@@ -36,6 +36,11 @@
             "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
           },
           "summariseTribunalDecisionAndReasonsDocument": "Document summarised example"
+        },
+        "finalDecisionAndReasonsDocuments": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "final-decisions-test-document-AMENDED"
         }
       }
     }
@@ -60,6 +65,11 @@
                 "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
               },
               "dateDocumentAndReasonsDocumentUploaded": "{$TODAY}"
+            },
+            "finalDecisionAndReasonsDocuments": {
+              "document_url": "http://document-store/AAA",
+              "document_binary_url": "http://document-store/AAA/binary",
+              "document_filename": "final-decisions-test-document-AMENDED"
             }
           }
         ]

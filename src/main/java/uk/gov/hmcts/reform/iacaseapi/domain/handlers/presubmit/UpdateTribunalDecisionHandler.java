@@ -100,6 +100,11 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
 
+            final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
+
+            final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments  = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
+
+
             if (decisionAndReasonsDoc.isPresent()) {
                 DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
                     decisionAndReasonsDoc.get(),
@@ -108,7 +113,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 );
 
                 List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
-                    new ArrayList<>(),
+                    existingDecisionAndReasonsDocuments,
                     singletonList(updatedDecisionAndReasonsDocument)
                 );
 
