@@ -78,7 +78,7 @@
         <cve>CVE-2023-45648</cve>
         <cve>CVE-2023-31582</cve>
     </suppress>
-    <suppress until="2024-0-15">
+    <suppress until="2024-04-15">
         <notes>Temporarily suppress vulnerability</notes>
         <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-41080</cve>
