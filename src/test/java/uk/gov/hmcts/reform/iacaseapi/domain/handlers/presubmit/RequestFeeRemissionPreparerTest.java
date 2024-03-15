@@ -4,21 +4,15 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -27,8 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
@@ -41,7 +33,6 @@ class RequestFeeRemissionPreparerTest {
     @Mock private AsylumCase asylumCase;
 
     @Mock private FeatureToggler featureToggler;
-    @Mock private Document document;
 
     private RequestFeeRemissionPreparer requestFeeRemissionPreparer;
     private RemissionDetailsAppender remissionDetailsAppender;
@@ -131,41 +122,6 @@ class RequestFeeRemissionPreparerTest {
         assertThat(callbackResponse.getErrors())
             .contains("You cannot request a fee remission at this time because another fee remission request for this appeal "
                                                           + "has yet to be decided.");
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
-    void handle_should_return_error_if_fee_remission_type_is_not_present(AppealType appealType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
-
-        assertThatThrownBy(() -> requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback))
-            .isExactlyInstanceOf(IllegalStateException.class)
-            .hasMessage("Previous fee remission type is not present");
-    }
-
-    private static Stream<Arguments> previousRemissionDecisionTestData() {
-
-        return Stream.of(
-            Arguments.of(AppealType.EA, APPROVED, "8000", "8000", "0", null),
-            Arguments.of(AppealType.HU, APPROVED, "8000", "8000", "0", null),
-            Arguments.of(AppealType.PA, APPROVED, "8000", "8000", "0", null),
-            Arguments.of(AppealType.EA, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason"),
-            Arguments.of(AppealType.HU, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason"),
-            Arguments.of(AppealType.PA, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason"),
-            Arguments.of(AppealType.EA, REJECTED, "8000", null, null, "A rejected reason"),
-            Arguments.of(AppealType.HU, REJECTED, "8000", null, null, "A rejected reason"),
-            Arguments.of(AppealType.PA, REJECTED, "8000", null, null, "A rejected reason")
-        );
     }
 
     @Test
