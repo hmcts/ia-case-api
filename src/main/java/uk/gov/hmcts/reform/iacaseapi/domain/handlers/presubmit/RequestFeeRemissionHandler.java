@@ -87,9 +87,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         setFeeRemissionTypeDetails(asylumCase);
-
-        // TODO: should no longer need this - we work out this in
-        asylumCase.write(PREVIOUS_REMISSION_DETAILS, getPreviousRemissions());
         clearPreviousRemissionCaseFields(asylumCase);
 
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
@@ -139,12 +136,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
             }
         }
-    }
-
-    // TODO: should no longer need this
-    private List<IdValue<RemissionDetails>> getPreviousRemissions() {
-
-        return remissionDetailsAppender.getRemissions();
     }
 
     private void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
@@ -228,8 +219,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             asylumCase.clear(REMISSION_DECISION_REASON);
             asylumCase.clear(REMISSION_TYPE);
 
-            // TODO: update with updating the actual case
-            remissionDetailsAppender.setRemissions(null);
+            asylumCase.clear(PREVIOUS_REMISSION_DETAILS);
         }
     }
 
@@ -396,8 +386,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                     }
                 });
 
-        // TODO: should no longer need this but need to update the actual previous remissions field in the case itself
-        remissionDetailsAppender.setRemissions(previousRemissionDetails);
+        asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
     }
 
     private void clearAsylumSupportRemissionDetails(AsylumCase asylumCase) {
