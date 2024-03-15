@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SourceOfRemittal {
 
-    COURT_OF_APPEAL("Court Of Appeal"),
+    COURT_OF_APPEAL("Court of Appeal"),
     UPPER_TRIBUNAL("Upper Tribunal");
 
     @JsonValue
