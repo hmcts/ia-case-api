@@ -1680,7 +1680,13 @@ public enum AsylumCaseFieldDefinition {
             "updateTribunalDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){}),
 
     UPDATED_APPEAL_DECISION(
-        "updatedAppealDecision", new TypeReference<String>(){}),
+            "updatedAppealDecision", new TypeReference<String>(){}),
+  
+    UPLOAD_REMITTAL_DECISION_DOC(
+        "uploadRemittalDecisionDoc", new TypeReference<Document>(){}),
+  
+    COURT_REFERENCE_NUMBER(
+        "courtReferenceNumber", new TypeReference<String>(){}), 
 
     REMISSION_OPTION(
         "remissionOption", new TypeReference<RemissionOption>(){}),
@@ -1699,6 +1705,15 @@ public enum AsylumCaseFieldDefinition {
 
     UPDATE_TRIBUNAL_DECISION_DATE(
         "updateTribunalDecisionDate", new TypeReference<String>(){}),
+
+    SOURCE_OF_REMITTAL(
+            "sourceOfRemittal", new TypeReference<SourceOfRemittal>(){}),
+
+    JUDGES_NAMES_TO_EXCLUDE(
+            "judgesNamesToExclude", new TypeReference<String>(){}),
+
+    REMITTED_ADDITIONAL_INSTRUCTIONS(
+            "remittedAdditionalInstructions", new TypeReference<String>(){}),
 
     ;
 

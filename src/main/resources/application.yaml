@@ -307,6 +307,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "markAppealAsRemitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

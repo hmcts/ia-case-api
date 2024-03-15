@@ -121,10 +121,11 @@ class EventTest {
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
         assertEquals("decideFtpaApplication", Event.DECIDE_FTPA_APPLICATION.toString());
         assertEquals("updateTribunalDecision", Event.UPDATE_TRIBUNAL_DECISION.toString());
+        assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(119, Event.values().length);
+        assertEquals(120, Event.values().length);
     }
 }
