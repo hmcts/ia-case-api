@@ -145,8 +145,8 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         assertThat(capturedCaseNote.getUser()).isEqualTo("Admin");
         assertThat(capturedCaseNote.getCaseNoteDescription())
                 .isEqualTo("Reason for rehearing: Remitted" + System.lineSeparator() +
-                        "Remitted from: Court Of Appeal" + System.lineSeparator() +
-                        "Court Of Appeal reference: CA-000001" + System.lineSeparator() +
+                        "Remitted from: Court of Appeal" + System.lineSeparator() +
+                        "Court of Appeal reference: CA-000001" + System.lineSeparator() +
                         "Excluded judges: Judge Example" + System.lineSeparator() +
                         "Listing instructions: Additional instruction example" + System.lineSeparator());
         assertThat(capturedCaseNote.getDateAdded()).isEqualTo(now.toString());
