@@ -38,11 +38,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-
-    public UpdateTribunalAppealDecisionRule31(DateProvider dateProvider,
-                                              Appender<DecisionAndReasons> decisionAndReasonsAppender,
-                                              DocumentReceiver documentReceiver,
-                                              DocumentsAppender documentsAppender) {
     public UpdateTribunalDecisionHandler(
             DateProvider dateProvider,
             Appender<DecisionAndReasons> decisionAndReasonsAppender,

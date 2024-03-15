@@ -94,15 +94,12 @@ class UpdateTribunalDecisionHandlerTest {
     @Mock
     private Document decisionAndReasonsDocument;
     @Mock
-    private List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonDocuments;
-    @Mock
     private List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs;
 
 
     @BeforeEach
     public void setUp() {
         updateTribunalDecisionHandler = new UpdateTribunalDecisionHandler(dateProvider, decisionAndReasonsAppender,documentReceiver,documentsAppender);
-        updateTribunalAppealDecisionRule31 = new UpdateTribunalAppealDecisionRule31(dateProvider, decisionAndReasonsAppender, documentReceiver, documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -394,7 +391,7 @@ class UpdateTribunalDecisionHandlerTest {
             .thenReturn(newUpdateTribunalDecisionDocs);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            updateTribunalAppealDecisionRule31.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
 
