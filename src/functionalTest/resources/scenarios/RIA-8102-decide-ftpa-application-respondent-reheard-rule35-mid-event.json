@@ -32,7 +32,7 @@
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "ftpaRespondentDecisionListingVisible": "Yes",
         "ftpaRespondentDecisionReasonsNotesVisible": "No",
-        "ftpaRespondentNoticeOfDecisionSetAsideVisible": "No"
+        "ftpaRespondentNoticeOfDecisionSetAsideVisible": "Yes"
       }
     }
   }
