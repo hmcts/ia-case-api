@@ -1661,11 +1661,11 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_R35_NOTICE_DOCUMENT(
             "ftpaRespondentR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
-    ALL_SET_ASIDE_APPELLANT_DOCS(
-            "allSetAsideAppellantDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    RULE_32_NOTICE_DOCUMENT(
+            "rule32NoticeDocument", new TypeReference<Document>(){}),
 
-    ALL_SET_ASIDE_RESPONDENT_DOCS(
-            "allSetAsideRespondentDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    ALL_SET_ASIDE_DOCS(
+            "allSetAsideDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     TYPES_OF_UPDATE_TRIBUNAL_DECISION(
         "typesOfUpdateTribunalDecision", new TypeReference<DynamicList>(){}),
@@ -1686,7 +1686,21 @@ public enum AsylumCaseFieldDefinition {
         "remissionOption", new TypeReference<RemissionOption>(){}),
 
     HELP_WITH_FEES_OPTION(
-        "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){});
+        "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
+
+    CORRECTED_DECISION_AND_REASONS(
+            "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
+
+    SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT(
+            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){}),
+
+    APPEAL_DECISION_LABEL(
+        "appealDecisionLabel", new TypeReference<String>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_DATE(
+        "updateTribunalDecisionDate", new TypeReference<String>(){}),
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;

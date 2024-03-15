@@ -2,15 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
 
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -74,10 +73,13 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
+                Optional<RemissionOption> remissionOptionAip = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+                Optional<HelpWithFeesOption> helpWithFeesOptionAip = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
+
                 Optional<RemissionDecision> remissionDecision =
                     asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType)) {
+                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType) && !isRemissionExistsAip(remissionOptionAip, helpWithFeesOptionAip)) {
 
                     callbackResponse.addError("You cannot record a remission decision because a remission has not been requested for this appeal");
 
@@ -112,6 +114,14 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
     private boolean isRemissionExists(Optional<RemissionType> remissionType) {
 
         return remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION;
+    }
+
+    private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
+        boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+
+        return (remissionOption.isPresent() && remissionOption.get() != NO_REMISSION)
+               || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
+                  && isDlrmFeeRemission;
     }
 
     private boolean isRemissionAmountLeftPaid(

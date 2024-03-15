@@ -1,5 +1,5 @@
 {
-  "description": "RIA-8110 Decide FTPA application appellant (reheardRule35)",
+  "description": "RIA-8110 Decide FTPA application Appellant (reheardRule35)",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -14,8 +14,8 @@
           "ftpaApplicantType": "appellant",
           "ftpaAppellantSubmitted": "Yes",
           "ftpaAppellantRjDecisionOutcomeType": "reheardRule35",
-          "allSetAsideAppellantDocs": [],
-          "ftpaAppellantR35ListingJudgeExclude": "Some judge to exclude",
+          "allSetAsideDocs": [],
+          "judgesNamesToExclude": "Some judge to exclude",
           "ftpaAppellantR35ListingAdditionalIns": "Some listing instructions",
           "ftpaAppellantR35DecisionObjections": "Some rule 35 decision objections",
           "ftpaR35AppellantDocument": {
@@ -64,39 +64,34 @@
         "isFtpaAppellantDecided": "Yes",
         "ftpaAppellantReasonRehearing": "Set aside and to be reheard under rule 35",
         "sendDirectionActionAvailable": "No",
-        "allSetAsideAppellantDocs": [
+        "allSetAsideDocs": [
           {
-            "id": "1",
+            "id": "3",
             "value": {
-              "ftpaApplicant": "appellant",
-              "ftpaAppellantR35NoticeDocument": [
-                {
-                  "id": "2",
-                  "value": {
-                    "document": {
-                      "document_url": "http://document-store/AAA",
-                      "document_binary_url": "http://document-store/AAA/binary",
-                      "document_filename": "some-ftpa-r35-notice-document-2.pdf"
-                    },
-                    "description": "Some R35 Notice 2"
-                  }
-                },
-                {
-                  "id": "1",
-                  "value": {
-                    "document": {
-                      "document_url": "http://document-store/CCC",
-                      "document_binary_url": "http://document-store/CCC/binary",
-                      "document_filename": "some-ftpa-r35-notice-document-1.pdf"
-                    },
-                    "description": "Some R35 Notice 1"
-                  }
-                }
-              ],
-              "ftpaR35Document": {
+              "document": {
                 "document_url": "http://document-store/BBB",
                 "document_binary_url": "http://document-store/BBB/binary",
                 "document_filename": "ftpa-r35-document.pdf"
+              }
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "some-ftpa-r35-notice-document-2.pdf"
+              }
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-r35-notice-document-1.pdf"
               }
             }
           }
