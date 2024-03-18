@@ -218,6 +218,9 @@ class UpdateTribunalDecisionHandlerTest {
     @Test
     void should_write_set_aside_documents_if_is_r32() {
 
+        LocalDate currentDate = LocalDate.now();
+        when(dateProvider.now()).thenReturn(currentDate);
+
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class))
                 .thenReturn(Optional.of(UNDER_RULE_32));
 
@@ -240,6 +243,8 @@ class UpdateTribunalDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(ALL_SET_ASIDE_DOCS, allFtpaSetAsideDocuments);
+        verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, currentDate.toString());
+        verify(asylumCase, times(1)).write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
 
     }
 
