@@ -1715,6 +1715,10 @@ public enum AsylumCaseFieldDefinition {
     REMITTED_ADDITIONAL_INSTRUCTIONS(
             "remittedAdditionalInstructions", new TypeReference<String>(){}),
 
+    APPEAL_REMITTED_DATE(
+        "appealRemittedDate", new TypeReference<String>() {}),
+    REHEARING_REASON(
+        "rehearingReason", new TypeReference<String>() {}),
     ;
 
     private final String value;
