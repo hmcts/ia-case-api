@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMOUNT_LEFT_TO_PAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMOUNT_REMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REF_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_ASYLUM_SUPPORT_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_ASYLUM_SUPPORT_REF_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_HELP_WITH_FEES_REF_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_LOCAL_AUTHORITY_LETTERS;
@@ -134,13 +134,13 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private void assignLateRemissionValuesToRemissionValues(AsylumCase asylumCase) {
         Optional<RemissionOption> lateRemissionOption = asylumCase.read(LATE_REMISSION_OPTION, RemissionOption.class);
-        Optional<String> lateAsylumSupportRefNumber = asylumCase.read(LATE_ASYLUM_SUPPORT_REFERENCE_NUMBER, String.class);
+        Optional<String> lateAsylumSupportRefNumber = asylumCase.read(LATE_ASYLUM_SUPPORT_REF_NUMBER, String.class);
         Optional<HelpWithFeesOption> lateHelpWithFees = asylumCase.read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
         Optional<String> lateHelpWithFeesRefNumber = asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class);
         Optional<List<IdValue<DocumentWithMetadata>>> lateLocalAuthorityLetters = asylumCase.read(LATE_LOCAL_AUTHORITY_LETTERS);
 
         asylumCase.write(REMISSION_OPTION, lateRemissionOption);
-        asylumCase.write(ASYLUM_SUPPORT_REFERENCE_NUMBER, lateAsylumSupportRefNumber);
+        asylumCase.write(ASYLUM_SUPPORT_REF_NUMBER, lateAsylumSupportRefNumber);
         asylumCase.write(HELP_WITH_FEES_OPTION, lateHelpWithFees);
         asylumCase.write(HELP_WITH_FEES_REF_NUMBER, lateHelpWithFeesRefNumber);
         asylumCase.write(LOCAL_AUTHORITY_LETTERS, lateLocalAuthorityLetters);
@@ -157,7 +157,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
         switch (remissionOption) {
             case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
-                String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE_NUMBER, String.class).orElse("");
+                String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class).orElse("");
 
                 previousRemissionDetails = remissionDetailsAppender.appendAsylumSupportRefNumberRemissionDetails(
                     existingRemissionDetails, remissionOption.toString(), asylumSupportReference);
@@ -178,7 +178,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 }
                 break;
 
-            case NO_REMISSION:
+            case I_WANT_TO_GET_HELP_WITH_FEES:
                 String helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, String.class).orElse("");
                 String helpWithFeesRefNumber = asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse("");
 
@@ -242,7 +242,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private void clearPreviousLateRemissionFields(AsylumCase asylumCase) {
         asylumCase.clear(LATE_REMISSION_OPTION);
-        asylumCase.clear(LATE_ASYLUM_SUPPORT_REFERENCE_NUMBER);
+        asylumCase.clear(LATE_ASYLUM_SUPPORT_REF_NUMBER);
         asylumCase.clear(LATE_HELP_WITH_FEES_OPTION);
         asylumCase.clear(LATE_HELP_WITH_FEES_REF_NUMBER);
         asylumCase.clear(LATE_LOCAL_AUTHORITY_LETTERS);

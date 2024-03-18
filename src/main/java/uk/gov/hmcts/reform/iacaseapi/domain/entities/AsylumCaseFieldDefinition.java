@@ -1685,7 +1685,7 @@ public enum AsylumCaseFieldDefinition {
     REMISSION_OPTION(
         "remissionOption", new TypeReference<RemissionOption>(){}),
 
-    ASYLUM_SUPPORT_REFERENCE_NUMBER(
+    ASYLUM_SUPPORT_REF_NUMBER(
         "asylumSupportRefNumber", new TypeReference<String>(){}),
 
     HELP_WITH_FEES_OPTION(
@@ -1700,7 +1700,7 @@ public enum AsylumCaseFieldDefinition {
     LATE_REMISSION_OPTION(
         "lateRemissionOption", new TypeReference<RemissionOption>(){}),
 
-    LATE_ASYLUM_SUPPORT_REFERENCE_NUMBER(
+    LATE_ASYLUM_SUPPORT_REF_NUMBER(
         "lateAsylumSupportRefNumber", new TypeReference<String>(){}),
 
     LATE_HELP_WITH_FEES_OPTION(

@@ -106,10 +106,8 @@ public class RemissionDetailsAppender {
         String helpWithFeesRefNumber
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType);
-        if (feeRemissionType.equals("noneOfTheseStatements")) {
-            newRemissionDetails.setHelpWithFeesOption(helpWithFeesOption);
-            newRemissionDetails.setHelpWithFeesReferenceNumber(helpWithFeesRefNumber);
-        }
+        newRemissionDetails.setHelpWithFeesOption(helpWithFeesOption);
+        newRemissionDetails.setHelpWithFeesReferenceNumber(helpWithFeesRefNumber);
         return append(existingRemissionDetails, newRemissionDetails);
     }
 
@@ -127,7 +125,7 @@ public class RemissionDetailsAppender {
         List<IdValue<RemissionDetails>> existingRemissionDetails,
         RemissionDetails newRemissionDetails) {
 
-        final  List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
+        final List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
 
         int index = existingRemissionDetails.size() + 1;
 
