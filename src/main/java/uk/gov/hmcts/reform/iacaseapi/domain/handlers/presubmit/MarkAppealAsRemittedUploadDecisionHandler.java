@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REMITTED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.COURT_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JUDGES_NAMES_TO_EXCLUDE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARING_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTED_ADDITIONAL_INSTRUCTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_REMITTAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_REMITTAL_DECISION_DOC;
@@ -68,6 +70,8 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
             mayBeDecisionDocument.getDocumentBinaryUrl(), getRemittalDecisionFilename(asylumCase));
 
         asylumCase.write(UPLOAD_REMITTAL_DECISION_DOC, decisionDocumnent);
+        asylumCase.write(APPEAL_REMITTED_DATE, dateProvider.now().toString());
+        asylumCase.write(REHEARING_REASON, "Remitted");
         addRemittedCaseNote(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

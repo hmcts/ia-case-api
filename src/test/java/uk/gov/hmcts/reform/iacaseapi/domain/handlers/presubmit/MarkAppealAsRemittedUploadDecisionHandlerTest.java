@@ -11,9 +11,11 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REMITTED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.COURT_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JUDGES_NAMES_TO_EXCLUDE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARING_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTED_ADDITIONAL_INSTRUCTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_REMITTAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_REMITTAL_DECISION_DOC;
@@ -92,7 +94,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     }
 
     @Test
-    void should_rename_remittal_decision_document() {
+    void should_rename_remittal_decision_document_and_set_fields() {
 
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
             .thenReturn(Optional.of(remittalDocument));
@@ -112,6 +114,8 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         verify(asylumCase, times(1))
             .write(UPLOAD_REMITTAL_DECISION_DOC,
                 new Document("http://localhost/documents/123456", "http://localhost/documents/123456","CA-000001-Decision-to-remit.pdf"));
+        verify(asylumCase, times(1)).write(REHEARING_REASON, "Remitted");
+        verify(asylumCase, times(1)).write(APPEAL_REMITTED_DATE, now.toString());
     }
 
     @Test
@@ -182,6 +186,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
                 .thenReturn(Optional.of(remittalDocument));
         when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
                 .thenReturn(Optional.of(courtRefNumber));
+        when(dateProvider.now()).thenReturn(now);
 
         Assertions
                 .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
