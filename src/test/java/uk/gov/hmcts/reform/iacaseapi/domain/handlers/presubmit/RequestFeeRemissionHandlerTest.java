@@ -9,10 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,22 +81,27 @@ class RequestFeeRemissionHandlerTest {
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details(RemissionType remissionType, String remissionClaim) {
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
-
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
+
+        List<IdValue<RemissionDetails>> previousRemissions = remissionDetailsAppender.appendAsylumSupportRemissionDetails(
+                Collections.emptyList(), "14000", "20/1375", null);
+
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Arrays.asList(previousRemissions)));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
+
         AsylumCase responseData = callbackResponse.getData();
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = responseData.read(PREVIOUS_REMISSION_DETAILS);
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
-
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
-        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
-        when(existingRemissionDetails).thenReturn(Arrays.asList(previousRemissionDetailsById));
-
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -306,7 +308,8 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("asylumSupport"));
 
         switch (remissionDecision) {
             case APPROVED:
@@ -340,7 +343,7 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback); //about to submit in handler
+                requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         AsylumCase responseData = callbackResponse.getData();
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = responseData.read(PREVIOUS_REMISSION_DETAILS);
@@ -401,7 +404,8 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("legalAid"));
 
         switch (remissionDecision) {
             case APPROVED:
@@ -494,7 +498,8 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("section17"));
 
         switch (remissionDecision) {
             case APPROVED:
@@ -526,6 +531,9 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(SECTION17_DOCUMENT)).thenReturn(Optional.of(document));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
 
+        List<IdValue<RemissionDetails>> previousRemissions = addRemissions(2);
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Arrays.asList(previousRemissions)));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -535,7 +543,7 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.get(0).);
 
         existingRemissionDetails
                 .stream()
@@ -966,5 +974,29 @@ class RequestFeeRemissionHandlerTest {
         assertThatThrownBy(() -> requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("Previous fee remission type is not present");
+    }
+
+    private void addRemissionDetails(String feeRemissionType,
+                                     String asylumSupportReference,
+                                     Document asylumSupportDocument,
+                                     List<IdValue<RemissionDetails>> allRemissionDetails){
+
+        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
+
+
+        int index = allRemissionDetails.size();
+
+        allRemissionDetails.add(new IdValue<>(String.valueOf(index), newRemissionDetails));
+    }
+
+    private List<IdValue<RemissionDetails>> addRemissions(int n){
+
+        final  List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
+
+        for(int i = 0; i < n; i++){
+            addRemissionDetails("14000",  "00/000" + i, null, allRemissionDetails);
+        }
+
+        return allRemissionDetails;
     }
 }
