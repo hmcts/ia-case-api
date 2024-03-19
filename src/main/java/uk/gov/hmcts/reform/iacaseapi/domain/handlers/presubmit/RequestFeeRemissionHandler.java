@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
+               && !isAipJourney(callback.getCaseDetails().getCaseData())
                && featureToggler.getValue("remissions-feature", false);
     }
 

@@ -143,7 +143,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch 
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1069 #pr-1069 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1123
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -466,7 +466,7 @@ ia-aip-frontend:
   nodejs:
     imagePullPolicy: Always
 #    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1038
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1069
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m

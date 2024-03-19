@@ -1685,8 +1685,32 @@ public enum AsylumCaseFieldDefinition {
     REMISSION_OPTION(
         "remissionOption", new TypeReference<RemissionOption>(){}),
 
+    ASYLUM_SUPPORT_REF_NUMBER(
+        "asylumSupportRefNumber", new TypeReference<String>(){}),
+
     HELP_WITH_FEES_OPTION(
         "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
+
+    HELP_WITH_FEES_REF_NUMBER(
+        "helpWithFeesRefNumber", new TypeReference<String>(){}),
+
+    LOCAL_AUTHORITY_LETTERS(
+        "localAuthorityLetters", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    LATE_REMISSION_OPTION(
+        "lateRemissionOption", new TypeReference<RemissionOption>(){}),
+
+    LATE_ASYLUM_SUPPORT_REF_NUMBER(
+        "lateAsylumSupportRefNumber", new TypeReference<String>(){}),
+
+    LATE_HELP_WITH_FEES_OPTION(
+        "lateHelpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
+
+    LATE_HELP_WITH_FEES_REF_NUMBER(
+        "lateHelpWithFeesRefNumber", new TypeReference<String>(){}),
+
+    LATE_LOCAL_AUTHORITY_LETTERS(
+        "lateLocalAuthorityLetters", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     CORRECTED_DECISION_AND_REASONS(
             "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
