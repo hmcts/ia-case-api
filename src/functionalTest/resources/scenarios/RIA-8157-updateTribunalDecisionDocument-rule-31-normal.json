@@ -17,11 +17,6 @@
             "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
             "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
             "document_filename": "sample-name.pdf"
-          },
-          "finalDecisionAndReasonsDocuments": {
-            "document_url": "http://document-store/AAA",
-            "document_binary_url": "http://document-store/AAA/binary",
-            "document_filename": "final-decisions-test-document-AMENDED"
           }
         }
       }
@@ -39,11 +34,6 @@
           "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
           "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
           "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
-        },
-        "finalDecisionAndReasonsDocuments": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "final-decisions-test-document-AMENDED"
         }
       }
     }
