@@ -14,6 +14,7 @@
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
           "lateRemissionType": "hoWaiverRemission",
+          "feeAmount": "14000",
           "feeRemissionType": "Legal Aid",
           "remissionClaim": "legalAid",
           "legalAidAccountNumber": "1A234B",
