@@ -32,6 +32,8 @@ public enum DocumentTag {
     APPEAL_REASONS("appealReasons"),
     CLARIFYING_QUESTIONS("clarifyingQuestions"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
+    UPDATED_FINAL_DECISION_AND_REASONS_PDF("updatedFinalDecisionAndReasonsPdf"),
+    UPDATED_DECISION_AND_REASONS_COVER_LETTER("updatedDecisionAndReasonsCoverLetter"),
 
     @JsonEnumDefaultValue
     NONE("");

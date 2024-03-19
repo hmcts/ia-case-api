@@ -1724,6 +1724,12 @@ public enum AsylumCaseFieldDefinition {
     UPDATE_TRIBUNAL_DECISION_DATE(
         "updateTribunalDecisionDate", new TypeReference<String>(){}),
 
+    UPDATE_TRIBUNAL_DECISION_DATE_RULE_32(
+            "updateTribunalDecisionDateRule32", new TypeReference<String>(){}),
+
+    REASON_REHEARING_RULE_32(
+            "reasonRehearingRule32", new TypeReference<String>(){})
+
     ;
 
     private final String value;
