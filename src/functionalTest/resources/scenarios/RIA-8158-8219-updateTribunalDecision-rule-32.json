@@ -39,7 +39,10 @@
           "document_binary_url": "http://document-store/BBB/binary",
           "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
         },
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "Yes",
+        "stitchingStatus": ""
       }
     }
   }
