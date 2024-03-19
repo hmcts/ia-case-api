@@ -1,0 +1,62 @@
+{
+  "description": "DIAC-299 Legal rep apply for a asylum support remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "requestFeeRemission",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "refusalOfHumanRights",
+          "isRemissionsEnabled": "Yes",
+          "feeAmountGbp": "14000",
+          "feeRemissionType": "Asylum Support",
+          "remissionClaim": "asylumSupport",
+          "asylumSupportReference": "1A234B",
+          "asylumSupportDocument": {
+            "document_binary_url": "http://dm-store-prod.service.core-compute-prod.internal/documents/88e3801b-e79f-44a4-4811-51faa5635f60/binary",
+            "document_filename": "Web Chat MOH1416-2.pdf",
+            "document_url": "http://dm-store-prod.service.core-compute-prod.internal/documents/88e3801b-e79f-44a4-4811-51faa5635f60"
+          },
+          "remissionDecision": "rejected",
+          "remissionDecisionReason": "Some reason"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "appealType": "refusalOfHumanRights",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "remissionClaim": "legalAid",
+        "legalAidAccountNumber": "1A234B",
+        "previousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeAmount": "14000",
+              "feeRemissionType": "Asylum Support",
+              "asylumSupportReference": "1A234B",
+              "asylumSupportDocument": {
+                "document_binary_url": "http://dm-store-prod.service.core-compute-prod.internal/documents/88e3801b-e79f-44a4-4811-51faa5635f60/binary",
+                "document_filename": "Web Chat MOH1416-2.pdf",
+                "document_url": "http://dm-store-prod.service.core-compute-prod.internal/documents/88e3801b-e79f-44a4-4811-51faa5635f60"
+              },
+              "remissionDecision": "Rejected",
+              "remissionDecisionReason": "Some reason"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
