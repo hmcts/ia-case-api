@@ -15,7 +15,9 @@
           "isRemissionsEnabled": "Yes",
           "lateRemissionType": "hoWaiverRemission",
           "remissionClaim": "legalAid",
-          "legalAidAccountNumber": "1A234B"
+          "legalAidAccountNumber": "1A234B",
+          "remissionDecision": "rejected",
+          "remissionDecisionReason": "Some reason"
         }
       }
     }
