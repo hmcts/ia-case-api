@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.*;
@@ -43,7 +42,6 @@ class RequestFeeRemissionHandlerTest {
     @Mock private IdValue<Document> previousDocuments;
 
     @Mock private FeatureToggler featureToggler;
-    @Mock private IdValue<RemissionDetails> previousRemissionDetailsById;
     @Mock private RemissionDetailsAppender remissionDetailsAppender;
 
     private RequestFeeRemissionHandler requestFeeRemissionHandler;
@@ -87,59 +85,53 @@ class RequestFeeRemissionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
 
-        List<IdValue<RemissionDetails>> previousRemissions = remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                Collections.emptyList(), "14000", "20/1375", null);
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(remissionType.toString(), "123456", document),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(remissionType.toString(), "123456", document),
+                previousRemissions)
+        );
 
-        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Arrays.asList(previousRemissions)));
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(remissionDetailsAppender.appendAsylumSupportRemissionDetails(anyList(), anyString(), anyString(), any()))
+                .thenReturn(previousRemissions);
 
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
+        when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("remissionDecisionReason"));
 
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
+        when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of("123456"));
+        when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("14000"));
+        when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT)).thenReturn(Optional.of(document));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        AsylumCase responseData = callbackResponse.getData();
-        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = responseData.read(PREVIOUS_REMISSION_DETAILS);
-        final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, existingRemissionDetails);
+        verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, previousRemissions);
         verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
 
         if (remissionType == HO_WAIVER_REMISSION) {
 
             switch (remissionClaim) {
-                case "asylumSupport":
-
-                    assertAsylumSupportRemissionDetails(asylumCase);
-                    break;
-
-                case "legalAid":
-
-                    assertLegalAidRemissionDetails(asylumCase);
-                    break;
-
-                case "section17":
-
-                    assertSection17RemissionDetails(asylumCase);
-                    break;
-
-                case "section20":
-
-                    assertSection20RemissionDetails(asylumCase);
-                    break;
-
-                case "homeOfficeWaiver":
-
-                    assertHomeOfficeWaiverRemissionDetails(asylumCase);
-                    break;
-
-                default:
-                    break;
+                case "asylumSupport" -> assertAsylumSupportRemissionDetails(asylumCase);
+                case "legalAid" -> assertLegalAidRemissionDetails(asylumCase);
+                case "section17" -> assertSection17RemissionDetails(asylumCase);
+                case "section20" -> assertSection20RemissionDetails(asylumCase);
+                case "homeOfficeWaiver" -> assertHomeOfficeWaiverRemissionDetails(asylumCase);
+                default -> {
+                }
             }
         } else if (remissionType == HELP_WITH_FEES) {
 
@@ -299,7 +291,6 @@ class RequestFeeRemissionHandlerTest {
     void handle_should_append_previous_asylum_support_remission_details(
             AppealType appealType, RemissionDecision remissionDecision, String feeAmount,
             String amountRemitted, String amountLeftToPay, String remissionDecisionReason) {
-
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -312,35 +303,47 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("asylumSupport"));
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
-        when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of("123456"));
+        String feeRemissionType = "Asylum support";
+        String asylumSupportRef = "123456";
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
+        when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of(asylumSupportRef));
         when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT)).thenReturn(Optional.of(document));
-        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, asylumSupportRef, document),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, asylumSupportRef, document),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendAsylumSupportRemissionDetails(anyList(), anyString(), anyString(), any()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -351,41 +354,37 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
-                    assertEquals("Asylum support", remissionDetails.getFeeRemissionType());
-                    assertEquals("123456", remissionDetails.getAsylumSupportReference());
+                    assertEquals(feeRemissionType, remissionDetails.getFeeRemissionType());
+                    assertEquals(asylumSupportRef, remissionDetails.getAsylumSupportReference());
                     assertEquals(document, remissionDetails.getAsylumSupportDocument());
                 });
     }
@@ -408,34 +407,47 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("legalAid"));
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Legal Aid"));
-        when(asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)).thenReturn(Optional.of("123456"));
+        String feeRemissionType = "Legal Aid";
+        String legalAidAccountNumber = "123456";
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
+        when(asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)).thenReturn(Optional.of(legalAidAccountNumber));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, legalAidAccountNumber, ""),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, legalAidAccountNumber, ""),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendLegalAidRemissionDetails(anyList(), anyString(), anyString()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -446,41 +458,37 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
-                    assertEquals("Legal Aid", remissionDetails.getFeeRemissionType());
-                    assertEquals("123456", remissionDetails.getLegalAidAccountNumber());
+                    assertEquals(feeRemissionType, remissionDetails.getFeeRemissionType());
+                    assertEquals(legalAidAccountNumber, remissionDetails.getLegalAidAccountNumber());
                 });
     }
 
@@ -489,7 +497,6 @@ class RequestFeeRemissionHandlerTest {
     void handle_should_append_previous_section_17_remission_details(
             AppealType appealType, RemissionDecision remissionDecision, String feeAmount,
             String amountRemitted, String amountLeftToPay, String remissionDecisionReason) {
-
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -502,37 +509,45 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("section17"));
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 17"));
+        String feeRemissionType = "Section 17";
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
         when(asylumCase.read(SECTION17_DOCUMENT)).thenReturn(Optional.of(document));
-        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
 
-        List<IdValue<RemissionDetails>> previousRemissions = addRemissions(2);
-        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Arrays.asList(previousRemissions)));
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, document, null, null),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, document, null, null),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendSection17RemissionDetails(anyList(), anyString(), any()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -543,40 +558,36 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(3, existingRemissionDetails.get(0).);
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
-                    assertEquals("Section 17", remissionDetails.getFeeRemissionType());
+                    assertEquals(feeRemissionType, remissionDetails.getFeeRemissionType());
                     assertEquals(document, remissionDetails.getSection17Document());
                 });
     }
@@ -596,36 +607,49 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
         when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("section17"));
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 20"));
+        String feeRemissionType = "Section 20";
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
         when(asylumCase.read(SECTION20_DOCUMENT)).thenReturn(Optional.of(document));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, null, document, null),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, null, document, null),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendSection20RemissionDetails(anyList(), anyString(), any()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -636,40 +660,36 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
-                    assertEquals("Section 20", remissionDetails.getFeeRemissionType());
+                    assertEquals(feeRemissionType, remissionDetails.getFeeRemissionType());
                     assertEquals(document, remissionDetails.getSection20Document());
                 });
     }
@@ -689,36 +709,49 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
         when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("homeOfficeWaiver"));
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Home Office fee waiver"));
+        String feeRemissionType = "Home Office fee waiver";
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
         when(asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT)).thenReturn(Optional.of(document));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, null, null, document),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, null, null, document),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(anyList(), anyString(), any()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -729,37 +762,33 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
                     assertEquals("Home Office fee waiver", remissionDetails.getFeeRemissionType());
@@ -780,38 +809,52 @@ class RequestFeeRemissionHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HELP_WITH_FEES));
         when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("homeOfficeWaiver"));
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Help with Fees"));
-        when(asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("HW-A1B-123"));
+        String feeRemissionType = "Help with Fees";
+        String hwfRefNum = "HW-A1B-123";
+        when(asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(hwfRefNum));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
+
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, null, hwfRefNum),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, null, hwfRefNum),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(anyList(), anyString(), anyString()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -822,37 +865,33 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
                     assertEquals("Help with Fees", remissionDetails.getFeeRemissionType());
@@ -873,40 +912,53 @@ class RequestFeeRemissionHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
         when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
 
         switch (remissionDecision) {
-            case APPROVED:
+            case APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
-                break;
-
-            case PARTIALLY_APPROVED:
+            }
+            case PARTIALLY_APPROVED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of(amountRemitted));
                 when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            case REJECTED:
+            }
+            case REJECTED -> {
                 when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
                 when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
                 when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of(remissionDecisionReason));
-                break;
-
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Exceptional circumstances"));
+        String feeRemissionType = "Exceptional circumstances";
+        String exceptionalCircumstances = "EC";
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(feeRemissionType));
         when(asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)).thenReturn(Optional.of("EC"));
 
-        when(asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(Arrays.asList(previousDocuments)));
+        when(asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(List.of(previousDocuments)));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+
+        // This is the amount of previous remission details the case will have before starting the event
+        List<IdValue<RemissionDetails>> previousRemissions = addPreviousRemissions(
+                new RemissionDetails(feeRemissionType, exceptionalCircumstances, List.of(previousDocuments)),
+                2
+        );
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissions));
+        // This is the new amount after the append method has been run
+        previousRemissions.add(addPreviousRemissionDetails(
+                new RemissionDetails(feeRemissionType, exceptionalCircumstances, List.of(previousDocuments)),
+                previousRemissions)
+        );
+        when(remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(anyList(), anyString(), anyString(), anyList()))
+                .thenReturn(previousRemissions);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -917,42 +969,38 @@ class RequestFeeRemissionHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(responseData, asylumCase);
-        assertEquals(1, existingRemissionDetails.size());
+        assertEquals(3, existingRemissionDetails.size());
 
         existingRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
                     switch (remissionDecision) {
-                        case APPROVED:
+                        case APPROVED -> {
                             assertEquals("Approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case PARTIALLY_APPROVED:
+                        }
+                        case PARTIALLY_APPROVED -> {
                             assertEquals("Partially approved", remissionDetails.getRemissionDecision());
                             assertEquals(feeAmount, remissionDetails.getFeeAmount());
                             assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
                             assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        case REJECTED:
+                        }
+                        case REJECTED -> {
                             assertEquals("Rejected", remissionDetails.getRemissionDecision());
                             assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                            break;
-
-                        default:
-                            break;
+                        }
+                        default -> {
+                        }
                     }
 
-                    assertEquals("Exceptional circumstances", remissionDetails.getFeeRemissionType());
-                    assertEquals("EC", remissionDetails.getExceptionalCircumstances());
-                    assertEquals(Arrays.asList(previousDocuments), remissionDetails.getRemissionEcEvidenceDocuments());
+                    assertEquals(feeRemissionType, remissionDetails.getFeeRemissionType());
+                    assertEquals(exceptionalCircumstances, remissionDetails.getExceptionalCircumstances());
+                    assertEquals(List.of(previousDocuments), remissionDetails.getRemissionEcEvidenceDocuments());
                 });
     }
 
@@ -976,25 +1024,19 @@ class RequestFeeRemissionHandlerTest {
                 .hasMessage("Previous fee remission type is not present");
     }
 
-    private void addRemissionDetails(String feeRemissionType,
-                                     String asylumSupportReference,
-                                     Document asylumSupportDocument,
-                                     List<IdValue<RemissionDetails>> allRemissionDetails){
-
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
-
-
+    private IdValue<RemissionDetails> addPreviousRemissionDetails(
+            RemissionDetails newRemissionDetails,
+            List<IdValue<RemissionDetails>> allRemissionDetails){
         int index = allRemissionDetails.size();
-
-        allRemissionDetails.add(new IdValue<>(String.valueOf(index), newRemissionDetails));
+        return new IdValue<>(String.valueOf(index), newRemissionDetails);
     }
 
-    private List<IdValue<RemissionDetails>> addRemissions(int n){
-
+    private List<IdValue<RemissionDetails>> addPreviousRemissions(RemissionDetails newRemissionDetails, int numRemissionsToAdd){
         final  List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
 
-        for(int i = 0; i < n; i++){
-            addRemissionDetails("14000",  "00/000" + i, null, allRemissionDetails);
+        for(int i = 0; i < numRemissionsToAdd; i++){
+            IdValue<RemissionDetails> remissionDetailsIdValue = addPreviousRemissionDetails(newRemissionDetails, allRemissionDetails);
+            allRemissionDetails.add(remissionDetailsIdValue);
         }
 
         return allRemissionDetails;

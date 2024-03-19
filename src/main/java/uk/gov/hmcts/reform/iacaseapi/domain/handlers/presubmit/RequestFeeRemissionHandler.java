@@ -77,7 +77,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                         || isPreviousRemissionExists(lateRemissionType, remissionDecision)) {
 
                     appendPreviousRemissionDetails(asylumCase);
-                    asylumCase.clear(REMISSION_TYPE);
                 }
                 break;
 
@@ -218,8 +217,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             asylumCase.clear(AMOUNT_LEFT_TO_PAY);
             asylumCase.clear(REMISSION_DECISION_REASON);
             asylumCase.clear(REMISSION_TYPE);
-
-            asylumCase.clear(PREVIOUS_REMISSION_DETAILS);
         }
     }
 
