@@ -14,7 +14,7 @@
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
           "feeAmountGbp": "14000",
-          "feeRemissionType": "Asylum Support",
+          "feeRemissionType": "Asylum support",
           "remissionClaim": "asylumSupport",
           "asylumSupportReference": "1A234B",
           "asylumSupportDocument": {
@@ -37,14 +37,14 @@
         "appealReferenceNumber": "$/(.+)/",
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
-        "remissionClaim": "legalAid",
+        "remissionClaim": "asylumSupport",
         "legalAidAccountNumber": "1A234B",
         "previousRemissionDetails": [
           {
             "id": "1",
             "value": {
               "feeAmount": "14000",
-              "feeRemissionType": "Asylum Support",
+              "feeRemissionType": "Asylum support",
               "asylumSupportReference": "1A234B",
               "asylumSupportDocument": {
                 "document_binary_url": "http://dm-store-prod.service.core-compute-prod.internal/documents/88e3801b-e79f-44a4-4811-51faa5635f60/binary",
