@@ -43,7 +43,7 @@
               "feeAmount": "14000",
               "feeRemissionType": "Legal Aid",
               "legalAidAccountNumber": "1A234B",
-              "remissionDecision": "rejected",
+              "remissionDecision": "Rejected",
               "remissionDecisionReason": "Some reason"
             }
           }
