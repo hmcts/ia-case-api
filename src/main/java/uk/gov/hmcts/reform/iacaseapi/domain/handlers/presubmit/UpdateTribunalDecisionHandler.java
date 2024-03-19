@@ -42,11 +42,11 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final FeatureToggler featureToggler;
 
     public UpdateTribunalDecisionHandler(
-            DateProvider dateProvider,
-            Appender<DecisionAndReasons> decisionAndReasonsAppender,
-            DocumentReceiver documentReceiver,
-            DocumentsAppender documentsAppender,
-            FeatureToggler featureToggler
+        DateProvider dateProvider,
+        Appender<DecisionAndReasons> decisionAndReasonsAppender,
+        DocumentReceiver documentReceiver,
+        DocumentsAppender documentsAppender,
+        FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
@@ -60,7 +60,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
+               && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -76,20 +76,20 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(UPDATED_APPEAL_DECISION, StringUtils.capitalize(updateTribunalDecisionValue.getValue().getCode()));
 
             final DecisionAndReasons newDecisionAndReasons =
-                    DecisionAndReasons.builder()
-                            .updatedDecisionDate(dateProvider.now().toString())
-                            .build();
+                DecisionAndReasons.builder()
+                    .updatedDecisionDate(dateProvider.now().toString())
+                    .build();
 
             if (asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
-                    .map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
+                .map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
                 Document correctedDecisionAndReasonsDoc = asylumCase
-                        .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)
-                        .orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
+                    .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)
+                    .orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
 
                 String summariseChanges = asylumCase
-                        .read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class)
-                        .orElseThrow(() -> new IllegalStateException("summariseTribunalDecisionAndReasonsDocument is not present"));
+                    .read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class)
+                    .orElseThrow(() -> new IllegalStateException("summariseTribunalDecisionAndReasonsDocument is not present"));
 
                 newDecisionAndReasons.setDocumentAndReasonsDocument(correctedDecisionAndReasonsDoc);
                 newDecisionAndReasons.setDateDocumentAndReasonsDocumentUploaded(dateProvider.now().toString());
@@ -97,18 +97,27 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
             }
 
             Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
-                    asylumCase.read(CORRECTED_DECISION_AND_REASONS);
+                asylumCase.read(CORRECTED_DECISION_AND_REASONS);
             List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
-                    decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
+                decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
 
             asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
 
             final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
 
+            YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
+                .orElse(NO);
+
+            if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
+                if (decisionAndReasonsDoc.isPresent()) {
+                    asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+                    asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
+                }
+            }
+
             final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
             final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments  = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
-
 
             if (decisionAndReasonsDoc.isPresent()) {
                 DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
@@ -127,15 +136,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
-            YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
-                .orElse(NO);
-
-            if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
-                if (decisionAndReasonsDoc.isPresent()) {
-                    asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
-                    asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
-                }
-            }
         } else if (isDecisionRule32(asylumCase)) {
 
             List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
@@ -152,7 +152,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                         rule32Document,
                         "",
                         DocumentTag.FTPA_SET_ASIDE
-                        )
+                    )
             );
 
             final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
@@ -176,18 +176,18 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
     private boolean isDecisionRule31(AsylumCase asylumCase) {
         return asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class)
-                .map(type -> type.equals(UNDER_RULE_31)).orElse(false);
+            .map(type -> type.equals(UNDER_RULE_31)).orElse(false);
     }
 
     private boolean isDecisionRule32(AsylumCase asylumCase) {
         return asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class)
-                .map(type -> type.equals(UNDER_RULE_32)).orElse(false);
+            .map(type -> type.equals(UNDER_RULE_32)).orElse(false);
     }
 
     private void setFtpaReheardCaseFlag(AsylumCase asylumCase) {
         boolean isReheardAppealEnabled = featureToggler.getValue("reheard-feature", false);
         asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-                isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
+            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
 
         if (isReheardAppealEnabled) {
             asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
