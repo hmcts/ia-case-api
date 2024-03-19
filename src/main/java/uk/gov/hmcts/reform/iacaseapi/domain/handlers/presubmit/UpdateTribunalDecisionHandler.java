@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
@@ -11,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -100,13 +102,33 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
 
             asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
+
             final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
+
+            final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
+
+            final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments  = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
+
+
+            if (decisionAndReasonsDoc.isPresent()) {
+                DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
+                    decisionAndReasonsDoc.get(),
+                    "",
+                    DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
+                );
+
+                List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
+                    existingDecisionAndReasonsDocuments,
+                    singletonList(updatedDecisionAndReasonsDocument)
+                );
+
+                asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
+            }
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
             YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
                 .orElse(NO);
-
 
             if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
                 if (decisionAndReasonsDoc.isPresent()) {
