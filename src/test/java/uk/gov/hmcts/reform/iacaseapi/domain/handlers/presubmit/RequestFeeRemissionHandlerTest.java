@@ -1026,15 +1026,15 @@ class RequestFeeRemissionHandlerTest {
 
     private IdValue<RemissionDetails> addPreviousRemissionDetails(
             RemissionDetails newRemissionDetails,
-            List<IdValue<RemissionDetails>> allRemissionDetails){
+            List<IdValue<RemissionDetails>> allRemissionDetails) {
         int index = allRemissionDetails.size();
         return new IdValue<>(String.valueOf(index), newRemissionDetails);
     }
 
-    private List<IdValue<RemissionDetails>> addPreviousRemissions(RemissionDetails newRemissionDetails, int numRemissionsToAdd){
+    private List<IdValue<RemissionDetails>> addPreviousRemissions(RemissionDetails newRemissionDetails, int numRemissionsToAdd) {
         final  List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
 
-        for(int i = 0; i < numRemissionsToAdd; i++){
+        for (int i = 0; i < numRemissionsToAdd; i++) {
             IdValue<RemissionDetails> remissionDetailsIdValue = addPreviousRemissionDetails(newRemissionDetails, allRemissionDetails);
             allRemissionDetails.add(remissionDetailsIdValue);
         }
