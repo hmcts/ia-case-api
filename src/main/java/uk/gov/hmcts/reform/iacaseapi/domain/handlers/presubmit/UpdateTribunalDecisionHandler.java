@@ -105,6 +105,10 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
 
+            final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
+
+            final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
+
             YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
                 .orElse(NO);
 
@@ -113,13 +117,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
                     asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
                 }
-            }
-
-            final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
-
-            final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments  = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
-
-            if (decisionAndReasonsDoc.isPresent()) {
+            } else if (isDecisionAndReasonDocumentBeingUpdated.equals(YES)) {
                 DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
                     decisionAndReasonsDoc.get(),
                     "",
@@ -132,6 +130,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 );
 
                 asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
+
             }
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
@@ -195,3 +194,4 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         }
     }
 }
+
