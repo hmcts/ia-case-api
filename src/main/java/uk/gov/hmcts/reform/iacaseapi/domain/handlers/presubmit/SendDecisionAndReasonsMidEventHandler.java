@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENT;
 
-@Slf4j
 @Component
 public class SendDecisionAndReasonsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private final DocumentReceiver documentReceiver;
@@ -51,10 +49,6 @@ public class SendDecisionAndReasonsMidEventHandler implements PreSubmitCallbackH
             asylumCasePreSubmitCallbackResponse.addError("The Decision and reasons document must be a PDF file");
             return asylumCasePreSubmitCallbackResponse;
         }
-        String docUrl = finalDecisionAndReasonsDoc.getDocumentUrl();
-        String docBinaryUrl = finalDecisionAndReasonsDoc.getDocumentBinaryUrl();
-        log.info("1 " + docUrl);
-        log.info("2 " + docBinaryUrl);
         documentReceiver.receive(
             finalDecisionAndReasonsDoc,
             "",
