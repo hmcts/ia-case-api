@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
 @Slf4j
-public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithCcdAssignmentsStub, WithAcaAssignmentsStub, WithUserDetailsStub, WithReferenceDataStub {
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
@@ -36,7 +36,7 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
     private String prdResponseJson;
 
     @BeforeEach
-    public void setupReferenceDataStub() throws IOException {
+    void setupReferenceDataStub() throws IOException {
 
         prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -46,7 +46,7 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set() {
+    void should_return_success_when_org_creator_access_revoked_and_case_assignment_set() {
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
