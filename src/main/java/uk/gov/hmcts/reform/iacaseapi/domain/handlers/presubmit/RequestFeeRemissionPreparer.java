@@ -8,25 +8,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
 
 @Component
 public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
-    private final RemissionDetailsAppender remissionDetailsAppender;
 
     public RequestFeeRemissionPreparer(
-        FeatureToggler featureToggler,
-        RemissionDetailsAppender remissionDetailsAppender
+        FeatureToggler featureToggler
     ) {
         this.featureToggler = featureToggler;
-        this.remissionDetailsAppender = remissionDetailsAppender;
     }
 
     public boolean canHandle(
@@ -49,10 +49,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
@@ -74,12 +71,22 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                if ((remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION && !remissionDecision.isPresent())
-                    || (lateRemissionType.isPresent() && !remissionDecision.isPresent())) {
-
+                if (remissionType.isPresent()
+                        && remissionType.get() != RemissionType.NO_REMISSION
+                        && remissionDecision.isEmpty()
+                    || lateRemissionType.isPresent()
+                        && remissionDecision.isEmpty()
+                ) {
                     callbackResponse
                         .addError("You cannot request a fee remission at this time because another fee remission request for this appeal "
                                   + "has yet to be decided.");
+                } else if (isPreviousRemissionExists(remissionType, remissionDecision)
+                        || isPreviousRemissionExists(lateRemissionType, remissionDecision)) {
+                    if (asylumCase.read(FEE_REMISSION_TYPE, String.class).isEmpty()) {
+                        throw new IllegalStateException("Previous fee remission type is not present");
+                    }
+
+                    asylumCase.clear(REMISSION_TYPE);
                 }
                 break;
 
@@ -90,4 +97,14 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
         return callbackResponse;
     }
 
+    private boolean isPreviousRemissionExists(
+            Optional<RemissionType> remissionType,
+            Optional<RemissionDecision> remissionDecision
+    ) {
+        return remissionType.isPresent()
+                && remissionType.get() != RemissionType.NO_REMISSION
+                && remissionDecision.isPresent()
+                && Arrays.asList(APPROVED, PARTIALLY_APPROVED, REJECTED)
+                .contains(remissionDecision.get());
+    }
 }

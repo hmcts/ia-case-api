@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
@@ -248,10 +249,11 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         List<IdValue<RemissionDetails>> previousRemissionDetails = null;
 
-        String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class)
-                .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
-        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
-        final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
+        // Existence of 'feeRemissionType' was checked in RequestFeeRemissionPreparer
+        String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class).get();
+
+        Optional<List<IdValue<RemissionDetails>>> maybeExistingPreviousRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
+        List<IdValue<RemissionDetails>> existingPreviousRemissionDetails = maybeExistingPreviousRemissionDetails.orElse(emptyList());
 
         log.info("---------------feeRemissionType: {}", feeRemissionType);
 
@@ -264,9 +266,9 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 previousRemissionDetails =
                         asylumSupportDocument.isPresent()
                                 ? remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                                existingRemissionDetails, feeRemissionType, asylumSupportReference, asylumSupportDocument.get())
+                                existingPreviousRemissionDetails, feeRemissionType, asylumSupportReference, asylumSupportDocument.get())
                                 : remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                                existingRemissionDetails, feeRemissionType, asylumSupportReference, null);
+                                existingPreviousRemissionDetails, feeRemissionType, asylumSupportReference, null);
 
                 break;
 
@@ -276,7 +278,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                 previousRemissionDetails =
                         remissionDetailsAppender
-                                .appendLegalAidRemissionDetails(existingRemissionDetails, feeRemissionType, legalAidAccountNumber);
+                                .appendLegalAidRemissionDetails(existingPreviousRemissionDetails, feeRemissionType, legalAidAccountNumber);
 
                 break;
 
@@ -287,7 +289,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     previousRemissionDetails =
                             remissionDetailsAppender
-                                    .appendSection17RemissionDetails(existingRemissionDetails, feeRemissionType, section17Document.get());
+                                    .appendSection17RemissionDetails(existingPreviousRemissionDetails, feeRemissionType, section17Document.get());
                 }
 
                 break;
@@ -299,7 +301,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     previousRemissionDetails =
                             remissionDetailsAppender
-                                    .appendSection20RemissionDetails(existingRemissionDetails, feeRemissionType, section20Document.get());
+                                    .appendSection20RemissionDetails(existingPreviousRemissionDetails, feeRemissionType, section20Document.get());
                 }
 
                 break;
@@ -311,7 +313,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     previousRemissionDetails =
                             remissionDetailsAppender
-                                    .appendHomeOfficeWaiverRemissionDetails(existingRemissionDetails, feeRemissionType, homeWaiverDocument.get());
+                                    .appendHomeOfficeWaiverRemissionDetails(existingPreviousRemissionDetails, feeRemissionType, homeWaiverDocument.get());
                 }
 
                 break;
@@ -321,7 +323,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                 previousRemissionDetails =
                         remissionDetailsAppender
-                                .appendHelpWithFeeReferenceRemissionDetails(existingRemissionDetails, feeRemissionType, helpWithReference);
+                                .appendHelpWithFeeReferenceRemissionDetails(existingPreviousRemissionDetails, feeRemissionType, helpWithReference);
 
                 break;
 
@@ -334,9 +336,9 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 previousRemissionDetails =
                         exceptionalCircumstancesDocuments.isPresent()
                                 ? remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
-                                existingRemissionDetails, feeRemissionType, exceptionalCircumstances, exceptionalCircumstancesDocuments.get())
+                                existingPreviousRemissionDetails, feeRemissionType, exceptionalCircumstances, exceptionalCircumstancesDocuments.get())
                                 : remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
-                                existingRemissionDetails, feeRemissionType, exceptionalCircumstances, null);
+                                existingPreviousRemissionDetails, feeRemissionType, exceptionalCircumstances, null);
 
                 break;
 

@@ -14,12 +14,8 @@
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
           "lateRemissionType": "hoWaiverRemission",
-          "feeAmountGbp": "14000",
-          "feeRemissionType": "Legal Aid",
           "remissionClaim": "legalAid",
-          "legalAidAccountNumber": "1A234B",
-          "remissionDecision": "rejected",
-          "remissionDecisionReason": "Some reason"
+          "legalAidAccountNumber": "1A234B"
         }
       }
     }
@@ -35,19 +31,7 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "lateRemissionType": "hoWaiverRemission",
         "remissionClaim": "legalAid",
-        "legalAidAccountNumber": "1A234B",
-        "previousRemissionDetails": [
-          {
-            "id": "1",
-            "value": {
-              "feeAmount": "14000",
-              "feeRemissionType": "Legal Aid",
-              "legalAidAccountNumber": "1A234B",
-              "remissionDecision": "Rejected",
-              "remissionDecisionReason": "Some reason"
-            }
-          }
-        ]
+        "legalAidAccountNumber": "1A234B"
       }
     }
   }

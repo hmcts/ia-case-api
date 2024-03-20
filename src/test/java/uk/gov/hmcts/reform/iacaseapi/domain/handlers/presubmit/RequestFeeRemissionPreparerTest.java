@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -35,15 +35,11 @@ class RequestFeeRemissionPreparerTest {
     @Mock private FeatureToggler featureToggler;
 
     private RequestFeeRemissionPreparer requestFeeRemissionPreparer;
-    private RemissionDetailsAppender remissionDetailsAppender;
-
 
     @BeforeEach
     void setUp() {
 
-        remissionDetailsAppender = new RemissionDetailsAppender();
-
-        requestFeeRemissionPreparer = new RequestFeeRemissionPreparer(featureToggler, remissionDetailsAppender);
+        requestFeeRemissionPreparer = new RequestFeeRemissionPreparer(featureToggler);
     }
 
     @ParameterizedTest
@@ -122,6 +118,50 @@ class RequestFeeRemissionPreparerTest {
         assertThat(callbackResponse.getErrors())
             .contains("You cannot request a fee remission at this time because another fee remission request for this appeal "
                                                           + "has yet to be decided.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void handle_should_return_error_if_fee_remission_type_is_not_present(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
+
+        assertThatThrownBy(() -> requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("Previous fee remission type is not present");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void handle_should_remove_remission_type_if_fee_remission_type_is_present(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(callbackResponse.getData(), asylumCase);
+        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
     @Test
