@@ -25,6 +25,7 @@ public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmi
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
     }
+
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
