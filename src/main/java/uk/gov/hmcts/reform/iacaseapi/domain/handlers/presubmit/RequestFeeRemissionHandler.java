@@ -58,6 +58,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("------------------111");
+
         AsylumCase asylumCase =
             callback
                 .getCaseDetails()
@@ -66,6 +68,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+
+        log.info("------------------222 appealType: {}", appealType);
 
         switch (appealType) {
             case EA:
@@ -76,17 +80,25 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
+                log.info("------------------333 remissionType: {}", remissionType);
+
                 if (isPreviousRemissionExists(remissionType, remissionDecision)
                         || isPreviousRemissionExists(lateRemissionType, remissionDecision)) {
+
+                    log.info("------------------444");
 
                     appendPreviousRemissionDetails(asylumCase);
                 }
                 break;
 
             default:
+                log.info("------------------444 1");
+
                 break;
 
         }
+
+        log.info("------------------555");
 
         setFeeRemissionTypeDetails(asylumCase);
         clearPreviousRemissionCaseFields(asylumCase);
