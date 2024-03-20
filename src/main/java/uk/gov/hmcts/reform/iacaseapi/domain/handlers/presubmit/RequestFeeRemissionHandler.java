@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
@@ -17,20 +19,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 @Component
+@Slf4j
 public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private FeatureToggler featureToggler;
-    private RemissionDetailsAppender remissionDetailsAppender;
+    private final FeatureToggler featureToggler;
 
     public RequestFeeRemissionHandler(
-        FeatureToggler featureToggler,
-        RemissionDetailsAppender remissionDetailsAppender
+        FeatureToggler featureToggler
     ) {
         this.featureToggler = featureToggler;
-        this.remissionDetailsAppender = remissionDetailsAppender;
     }
 
     public boolean canHandle(
@@ -53,14 +52,14 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         setFeeRemissionTypeDetails(asylumCase);
 
-        asylumCase.write(PREVIOUS_REMISSION_DETAILS, getPreviousRemissions());
+        Optional<List<IdValue<RemissionDetails>>> previousRemissionDetailsOpt =
+                asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
+        log.info("GETTING REMISSIONS: " + previousRemissionDetailsOpt.get());
+        asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetailsOpt.get());
         clearPreviousRemissionCaseFields(asylumCase);
 
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
@@ -110,11 +109,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
             }
         }
-    }
-
-    private List<IdValue<RemissionDetails>> getPreviousRemissions() {
-
-        return remissionDetailsAppender.getRemissions();
     }
 
     private void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
@@ -197,7 +191,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             asylumCase.clear(AMOUNT_LEFT_TO_PAY);
             asylumCase.clear(REMISSION_DECISION_REASON);
             asylumCase.clear(REMISSION_TYPE);
-            remissionDetailsAppender.setRemissions(null);
+
+            asylumCase.clear(TEMP_PREVIOUS_REMISSION_DETAILS);
         }
     }
 

@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -41,17 +44,19 @@ class RequestFeeRemissionPreparerTest {
     @Mock private AsylumCase asylumCase;
 
     @Mock private FeatureToggler featureToggler;
-    private RemissionDetailsAppender remissionDetailsAppender;
 
     @Mock private Document document;
     @Mock private IdValue<Document> previousDocuments;
 
     private RequestFeeRemissionPreparer requestFeeRemissionPreparer;
 
+    @Captor
+    private ArgumentCaptor<List<IdValue<RemissionDetails>>> previousRemissionDetails;
+
     @BeforeEach
     void setUp() {
 
-        remissionDetailsAppender = new RemissionDetailsAppender();
+        RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
 
         requestFeeRemissionPreparer = new RequestFeeRemissionPreparer(featureToggler, remissionDetailsAppender);
     }
@@ -206,9 +211,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
@@ -296,9 +301,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
@@ -385,9 +390,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
@@ -474,9 +479,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
@@ -563,9 +568,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
@@ -652,9 +657,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
@@ -743,9 +748,9 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
 
-        remissionDetailsAppender.getRemissions()
+        verify(asylumCase).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), previousRemissionDetails.capture());
+        previousRemissionDetails.getValue()
             .stream()
             .forEach(idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();

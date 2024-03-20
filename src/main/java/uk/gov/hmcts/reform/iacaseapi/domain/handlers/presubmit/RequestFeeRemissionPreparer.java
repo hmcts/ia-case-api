@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 @Component
+@Slf4j
 public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
@@ -55,10 +58,9 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        asylumCase.clear(TEMP_PREVIOUS_REMISSION_DETAILS);
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
@@ -80,8 +82,8 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                if ((remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION && !remissionDecision.isPresent())
-                    || (lateRemissionType.isPresent() && !remissionDecision.isPresent())) {
+                if ((remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION && remissionDecision.isEmpty())
+                    || (lateRemissionType.isPresent() && remissionDecision.isEmpty())) {
 
                     callbackResponse
                         .addError("You cannot request a fee remission at this time because another fee remission request for this appeal "
@@ -101,8 +103,10 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
         return callbackResponse;
     }
 
-    private boolean isPreviousRemissionExists(Optional<RemissionType> remissionType, Optional<RemissionDecision> remissionDecision) {
-
+    private boolean isPreviousRemissionExists(
+            Optional<RemissionType> remissionType,
+            Optional<RemissionDecision> remissionDecision
+    ) {
         return remissionType.isPresent()
                && remissionType.get() != RemissionType.NO_REMISSION
                && remissionDecision.isPresent()
@@ -264,6 +268,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                 }
             });
 
-        remissionDetailsAppender.setRemissions(previousRemissionDetails);
+        log.info("Setting temp previous remission details: " + previousRemissionDetails);
+        asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
     }
 }

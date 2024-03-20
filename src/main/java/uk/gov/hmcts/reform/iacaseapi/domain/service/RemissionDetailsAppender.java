@@ -108,15 +108,4 @@ public class RemissionDetailsAppender {
 
         return allRemissionDetails;
     }
-
-    public void setRemissions(List<IdValue<RemissionDetails>> remissions) {
-        log.info("SETTING REMISSION: " + remissions);
-        log.info("TO: " + this.remissions);
-        this.remissions = remissions;
-    }
-
-    public List<IdValue<RemissionDetails>> getRemissions() {
-        log.info("GETTING REMISSIONS: " + remissions);
-        return remissions;
-    }
 }

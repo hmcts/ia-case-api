@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
+
+import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -41,14 +41,12 @@ class RequestFeeRemissionHandlerTest {
 
     @Mock private FeatureToggler featureToggler;
     @Mock private IdValue<RemissionDetails> previousRemissionDetailsById;
-    @Mock private RemissionDetailsAppender remissionDetailsAppender;
 
     private RequestFeeRemissionHandler requestFeeRemissionHandler;
 
     @BeforeEach
     void setUp() {
-
-        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender);
+        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler);
     }
 
     @Test
@@ -71,14 +69,14 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
-        when(remissionDetailsAppender.getRemissions()).thenReturn(Arrays.asList(previousRemissionDetailsById));
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(singletonList(previousRemissionDetailsById)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
+        verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS));
         verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
 
