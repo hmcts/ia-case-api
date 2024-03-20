@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 @Component
+@Slf4j
 public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private FeatureToggler featureToggler;
@@ -238,6 +241,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
 
+        log.info("---------------feeRemissionType: {}", feeRemissionType);
+        
         switch (feeRemissionType) {
             case "Asylum support":
                 String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
