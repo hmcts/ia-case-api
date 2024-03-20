@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -124,8 +125,11 @@ class UpdateTribunalDecisionHandlerTest {
 
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
-
         when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)).thenReturn(Optional.of(decisionAndReasonsDocument));
+        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class))
+            .thenReturn(Optional.of(summarisedChanges));
 
         LocalDate currentDate = LocalDate.now();
         when(dateProvider.now()).thenReturn(currentDate);
@@ -166,6 +170,10 @@ class UpdateTribunalDecisionHandlerTest {
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
         when(asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)).thenReturn(Optional.of(decisionAndReasonsDocument));
+        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class))
+            .thenReturn(Optional.of(summarisedChanges));
 
         LocalDate currentDate = LocalDate.now();
         when(dateProvider.now()).thenReturn(currentDate);
@@ -425,7 +433,10 @@ class UpdateTribunalDecisionHandlerTest {
 
         when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
-
+        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class))
+            .thenReturn(Optional.of(summarisedChanges));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
@@ -449,8 +460,6 @@ class UpdateTribunalDecisionHandlerTest {
         verify(documentReceiver).receive(correctedDecisionDocument, "", DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF);
         verify(documentsAppender).append(finalDecisionAndReasonsDocuments, Arrays.asList(decisionsAndReasonsDocumentWithMetadata));
 
-
-        verify(asylumCase, times(1)).read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
         verify(asylumCase).write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
     }
 }

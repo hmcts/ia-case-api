@@ -7,12 +7,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -80,12 +78,13 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     .updatedDecisionDate(dateProvider.now().toString())
                     .build();
 
+            Optional<Document> maybeDecisionAndReasonSingleDocument = asylumCase
+                .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
+
             if (asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
                 .map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
-                Document correctedDecisionAndReasonsDoc = asylumCase
-                    .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)
-                    .orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
+                Document correctedDecisionAndReasonsDoc = maybeDecisionAndReasonSingleDocument.orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
 
                 String summariseChanges = asylumCase
                     .read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class)
@@ -94,48 +93,42 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 newDecisionAndReasons.setDocumentAndReasonsDocument(correctedDecisionAndReasonsDoc);
                 newDecisionAndReasons.setDateDocumentAndReasonsDocumentUploaded(dateProvider.now().toString());
                 newDecisionAndReasons.setSummariseChanges(summariseChanges);
-            }
 
-            Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
-                asylumCase.read(CORRECTED_DECISION_AND_REASONS);
-            List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
-                decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
+                Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
+                    asylumCase.read(CORRECTED_DECISION_AND_REASONS);
+                List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
+                    decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
 
-            asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
+                asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
+                asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
-            final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
+                final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
-            final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
+                final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
 
-            final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
+                    DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
+                        correctedDecisionAndReasonsDoc,
+                        "",
+                        DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
+                    );
 
-            YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
-                .orElse(NO);
+                    List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
+                        existingDecisionAndReasonsDocuments,
+                        singletonList(updatedDecisionAndReasonsDocument)
+                    );
 
-            if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
-                if (decisionAndReasonsDoc.isPresent()) {
+                    asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
+
+            } else {
+
+                if (maybeDecisionAndReasonSingleDocument.isPresent()) {
                     asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
                     asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
+
                 }
-            } else if (isDecisionAndReasonDocumentBeingUpdated.equals(YES)) {
-                DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
-                    decisionAndReasonsDoc.get(),
-                    "",
-                    DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
-                );
-
-                List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
-                    existingDecisionAndReasonsDocuments,
-                    singletonList(updatedDecisionAndReasonsDocument)
-                );
-
-                asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
-
             }
-
-            asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
-
-        } else if (isDecisionRule32(asylumCase)) {
+        }
+            else if (isDecisionRule32(asylumCase)) {
 
             List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
 
