@@ -242,7 +242,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
 
         log.info("---------------feeRemissionType: {}", feeRemissionType);
-        
+
         switch (feeRemissionType) {
             case "Asylum support":
                 String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
