@@ -280,6 +280,7 @@ security:
       - "maintainCaseLinks"
       - "createFlag"
       - "updateS94bStatus"
+      - "generateServiceRequest"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
