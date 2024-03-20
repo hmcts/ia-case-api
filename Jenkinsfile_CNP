@@ -11,7 +11,7 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "ia-task-configuration-dlrm"
+def dmnBranch = "ia-task-configuration-remitted"
 def bpmnBranch = "master"
 
 def secrets = [
