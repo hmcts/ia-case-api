@@ -280,7 +280,6 @@ security:
       - "maintainCaseLinks"
       - "createFlag"
       - "updateS94bStatus"
-      - "generateServiceRequest"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -312,6 +311,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "generateServiceRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
