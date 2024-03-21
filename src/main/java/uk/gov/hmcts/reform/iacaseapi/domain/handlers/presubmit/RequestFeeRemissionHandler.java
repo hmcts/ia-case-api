@@ -49,7 +49,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        log.info("------------------111");
+        log.info("---Submitting requestFeeRemission");
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -61,17 +62,18 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         Optional<List<IdValue<RemissionDetails>>> previousRemissionDetailsOpt =
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> previousRemissionDetails = previousRemissionDetailsOpt.orElse(emptyList());
-        log.info("GETTING REMISSIONS: " + previousRemissionDetails);
+        log.info("---Getting temp previous remission details: " + previousRemissionDetails);
         asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         clearPreviousRemissionCaseFields(asylumCase);
 
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
-        log.info("------------------555");
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
+
+        log.info("---Setting fee remission type details");
 
         Optional<RemissionType> optRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
@@ -105,10 +107,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                         break;
                 }
             } else if (optRemissionType.get() == RemissionType.HELP_WITH_FEES) {
-                log.info("------------------444444");
                 asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
             } else if (optRemissionType.get() == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
-                log.info("------------------555555");
                 asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
             }
         }
@@ -116,7 +116,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
     private void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
 
-        log.info("------------------666666");
+        log.info("---Clearing previous remission case fields");
+
         final Optional<RemissionType> remissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
 

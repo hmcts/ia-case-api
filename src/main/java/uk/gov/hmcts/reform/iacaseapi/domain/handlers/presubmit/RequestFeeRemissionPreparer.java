@@ -220,6 +220,8 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
 
     private void appendPreviousRemissionDecisionDetails(List<IdValue<RemissionDetails>> previousRemissionDetails, AsylumCase asylumCase) {
 
+        log.info("---Appending previous remission decision details");
+
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
             .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
         String feeAmount = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
@@ -268,7 +270,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                 }
             });
 
-        log.info("Setting temp previous remission details: " + previousRemissionDetails);
+        log.info("---Setting temp previous remission details: " + previousRemissionDetails);
         asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
     }
 }
