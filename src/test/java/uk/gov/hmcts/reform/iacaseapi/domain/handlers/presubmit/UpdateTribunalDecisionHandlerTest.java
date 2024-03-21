@@ -90,11 +90,8 @@ class UpdateTribunalDecisionHandlerTest {
     private UpdateTribunalDecisionHandler updateTribunalDecisionHandler;
     private final LocalDate now = LocalDate.now();
     private final String summarisedChanges = "Summarise document example";
-    private String decisionsAndReasonDoc = "someTestDoc";
     @Mock
     private DocumentWithMetadata decisionsAndReasonsDocumentWithMetadata;
-    @Mock
-    private Document decisionAndReasonsDocument;
     @Mock
     private List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs;
 
@@ -136,6 +133,8 @@ class UpdateTribunalDecisionHandlerTest {
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
         verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
+        verify(asylumCase).clear(FTPA_APPELLANT_SUBMITTED);
+        verify(asylumCase).clear(FTPA_RESPONDENT_SUBMITTED);
         assertThat(capturedDecision.getUpdatedDecisionDate()).isEqualTo(now.toString());
     }
 
@@ -162,6 +161,8 @@ class UpdateTribunalDecisionHandlerTest {
         verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
         verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, now.toString());
         assertThat(capturedDecision.getUpdatedDecisionDate()).isEqualTo(now.toString());
+        verify(asylumCase).clear(FTPA_APPELLANT_SUBMITTED);
+        verify(asylumCase).clear(FTPA_RESPONDENT_SUBMITTED);
     }
 
     @Test

@@ -76,10 +76,8 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (isFtpaSetAsideAndReheard) {
-            asylumCase.clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
-            asylumCase.clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
-        }
+        asylumCase.clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        asylumCase.clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
 
         final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);
 
