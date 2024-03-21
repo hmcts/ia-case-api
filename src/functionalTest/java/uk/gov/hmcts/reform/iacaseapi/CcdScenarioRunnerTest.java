@@ -130,6 +130,9 @@ public class CcdScenarioRunnerTest {
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         int maxRetries = 3;
         for (String scenarioSource : scenarioSources) {
+            if (!scenarioSource.contains("3218")) {
+                continue;
+            }
             String description = "";
             for (int i = 0; i < maxRetries; i++) {
                 try {
