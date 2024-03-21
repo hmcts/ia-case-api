@@ -60,6 +60,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        log.info("---Clearing temp previous remission details");
         asylumCase.clear(TEMP_PREVIOUS_REMISSION_DETAILS);
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
