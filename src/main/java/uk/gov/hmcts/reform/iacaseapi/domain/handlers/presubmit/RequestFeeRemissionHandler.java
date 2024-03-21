@@ -54,19 +54,16 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        log.info("------------------222");
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         setFeeRemissionTypeDetails(asylumCase);
 
-        log.info("------------------333");
         Optional<List<IdValue<RemissionDetails>>> previousRemissionDetailsOpt =
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> previousRemissionDetails = previousRemissionDetailsOpt.orElse(emptyList());
         log.info("GETTING REMISSIONS: " + previousRemissionDetails);
         asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         clearPreviousRemissionCaseFields(asylumCase);
-        log.info("------------------444");
 
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
@@ -82,36 +79,29 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         if (optRemissionType.isPresent()) {
 
-            log.info("------------------666");
             if (optRemissionType.get() == RemissionType.HO_WAIVER_REMISSION) {
                 switch (remissionClaim) {
                     case "asylumSupport":
-                        log.info("------------------777");
                         asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
                         break;
 
                     case "legalAid":
-                        log.info("------------------888");
                         asylumCase.write(FEE_REMISSION_TYPE, "Legal Aid");
                         break;
 
                     case "section17":
-                        log.info("------------------999");
                         asylumCase.write(FEE_REMISSION_TYPE, "Section 17");
                         break;
 
                     case "section20":
-                        log.info("------------------111111");
                         asylumCase.write(FEE_REMISSION_TYPE, "Section 20");
                         break;
 
                     case "homeOfficeWaiver":
-                        log.info("------------------222222");
                         asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
                         break;
 
                     default:
-                        log.info("------------------333333");
                         break;
                 }
             } else if (optRemissionType.get() == RemissionType.HELP_WITH_FEES) {
