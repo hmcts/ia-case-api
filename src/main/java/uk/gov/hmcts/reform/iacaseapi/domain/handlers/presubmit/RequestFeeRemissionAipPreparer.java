@@ -134,16 +134,48 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private void assignLateRemissionValuesToRemissionValues(AsylumCase asylumCase) {
         Optional<RemissionOption> lateRemissionOption = asylumCase.read(LATE_REMISSION_OPTION, RemissionOption.class);
+
+        if (lateRemissionOption.isPresent()) {
+            RemissionOption remissionOption = lateRemissionOption.get();
+            asylumCase.write(REMISSION_OPTION, remissionOption);
+            if (remissionOption == RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE) {
+                asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+                asylumCase.clear(HELP_WITH_FEES_OPTION);
+                asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
+                asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+            }
+        }
+
         Optional<String> lateAsylumSupportRefNumber = asylumCase.read(LATE_ASYLUM_SUPPORT_REF_NUMBER, String.class);
+
+        if (lateAsylumSupportRefNumber.isPresent()) {
+            asylumCase.write(ASYLUM_SUPPORT_REF_NUMBER, lateAsylumSupportRefNumber.get());
+
+            asylumCase.clear(HELP_WITH_FEES_OPTION);
+            asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
+            asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+        }
+
         Optional<HelpWithFeesOption> lateHelpWithFees = asylumCase.read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
         Optional<String> lateHelpWithFeesRefNumber = asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class);
+
+        if (lateHelpWithFees.isPresent() && lateHelpWithFeesRefNumber.isPresent()) {
+            asylumCase.write(HELP_WITH_FEES_OPTION, lateHelpWithFees.get());
+            asylumCase.write(HELP_WITH_FEES_REF_NUMBER, lateHelpWithFeesRefNumber.get());
+
+            asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+            asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+        }
+
         Optional<List<IdValue<DocumentWithMetadata>>> lateLocalAuthorityLetters = asylumCase.read(LATE_LOCAL_AUTHORITY_LETTERS);
 
-        asylumCase.write(REMISSION_OPTION, lateRemissionOption);
-        asylumCase.write(ASYLUM_SUPPORT_REF_NUMBER, lateAsylumSupportRefNumber);
-        asylumCase.write(HELP_WITH_FEES_OPTION, lateHelpWithFees);
-        asylumCase.write(HELP_WITH_FEES_REF_NUMBER, lateHelpWithFeesRefNumber);
-        asylumCase.write(LOCAL_AUTHORITY_LETTERS, lateLocalAuthorityLetters);
+        if (lateLocalAuthorityLetters.isPresent() && !lateLocalAuthorityLetters.get().isEmpty()) {
+            asylumCase.write(LOCAL_AUTHORITY_LETTERS, lateLocalAuthorityLetters.get());
+
+            asylumCase.clear(HELP_WITH_FEES_OPTION);
+            asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
+            asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+        }
     }
 
     private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
