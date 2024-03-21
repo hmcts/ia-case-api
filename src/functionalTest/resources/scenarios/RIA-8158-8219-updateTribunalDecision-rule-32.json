@@ -1,5 +1,5 @@
 {
-  "description": "RIA-8158 Update Tribunal Decision Rule 32",
+  "description": "RIA-8158-8219 Update Tribunal Decision Rule 32",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -30,6 +30,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "updateTribunalDecisionList": "underRule32",
+        "reasonRehearingRule32": "Set aside and to be reheard under rule 32",
+        "updateTribunalDecisionDateRule32": "{$TODAY}",
         "judgesNamesToExclude": "Judge John Doe",
         "rule32ListingAdditionalIns": "Rule 32 listing instruction example",
         "rule32NoticeDocument": {
@@ -37,7 +39,10 @@
           "document_binary_url": "http://document-store/BBB/binary",
           "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
         },
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "Yes",
+        "stitchingStatus": ""
       }
     }
   }
