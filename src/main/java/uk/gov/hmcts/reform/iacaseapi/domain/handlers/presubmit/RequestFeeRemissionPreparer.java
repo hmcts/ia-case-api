@@ -58,19 +58,24 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("------------------111");
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        log.info("------------------222");
 
         asylumCase.clear(TEMP_PREVIOUS_REMISSION_DETAILS);
+        log.info("------------------333");
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
         final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
+        log.info("------------------444");
         switch (appealType) {
             case DC:
             case RP:
 
+                log.info("------------------555");
                 callbackResponse.addError("You cannot request a fee remission for this appeal");
                 break;
 
@@ -78,6 +83,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             case HU:
             case PA:
 
+                log.info("------------------666");
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
@@ -85,21 +91,27 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                 if ((remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION && remissionDecision.isEmpty())
                     || (lateRemissionType.isPresent() && remissionDecision.isEmpty())) {
 
+                    log.info("------------------777");
                     callbackResponse
                         .addError("You cannot request a fee remission at this time because another fee remission request for this appeal "
                                   + "has yet to be decided.");
                 } else if (isPreviousRemissionExists(remissionType, remissionDecision)
                            || isPreviousRemissionExists(lateRemissionType, remissionDecision)) {
 
+                    log.info("------------------888");
                     appendPreviousRemissionDetails(asylumCase);
+                    log.info("------------------999");
                     asylumCase.clear(REMISSION_TYPE);
+                    log.info("------------------111111");
                 }
                 break;
 
             default:
+                log.info("------------------222222");
                 break;
         }
 
+        log.info("------------------333333");
         return callbackResponse;
     }
 
