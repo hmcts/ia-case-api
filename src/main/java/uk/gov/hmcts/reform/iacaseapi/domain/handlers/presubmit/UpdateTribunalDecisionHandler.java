@@ -7,12 +7,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -80,12 +78,13 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     .updatedDecisionDate(dateProvider.now().toString())
                     .build();
 
+            Optional<Document> maybeDecisionAndReasonSingleDocument = asylumCase
+                .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
+
             if (asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
                 .map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
-                Document correctedDecisionAndReasonsDoc = asylumCase
-                    .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class)
-                    .orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
+                Document correctedDecisionAndReasonsDoc = maybeDecisionAndReasonSingleDocument.orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
 
                 String summariseChanges = asylumCase
                     .read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class)
@@ -94,34 +93,13 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 newDecisionAndReasons.setDocumentAndReasonsDocument(correctedDecisionAndReasonsDoc);
                 newDecisionAndReasons.setDateDocumentAndReasonsDocumentUploaded(dateProvider.now().toString());
                 newDecisionAndReasons.setSummariseChanges(summariseChanges);
-            }
 
-            Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
-                asylumCase.read(CORRECTED_DECISION_AND_REASONS);
-            List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
-                decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
+                final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
-            asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
+                final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
 
-            final Optional<Document> decisionAndReasonsDoc = asylumCase.read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
-
-            YesOrNo isDecisionAndReasonDocumentBeingUpdated = asylumCase.read(AsylumCaseFieldDefinition.UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
-                .orElse(NO);
-
-            if (isDecisionAndReasonDocumentBeingUpdated.equals(NO)) {
-                if (decisionAndReasonsDoc.isPresent()) {
-                    asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
-                    asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
-                }
-            }
-
-            final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
-
-            final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments  = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
-
-            if (decisionAndReasonsDoc.isPresent()) {
                 DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
-                    decisionAndReasonsDoc.get(),
+                    correctedDecisionAndReasonsDoc,
                     "",
                     DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
                 );
@@ -132,8 +110,22 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 );
 
                 asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
+
+            } else {
+
+                if (maybeDecisionAndReasonSingleDocument.isPresent()) {
+                    asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
+                    asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
+
+                }
             }
 
+            Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
+                asylumCase.read(CORRECTED_DECISION_AND_REASONS);
+            List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
+                decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
+
+            asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
         } else if (isDecisionRule32(asylumCase)) {
@@ -142,7 +134,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             final Document rule32Document =
                 asylumCase
-                    .read(RULE_32_NOTICE_DOCUMENT,Document.class)
+                    .read(RULE_32_NOTICE_DOCUMENT, Document.class)
                     .orElseThrow(
                         () -> new IllegalStateException("Rule 32 notice document is not present"));
 
@@ -195,3 +187,4 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         }
     }
 }
+
