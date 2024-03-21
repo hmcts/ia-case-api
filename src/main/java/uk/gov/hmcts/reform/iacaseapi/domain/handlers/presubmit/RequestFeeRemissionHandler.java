@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -48,22 +49,28 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        log.info("------------------111");
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("------------------222");
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         setFeeRemissionTypeDetails(asylumCase);
 
+        log.info("------------------333");
         Optional<List<IdValue<RemissionDetails>>> previousRemissionDetailsOpt =
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
-        log.info("GETTING REMISSIONS: " + previousRemissionDetailsOpt.get());
-        asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetailsOpt.get());
+        List<IdValue<RemissionDetails>> previousRemissionDetails = previousRemissionDetailsOpt.orElse(emptyList());
+        log.info("GETTING REMISSIONS: " + previousRemissionDetails);
+        asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         clearPreviousRemissionCaseFields(asylumCase);
+        log.info("------------------444");
 
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
+        log.info("------------------555");
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -75,37 +82,43 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         if (optRemissionType.isPresent()) {
 
+            log.info("------------------666");
             if (optRemissionType.get() == RemissionType.HO_WAIVER_REMISSION) {
-
                 switch (remissionClaim) {
                     case "asylumSupport":
+                        log.info("------------------777");
                         asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
                         break;
 
                     case "legalAid":
+                        log.info("------------------888");
                         asylumCase.write(FEE_REMISSION_TYPE, "Legal Aid");
                         break;
 
                     case "section17":
+                        log.info("------------------999");
                         asylumCase.write(FEE_REMISSION_TYPE, "Section 17");
                         break;
 
                     case "section20":
+                        log.info("------------------111111");
                         asylumCase.write(FEE_REMISSION_TYPE, "Section 20");
                         break;
 
                     case "homeOfficeWaiver":
+                        log.info("------------------222222");
                         asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
                         break;
 
                     default:
+                        log.info("------------------333333");
                         break;
                 }
             } else if (optRemissionType.get() == RemissionType.HELP_WITH_FEES) {
-
+                log.info("------------------444444");
                 asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
             } else if (optRemissionType.get() == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
-
+                log.info("------------------555555");
                 asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
             }
         }
@@ -113,6 +126,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
     private void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
 
+        log.info("------------------666666");
         final Optional<RemissionType> remissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
 
