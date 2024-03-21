@@ -100,24 +100,23 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
 
                 asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
-                asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
                 final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
                 final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
 
-                    DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
-                        correctedDecisionAndReasonsDoc,
-                        "",
-                        DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
-                    );
+                DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
+                    correctedDecisionAndReasonsDoc,
+                    "",
+                    DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
+                );
 
-                    List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
-                        existingDecisionAndReasonsDocuments,
-                        singletonList(updatedDecisionAndReasonsDocument)
-                    );
+                List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
+                    existingDecisionAndReasonsDocuments,
+                    singletonList(updatedDecisionAndReasonsDocument)
+                );
 
-                    asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
+                asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
 
             } else {
 
@@ -127,14 +126,16 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
                 }
             }
-        }
-            else if (isDecisionRule32(asylumCase)) {
+
+            asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
+
+        } else if (isDecisionRule32(asylumCase)) {
 
             List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
 
             final Document rule32Document =
                 asylumCase
-                    .read(RULE_32_NOTICE_DOCUMENT,Document.class)
+                    .read(RULE_32_NOTICE_DOCUMENT, Document.class)
                     .orElseThrow(
                         () -> new IllegalStateException("Rule 32 notice document is not present"));
 
