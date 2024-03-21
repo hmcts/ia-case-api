@@ -94,13 +94,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 newDecisionAndReasons.setDateDocumentAndReasonsDocumentUploaded(dateProvider.now().toString());
                 newDecisionAndReasons.setSummariseChanges(summariseChanges);
 
-                Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
-                    asylumCase.read(CORRECTED_DECISION_AND_REASONS);
-                List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
-                    decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
-
-                asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
-
                 final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
                 final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
@@ -127,6 +120,12 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 }
             }
 
+            Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
+                asylumCase.read(CORRECTED_DECISION_AND_REASONS);
+            List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
+                decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
+
+            asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
 
         } else if (isDecisionRule32(asylumCase)) {
