@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -279,33 +277,15 @@ class RequestFeeRemissionAipPreparerTest {
 
                 assertEquals(previousRemissionOptionOption.toString(), remissionDetails.getFeeRemissionType());
             });
-
-        verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
-
-        verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
-        verify(asylumCase, times(1)).read(LATE_ASYLUM_SUPPORT_REF_NUMBER, String.class);
-        verify(asylumCase, times(1)).read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-        verify(asylumCase, times(1)).read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class);
-        verify(asylumCase, times(1)).read(LATE_LOCAL_AUTHORITY_LETTERS);
-
-        verify(asylumCase).write(eq(REMISSION_OPTION), any());
-        verify(asylumCase).write(eq(ASYLUM_SUPPORT_REF_NUMBER), any());
-        verify(asylumCase).write(eq(HELP_WITH_FEES_OPTION), any());
-        verify(asylumCase).write(eq(HELP_WITH_FEES_REF_NUMBER), any());
-        verify(asylumCase).write(eq(LOCAL_AUTHORITY_LETTERS), any());
-
-        verify(asylumCase, times(1)).clear(LATE_REMISSION_OPTION);
-        verify(asylumCase, times(1)).clear(LATE_ASYLUM_SUPPORT_REF_NUMBER);
-        verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_OPTION);
-        verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_REF_NUMBER);
-        verify(asylumCase, times(1)).clear(LATE_LOCAL_AUTHORITY_LETTERS);
     }
 
     //If user selected "Ask for a fee remission, but previously we had 'No remission' state". In that case we need to create a new app, by overwriting previous values.
     @ParameterizedTest
-    @MethodSource("previousRemissionDecisionTestData")
-    void should_create_new_request_in_not_decisded_state(AppealType appealType) {
-
+    @MethodSource("previousRemissionTestData")
+    void should_create_new_request_in_not_decisded_state(
+        AppealType appealType,
+        RemissionOption remissionOption
+    ) {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.NO_REMISSION));
 
@@ -316,17 +296,20 @@ class RequestFeeRemissionAipPreparerTest {
         assertNull(remissionDetailsAppender.getRemissions());
 
         verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
+        verify(asylumCase, times(1)).read(JOURNEY_TYPE, JourneyType.class);
+        verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
+        verify(asylumCase, times(1)).read(REMISSION_OPTION, RemissionOption.class);
+        verify(asylumCase, times(1)).read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
+        verify(asylumCase, times(1)).read(REMISSION_DECISION, RemissionDecision.class);
+
+        //assign block
+        verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
         verify(asylumCase, times(1)).read(LATE_ASYLUM_SUPPORT_REF_NUMBER, String.class);
         verify(asylumCase, times(1)).read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
         verify(asylumCase, times(1)).read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class);
         verify(asylumCase, times(1)).read(LATE_LOCAL_AUTHORITY_LETTERS);
 
-        verify(asylumCase).write(eq(REMISSION_OPTION), any());
-        verify(asylumCase).write(eq(ASYLUM_SUPPORT_REF_NUMBER), any());
-        verify(asylumCase).write(eq(HELP_WITH_FEES_OPTION), any());
-        verify(asylumCase).write(eq(HELP_WITH_FEES_REF_NUMBER), any());
-        verify(asylumCase).write(eq(LOCAL_AUTHORITY_LETTERS), any());
-
+        //clear block
         verify(asylumCase, times(1)).clear(LATE_REMISSION_OPTION);
         verify(asylumCase, times(1)).clear(LATE_ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_OPTION);
@@ -345,6 +328,16 @@ class RequestFeeRemissionAipPreparerTest {
             Arguments.of(AppealType.EA, REJECTED, "8000", null, null, "A rejected reason", FEE_WAIVER_FROM_HOME_OFFICE),
             Arguments.of(AppealType.HU, REJECTED, "8000", null, null, "A rejected reason", UNDER_18_GET_SUPPORT),
             Arguments.of(AppealType.PA, REJECTED, "8000", null, null, "A rejected reason", PARENT_GET_SUPPORT)
+        );
+    }
+
+    private static Stream<Arguments> previousRemissionTestData() {
+        return Stream.of(
+            Arguments.of(AppealType.EA, ASYLUM_SUPPORT_FROM_HOME_OFFICE),
+            Arguments.of(AppealType.HU, FEE_WAIVER_FROM_HOME_OFFICE),
+            Arguments.of(AppealType.PA, UNDER_18_GET_SUPPORT),
+            Arguments.of(AppealType.EA, PARENT_GET_SUPPORT),
+            Arguments.of(AppealType.HU, I_WANT_TO_GET_HELP_WITH_FEES)
         );
     }
 
