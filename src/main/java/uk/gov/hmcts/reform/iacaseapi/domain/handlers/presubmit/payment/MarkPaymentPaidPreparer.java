@@ -169,7 +169,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
     private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
         boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
 
-        return (remissionOption.isPresent() && remissionOption.get() != uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION)
+        return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             && isDlrmFeeRemission;
     }
