@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 @Slf4j
 public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private FeatureToggler featureToggler;
-    private RemissionDetailsAppender remissionDetailsAppender;
+    private final FeatureToggler featureToggler;
+    private final RemissionDetailsAppender remissionDetailsAppender;
 
     public RequestFeeRemissionHandler(
         FeatureToggler featureToggler,
