@@ -213,9 +213,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             asylumCase.clear(AMOUNT_LEFT_TO_PAY);
             asylumCase.clear(REMISSION_DECISION_REASON);
             asylumCase.clear(REMISSION_TYPE);
-
-            log.info("---Clearing temp previous remission details");
-            asylumCase.clear(TEMP_PREVIOUS_REMISSION_DETAILS);
         }
     }
 
