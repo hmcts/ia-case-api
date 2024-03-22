@@ -61,10 +61,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         log.info("------------------111");
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
 
         final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
@@ -144,10 +141,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                         break;
                 }
             } else if (optRemissionType.get() == RemissionType.HELP_WITH_FEES) {
-
                 asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
             } else if (optRemissionType.get() == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
-
                 asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
             }
         }
