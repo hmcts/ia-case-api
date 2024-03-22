@@ -65,8 +65,10 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             case EA:
             case HU:
             case PA:
-                asylumCase.read(FEE_REMISSION_TYPE, String.class)
-                        .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
+                if (asylumCase.read(FEE_REMISSION_TYPE, String.class).isEmpty()) {
+                    throw(new IllegalStateException("Previous fee remission type is not present"));
+                }
+
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
