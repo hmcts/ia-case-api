@@ -112,11 +112,9 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
 
             } else {
-
                 if (maybeDecisionAndReasonSingleDocument.isPresent()) {
                     asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
                     asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
-
                 }
             }
 
@@ -127,6 +125,8 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
+            asylumCase.clear(FTPA_APPELLANT_SUBMITTED);
+            asylumCase.clear(FTPA_RESPONDENT_SUBMITTED);
 
         } else if (isDecisionRule32(asylumCase)) {
 
