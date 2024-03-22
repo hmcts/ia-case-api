@@ -757,7 +757,7 @@ ccd:
 
   ccd-definition-store-api:
     java:
-      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:prod-df77194-20240319111502
       imagePullPolicy: Always
       devcpuRequests: 500m
       devmemoryRequests: 512Mi
