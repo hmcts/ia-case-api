@@ -243,8 +243,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         List<IdValue<RemissionDetails>> previousRemissionDetails = null;
 
-        // Existence of 'feeRemissionType' was checked in RequestFeeRemissionPreparer
-        String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class).get();
+        String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class)
+                .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
 
         Optional<List<IdValue<RemissionDetails>>> maybeExistingPreviousRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> existingPreviousRemissionDetails = maybeExistingPreviousRemissionDetails.orElse(emptyList());
