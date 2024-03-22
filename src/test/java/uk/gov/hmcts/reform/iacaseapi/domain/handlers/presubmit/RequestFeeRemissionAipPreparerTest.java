@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
@@ -39,7 +41,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.PARE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.UNDER_18_GET_SUPPORT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -190,9 +192,41 @@ class RequestFeeRemissionAipPreparerTest {
         String remissionDecisionReason,
         RemissionOption previousRemissionOptionOption
     ) {
+        RemissionDetails remissionDetails = null;
+
+        switch (previousRemissionOptionOption) {
+            case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
+                when(asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class)).thenReturn(Optional.of("123"));
+                remissionDetails = new RemissionDetails(previousRemissionOptionOption.toString(), "123");
+                break;
+
+            case FEE_WAIVER_FROM_HOME_OFFICE:
+                remissionDetails = new RemissionDetails(previousRemissionOptionOption.toString());
+                break;
+
+            case UNDER_18_GET_SUPPORT:
+            case PARENT_GET_SUPPORT:
+                when(asylumCase.read(LOCAL_AUTHORITY_LETTERS)).thenReturn(Optional.of(List.of(previousDocuments)));
+                List<IdValue<DocumentWithMetadata>> localAuthorityLetterMock = mock(List.class);
+                remissionDetails = new RemissionDetails(previousRemissionOptionOption.toString(), localAuthorityLetterMock);
+                break;
+
+            case I_WANT_TO_GET_HELP_WITH_FEES:
+                when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)).thenReturn(Optional.of(WANT_TO_APPLY));
+                when(asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class)).thenReturn(Optional.of("HWF123"));
+                remissionDetails = new RemissionDetails(previousRemissionOptionOption.toString(), WANT_TO_APPLY.toString(), "HWF123");
+                break;
+
+            default:
+                break;
+        }
+
+        List<IdValue<RemissionDetails>> previousRemissionDetails = new ArrayList<>();
+        previousRemissionDetails.add(new IdValue<>("id1", remissionDetails));
+
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOptionOption));
-        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissionDetails));
 
         switch (remissionDecision) {
             case APPROVED:
@@ -220,63 +254,41 @@ class RequestFeeRemissionAipPreparerTest {
                 break;
         }
 
-        switch (previousRemissionOptionOption) {
-            case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
-                when(asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class)).thenReturn(Optional.of("123"));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipPreparer.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(callbackResponse.getData(), asylumCase);
+
+        switch (remissionDecision) {
+            case APPROVED:
+                previousRemissionDetails.get(0).getValue().getAmountRemitted();
+
+                assertEquals("Approved", remissionDetails.getRemissionDecision());
+                assertEquals(feeAmount, remissionDetails.getFeeAmount());
+                assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
+                assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
+                assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
+
                 break;
 
-            case UNDER_18_GET_SUPPORT:
-            case PARENT_GET_SUPPORT:
-                when(asylumCase.read(LOCAL_AUTHORITY_LETTERS)).thenReturn(Optional.of(List.of(previousDocuments)));
+            case PARTIALLY_APPROVED:
+                assertEquals("Partially approved", remissionDetails.getRemissionDecision());
+                assertEquals(feeAmount, remissionDetails.getFeeAmount());
+                assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
+                assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
+                assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
+
                 break;
 
-            case I_WANT_TO_GET_HELP_WITH_FEES:
-                when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)).thenReturn(Optional.of(HelpWithFeesOption.WANT_TO_APPLY));
-                when(asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class)).thenReturn(Optional.of("HWF123"));
+            case REJECTED:
+                assertEquals("Rejected", remissionDetails.getRemissionDecision());
+                assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
+
                 break;
 
             default:
                 break;
         }
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipPreparer.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, remissionDetailsAppender.getRemissions().size());
-
-        remissionDetailsAppender.getRemissions()
-            .forEach(idValue -> {
-                RemissionDetails remissionDetails = idValue.getValue();
-
-                switch (remissionDecision) {
-                    case APPROVED:
-                        assertEquals("Approved", remissionDetails.getRemissionDecision());
-                        assertEquals(feeAmount, remissionDetails.getFeeAmount());
-                        assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
-                        assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
-                        assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                        break;
-
-                    case PARTIALLY_APPROVED:
-                        assertEquals("Partially approved", remissionDetails.getRemissionDecision());
-                        assertEquals(feeAmount, remissionDetails.getFeeAmount());
-                        assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
-                        assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
-                        assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                        break;
-
-                    case REJECTED:
-                        assertEquals("Rejected", remissionDetails.getRemissionDecision());
-                        assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
-                        break;
-
-                    default:
-                        break;
-                }
-
-                assertEquals(previousRemissionOptionOption.toString(), remissionDetails.getFeeRemissionType());
-            });
     }
 
     //If user selected "Ask for a fee remission, but previously we had 'No remission' state". In that case we need to create a new app, by overwriting previous values.
