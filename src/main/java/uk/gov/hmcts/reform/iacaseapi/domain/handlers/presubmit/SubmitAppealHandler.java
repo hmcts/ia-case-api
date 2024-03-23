@@ -83,7 +83,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                 case EA:
                 case HU:
                 case PA:
-                    appendPreviousRemissionDetails(asylumCase);
+                    appendTempPreviousRemissionDetails(asylumCase);
                     break;
 
                 default:
@@ -94,7 +94,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
+    private void appendTempPreviousRemissionDetails(AsylumCase asylumCase) {
         List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = null;
 
         String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class).get();
