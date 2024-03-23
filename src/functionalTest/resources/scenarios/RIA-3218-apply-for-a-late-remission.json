@@ -13,10 +13,11 @@
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
-          "feeRemissionType": "Asylum support",
+          "feeRemissionType": "Legal Aid",
           "lateRemissionType": "hoWaiverRemission",
           "remissionClaim": "legalAid",
-          "legalAidAccountNumber": "1A234B"
+          "legalAidAccountNumber": "1A234B",
+          "remissionDecision": "rejected"
         }
       }
     }
