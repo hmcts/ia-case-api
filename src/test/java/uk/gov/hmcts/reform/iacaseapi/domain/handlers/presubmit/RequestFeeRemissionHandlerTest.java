@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -315,12 +316,20 @@ class RequestFeeRemissionHandlerTest {
         }
     }
 
-    private void verifyTestResults(RemissionType remissionType, String remissionClaim, PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
+    private void verifyTestResults(
+            RemissionType remissionType,
+            String remissionClaim,
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse
+    ) {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(2)).write(PREVIOUS_REMISSION_DETAILS, asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS));
-        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
+        verify(asylumCase, times(2))
+                .write(PREVIOUS_REMISSION_DETAILS, asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS));
+        verify(asylumCase, times(1))
+                .write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
+        verify(asylumCase, times(1))
+                .write(ArgumentMatchers.eq(TEMP_PREVIOUS_REMISSION_DETAILS), anyList());
 
         if (remissionType == HO_WAIVER_REMISSION) {
             switch (remissionClaim) {
