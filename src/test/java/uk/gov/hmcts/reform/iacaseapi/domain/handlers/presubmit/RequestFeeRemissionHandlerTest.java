@@ -27,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -85,7 +86,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of("123456"));
         when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT)).thenReturn(Optional.of(document));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -116,7 +118,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Legal Aid"));
         when(asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)).thenReturn(Optional.of("123456"));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -147,7 +150,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 17"));
         when(asylumCase.read(SECTION17_DOCUMENT)).thenReturn(Optional.of(document));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -178,7 +182,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 20"));
         when(asylumCase.read(SECTION20_DOCUMENT)).thenReturn(Optional.of(document));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -209,7 +214,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Home Office fee waiver"));
         when(asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT)).thenReturn(Optional.of(document));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -240,7 +246,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Help with Fees"));
         when(asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("HW-A1B-123"));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -272,7 +279,8 @@ class RequestFeeRemissionHandlerTest {
         when(asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)).thenReturn(Optional.of("EC"));
         when(asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(singletonList(previousDocuments)));
 
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -328,7 +336,7 @@ class RequestFeeRemissionHandlerTest {
                 .write(PREVIOUS_REMISSION_DETAILS, asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS));
         verify(asylumCase, times(1))
                 .write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
-        verify(asylumCase, times(1))
+        verify(asylumCase, times(2))
                 .write(ArgumentMatchers.eq(TEMP_PREVIOUS_REMISSION_DETAILS), anyList());
 
         if (remissionType == HO_WAIVER_REMISSION) {

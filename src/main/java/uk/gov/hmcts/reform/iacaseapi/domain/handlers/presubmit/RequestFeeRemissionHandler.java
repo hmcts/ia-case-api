@@ -69,24 +69,28 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
+        Optional<List<IdValue<RemissionDetails>>> tempPreviousRemissionDetailsOpt =
+                asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
+        List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = tempPreviousRemissionDetailsOpt.orElse(emptyList());
+        log.info("---Getting temp previous remission details: " + tempPreviousRemissionDetails);
+
         switch (appealType) {
             case EA:
             case HU:
             case PA:
-                appendPreviousRemissionDetails(asylumCase);
+                appendTempPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
+                asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
+
+                appendTempPreviousRemissionDetails(asylumCase);
                 break;
 
             default:
+                asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
                 break;
         }
 
         setFeeRemissionTypeDetails(asylumCase);
 
-        Optional<List<IdValue<RemissionDetails>>> previousRemissionDetailsOpt =
-                asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
-        List<IdValue<RemissionDetails>> previousRemissionDetails = previousRemissionDetailsOpt.orElse(emptyList());
-        log.info("---Getting temp previous remission details: " + previousRemissionDetails);
-        asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         clearPreviousRemissionCaseFields(asylumCase);
 
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
@@ -246,7 +250,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
+    private void appendTempPreviousRemissionDetails(AsylumCase asylumCase) {
         List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = null;
 
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
@@ -257,7 +261,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 "---Setting previous remission details from temp previous remission details: {}",
                 tempPreviousRemissionDetails
         );
-        asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
 
         String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class)
                 .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
@@ -369,16 +372,13 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 break;
         }
 
-        if (tempPreviousRemissionDetails != null) {
-            appendPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
-        }
+        asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
     }
 
-    private void appendPreviousRemissionDecisionDetails(
+    private void appendTempPreviousRemissionDecisionDetails(
             List<IdValue<RemissionDetails>> tempPreviousRemissionDetails,
             AsylumCase asylumCase
     ) {
-
         log.info("---Appending previous remission decision details");
 
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
