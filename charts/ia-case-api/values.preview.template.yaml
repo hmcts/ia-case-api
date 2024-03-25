@@ -342,7 +342,7 @@ ia-bail-case-api:
   java:
     imagePullPolicy: Always
     #image: hmctspublic.azurecr.io/ia/bail-case-api:latest
-    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-485
+    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-479
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
