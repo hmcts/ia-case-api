@@ -1,0 +1,44 @@
+{
+  "description": "RIA-369 Determines whether appeal is submitted out of time",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "feeRemissionType": "Home Office fee waiver",
+          "homeWaiverDocument": {
+            "documentUrl": "http://url",
+            "documentBinaryUrl": "http://url/binary",
+            "documentFilename": "file1.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "tempPreviousRemissionDetails": [
+          {
+            "feeRemissionType": "Home Office fee waiver",
+            "homeWaiverDocument": {
+              "documentUrl": "http://url",
+              "documentBinaryUrl": "http://url/binary",
+              "documentFilename": "file1.pdf"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
