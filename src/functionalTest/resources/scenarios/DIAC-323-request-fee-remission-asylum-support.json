@@ -1,0 +1,85 @@
+{
+  "description": "RIA-3218 Legal rep apply for a late remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "requestFeeRemission",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "refusalOfHumanRights",
+          "isRemissionsEnabled": "Yes",
+          "feeRemissionType": "Asylum support",
+          "asylumSupportReference": "123/456",
+          "remissionClaim": "asylumSupport",
+          "asylumSupportDocument": {
+            "documentUrl": "http://url",
+            "documentBinaryUrl": "http://url/binary",
+            "documentFilename": "file1.pdf"
+          },
+          "remissionDecision": "rejected",
+          "tempPreviousRemissionDetails": [
+            {
+              "feeRemissionType": "Legal Aid",
+              "feeAmount": "14000",
+              "legalAidAccountNumber": "123/456",
+              "remissionDecision": "Rejected",
+              "remissionDecisionReason": "Reason"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "appealType": "refusalOfHumanRights",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "feeRemissionType": "Asylum support",
+        "asylumSupportReference": "123/456",
+        "remissionClaim": "asylumSupport",
+        "asylumSupportDocument": {
+          "documentUrl": "http://url",
+          "documentBinaryUrl": "http://url/binary",
+          "documentFilename": "file1.pdf"
+        },
+        "previousRemissionDetails": [
+          {
+            "feeRemissionType": "Legal Aid",
+            "feeAmount": "14000",
+            "legalAidAccountNumber": "123/456",
+            "remissionDecision": "Rejected",
+            "remissionDecisionReason": "Some reason"
+          }
+        ],
+        "tempPreviousRemissionDetails": [
+          {
+            "feeRemissionType": "Asylum support",
+            "asylumSupportReference": "123/456",
+            "asylumSupportDocument": {
+              "documentUrl": "http://url",
+              "documentBinaryUrl": "http://url/binary",
+              "documentFilename": "file1.pdf"
+            }
+          },
+          {
+            "feeRemissionType": "Legal Aid",
+            "feeAmount": "14000",
+            "legalAidAccountNumber": "123/456",
+            "remissionDecision": "Rejected",
+            "remissionDecisionReason": "Reason"
+          }
+        ]
+      }
+    }
+  }
+}
