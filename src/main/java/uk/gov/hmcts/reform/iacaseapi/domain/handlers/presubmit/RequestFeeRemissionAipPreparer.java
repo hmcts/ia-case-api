@@ -106,10 +106,10 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                     appendPreviousRemissionDetails(asylumCase);
                     asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
                     assignLateRemissionValuesToRemissionValues(asylumCase);
-                    clearPreviousLateRemissionFields(asylumCase);
+                    clearPreviousAndLateRemissionFields(asylumCase);
                 } else {
                     assignLateRemissionValuesToRemissionValues(asylumCase);
-                    clearPreviousLateRemissionFields(asylumCase);
+                    clearPreviousAndLateRemissionFields(asylumCase);
                 }
                 break;
 
@@ -272,12 +272,18 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         remissionDetailsAppender.setRemissions(previousRemissionDetails);
     }
 
-    private void clearPreviousLateRemissionFields(AsylumCase asylumCase) {
+    private void clearPreviousAndLateRemissionFields(AsylumCase asylumCase) {
         asylumCase.clear(LATE_REMISSION_OPTION);
         asylumCase.clear(LATE_ASYLUM_SUPPORT_REF_NUMBER);
         asylumCase.clear(LATE_HELP_WITH_FEES_OPTION);
         asylumCase.clear(LATE_HELP_WITH_FEES_REF_NUMBER);
         asylumCase.clear(LATE_LOCAL_AUTHORITY_LETTERS);
+
+        asylumCase.clear(REMISSION_DECISION);
+        asylumCase.clear(AMOUNT_REMITTED);
+        asylumCase.clear(AMOUNT_LEFT_TO_PAY);
+        asylumCase.clear(REMISSION_DECISION_REASON);
+        remissionDetailsAppender.setRemissions(null);
     }
 
 }
