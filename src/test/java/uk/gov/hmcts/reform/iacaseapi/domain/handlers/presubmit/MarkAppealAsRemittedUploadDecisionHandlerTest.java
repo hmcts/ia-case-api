@@ -99,14 +99,14 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     @Mock
     private List<IdValue<RemittalDocument>> remittalDocuments;
     @Mock
-    private RemittalDocumentsAppender documentsAppender;
+    private RemittalDocumentsAppender remittalDocumentsAppender;
 
     @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
 
-        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider, documentsAppender);
+        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider, remittalDocumentsAppender);
         when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -280,7 +280,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         when(asylumCase.read(REMITTAL_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)).thenReturn(Optional.of(remittalDocument));
         when(asylumCase.read(UPLOAD_OTHER_REMITTAL_DOCS)).thenReturn(Optional.of(allOtherRemittalDocs));
-        when(documentsAppender.prepend(anyList(), any())).thenReturn(remittalDocuments);
+        when(remittalDocumentsAppender.prepend(anyList(), any())).thenReturn(remittalDocuments);
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
             .thenReturn(Optional.of(remittalDocument));
         when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))

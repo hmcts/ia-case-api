@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-// omplex object in CCD to represent the collection of the
+// Complex object in CCD to represent the collection of the
 // Remittal Decision Document & Other remittal documents.
 public class RemittalDocument {
 
