@@ -1,5 +1,5 @@
 {
-  "description": "RIA-369 Determines whether appeal is submitted out of time",
+  "description": "DIAC-323 Submit appeal with section 17 fee remission",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",

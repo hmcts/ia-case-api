@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3218 Legal rep apply for a late remission",
+  "description": "DIAC-323 request asylum support fee remission",
   "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

@@ -130,7 +130,7 @@ public class CcdScenarioRunnerTest {
         log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
         int maxRetries = 3;
         for (String scenarioSource : scenarioSources) {
-            if (!scenarioSource.contains("DIAC-323")) {
+            if (!scenarioSource.contains("323")) {
                 continue;
             }
             String description = "";
