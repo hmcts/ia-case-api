@@ -10,6 +10,8 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
           "feeRemissionType": "Asylum support",
           "asylumSupportReference": "123/456",
           "asylumSupportDocument": {

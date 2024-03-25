@@ -65,11 +65,11 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        log.info("---Submitting appeal");
-
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        log.info("---Submitting appeal");
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
