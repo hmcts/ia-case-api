@@ -78,7 +78,9 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
 
         Optional<String> feeRemissionTypeOpt = asylumCase.read(FEE_REMISSION_TYPE, String.class);
 
+        log.info("---SubmitAppeal feeRemissionTypeOpt: " + feeRemissionTypeOpt);
         if (feeRemissionTypeOpt.isPresent()) {
+            log.info("---SubmitAppeal appealType: " + appealType);
             switch (appealType) {
                 case EA:
                 case HU:
@@ -99,6 +101,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
 
         String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class).get();
 
+        log.info("---SubmitAppeal feeRemissionType: " + feeRemissionType);
         switch (feeRemissionType) {
             case "Asylum support":
                 String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
@@ -206,8 +209,8 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                 break;
         }
 
+        log.info("---Setting temp previous remission details: " + tempPreviousRemissionDetails);
         if (tempPreviousRemissionDetails != null) {
-            log.info("---Setting temp previous remission details: " + tempPreviousRemissionDetails);
             asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
         }
     }
