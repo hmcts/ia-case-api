@@ -75,18 +75,12 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         log.info("---Getting temp previous remission details: " + tempPreviousRemissionDetails);
 
         switch (appealType) {
-            case EA:
-            case HU:
-            case PA:
+            case EA, HU, PA -> {
                 appendTempPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
                 asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
-
                 appendTempPreviousRemissionDetails(asylumCase);
-                break;
-
-            default:
-                asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
-                break;
+            }
+            default -> asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
         }
 
         setFeeRemissionTypeDetails(asylumCase);
@@ -257,11 +251,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(emptyList());
         log.info("---Getting temp previous remission details: {}", existingRemissionDetails);
 
-        log.info(
-                "---Setting previous remission details from temp previous remission details: {}",
-                tempPreviousRemissionDetails
-        );
-
         String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class)
                 .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
 
@@ -386,7 +375,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         String feeAmount = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
 
         tempPreviousRemissionDetails
-                .stream()
                 .forEach(idValue -> {
                     RemissionDetails remissionDetails = idValue.getValue();
 
