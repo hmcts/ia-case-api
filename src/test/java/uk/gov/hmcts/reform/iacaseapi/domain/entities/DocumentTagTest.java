@@ -35,11 +35,12 @@ class DocumentTagTest {
         assertEquals("clarifyingQuestions", DocumentTag.CLARIFYING_QUESTIONS.toString());
         assertEquals("endAppealAutomatically", DocumentTag.END_APPEAL_AUTOMATICALLY.toString());
         assertEquals("ftpaSetAside", DocumentTag.FTPA_SET_ASIDE.toString());
+        assertEquals("remittalDecision", DocumentTag.REMITTAL_DECISION.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(28, DocumentTag.values().length);
+        assertEquals(29, DocumentTag.values().length);
     }
 }
