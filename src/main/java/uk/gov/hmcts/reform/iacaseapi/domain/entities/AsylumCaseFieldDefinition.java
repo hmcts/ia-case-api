@@ -1684,7 +1684,13 @@ public enum AsylumCaseFieldDefinition {
   
     UPLOAD_REMITTAL_DECISION_DOC(
         "uploadRemittalDecisionDoc", new TypeReference<Document>(){}),
-  
+
+    UPLOAD_OTHER_REMITTAL_DOCS(
+        "uploadOtherRemittalDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    REMITTAL_DOCUMENTS(
+        "remittalDocuments", new TypeReference<List<IdValue<RemittalDocument>>>(){}),
+
     COURT_REFERENCE_NUMBER(
         "courtReferenceNumber", new TypeReference<String>(){}), 
 

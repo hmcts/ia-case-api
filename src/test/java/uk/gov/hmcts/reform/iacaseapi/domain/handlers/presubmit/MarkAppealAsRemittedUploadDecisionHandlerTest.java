@@ -16,13 +16,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.COURT_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JUDGES_NAMES_TO_EXCLUDE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARING_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTAL_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTED_ADDITIONAL_INSTRUCTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_REMITTAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_OTHER_REMITTAL_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_REMITTAL_DECISION_DOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_REMITTED;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -39,6 +42,8 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemittalDocument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfRemittal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -48,6 +53,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RemittalDocumentsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -81,13 +87,26 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
             new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
                     "remittalDecision.pdf");
+    private final Document document1 =
+        new Document("http://localhost/documents/123456",
+            "http://localhost/documents/123456",
+            "other documents.pdf");
+
+    private DocumentWithDescription remittalDoc1 = new DocumentWithDescription(document1, "description1");
+
+    private DocumentWithDescription remittalDoc2 = new DocumentWithDescription(document1, "description2");
+
+    @Mock
+    private List<IdValue<RemittalDocument>> remittalDocuments;
+    @Mock
+    private RemittalDocumentsAppender documentsAppender;
 
     @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
 
-        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider);
+        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider, documentsAppender);
         when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -248,5 +267,40 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void should_add_documents_in_collection_and_casefield() {
+        List<IdValue<DocumentWithDescription>> allOtherRemittalDocs =
+            Arrays.asList(
+                new IdValue<>("1", remittalDoc1),
+                new IdValue<>("2", remittalDoc2)
+            );
+        //no documents available in the case field initially
+        when(asylumCase.read(REMITTAL_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)).thenReturn(Optional.of(remittalDocument));
+        when(asylumCase.read(UPLOAD_OTHER_REMITTAL_DOCS)).thenReturn(Optional.of(allOtherRemittalDocs));
+        when(documentsAppender.prepend(anyList(), any())).thenReturn(remittalDocuments);
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
+            .thenReturn(Optional.of(remittalDocument));
+        when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(courtRefNumber));
+        when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class))
+            .thenReturn(Optional.of(SourceOfRemittal.UPPER_TRIBUNAL));
+        when(dateProvider.now()).thenReturn(now);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(asylumCase, times(1))
+            .read(UPLOAD_REMITTAL_DECISION_DOC, Document.class);
+        verify(asylumCase, times(1))
+            .write(UPLOAD_REMITTAL_DECISION_DOC,
+                new Document("http://localhost/documents/123456", "http://localhost/documents/123456","CA-000001-Decision-to-remit.pdf"));
+        verify(asylumCase, times(1)).write(REHEARING_REASON, "Remitted");
+        verify(asylumCase, times(1)).write(APPEAL_REMITTED_DATE, now.toString());
+        verify(asylumCase, times(1)).write(REMITTAL_DOCUMENTS, remittalDocuments);
     }
 }
