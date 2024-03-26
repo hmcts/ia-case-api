@@ -14,7 +14,7 @@
           "appealType": "protection",
           "isRemissionsEnabled": "Yes",
           "feeRemissionType": "Home Office fee waiver",
-          "homeWaiverDocument": {
+          "homeOfficeWaiverDocument": {
             "document_url": "http://url",
             "document_binary_url": "http://url/binary",
             "document_filename": "file1.pdf"
@@ -36,7 +36,7 @@
           {
             "value": {
               "feeRemissionType": "Home Office fee waiver",
-              "homeWaiverDocument": {
+              "homeOfficeWaiverDocument": {
                 "document_url": "http://url",
                 "document_binary_url": "http://url/binary",
                 "document_filename": "file1.pdf"

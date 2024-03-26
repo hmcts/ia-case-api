@@ -163,14 +163,14 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                 break;
 
             case "Home Office fee waiver":
-                Optional<Document> homeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
+                Optional<Document> homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
 
-                if (homeWaiverDocument.isPresent()) {
+                if (homeOfficeWaiverDocument.isPresent()) {
                     tempPreviousRemissionDetails =
                             remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
                                     emptyList(),
                                     feeRemissionType,
-                                    homeWaiverDocument.get()
+                                    homeOfficeWaiverDocument.get()
                             );
                 }
 

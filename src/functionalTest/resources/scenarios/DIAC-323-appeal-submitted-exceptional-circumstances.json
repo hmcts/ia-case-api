@@ -13,7 +13,7 @@
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "appealType": "protection",
           "isRemissionsEnabled": "Yes",
-          "feeRemissionType": "exceptionalCircumstances",
+          "feeRemissionType": "Exceptional circumstances",
           "exceptionalCircumstancesDocuments": [
             {
               "document_url": "http://url",
@@ -37,7 +37,7 @@
         "tempPreviousRemissionDetails": [
           {
             "value": {
-              "feeRemissionType": "exceptionalCircumstances",
+              "feeRemissionType": "Exceptional circumstances",
               "exceptionalCircumstancesDocuments": [
                 {
                   "value": {
