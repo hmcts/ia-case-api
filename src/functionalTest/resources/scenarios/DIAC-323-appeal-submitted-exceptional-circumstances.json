@@ -14,7 +14,8 @@
           "appealType": "protection",
           "isRemissionsEnabled": "Yes",
           "feeRemissionType": "Exceptional circumstances",
-          "exceptionalCircumstancesDocuments": [
+          "exceptionalCircumstances": "Exceptional circumstances details",
+          "remissionEcEvidenceDocuments": [
             {
               "document_url": "http://url",
               "document_binary_url": "http://url/binary",
@@ -38,7 +39,8 @@
           {
             "value": {
               "feeRemissionType": "Exceptional circumstances",
-              "exceptionalCircumstancesDocuments": [
+              "exceptionalCircumstances": "Exceptional circumstances details",
+              "remissionEcEvidenceDocuments": [
                 {
                   "value": {
                     "document_url": "http://url",
