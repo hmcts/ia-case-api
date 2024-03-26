@@ -58,9 +58,6 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
                 .getCaseDetails()
                 .getCaseData();
 
-        if (asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)) {
-            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-
             Document mayBeDecisionDocument = asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)
                 .orElseThrow(() -> new IllegalStateException("uploadRemittalDecisionDoc is not present"));
 
@@ -70,9 +67,10 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
             asylumCase.write(UPLOAD_REMITTAL_DECISION_DOC, decisionDocumnent);
             asylumCase.write(APPEAL_REMITTED_DATE, dateProvider.now().toString());
             asylumCase.write(REHEARING_REASON, "Remitted");
+            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
             addRemittedCaseNote(asylumCase);
 
-        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

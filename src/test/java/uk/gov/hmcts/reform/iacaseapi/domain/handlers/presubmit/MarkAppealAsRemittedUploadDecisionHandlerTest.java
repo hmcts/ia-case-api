@@ -97,8 +97,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class))
             .thenReturn(Optional.of(SourceOfRemittal.UPPER_TRIBUNAL));
         when(dateProvider.now()).thenReturn(now);
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
+
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -130,8 +129,6 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         when(dateProvider.now()).thenReturn(now);
         when(asylumCase.read(CASE_NOTES)).thenReturn(Optional.of(existingCaseNotes));
         when(caseNoteAppender.append(any(CaseNote.class), anyList())).thenReturn(allAppendedCaseNotes);
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -161,8 +158,6 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     void should_throw_on_missing_remittal_decision() {
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
             .thenReturn(Optional.empty());
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
 
         Assertions
             .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -174,8 +169,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     void should_throw_on_missing_court_reference_number() {
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
             .thenReturn(Optional.of(remittalDocument));
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
+
 
         Assertions
             .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -190,8 +184,6 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(courtRefNumber));
         when(dateProvider.now()).thenReturn(now);
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
 
         Assertions
             .assertThatThrownBy(() -> markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -256,25 +248,8 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     }
 
     @Test
-    void when_Reheard_Appeal_Missing_No_Flag_Set() {
+     void  when_All_Information_Present_Set_Flag() {
 
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)).thenReturn(Optional.of(remittalDocument));
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(courtRefNumber));
-        when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class)).thenReturn(Optional.of(SourceOfRemittal.COURT_OF_APPEAL));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertNotNull(callbackResponse);
-
-        verify(asylumCase, never()).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-
-    }
-
-    @Test
-     void  when_Reheard_Appeal_present_Set_Flag() {
-
-        when(asylumCase.read(IS_REHEARD_APPEAL_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)).thenReturn(Optional.of(remittalDocument));
         when(dateProvider.now()).thenReturn(LocalDate.now());
         when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(courtRefNumber));
