@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
@@ -58,17 +57,17 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
                 .getCaseDetails()
                 .getCaseData();
 
-            Document mayBeDecisionDocument = asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)
-                .orElseThrow(() -> new IllegalStateException("uploadRemittalDecisionDoc is not present"));
+        Document mayBeDecisionDocument = asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)
+            .orElseThrow(() -> new IllegalStateException("uploadRemittalDecisionDoc is not present"));
 
-            Document decisionDocumnent = new Document(mayBeDecisionDocument.getDocumentUrl(),
-                mayBeDecisionDocument.getDocumentBinaryUrl(), getRemittalDecisionFilename(asylumCase));
+        Document decisionDocumnent = new Document(mayBeDecisionDocument.getDocumentUrl(),
+            mayBeDecisionDocument.getDocumentBinaryUrl(), getRemittalDecisionFilename(asylumCase));
 
-            asylumCase.write(UPLOAD_REMITTAL_DECISION_DOC, decisionDocumnent);
-            asylumCase.write(APPEAL_REMITTED_DATE, dateProvider.now().toString());
-            asylumCase.write(REHEARING_REASON, "Remitted");
-            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-            addRemittedCaseNote(asylumCase);
+        asylumCase.write(UPLOAD_REMITTAL_DECISION_DOC, decisionDocumnent);
+        asylumCase.write(APPEAL_REMITTED_DATE, dateProvider.now().toString());
+        asylumCase.write(REHEARING_REASON, "Remitted");
+        asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+        addRemittedCaseNote(asylumCase);
 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
