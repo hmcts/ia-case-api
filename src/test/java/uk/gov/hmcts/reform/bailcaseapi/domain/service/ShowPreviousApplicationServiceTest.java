@@ -344,24 +344,12 @@ public class ShowPreviousApplicationServiceTest {
                 + "*Date due:* 1 Nov 2020<br>*Date sent:* 1 Nov 2019<br>|"));
     }
 
-    @Test
-    void check_case_notes_label() {
-        String label = showPreviousApplicationService.getCaseNoteLabel(bailCase);
-        assertTrue(label.contains("|Case notes 1<br>*Subject:* subject<br>*Case note:* description<br>*Document:*"
-                                      + " <a href=\"/documents/document1BinaryUrl\">document1FileName</a><br>"
-                                      + "*Added by:* admin-user<br>*Date added:* 23 Jun 2022<br>"
-                                      + "<br>Case notes 2<br>*Subject:* subject2<br>*Case note:* description2<br>"
-                                      + "*Document:* N/A<br>*Added by:* admin-user2<br>*Date added:* 22 Jun 2022<br>"));
-    }
-
-
     //Test to make sure methods cope with absence of data
     @Test
     void check_labels_if_no_data_present() {
         reset(bailCase);
         assertNull(showPreviousApplicationService.getDocumentsLabel(bailCase));
         assertNull(showPreviousApplicationService.getDirectionLabel(bailCase));
-        assertNull(showPreviousApplicationService.getCaseNoteLabel(bailCase));
         String label = showPreviousApplicationService.getHearingReqDetails(bailCase);
         assertTrue(label.contains("|Interpreter|No|\n|Disability|No|\n|Video hearing|No|"));
         assertThatThrownBy(() -> showPreviousApplicationService.getSubmissionDetails(bailCase))

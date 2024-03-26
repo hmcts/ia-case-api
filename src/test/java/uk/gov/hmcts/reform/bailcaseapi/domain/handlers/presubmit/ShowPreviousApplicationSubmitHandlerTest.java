@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_DOCS_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_INFO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_CASE_NOTES_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DECISION_DETAILS_LABEL;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DIRECTION_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_COMMITMENT;
@@ -69,7 +68,6 @@ public class ShowPreviousApplicationSubmitHandlerTest {
         verify(bailCase, times(1)).remove(PREV_APP_HEARING_REQ_DETAILS);
         verify(bailCase, times(1)).remove(PREV_APP_APPLICANT_DOCS_DETAILS);
         verify(bailCase, times(1)).remove(PREV_APP_DIRECTION_DETAILS);
-        verify(bailCase, times(1)).remove(PREV_APP_CASE_NOTES_DETAILS);
         verify(bailCase, times(1)).remove(PREV_APP_PERSONAL_INFO_DETAILS);
         verify(bailCase, times(1)).remove(PREV_APP_APPLICANT_INFO);
         verify(bailCase, times(1)).remove(PREV_APP_FINANCIAL_COND_COMMITMENT);

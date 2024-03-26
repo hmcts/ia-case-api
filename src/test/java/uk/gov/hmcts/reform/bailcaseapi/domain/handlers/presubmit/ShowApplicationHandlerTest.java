@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_LIST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_DOCS_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_INFO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_CASE_NOTES_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DECISION_DETAILS_LABEL;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DIRECTION_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_COMMITMENT;
@@ -169,7 +168,6 @@ public class ShowApplicationHandlerTest {
         verify(bailCase, times(1)).write(PREV_APP_APPLICANT_DOCS_DETAILS, "Documents label");
         verify(bailCase, times(1)).write(PREV_APP_SUBMISSION_DETAILS, "Submission label");
         verify(bailCase, times(1)).write(PREV_APP_DIRECTION_DETAILS, "Direction label");
-        verify(bailCase, times(1)).write(PREV_APP_CASE_NOTES_DETAILS, "CaseNote label");
         verify(bailCase, times(1)).write(PREV_APP_GROUNDS_FOR_BAIL, "Bail grounds label");
         verify(bailCase, times(1)).write(PREV_APP_LEGAL_REP_DETAILS, "Legal rep label");
         verify(bailCase, times(1)).write(PREV_APP_APPLICANT_INFO, "Applicant info label");
@@ -282,8 +280,6 @@ public class ShowApplicationHandlerTest {
             .thenReturn("Documents label");
         when(showPreviousApplicationService.getDirectionLabel(previousBailCase))
             .thenReturn("Direction label");
-        when(showPreviousApplicationService.getCaseNoteLabel(previousBailCase))
-            .thenReturn("CaseNote label");
         when(showPreviousApplicationService.getHearingReqDetails(previousBailCase))
             .thenReturn("Hearing req label");
         when(showPreviousApplicationService.getSubmissionDetails(previousBailCase))

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_DOCS_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_INFO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_CASE_NOTES_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DECISION_DETAILS_LABEL;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DIRECTION_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_COMMITMENT;
@@ -57,7 +56,6 @@ public class ShowPreviousApplicationSubmitHandler implements PreSubmitCallbackHa
         bailCase.remove(PREV_APP_APPLICANT_DOCS_DETAILS);
         bailCase.remove(PREV_APP_DECISION_DETAILS_LABEL);
         bailCase.remove(PREV_APP_DIRECTION_DETAILS);
-        bailCase.remove(PREV_APP_CASE_NOTES_DETAILS);
         bailCase.remove(PREV_APP_PERSONAL_INFO_DETAILS);
         bailCase.remove(PREV_APP_APPLICANT_INFO);
         bailCase.remove(PREV_APP_FINANCIAL_COND_COMMITMENT);

@@ -414,8 +414,6 @@ public enum BailCaseFieldDefinition {
         "prevAppDecisionDetailsLabel", new TypeReference<String>() {}),
     PREV_APP_DIRECTION_DETAILS(
         "prevAppDirectionDetails", new TypeReference<String>() {}),
-    PREV_APP_CASE_NOTES_DETAILS(
-        "prevAppCaseNotesDetails", new TypeReference<String>() {}),
     PREV_APP_HEARING_REQ_DETAILS(
         "prevAppHearingReqDetails", new TypeReference<String>() {}),
     PREV_APP_PERSONAL_INFO_DETAILS(

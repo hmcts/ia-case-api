@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_LIST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_DOCS_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_APPLICANT_INFO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_CASE_NOTES_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DECISION_DETAILS_LABEL;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_DIRECTION_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_COMMITMENT;
@@ -164,7 +163,6 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
         String documentsLabel = showPreviousApplicationService.getDocumentsLabel(previousBailCase);
 
         String directionLabel = showPreviousApplicationService.getDirectionLabel(previousBailCase);
-        String caseNoteLabel = showPreviousApplicationService.getCaseNoteLabel(previousBailCase);
 
         String hearingReqLabel = showPreviousApplicationService.getHearingReqDetails(previousBailCase);
 
@@ -190,7 +188,6 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
         bailCase.write(PREV_APP_APPLICANT_DOCS_DETAILS, documentsLabel);
         bailCase.write(PREV_APP_DECISION_DETAILS_LABEL, decisionLabel);
         bailCase.write(PREV_APP_DIRECTION_DETAILS, directionLabel);
-        bailCase.write(PREV_APP_CASE_NOTES_DETAILS, caseNoteLabel);
         bailCase.write(PREV_APP_PERSONAL_INFO_DETAILS, personalInfo);
         bailCase.write(PREV_APP_APPLICANT_INFO, applicantInformationLabel);
         bailCase.write(PREV_APP_FINANCIAL_COND_COMMITMENT, financialCondCommitment);

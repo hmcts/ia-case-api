@@ -138,30 +138,6 @@ public class ShowPreviousApplicationService {
         return null;
     }
 
-    public String getCaseNoteLabel(BailCase previousBailCase) {
-        Optional<List<IdValue<CaseNote>>> mayBeCaseNotes = previousBailCase.read(CASE_NOTES);
-        AtomicInteger index = new AtomicInteger(0);
-        if (mayBeCaseNotes.isPresent()) {
-            String label = "|Case notes||\n|--------|--------|\n"
-                + getColumnTitle("Case notes", 84);
-            List<IdValue<CaseNote>> caseNote = mayBeCaseNotes.get();
-            String caseNoteDetails = caseNote
-                .stream()
-                .map((idValue) -> "Case notes " + index.incrementAndGet()
-                    + "<br>*Subject:* " + idValue.getValue().getCaseNoteSubject()
-                    + "<br>*Case note:* " + idValue.getValue().getCaseNoteDescription()
-                    + "<br>*Document:* "
-                    + (isNull(idValue.getValue().getCaseNoteDocument()) ? "N/A"
-                    : createDocumentLabel(idValue.getValue().getCaseNoteDocument()))
-                    + "<br>*Added by:* " + idValue.getValue().getUser()
-                    + "<br>*Date added:* " + formatDate(idValue.getValue().getDateAdded())
-                    + "<br>")
-                .collect(Collectors.joining("<br>"));
-            return label + caseNoteDetails;
-        }
-        return null;
-    }
-
     public String getHearingReqDetails(BailCase previousBailCase) {
         StringBuilder stringBuilder = new StringBuilder("|Hearing requirements||\n|--------|--------|\n");
         stringBuilder.append("|Interpreter|")
