@@ -1,5 +1,6 @@
 {
   "description": "DIAC-323 Submit appeal with section 20 fee remission",
+  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
