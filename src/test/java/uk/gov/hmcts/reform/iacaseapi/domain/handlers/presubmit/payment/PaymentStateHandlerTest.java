@@ -46,12 +46,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.PaymentStateHandler.PAY_LATER;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -316,18 +320,19 @@ class PaymentStateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("typeRemissionOptionAndHelpWithFees")
-    void should_return_valid_state_on_help_with_fees_remissions_and_dlrm_fee_support_enabled_for_given_appeal_types(AppealType type, RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption) {
+    void should_return_valid_state_on_help_with_fees_remissions_and_dlrm_fee_support_enabled_for_given_appeal_types(AppealType type, RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption, String  payLater) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
 
         AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(JOURNEY_TYPE, Optional.of(AIP));
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(type));
         asylumCase.write(REMISSION_TYPE, RemissionType.HELP_WITH_FEES);
         asylumCase.write(REMISSION_OPTION, Optional.of(remissionOption));
         asylumCase.write(HELP_WITH_FEES_OPTION, Optional.of(helpWithFeesOption));
-
+        asylumCase.write(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, Optional.of(payLater));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
@@ -337,7 +342,7 @@ class PaymentStateHandlerTest {
         Assert.assertNotNull(returnedCallbackResponse);
         Assert.assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU, EU).contains(type) && remissionOption.equals(NO_REMISSION) && helpWithFeesOption.equals(WILL_PAY_FOR_APPEAL)) {
+        if (hasRemission(remissionOption, helpWithFeesOption) && !payLater.equals(PAY_LATER)) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -529,29 +534,34 @@ class PaymentStateHandlerTest {
 
     private static Stream<Arguments> typeRemissionOptionAndHelpWithFees() {
         return Stream.of(
-            Arguments.of(EA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(EA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(EA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(EA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(EA, NO_REMISSION, WILL_PAY_FOR_APPEAL),
+            Arguments.of(EA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(EA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(EA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(EA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(EA, NO_REMISSION, WILL_PAY_FOR_APPEAL, ""),
 
-            Arguments.of(HU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(HU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(HU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(HU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(HU, NO_REMISSION, WILL_PAY_FOR_APPEAL),
+            Arguments.of(HU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(HU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(HU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(HU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(HU, NO_REMISSION, WILL_PAY_FOR_APPEAL, ""),
 
-            Arguments.of(PA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(PA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(PA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(PA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(PA, NO_REMISSION, WILL_PAY_FOR_APPEAL),
+            Arguments.of(PA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, PAY_LATER),
+            Arguments.of(PA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, PAY_LATER),
+            Arguments.of(PA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(PA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(PA, NO_REMISSION, WILL_PAY_FOR_APPEAL, PAY_LATER),
 
-            Arguments.of(EU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(EU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(EU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY),
-            Arguments.of(EU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED),
-            Arguments.of(EU, NO_REMISSION, WILL_PAY_FOR_APPEAL)
+            Arguments.of(EU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(EU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(EU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
+            Arguments.of(EU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
+            Arguments.of(EU, NO_REMISSION, WILL_PAY_FOR_APPEAL, "")
         );
+    }
+
+    private boolean hasRemission(RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption) {
+        return remissionOption != RemissionOption.NO_REMISSION
+            || helpWithFeesOption != WILL_PAY_FOR_APPEAL;
     }
 }
