@@ -30,6 +30,7 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
+            "id": "1",
             "value": {
               "feeRemissionType": "Legal Aid",
               "legalAidAccountNumber": "123/456"

@@ -30,6 +30,7 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
+            "id": "1",
             "value": {
               "feeRemissionType": "Help with Fees",
               "helpWithFeesReferenceNumber": "123/456"

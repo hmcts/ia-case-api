@@ -34,6 +34,7 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
+            "id": "1",
             "value": {
               "feeRemissionType": "Section 20",
               "section20Document": {

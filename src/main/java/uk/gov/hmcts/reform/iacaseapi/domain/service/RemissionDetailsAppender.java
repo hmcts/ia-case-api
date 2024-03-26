@@ -21,7 +21,8 @@ public class RemissionDetailsAppender {
         String asylumSupportReference,
         Document asylumSupportDocument
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
+        final RemissionDetails newRemissionDetails =
+                new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
 
         return append(existingRemissionDetails, newRemissionDetails);
     }

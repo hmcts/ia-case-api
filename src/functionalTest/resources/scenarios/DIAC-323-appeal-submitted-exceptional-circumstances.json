@@ -40,6 +40,7 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
+            "id": "1",
             "value": {
               "feeRemissionType": "Exceptional circumstances",
               "exceptionalCircumstances": "Exceptional circumstances details",

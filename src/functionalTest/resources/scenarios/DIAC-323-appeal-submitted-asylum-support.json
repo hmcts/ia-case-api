@@ -35,6 +35,7 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
+            "id": "1",
             "value": {
               "feeRemissionType": "Asylum support",
               "asylumSupportReference": "123/456",
