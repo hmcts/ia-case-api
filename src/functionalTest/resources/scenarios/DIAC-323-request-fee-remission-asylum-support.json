@@ -87,7 +87,7 @@
               "feeAmount": "14000",
               "legalAidAccountNumber": "123/456",
               "remissionDecision": "Rejected",
-              "remissionDecisionReason": "Reason"
+              "remissionDecisionReason": "Some reason"
             }
           }
         ]
