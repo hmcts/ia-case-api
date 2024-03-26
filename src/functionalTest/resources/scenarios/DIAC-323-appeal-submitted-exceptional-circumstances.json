@@ -42,6 +42,7 @@
               "exceptionalCircumstances": "Exceptional circumstances details",
               "remissionEcEvidenceDocuments": [
                 {
+                  "id": "1",
                   "value": {
                     "document_url": "http://url",
                     "document_binary_url": "http://url/binary",
