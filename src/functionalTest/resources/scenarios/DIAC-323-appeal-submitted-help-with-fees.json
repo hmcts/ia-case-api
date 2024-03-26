@@ -14,7 +14,7 @@
           "appealType": "protection",
           "isRemissionsEnabled": "Yes",
           "feeRemissionType": "Help with Fees",
-          "helpWithReference": "123/456"
+          "helpWithFeesReferenceNumber": "123/456"
         }
       }
     }
@@ -32,7 +32,7 @@
           {
             "value": {
               "feeRemissionType": "Help with Fees",
-              "helpWithReference": "123/456"
+              "helpWithFeesReferenceNumber": "123/456"
             }
           }
         ]

@@ -40,9 +40,11 @@
               "feeRemissionType": "exceptionalCircumstances",
               "exceptionalCircumstancesDocuments": [
                 {
-                  "document_url": "http://url",
-                  "document_binary_url": "http://url/binary",
-                  "document_filename": "file1.pdf"
+                  "value": {
+                    "document_url": "http://url",
+                    "document_binary_url": "http://url/binary",
+                    "document_filename": "file1.pdf"
+                  }
                 }
               ]
             }
