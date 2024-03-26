@@ -31,6 +31,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
