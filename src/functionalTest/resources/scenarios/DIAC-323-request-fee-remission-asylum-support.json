@@ -17,9 +17,9 @@
           "asylumSupportReference": "123/456",
           "remissionClaim": "asylumSupport",
           "asylumSupportDocument": {
-            "documentUrl": "http://url",
-            "documentBinaryUrl": "http://url/binary",
-            "documentFilename": "file1.pdf"
+            "document_url": "http://url",
+            "document_binary_url": "http://url/binary",
+            "document_filename": "file1.pdf"
           },
           "remissionDecision": "rejected",
           "tempPreviousRemissionDetails": [
