@@ -15,9 +15,9 @@
           "isRemissionsEnabled": "Yes",
           "feeRemissionType": "Section 20",
           "section20Document": {
-            "documentUrl": "http://url",
-            "documentBinaryUrl": "http://url/binary",
-            "documentFilename": "file1.pdf"
+            "document_url": "http://url",
+            "document_binary_url": "http://url/binary",
+            "document_filename": "file1.pdf"
           }
         }
       }
@@ -37,9 +37,9 @@
             "value": {
               "feeRemissionType": "Section 20",
               "section20Document": {
-                "documentUrl": "http://url",
-                "documentBinaryUrl": "http://url/binary",
-                "documentFilename": "file1.pdf"
+                "document_url": "http://url",
+                "document_binary_url": "http://url/binary",
+                "document_filename": "file1.pdf"
               }
             }
           }
