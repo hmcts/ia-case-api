@@ -1,7 +1,7 @@
 {
   "description": "DIAC-323 Submit appeal with section 17 fee remission",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "submitAppeal",
