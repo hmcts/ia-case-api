@@ -36,14 +36,16 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
-            "feeRemissionType": "exceptionalCircumstances",
-            "exceptionalCircumstancesDocuments": [
-              {
-                "documentUrl": "http://url",
-                "documentBinaryUrl": "http://url/binary",
-                "documentFilename": "file1.pdf"
-              }
-            ]
+            "value": {
+              "feeRemissionType": "exceptionalCircumstances",
+              "exceptionalCircumstancesDocuments": [
+                {
+                  "documentUrl": "http://url",
+                  "documentBinaryUrl": "http://url/binary",
+                  "documentFilename": "file1.pdf"
+                }
+              ]
+            }
           }
         ]
       }

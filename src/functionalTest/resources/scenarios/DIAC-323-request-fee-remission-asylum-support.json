@@ -54,21 +54,25 @@
         },
         "previousRemissionDetails": [
           {
-            "feeRemissionType": "Legal Aid",
-            "feeAmount": "14000",
-            "legalAidAccountNumber": "123/456",
-            "remissionDecision": "Rejected",
-            "remissionDecisionReason": "Some reason"
+            "value": {
+              "feeRemissionType": "Legal Aid",
+              "feeAmount": "14000",
+              "legalAidAccountNumber": "123/456",
+              "remissionDecision": "Rejected",
+              "remissionDecisionReason": "Some reason"
+            }
           }
         ],
         "tempPreviousRemissionDetails": [
           {
-            "feeRemissionType": "Asylum support",
-            "asylumSupportReference": "123/456",
-            "asylumSupportDocument": {
-              "documentUrl": "http://url",
-              "documentBinaryUrl": "http://url/binary",
-              "documentFilename": "file1.pdf"
+            "value": {
+              "feeRemissionType": "Asylum support",
+              "asylumSupportReference": "123/456",
+              "asylumSupportDocument": {
+                "documentUrl": "http://url",
+                "documentBinaryUrl": "http://url/binary",
+                "documentFilename": "file1.pdf"
+              }
             }
           },
           {

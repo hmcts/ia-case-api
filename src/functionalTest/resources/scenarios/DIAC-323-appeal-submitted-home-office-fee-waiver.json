@@ -34,11 +34,13 @@
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "tempPreviousRemissionDetails": [
           {
-            "feeRemissionType": "Home Office fee waiver",
-            "homeWaiverDocument": {
-              "documentUrl": "http://url",
-              "documentBinaryUrl": "http://url/binary",
-              "documentFilename": "file1.pdf"
+            "value": {
+              "feeRemissionType": "Home Office fee waiver",
+              "homeWaiverDocument": {
+                "documentUrl": "http://url",
+                "documentBinaryUrl": "http://url/binary",
+                "documentFilename": "file1.pdf"
+              }
             }
           }
         ]
