@@ -1199,7 +1199,6 @@ ccd-message-publisher:
       DATA_STORE_DB_USERNAME: hmcts
       DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
-      SERVICE_BUS_IDLE_TIMEOUT: 1800000
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
         secretRef: ia-sb-preview
