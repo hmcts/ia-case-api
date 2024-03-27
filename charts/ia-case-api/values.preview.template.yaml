@@ -1135,7 +1135,7 @@ wa:
       devcpuLimits: 2
       devmemoryLimits: 4Gi
       environment:
-        CAMUNDA_URL: "http://{{ .Release.Name }}-/engine-rest"
+        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
@@ -1283,7 +1283,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-emstitch"
       - name: "pr-${CHANGE_ID}-wa-case-event-handler"
       - name: "pr-${CHANGE_ID}-wa_workflow_api"
-      - name: "pr-${CHANGE_ID}-"
+      - name: "pr-${CHANGE_ID}-camunda"
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
