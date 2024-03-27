@@ -103,4 +103,8 @@
     <suppress until="2024-01-31">
         <cve>CVE-2023-35116</cve>
     </suppress>
+    <suppress until="2024-06-30">
+        <cve>CVE-2024-1597</cve>
+    </suppress>
+
 </suppressions>
