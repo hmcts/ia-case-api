@@ -4,9 +4,11 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
@@ -45,6 +47,11 @@ public class EditAppealTypePreparer implements PreSubmitCallbackHandler<AsylumCa
             callback
                 .getCaseDetails()
                 .getCaseData();
+        // Pre NABA Definition release, there is no population of AppealTypeForDisplay. So no change needed.
+        Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
+        if (isNabaEnabled.equals(Optional.of(NO))) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
         // After release of NABA, the pre-NABA cases will not have APPEAL_TYPE_FOR_DISPLAY populated, so when they get
         // to select appeal type screen (via EditAppeal event), it will not be pre-populated. This preparer will

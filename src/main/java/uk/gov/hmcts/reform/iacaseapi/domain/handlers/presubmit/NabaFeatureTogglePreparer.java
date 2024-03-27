@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ADA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED_OOC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
+
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -68,6 +70,12 @@ public class NabaFeatureTogglePreparer implements PreSubmitCallbackHandler<Asylu
         // This field is used by LR in-country flows and Internal EJP and Paper form in-country flow
         // Writing this value to show the Accelerated Detained related screens on the UI
         asylumCase.write(IS_NABA_ADA_ENABLED, isAdaEnabled);
+
+        // We need this in the backend, as the ccd -defs master branch still has this field in use. Once we do the
+        // NABA ccd release, we can omit this.
+        YesOrNo isOutOfCountryEnabled
+            = featureToggler.getValue("out-of-country-feature", false) ? YES : NO;
+        asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, isOutOfCountryEnabled);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
