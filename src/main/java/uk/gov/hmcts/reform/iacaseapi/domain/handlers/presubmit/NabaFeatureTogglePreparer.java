@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ADA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED_OOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
@@ -61,6 +62,12 @@ public class NabaFeatureTogglePreparer implements PreSubmitCallbackHandler<Asylu
         // This field is used by LR out-of-country flow and internal paper form out-of-country flow
         // Writing this value visible in OOC flows
         asylumCase.write(IS_NABA_ENABLED_OOC, isNabaEnabled);
+
+        YesOrNo isAdaEnabled
+            = featureToggler.getValue("naba-ada-feature-flag", false) ? YES : NO;
+        // This field is used by LR in-country flows and Internal EJP and Paper form in-country flow
+        // Writing this value to show the Accelerated Detained related screens on the UI
+        asylumCase.write(IS_NABA_ADA_ENABLED, isAdaEnabled);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

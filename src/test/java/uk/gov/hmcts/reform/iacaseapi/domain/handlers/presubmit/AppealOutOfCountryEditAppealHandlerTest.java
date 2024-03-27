@@ -87,6 +87,37 @@ class AppealOutOfCountryEditAppealHandlerTest {
     @EnumSource(value = Event.class, names = {
         "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
+    void should_clear_decision_letter_receive_date_when_detained_non_ada(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).read(APPELLANT_IN_UK, YesOrNo.class);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
+        verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
+        verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
+        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
+        clearHumanRightsDecision(asylumCase);
+        clearRefusalOfProtection(asylumCase);
+        clearSponsor(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
     void should_clear_HO_decision_date_when_switching_to_ada_case(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
