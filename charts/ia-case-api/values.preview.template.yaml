@@ -1135,7 +1135,7 @@ wa:
       devcpuLimits: 2
       devmemoryLimits: 4Gi
       environment:
-        _URL: "http://{{ .Release.Name }}-/engine-rest"
+        CAMUNDA_URL: "http://{{ .Release.Name }}-/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
