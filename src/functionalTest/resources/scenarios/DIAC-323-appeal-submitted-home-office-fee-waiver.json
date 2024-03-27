@@ -32,6 +32,13 @@
         "appealReferenceNumber": "$/(.+)/",
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
+        "isRemissionsEnabled": "Yes",
+        "feeRemissionType": "Home Office fee waiver",
+        "homeOfficeWaiverDocument": {
+          "document_url": "http://url",
+          "document_binary_url": "http://url/binary",
+          "document_filename": "file1.pdf"
+        },
         "tempPreviousRemissionDetails": [
           {
             "id": "1",

@@ -28,6 +28,9 @@
         "appealReferenceNumber": "$/(.+)/",
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
+        "feeRemissionType": "Legal Aid",
+        "isRemissionsEnabled": "Yes",
+        "legalAidAccountNumber": "123/456",
         "tempPreviousRemissionDetails": [
           {
             "id": "1",

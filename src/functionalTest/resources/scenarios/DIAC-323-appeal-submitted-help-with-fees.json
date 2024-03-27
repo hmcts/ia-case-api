@@ -28,6 +28,9 @@
         "appealReferenceNumber": "$/(.+)/",
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
+        "isRemissionsEnabled": "Yes",
+        "feeRemissionType": "Help with Fees",
+        "helpWithFeesReferenceNumber": "123/456",
         "tempPreviousRemissionDetails": [
           {
             "id": "1",
