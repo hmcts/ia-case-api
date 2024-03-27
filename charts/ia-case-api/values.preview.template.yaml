@@ -1,6 +1,10 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  devcpuRequests: 500m
+  devmemoryRequests: 1Gi
+  devcpuLimits: 2
+  devmemoryLimits: 4Gi
   environment:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
@@ -673,6 +677,10 @@ ccd:
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
       keyVaults: [ ]
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
         USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
@@ -722,6 +730,10 @@ ccd:
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/am/role-assignment-service:latest
       ingressHost: am-role-assignment-${SERVICE_FQDN}
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
@@ -760,9 +772,9 @@ ccd:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
       devcpuRequests: 500m
-      devmemoryRequests: 512Mi
+      devmemoryRequests: 1Gi
       devcpuLimits: 2
-      devmemoryLimits: 1Gi
+      devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
       environment:
@@ -992,6 +1004,10 @@ em-stitching:
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
     environment:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
@@ -1085,6 +1101,10 @@ wa:
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
@@ -1102,6 +1122,10 @@ wa:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
           secretRef: ia-sb-preview
           key: connectionString
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -1118,7 +1142,11 @@ wa:
       environment:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
   wa-workflow-api:
-    java:    
+    java:
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
          DB_READER_USERNAME: "hmcts"        
   wa:
@@ -1153,6 +1181,10 @@ ccd-message-publisher:
         secrets:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
       DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
@@ -1200,6 +1232,10 @@ am-org-role-mapping-service:
             alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
           - name: orm-IDAM-ADMIN-SECRET
             alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
       S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
