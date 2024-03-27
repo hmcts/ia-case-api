@@ -13,14 +13,8 @@
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
-          "remissionClaim": "asylumSupport",
-          "feeRemissionType": "Asylum support",
-          "asylumSupportReference": "123/456",
-          "asylumSupportDocument": {
-            "document_url": "http://url",
-            "document_binary_url": "http://url/binary",
-            "document_filename": "file1.pdf"
-          },
+          "feeRemissionType": "Help with Fees",
+          "helpWithFeesReferenceNumber": "123/456",
           "remissionDecision": "rejected",
           "tempPreviousRemissionDetails": [
             {
@@ -47,14 +41,8 @@
         "appealReferenceNumber": "$/(.+)/",
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
-        "remissionClaim": "asylumSupport",
-        "feeRemissionType": "Asylum support",
-        "asylumSupportReference": "123/456",
-        "asylumSupportDocument": {
-          "document_url": "http://url",
-          "document_binary_url": "http://url/binary",
-          "document_filename": "file1.pdf"
-        },
+        "feeRemissionType": "Help with Fees",
+        "helpWithFeesReferenceNumber": "123/456",
         "previousRemissionDetails": [
           {
             "id": "1",
@@ -71,13 +59,8 @@
           {
             "id": "2",
             "value": {
-              "feeRemissionType": "Asylum support",
-              "asylumSupportReference": "123/456",
-              "asylumSupportDocument": {
-                "document_url": "http://url",
-                "document_binary_url": "http://url/binary",
-                "document_filename": "file1.pdf"
-              }
+              "feeRemissionType": "Help with Fees",
+              "helpWithFeesReferenceNumber": "123/456"
             }
           },
           {
