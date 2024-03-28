@@ -29,9 +29,9 @@ public class RemissionDetailsAppender {
         String legalAidAccountNumber
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(
-                feeRemissionType,
-                legalAidAccountNumber,
-                ""
+            feeRemissionType,
+            legalAidAccountNumber,
+            ""
         );
 
         return append(existingRemissionDetails, newRemissionDetails);
@@ -43,9 +43,9 @@ public class RemissionDetailsAppender {
         String helpWithFeesReferenceNumber
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(
-                feeRemissionType,
-                null,
-                helpWithFeesReferenceNumber
+            feeRemissionType,
+            null,
+            helpWithFeesReferenceNumber
         );
 
         return append(existingRemissionDetails, newRemissionDetails);
@@ -57,10 +57,10 @@ public class RemissionDetailsAppender {
         Document section17Document
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(
-                feeRemissionType,
-                section17Document,
-                null,
-                null
+            feeRemissionType,
+            section17Document,
+            null,
+            null
         );
 
         return append(existingRemissionDetails, newRemissionDetails);
@@ -72,10 +72,10 @@ public class RemissionDetailsAppender {
         Document section20Document
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(
-                feeRemissionType,
-                null,
-                section20Document,
-                null
+            feeRemissionType,
+            null,
+            section20Document,
+            null
         );
 
         return append(existingRemissionDetails, newRemissionDetails);
@@ -87,10 +87,10 @@ public class RemissionDetailsAppender {
         Document homeOfficeWaiverDocument
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(
-                feeRemissionType,
-                null,
-                null,
-                homeOfficeWaiverDocument
+            feeRemissionType,
+            null,
+            null,
+            homeOfficeWaiverDocument
         );
 
         return append(existingRemissionDetails, newRemissionDetails);
@@ -103,9 +103,9 @@ public class RemissionDetailsAppender {
         List<IdValue<Document>> remissionEcEvidenceDocuments
     ) {
         RemissionDetails newRemissionDetails = new RemissionDetails(
-                feeRemissionType,
-                exceptionalCircumstances,
-                remissionEcEvidenceDocuments
+            feeRemissionType,
+            exceptionalCircumstances,
+            remissionEcEvidenceDocuments
         );
 
         return append(existingRemissionDetails, newRemissionDetails);

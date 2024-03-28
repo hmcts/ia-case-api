@@ -42,8 +42,8 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final RemissionDetailsAppender remissionDetailsAppender;
 
     public SubmitAppealHandler(
-            FeatureToggler featureToggler,
-            RemissionDetailsAppender remissionDetailsAppender
+        FeatureToggler featureToggler,
+        RemissionDetailsAppender remissionDetailsAppender
     ) {
         this.featureToggler = featureToggler;
         this.remissionDetailsAppender = remissionDetailsAppender;
@@ -105,13 +105,12 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                 Optional<Document>  asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
 
                 tempPreviousRemissionDetails =
-                        remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                                emptyList(),
-                                feeRemissionType,
-                                asylumSupportReference,
-                                asylumSupportDocument.orElse(null)
-                        );
-
+                    remissionDetailsAppender.appendAsylumSupportRemissionDetails(
+                        emptyList(),
+                        feeRemissionType,
+                        asylumSupportReference,
+                        asylumSupportDocument.orElse(null)
+                    );
                 break;
 
             case "Legal Aid":
@@ -119,13 +118,11 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                         .orElse("");
 
                 tempPreviousRemissionDetails =
-                        remissionDetailsAppender
-                                .appendLegalAidRemissionDetails(
-                                        emptyList(),
-                                        feeRemissionType,
-                                        legalAidAccountNumber
-                                );
-
+                    remissionDetailsAppender.appendLegalAidRemissionDetails(
+                        emptyList(),
+                        feeRemissionType,
+                        legalAidAccountNumber
+                    );
                 break;
 
             case "Section 17":
@@ -133,14 +130,12 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
 
                 if (section17Document.isPresent()) {
                     tempPreviousRemissionDetails =
-                            remissionDetailsAppender
-                                    .appendSection17RemissionDetails(
-                                            emptyList(),
-                                            feeRemissionType,
-                                            section17Document.get()
-                                    );
+                        remissionDetailsAppender.appendSection17RemissionDetails(
+                            emptyList(),
+                            feeRemissionType,
+                            section17Document.get()
+                        );
                 }
-
                 break;
 
             case "Section 20":
@@ -148,14 +143,12 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
 
                 if (section20Document.isPresent()) {
                     tempPreviousRemissionDetails =
-                            remissionDetailsAppender
-                                    .appendSection20RemissionDetails(
-                                            emptyList(),
-                                            feeRemissionType,
-                                            section20Document.get()
-                                    );
+                        remissionDetailsAppender.appendSection20RemissionDetails(
+                            emptyList(),
+                            feeRemissionType,
+                            section20Document.get()
+                        );
                 }
-
                 break;
 
             case "Home Office fee waiver":
@@ -163,13 +156,12 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
 
                 if (homeOfficeWaiverDocument.isPresent()) {
                     tempPreviousRemissionDetails =
-                            remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
-                                    emptyList(),
-                                    feeRemissionType,
-                                    homeOfficeWaiverDocument.get()
-                            );
+                        remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
+                            emptyList(),
+                            feeRemissionType,
+                            homeOfficeWaiverDocument.get()
+                        );
                 }
-
                 break;
 
             case "Help with Fees":
@@ -177,12 +169,11 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                         .orElse("");
 
                 tempPreviousRemissionDetails =
-                        remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(
-                                emptyList(),
-                                feeRemissionType,
-                                helpWithReference
-                        );
-
+                    remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(
+                        emptyList(),
+                        feeRemissionType,
+                        helpWithReference
+                    );
                 break;
 
             case "Exceptional circumstances":
@@ -192,13 +183,12 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                         asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS);
 
                 tempPreviousRemissionDetails =
-                        remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
-                                emptyList(),
-                                feeRemissionType,
-                                exceptionalCircumstances,
-                                exceptionalCircumstancesDocuments.orElse(null)
-                        );
-
+                    remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
+                        emptyList(),
+                        feeRemissionType,
+                        exceptionalCircumstances,
+                        exceptionalCircumstancesDocuments.orElse(null)
+                    );
                 break;
 
             default:
