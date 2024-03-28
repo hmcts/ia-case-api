@@ -330,7 +330,7 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
-                assertThat(
+        assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
