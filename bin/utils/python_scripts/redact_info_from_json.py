@@ -4,19 +4,19 @@ import json
 """
 Script for redacting data from a case data JSON.
 
-Usage: 
+Usage:
 
-Replace filepath with absolute filepath of JSON requiring redacting at the bottom of this file where 
+Replace filepath with absolute filepath of JSON requiring redacting at the bottom of this file where
 redact_values_from_file function is called.
 
 Run python bin/utils/python_scripts/redact_info_from_json.py while in ia/case/api directory
- 
+
 Script will output redacted JSON file in the same directory as original
 with '_redacted' suffix.
 
 Notes:
- 
-Fields to be redacted are hardcoded in replace mapping dict, so use with caution and double check redacted JSON 
+
+Fields to be redacted are hardcoded in replace mapping dict, so use with caution and double check redacted JSON
 (I suggest comparing two files in IDE) as it's only been tested on a few cases' data.
 
 Add any additionally required fields (in full lowercase) to be redacted in replace_mapping_dict with their corresponding

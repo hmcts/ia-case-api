@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ADA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED_OOC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -51,6 +52,11 @@ public class NabaFeatureTogglePreparer implements PreSubmitCallbackHandler<Asylu
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        // This needs to be removed before deploying NABA definitions
+        YesOrNo isOutOfCountryEnabled
+            = featureToggler.getValue("out-of-country-feature", false) ? YES : NO;
+        asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, isOutOfCountryEnabled);
 
         YesOrNo isNabaEnabled
                 = featureToggler.getValue("naba-feature-flag", false) ? YES : NO;
