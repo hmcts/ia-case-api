@@ -3,20 +3,27 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
 @Component
 public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
-    public GenerateServiceRequestMakeAPaymentConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService) {
-        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+    public GenerateServiceRequestMakeAPaymentConfirmation(
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper
+    ) {
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     public boolean canHandle(
@@ -33,16 +40,24 @@ public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmi
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
+        UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
 
-        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
-            callback.getCaseDetails(),
-            callback.getCaseDetailsBefore(),
-            Event.GENERATE_SERVICE_REQUEST
-        );
-        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
+        postSubmitResponse.setConfirmationHeader("# You have created a service request");
+        if (currentUser == UserRoleLabel.ADMIN_OFFICER) {
+            postSubmitResponse.setConfirmationBody(
+                "### What happens next\n\n"
+                    + "The legal representative can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n"
+            );
+        } else {
+            postSubmitResponse.setConfirmationBody(
+                "### What happens next\n\n"
+                    + "You can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n"
+                    + "[Service requests](cases/case-details/"
+                    + callback.getCaseDetails().getId() + "#Service%20Request)\n\n"
+            );
+        }
 
         return postSubmitResponse;
     }
