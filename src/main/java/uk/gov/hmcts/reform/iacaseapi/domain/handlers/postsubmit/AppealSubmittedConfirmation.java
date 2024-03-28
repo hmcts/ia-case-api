@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -123,6 +124,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 break;
 
             case PA:
+                String paymentOption = asylumCase
+                    .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+                    .orElse("");
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
                     setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
@@ -133,7 +137,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
-                    setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
+                    if (paymentOption.equals("payLater")) {
+                        setWaysToPayLabelPaPayLater(postSubmitResponse, callback, submissionOutOfTime);
+                    } else {
+                        setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
+                    }
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
@@ -238,18 +246,18 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         );
     }
 
-    private void setWaysToPayLabelPaPayNowPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
+    private void setWaysToPayLabelPaPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime) {
 
-        String paPayNowPayLaterLabel = "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/"
+        String paPayLaterLabel = "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/"
             + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
             + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         postSubmitCallbackResponse.setConfirmationBody(
             submissionOutOfTime == NO
-                ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
-                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
+                ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel + REVIEW_LABEL
         );
     }
 
