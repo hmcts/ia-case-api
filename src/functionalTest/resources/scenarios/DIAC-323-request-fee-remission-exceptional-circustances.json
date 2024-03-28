@@ -1,0 +1,112 @@
+{
+  "description": "DIAC-323 Request exceptional circumstances fee remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "requestFeeRemission",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "refusalOfHumanRights",
+          "isRemissionsEnabled": "Yes",
+          "remissionClaim": "exceptionalCircumstances",
+          "feeRemissionType": "Exceptional circumstances",
+          "exceptionalCircumstances": "Exceptional circumstances details",
+          "remissionEcEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document_url": "http://url",
+                "document_binary_url": "http://url/binary",
+                "document_filename": "file1.pdf"
+              }
+            }
+          ],
+          "remissionDecision": "rejected",
+          "tempPreviousRemissionDetails": [
+            {
+              "id": "1",
+              "value": {
+                "feeRemissionType": "Legal Aid",
+                "feeAmount": "14000",
+                "legalAidAccountNumber": "123/456",
+                "remissionDecision": "Rejected",
+                "remissionDecisionReason": "Some reason"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "appealType": "refusalOfHumanRights",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "feeRemissionType": "Exceptional circumstances",
+        "exceptionalCircumstances": "Exceptional circumstances details",
+        "remissionClaim": "exceptionalCircumstances",
+        "remissionEcEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document_url": "http://url",
+              "document_binary_url": "http://url/binary",
+              "document_filename": "file1.pdf"
+            }
+          }
+        ],
+        "previousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeRemissionType": "Legal Aid",
+              "feeAmount": "14000",
+              "legalAidAccountNumber": "123/456",
+              "remissionDecision": "Rejected",
+              "remissionDecisionReason": "Some reason"
+            }
+          }
+        ],
+        "tempPreviousRemissionDetails": [
+          {
+            "id": "2",
+            "value": {
+              "feeRemissionType": "Exceptional circumstances",
+              "exceptionalCircumstances": "Exceptional circumstances details",
+              "remissionEcEvidenceDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document_url": "http://url",
+                    "document_binary_url": "http://url/binary",
+                    "document_filename": "file1.pdf"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "feeRemissionType": "Legal Aid",
+              "feeAmount": "14000",
+              "legalAidAccountNumber": "123/456",
+              "remissionDecision": "Rejected",
+              "remissionDecisionReason": "Some reason"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

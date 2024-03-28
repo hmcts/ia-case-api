@@ -1,0 +1,46 @@
+{
+  "description": "DIAC-323 Submit appeal with legal aid fee remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "feeRemissionType": "Legal Aid",
+          "legalAidAccountNumber": "123/456"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "feeRemissionType": "Legal Aid",
+        "isRemissionsEnabled": "Yes",
+        "legalAidAccountNumber": "123/456",
+        "tempPreviousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeRemissionType": "Legal Aid",
+              "legalAidAccountNumber": "123/456"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

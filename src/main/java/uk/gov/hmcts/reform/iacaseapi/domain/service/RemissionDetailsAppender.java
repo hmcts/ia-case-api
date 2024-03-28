@@ -3,17 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
-@Slf4j
 public class RemissionDetailsAppender {
-
-    private List<IdValue<RemissionDetails>> remissions;
 
     public List<IdValue<RemissionDetails>> appendAsylumSupportRemissionDetails(
         List<IdValue<RemissionDetails>> existingRemissionDetails,
@@ -21,7 +17,8 @@ public class RemissionDetailsAppender {
         String asylumSupportReference,
         Document asylumSupportDocument
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
+        final RemissionDetails newRemissionDetails =
+                new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -31,7 +28,11 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         String legalAidAccountNumber
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, legalAidAccountNumber, "");
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            legalAidAccountNumber,
+            ""
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -41,7 +42,11 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         String helpWithFeesReferenceNumber
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, null, helpWithFeesReferenceNumber);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            null,
+            helpWithFeesReferenceNumber
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -51,8 +56,12 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         Document section17Document
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, section17Document, null, null);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            section17Document,
+            null,
+            null
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -62,8 +71,12 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         Document section20Document
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, null, section20Document, null);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            null,
+            section20Document,
+            null
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -73,8 +86,12 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         Document homeOfficeWaiverDocument
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, null, null, homeOfficeWaiverDocument);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            null,
+            null,
+            homeOfficeWaiverDocument
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -85,8 +102,11 @@ public class RemissionDetailsAppender {
         String exceptionalCircumstances,
         List<IdValue<Document>> remissionEcEvidenceDocuments
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, exceptionalCircumstances, remissionEcEvidenceDocuments);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            exceptionalCircumstances,
+            remissionEcEvidenceDocuments
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -101,22 +121,10 @@ public class RemissionDetailsAppender {
 
         allRemissionDetails.add(new IdValue<>(String.valueOf(index--), newRemissionDetails));
 
-
         for (IdValue<RemissionDetails> existingRemission : existingRemissionDetails) {
             allRemissionDetails.add(new IdValue<>(String.valueOf(index--), existingRemission.getValue()));
         }
 
         return allRemissionDetails;
-    }
-
-    public void setRemissions(List<IdValue<RemissionDetails>> remissions) {
-        log.info("SETTING REMISSION: " + remissions);
-        log.info("TO: " + this.remissions);
-        this.remissions = remissions;
-    }
-
-    public List<IdValue<RemissionDetails>> getRemissions() {
-        log.info("GETTING REMISSIONS: " + remissions);
-        return remissions;
     }
 }

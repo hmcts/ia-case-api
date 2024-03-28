@@ -1466,6 +1466,9 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_REMISSION_DETAILS(
         "previousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
 
+    TEMP_PREVIOUS_REMISSION_DETAILS(
+        "tempPreviousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
+
     OUT_OF_TIME_DECISION_MAKER(
         "outOfTimeDecisionMaker", new TypeReference<String>(){}),
 
