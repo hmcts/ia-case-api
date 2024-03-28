@@ -4,14 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -22,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
@@ -33,9 +30,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE;
@@ -48,9 +42,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TEMP_PREVIOUS_REMISSION_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,7 +51,6 @@ class SubmitAppealHandlerTest {
     @Mock private AsylumCase asylumCase;
 
     @Mock private FeatureToggler featureToggler;
-    private RemissionDetailsAppender remissionDetailsAppender;
 
     @Mock private Document document;
     @Mock private IdValue<Document> previousDocuments;
@@ -82,12 +72,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_asylum_support(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
-    ) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_asylum_support(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
@@ -105,12 +91,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_legal_aid(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
-    ) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_legal_aid(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
@@ -127,12 +109,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_section_17(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
-    ) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_section_17(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
@@ -149,12 +127,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_section_20(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
-    ) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_section_20(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
@@ -171,11 +145,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_home_office_waiver(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_home_office_waiver(AppealType appealType
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -193,12 +164,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_help_with_fees(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
-    ) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_help_with_fees(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
@@ -215,12 +182,8 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("remissionClaimsTestData")
-    void handle_should_return_new_and_previous_remission_details_exceptional_circumstances(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType
-    ) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    void handle_should_return_new_and_previous_remission_details_exceptional_circumstances(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
@@ -243,31 +206,5 @@ class SubmitAppealHandlerTest {
 
         verify(asylumCase, times(1))
                 .write(ArgumentMatchers.eq(TEMP_PREVIOUS_REMISSION_DETAILS), anyList());
-    }
-
-    private static Stream<Arguments> remissionClaimsTestData() {
-        return Stream.of(
-                Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", EA),
-                Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", HU),
-                Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", PA),
-                Arguments.of(HO_WAIVER_REMISSION, "legalAid", EA),
-                Arguments.of(HO_WAIVER_REMISSION, "legalAid", HU),
-                Arguments.of(HO_WAIVER_REMISSION, "legalAid", PA),
-                Arguments.of(HO_WAIVER_REMISSION, "section17", EA),
-                Arguments.of(HO_WAIVER_REMISSION, "section17", HU),
-                Arguments.of(HO_WAIVER_REMISSION, "section17", PA),
-                Arguments.of(HO_WAIVER_REMISSION, "section20", EA),
-                Arguments.of(HO_WAIVER_REMISSION, "section20", HU),
-                Arguments.of(HO_WAIVER_REMISSION, "section20", PA),
-                Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EA),
-                Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", HU),
-                Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", PA),
-                Arguments.of(HELP_WITH_FEES, "Help with Fees", EA),
-                Arguments.of(HELP_WITH_FEES, "Help with Fees", HU),
-                Arguments.of(HELP_WITH_FEES, "Help with Fees", PA),
-                Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA),
-                Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", HU),
-                Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA)
-        );
     }
 }

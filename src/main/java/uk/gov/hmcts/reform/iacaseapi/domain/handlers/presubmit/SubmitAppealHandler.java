@@ -69,8 +69,6 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        log.info("---Submitting appeal");
-
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
@@ -78,14 +76,14 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
 
         Optional<String> feeRemissionTypeOpt = asylumCase.read(FEE_REMISSION_TYPE, String.class);
 
-        log.info("---SubmitAppeal feeRemissionTypeOpt: " + feeRemissionTypeOpt);
+        log.info("SubmitAppeal feeRemissionTypeOpt: " + feeRemissionTypeOpt);
         if (feeRemissionTypeOpt.isPresent()) {
-            log.info("---SubmitAppeal appealType: " + appealType);
+            log.info("SubmitAppeal appealType: " + appealType);
             switch (appealType) {
                 case EA:
                 case HU:
                 case PA:
-                    appendTempPreviousRemissionDetails(asylumCase);
+                    appendTempPreviousRemissionDetails(asylumCase, feeRemissionTypeOpt.get());
                     break;
 
                 default:
@@ -96,12 +94,10 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void appendTempPreviousRemissionDetails(AsylumCase asylumCase) {
+    private void appendTempPreviousRemissionDetails(AsylumCase asylumCase, String feeRemissionType) {
         List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = null;
 
-        String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class).get();
-
-        log.info("---SubmitAppeal feeRemissionType: " + feeRemissionType);
+        log.info("SubmitAppeal feeRemissionType: " + feeRemissionType);
         switch (feeRemissionType) {
             case "Asylum support":
                 String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
@@ -209,7 +205,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                 break;
         }
 
-        log.info("---Setting temp previous remission details: " + tempPreviousRemissionDetails);
+        log.info("Setting temp previous remission details: " + tempPreviousRemissionDetails);
         if (tempPreviousRemissionDetails != null) {
             asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
         }

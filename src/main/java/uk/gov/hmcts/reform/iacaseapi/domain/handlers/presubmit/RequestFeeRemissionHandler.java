@@ -58,8 +58,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        log.info("---Submitting requestFeeRemission");
-
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -72,7 +70,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         Optional<List<IdValue<RemissionDetails>>> tempPreviousRemissionDetailsOpt =
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = tempPreviousRemissionDetailsOpt.orElse(emptyList());
-        log.info("---Getting temp previous remission details: " + tempPreviousRemissionDetails);
+        log.info("Getting temp previous remission details: " + tempPreviousRemissionDetails);
 
         switch (appealType) {
             case EA, HU, PA -> {
@@ -94,7 +92,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
     private void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
 
-        log.info("---Setting fee remission type details");
+        log.info("Setting fee remission type details");
 
         Optional<RemissionType> optRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
@@ -136,7 +134,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
     private void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
 
-        log.info("---Clearing previous remission case fields");
+        log.info("Clearing previous remission case fields");
 
         final Optional<RemissionType> remissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
@@ -146,41 +144,47 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             switch (remissionType.get()) {
 
                 case HO_WAIVER_REMISSION:
-                    if (remissionClaim.equals("asylumSupport")) {
-                        clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                        clearSection17RemissionDetails(asylumCase);
-                        clearSection20RemissionDetails(asylumCase);
-                        clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                        clearHelpWithFeesRemissionDetails(asylumCase);
-                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                    } else if (remissionClaim.equals("legalAid")) {
-                        clearAsylumSupportRemissionDetails(asylumCase);
-                        clearSection17RemissionDetails(asylumCase);
-                        clearSection20RemissionDetails(asylumCase);
-                        clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                        clearHelpWithFeesRemissionDetails(asylumCase);
-                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                    } else if (remissionClaim.equals("section17")) {
-                        clearAsylumSupportRemissionDetails(asylumCase);
-                        clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                        clearSection20RemissionDetails(asylumCase);
-                        clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                        clearHelpWithFeesRemissionDetails(asylumCase);
-                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                    } else if (remissionClaim.equals("section20")) {
-                        clearAsylumSupportRemissionDetails(asylumCase);
-                        clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                        clearSection17RemissionDetails(asylumCase);
-                        clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                        clearHelpWithFeesRemissionDetails(asylumCase);
-                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                    } else if (remissionClaim.equals("homeOfficeWaiver")) {
-                        clearAsylumSupportRemissionDetails(asylumCase);
-                        clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                        clearSection17RemissionDetails(asylumCase);
-                        clearSection20RemissionDetails(asylumCase);
-                        clearHelpWithFeesRemissionDetails(asylumCase);
-                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    switch (remissionClaim) {
+                        case "asylumSupport" -> {
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "legalAid" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "section17" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "section20" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "homeOfficeWaiver" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
                     }
                     break;
 
@@ -249,7 +253,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(emptyList());
-        log.info("---Getting temp previous remission details: {}", existingRemissionDetails);
+        log.info("Getting temp previous remission details: {}", existingRemissionDetails);
 
         String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class)
                 .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
@@ -368,7 +372,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             List<IdValue<RemissionDetails>> tempPreviousRemissionDetails,
             AsylumCase asylumCase
     ) {
-        log.info("---Appending previous remission decision details");
+        log.info("Appending previous remission decision details");
 
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
                 .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
@@ -411,7 +415,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                     }
                 });
 
-        log.info("---Setting temp previous remission details: " + tempPreviousRemissionDetails);
+        log.info("Setting temp previous remission details: " + tempPreviousRemissionDetails);
         asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
     }
 }
