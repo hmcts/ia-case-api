@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REMITTED_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.COURT_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JUDGES_NAMES_TO_EXCLUDE;
@@ -54,7 +55,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RemittalDocumentsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -101,7 +101,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     @Mock
     private List<IdValue<RemittalDocument>> remittalDocuments;
     @Mock
-    private RemittalDocumentsAppender remittalDocumentsAppender;
+    private Appender<RemittalDocument> remittalDocumentsAppender;
 
     @BeforeEach
     public void setUp() {
@@ -298,7 +298,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         when(asylumCase.read(REMITTAL_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)).thenReturn(Optional.of(remittalDocument));
         when(asylumCase.read(UPLOAD_OTHER_REMITTAL_DOCS)).thenReturn(Optional.of(allOtherRemittalDocs));
-        when(remittalDocumentsAppender.prepend(anyList(), any())).thenReturn(remittalDocuments);
+        when(remittalDocumentsAppender.append(any(), anyList())).thenReturn(remittalDocuments);
         when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
             .thenReturn(Optional.of(remittalDocument));
         when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))

@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RemittalDocumentsAppender;
 
 @Component
 public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -38,11 +37,11 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
 
-    private final RemittalDocumentsAppender remittalDocumentsAppender;
+    private final Appender<RemittalDocument> remittalDocumentsAppender;
 
     public MarkAppealAsRemittedUploadDecisionHandler(Appender<CaseNote> caseNoteAppender,
                                                      DateProvider dateProvider,
-                                                     RemittalDocumentsAppender remittalDocumentsAppender) {
+                                                     Appender<RemittalDocument> remittalDocumentsAppender) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.remittalDocumentsAppender = remittalDocumentsAppender;
@@ -108,7 +107,7 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
         }
         DocumentWithMetadata decisionWithMetaData = new DocumentWithMetadata(renamedDecisionDocument, "", LocalDate.now().toString(), DocumentTag.REMITTAL_DECISION);
 
-        existingRemittalDocuments = remittalDocumentsAppender.prepend(existingRemittalDocuments, new RemittalDocument(decisionWithMetaData, otherDocuments));
+        existingRemittalDocuments = remittalDocumentsAppender.append(new RemittalDocument(decisionWithMetaData, otherDocuments), existingRemittalDocuments);
         asylumCase.write(REMITTAL_DOCUMENTS, existingRemittalDocuments);
     }
 
