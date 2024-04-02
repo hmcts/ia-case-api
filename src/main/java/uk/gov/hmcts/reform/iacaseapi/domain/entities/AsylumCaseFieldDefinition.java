@@ -1445,6 +1445,8 @@ public enum AsylumCaseFieldDefinition {
 
     IS_NABA_ENABLED_OOC(
         "isNabaEnabledOoc", new TypeReference<YesOrNo>() {}),
+    IS_NABA_ADA_ENABLED(
+        "isNabaAdaEnabled", new TypeReference<YesOrNo>() {}),
     HAS_CORRESPONDENCE_ADDRESS(
         "hasCorrespondenceAddress", new TypeReference<YesOrNo>() {}),
 
@@ -1935,6 +1937,9 @@ public enum AsylumCaseFieldDefinition {
 
     LEGAL_PRACTICE_ADDRESS_EJP(
         "legalPracticeAddressEjp", new TypeReference<AddressUk>(){}),
+
+    IS_OUT_OF_COUNTRY_ENABLED(
+        "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
     ;
 
     private final String value;
