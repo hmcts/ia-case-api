@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -52,10 +53,11 @@ public class AppealTypeHandlerTest {
     private AsylumCase asylumCase;
 
     private AppealTypeHandler appealTypeHandler;
+    @Mock private FeatureToggler featureToggler;
 
     @BeforeEach
     void setup() {
-        appealTypeHandler = new AppealTypeHandler();
+        appealTypeHandler = new AppealTypeHandler(featureToggler);
     }
 
     @Test
@@ -263,4 +265,20 @@ public class AppealTypeHandlerTest {
             .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.HU.getValue()));
     }
 
+    @Test
+    void should_rewrite_feature_toggle_flags_if_start_appeal() {
+        // If event = start appeal, and feature toggle is off (Pre ccd release)
+        // We want to make sure the Feature toggle values are saved on the cases.
+        when(callback.getEvent()).thenReturn(START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(featureToggler.getValue("naba-feature-flag", false)).thenReturn(false);
+        when(featureToggler.getValue("naba-ada-feature-flag", false)).thenReturn(false);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
+        verify(asylumCase, times(1)).write(IS_NABA_ENABLED, NO);
+        verify(asylumCase, times(1)).write(IS_NABA_ENABLED_OOC, NO);
+        verify(asylumCase, times(1)).write(IS_NABA_ADA_ENABLED, NO);
+    }
 }
