@@ -21,9 +21,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final FeatureToggler featureToggler;
+    
+    public AppealTypeHandler(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
+    }
 
     public DispatchPriority getDispatchPriority() {
         return DispatchPriority.EARLIEST;
@@ -56,6 +63,19 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseData();
 
         Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
+
+        if (callback.getEvent() == START_APPEAL && isNabaEnabled.isEmpty()) {
+            // (Pre NABA ccd release) checking for empty, as when the flag is disabled, it is not visible on any screens hence not part of the case data unless we submit.
+            // so repopulating the fields in case of start appeal.
+            YesOrNo isNabaEnabledFlag
+                = featureToggler.getValue("naba-feature-flag", false) ? YES : NO;
+            asylumCase.write(IS_NABA_ENABLED, isNabaEnabledFlag);
+            asylumCase.write(IS_NABA_ENABLED_OOC, isNabaEnabledFlag);
+            YesOrNo isAdaEnabled
+                = featureToggler.getValue("naba-ada-feature-flag", false) ? YES : NO;
+            asylumCase.write(IS_NABA_ADA_ENABLED, isAdaEnabled);
+            isNabaEnabled = Optional.of(isNabaEnabledFlag);
+        }
 
         // This duplicate feature flag field is used because isNabaEnabled is on the detention screen which is not
         // visible in the OOC flows.
