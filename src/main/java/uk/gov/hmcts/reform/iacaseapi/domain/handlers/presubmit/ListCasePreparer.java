@@ -64,6 +64,7 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             asylumCase.clear(LIST_CASE_HEARING_CENTRE);
             asylumCase.clear(LIST_CASE_HEARING_DATE);
             asylumCase.clear(LIST_CASE_HEARING_LENGTH);
+            asylumCase.clear(LISTING_LENGTH);
         } else {
 
             maybeHearingCentre.ifPresent(hearingCentre -> {

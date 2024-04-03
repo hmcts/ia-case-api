@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -185,6 +186,32 @@ class ReviewDraftHearingRequirementsPreparerTest {
         verify(asylumCase, times(1)).write(
                 LIST_CASE_HEARING_LENGTH,
                 expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "HU, 120",
+        "EA, 120",
+        "EU, 120",
+        "DC, 180",
+        "PA, 180",
+        "RP, 180",
+    })
+    void should_set_default_length_hearing_for_integrated_appeal_type(AppealType appealType, String expectedResult) {
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        ArgumentCaptor<HoursMinutes> hoursMinutesCaptor = ArgumentCaptor.forClass(HoursMinutes.class);
+
+        verify(asylumCase, times(1)).write(eq(LISTING_LENGTH), hoursMinutesCaptor.capture());
+        assertEquals(expectedResult, String.valueOf(hoursMinutesCaptor.getValue().convertToIntegerMinutes()));
     }
 
     @Test
