@@ -311,7 +311,6 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
-      - "generateServiceRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

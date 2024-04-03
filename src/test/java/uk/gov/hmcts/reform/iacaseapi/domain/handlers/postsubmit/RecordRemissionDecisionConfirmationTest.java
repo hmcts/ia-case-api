@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
@@ -24,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +37,7 @@ class RecordRemissionDecisionConfirmationTest {
     @Mock private AsylumCase asylumCase;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private Callback<AsylumCase> callback;
+    @Mock private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
     private RecordRemissionDecisionConfirmation recordRemissionDecisionConfirmation;
 
     @BeforeEach
@@ -41,7 +46,7 @@ class RecordRemissionDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
 
-        recordRemissionDecisionConfirmation = new RecordRemissionDecisionConfirmation();
+        recordRemissionDecisionConfirmation = new RecordRemissionDecisionConfirmation(asylumCasePostFeePaymentService);
     }
 
     @Test
@@ -89,7 +94,7 @@ class RecordRemissionDecisionConfirmationTest {
         PostSubmitCallbackResponse callbackResponse =
             recordRemissionDecisionConfirmation.handle(callback);
 
-        assertNotNull(callbackResponse);
+        assertThat(callbackResponse).isNotNull();
         assertThat(callbackResponse.getConfirmationHeader()).isPresent();
         assertThat(callbackResponse.getConfirmationBody()).isPresent();
 
@@ -140,4 +145,17 @@ class RecordRemissionDecisionConfirmationTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    void should_send_postSubmit_payment_callback() {
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordRemissionDecisionConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService, times(1)).ccdSubmitted(any(Callback.class));
+
+        assertNotNull(callbackResponse);
+
+    }
+
 }

@@ -10,9 +10,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
 @Component
 public class RecordRemissionDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+
+    public RecordRemissionDecisionConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService) {
+        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -35,6 +42,8 @@ public class RecordRemissionDecisionConfirmation implements PostSubmitCallbackHa
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         String whatHappenNextLabel = "#### What happens next\n\n";
+
+        sendPaymentCallback(callback);
 
         asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
             .ifPresent(remissionDecision -> {
@@ -71,5 +80,16 @@ public class RecordRemissionDecisionConfirmation implements PostSubmitCallbackHa
             });
 
         return postSubmitResponse;
+    }
+
+    private void sendPaymentCallback(Callback<AsylumCase> callback) {
+
+        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
+            callback.getCaseDetails(),
+            callback.getCaseDetailsBefore(),
+            Event.RECORD_REMISSION_DECISION
+        );
+        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
+
     }
 }

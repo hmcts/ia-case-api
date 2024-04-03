@@ -117,6 +117,7 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(feePayment, never()).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
     }
 
     @ParameterizedTest
@@ -148,6 +149,7 @@ class RecordRemissionDecisionStateHandlerTest {
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
+        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
     }
 
     @Test
@@ -200,6 +202,7 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
 
     }
 
@@ -232,6 +235,7 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
 
     }
 
