@@ -336,6 +336,10 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
+
+  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+
   testImplementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
   testImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured
