@@ -368,8 +368,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
     ) {
         log.info("Appending previous remission decision details");
 
-        RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
-                .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
+        Optional<RemissionDecision> remissionDecisionOpt =
+                asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
         String feeAmount = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
 
         tempPreviousRemissionDetails
@@ -379,31 +379,35 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 if (remissionDetails.getRemissionDecision() == null) {
                     remissionDetails.setFeeAmount(feeAmount);
 
-                    switch (remissionDecision) {
-                        case APPROVED:
-                        case PARTIALLY_APPROVED:
-                            String amountRemitted = asylumCase.read(AMOUNT_REMITTED, String.class).orElse("");
-                            String amountLeftToPay = asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class).orElse("");
-                            remissionDetails.setAmountRemitted(amountRemitted);
-                            remissionDetails.setAmountLeftToPay(amountLeftToPay);
+                    if (remissionDecisionOpt.isPresent()) {
+                        RemissionDecision remissionDecision = remissionDecisionOpt.get();
 
-                            if (remissionDecision == APPROVED) {
-                                remissionDetails.setRemissionDecision("Approved");
-                            } else {
+                        switch (remissionDecision) {
+                            case APPROVED:
+                            case PARTIALLY_APPROVED:
+                                String amountRemitted = asylumCase.read(AMOUNT_REMITTED, String.class).orElse("");
+                                String amountLeftToPay = asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class).orElse("");
+                                remissionDetails.setAmountRemitted(amountRemitted);
+                                remissionDetails.setAmountLeftToPay(amountLeftToPay);
+
+                                if (remissionDecision == APPROVED) {
+                                    remissionDetails.setRemissionDecision("Approved");
+                                } else {
+                                    String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
+                                    remissionDetails.setRemissionDecision("Partially approved");
+                                    remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
+                                }
+                                break;
+
+                            case REJECTED:
                                 String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
-                                remissionDetails.setRemissionDecision("Partially approved");
+                                remissionDetails.setRemissionDecision("Rejected");
                                 remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
-                            }
-                            break;
+                                break;
 
-                        case REJECTED:
-                            String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
-                            remissionDetails.setRemissionDecision("Rejected");
-                            remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
-                            break;
-
-                        default:
-                            break;
+                            default:
+                                break;
+                        }
                     }
                 }
             });
