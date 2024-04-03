@@ -270,12 +270,11 @@ class CreateCaseSummaryHandlerTest {
         verify(documentReceiver, times(1))
                 .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
-        verify(documentsAppender, times(1))
-                .append(
-                        hearingDocumentsCaptor.capture(),
-                        eq(Collections.singletonList(caseSummaryWithMetadata)),
-                        eq(DocumentTag.CASE_SUMMARY)
-                );
+        verify(documentsAppender, times(1)).append(
+                hearingDocumentsCaptor.capture(),
+                eq(Collections.singletonList(caseSummaryWithMetadata)),
+                eq(DocumentTag.CASE_SUMMARY)
+        );
 
         verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
