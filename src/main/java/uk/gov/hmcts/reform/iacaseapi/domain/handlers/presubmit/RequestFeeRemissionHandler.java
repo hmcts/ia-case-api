@@ -185,7 +185,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             clearExceptionalCircumstancesRemissionDetails(asylumCase);
                         }
                         default -> {
-                            
+
                         }
                     }
                     break;

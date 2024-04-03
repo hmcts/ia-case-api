@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -65,10 +65,6 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             case EA:
             case HU:
             case PA:
-                if (asylumCase.read(FEE_REMISSION_TYPE, String.class).isEmpty()) {
-                    throw(new IllegalStateException("Previous fee remission type is not present"));
-                }
-
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
@@ -80,6 +76,10 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                                   + "has yet to be decided.");
                 } else if (isPreviousRemissionExists(remissionType, remissionDecision)
                         || isPreviousRemissionExists(lateRemissionType, remissionDecision)) {
+                    if (asylumCase.read(FEE_REMISSION_TYPE, String.class).isEmpty()) {
+                        throw(new IllegalStateException("Previous fee remission type is not present"));
+                    }
+
                     asylumCase.clear(REMISSION_TYPE);
                 }
                 break;
@@ -98,7 +98,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
         return remissionType.isPresent()
                && remissionType.get() != RemissionType.NO_REMISSION
                && remissionDecision.isPresent()
-               && Arrays.asList(APPROVED, PARTIALLY_APPROVED, REJECTED)
+               && asList(APPROVED, PARTIALLY_APPROVED, REJECTED)
                    .contains(remissionDecision.get());
     }
 }

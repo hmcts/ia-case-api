@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
@@ -52,10 +53,9 @@ class RequestFeeRemissionPreparerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(NO_REMISSION));
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
+                requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
@@ -108,16 +108,15 @@ class RequestFeeRemissionPreparerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
+                requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertNotNull(callbackResponse.getErrors());
         assertThat(callbackResponse.getErrors())
-            .contains("You cannot request a fee remission at this time because another fee remission request for this appeal "
-                                                          + "has yet to be decided.");
+                .contains("You cannot request a fee remission at this time because another fee remission request for this appeal "
+                        + "has yet to be decided.");
     }
 
     @ParameterizedTest
@@ -131,7 +130,9 @@ class RequestFeeRemissionPreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
 
         assertThatThrownBy(() -> requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
