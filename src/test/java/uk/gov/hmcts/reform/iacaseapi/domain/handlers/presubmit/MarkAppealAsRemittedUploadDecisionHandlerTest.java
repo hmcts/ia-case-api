@@ -286,6 +286,7 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         assertNotNull(callbackResponse);
 
         verify(asylumCase).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+        verify(asylumCase).write(IS_REHEARD_APPEAL_ENABLED, YES);
     }
 
     void should_add_documents_in_collection_and_casefield() {
