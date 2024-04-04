@@ -71,7 +71,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> tempPreviousRemissionDetails =
                 tempPreviousRemissionDetailsOpt.orElse(emptyList());
-        log.info("Getting temp previous remission details: " + tempPreviousRemissionDetails);
+        log.info("Handle: getting temp previous remission details: " + tempPreviousRemissionDetails);
 
         switch (appealType) {
             case EA, HU, PA -> {
@@ -259,13 +259,14 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails =
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(emptyList());
-        log.info("Getting temp previous remission details: {}", existingRemissionDetails);
+        log.info("Append: getting temp previous remission details: {}", existingRemissionDetails);
 
         Optional<String> feeRemissionTypeOpt = asylumCase.read(FEE_REMISSION_TYPE, String.class);
+        log.info("Fee remission type: {}", feeRemissionTypeOpt);
 
         if (feeRemissionTypeOpt.isPresent()) {
             String feeRemissionType = feeRemissionTypeOpt.get();
-            
+
             switch (feeRemissionType) {
                 case "Asylum support":
                     String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
