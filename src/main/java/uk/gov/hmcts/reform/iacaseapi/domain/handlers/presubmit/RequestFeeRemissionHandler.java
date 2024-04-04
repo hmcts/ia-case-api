@@ -69,7 +69,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         Optional<List<IdValue<RemissionDetails>>> tempPreviousRemissionDetailsOpt =
                 asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
-        List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = tempPreviousRemissionDetailsOpt.orElse(emptyList());
+        List<IdValue<RemissionDetails>> tempPreviousRemissionDetails =
+                tempPreviousRemissionDetailsOpt.orElse(emptyList());
         log.info("Getting temp previous remission details: " + tempPreviousRemissionDetails);
 
         switch (appealType) {
@@ -94,12 +95,14 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         log.info("Setting fee remission type details");
 
-        Optional<RemissionType> optRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
             .orElse("");
 
-        if (optRemissionType.isPresent()) {
-            if (optRemissionType.get() == RemissionType.HO_WAIVER_REMISSION) {
+        if (lateRemissionTypeOpt.isPresent()) {
+            RemissionType lateRemissionType = lateRemissionTypeOpt.get();
+
+            if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
                 switch (remissionClaim) {
                     case "asylumSupport":
                         asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
@@ -124,9 +127,9 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                     default:
                         break;
                 }
-            } else if (optRemissionType.get() == RemissionType.HELP_WITH_FEES) {
+            } else if (lateRemissionType == RemissionType.HELP_WITH_FEES) {
                 asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
-            } else if (optRemissionType.get() == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
+            } else if (lateRemissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
                 asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
             }
         }
@@ -136,12 +139,12 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         log.info("Clearing previous remission case fields");
 
-        final Optional<RemissionType> remissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        final Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
 
-        if (remissionType.isPresent()) {
+        if (lateRemissionTypeOpt.isPresent()) {
 
-            switch (remissionType.get()) {
+            switch (lateRemissionTypeOpt.get()) {
                 case HO_WAIVER_REMISSION:
                     switch (remissionClaim) {
                         case "asylumSupport" -> {
@@ -253,7 +256,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
     private void appendTempPreviousRemissionDetails(AsylumCase asylumCase) {
         List<IdValue<RemissionDetails>> tempPreviousRemissionDetails = null;
 
-        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
+        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails =
+                asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(emptyList());
         log.info("Getting temp previous remission details: {}", existingRemissionDetails);
 
@@ -329,8 +333,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 break;
 
             case "Help with Fees":
-                String helpWithReference = asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class)
-                        .orElse("");
+                String helpWithReference =
+                        asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class).orElse("");
 
                 tempPreviousRemissionDetails =
                     remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(
@@ -368,12 +372,12 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
     ) {
         log.info("Appending previous remission decision details");
 
-        Optional<RemissionDecision> remissionDecisionOpt =
-                asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+        Optional<RemissionDecision> remissionDecisionOpt = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+
         String feeAmount = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
 
-        tempPreviousRemissionDetails
-            .forEach(idValue -> {
+        tempPreviousRemissionDetails.forEach(
+            idValue -> {
                 RemissionDetails remissionDetails = idValue.getValue();
 
                 if (remissionDetails.getRemissionDecision() == null) {
@@ -393,14 +397,16 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                                 if (remissionDecision == APPROVED) {
                                     remissionDetails.setRemissionDecision("Approved");
                                 } else {
-                                    String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
+                                    String remissionDecisionReason =
+                                            asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
                                     remissionDetails.setRemissionDecision("Partially approved");
                                     remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
                                 }
                                 break;
 
                             case REJECTED:
-                                String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
+                                String remissionDecisionReason =
+                                        asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
                                 remissionDetails.setRemissionDecision("Rejected");
                                 remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
                                 break;
@@ -410,7 +416,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                         }
                     }
                 }
-            });
+            }
+        );
 
         log.info("Setting temp previous remission details: " + tempPreviousRemissionDetails);
         asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);

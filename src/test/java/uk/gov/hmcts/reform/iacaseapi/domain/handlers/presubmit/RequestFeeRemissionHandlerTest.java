@@ -73,10 +73,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_asylum_support(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -106,10 +106,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_legal_aid(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -138,10 +138,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_section_17(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -170,10 +170,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_section_20(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -202,10 +202,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_home_office_waiver(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -234,10 +234,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_help_with_fees(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -266,10 +266,10 @@ class RequestFeeRemissionHandlerTest {
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_exceptional_circumstances(
-            RemissionType remissionType,
-            String remissionClaim,
-            AppealType appealType,
-            RemissionDecision remissionDecision
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -325,9 +325,9 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void verifyTestResults(
-            RemissionType remissionType,
-            String remissionClaim,
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse
+        RemissionType remissionType,
+        String remissionClaim,
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse
     ) {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
