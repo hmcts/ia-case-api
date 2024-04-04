@@ -261,106 +261,109 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(emptyList());
         log.info("Getting temp previous remission details: {}", existingRemissionDetails);
 
-        String feeRemissionType = asylumCase.read(FEE_REMISSION_TYPE, String.class)
-                .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
+        Optional<String> feeRemissionTypeOpt = asylumCase.read(FEE_REMISSION_TYPE, String.class);
 
-        switch (feeRemissionType) {
-            case "Asylum support":
-                String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
-                        .orElse("");
-                Optional<Document>  asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
+        if (feeRemissionTypeOpt.isPresent()) {
+            String feeRemissionType = feeRemissionTypeOpt.get();
+            
+            switch (feeRemissionType) {
+                case "Asylum support":
+                    String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
+                            .orElse("");
+                    Optional<Document> asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
 
-                tempPreviousRemissionDetails =
-                    remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                        existingRemissionDetails,
-                        feeRemissionType,
-                        asylumSupportReference,
-                        asylumSupportDocument.orElse(null)
-                    );
-                break;
-
-            case "Legal Aid":
-                String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)
-                        .orElse("");
-
-                tempPreviousRemissionDetails =
-                    remissionDetailsAppender.appendLegalAidRemissionDetails(
-                        existingRemissionDetails,
-                        feeRemissionType,
-                        legalAidAccountNumber
-                    );
-                break;
-
-            case "Section 17":
-                Optional<Document> section17Document = asylumCase.read(SECTION17_DOCUMENT);
-
-                if (section17Document.isPresent()) {
                     tempPreviousRemissionDetails =
-                        remissionDetailsAppender.appendSection17RemissionDetails(
-                            existingRemissionDetails,
-                            feeRemissionType,
-                            section17Document.get()
-                        );
-                }
+                            remissionDetailsAppender.appendAsylumSupportRemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    asylumSupportReference,
+                                    asylumSupportDocument.orElse(null)
+                            );
+                    break;
 
-                break;
+                case "Legal Aid":
+                    String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)
+                            .orElse("");
 
-            case "Section 20":
-                Optional<Document> section20Document = asylumCase.read(SECTION20_DOCUMENT);
-
-                if (section20Document.isPresent()) {
                     tempPreviousRemissionDetails =
-                        remissionDetailsAppender.appendSection20RemissionDetails(
-                            existingRemissionDetails,
-                            feeRemissionType,
-                            section20Document.get()
-                        );
-                }
+                            remissionDetailsAppender.appendLegalAidRemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    legalAidAccountNumber
+                            );
+                    break;
 
-                break;
+                case "Section 17":
+                    Optional<Document> section17Document = asylumCase.read(SECTION17_DOCUMENT);
 
-            case "Home Office fee waiver":
-                Optional<Document> homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
+                    if (section17Document.isPresent()) {
+                        tempPreviousRemissionDetails =
+                                remissionDetailsAppender.appendSection17RemissionDetails(
+                                        existingRemissionDetails,
+                                        feeRemissionType,
+                                        section17Document.get()
+                                );
+                    }
 
-                if (homeOfficeWaiverDocument.isPresent()) {
+                    break;
+
+                case "Section 20":
+                    Optional<Document> section20Document = asylumCase.read(SECTION20_DOCUMENT);
+
+                    if (section20Document.isPresent()) {
+                        tempPreviousRemissionDetails =
+                                remissionDetailsAppender.appendSection20RemissionDetails(
+                                        existingRemissionDetails,
+                                        feeRemissionType,
+                                        section20Document.get()
+                                );
+                    }
+
+                    break;
+
+                case "Home Office fee waiver":
+                    Optional<Document> homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
+
+                    if (homeOfficeWaiverDocument.isPresent()) {
+                        tempPreviousRemissionDetails =
+                                remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
+                                        existingRemissionDetails,
+                                        feeRemissionType,
+                                        homeOfficeWaiverDocument.get()
+                                );
+                    }
+                    break;
+
+                case "Help with Fees":
+                    String helpWithReference =
+                            asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class).orElse("");
+
                     tempPreviousRemissionDetails =
-                        remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
-                            existingRemissionDetails,
-                            feeRemissionType,
-                            homeOfficeWaiverDocument.get()
-                        );
-                }
-                break;
+                            remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    helpWithReference
+                            );
+                    break;
 
-            case "Help with Fees":
-                String helpWithReference =
-                        asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class).orElse("");
+                case "Exceptional circumstances":
+                    String exceptionalCircumstances = asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)
+                            .orElseThrow(() -> new IllegalStateException("Exceptional circumstances details not present"));
+                    Optional<List<IdValue<Document>>> exceptionalCircumstancesDocuments =
+                            asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS);
 
-                tempPreviousRemissionDetails =
-                    remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(
-                        existingRemissionDetails,
-                        feeRemissionType,
-                        helpWithReference
-                    );
-                break;
+                    tempPreviousRemissionDetails =
+                            remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    exceptionalCircumstances,
+                                    exceptionalCircumstancesDocuments.orElse(null)
+                            );
+                    break;
 
-            case "Exceptional circumstances":
-                String exceptionalCircumstances = asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)
-                        .orElseThrow(() -> new IllegalStateException("Exceptional circumstances details not present"));
-                Optional<List<IdValue<Document>>> exceptionalCircumstancesDocuments =
-                        asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS);
-
-                tempPreviousRemissionDetails =
-                    remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
-                        existingRemissionDetails,
-                        feeRemissionType,
-                        exceptionalCircumstances,
-                        exceptionalCircumstancesDocuments.orElse(null)
-                    );
-                break;
-
-            default:
-                break;
+                default:
+                    break;
+            }
         }
 
         asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
