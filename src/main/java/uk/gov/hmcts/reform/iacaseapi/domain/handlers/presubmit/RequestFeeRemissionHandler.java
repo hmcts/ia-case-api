@@ -73,6 +73,8 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 tempPreviousRemissionDetailsOpt.orElse(emptyList());
         log.info("Handle: getting temp previous remission details: " + tempPreviousRemissionDetails);
 
+        setFeeRemissionTypeDetails(asylumCase);
+
         switch (appealType) {
             case EA, HU, PA -> {
                 appendTempPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
@@ -81,8 +83,6 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             }
             default -> asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
         }
-
-        setFeeRemissionTypeDetails(asylumCase);
 
         clearPreviousRemissionCaseFields(asylumCase);
 
