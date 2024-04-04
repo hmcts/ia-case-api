@@ -5,6 +5,12 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTAL_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_OTHER_REMITTAL_DOCS;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -12,6 +18,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfRemittal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemittalDocument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -27,10 +37,14 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
 
+    private final Appender<RemittalDocument> remittalDocumentsAppender;
+
     public MarkAppealAsRemittedUploadDecisionHandler(Appender<CaseNote> caseNoteAppender,
-                                                     DateProvider dateProvider) {
+                                                     DateProvider dateProvider,
+                                                     Appender<RemittalDocument> remittalDocumentsAppender) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
+        this.remittalDocumentsAppender = remittalDocumentsAppender;
     }
 
     public boolean canHandle(
@@ -57,20 +71,44 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
                 .getCaseDetails()
                 .getCaseData();
 
-        Document mayBeDecisionDocument = asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)
-            .orElseThrow(() -> new IllegalStateException("uploadRemittalDecisionDoc is not present"));
-
-        Document decisionDocumnent = new Document(mayBeDecisionDocument.getDocumentUrl(),
-            mayBeDecisionDocument.getDocumentBinaryUrl(), getRemittalDecisionFilename(asylumCase));
-
-        asylumCase.write(UPLOAD_REMITTAL_DECISION_DOC, decisionDocumnent);
+        getCollectionOfRemittalDocumentsForUi(asylumCase);
         asylumCase.write(APPEAL_REMITTED_DATE, dateProvider.now().toString());
         asylumCase.write(REHEARING_REASON, "Remitted");
         asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
         addRemittedCaseNote(asylumCase);
 
-
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void getCollectionOfRemittalDocumentsForUi(AsylumCase asylumCase) {
+        Optional<List<IdValue<RemittalDocument>>> mayBeExistingRemittalDocuments = asylumCase.read(REMITTAL_DOCUMENTS);
+        List<IdValue<RemittalDocument>> existingRemittalDocuments = mayBeExistingRemittalDocuments.orElse(Collections.emptyList());
+        Document decisionDocument = asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class)
+            .orElseThrow(() -> new IllegalStateException("uploadRemittalDecisionDoc is not present"));
+
+        Document renamedDecisionDocument = new Document(decisionDocument.getDocumentUrl(),
+            decisionDocument.getDocumentBinaryUrl(), getRemittalDecisionFilename(asylumCase));
+
+        //Replace the field by the renamed document.
+        asylumCase.write(UPLOAD_REMITTAL_DECISION_DOC, renamedDecisionDocument);
+
+        String index = String.valueOf(existingRemittalDocuments.size() + 1);
+        int indexForCollection = 1; //For the id as 11, 12
+        List<IdValue<DocumentWithMetadata>> otherDocuments = new ArrayList<>();
+        Optional<List<IdValue<DocumentWithDescription>>> mayBeOtherDocuments = asylumCase.read(UPLOAD_OTHER_REMITTAL_DOCS);
+        if (mayBeOtherDocuments.isPresent()) {
+            //Add metadata to the documents in collection
+            for (IdValue<DocumentWithDescription> otherDocument : mayBeOtherDocuments.get()) {
+                DocumentWithDescription documentWithDescription = otherDocument.getValue();
+                DocumentWithMetadata documentWithMetaData = new DocumentWithMetadata(documentWithDescription.getDocument().get(),
+                    documentWithDescription.getDescription().get(), LocalDate.now().toString(), DocumentTag.REMITTAL_DECISION);
+                otherDocuments.add(new IdValue<>(index + indexForCollection++, documentWithMetaData));
+            }
+        }
+        DocumentWithMetadata decisionWithMetaData = new DocumentWithMetadata(renamedDecisionDocument, "", LocalDate.now().toString(), DocumentTag.REMITTAL_DECISION);
+
+        existingRemittalDocuments = remittalDocumentsAppender.append(new RemittalDocument(decisionWithMetaData, otherDocuments), existingRemittalDocuments);
+        asylumCase.write(REMITTAL_DOCUMENTS, existingRemittalDocuments);
     }
 
 
