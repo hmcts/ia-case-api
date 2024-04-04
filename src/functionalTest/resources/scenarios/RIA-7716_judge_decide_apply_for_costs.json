@@ -1,5 +1,6 @@
 {
   "description": "RIA-7716: Judge decides a costs application",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
