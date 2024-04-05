@@ -1,6 +1,5 @@
 {
   "description": "RIA-7717 Tribunal consider making costs start event",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "Judge",
@@ -28,13 +27,13 @@
         "isAcceleratedDetainedAppeal": "No",
         "judgeAppliedCostsTypes": {
           "value": {
-            "code": "TRIBUNAL_COSTS",
-            "label": "Tribunal costs"
+            "code": "",
+            "label": ""
           },
           "list_items": [
             {
-              "code": "UNREASONABLE_COSTS",
-              "label": "Unreasonable costs"
+              "code": "TRIBUNAL_COSTS",
+              "label": "Tribunal costs"
             },
             {
               "code": "UNREASONABLE_COSTS",

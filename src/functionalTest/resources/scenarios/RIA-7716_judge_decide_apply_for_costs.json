@@ -1,6 +1,5 @@
 {
   "description": "RIA-7716: Judge decides a costs application",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
@@ -108,6 +107,7 @@
               "isApplyForCostsOot": "No",
               "argumentsAndEvidenceDocuments": [
                 {
+                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
                   "value": {
                     "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                     "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
@@ -118,16 +118,18 @@
               "applyForCostsHearingTypeExplanation": "",
               "applyForCostsDecision": "Order made",
               "costsDecisionType": "With an oral hearing",
-              "costsOralHearingDate": "{$TODAY}",
-              "costsDecisionDate": "{$TODAY}",
-              "uploadCostsOrder": {
-                "value": {
-                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              "costsOralHearingDate": "{$TODAY_FULL_DATE_2}",
+              "uploadCostsOrder": [
+                {
+                  "id": "",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
                 }
-              },
-              "dateOfDecision": "${TODAY}"
+              ],
+              "dateOfDecision": "{$TODAY_FULL_DATE_2}"
             }
           }
         ]

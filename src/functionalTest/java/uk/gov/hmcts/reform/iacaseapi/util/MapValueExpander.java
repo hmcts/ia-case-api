@@ -18,6 +18,7 @@ public final class MapValueExpander {
 
     private static final Pattern TODAY_PATTERN = Pattern.compile("\\{\\$TODAY([+-]?\\d*?)}");
     private static final Pattern TODAY_FULL_DATE_PATTERN = Pattern.compile("\\{\\$TODAY_FULL_DATE([+-]?\\d*?)}");
+    private static final Pattern TODAY_FULL_DATE_PATTERN_2 = Pattern.compile("\\{\\$TODAY_FULL_DATE_2([+-]?\\d*?)}");
     private static final Pattern ENVIRONMENT_PROPERTY_PATTERN = Pattern.compile("\\{\\$([a-zA-Z0-9].+?)}");
     public static final Properties ENVIRONMENT_PROPERTIES = new Properties(System.getProperties());
 
@@ -65,7 +66,11 @@ public final class MapValueExpander {
             }
 
             if (TODAY_FULL_DATE_PATTERN.matcher(value).find()) {
-                value = expandTodayFullDate(value);
+                value = expandTodayFullDate(value, TODAY_FULL_DATE_PATTERN, "dd MMMM yyyy");
+            }
+
+            if (TODAY_FULL_DATE_PATTERN_2.matcher(value).find()) {
+                value = expandTodayFullDate(value, TODAY_FULL_DATE_PATTERN_2, "d MMM yyyy");
             }
 
             if (ENVIRONMENT_PROPERTY_PATTERN.matcher(value).find()) {
@@ -112,9 +117,9 @@ public final class MapValueExpander {
         return expandedValue;
     }
 
-    private static String expandTodayFullDate(String value) {
+    private static String expandTodayFullDate(String value, Pattern pattern, String datePattern) {
 
-        Matcher matcher = TODAY_FULL_DATE_PATTERN.matcher(value);
+        Matcher matcher = pattern.matcher(value);
 
         String expandedValue = value;
 
@@ -140,7 +145,7 @@ public final class MapValueExpander {
 
             String token = matcher.group(0);
 
-            expandedValue = expandedValue.replace(token, now.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+            expandedValue = expandedValue.replace(token, now.format(DateTimeFormatter.ofPattern(datePattern)));
         }
 
         return expandedValue;

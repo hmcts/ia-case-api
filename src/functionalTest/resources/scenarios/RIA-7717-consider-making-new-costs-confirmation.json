@@ -1,6 +1,5 @@
 {
   "description": "RIA-7717 Tribunal consider making costs confirmation screen",
-  "disabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "Judge",
@@ -22,7 +21,7 @@
     "status": 200,
     "confirmation": {
       "header": "# The Tribunal has given notice that it is considering making a costs order",
-      "body": "#### What happens next\n\nBoth parties will be notified.\n\nYou can review your costs order in the [Costs tab](/cases/case-details/77171#Costs)."
+      "body": "## What happens next\n\nBoth parties will be notified.\n\nYou can review your costs order in the [Costs tab](/cases/case-details/77171#Costs)."
     }
   }
 }
