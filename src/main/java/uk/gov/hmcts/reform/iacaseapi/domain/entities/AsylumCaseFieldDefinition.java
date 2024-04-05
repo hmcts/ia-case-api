@@ -1725,6 +1725,9 @@ public enum AsylumCaseFieldDefinition {
         "appealRemittedDate", new TypeReference<String>() {}),
     REHEARING_REASON(
         "rehearingReason", new TypeReference<String>() {}),
+
+    REHEARD_HEARING_DOCUMENTS_COLLECTION(
+            "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
     ;
 
     private final String value;

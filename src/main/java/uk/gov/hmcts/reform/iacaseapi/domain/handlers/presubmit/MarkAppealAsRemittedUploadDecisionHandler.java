@@ -75,6 +75,7 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
         asylumCase.write(APPEAL_REMITTED_DATE, dateProvider.now().toString());
         asylumCase.write(REHEARING_REASON, "Remitted");
         asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+        asylumCase.write(IS_REHEARD_APPEAL_ENABLED, YES);
         addRemittedCaseNote(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
