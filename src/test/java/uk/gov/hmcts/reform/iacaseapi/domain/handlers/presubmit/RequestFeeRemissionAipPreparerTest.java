@@ -56,6 +56,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -87,7 +88,7 @@ class RequestFeeRemissionAipPreparerTest {
     private FeatureToggler featureToggler;
     @Mock
     private IdValue<DocumentWithMetadata> previousDocuments;
-
+    private  DateProvider dateProvider;
     private RemissionDetailsAppender remissionDetailsAppender;
     private RequestFeeRemissionAipPreparer requestFeeRemissionAipPreparer;
 
@@ -96,7 +97,7 @@ class RequestFeeRemissionAipPreparerTest {
         when(featureToggler.getValue("dlrm-refund-feature-flag", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         remissionDetailsAppender = new RemissionDetailsAppender();
-        requestFeeRemissionAipPreparer = new RequestFeeRemissionAipPreparer(featureToggler, remissionDetailsAppender);
+        requestFeeRemissionAipPreparer = new RequestFeeRemissionAipPreparer(featureToggler, remissionDetailsAppender, dateProvider);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);

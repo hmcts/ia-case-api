@@ -1728,7 +1728,10 @@ public enum AsylumCaseFieldDefinition {
             "updateTribunalDecisionDateRule32", new TypeReference<String>(){}),
 
     REASON_REHEARING_RULE_32(
-            "reasonRehearingRule32", new TypeReference<String>(){})
+            "reasonRehearingRule32", new TypeReference<String>(){}),
+
+    REQUEST_FEE_REMISSION_DATE(
+        "requestFeeRemissionDate", new TypeReference<String>(){}),
 
     ;
 
