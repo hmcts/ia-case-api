@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -49,13 +50,16 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private final FeatureToggler featureToggler;
     private final RemissionDetailsAppender remissionDetailsAppender;
+    private final DateProvider dateProvider;
 
     public RequestFeeRemissionAipPreparer(
         FeatureToggler featureToggler,
-        RemissionDetailsAppender remissionDetailsAppender
+        RemissionDetailsAppender remissionDetailsAppender,
+        DateProvider dateProvider
     ) {
         this.featureToggler = featureToggler;
         this.remissionDetailsAppender = remissionDetailsAppender;
+        this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
@@ -107,9 +111,11 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                     asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
                     assignLateRemissionValuesToRemissionValues(asylumCase);
                     clearPreviousAndLateRemissionFields(asylumCase);
+                    asylumCase.write(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE, dateProvider.now().toString());
                 } else {
                     assignLateRemissionValuesToRemissionValues(asylumCase);
                     clearPreviousAndLateRemissionFields(asylumCase);
+                    asylumCase.write(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE, dateProvider.now().toString());
                 }
                 break;
 

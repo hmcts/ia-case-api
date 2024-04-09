@@ -7,29 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMOUNT_LEFT_TO_PAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMOUNT_REMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REF_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_ASYLUM_SUPPORT_REF_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_HELP_WITH_FEES_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_HELP_WITH_FEES_REF_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_LOCAL_AUTHORITY_LETTERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_REMISSION_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_LETTERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_REMISSION_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
@@ -41,6 +26,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.PARE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.UNDER_18_GET_SUPPORT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,13 +42,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -87,8 +68,10 @@ class RequestFeeRemissionAipPreparerTest {
     private FeatureToggler featureToggler;
     @Mock
     private IdValue<DocumentWithMetadata> previousDocuments;
-
+    @Mock
+    private DateProvider dateProvider;
     private RemissionDetailsAppender remissionDetailsAppender;
+    private final LocalDate now = LocalDate.now();
     private RequestFeeRemissionAipPreparer requestFeeRemissionAipPreparer;
 
     @BeforeEach
@@ -96,10 +79,11 @@ class RequestFeeRemissionAipPreparerTest {
         when(featureToggler.getValue("dlrm-refund-feature-flag", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         remissionDetailsAppender = new RemissionDetailsAppender();
-        requestFeeRemissionAipPreparer = new RequestFeeRemissionAipPreparer(featureToggler, remissionDetailsAppender);
+        requestFeeRemissionAipPreparer = new RequestFeeRemissionAipPreparer(featureToggler, remissionDetailsAppender, dateProvider);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+        when(dateProvider.now()).thenReturn(now);
     }
 
     @ParameterizedTest
@@ -294,7 +278,7 @@ class RequestFeeRemissionAipPreparerTest {
     //If user selected "Ask for a fee remission, but previously we had 'No remission' state". In that case we need to create a new app, by overwriting previous values.
     @ParameterizedTest
     @MethodSource("previousRemissionTestData")
-    void should_create_new_request_in_not_decisded_state(
+    void should_create_new_request_in_not_decided_state(
         AppealType appealType,
         RemissionOption remissionOption
     ) {
@@ -327,6 +311,8 @@ class RequestFeeRemissionAipPreparerTest {
         verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_OPTION);
         verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LATE_LOCAL_AUTHORITY_LETTERS);
+
+        verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE), anyString());
     }
 
     private static Stream<Arguments> previousRemissionDecisionTestData() {
@@ -352,5 +338,7 @@ class RequestFeeRemissionAipPreparerTest {
             Arguments.of(AppealType.HU, I_WANT_TO_GET_HELP_WITH_FEES)
         );
     }
+
+
 
 }
