@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -209,7 +211,6 @@ class RequestFeeRemissionAipPreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOptionOption));
         when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissionDetails));
-        LocalDate currentDate = LocalDate.now();
 
         switch (remissionDecision) {
             case APPROVED:
@@ -277,7 +278,7 @@ class RequestFeeRemissionAipPreparerTest {
     //If user selected "Ask for a fee remission, but previously we had 'No remission' state". In that case we need to create a new app, by overwriting previous values.
     @ParameterizedTest
     @MethodSource("previousRemissionTestData")
-    void should_create_new_request_in_not_decisded_state(
+    void should_create_new_request_in_not_decided_state(
         AppealType appealType,
         RemissionOption remissionOption
     ) {
@@ -310,6 +311,8 @@ class RequestFeeRemissionAipPreparerTest {
         verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_OPTION);
         verify(asylumCase, times(1)).clear(LATE_HELP_WITH_FEES_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LATE_LOCAL_AUTHORITY_LETTERS);
+
+        verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE), anyString());
     }
 
     private static Stream<Arguments> previousRemissionDecisionTestData() {
