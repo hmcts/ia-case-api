@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -388,6 +389,9 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", PA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", PA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", PA, REJECTED),
+            Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", EU, APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", EU, PARTIALLY_APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", EU, REJECTED),
             Arguments.of(HO_WAIVER_REMISSION, "legalAid", EA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "legalAid", EA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "legalAid", EA, REJECTED),
@@ -397,6 +401,9 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HO_WAIVER_REMISSION, "legalAid", PA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "legalAid", PA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "legalAid", PA, REJECTED),
+            Arguments.of(HO_WAIVER_REMISSION, "legalAid", EU, APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "legalAid", EU, PARTIALLY_APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "legalAid", EU, REJECTED),
             Arguments.of(HO_WAIVER_REMISSION, "section17", EA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section17", EA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section17", EA, REJECTED),
@@ -406,6 +413,9 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HO_WAIVER_REMISSION, "section17", PA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section17", PA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section17", PA, REJECTED),
+            Arguments.of(HO_WAIVER_REMISSION, "section17", EU, APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "section17", EU, PARTIALLY_APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "section17", EU, REJECTED),
             Arguments.of(HO_WAIVER_REMISSION, "section20", EA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section20", EA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section20", EA, REJECTED),
@@ -415,6 +425,9 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HO_WAIVER_REMISSION, "section20", PA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section20", PA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "section20", PA, REJECTED),
+            Arguments.of(HO_WAIVER_REMISSION, "section20", EU, APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "section20", EU, PARTIALLY_APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "section20", EU, REJECTED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EA, REJECTED),
@@ -424,6 +437,9 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", PA, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", PA, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", PA, REJECTED),
+            Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EU, APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EU, PARTIALLY_APPROVED),
+            Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EU, REJECTED),
             Arguments.of(HELP_WITH_FEES, "Help with Fees", EA, APPROVED),
             Arguments.of(HELP_WITH_FEES, "Help with Fees", EA, PARTIALLY_APPROVED),
             Arguments.of(HELP_WITH_FEES, "Help with Fees", EA, REJECTED),
@@ -433,6 +449,9 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HELP_WITH_FEES, "Help with Fees", PA, APPROVED),
             Arguments.of(HELP_WITH_FEES, "Help with Fees", PA, PARTIALLY_APPROVED),
             Arguments.of(HELP_WITH_FEES, "Help with Fees", PA, REJECTED),
+            Arguments.of(HELP_WITH_FEES, "Help with Fees", EU, APPROVED),
+            Arguments.of(HELP_WITH_FEES, "Help with Fees", EU, PARTIALLY_APPROVED),
+            Arguments.of(HELP_WITH_FEES, "Help with Fees", EU, REJECTED),
             Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA, APPROVED),
             Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA, PARTIALLY_APPROVED),
             Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA, REJECTED),
@@ -441,7 +460,10 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", HU, REJECTED),
             Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, APPROVED),
             Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, PARTIALLY_APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, REJECTED)
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, REJECTED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EU, APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EU, PARTIALLY_APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EU, REJECTED)
         );
     }
 

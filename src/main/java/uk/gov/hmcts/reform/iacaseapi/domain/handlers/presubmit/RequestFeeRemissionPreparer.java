@@ -65,6 +65,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             case EA:
             case HU:
             case PA:
+            case EU:
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);

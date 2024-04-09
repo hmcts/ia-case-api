@@ -76,7 +76,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         setFeeRemissionTypeDetails(asylumCase);
 
         switch (appealType) {
-            case EA, HU, PA -> {
+            case EA, HU, PA, EU -> {
                 appendTempPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
                 asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
                 appendTempPreviousRemissionDetails(asylumCase);
