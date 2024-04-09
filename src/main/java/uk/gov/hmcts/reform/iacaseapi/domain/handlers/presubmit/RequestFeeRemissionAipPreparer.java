@@ -91,13 +91,13 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 } else if (previousRemissionExistsAndDecided(previousRemissionOption, previousHelpWithFeesOptionAip, remissionDecision)) {
                     appendPreviousRemissionDetails(asylumCase);
                     asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
+                    asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
                     assignLateRemissionValuesToRemissionValues(asylumCase);
                     clearPreviousAndLateRemissionFields(asylumCase);
-                    asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
                 } else {
+                    asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
                     assignLateRemissionValuesToRemissionValues(asylumCase);
                     clearPreviousAndLateRemissionFields(asylumCase);
-                    asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
                 }
                 break;
 
