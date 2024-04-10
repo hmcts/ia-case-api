@@ -331,6 +331,7 @@ security:
       - "updateHearingRequest"
       - "recordAdjournmentDetails"
       - "listAssistIntegration"
+      - "generateServiceRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
