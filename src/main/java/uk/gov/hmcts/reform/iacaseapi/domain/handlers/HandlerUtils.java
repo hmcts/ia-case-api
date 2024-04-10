@@ -1,13 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_LEGALLY_REPRESENTED_EJP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class HandlerUtils {
 
@@ -93,5 +114,26 @@ public class HandlerUtils {
     // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
     public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
         return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    public static List<String> readJsonFileList(String filePath, String key) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClassPathResource fileResource = new ClassPathResource(filePath);
+        InputStream file = fileResource.getInputStream();
+
+        JsonNode rootNode = objectMapper.readTree(file);
+
+        JsonNode listNode = rootNode.get(key);
+        List<String> valueList = new ArrayList<>();
+
+        if (listNode != null && listNode.isArray()) {
+            Iterator<JsonNode> elements = listNode.elements();
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                valueList.add(element.asText());
+            }
+        }
+
+        return valueList;
     }
 }

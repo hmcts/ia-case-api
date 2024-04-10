@@ -37,6 +37,7 @@
             {
               "id": "1",
               "value": {
+                "applyForCostsRespondentRole": "Home office",
                 "appliedCostsType": "Unreasonable costs",
                 "applyForCostsDecision": "Pending",
                 "respondentToCostsOrder": "Home office",
@@ -44,7 +45,6 @@
                 "scheduleOfCostsDocuments": [],
                 "applyForCostsCreationDate": "2023-11-13",
                 "applyForCostsApplicantType": "Legal representative",
-                "applyForCostsRespondentRole": "Respondent",
                 "argumentsAndEvidenceDetails": "",
                 "applyForCostsOotExplanation": "",
                 "ootUploadEvidenceDocuments": [],
@@ -95,7 +95,7 @@
               "responseToApplication": "Some explanation",
               "responseHearingTypeExplanation": "Hearing explanation",
               "responseHearingType": "Yes",
-              "applyForCostsRespondentRole": "Respondent",
+              "applyForCostsRespondentRole": "Home office",
               "applyForCostsOotExplanation": "",
               "ootUploadEvidenceDocuments": [],
               "isApplyForCostsOot": "No",

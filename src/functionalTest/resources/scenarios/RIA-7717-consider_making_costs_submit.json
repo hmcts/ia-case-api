@@ -20,7 +20,7 @@
           },
           "applyForCostsDecision": "Pending",
           "respondentToCostsOrder": "Home office",
-          "tribunalConsideringReasons": "Test reason",
+          "tribunalConsideringReason": "Test reason",
           "judgeAppliedCostsTypes": {
             "value": {
               "code": "TRIBUNAL_COSTS",
@@ -73,11 +73,11 @@
           {
             "id": "1",
             "value": {
-              "appliedCostsType": "Unreasonable costs",
+              "appliedCostsType": "Tribunal costs",
               "applyForCostsDecision": "Pending",
               "respondentToCostsOrder": "Home office",
               "applyForCostsRespondentRole": "Home office",
-              "tribunalConsideringReasons": "Test reason",
+              "tribunalConsideringReason": "Test reason",
               "applyForCostsCreationDate": "{$TODAY}",
               "applyForCostsApplicantType": "Tribunal",
               "judgeEvidenceForCostsOrder": [

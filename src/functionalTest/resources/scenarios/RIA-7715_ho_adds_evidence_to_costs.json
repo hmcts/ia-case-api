@@ -99,21 +99,11 @@
               "applyForCostsCreationDate": "2023-11-13",
               "applyForCostsApplicantType": "Legal representative",
               "argumentsAndEvidenceDetails": "",
-              "applyForCostsRespondentRole": "Respondent",
+              "applyForCostsRespondentRole": "Home office",
               "applyForCostsOotExplanation": "",
               "ootUploadEvidenceDocuments": [],
               "isApplyForCostsOot": "No",
               "argumentsAndEvidenceDocuments": [
-                {
-                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
-                  "value": {
-                    "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
-                    "document_filename": "test.pdf",
-                    "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
-                  }
-                }
-              ],
-              "applicantAdditionalEvidence": [
                 {
                   "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
                   "value": {

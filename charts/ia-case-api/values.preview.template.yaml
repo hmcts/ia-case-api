@@ -61,7 +61,7 @@ global:
 
 
 ia-case-payments-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:pr-259 #:pr-259 or relevant PR number to change
@@ -95,7 +95,7 @@ ia-case-payments-api:
           - ia-config-validator-secret
 
 ia-case-documents-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:pr-520 #pr-520 or relevant PR number to change
@@ -144,7 +144,7 @@ ia-case-documents-api:
           - ia-config-validator-secret
 
 ia-case-notifications-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-724 #pr-724 or relevant PR number to change
@@ -417,7 +417,7 @@ ia-timed-event-service:
           - ia-config-validator-secret
 
 ia-home-office-integration-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-285 #pr-285 or relevant PR number to change
@@ -1156,7 +1156,7 @@ wa:
       devcpuLimits: 2
       devmemoryLimits: 4Gi
       environment:
-         DB_READER_USERNAME: "hmcts"        
+         DB_READER_USERNAME: "hmcts"
   wa:
     postgresql:
       enabled: false
@@ -1267,7 +1267,7 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
-            
+
 
 
 postgresql:

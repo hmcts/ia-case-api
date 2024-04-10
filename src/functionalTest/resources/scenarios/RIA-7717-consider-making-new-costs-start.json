@@ -27,13 +27,13 @@
         "isAcceleratedDetainedAppeal": "No",
         "judgeAppliedCostsTypes": {
           "value": {
-            "code": "TRIBUNAL_COSTS",
-            "label": "Tribunal costs"
+            "code": "",
+            "label": ""
           },
           "list_items": [
             {
-              "code": "UNREASONABLE_COSTS",
-              "label": "Unreasonable costs"
+              "code": "TRIBUNAL_COSTS",
+              "label": "Tribunal costs"
             },
             {
               "code": "UNREASONABLE_COSTS",
