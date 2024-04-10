@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
@@ -28,6 +31,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class HandlerUtils {
 
@@ -183,5 +192,26 @@ public class HandlerUtils {
             .read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
             .map(adjournedDay -> ON_HEARING_DATE == adjournedDay)
             .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
+    }
+  
+    public static List<String> readJsonFileList(String filePath, String key) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClassPathResource fileResource = new ClassPathResource(filePath);
+        InputStream file = fileResource.getInputStream();
+
+        JsonNode rootNode = objectMapper.readTree(file);
+
+        JsonNode listNode = rootNode.get(key);
+        List<String> valueList = new ArrayList<>();
+
+        if (listNode != null && listNode.isArray()) {
+            Iterator<JsonNode> elements = listNode.elements();
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                valueList.add(element.asText());
+            }
+        }
+
+        return valueList;
     }
 }

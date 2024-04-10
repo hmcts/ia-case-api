@@ -413,6 +413,9 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
+    caseworker-ia-task-retrigger:
+      - "reTriggerWaTasks"
+      - "reTriggerWaBulkTasks"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -472,3 +475,5 @@ timed-event-service:
 commonData:
   api:
     url: ${COMMON_DATA_API:http://localhost:8991}
+
+caseIdListJsonLocation: caseIdForRetrigger.json

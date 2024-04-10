@@ -15,8 +15,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInteg
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@SuppressWarnings("unchecked")
 class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
 
@@ -224,5 +228,35 @@ class HandlerUtilsTest {
             .thenReturn(Optional.of(adjournmentDay));
 
         assertEquals(adjournmentDay == ON_HEARING_DATE, adjournedOnHearingDay(asylumCase));
+    }
+  
+    @Test
+    public void read_json_file_list_valid_returns_list() throws IOException {
+        String filePath = "/readJsonList.json";
+        List<String> expectedCaseIdList = List.of("1234", "5678", "9012");
+        List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
+        assertEquals(expectedCaseIdList, result);
+    }
+
+    @Test
+    public void read_json_file_list_invalid_file_path_throws_io() {
+        String filePath = "/missingCaseIdList.json";
+        assertThrows(IOException.class, () -> {
+            HandlerUtils.readJsonFileList(filePath, "key");
+        });
+    }
+
+    @Test
+    public void read_json_file_list_empty_list_returns_empty() throws IOException {
+        String filePath = "/readJsonEmptyList.json";
+        List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
+        assertEquals(new ArrayList<>(), result);
+    }
+
+    @Test
+    public void read_json_file_list_non_array_json_returns_empty() throws IOException {
+        String filePath = "/readJsonNonArray.json";
+        List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
+        assertEquals(new ArrayList<>(), result);
     }
 }

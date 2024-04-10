@@ -128,10 +128,12 @@ class EventTest {
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
         assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
         assertEquals("decisionWithoutHearingListed", Event.DECISION_WITHOUT_HEARING_LISTED.toString());
+        assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
+        assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(126, Event.values().length);
+        assertEquals(128, Event.values().length);
     }
 }
