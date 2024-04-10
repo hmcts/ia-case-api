@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ServiceRequestHandlerTest {
+class ServiceRequestHandlerTest {
 
     @Mock
     private FeePayment<AsylumCase> feePayment;
@@ -52,9 +51,9 @@ public class ServiceRequestHandlerTest {
     }
 
     @Test
-    void lr_should_make_feePayment_submit_callback() {
+    void no_journey_type_should_make_feePayment_submit_callback() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty()); // empty = not AIP
@@ -71,9 +70,28 @@ public class ServiceRequestHandlerTest {
     }
 
     @Test
+    void lr_should_make_feePayment_submit_callback() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+
+        AsylumCase responseAsylumCase = mock(AsylumCase.class);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(responseAsylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
     void aip_should_not_make_feePayment_submit_callback() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
@@ -98,6 +116,12 @@ public class ServiceRequestHandlerTest {
         assertThatThrownBy(() -> serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        ServiceRequestHandler feePayDisabledServiceRequestHandler = new ServiceRequestHandler(false, feePayment);
+        assertThatThrownBy(() -> feePayDisabledServiceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -112,8 +136,7 @@ public class ServiceRequestHandlerTest {
                 boolean canHandle = serviceRequestHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && List.of(Event.SUBMIT_APPEAL,
-                    Event.GENERATE_SERVICE_REQUEST).contains(event)) {
+                    && event == Event.GENERATE_SERVICE_REQUEST) {
 
                     assertTrue(canHandle);
                 } else {
