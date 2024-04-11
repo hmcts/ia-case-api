@@ -1,5 +1,6 @@
 {
   "description": "RIA-3763 update hearing requirements - feature flag on - not FTPA reheard",
+  "enabled": false,
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

@@ -1,5 +1,6 @@
 {
   "description": "RIA-7979 Appeal set as integrated if location is among integrated location (e.g. Glasgow)",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

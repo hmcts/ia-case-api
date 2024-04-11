@@ -1,6 +1,6 @@
 {
   "description": "RIA-7337 RIA-7340 Review hearing requirements when hearing loop and wheelchair access are requested",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

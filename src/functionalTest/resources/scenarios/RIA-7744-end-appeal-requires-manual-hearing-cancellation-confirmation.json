@@ -1,5 +1,6 @@
 {
   "description": "RIA 7744 end appeal requires manual hearing cancellation confirmation",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

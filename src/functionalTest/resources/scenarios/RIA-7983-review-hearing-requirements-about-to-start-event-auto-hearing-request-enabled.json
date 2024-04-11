@@ -1,6 +1,6 @@
 {
   "description": "RIA-7983 review hearing requirements about to start event (auto hearing request enabled)",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

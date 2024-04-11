@@ -1,6 +1,6 @@
 {
   "description": "RIA-8014 Record adjournment details auto hearing request confirmation",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
