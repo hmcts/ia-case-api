@@ -1109,7 +1109,7 @@ wa:
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-     spotInstances:
+      spotInstances:
         enabled: false   
   wa-task-monitor:
     java:
@@ -1123,7 +1123,7 @@ wa:
       environment:
          DB_READER_USERNAME: "hmcts" 
       spotInstances:
-         enabled: false   
+        enabled: false   
   wa:
     postgresql:
       enabled: false
