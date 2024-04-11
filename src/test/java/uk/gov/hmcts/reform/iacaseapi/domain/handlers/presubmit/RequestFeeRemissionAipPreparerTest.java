@@ -320,12 +320,12 @@ class RequestFeeRemissionAipPreparerTest {
             Arguments.of(AppealType.EA, APPROVED, "8000", "8000", "0", null, ASYLUM_SUPPORT_FROM_HOME_OFFICE),
             Arguments.of(AppealType.HU, APPROVED, "8000", "8000", "0", null, FEE_WAIVER_FROM_HOME_OFFICE),
             Arguments.of(AppealType.PA, APPROVED, "8000", "8000", "0", null, UNDER_18_GET_SUPPORT),
-            Arguments.of(AppealType.EA, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason", PARENT_GET_SUPPORT),
+            Arguments.of(AppealType.EU, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason", PARENT_GET_SUPPORT),
             Arguments.of(AppealType.HU, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason", I_WANT_TO_GET_HELP_WITH_FEES),
             Arguments.of(AppealType.PA, PARTIALLY_APPROVED, "8000", "4000", "4000", "A partially approved reason", ASYLUM_SUPPORT_FROM_HOME_OFFICE),
             Arguments.of(AppealType.EA, REJECTED, "8000", null, null, "A rejected reason", FEE_WAIVER_FROM_HOME_OFFICE),
             Arguments.of(AppealType.HU, REJECTED, "8000", null, null, "A rejected reason", UNDER_18_GET_SUPPORT),
-            Arguments.of(AppealType.PA, REJECTED, "8000", null, null, "A rejected reason", PARENT_GET_SUPPORT)
+            Arguments.of(AppealType.EU, REJECTED, "8000", null, null, "A rejected reason", PARENT_GET_SUPPORT)
         );
     }
 
@@ -334,7 +334,7 @@ class RequestFeeRemissionAipPreparerTest {
             Arguments.of(AppealType.EA, ASYLUM_SUPPORT_FROM_HOME_OFFICE),
             Arguments.of(AppealType.HU, FEE_WAIVER_FROM_HOME_OFFICE),
             Arguments.of(AppealType.PA, UNDER_18_GET_SUPPORT),
-            Arguments.of(AppealType.EA, PARENT_GET_SUPPORT),
+            Arguments.of(AppealType.EU, PARENT_GET_SUPPORT),
             Arguments.of(AppealType.HU, I_WANT_TO_GET_HELP_WITH_FEES)
         );
     }
