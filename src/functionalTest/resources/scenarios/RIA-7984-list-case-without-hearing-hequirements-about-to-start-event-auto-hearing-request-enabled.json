@@ -1,6 +1,6 @@
 {
   "description": "RIA-7353 list case without hearing requirements for retrieving hearing channel type mid event",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

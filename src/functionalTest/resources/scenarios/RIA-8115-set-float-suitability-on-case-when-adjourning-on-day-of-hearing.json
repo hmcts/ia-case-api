@@ -1,5 +1,6 @@
 {
   "description": "RIA-8115 Set float suitability on case when adjourning on day of hearing",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

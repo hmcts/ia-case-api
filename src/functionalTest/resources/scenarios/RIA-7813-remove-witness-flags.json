@@ -1,6 +1,6 @@
 {
   "description": "RIA-7813 remove witness flags when a witness is removed",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

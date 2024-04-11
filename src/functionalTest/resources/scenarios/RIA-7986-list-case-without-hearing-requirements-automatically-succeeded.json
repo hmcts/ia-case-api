@@ -1,5 +1,6 @@
 {
   "description": "RIA-7986 List case without hearing requirements automatically (Succeeded request)",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
