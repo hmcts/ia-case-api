@@ -275,6 +275,31 @@ class RequestFeeRemissionAipPreparerTest {
         }
     }
 
+    @Test
+    void handle_should_thow_exception_if_help_with_fees_option_is_not_present(
+    ) {
+        AppealType appealType = AppealType.HU;
+        RemissionOption previousRemissionOptionOption = I_WANT_TO_GET_HELP_WITH_FEES;
+        RemissionDetails remissionDetails = new RemissionDetails(previousRemissionOptionOption.toString(), WANT_TO_APPLY.toString(), "HWF123");
+
+        List<IdValue<RemissionDetails>> previousRemissionDetails = new ArrayList<>();
+        previousRemissionDetails.add(new IdValue<>("id1", remissionDetails));
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOptionOption));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissionDetails));
+
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
+        when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
+        when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of("4000"));
+        when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of("4000"));
+        when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("A partially approved reason"));
+
+        assertThatThrownBy(() -> requestFeeRemissionAipPreparer.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Help with fees option is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
     //If user selected "Ask for a fee remission, but previously we had 'No remission' state". In that case we need to create a new app, by overwriting previous values.
     @ParameterizedTest
     @MethodSource("previousRemissionTestData")
