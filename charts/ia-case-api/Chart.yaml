@@ -1,21 +1,21 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.44
+version: 0.0.43
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.2.0
+    version: 5.0.0
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: ccd
-    version: ~8.0.28
+    version: 8.0.27
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
-    version: ~1.0.16
+    version: ~1.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-webapp.enabled
   - name: idam-pr
