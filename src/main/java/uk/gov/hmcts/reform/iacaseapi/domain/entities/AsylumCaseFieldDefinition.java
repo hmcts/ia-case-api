@@ -1581,6 +1581,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
 
+    IS_ADMIN(
+        "isAdmin", new TypeReference<YesOrNo>() {}),
+
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
     // This is not actually a real case field. It is used to determine
