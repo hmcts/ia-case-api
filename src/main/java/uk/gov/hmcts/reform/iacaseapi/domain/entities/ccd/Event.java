@@ -114,6 +114,8 @@ public enum Event {
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
     MARK_EVIDENCE_AS_REVIEWED("markEvidenceAsReviewed"),
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
+    RE_TRIGGER_WA_BULK_TASKS("reTriggerWaBulkTasks"),
+    RE_TRIGGER_WA_TASKS("reTriggerWaTasks"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),

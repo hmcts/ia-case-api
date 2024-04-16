@@ -187,6 +187,9 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     classpath = sourceSets.functionalTest.runtimeClasspath
     finalizedBy aggregate
     testLogging {
+        showStandardStreams = true
+        showCauses = true
+        showExceptions = true
         showStackTraces = true
     }
 }
@@ -283,30 +286,25 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.0') {
             entry 'jackson-databind'
             entry 'jackson-core'
             entry 'jackson-annotations'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.16.0') {
             entry 'jackson-dataformat-csv'
             entry 'jackson-dataformat-yaml'
        }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.16.0') {
             entry 'jackson-datatype-jsr310'
             entry 'jackson-datatype-jdk8'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.15.2') {
+        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.16.0') {
             entry 'jackson-module-parameter-names'
         }
-
-        dependencySet(group: 'net.minidev', version: '2.4.10') {
-            entry 'json-smart'
-        }
-
     }
 }
 
@@ -334,7 +332,6 @@ dependencies {
 
     implementation group: 'org.springframework.security', name: 'spring-security-test'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
     implementation group: 'org.springframework', name: 'spring-context-support'
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
@@ -355,7 +352,7 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.3'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.4'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
     implementation group: 'com.google.guava', name: 'guava'
@@ -369,8 +366,19 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
-    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.1-RELEASE'
+
+    implementation(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0') {
+        exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    }
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
+        exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    }
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
+        exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    }
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.2-RELEASE'
+
 
     compileOnly 'org.projectlombok:lombok'
 
@@ -380,7 +388,11 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-crypto'
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.1'
+
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
+
+    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"

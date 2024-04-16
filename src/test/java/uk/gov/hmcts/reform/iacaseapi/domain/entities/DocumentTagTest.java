@@ -22,6 +22,7 @@ class DocumentTagTest {
         assertEquals("decisionAndReasons", DocumentTag.DECISION_AND_REASONS_DRAFT.toString());
         assertEquals("decisionAndReasonsCoverLetter", DocumentTag.DECISION_AND_REASONS_COVER_LETTER.toString());
         assertEquals("finalDecisionAndReasonsPdf", DocumentTag.FINAL_DECISION_AND_REASONS_PDF.toString());
+        assertEquals("finalDecisionAndReasonsDocument", DocumentTag.FINAL_DECISION_AND_REASONS_DOCUMENT.toString());
         assertEquals("submitCaseBundle", DocumentTag.APPEAL_SKELETON_BUNDLE.toString());
         assertEquals("endAppeal", DocumentTag.END_APPEAL.toString());
         assertEquals("ftpaAppellant", DocumentTag.FTPA_APPELLANT.toString());

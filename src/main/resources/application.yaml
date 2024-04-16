@@ -53,6 +53,10 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
+  cache:
+    cache-names: userInfoCache, accessTokenCache
+    caffeine:
+      spec: expireAfterAccess=3600s
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -307,6 +311,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "generateServiceRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -384,6 +389,11 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
+      - "reTriggerWaTasks"
+      - "reTriggerWaBulkTasks"
+    caseworker-ia-task-retrigger:
+      - "reTriggerWaTasks"
+      - "reTriggerWaBulkTasks"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -437,3 +447,5 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+caseIdListJsonLocation: caseIdForRetrigger.json

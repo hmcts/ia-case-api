@@ -19,6 +19,7 @@ public enum DocumentTag {
     DECISION_AND_REASONS_DRAFT("decisionAndReasons"),
     DECISION_AND_REASONS_COVER_LETTER("decisionAndReasonsCoverLetter"),
     FINAL_DECISION_AND_REASONS_PDF("finalDecisionAndReasonsPdf"),
+    FINAL_DECISION_AND_REASONS_DOCUMENT("finalDecisionAndReasonsDocument"),
     APPEAL_SKELETON_BUNDLE("submitCaseBundle"),
     END_APPEAL("endAppeal"),
     FTPA_APPELLANT("ftpaAppellant"),
