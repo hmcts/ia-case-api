@@ -16,15 +16,24 @@ import lombok.Value;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StrategicCaseFlag {
 
+    public static final String ROLE_ON_CASE_APPLICANT = "Applicant";
+    public static final String ROLE_ON_CASE_FCS = "FCS";
+
     String partyName;
     String roleOnCase;
     @JsonProperty("details")
     List<CaseFlagDetail> details;
 
-    public StrategicCaseFlag(String appellantNameForDisplay) {
-        this.partyName = appellantNameForDisplay;
-        this.roleOnCase = "Appellant";
+    public StrategicCaseFlag(String partyFullName, String roleOnCase) {
+        this.partyName = partyFullName;
+        this.roleOnCase = roleOnCase;
         this.details = Collections.emptyList();
+    }
+
+    public StrategicCaseFlag(String partyFullName, String roleOnCase, List<CaseFlagDetail> details) {
+        this.partyName = partyFullName;
+        this.roleOnCase = roleOnCase;
+        this.details = details;
     }
 
     public StrategicCaseFlag() {

@@ -1,0 +1,26 @@
+{
+  "description": "Listing case by Admin Officer confirmation (post-submit REST call) - relisting",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8348,
+      "eventId": "caseListing",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "listingEvent": "relisting"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have relisted the case",
+      "body": "### What happens next\n\nThe hearing notice will be sent to all parties and is available in the documents tab."
+    }
+  }
+}

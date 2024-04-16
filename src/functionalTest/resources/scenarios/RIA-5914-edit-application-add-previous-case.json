@@ -24,6 +24,7 @@
       "replacements": {
         "hasPreviousBailApplication": "Yes",
         "previousBailApplicationNumber": "1111222233334444",
+        "hasFinancialCondSupporter": null,
         "interpreterLanguages": null
       }
     }

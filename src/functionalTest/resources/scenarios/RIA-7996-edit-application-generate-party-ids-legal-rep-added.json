@@ -1,0 +1,39 @@
+{
+  "description": "Edit application - New party IDs generated for legal rep added",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 7996,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "isLegalRep": "No",
+          "hasLegalRep": "Yes",
+          "isLegallyRepresentedForFlag": "Yes",
+          "hasFinancialCondSupporter": "No",
+          "legalRepIndividualPartyId": null,
+          "legalRepOrganisationPartyId": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "isLegalRep": "No",
+        "hasLegalRep": "Yes",
+        "isLegallyRepresentedForFlag": "Yes",
+        "hasFinancialCondSupporter": null,
+        "legalRepIndividualPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepOrganisationPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

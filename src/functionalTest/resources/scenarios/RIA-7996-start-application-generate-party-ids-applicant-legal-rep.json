@@ -1,0 +1,37 @@
+{
+  "description": "Start application - Party IDs generated for applicant and legal rep",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 7996,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "isLegalRep": "No",
+          "hasLegalRep": "Yes",
+          "isLegallyRepresentedForFlag": "Yes",
+          "hasFinancialCondSupporter": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "isLegalRep": "No",
+        "hasLegalRep": "Yes",
+        "isLegallyRepresentedForFlag": "Yes",
+        "hasFinancialCondSupporter": "No",
+        "applicantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepIndividualPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepOrganisationPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/"
+      }
+    }
+  }
+}

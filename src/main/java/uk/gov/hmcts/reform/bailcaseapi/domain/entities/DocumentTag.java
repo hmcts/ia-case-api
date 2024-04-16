@@ -14,6 +14,7 @@ public enum DocumentTag {
     BAIL_SUBMISSION("bailSubmission"),
     B1_DOCUMENT("b1Document"),
     BAIL_END_APPLICATION("bailEndApplication"),
+    BAIL_NOTICE_OF_HEARING("bailNoticeOfHearing"),
 
     @JsonEnumDefaultValue
     NONE("");

@@ -10,6 +10,14 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES;
@@ -29,6 +37,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_SUPPORTER3;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_SUPPORTER4;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_GROUNDS_FOR_BAIL;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_ID;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_LEGAL_REP_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_PERSONAL_INFO_DETAILS;
@@ -183,6 +192,8 @@ public class ShowApplicationHandlerTest {
             .write(PREV_APP_FINANCIAL_COND_SUPPORTER3, "Supporter 3 label");
         verify(bailCase, times(1))
             .write(PREV_APP_FINANCIAL_COND_SUPPORTER4, "Supporter 4 label");
+        verify(bailCase, times(1))
+            .write(PREV_APP_HEARING_DETAILS, "Hearing label");
     }
 
     @Test
@@ -280,6 +291,10 @@ public class ShowApplicationHandlerTest {
             .thenReturn("Documents label");
         when(showPreviousApplicationService.getDirectionLabel(previousBailCase))
             .thenReturn("Direction label");
+        when(showPreviousApplicationService.getCaseNoteLabel(previousBailCase))
+            .thenReturn("CaseNote label");
+        when(showPreviousApplicationService.getHearingDetails(previousBailCase))
+            .thenReturn("Hearing label");
         when(showPreviousApplicationService.getHearingReqDetails(previousBailCase))
             .thenReturn("Hearing req label");
         when(showPreviousApplicationService.getSubmissionDetails(previousBailCase))
@@ -306,7 +321,9 @@ public class ShowApplicationHandlerTest {
                                                       SUPPORTER_NATIONALITY,
                                                       SUPPORTER_HAS_PASSPORT,
                                                       SUPPORTER_PASSPORT,
-                                                      FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES))
+                                                      FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES,
+                                                      FCS1_INTERPRETER_SPOKEN_LANGUAGE,
+                                                      FCS1_INTERPRETER_SIGN_LANGUAGE))
             .thenReturn("Supporter 1 label");
         when(showPreviousApplicationService
                  .getFinancialConditionSupporterLabel(previousBailCase,
@@ -324,7 +341,9 @@ public class ShowApplicationHandlerTest {
                                                       SUPPORTER_2_NATIONALITY,
                                                       SUPPORTER_2_HAS_PASSPORT,
                                                       SUPPORTER_2_PASSPORT,
-                                                      FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES))
+                                                      FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES,
+                                                      FCS2_INTERPRETER_SPOKEN_LANGUAGE,
+                                                      FCS2_INTERPRETER_SIGN_LANGUAGE))
             .thenReturn("Supporter 2 label");
         when(showPreviousApplicationService
                  .getFinancialConditionSupporterLabel(previousBailCase,
@@ -342,7 +361,9 @@ public class ShowApplicationHandlerTest {
                                                       SUPPORTER_3_NATIONALITY,
                                                       SUPPORTER_3_HAS_PASSPORT,
                                                       SUPPORTER_3_PASSPORT,
-                                                      FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES))
+                                                      FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES,
+                                                      FCS3_INTERPRETER_SPOKEN_LANGUAGE,
+                                                      FCS3_INTERPRETER_SIGN_LANGUAGE))
             .thenReturn("Supporter 3 label");
         when(showPreviousApplicationService
                  .getFinancialConditionSupporterLabel(previousBailCase,
@@ -360,7 +381,9 @@ public class ShowApplicationHandlerTest {
                                                       SUPPORTER_4_NATIONALITY,
                                                       SUPPORTER_4_HAS_PASSPORT,
                                                       SUPPORTER_4_PASSPORT,
-                                                      FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES))
+                                                      FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES,
+                                                      FCS4_INTERPRETER_SPOKEN_LANGUAGE,
+                                                      FCS4_INTERPRETER_SIGN_LANGUAGE))
             .thenReturn("Supporter 4 label");
         when(showPreviousApplicationService.getGroundsForBail(previousBailCase))
             .thenReturn("Bail grounds label");

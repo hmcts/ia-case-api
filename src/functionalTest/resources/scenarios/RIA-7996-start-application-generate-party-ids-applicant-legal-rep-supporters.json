@@ -1,0 +1,47 @@
+{
+  "description": "Start application - Party IDs generated for applicant, legal rep and 4 supporters",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 7996,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "isLegalRep": "No",
+          "hasLegalRep": "Yes",
+          "isLegallyRepresentedForFlag": "Yes",
+          "hasFinancialCondSupporter": "Yes",
+          "hasFinancialCondSupporter2": "Yes",
+          "hasFinancialCondSupporter3": "Yes",
+          "hasFinancialCondSupporter4": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "isLegalRep": "No",
+        "hasLegalRep": "Yes",
+        "isLegallyRepresentedForFlag": "Yes",
+        "hasFinancialCondSupporter": "Yes",
+        "hasFinancialCondSupporter2": "Yes",
+        "hasFinancialCondSupporter3": "Yes",
+        "hasFinancialCondSupporter4": "Yes",
+        "applicantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepIndividualPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "legalRepOrganisationPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "supporter1PartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "supporter2PartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "supporter3PartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "supporter4PartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/"
+      }
+    }
+  }
+}

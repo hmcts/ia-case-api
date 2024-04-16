@@ -17,6 +17,7 @@ java:
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     CASE_DOCUMENT_AM_URL: "http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    COMMON_DATA_API: http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   keyVaults:
     ia:
       resourceGroup: ia

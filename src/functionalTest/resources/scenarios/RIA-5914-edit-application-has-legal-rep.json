@@ -23,7 +23,8 @@
       "replacements": {
         "hasLegalRep": "Yes",
         "isLegallyRepresentedForFlag": "Yes",
-        "interpreterLanguages": null
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
       }
     }
   }

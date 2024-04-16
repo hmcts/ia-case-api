@@ -15,7 +15,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FULL_NAME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL;
 
@@ -33,7 +32,7 @@ class BailCaseNameFixerTest {
     @BeforeEach
     public void setUp() {
         bailFieldCaseNameFixer = new BailFieldCaseNameFixer(CASE_NAME_HMCTS_INTERNAL, APPLICANT_GIVEN_NAMES,
-                                                            APPLICANT_FAMILY_NAME, APPLICANT_FULL_NAME
+                                                            APPLICANT_FAMILY_NAME
         );
         bailCase = new BailCase();
     }
@@ -105,15 +104,6 @@ class BailCaseNameFixerTest {
 
         verify(bailCaseMock, times(1)).write(
             BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL, "John Smith");
-    }
-
-    @Test
-    void should_set_formatted_case_name_hmcts_internal_to_full_name_if_populated() {
-        when(bailCaseMock.read(APPLICANT_FULL_NAME)).thenReturn(Optional.of("John H.  Smith"));
-        setupAndTestForSuccessfulFix();
-
-        verify(bailCaseMock, times(1)).write(
-            BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL, "John H. Smith");
     }
 
     private void setupAndTestForSuccessfulFix() {

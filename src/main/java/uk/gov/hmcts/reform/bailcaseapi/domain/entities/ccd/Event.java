@@ -31,8 +31,11 @@ public enum Event {
     CREATE_BAIL_CASE_LINK("createBailCaseLink"),
     MAINTAIN_BAIL_CASE_LINKS("maintainBailCaseLinks"),
     CREATE_FLAG("createFlag"),
+    CONFIRM_DETENTION_LOCATION("confirmDetentionLocation"),
+    UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
+    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
+    CASE_LISTING("caseListing"),
     IMA_STATUS("imaStatus"),
-
 
 
     @JsonEnumDefaultValue

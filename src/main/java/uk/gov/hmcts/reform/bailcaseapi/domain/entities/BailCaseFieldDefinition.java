@@ -1,15 +1,11 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.*;
 
 import java.util.Arrays;
 import java.util.List;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 
 public enum BailCaseFieldDefinition {
     HAS_PREVIOUS_BAIL_APPLICATION(
@@ -103,7 +99,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_ADDRESS_DETAILS(
         "supporterAddressDetails", new TypeReference<AddressUK>(){}),
     SUPPORTER_CONTACT_DETAILS(
-        "supporterContactDetails", new TypeReference<String>(){}),
+        "supporterContactDetails", new TypeReference<List<ContactPreference>>(){}),
     SUPPORTER_TELEPHONE_NUMBER(
         "supporterTelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_MOBILE_NUMBER(
@@ -121,7 +117,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_NATIONALITY(
         "supporterNationality", new TypeReference<List<IdValue<NationalityFieldValue>>>(){}),
     SUPPORTER_HAS_PASSPORT(
-        "supporterHasPassport", new TypeReference<String>(){}),
+        "supporterHasPassport", new TypeReference<YesOrNo>(){}),
     SUPPORTER_PASSPORT(
         "supporterPassport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES(
@@ -135,7 +131,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_2_ADDRESS_DETAILS(
         "supporter2AddressDetails", new TypeReference<AddressUK>(){}),
     SUPPORTER_2_CONTACT_DETAILS(
-        "supporter2ContactDetails", new TypeReference<String>(){}),
+        "supporter2ContactDetails", new TypeReference<List<ContactPreference>>(){}),
     SUPPORTER_2_TELEPHONE_NUMBER(
         "supporter2TelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_2_MOBILE_NUMBER(
@@ -153,7 +149,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_2_NATIONALITY(
         "supporter2Nationality", new TypeReference<List<IdValue<NationalityFieldValue>>>(){}),
     SUPPORTER_2_HAS_PASSPORT(
-        "supporter2HasPassport", new TypeReference<String>(){}),
+        "supporter2HasPassport", new TypeReference<YesOrNo>(){}),
     SUPPORTER_2_PASSPORT(
         "supporter2Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES(
@@ -167,7 +163,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_3_ADDRESS_DETAILS(
         "supporter3AddressDetails", new TypeReference<AddressUK>(){}),
     SUPPORTER_3_CONTACT_DETAILS(
-        "supporter3ContactDetails", new TypeReference<String>(){}),
+        "supporter3ContactDetails", new TypeReference<List<ContactPreference>>(){}),
     SUPPORTER_3_TELEPHONE_NUMBER(
         "supporter3TelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_3_MOBILE_NUMBER(
@@ -185,7 +181,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_3_NATIONALITY(
         "supporter3Nationality", new TypeReference<List<IdValue<NationalityFieldValue>>>(){}),
     SUPPORTER_3_HAS_PASSPORT(
-        "supporter3HasPassport", new TypeReference<String>(){}),
+        "supporter3HasPassport", new TypeReference<YesOrNo>(){}),
     SUPPORTER_3_PASSPORT(
         "supporter3Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES(
@@ -199,7 +195,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_4_ADDRESS_DETAILS(
         "supporter4AddressDetails", new TypeReference<AddressUK>(){}),
     SUPPORTER_4_CONTACT_DETAILS(
-        "supporter4ContactDetails", new TypeReference<String>(){}),
+        "supporter4ContactDetails", new TypeReference<List<ContactPreference>>(){}),
     SUPPORTER_4_TELEPHONE_NUMBER(
         "supporter4TelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_4_MOBILE_NUMBER(
@@ -217,7 +213,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_4_NATIONALITY(
         "supporter4Nationality", new TypeReference<List<IdValue<NationalityFieldValue>>>(){}),
     SUPPORTER_4_HAS_PASSPORT(
-        "supporter4HasPassport", new TypeReference<String>(){}),
+        "supporter4HasPassport", new TypeReference<YesOrNo>(){}),
     SUPPORTER_4_PASSPORT(
         "supporter4Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES(
@@ -240,6 +236,8 @@ public enum BailCaseFieldDefinition {
         "legalRepEmail", new TypeReference<String>(){}),
     LEGAL_REP_NAME(
         "legalRepName", new TypeReference<String>(){}),
+    LEGAL_REP_FAMILY_NAME(
+        "legalRepFamilyName", new TypeReference<String>(){}),
     LEGAL_REP_PHONE(
         "legalRepPhone", new TypeReference<String>(){}),
     LEGAL_REP_REFERENCE(
@@ -376,6 +374,8 @@ public enum BailCaseFieldDefinition {
         "decisionUnsignedDocument", new TypeReference<Document>(){}),
     TRIBUNAL_DOCUMENTS_WITH_METADATA(
         "tribunalDocumentsWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    HEARING_DOCUMENTS(
+        "hearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     END_APPLICATION_DATE(
         "endApplicationDate", new TypeReference<String>(){}),
     END_APPLICATION_OUTCOME(
@@ -413,7 +413,9 @@ public enum BailCaseFieldDefinition {
     PREV_APP_DECISION_DETAILS_LABEL(
         "prevAppDecisionDetailsLabel", new TypeReference<String>() {}),
     PREV_APP_DIRECTION_DETAILS(
-        "prevAppDirectionDetails", new TypeReference<String>() {}),
+        "prevAppDirectionDetails", new TypeReference<String>() {}),    
+    PREV_APP_HEARING_DETAILS(
+        "prevAppHearingDetails", new TypeReference<String>() {}),
     PREV_APP_HEARING_REQ_DETAILS(
         "prevAppHearingReqDetails", new TypeReference<String>() {}),
     PREV_APP_PERSONAL_INFO_DETAILS(
@@ -448,6 +450,8 @@ public enum BailCaseFieldDefinition {
         "updateLegalRepEmail1", new TypeReference<String>(){}),
     UPDATE_LEGAL_REP_NAME(
         "updateLegalRepName", new TypeReference<String>(){}),
+    UPDATE_LEGAL_REP_FAMILY_NAME(
+        "updateLegalRepFamilyName", new TypeReference<String>(){}),
     UPDATE_LEGAL_REP_REFERENCE(
         "updateLegalRepReference", new TypeReference<String>(){}),
     UPDATE_LEGAL_REP_PHONE(
@@ -462,6 +466,156 @@ public enum BailCaseFieldDefinition {
         "appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {}),
     CASE_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
+
+    APPLICANT_INTERPRETER_SPOKEN_LANGUAGE(
+        "applicantInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPLICANT_INTERPRETER_SIGN_LANGUAGE(
+        "applicantInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPLICANT_INTERPRETER_LANGUAGE_CATEGORY(
+        "applicantInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    FCS_INTERPRETER_YESNO(
+            "fcsInterpreterYesNo", new TypeReference<YesOrNo>(){}),
+
+    FCS1_INTERPRETER_LANGUAGE_CATEGORY(
+            "fcs1InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    FCS1_INTERPRETER_SPOKEN_LANGUAGE(
+            "fcs1InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS1_INTERPRETER_SIGN_LANGUAGE(
+            "fcs1InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS2_INTERPRETER_LANGUAGE_CATEGORY(
+            "fcs2InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    FCS2_INTERPRETER_SPOKEN_LANGUAGE(
+            "fcs2InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS2_INTERPRETER_SIGN_LANGUAGE(
+            "fcs2InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS3_INTERPRETER_LANGUAGE_CATEGORY(
+            "fcs3InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    FCS3_INTERPRETER_SPOKEN_LANGUAGE(
+            "fcs3InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS3_INTERPRETER_SIGN_LANGUAGE(
+            "fcs3InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS4_INTERPRETER_LANGUAGE_CATEGORY(
+            "fcs4InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    FCS4_INTERPRETER_SPOKEN_LANGUAGE(
+            "fcs4InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS4_INTERPRETER_SIGN_LANGUAGE(
+            "fcs4InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    FCS_LEVEL_FLAGS(
+        "fcsLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
+
+    APPLICANT_PARTY_ID(
+        "applicantPartyId", new TypeReference<String>(){}),
+
+    LEGAL_REP_INDIVIDUAL_PARTY_ID(
+        "legalRepIndividualPartyId", new TypeReference<String>(){}),
+
+    LEGAL_REP_ORGANISATION_PARTY_ID(
+        "legalRepOrganisationPartyId", new TypeReference<String>(){}),
+
+    SUPPORTER_1_PARTY_ID(
+        "supporter1PartyId", new TypeReference<String>(){}),
+
+    SUPPORTER_2_PARTY_ID(
+        "supporter2PartyId", new TypeReference<String>(){}),
+
+    SUPPORTER_3_PARTY_ID(
+        "supporter3PartyId", new TypeReference<String>(){}),
+
+    SUPPORTER_4_PARTY_ID(
+        "supporter4PartyId", new TypeReference<String>(){}),
+    INTERPRETER_DETAILS(
+        "interpreterDetails", new TypeReference<List<IdValue<InterpreterDetails>>>() {}),
+
+    APPLICANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
+        "applicantInterpreterSpokenLanguageBooking", new TypeReference<String>(){}),
+
+    APPLICANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS(
+        "applicantInterpreterSpokenLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>(){}),
+
+    APPLICANT_INTERPRETER_SIGN_LANGUAGE_BOOKING(
+        "applicantInterpreterSignLanguageBooking", new TypeReference<String>(){}),
+
+    APPLICANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS(
+        "applicantInterpreterSignLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1(
+        "fcsInterpreterSpokenLanguageBooking1", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1(
+        "fcsInterpreterSpokenLanguageBookingStatus1", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2(
+        "fcsInterpreterSpokenLanguageBooking2", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2(
+        "fcsInterpreterSpokenLanguageBookingStatus2", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3(
+        "fcsInterpreterSpokenLanguageBooking3", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3(
+        "fcsInterpreterSpokenLanguageBookingStatus3", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4(
+        "fcsInterpreterSpokenLanguageBooking4", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4(
+        "fcsInterpreterSpokenLanguageBookingStatus4", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1(
+        "fcsInterpreterSignLanguageBooking1", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1(
+        "fcsInterpreterSignLanguageBookingStatus1", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2(
+        "fcsInterpreterSignLanguageBooking2", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2(
+        "fcsInterpreterSignLanguageBookingStatus2", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3(
+        "fcsInterpreterSignLanguageBooking3", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3(
+        "fcsInterpreterSignLanguageBookingStatus3", new TypeReference<InterpreterBookingStatus>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4(
+        "fcsInterpreterSignLanguageBooking4", new TypeReference<String>(){}),
+
+    FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4(
+        "fcsInterpreterSignLanguageBookingStatus4", new TypeReference<InterpreterBookingStatus>(){}),
+
+    IS_DETENTION_LOCATION_CORRECT(
+        "isDetentionLocationCorrect", new TypeReference<YesOrNo>(){}),
+
+    LISTING_EVENT(
+        "listingEvent", new TypeReference<ListingEvent>(){}),
+
+    UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE(
+        "uploadBailSummaryActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    LIST_CASE_HEARING_DATE(
+        "listingHearingDate", new TypeReference<String>(){}),
+
+    LISTING_LOCATION(
+        "listingLocation", new TypeReference<ListingHearingCentre>(){}),
+
     HO_HAS_IMA_STATUS(
         "hoHasImaStatus", new TypeReference<YesOrNo>(){}),
     ADMIN_HAS_IMA_STATUS(

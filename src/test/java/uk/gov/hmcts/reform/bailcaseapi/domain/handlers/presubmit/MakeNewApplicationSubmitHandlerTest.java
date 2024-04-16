@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +46,7 @@ class MakeNewApplicationSubmitHandlerTest {
     @Mock
     private BailCase bailCaseBefore;
     @Mock
-    private FeatureToggler featureToggler;
+    private FeatureToggleService featureToggleService;
     @Mock
     private MakeNewApplicationService makeNewApplicationService;
 
@@ -55,7 +55,7 @@ class MakeNewApplicationSubmitHandlerTest {
     @BeforeEach
     public void setUp() {
         makeNewApplicationSubmitHandler =
-            new MakeNewApplicationSubmitHandler(makeNewApplicationService, featureToggler);
+            new MakeNewApplicationSubmitHandler(makeNewApplicationService, featureToggleService);
     }
 
     @Test
@@ -77,7 +77,7 @@ class MakeNewApplicationSubmitHandlerTest {
 
         verify(makeNewApplicationService, times(1)).clearFieldsAboutToSubmit(bailCase);
         verify(makeNewApplicationService, times(1)).appendPriorApplication(bailCase, bailCaseBefore);
-        when(featureToggler.getValue("ima-feature-flag", false)).thenReturn(false);
+        when(featureToggleService.imaEnabled()).thenReturn(false);
     }
 
     @Test
@@ -115,7 +115,7 @@ class MakeNewApplicationSubmitHandlerTest {
     @ParameterizedTest
     @CsvSource({"true", "false"})
     void should_set_ima_field(boolean featureFlag) {
-        when(featureToggler.getValue("ima-feature-flag", false)).thenReturn(featureFlag);
+        when(featureToggleService.imaEnabled()).thenReturn(featureFlag);
         when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));

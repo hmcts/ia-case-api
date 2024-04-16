@@ -25,7 +25,8 @@
         "detentionFacility": "Brookhouse",
         "ircName": "Brookhouse",
         "hearingCentre": "taylorHouse",
-        "interpreterLanguages": null
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
       }
     }
   }

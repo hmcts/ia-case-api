@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentGenerator;
-
-import java.util.List;
 
 @Component
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<BailCase> {
@@ -46,15 +45,15 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<BailCas
     }
 
     private List<Event> getEventsToHandle() {
-        List<Event> eventsToHandle = Lists.newArrayList(
+        return Lists.newArrayList(
             Event.SUBMIT_APPLICATION,
             Event.RECORD_THE_DECISION,
             Event.END_APPLICATION,
             Event.MAKE_NEW_APPLICATION,
             Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT,
-            Event.UPLOAD_SIGNED_DECISION_NOTICE
+            Event.UPLOAD_SIGNED_DECISION_NOTICE,
+            Event.CASE_LISTING
         );
-        return eventsToHandle;
     }
 
     @Override

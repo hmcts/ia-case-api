@@ -14,8 +14,7 @@ public class BailCaseDataConfiguration {
         return new BailFieldCaseNameFixer(
             BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL,
             BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES,
-            BailCaseFieldDefinition.APPLICANT_FAMILY_NAME,
-            BailCaseFieldDefinition.APPLICANT_FULL_NAME);
+            BailCaseFieldDefinition.APPLICANT_FAMILY_NAME);
     }
 
 }

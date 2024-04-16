@@ -2,20 +2,16 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.PriorApplication;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
 public class MakeNewApplicationService {
@@ -135,6 +131,7 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.IS_IMA_ENABLED.value());
 
     private static final List<String> VALID_ABOUT_TO_SUBMIT_MAKE_NEW_APPLICATION_FIELDS = List.of(
+        BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL.value(),
         BailCaseFieldDefinition.BAIL_REFERENCE_NUMBER.value(),
         BailCaseFieldDefinition.PRIOR_APPLICATIONS.value(),
         BailCaseFieldDefinition.IS_ADMIN.value(),
@@ -181,6 +178,10 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.SUPPORTER_NATIONALITY.value(),
         BailCaseFieldDefinition.SUPPORTER_HAS_PASSPORT.value(),
         BailCaseFieldDefinition.SUPPORTER_PASSPORT.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_YESNO.value(),
+        BailCaseFieldDefinition.FCS1_INTERPRETER_LANGUAGE_CATEGORY.value(),
+        BailCaseFieldDefinition.FCS1_INTERPRETER_SIGN_LANGUAGE.value(),
+        BailCaseFieldDefinition.FCS1_INTERPRETER_SPOKEN_LANGUAGE.value(),
         BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES.value(),
         BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER_2.value(),
         BailCaseFieldDefinition.SUPPORTER_2_GIVEN_NAMES.value(),
@@ -197,6 +198,9 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.SUPPORTER_2_NATIONALITY.value(),
         BailCaseFieldDefinition.SUPPORTER_2_HAS_PASSPORT.value(),
         BailCaseFieldDefinition.SUPPORTER_2_PASSPORT.value(),
+        BailCaseFieldDefinition.FCS2_INTERPRETER_LANGUAGE_CATEGORY.value(),
+        BailCaseFieldDefinition.FCS2_INTERPRETER_SIGN_LANGUAGE.value(),
+        BailCaseFieldDefinition.FCS2_INTERPRETER_SPOKEN_LANGUAGE.value(),
         BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES.value(),
         BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER_3.value(),
         BailCaseFieldDefinition.SUPPORTER_3_GIVEN_NAMES.value(),
@@ -213,6 +217,9 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.SUPPORTER_3_NATIONALITY.value(),
         BailCaseFieldDefinition.SUPPORTER_3_HAS_PASSPORT.value(),
         BailCaseFieldDefinition.SUPPORTER_3_PASSPORT.value(),
+        BailCaseFieldDefinition.FCS3_INTERPRETER_LANGUAGE_CATEGORY.value(),
+        BailCaseFieldDefinition.FCS3_INTERPRETER_SIGN_LANGUAGE.value(),
+        BailCaseFieldDefinition.FCS3_INTERPRETER_SPOKEN_LANGUAGE.value(),
         BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES.value(),
         BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER_4.value(),
         BailCaseFieldDefinition.SUPPORTER_4_GIVEN_NAMES.value(),
@@ -229,6 +236,9 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.SUPPORTER_4_NATIONALITY.value(),
         BailCaseFieldDefinition.SUPPORTER_4_HAS_PASSPORT.value(),
         BailCaseFieldDefinition.SUPPORTER_4_PASSPORT.value(),
+        BailCaseFieldDefinition.FCS4_INTERPRETER_LANGUAGE_CATEGORY.value(),
+        BailCaseFieldDefinition.FCS4_INTERPRETER_SIGN_LANGUAGE.value(),
+        BailCaseFieldDefinition.FCS4_INTERPRETER_SPOKEN_LANGUAGE.value(),
         BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES.value(),
         BailCaseFieldDefinition.GROUNDS_FOR_BAIL_REASONS.value(),
         BailCaseFieldDefinition.GROUNDS_FOR_BAIL_PROVIDE_EVIDENCE_OPTION.value(),
@@ -237,6 +247,9 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS.value(),
         BailCaseFieldDefinition.INTERPRETER_YESNO.value(),
         BailCaseFieldDefinition.INTERPRETER_LANGUAGES.value(),
+        BailCaseFieldDefinition.APPLICANT_INTERPRETER_SPOKEN_LANGUAGE.value(),
+        BailCaseFieldDefinition.APPLICANT_INTERPRETER_SIGN_LANGUAGE.value(),
+        BailCaseFieldDefinition.APPLICANT_INTERPRETER_LANGUAGE_CATEGORY.value(),
         BailCaseFieldDefinition.DISABILITY_YESNO.value(),
         BailCaseFieldDefinition.APPLICANT_DISABILITY_DETAILS.value(),
         BailCaseFieldDefinition.VIDEO_HEARING_YESNO.value(),
@@ -246,9 +259,32 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.IS_LEGAL_REP.value(),
         BailCaseFieldDefinition.LEGAL_REP_COMPANY.value(),
         BailCaseFieldDefinition.LEGAL_REP_NAME.value(),
+        BailCaseFieldDefinition.LEGAL_REP_FAMILY_NAME.value(),
         BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS.value(),
         BailCaseFieldDefinition.LEGAL_REP_PHONE.value(),
         BailCaseFieldDefinition.LEGAL_REP_REFERENCE.value(),
         BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS.value(),
-        BailCaseFieldDefinition.CASE_NOTES.value());
+        BailCaseFieldDefinition.CASE_NOTES.value(),
+        BailCaseFieldDefinition.APPLICANT_PARTY_ID.value(),
+        BailCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID.value(),
+        BailCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID.value(),
+        BailCaseFieldDefinition.SUPPORTER_1_PARTY_ID.value(),
+        BailCaseFieldDefinition.SUPPORTER_2_PARTY_ID.value(),
+        BailCaseFieldDefinition.SUPPORTER_3_PARTY_ID.value(),
+        BailCaseFieldDefinition.SUPPORTER_4_PARTY_ID.value(),
+        BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG.value(),
+        BailCaseFieldDefinition.APPLICANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS.value(),
+        BailCaseFieldDefinition.APPLICANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3.value(),
+        BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4.value(),
+        BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER.value(),
+        BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY.value(),
+        BailCaseFieldDefinition.LISTING_LOCATION.value(),
+        BailCaseFieldDefinition.LIST_CASE_HEARING_DATE.value());
 }

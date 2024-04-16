@@ -2,7 +2,7 @@
   "description": "Start the application by Legal Representative - append LR ref data",
   "request": {
     "uri": "/bail/ccdAboutToStart",
-    "credentials": "LegalRepresentativeOrgSuccess",
+    "credentials": "LegalRepresentativeOrgA",
     "input": {
       "id": 1111,
       "eventId": "startApplication",
@@ -23,7 +23,6 @@
       "replacements": {
         "applicationSubmittedBy": "Legal Representative",
         "legalRepEmail":"ialegalreporgcreator12@mailnesia.com",
-        "legalRepCompany":"ia-legal-rep-org777",
         "isAdmin": "No",
         "isLegalRep": "Yes"
       }

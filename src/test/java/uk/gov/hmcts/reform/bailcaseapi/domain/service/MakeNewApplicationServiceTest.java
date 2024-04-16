@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_USER;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_LOCATION;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRIOR_APPLICATIONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS;
@@ -29,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.PriorApplication;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
@@ -199,5 +202,16 @@ class MakeNewApplicationServiceTest {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
         assertTrue(bailCase.containsKey(CASE_NOTES.value()));
+    }
+
+    @Test
+    void should_keep_hearing_details_about_to_submit() {
+        BailCase bailCase = new BailCase();
+        bailCase.write(LISTING_LOCATION, ListingHearingCentre.BIRMINGHAM);
+        bailCase.write(LIST_CASE_HEARING_DATE, "2024-04-04T08:00:00.000");
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
+        assertTrue(bailCase.containsKey(LISTING_LOCATION.value()));
+        assertTrue(bailCase.containsKey(LIST_CASE_HEARING_DATE.value()));
     }
 }

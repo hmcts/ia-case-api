@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -45,11 +45,11 @@ class ImaFeatureToggleHandlerTest {
 
     private ImaFeatureToggleHandler imaFeatureToggleHandler;
     @Mock
-    private FeatureToggler featureToggler;
+    private FeatureToggleService featureToggleService;
 
     @BeforeEach
     public void setUp() {
-        imaFeatureToggleHandler = new ImaFeatureToggleHandler(featureToggler);
+        imaFeatureToggleHandler = new ImaFeatureToggleHandler(featureToggleService);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
@@ -58,7 +58,7 @@ class ImaFeatureToggleHandlerTest {
     @ParameterizedTest
     @ValueSource(booleans =  {true, false})
     void handler_checks_age_assessment_feature_flag_set_value(boolean featureToggle) {
-        when(featureToggler.getValue("ima-feature-flag", false)).thenReturn(featureToggle);
+        when(featureToggleService.imaEnabled()).thenReturn(featureToggle);
         PreSubmitCallbackResponse<BailCase> response = imaFeatureToggleHandler.handle(ABOUT_TO_START, callback);
         verify(bailCase, times(1))
             .write(BailCaseFieldDefinition.IS_IMA_ENABLED, featureToggle ? YesOrNo.YES : YesOrNo.NO);

@@ -30,7 +30,8 @@
             }
           }
         ],
-        "interpreterLanguages": null
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
       }
     }
   }

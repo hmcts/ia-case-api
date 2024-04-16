@@ -1,0 +1,39 @@
+{
+  "description": "Edit application - Party IDs cleared for legal rep removed",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 7996,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "isLegalRep": "No",
+          "hasLegalRep": "No",
+          "isLegallyRepresentedForFlag": "No",
+          "hasFinancialCondSupporter": "No",
+          "legalRepIndividualPartyId": "39804a48-70b6-49be-af16-af4c1f385dad",
+          "legalRepOrganisationPartyId": "a3468ed5-5844-4edd-98a6-d0059af7d8ca"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "isLegalRep": "No",
+        "hasLegalRep": "No",
+        "isLegallyRepresentedForFlag": "No",
+        "hasFinancialCondSupporter": null,
+        "legalRepIndividualPartyId": null,
+        "legalRepOrganisationPartyId": null,
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

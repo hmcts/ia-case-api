@@ -1,0 +1,50 @@
+{
+  "description": "RIA-8000 Submitted Update interpreter details",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8000,
+      "eventId": "updateInterpreterDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "interpreterDetails": [
+            {
+              "id": "1",
+              "value": {
+                "interpreterId": "testId",
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "interpreterId": "testId2",
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Interpreter details have been updated",
+      "body": "#### What happens next\n\nEnsure the [interpreter booking status](/case/IA/Bail/8000/trigger/updateInterpreterBookingStatus) is updated."
+    }
+  }
+}

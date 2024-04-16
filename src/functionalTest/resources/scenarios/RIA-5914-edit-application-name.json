@@ -25,7 +25,8 @@
         "applicantFullName": "Joris Bohnson",
         "applicantFamilyName": "Bohnson",
         "applicantGivenNames": "Joris",
-        "interpreterLanguages": null
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
       }
     }
   }

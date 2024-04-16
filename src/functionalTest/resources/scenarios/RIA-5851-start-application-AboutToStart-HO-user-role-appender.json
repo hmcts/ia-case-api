@@ -2,7 +2,7 @@
   "description": "Start the application by Home Office - append HO user role",
   "request": {
     "uri": "/bail/ccdAboutToStart",
-    "credentials": "HomeOfficeGeneric",
+    "credentials": "HomeOfficeBail",
     "input": {
       "id": 1111,
       "eventId": "startApplication",

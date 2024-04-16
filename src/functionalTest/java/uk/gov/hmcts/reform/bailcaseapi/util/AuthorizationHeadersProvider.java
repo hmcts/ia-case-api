@@ -303,4 +303,27 @@ public class AuthorizationHeadersProvider {
             new Header("Authorization", accessToken)
         );
     }
+
+    public Headers getHomeOfficeBailAuthorization() {
+
+        MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
+        tokenRequestForm.add("grant_type", "password");
+        tokenRequestForm.add("redirect_uri", idamRedirectUrl);
+        tokenRequestForm.add("client_id", idamClientId);
+        tokenRequestForm.add("client_secret", idamClientSecret);
+        tokenRequestForm.add("username", System.getenv("TEST_HOMEOFFICE_BAIL_USERNAME"));
+        tokenRequestForm.add("password", System.getenv("TEST_HOMEOFFICE_BAIL_PASSWORD"));
+        tokenRequestForm.add("scope", userScope);
+
+        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
+        String accessToken = tokens.computeIfAbsent(
+            "HomeOfficeGeneric",
+            user -> "Bearer " + idamApi.token(tokenRequestForm).getAccessToken()
+        );
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
 }

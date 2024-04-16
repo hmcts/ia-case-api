@@ -1,6 +1,14 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES;
@@ -20,6 +28,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_SUPPORTER3;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_FINANCIAL_COND_SUPPORTER4;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_GROUNDS_FOR_BAIL;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_HEARING_REQ_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_ID;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_LEGAL_REP_DETAILS;
@@ -164,6 +173,7 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
 
         String directionLabel = showPreviousApplicationService.getDirectionLabel(previousBailCase);
 
+        String hearingLabel = showPreviousApplicationService.getHearingDetails(previousBailCase);
         String hearingReqLabel = showPreviousApplicationService.getHearingReqDetails(previousBailCase);
 
         String submissionDetails = showPreviousApplicationService.getSubmissionDetails(previousBailCase);
@@ -184,6 +194,7 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
         String legalRepDetails = showPreviousApplicationService.getLegalRepDetails(previousBailCase);
 
         bailCase.write(PREV_APP_SUBMISSION_DETAILS, submissionDetails);
+        bailCase.write(PREV_APP_HEARING_DETAILS, hearingLabel);
         bailCase.write(PREV_APP_HEARING_REQ_DETAILS, hearingReqLabel);
         bailCase.write(PREV_APP_APPLICANT_DOCS_DETAILS, documentsLabel);
         bailCase.write(PREV_APP_DECISION_DETAILS_LABEL, decisionLabel);
@@ -218,7 +229,9 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
             SUPPORTER_NATIONALITY,
             SUPPORTER_HAS_PASSPORT,
             SUPPORTER_PASSPORT,
-            FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES
+            FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES,
+            FCS1_INTERPRETER_SPOKEN_LANGUAGE,
+            FCS1_INTERPRETER_SIGN_LANGUAGE
         );
     }
 
@@ -239,7 +252,9 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
             SUPPORTER_2_NATIONALITY,
             SUPPORTER_2_HAS_PASSPORT,
             SUPPORTER_2_PASSPORT,
-            FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES
+            FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES,
+            FCS2_INTERPRETER_SPOKEN_LANGUAGE,
+            FCS2_INTERPRETER_SIGN_LANGUAGE
         );
     }
 
@@ -260,7 +275,9 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
             SUPPORTER_3_NATIONALITY,
             SUPPORTER_3_HAS_PASSPORT,
             SUPPORTER_3_PASSPORT,
-            FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES
+            FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES,
+            FCS3_INTERPRETER_SPOKEN_LANGUAGE,
+            FCS3_INTERPRETER_SIGN_LANGUAGE
         );
     }
 
@@ -281,7 +298,9 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
             SUPPORTER_4_NATIONALITY,
             SUPPORTER_4_HAS_PASSPORT,
             SUPPORTER_4_PASSPORT,
-            FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES
+            FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES,
+            FCS4_INTERPRETER_SPOKEN_LANGUAGE,
+            FCS4_INTERPRETER_SIGN_LANGUAGE
         );
     }
 }

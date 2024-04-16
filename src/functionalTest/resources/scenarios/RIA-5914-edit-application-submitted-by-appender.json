@@ -29,7 +29,8 @@
         "isLegalRep": "Yes",
         "sentByChecklist": "",
         "isLegallyRepresentedForFlag": "Yes",
-        "interpreterLanguages": null
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
       }
     }
   }

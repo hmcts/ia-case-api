@@ -2,7 +2,7 @@
   "description": "RIA-5948 Upload bail summary confirmation by Home Office (post-submit REST call)",
   "request": {
     "uri": "/bail/ccdSubmitted",
-    "credentials": "HomeOfficeGeneric",
+    "credentials": "HomeOfficeBail",
     "input": {
       "id": 1111,
       "eventId": "uploadBailSummary",

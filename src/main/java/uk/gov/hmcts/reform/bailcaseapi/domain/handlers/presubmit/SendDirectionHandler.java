@@ -2,12 +2,16 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SEND_DIRECTION_DESCRIPTION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SEND_DIRECTION_LIST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DATE_OF_COMPLIANCE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_EVENT;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SEND_DIRECTION_DESCRIPTION;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SEND_DIRECTION_LIST;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent.INITIAL_LISTING;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.CASE_LISTING;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.SEND_BAIL_DIRECTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -45,7 +50,14 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<BailCase> 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage.equals(ABOUT_TO_SUBMIT) && callback.getEvent().equals(SEND_BAIL_DIRECTION);
+        BailCase bailCase = callback.getCaseDetails().getCaseData();
+
+        final ListingEvent listingEvent = bailCase.read(LISTING_EVENT, ListingEvent.class)
+            .orElse(null);
+
+        return callbackStage.equals(ABOUT_TO_SUBMIT)
+            && (callback.getEvent().equals(SEND_BAIL_DIRECTION)
+            || (callback.getEvent().equals(CASE_LISTING) && INITIAL_LISTING == listingEvent));
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(

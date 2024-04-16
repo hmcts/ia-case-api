@@ -18,6 +18,8 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GENDER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_HAS_ADDRESS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_NATIONALITIES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_PRISON_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICATION_SUBMITTED_BY;
@@ -34,12 +36,17 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.END_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.END_APPLICATION_OUTCOME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.END_APPLICATION_REASONS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_YESNO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_COND_AMOUNT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.GROUNDS_FOR_BAIL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING_UT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.INTERPRETER_LANGUAGES;
@@ -49,12 +56,18 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_FAMILY_NAME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_NAME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_PHONE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_REFERENCE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_LOCATION;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REASONS_JUDGE_IS_MINDED_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_REFUSAL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_ADDRESS_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_DOB;
@@ -91,7 +104,10 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguage;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
@@ -115,6 +131,14 @@ public class ShowPreviousApplicationServiceTest {
     private CaseNote caseNote;
     @Mock
     private CaseNote caseNoteWithoutDocument;
+    @Mock
+    InterpreterLanguageRefData interpreterLanguageRefDataSpoken1;
+    @Mock
+    DynamicList dynamicListSpoken1;
+    @Mock
+    Value valueSpoken1;
+    @Mock
+    InterpreterLanguageRefData interpreterLanguageRefDataSign1;
 
     @BeforeEach
     void setUp() {
@@ -134,6 +158,9 @@ public class ShowPreviousApplicationServiceTest {
         );
         List<IdValue<DocumentWithMetadata>> existingDecisionDocuments = List.of(
             new IdValue<>("1", document1WithMetadata)
+        );
+        List<IdValue<DocumentWithMetadata>> existingHearingDocuments = List.of(
+            new IdValue<>("1", document2WithMetadata)
         );
 
 
@@ -197,6 +224,8 @@ public class ShowPreviousApplicationServiceTest {
             .thenReturn(Optional.of(existingApplicantDocuments));
         when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA))
             .thenReturn(Optional.of(existingTribunalDocuments));
+        when(bailCase.read(HEARING_DOCUMENTS))
+            .thenReturn(Optional.of(existingHearingDocuments));
         when(bailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA))
             .thenReturn(Optional.of(existingHODocuments));
         when(bailCase.read(SIGNED_DECISION_DOCUMENTS_WITH_METADATA))
@@ -284,9 +313,28 @@ public class ShowPreviousApplicationServiceTest {
         when(bailCase.read(IS_LEGALLY_REPRESENTED_FOR_FLAG, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.of("Legal Rep Company"));
         when(bailCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("LR ABC"));
+        when(bailCase.read(LEGAL_REP_FAMILY_NAME)).thenReturn(Optional.of("Jones"));
         when(bailCase.read(LEGAL_REP_EMAIL_ADDRESS)).thenReturn(Optional.of("lr_abc@test.com"));
         when(bailCase.read(LEGAL_REP_PHONE)).thenReturn(Optional.of("1122334455"));
         when(bailCase.read(LEGAL_REP_REFERENCE)).thenReturn(Optional.of("Ref78965"));
+
+
+        when(interpreterLanguageRefDataSpoken1.getLanguageRefData()).thenReturn(dynamicListSpoken1);
+        when(interpreterLanguageRefDataSign1.getLanguageRefData()).thenReturn(null);
+        when(interpreterLanguageRefDataSign1.getLanguageManualEntry()).thenReturn("Yes");
+        when(bailCase.read(APPLICANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguageRefDataSpoken1));
+        when(bailCase.read(APPLICANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguageRefDataSign1));
+        when(dynamicListSpoken1.getValue()).thenReturn(valueSpoken1);
+        when(valueSpoken1.getLabel()).thenReturn("lang 1");
+        when(interpreterLanguageRefDataSign1.getLanguageManualEntryDescription()).thenReturn("lang sign 1");
+
+        when(bailCase.read(FCS_INTERPRETER_YESNO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(FCS1_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(List.of("spokenLanguageInterpreter")));
+        when(bailCase.read(FCS1_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguageRefDataSpoken1));
+
+        when(bailCase.read(LISTING_LOCATION, ListingHearingCentre.class)).thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
+        when(bailCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("2024-04-04T08:00:00.000"));
+
     }
 
     @Test
@@ -317,6 +365,24 @@ public class ShowPreviousApplicationServiceTest {
     }
 
     @Test
+    void check_decision_label_for_Decided_Application_with_minded_to_grant() {
+        Value selectedApplicationValue = new Value("1", "Bail Application 1 Decided 20/06/2022");
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of("refused"));
+        when(bailCase.read(RECORD_THE_DECISION_LIST, String.class)).thenReturn(Optional.of("mindedToGrant"));
+        when(bailCase.read(REASONS_JUDGE_IS_MINDED_DETAILS, String.class)).thenReturn(Optional.of("Reasons for minded to Grant"));
+        when(bailCase.read(SECRETARY_OF_STATE_REFUSAL_REASONS, String.class)).thenReturn(Optional.of("Reason 123"));
+
+        String label = showPreviousApplicationService
+            .getDecisionLabel(bailCase, selectedApplicationValue);
+
+        assertNotNull(label);
+        assertTrue(label.contains("|Decision details||"));
+        assertTrue(label.contains("|\n|Decision date|20 Jun 2022|"));
+        assertTrue(label.contains("|\n|Reasons judge minded to grant bail|Reasons for minded to Grant|"));
+        assertTrue(label.contains("|\n|Reasons for refusal|Reason 123"));
+    }
+
+    @Test
     void check_documents_label() {
         String label = showPreviousApplicationService.getDocumentsLabel(bailCase);
         assertTrue(label.contains(
@@ -331,6 +397,9 @@ public class ShowPreviousApplicationServiceTest {
         assertTrue(label.contains(
             "|Decision document 1<br>*Document:* <a href=\"/documents/document1BinaryUrl\" "
                 + "target=\"_blank\">document1FileName</a>"));
+        assertTrue(label.contains(
+            "|Hearing document 1<br>*Document:* <a href=\"/documents/document2BinaryUrl\" "
+            + "target=\"_blank\">document2FileName</a>"));
     }
 
     @Test
@@ -370,23 +439,32 @@ public class ShowPreviousApplicationServiceTest {
 
         assertNull(showPreviousApplicationService.getFinancialConditionSupporterLabel(
             bailCase,
-            HAS_FINANCIAL_COND_SUPPORTER,
-            SUPPORTER_GIVEN_NAMES,
-            SUPPORTER_FAMILY_NAMES,
-            SUPPORTER_ADDRESS_DETAILS,
-            SUPPORTER_TELEPHONE_NUMBER,
-            SUPPORTER_MOBILE_NUMBER,
-            SUPPORTER_EMAIL_ADDRESS,
-            SUPPORTER_DOB,
-            SUPPORTER_RELATION,
-            SUPPORTER_OCCUPATION,
-            SUPPORTER_IMMIGRATION,
-            SUPPORTER_NATIONALITY,
-            SUPPORTER_HAS_PASSPORT,
-            SUPPORTER_PASSPORT,
-            FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES
-        ));
+             HAS_FINANCIAL_COND_SUPPORTER,
+             SUPPORTER_GIVEN_NAMES,
+             SUPPORTER_FAMILY_NAMES,
+             SUPPORTER_ADDRESS_DETAILS,
+             SUPPORTER_TELEPHONE_NUMBER,
+             SUPPORTER_MOBILE_NUMBER,
+             SUPPORTER_EMAIL_ADDRESS,
+             SUPPORTER_DOB,
+             SUPPORTER_RELATION,
+             SUPPORTER_OCCUPATION,
+             SUPPORTER_IMMIGRATION,
+             SUPPORTER_NATIONALITY,
+             SUPPORTER_HAS_PASSPORT,
+             SUPPORTER_PASSPORT,
+             FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES,
+             FCS1_INTERPRETER_SPOKEN_LANGUAGE,
+             FCS1_INTERPRETER_SIGN_LANGUAGE));
         assertTrue(showPreviousApplicationService.getLegalRepDetails(bailCase).isEmpty());
+    }
+
+    @Test
+    void check_hearing_details_labels() {
+        String label = showPreviousApplicationService.getHearingDetails(bailCase);
+        assertTrue(label.contains(
+            "|Location|Birmingham|\n"
+                + "|Date and time|04 Apr 2024, 08:00|\n"), "Label mismatch, expected label: " + label);
     }
 
     @Test
@@ -460,7 +538,9 @@ public class ShowPreviousApplicationServiceTest {
             SUPPORTER_NATIONALITY,
             SUPPORTER_HAS_PASSPORT,
             SUPPORTER_PASSPORT,
-            FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES
+            FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES,
+            FCS1_INTERPRETER_SPOKEN_LANGUAGE,
+            FCS1_INTERPRETER_SIGN_LANGUAGE
         );
         assertTrue(label.contains(
             "|Financial condition supporter|Yes|\n"
@@ -474,7 +554,9 @@ public class ShowPreviousApplicationServiceTest {
                 + "|Occupation|Doctor|\n"
                 + "|Immigration status|Resident|\n"
                 + "|Nationalities|American|\n"
-                + "|Passport number|No|\n"
+                + "|Passport number|Yes|\n"
+                + "|Passport number|P12345|\n"
+                + "|Spoken language Interpreter|lang 1|\n"
                 + "|Financial condition amount (£)|3000|"
         ));
     }
@@ -505,9 +587,24 @@ public class ShowPreviousApplicationServiceTest {
         assertTrue(label.contains(
             "|Company|Legal Rep Company|\n"
                 + "|Name|LR ABC|\n"
+                + "|Family name|Jones|\n"
                 + "|Email address|lr_abc@test.com|\n"
                 + "|Phone number|1122334455|\n"
                 + "|Reference|Ref78965|"
         ));
+    }
+
+    @Test
+    void test_interpreter_details_label_after_list_assist() {
+        when(bailCase.read(INTERPRETER_LANGUAGES)).thenReturn(Optional.empty());
+        String label = showPreviousApplicationService.getHearingReqDetails(bailCase);
+        assertTrue(label.contains(
+            "|Interpreter|Yes|\n"
+                + "|Spoken language Interpreter|lang 1|\n|Sign language Interpreter|lang sign 1|\n"
+                + "|Disability|Yes|\n"
+                + "|Explain any special <br>arrangements needed for the <br>hearing|Disability details|\n"
+                + "|Video hearing|No|\n"
+                + "|Explain why the applicant <br>would not be able to join the <br>hearing by video link"
+                + "|Video hearing details|"));
     }
 }

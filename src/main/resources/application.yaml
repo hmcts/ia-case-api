@@ -74,6 +74,7 @@ security:
   roleEventAccess:
     caseworker-ia-system:
       - "clearLegalRepresentativeDetails"
+      - "caseListing"
     caseworker-caa:
       - "nocRequest"
       - "clearLegalRepresentativeDetails"
@@ -110,6 +111,10 @@ security:
       - "createBailCaseLink"
       - "maintainBailCaseLinks"
       - "createFlag"
+      - "confirmDetentionLocation"
+      - "updateInterpreterDetails"
+      - "updateInterpreterBookingStatus"
+      - "caseListing"
       - "imaStatus"
     caseworker-ia-homeofficebail:
       - "startApplication"
@@ -218,3 +223,11 @@ ia:
   config:
     validator:
       secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
+
+commonData:
+  api:
+    url: ${COMMON_DATA_API:http://localhost:8991}
+
+govUkHolidays:
+  url: https://www.gov.uk/

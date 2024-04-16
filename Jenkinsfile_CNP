@@ -56,6 +56,9 @@ def secrets = [
     secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
     secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 
+    secret('test-homeoffice-bail-username', 'TEST_HOMEOFFICE_BAIL_USERNAME'),
+    secret('test-homeoffice-bail-password', 'TEST_HOMEOFFICE_BAIL_PASSWORD'),
+
   ]
 ]
 
@@ -91,10 +94,12 @@ withPipeline(type, product, component) {
 
   afterSuccess('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
   }
 
   afterSuccess('functionalTest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
   }
 
   enableSlackNotifications('#ia-tech')

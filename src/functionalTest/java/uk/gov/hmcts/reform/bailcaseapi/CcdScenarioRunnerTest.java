@@ -448,6 +448,12 @@ public class CcdScenarioRunnerTest {
                 .getCitizenAuthorization();
         }
 
+        if ("HomeOfficeBail".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficeBailAuthorization();
+        }
+
         return new Headers();
     }
 }

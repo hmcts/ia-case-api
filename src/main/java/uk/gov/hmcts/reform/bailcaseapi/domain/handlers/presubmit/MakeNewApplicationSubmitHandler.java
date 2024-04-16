@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_IMA_ENABLED;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
 
 @Slf4j
@@ -22,11 +24,12 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
 public class MakeNewApplicationSubmitHandler implements PreSubmitCallbackStateHandler<BailCase> {
 
     private final MakeNewApplicationService makeNewApplicationService;
-    private final FeatureToggler featureToggler;
+    private final FeatureToggleService featureToggleService;
 
-    public MakeNewApplicationSubmitHandler(MakeNewApplicationService makeNewApplicationService, FeatureToggler featureToggler) {
+    public MakeNewApplicationSubmitHandler(MakeNewApplicationService makeNewApplicationService,
+                                           FeatureToggleService featureToggleService) {
         this.makeNewApplicationService = makeNewApplicationService;
-        this.featureToggler = featureToggler;
+        this.featureToggleService = featureToggleService;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class MakeNewApplicationSubmitHandler implements PreSubmitCallbackStateHa
         makeNewApplicationService.appendPriorApplication(bailCase, detailsBefore);
 
         //Because the ABOUT_TO_START handler doesn't persist the IMA_ENABLED field, we need to set it here
-        YesOrNo isImaEnabled = featureToggler.getValue("ima-feature-flag", false) == true ? YesOrNo.YES : YesOrNo.NO;
+        YesOrNo isImaEnabled = featureToggleService.imaEnabled() ? YES : NO;
         bailCase.write(IS_IMA_ENABLED, isImaEnabled);
 
         return new PreSubmitCallbackResponse<>(bailCase, State.APPLICATION_SUBMITTED);

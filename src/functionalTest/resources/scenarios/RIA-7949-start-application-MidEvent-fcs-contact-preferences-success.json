@@ -1,0 +1,90 @@
+{
+  "description": "Start the application by admin - FCS contact preferences include email and phone",
+  "request": {
+    "uri": "/bail/ccdMidEvent?pageId=supporterContactDetails",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 7949,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "hasFinancialCondSupporter": "Yes",
+          "hasFinancialCondSupporter2": "No",
+          "supporterGivenNames": "First Name",
+          "supporterFamilyNames": "Surname",
+          "supporterDOB": "1990-01-01",
+          "supporterAddressDetails": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "NE2 1JX",
+            "PostTown": "Newcastle Upon Tyne",
+            "AddressLine1": "8 Deuchar Street",
+            "AddressLine2": "",
+            "AddressLine3": ""
+          },
+          "supporterImmigration": "Permanent Resident",
+          "supporterNationality": [
+            {
+              "id": "8daead00-d11b-45bf-9bc6-3d0babdba370",
+              "value": {
+                "code": "Afghan"
+              }
+            }
+          ],
+          "supporterContactDetails": [
+            "mobile",
+            "email"
+          ],
+          "supporterMobileNumber1": "07781122334",
+          "supporterEmailAddress1": "fcs@example.com",
+          "supporterRelation": "Parent",
+          "supporterOccupation": "Teacher",
+          "financialAmountSupporterUndertakes1": "250"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "hasFinancialCondSupporter": "Yes",
+        "hasFinancialCondSupporter2": "No",
+        "supporterGivenNames": "First Name",
+        "supporterFamilyNames": "Surname",
+        "supporterDOB": "1990-01-01",
+        "supporterAddressDetails": {
+          "County": "",
+          "Country": "United Kingdom",
+          "PostCode": "NE2 1JX",
+          "PostTown": "Newcastle Upon Tyne",
+          "AddressLine1": "8 Deuchar Street",
+          "AddressLine2": "",
+          "AddressLine3": ""
+        },
+        "supporterImmigration": "Permanent Resident",
+        "supporterNationality": [
+          {
+            "id": "8daead00-d11b-45bf-9bc6-3d0babdba370",
+            "value": {
+              "code": "Afghan"
+            }
+          }
+        ],
+        "supporterContactDetails": [
+          "mobile",
+          "email"
+        ],
+        "supporterMobileNumber1": "07781122334",
+        "supporterEmailAddress1": "fcs@example.com",
+        "supporterRelation": "Parent",
+        "supporterOccupation": "Teacher",
+        "financialAmountSupporterUndertakes1": "250"
+      }
+    }
+  }
+}

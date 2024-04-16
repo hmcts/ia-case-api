@@ -54,6 +54,9 @@ def secrets = [
 
     secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
     secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+
+    secret('test-homeoffice-bail-username', 'TEST_HOMEOFFICE_BAIL_USERNAME'),
+    secret('test-homeoffice-bail-password', 'TEST_HOMEOFFICE_BAIL_PASSWORD'),
   ]
 ]
 

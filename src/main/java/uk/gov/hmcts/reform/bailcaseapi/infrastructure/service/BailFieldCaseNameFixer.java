@@ -12,17 +12,14 @@ public class BailFieldCaseNameFixer implements DataFixer {
     private final BailCaseFieldDefinition hmctsCaseNameInternal;
     private final BailCaseFieldDefinition applicantGivenNames;
     private final BailCaseFieldDefinition applicantFamilyName;
-    private final BailCaseFieldDefinition applicantFullName;
 
     public BailFieldCaseNameFixer(
         BailCaseFieldDefinition hmctsCaseNameInternal,
         BailCaseFieldDefinition applicantGivenNames,
-        BailCaseFieldDefinition applicantFamilyName,
-        BailCaseFieldDefinition applicantFullName) {
+        BailCaseFieldDefinition applicantFamilyName) {
         this.hmctsCaseNameInternal = hmctsCaseNameInternal;
         this.applicantGivenNames = applicantGivenNames;
         this.applicantFamilyName = applicantFamilyName;
-        this.applicantFullName = applicantFullName;
     }
 
     @Override
@@ -31,13 +28,10 @@ public class BailFieldCaseNameFixer implements DataFixer {
         Optional<String> caseNameToBeUpdated = bailCase.read(hmctsCaseNameInternal);
         Optional<String> applicantGivenNamesToBeConcatenated = bailCase.read(applicantGivenNames);
         Optional<String> applicantFamilyNameToBeConcatenated = bailCase.read(applicantFamilyName);
-        Optional<String> applicantFullNameToUse = bailCase.read(applicantFullName);
 
         String expectedCaseName = null;
 
-        if (applicantFullNameToUse.isPresent()) {
-            expectedCaseName = applicantFullNameToUse.get().replaceAll("\\s+", " ").trim();
-        } else if (applicantGivenNamesToBeConcatenated.isPresent() && applicantFamilyNameToBeConcatenated.isPresent()) {
+        if (applicantGivenNamesToBeConcatenated.isPresent() && applicantFamilyNameToBeConcatenated.isPresent()) {
             expectedCaseName = getCaseName(
                 applicantGivenNamesToBeConcatenated.get(),
                 applicantFamilyNameToBeConcatenated.get()

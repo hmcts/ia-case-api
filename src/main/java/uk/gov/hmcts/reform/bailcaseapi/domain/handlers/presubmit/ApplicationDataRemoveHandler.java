@@ -1,113 +1,10 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.AGREES_TO_BOUND_BY_FINANCIAL_COND;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_DETENTION_LOCATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_DISABILITY_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GENDER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GENDER_OTHER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_HAS_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_HAS_MOBILE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_NATIONALITIES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_NATIONALITY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_PRISON_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.BAIL_EVIDENCE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DISABILITY_YESNO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_COND_AMOUNT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.GROUNDS_FOR_BAIL_PROVIDE_EVIDENCE_OPTION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER_2;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER_3;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER_4;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_LEGAL_REP;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.INTERPRETER_LANGUAGES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.INTERPRETER_YESNO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IRC_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_PHONE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_REFERENCE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_ADDRESS_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_CONTACT_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_DOB;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_FAMILY_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_HAS_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_IMMIGRATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_NATIONALITY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_OCCUPATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_RELATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_TELEPHONE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_ADDRESS_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_CONTACT_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_DOB;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_FAMILY_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_HAS_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_IMMIGRATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_NATIONALITY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_OCCUPATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_RELATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_3_TELEPHONE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_ADDRESS_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_CONTACT_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_DOB;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_FAMILY_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_HAS_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_IMMIGRATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_NATIONALITY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_OCCUPATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_RELATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_4_TELEPHONE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_ADDRESS_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_CONTACT_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_DOB;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_FAMILY_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_HAS_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_IMMIGRATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_NATIONALITY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_OCCUPATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_PASSPORT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_RELATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_TELEPHONE_NUMBER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OPTION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.VIDEO_HEARING_DETAILS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.VIDEO_HEARING_YESNO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_PREVIOUS_BAIL_APPLICATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_BEEN_REFUSED_BAIL;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.BAIL_HEARING_DATE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -115,9 +12,20 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
 @Slf4j
 @Component
 public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<BailCase> {
+
+    private static final String IS_MANUAL_ENTRY = "Yes";
+    private static final String IS_NOT_MANUAL_ENTRY = "No";
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<BailCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
@@ -165,7 +73,7 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         final Optional<YesOrNo> optionalTransferBailManagement = bailCase.read(
             TRANSFER_BAIL_MANAGEMENT_OPTION,YesOrNo.class);
 
-
+        final Optional<YesOrNo> optionalFcsInterpreter = bailCase.read(FCS_INTERPRETER_YESNO, YesOrNo.class);
         final YesOrNo hasFinancialConditionSupporter1 = bailCase.read(
             HAS_FINANCIAL_COND_SUPPORTER, YesOrNo.class).orElse(NO);
         final YesOrNo hasFinancialConditionSupporter2 = bailCase.read(
@@ -174,6 +82,8 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
             HAS_FINANCIAL_COND_SUPPORTER_3, YesOrNo.class).orElse(NO);
         final YesOrNo hasFinancialConditionSupporter4 = bailCase.read(
             HAS_FINANCIAL_COND_SUPPORTER_4, YesOrNo.class).orElse(NO);
+
+        final Optional<YesOrNo> optionalIsDetentionLocationCorrect = bailCase.read(IS_DETENTION_LOCATION_CORRECT, YesOrNo.class);
 
         if (optionalPreviousApplication.isPresent()) {
             String hasPreviousApplications = optionalPreviousApplication.get();
@@ -285,6 +195,15 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
 
             if (interpreterLanguages.equals(NO)) {
                 bailCase.remove(INTERPRETER_LANGUAGES);
+                bailCase.remove(APPLICANT_INTERPRETER_LANGUAGE_CATEGORY);
+                bailCase.remove(APPLICANT_INTERPRETER_SIGN_LANGUAGE);
+                bailCase.remove(APPLICANT_INTERPRETER_SPOKEN_LANGUAGE);
+            } else {
+                sanitizeInterpreterLanguages(bailCase, APPLICANT_INTERPRETER_LANGUAGE_CATEGORY, APPLICANT_INTERPRETER_SIGN_LANGUAGE,
+                                             APPLICANT_INTERPRETER_SPOKEN_LANGUAGE, APPLICANT_INTERPRETER_SIGN_LANGUAGE_BOOKING,
+                                             APPLICANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS,
+                                             APPLICANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
+                                             APPLICANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
             }
         }
 
@@ -296,11 +215,18 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
             }
         }
 
+        // if the language category has been removed, remove the language details
+
         if (optionalFinancialSupporter1.isPresent()) {
 
             //Clear all the supporter 1-4 fields
             if (hasFinancialConditionSupporter1.equals(NO)) {
                 log.info("Clearing Financial Supporter details from bail application case data");
+                bailCase.write(FCS_INTERPRETER_YESNO, NO);
+                clearHasFinancialSupporter(bailCase, "");
+                clearHasFinancialSupporter(bailCase, "2");
+                clearHasFinancialSupporter(bailCase, "3");
+                clearHasFinancialSupporter(bailCase, "4");
                 clearFinancialSupporter1Details(bailCase);
                 clearFinancialSupporter2Details(bailCase);
                 clearFinancialSupporter3Details(bailCase);
@@ -313,6 +239,9 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
 
             //Clear all the supporter 2-4 fields
             if (hasFinancialConditionSupporter2.equals(NO)) {
+                clearHasFinancialSupporter(bailCase, "2");
+                clearHasFinancialSupporter(bailCase, "3");
+                clearHasFinancialSupporter(bailCase, "4");
                 log.info("Clearing Financial Supporter details from bail application case data");
                 clearFinancialSupporter2Details(bailCase);
                 clearFinancialSupporter3Details(bailCase);
@@ -326,6 +255,8 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
 
             //Clear all the supporter 3-4 fields
             if (hasFinancialConditionSupporter3.equals(NO)) {
+                clearHasFinancialSupporter(bailCase, "3");
+                clearHasFinancialSupporter(bailCase, "4");
                 log.info("Clearing Financial Supporter details from bail application case data");
                 clearFinancialSupporter3Details(bailCase);
                 clearFinancialSupporter4Details(bailCase);
@@ -339,12 +270,122 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
 
             //Clear all the supporter 4 fields
             if (hasFinancialConditionSupporter4.equals(NO)) {
+                clearHasFinancialSupporter(bailCase, "4");
                 log.info("Clearing Financial Supporter details from bail application case data");
                 clearFinancialSupporter4Details(bailCase);
             }
         }
 
+        //Clear language details for FCS if fields were deleted in the Edit event
+        if (optionalFcsInterpreter.isPresent()) {
+            if (optionalFcsInterpreter.get().equals(NO)) {
+                //remove all fcs language related fields
+                removeFcsLanguageFields(bailCase);
+            } else {
+                sanitizeInterpreterLanguages(bailCase, FCS1_INTERPRETER_LANGUAGE_CATEGORY,
+                                             FCS1_INTERPRETER_SIGN_LANGUAGE, FCS1_INTERPRETER_SPOKEN_LANGUAGE,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1);
+                sanitizeInterpreterLanguages(bailCase, FCS2_INTERPRETER_LANGUAGE_CATEGORY,
+                                             FCS2_INTERPRETER_SIGN_LANGUAGE, FCS2_INTERPRETER_SPOKEN_LANGUAGE,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2);
+                sanitizeInterpreterLanguages(bailCase, FCS3_INTERPRETER_LANGUAGE_CATEGORY,
+                                             FCS3_INTERPRETER_SIGN_LANGUAGE, FCS3_INTERPRETER_SPOKEN_LANGUAGE,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3);
+                sanitizeInterpreterLanguages(bailCase, FCS4_INTERPRETER_LANGUAGE_CATEGORY,
+                                             FCS4_INTERPRETER_SIGN_LANGUAGE, FCS4_INTERPRETER_SPOKEN_LANGUAGE,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4,
+                                             FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4,
+                                             FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4);
+            }
+        }
+
+        if (callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT
+            && optionalIsDetentionLocationCorrect.isPresent()) {
+            if (optionalIsDetentionLocationCorrect.get().equals(NO)) {
+
+                bailCase.clear(IS_DETENTION_LOCATION_CORRECT);
+            }
+        }
+
         return new PreSubmitCallbackResponse<>(bailCase);
+    }
+
+    private void removeFcsLanguageFields(BailCase bailCase) {
+        bailCase.remove(FCS1_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS1_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS1_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1);
+
+        bailCase.remove(FCS2_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS2_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS2_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2);
+
+        bailCase.remove(FCS3_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS3_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS3_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3);
+
+        bailCase.remove(FCS4_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS4_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS4_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4);
+    }
+
+    private void sanitizeInterpreterLanguages(BailCase bailCase, BailCaseFieldDefinition interpreterLanguageCategory,
+                                              BailCaseFieldDefinition interpreterSignLanguage,
+                                              BailCaseFieldDefinition interpreterSpokenLanguage,
+                                              BailCaseFieldDefinition interpreterSignLanguageBooking,
+                                              BailCaseFieldDefinition interpreterSignLanguageBookingStatus,
+                                              BailCaseFieldDefinition interpreterSpokenLanguageBooking,
+                                              BailCaseFieldDefinition interpreterSpokenLanguageBookingStatus) {
+        Optional<List<String>> optionalInterpreterCategory = bailCase.read(interpreterLanguageCategory);
+        List<String> interpreterCategory = optionalInterpreterCategory.orElse(null);
+        if (optionalInterpreterCategory.isPresent() && optionalInterpreterCategory.get().size() > 0) {
+            if (!interpreterCategory.contains("spokenLanguageInterpreter")) {
+                bailCase.remove(interpreterSpokenLanguage);
+                bailCase.remove(interpreterSpokenLanguageBooking);
+                bailCase.remove(interpreterSpokenLanguageBookingStatus);
+            } else {
+                createInterpreterLanguage(bailCase, interpreterSpokenLanguage);
+            }
+            if (!interpreterCategory.contains("signLanguageInterpreter")) {
+                bailCase.remove(interpreterSignLanguage);
+                bailCase.remove(interpreterSignLanguageBooking);
+                bailCase.remove(interpreterSignLanguageBookingStatus);
+            } else {
+                createInterpreterLanguage(bailCase, interpreterSignLanguage);
+            }
+        } else {
+            bailCase.remove(interpreterSpokenLanguage);
+            bailCase.remove(interpreterSpokenLanguageBooking);
+            bailCase.remove(interpreterSpokenLanguageBookingStatus);
+            bailCase.remove(interpreterSignLanguage);
+            bailCase.remove(interpreterSignLanguageBooking);
+            bailCase.remove(interpreterSignLanguageBookingStatus);
+        }
     }
 
     private void clearFinancialSupporter1Details(BailCase bailCase) {
@@ -363,6 +404,13 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         bailCase.remove(SUPPORTER_HAS_PASSPORT);
         bailCase.remove(SUPPORTER_PASSPORT);
         bailCase.remove(FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES);
+        bailCase.remove(FCS1_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS1_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS1_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1);
     }
 
     private void clearFinancialSupporter2Details(BailCase bailCase) {
@@ -381,6 +429,13 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         bailCase.remove(SUPPORTER_2_HAS_PASSPORT);
         bailCase.remove(SUPPORTER_2_PASSPORT);
         bailCase.remove(FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES);
+        bailCase.remove(FCS2_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS2_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS2_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2);
     }
 
     private void clearFinancialSupporter3Details(BailCase bailCase) {
@@ -399,6 +454,17 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         bailCase.remove(SUPPORTER_3_HAS_PASSPORT);
         bailCase.remove(SUPPORTER_3_PASSPORT);
         bailCase.remove(FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES);
+        bailCase.remove(FCS3_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS3_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS3_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3);
+    }
+
+    private void clearHasFinancialSupporter(BailCase bailcase, String index) {
+        bailcase.removeByString("hasFinancialCondSupporter" + index);
     }
 
     private void clearFinancialSupporter4Details(BailCase bailCase) {
@@ -417,15 +483,43 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         bailCase.remove(SUPPORTER_4_HAS_PASSPORT);
         bailCase.remove(SUPPORTER_4_PASSPORT);
         bailCase.remove(FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES);
+        bailCase.remove(FCS4_INTERPRETER_SPOKEN_LANGUAGE);
+        bailCase.remove(FCS4_INTERPRETER_SIGN_LANGUAGE);
+        bailCase.remove(FCS4_INTERPRETER_LANGUAGE_CATEGORY);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4);
+        bailCase.remove(FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4);
+        bailCase.remove(FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4);
     }
 
     private void clearLegalRepDetails(BailCase bailCase) {
         bailCase.remove(LEGAL_REP_COMPANY);
         bailCase.remove(LEGAL_REP_EMAIL_ADDRESS);
         bailCase.remove(LEGAL_REP_NAME);
+        bailCase.remove(LEGAL_REP_FAMILY_NAME);
         bailCase.remove(LEGAL_REP_PHONE);
         bailCase.remove(LEGAL_REP_REFERENCE);
         bailCase.write(IS_LEGALLY_REPRESENTED_FOR_FLAG, NO);
     }
 
+    private void createInterpreterLanguage(BailCase bailCase, BailCaseFieldDefinition interpreterLanguage) {
+        Optional<InterpreterLanguageRefData> optionalLanguage = bailCase.read(interpreterLanguage, InterpreterLanguageRefData.class);
+
+        if (optionalLanguage.isPresent()) {
+            InterpreterLanguageRefData existingLanguageData = optionalLanguage.get();
+            InterpreterLanguageRefData newLanguageData;
+            if (existingLanguageData.getLanguageManualEntry().equals(IS_MANUAL_ENTRY)) {
+                newLanguageData = new InterpreterLanguageRefData(
+                    null,
+                    IS_MANUAL_ENTRY,
+                    existingLanguageData.getLanguageManualEntryDescription());
+            } else {
+                newLanguageData = new InterpreterLanguageRefData(
+                    existingLanguageData.getLanguageRefData(),
+                    IS_NOT_MANUAL_ENTRY,
+                    null);
+            }
+            bailCase.write(interpreterLanguage, newLanguageData);
+        }
+    }
 }

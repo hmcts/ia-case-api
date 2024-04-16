@@ -9,17 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_PHONE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_REFERENCE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPDATE_LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPDATE_LEGAL_REP_PHONE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
 import java.util.Optional;
@@ -45,6 +35,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
 
     private final String legalRepCompany = "Company Orange";
     private final String legalRepName = "John Doe";
+    private final String legalRepFamilyName = "Jones";
     private final String legalRepEmailAddress = "john.doe@example.com";
     private final String legalRepPhoneNumber = "01234567891";
     private final String legalRepReferenceNumber = "ABC-123";
@@ -67,6 +58,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
 
         when(bailCase.read(UPDATE_LEGAL_REP_COMPANY, String.class)).thenReturn(Optional.of(legalRepCompany));
         when(bailCase.read(UPDATE_LEGAL_REP_NAME, String.class)).thenReturn(Optional.of(legalRepName));
+        when(bailCase.read(UPDATE_LEGAL_REP_FAMILY_NAME, String.class)).thenReturn(Optional.of(legalRepFamilyName));
         when(bailCase.read(UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class)).thenReturn(Optional.of(legalRepEmailAddress));
         when(bailCase.read(UPDATE_LEGAL_REP_PHONE, String.class)).thenReturn(Optional.of(legalRepPhoneNumber));
         when(bailCase.read(UPDATE_LEGAL_REP_REFERENCE, String.class)).thenReturn(Optional.of(legalRepReferenceNumber));
@@ -83,18 +75,21 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
 
         verify(bailCase).read(UPDATE_LEGAL_REP_COMPANY, String.class);
         verify(bailCase).read(UPDATE_LEGAL_REP_NAME, String.class);
+        verify(bailCase).read(UPDATE_LEGAL_REP_FAMILY_NAME, String.class);
         verify(bailCase).read(UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class);
         verify(bailCase).read(UPDATE_LEGAL_REP_PHONE, String.class);
         verify(bailCase).read(UPDATE_LEGAL_REP_REFERENCE, String.class);
 
         verify(bailCase, times(1)).clear(eq(UPDATE_LEGAL_REP_COMPANY));
         verify(bailCase, times(1)).clear(eq(UPDATE_LEGAL_REP_NAME));
+        verify(bailCase, times(1)).clear(eq(UPDATE_LEGAL_REP_FAMILY_NAME));
         verify(bailCase, times(1)).clear(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS));
         verify(bailCase, times(1)).clear(eq(UPDATE_LEGAL_REP_PHONE));
         verify(bailCase, times(1)).clear(eq(UPDATE_LEGAL_REP_REFERENCE));
 
         verify(bailCase, times(1)).write(eq(LEGAL_REP_COMPANY), eq(legalRepCompany));
         verify(bailCase, times(1)).write(eq(LEGAL_REP_NAME), eq(legalRepName));
+        verify(bailCase, times(1)).write(eq(LEGAL_REP_FAMILY_NAME), eq(legalRepFamilyName));
         verify(bailCase, times(1)).write(eq(LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(bailCase, times(1)).write(eq(LEGAL_REP_PHONE), eq(legalRepPhoneNumber));
         verify(bailCase, times(1)).write(eq(LEGAL_REP_REFERENCE), eq(legalRepReferenceNumber));

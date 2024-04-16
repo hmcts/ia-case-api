@@ -8,13 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_PHONE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_REFERENCE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 
 import feign.FeignException;
 import java.util.HashMap;
@@ -83,6 +77,8 @@ class CcdDataServiceTest {
         when(startEventCaseDetails.getCaseData()).thenReturn(startEventBailCase);
         when(startEventBailCase.read(BailCaseFieldDefinition.LEGAL_REP_NAME, String.class))
             .thenReturn(Optional.of("J Smith"));
+        when(startEventBailCase.read(BailCaseFieldDefinition.LEGAL_REP_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
         when(startEventBailCase.read(BailCaseFieldDefinition.LEGAL_REP_PHONE, String.class))
             .thenReturn(Optional.of("0123654"));
         when(startEventBailCase.read(BailCaseFieldDefinition.LEGAL_REP_REFERENCE, String.class))
@@ -180,6 +176,7 @@ class CcdDataServiceTest {
 
     private void assertLegalRepDetailsClear(Map<String, Object> data) {
         assertEquals("", data.get(LEGAL_REP_NAME.value()));
+        assertEquals("", data.get(LEGAL_REP_FAMILY_NAME.value()));
         assertEquals("", data.get(LEGAL_REP_COMPANY.value()));
         assertEquals("", data.get(LEGAL_REP_PHONE.value()));
         assertEquals("", data.get(LEGAL_REP_REFERENCE.value()));
@@ -208,6 +205,7 @@ class CcdDataServiceTest {
     private Map<String, Object> getDataWithEmptyLegalRepDetails() {
         Map<String, Object> data = new HashMap<>();
         data.put(LEGAL_REP_NAME.value(), "");
+        data.put(LEGAL_REP_FAMILY_NAME.value(), "");
         data.put(LEGAL_REP_COMPANY.value(), "");
         data.put(LEGAL_REP_PHONE.value(), "");
         data.put(LEGAL_REP_REFERENCE.value(), "");

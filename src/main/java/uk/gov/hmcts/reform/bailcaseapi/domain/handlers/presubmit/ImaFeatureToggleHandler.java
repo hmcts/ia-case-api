@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_IMA_ENABLED;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -12,15 +14,15 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 
 @Component
 public class ImaFeatureToggleHandler implements PreSubmitCallbackHandler<BailCase> {
 
-    private final FeatureToggler featureToggler;
+    private final FeatureToggleService featureToggleService;
 
-    public ImaFeatureToggleHandler(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
+    public ImaFeatureToggleHandler(FeatureToggleService featureToggleService) {
+        this.featureToggleService = featureToggleService;
     }
 
 
@@ -47,7 +49,7 @@ public class ImaFeatureToggleHandler implements PreSubmitCallbackHandler<BailCas
             callback
                 .getCaseDetails()
                 .getCaseData();
-        YesOrNo isImaEnabled = featureToggler.getValue("ima-feature-flag", false) == true ? YesOrNo.YES : YesOrNo.NO;
+        YesOrNo isImaEnabled = featureToggleService.imaEnabled() ? YES : NO;
         bailCase.write(IS_IMA_ENABLED, isImaEnabled);
 
 

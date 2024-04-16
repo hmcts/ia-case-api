@@ -1,12 +1,6 @@
 package uk.gov.hmcts.reform.bailcaseapi.infrastructure.service;
 
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_PHONE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_REFERENCE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +82,7 @@ public class CcdDataService {
         // Clear Legal Rep Details
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(LEGAL_REP_NAME.value(), "");
+        caseData.put(LEGAL_REP_FAMILY_NAME.value(), "");
         caseData.put(LEGAL_REP_COMPANY.value(), "");
         caseData.put(LEGAL_REP_PHONE.value(), "");
         caseData.put(LEGAL_REP_REFERENCE.value(), "");

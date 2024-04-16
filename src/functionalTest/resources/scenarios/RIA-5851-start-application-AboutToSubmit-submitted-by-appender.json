@@ -13,7 +13,9 @@
           "applicationSubmittedBy": "Legal Representative",
           "isAdmin": "No",
           "isLegalRep": "Yes",
-          "sentByChecklist": ""
+          "sentByChecklist": "",
+          "legalRepName": "John",
+          "legalRepFamilyName": "Doe"
         }
       }
     }
@@ -28,7 +30,9 @@
         "isAdmin": "No",
         "isLegalRep": "Yes",
         "sentByChecklist": "",
-        "isLegallyRepresentedForFlag": "Yes"
+        "isLegallyRepresentedForFlag": "Yes",
+        "legalRepName": "John",
+        "legalRepFamilyName": "Doe"
       }
     }
   }
