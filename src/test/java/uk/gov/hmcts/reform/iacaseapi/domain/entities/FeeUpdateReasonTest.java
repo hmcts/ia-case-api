@@ -11,10 +11,11 @@ class FeeUpdateReasonTest {
         assertEquals("decisionTypeChanged", FeeUpdateReason.DECISION_TYPE_CHANGED.toString());
         assertEquals("appealNotValid", FeeUpdateReason.APPEAL_NOT_VALID.toString());
         assertEquals("feeRemissionChanged", FeeUpdateReason.FEE_REMISSION_CHANGED.toString());
+        assertEquals("appealWithdrawn", FeeUpdateReason.APPEAL_WITHDRAWN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(3, FeeUpdateReason.values().length);
+        assertEquals(4, FeeUpdateReason.values().length);
     }
 }
