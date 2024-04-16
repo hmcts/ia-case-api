@@ -78,14 +78,14 @@
         <cve>CVE-2023-45648</cve>
         <cve>CVE-2023-31582</cve>
     </suppress>
-    <suppress until="2024-04-15">
+    <suppress until="2024-06-15">
         <notes>Temporarily suppress vulnerability</notes>
         <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-41080</cve>
         <cve>CVE-2023-31582</cve>
         <cve>CVE-2023-5072</cve>
     </suppress>
-    <suppress until="2024-04-15">
+    <suppress until="2024-06-15">
         <cve>CVE-2023-33202</cve>
         <cve>CVE-2023-6378</cve>
         <cve>CVE-2023-34055</cve>
@@ -95,7 +95,7 @@
         <cve>CVE-2023-1370</cve>
         <cve>CVE-2024-1597</cve>
     </suppress>
-    <suppress until="2024-04-15">
+    <suppress until="2024-06-15">
         <cve>CVE-2024-1597</cve>
         <cve>CVE-2023-1370</cve>
     </suppress>
