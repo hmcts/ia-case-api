@@ -85,6 +85,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
             case EA:
             case HU:
             case PA:
+            case EU:
                 Optional<RemissionOption> previousRemissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
                 Optional<HelpWithFeesOption> previousHelpWithFeesOptionAip = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
