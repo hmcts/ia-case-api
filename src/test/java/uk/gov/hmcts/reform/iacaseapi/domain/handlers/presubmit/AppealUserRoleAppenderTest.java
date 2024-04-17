@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,7 +93,7 @@ class AppealUserRoleAppenderTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = appealUserRoleAppender.canHandle(callbackStage, callback);
-                if (callbackStage == ABOUT_TO_START
+                if ((callbackStage == ABOUT_TO_START || callbackStage == ABOUT_TO_SUBMIT)
                     && callback.getEvent() == START_APPEAL) {
                     assertTrue(canHandle);
                 } else {
