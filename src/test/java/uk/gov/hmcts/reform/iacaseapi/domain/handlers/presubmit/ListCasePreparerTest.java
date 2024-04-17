@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
@@ -214,6 +215,7 @@ class ListCasePreparerTest {
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_CENTRE);
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(LISTING_LENGTH);
     }
 
     @Test
@@ -227,6 +229,7 @@ class ListCasePreparerTest {
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(0)).clear(LISTING_LENGTH);
     }
 
     @Test
@@ -241,6 +244,7 @@ class ListCasePreparerTest {
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(0)).clear(LISTING_LENGTH);
     }
 
     @Test
