@@ -206,11 +206,11 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 break;
 
             case I_WANT_TO_GET_HELP_WITH_FEES:
-                String helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, String.class).orElse("");
+                HelpWithFeesOption helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).orElseThrow(() -> new IllegalStateException("Help with fees option is not present"));
                 String helpWithFeesRefNumber = asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse("");
 
                 previousRemissionDetails = remissionDetailsAppender.appendRemissionOptionDetails(
-                    existingRemissionDetails, remissionOption.toString(), helpWithFeesOption, helpWithFeesRefNumber);
+                    existingRemissionDetails, remissionOption.toString(), helpWithFeesOption.toString(), helpWithFeesRefNumber);
                 break;
 
             default:
