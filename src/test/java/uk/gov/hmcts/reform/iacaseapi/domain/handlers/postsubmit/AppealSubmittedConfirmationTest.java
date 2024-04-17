@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,8 +46,6 @@ class AppealSubmittedConfirmationTest {
     private AsylumCase asylumCase;
     @Mock
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    @Mock
-    private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation;
 
@@ -57,7 +55,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(ccdSupplementaryUpdater);
 
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
     }
@@ -380,7 +378,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/");
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -414,7 +412,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/");
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -422,11 +420,12 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "EU"})
+    @ValueSource(strings = {"EA", "HU", "EU", "PA"})
     void lr_should_return_confirmation_for_ea_hu_paPayNow(String appealType) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -444,12 +443,11 @@ class AppealSubmittedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
-
+            .contains("#### Do this next");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
             );
     }
 
@@ -478,11 +476,10 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
-
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
+                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
             );
     }
 
@@ -615,12 +612,12 @@ class AppealSubmittedConfirmationTest {
         if (flag.equals(NO.toString())) {
             assertThat(
                 callbackResponse.getConfirmationHeader().get()
-                .contains("# Your appeal has been submitted"));
+                    .contains("# Your appeal has been submitted"));
 
             assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                       + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.");
+                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.");
         }
         if (flag.equals(YES.toString())) {
             assertThat(
@@ -630,16 +627,16 @@ class AppealSubmittedConfirmationTest {
             assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                                + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                                + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                    + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
+                    + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
                 );
         }
 
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "NO", "YES" })
+    @ValueSource(strings = {"NO", "YES"})
     public void should_return_confirmation_for_help_with_fees(String flag) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
@@ -918,8 +915,6 @@ class AppealSubmittedConfirmationTest {
 
         PostSubmitCallbackResponse callbackResponse =
             appealSubmittedConfirmation.handle(callback);
-
-        verify(asylumCasePostFeePaymentService, times(1)).ccdSubmitted(any(Callback.class));
 
         assertNotNull(callbackResponse);
 

@@ -345,6 +345,7 @@ security:
       - "createFlag"
       - "updateDetentionLocation"
       - "turnOnNotifications"
+      - "generateServiceRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
