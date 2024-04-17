@@ -1,6 +1,6 @@
 {
   "description": "RIA-823 end appeal",
-  "enabled": "{$featureFlag.docmosisEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

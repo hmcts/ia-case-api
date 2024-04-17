@@ -1,5 +1,6 @@
 {
   "description": "RIA-4293 persisted legal rep fields (not after NoC)",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",

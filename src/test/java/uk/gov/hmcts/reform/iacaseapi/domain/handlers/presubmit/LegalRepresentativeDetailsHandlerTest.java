@@ -63,8 +63,10 @@ class LegalRepresentativeDetailsHandlerTest {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
+        final String expectedLegalRepresentativeMobileNumber = "";
         final String expectedLegalRepCompany = "";
         final String expectedLegalRepName = "";
+        final String expectedLegalRepFamilyName = "";
 
         when(userDetails.getForename()).thenReturn("John");
         when(userDetails.getSurname()).thenReturn("Doe");
@@ -74,8 +76,10 @@ class LegalRepresentativeDetailsHandlerTest {
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -84,8 +88,10 @@ class LegalRepresentativeDetailsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_NAME, expectedLegalRepresentativeName);
         verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, expectedLegalRepresentativeEmailAddress);
+        verify(asylumCase, times(1)).write(LEGAL_REP_MOBILE_PHONE_NUMBER, expectedLegalRepresentativeMobileNumber);
         verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY, expectedLegalRepCompany);
         verify(asylumCase, times(1)).write(LEGAL_REP_NAME, expectedLegalRepName);
+        verify(asylumCase, times(1)).write(LEGAL_REP_FAMILY_NAME, expectedLegalRepFamilyName);
     }
 
     @ParameterizedTest
@@ -94,8 +100,10 @@ class LegalRepresentativeDetailsHandlerTest {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
+        final String expectedLegalRepresentativeMobileNumber = "";
         final String expectedLegalRepCompany = "";
         final String expectedLegalRepName = "";
+        final String expectedLegalRepFamilyName = "";
 
         when(userDetails.getForename()).thenReturn("John");
         when(userDetails.getSurname()).thenReturn("Doe");
@@ -107,8 +115,10 @@ class LegalRepresentativeDetailsHandlerTest {
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -117,8 +127,10 @@ class LegalRepresentativeDetailsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_NAME, expectedLegalRepresentativeName);
         verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, expectedLegalRepresentativeEmailAddress);
+        verify(asylumCase, times(1)).write(LEGAL_REP_MOBILE_PHONE_NUMBER, expectedLegalRepresentativeMobileNumber);
         verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY, expectedLegalRepCompany);
         verify(asylumCase, times(1)).write(LEGAL_REP_NAME, expectedLegalRepName);
+        verify(asylumCase, times(1)).write(LEGAL_REP_FAMILY_NAME, expectedLegalRepFamilyName);
     }
 
     @ParameterizedTest
@@ -130,8 +142,10 @@ class LegalRepresentativeDetailsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME)).thenReturn(Optional.of("existing"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -150,8 +164,10 @@ class LegalRepresentativeDetailsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME)).thenReturn(Optional.of("existing"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

@@ -3,6 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.persistWitnessInterpreterCategoryField;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +112,41 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         }
 
+        boolean isInterpreterServicesNeeded = asylumCase
+            .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (!isInterpreterServicesNeeded) {
+            asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+            asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+        }
+
+        if (witnessDetails.isEmpty()) {
+            // if no witnesses present clear all witness-related fields
+            WITNESS_N_FIELD.forEach(asylumCase::clear);
+            WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(asylumCase::clear);
+            WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(asylumCase::clear);
+            WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
+        } else {
+            persistWitnessInterpreterCategoryField(asylumCase);
+        }
+
+        // WitnessListElement(s) are only needed for the AIP screens, they do not need to be written
+        clearAllWitnessListElementFields(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
+    private void clearAllWitnessListElementFields(AsylumCase asylumCase) {
+        int i = 0;
+        while (i < 10) {
+            asylumCase.clear(WITNESS_LIST_ELEMENT_N.get(i));
+            i++;
+        }
+    }
+
+
 }
 

@@ -1,0 +1,81 @@
+{
+  "description": "RIA-7769 prepopulate data for record adjournment details",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordAdjournmentDetails",
+      "pageId": "relistCaseImmediately",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isWitnessesAttending": "No",
+          "hearingChannel": {
+            "value": {
+              "code": "INTER",
+              "label": "In Person"
+            },
+            "list_items": [
+              {
+                "code": "INTER",
+                "label": "In Person"
+              }
+            ]
+          },
+          "listCaseHearingLength": "60",
+          "listCaseHearingCentre": "glasgowTribunalsCentre"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isWitnessesAttending": "No",
+        "nextHearingFormat": {
+          "value": {
+            "code": "INTER",
+            "label": "In Person"
+          },
+          "list_items": [
+            {
+              "code": "INTER",
+              "label": "In Person"
+            }
+          ]
+        },
+        "nextHearingDuration": "60",
+        "nextHearingVenue": {
+          "value": {
+            "code": "366559",
+            "label": "Atlantic Quay - Glasgow"
+          },
+          "list_items": [
+            {"code": "783803", "label": "Manchester Magistrates Court"},
+            {"code": "227101", "label": "Newport Tribunal Centre - Columbus House"},
+            {"code": "231596", "label": "Birmingham Civil And Family Justice Centre"},
+            {"code": "28837", "label": "Harmondsworth Tribunal Hearing Centre"},
+            {"code": "366559", "label": "Atlantic Quay - Glasgow"},
+            {"code": "366796", "label": "Newcastle Civil And Family Courts And Tribunals Centre"},
+            {"code": "386417", "label": "Hatton Cross Tribunal Hearing Centre"},
+            {"code": "443257", "label": "North Tyneside Magistrates Court"},
+            {"code": "569737", "label": "Leeds Magistrates Court and Family Court"},
+            {"code": "698118", "label": "Bradford Tribunal Hearing Centre"},
+            {"code": "618632", "label": "Nottingham Magistrates Court"},
+            {"code": "649000", "label": "Yarls Wood Immigration And Asylum Hearing Centre"},
+            {"code": "745389", "label": "Hendon Magistrates Court"},
+            {"code": "765324", "label": "Taylor House Tribunal Hearing Centre"},
+            {"code": "787030", "label": "Coventry Magistrates Court"},
+            {"code": "999971", "label": "Alloa Sheriff Court"},
+            {"code": "999973", "label": "Belfast Laganside Court"}
+          ]
+        }
+      }
+    }
+  }
+}

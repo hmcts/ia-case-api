@@ -1,0 +1,95 @@
+{
+  "description": "RIA-7781: Legal rep make a Change Hearing Type application",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 7781,
+      "eventId": "makeAnApplication",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "revocationOfProtection",
+          "appealGroundsRevocation": {
+            "values": [
+              "revocationRefugeeConvention",
+              "revocationHumanitarianProtection"
+            ]
+          },
+          "makeAnApplicationTypes": {
+            "value": {
+              "code": "changeHearingType",
+              "label": "Change hearing type"
+            },
+            "list_items": [
+              {
+                "code": "judgeReview",
+                "label": "Judge's review of application decision"
+              },
+              {
+                "code": "changeHearingType",
+                "label": "Change hearing type"
+              }
+            ]
+          },
+          "makeAnApplicationDetails": "I want to change the hearing type",
+          "makeAnApplicationEvidence": [
+            {
+              "id": "223a2858-8779-45a5-b12d-bf9d689e6d7d",
+              "value": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "Evidence.PDF"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "revocationOfProtection",
+        "appealGroundsRevocation": {
+          "values": [
+            "revocationRefugeeConvention",
+            "revocationHumanitarianProtection"
+          ]
+        },
+        "makeAnApplications": [
+          {
+            "id": "1",
+            "value": {
+              "date": "{$TODAY}",
+              "type": "Change hearing type",
+              "details": "I want to change the hearing type",
+              "decision": "Pending",
+              "evidence": [
+                {
+                  "id": "223a2858-8779-45a5-b12d-bf9d689e6d7d",
+                  "value": {
+                    "document_url": "http://document-store/AAA",
+                    "document_binary_url": "http://document-store/AAA/binary",
+                    "document_filename": "Evidence.PDF"
+                  }
+                }
+              ],
+              "applicant": "Legal representative",
+              "applicantRole": "caseworker-ia-legalrep-solicitor",
+              "state": "appealSubmitted"
+            }
+          }
+        ],
+        "makeAnApplicationTypes": null,
+        "makeAnApplicationDetails": null,
+        "makeAnApplicationEvidence": null
+      }
+    }
+  }
+}
+

@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,8 +23,12 @@ public class CaseFlagValue {
     String name;
     String status;
     String flagCode;
+    String subTypeKey;
+    String flagComment;
+    String subTypeValue;
     YesOrNo hearingRelevant;
     String dateTimeCreated;
     String dateTimeModified;
-
+    List<IdValue<String>> path;
+    String otherDescription;
 }

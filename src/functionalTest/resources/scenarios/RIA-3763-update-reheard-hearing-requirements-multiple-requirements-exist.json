@@ -1,5 +1,6 @@
 {
   "description": "RIA-3763 FTPA Reheard - update hearing requirements - multiple hearing requirements copied to previous hearing requirements - feature flag on",
+  "enabled": false,
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -17,6 +18,8 @@
           "sendDirectionExplanation": "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed",
           "sendDirectionDueDate": "{$TODAY+5}",
           "allocatedJudge": "Judge Fudge",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
           "appealDecision": "Allowed",
           "listCaseHearingDate": "2020-10-28T10:30:00.000",
           "ariaListingReference": "LP/12345/2019",
@@ -73,6 +76,8 @@
         "sendDirectionActionAvailable": "Yes",
         "isReheardAppealEnabled": "Yes",
         "attendingJudge": "Judge Fudge",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
         "attendingAppellant": "José González",
         "attendingHomeOfficeLegalRepresentative": "Perry Mason",
         "hearingRequirements": [

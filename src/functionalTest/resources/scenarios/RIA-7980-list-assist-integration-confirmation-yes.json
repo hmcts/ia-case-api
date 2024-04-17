@@ -1,0 +1,25 @@
+{
+  "description": "RIA-7980 List Assist Integration confirmation (Yes)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "listAssistIntegration",
+      "state": "appealSubmitted",
+      "id": 7980,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isIntegrated": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# List Assist Integration",
+      "body": "List hearing in List Assist: Yes"
+    }
+  }
+}

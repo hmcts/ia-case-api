@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum  MakeAnApplicationTypes {
+import java.util.Arrays;
+import java.util.Optional;
+
+public enum MakeAnApplicationTypes {
 
     ADJOURN("Adjourn"),
     EXPEDITE("Expedite"),
@@ -14,6 +17,7 @@ public enum  MakeAnApplicationTypes {
     UPDATE_HEARING_REQUIREMENTS("Update hearing requirements"),
     UPDATE_APPEAL_DETAILS("Update appeal details"),
     REINSTATE("Reinstate an ended appeal"),
+    CHANGE_HEARING_TYPE("Change hearing type"),
     OTHER("Other");
 
     @JsonValue
@@ -21,6 +25,12 @@ public enum  MakeAnApplicationTypes {
 
     MakeAnApplicationTypes(String value) {
         this.value = value;
+    }
+
+    public static Optional<MakeAnApplicationTypes> getTypeFrom(String s) {
+        return Arrays.stream(MakeAnApplicationTypes.values())
+            .filter(v -> v.value.equals(s))
+            .findFirst();
     }
 
     @Override

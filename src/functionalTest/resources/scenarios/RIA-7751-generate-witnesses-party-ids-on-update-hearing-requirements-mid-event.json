@@ -1,0 +1,106 @@
+{
+  "description": "RIA-7751 generate witnesses party id on updateHearingRequirements mid event",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 77511,
+      "eventId": "updateHearingRequirements",
+      "pageId": "isWitnessesAttending",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingDate": "2020-10-28T10:30:00.000",
+          "ariaListingReference": "LP/12345/2019",
+          "listCaseHearingCentre": "taylorHouse",
+          "listCaseHearingLength": "360",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
+          "attendingAppellant": "José González",
+          "isWitnessesAttending": "Yes",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessName": "witness name one",
+                "witnessFamilyName": "witness last name one"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "witnessName": "witness name two",
+                "witnessFamilyName": "witness last name two"
+              }
+            },
+            {
+              "id": "3",
+              "value": {
+                "witnessName": "witness name three",
+                "witnessFamilyName": "witness last name three"
+              }
+            }
+          ],
+          "attendingHomeOfficeLegalRepresentative": "Perry Mason",
+          "actualCaseHearingLength": {
+            "hours": "2",
+            "minutes": "30"
+          },
+          "hearingRequirements": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "some-hearing-requirements.pdf"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY}",
+                "tag": "hearingRequirements"
+              }
+            }
+          ],
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isWitnessesAttending": "Yes",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessName": "witness name one",
+              "witnessFamilyName": "witness last name one"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessName": "witness name two",
+              "witnessFamilyName": "witness last name two"
+            }
+          },
+          {
+            "id": "3",
+            "value": {
+              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessName": "witness name three",
+              "witnessFamilyName": "witness last name three"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

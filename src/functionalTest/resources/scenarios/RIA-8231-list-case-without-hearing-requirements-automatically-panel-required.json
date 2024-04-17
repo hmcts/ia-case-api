@@ -1,0 +1,33 @@
+{
+  "description": "RIA-8231 List case without hearing requirements automatically (Panel required)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 82312,
+      "eventId": "listCaseWithoutHearingRequirements",
+      "state": "listed",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "isPanelRequired": "Yes",
+          "isIntegrated": "Yes",
+          "listCaseHearingLength": "90",
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "manualCreHearingRequired": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# List without requirements complete",
+      "body": "#### What happens next\n\nThe listing team will now list the case. All parties will be notified when the Hearing Notice is available to view"
+    }
+  }
+}

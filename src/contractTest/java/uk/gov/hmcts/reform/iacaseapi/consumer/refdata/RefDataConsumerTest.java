@@ -24,6 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 
 @ExtendWith(SpringExtension.class)
@@ -41,6 +42,9 @@ public class RefDataConsumerTest {
 
     @Autowired
     RefDataCaseWorkerApi refDataCaseWorkerApi;
+
+    @Autowired
+    CommonDataRefApi commonDataRefApi;
 
     @Pact(provider = "referenceData_caseworkerRefUsers", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {

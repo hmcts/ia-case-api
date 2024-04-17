@@ -1,0 +1,121 @@
+{
+  "description": "RIA-7751 RIA-7750 witness party ID generation when the event is draftHearingRequirement",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "pageId": "isWitnessesAttending",
+      "eventId": "draftHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAppellantAttendTheHearing": "Yes",
+          "isAppellantGivingOralEvidence": "Yes",
+          "isWitnessesAttending": "Yes",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessName": "witness name one",
+                "witnessFamilyName": "witness last name one"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "witnessName": "witness name two",
+                "witnessFamilyName": "witness last name two"
+              }
+            },
+            {
+              "id": "3",
+              "value": {
+                "witnessName": "witness name three",
+                "witnessFamilyName": "witness last name three"
+              }
+            }
+          ],
+          "isInterpreterServicesNeeded": "No",
+          "isAnyWitnessInterpreterRequired": "No",
+          "isHearingRoomNeeded": "Yes",
+          "isHearingLoopNeeded": "Yes",
+          "physicalOrMentalHealthIssues": "Yes",
+          "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+          "pastExperiences": "Yes",
+          "pastExperiencesDescription": "Past experiences",
+          "multimediaEvidence": "Yes",
+          "multimediaEvidenceDescription": "Multimedia evidence",
+          "singleSexCourt": "Yes",
+          "singleSexCourtType": "All female",
+          "singleSexCourtTypeDescription": "Requirement for single sex court",
+          "inCameraCourt": "Yes",
+          "isInCameraCourtAllowed": "Granted",
+          "inCameraCourtDescription": "In camera court description",
+          "additionalRequests": "Yes",
+          "additionalRequestsDescription": "Additional requests description",
+          "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAppellantAttendTheHearing": "Yes",
+        "isAppellantGivingOralEvidence": "Yes",
+        "isWitnessesAttending": "Yes",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessName": "witness name one",
+              "witnessFamilyName": "witness last name one"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessName": "witness name two",
+              "witnessFamilyName": "witness last name two"
+            }
+          },
+          {
+            "id": "3",
+            "value": {
+              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessName": "witness name three",
+              "witnessFamilyName": "witness last name three"
+            }
+          }
+        ],
+        "isInterpreterServicesNeeded": "No",
+        "isAnyWitnessInterpreterRequired": "No",
+        "isHearingRoomNeeded": "Yes",
+        "isHearingLoopNeeded": "Yes",
+        "physicalOrMentalHealthIssues": "Yes",
+        "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+        "pastExperiences": "Yes",
+        "pastExperiencesDescription": "Past experiences",
+        "multimediaEvidence": "Yes",
+        "multimediaEvidenceDescription": "Multimedia evidence",
+        "singleSexCourt": "Yes",
+        "singleSexCourtType": "All female",
+        "singleSexCourtTypeDescription": "Requirement for single sex court",
+        "inCameraCourt": "Yes",
+        "isInCameraCourtAllowed": "Granted",
+        "inCameraCourtDescription": "In camera court description",
+        "additionalRequests": "Yes",
+        "additionalRequestsDescription": "Additional requests description",
+        "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}

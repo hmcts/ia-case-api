@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -354,6 +355,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
         verify(asylumCase, times(1)).clear(SPONSOR_NAME_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS_FOR_DISPLAY);
+        verify(asylumCase, times(1)).clear(SPONSOR_PARTY_ID);
     }
 
 }

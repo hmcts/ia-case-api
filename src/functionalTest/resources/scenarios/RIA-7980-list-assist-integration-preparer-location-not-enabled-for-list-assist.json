@@ -1,0 +1,28 @@
+{
+  "description": "RIA-7980 List Assist Integration preparer for location not enabled for list assist",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "listAssistIntegration",
+      "state": "appealSubmitted",
+      "id": 7980,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "227101"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["List assist integration option is not available for selected hearing centre"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}

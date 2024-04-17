@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -35,6 +36,8 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        HandlerUtils.formatHearingAdjustmentResponses(asylumCase);
 
         asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS, YesOrNo.YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, callback.getCaseDetails().getState());

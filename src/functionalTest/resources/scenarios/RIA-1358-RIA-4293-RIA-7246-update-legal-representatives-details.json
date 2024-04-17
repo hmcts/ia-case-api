@@ -1,0 +1,39 @@
+{
+  "description": "RIA-1358-RIA-4293-RIA-7246 Update legal representative's details",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "updateLegalRepDetails",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "legalRepCompany": "Amazing Law Firm",
+          "legalRepName": "{$IA_USER_PREFIX}A legal Rep",
+          "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+          "legalRepReferenceNumber": "ABC-123",
+          "updateLegalRepCompany": "Amazing Law Firm",
+          "updateLegalRepName": "Jane Doe",
+          "updateLegalRepEmailAddress": "jane.doe@example.com",
+          "updateLegalRepReferenceNumber": "ABC-JD-001",
+          "updateLegalRepMobilePhoneNumber": "01234123123"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "legalRepCompany": "Amazing Law Firm",
+        "legalRepName": "Jane Doe",
+        "legalRepresentativeEmailAddress": "jane.doe@example.com",
+        "legalRepReferenceNumber": "ABC-JD-001",
+        "legalRepMobilePhoneNumber": "01234123123"
+      }
+    }
+  }
+}

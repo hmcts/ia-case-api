@@ -1,6 +1,6 @@
 {
   "description": "RIA-2239 end appeal",
-  "enabled": "{$featureFlag.docmosisEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",

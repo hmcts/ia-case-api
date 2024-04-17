@@ -119,12 +119,21 @@ class EventTest {
         assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
+        assertEquals("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString());
+        assertEquals("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString());
+        assertEquals("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString());
+        assertEquals("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString());
+        assertEquals("triggerCmrUpdated", Event.TRIGGER_CMR_UPDATED.toString());
+        assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
+        assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
+        assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
+        assertEquals("decisionWithoutHearingListed", Event.DECISION_WITHOUT_HEARING_LISTED.toString());
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(119, Event.values().length);
+        assertEquals(128, Event.values().length);
     }
 }

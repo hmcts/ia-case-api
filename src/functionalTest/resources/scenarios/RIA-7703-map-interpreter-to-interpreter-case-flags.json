@@ -1,0 +1,113 @@
+{
+  "description": "RIA-7730 map interpreter's to interpreter case flags",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateInterpreterDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isWitnessesAttending": "No",
+          "interpreterDetails": [
+            {
+              "id": "1",
+              "value": {
+                "interpreterId": "1",
+                "interpreterEmail": "gg@gg.com",
+                "interpreterBookingRef": "Test 1",
+                "interpreterFamilyName": "Test Family 1",
+                "interpreterGivenNames": "Interp One",
+                "interpreterPhoneNumber": "07933333331"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "interpreterId": "2",
+                "interpreterEmail": "ddg@gg.com",
+                "interpreterBookingRef": "Test 2",
+                "interpreterFamilyName": "Test Family 2",
+                "interpreterGivenNames": "Interp Two",
+                "interpreterPhoneNumber": "07933333322"
+              }
+            }
+          ],
+          "interpreterLevelFlags": [
+            {
+              "id": "1",
+              "value": {
+                "partyName": "Interp One Test Family 1",
+                "roleOnCase": "Interpreter",
+                "details": []
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "partyName": "Interp Two Test Family 2",
+                "roleOnCase": "Interpreter",
+                "details": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "isWitnessesAttending": "No",
+        "interpreterDetails": [
+          {
+            "id": "1",
+            "value": {
+              "interpreterId": "1",
+              "interpreterEmail": "gg@gg.com",
+              "interpreterBookingRef": "Test 1",
+              "interpreterFamilyName": "Test Family 1",
+              "interpreterGivenNames": "Interp One",
+              "interpreterPhoneNumber": "07933333331"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "interpreterId": "2",
+              "interpreterEmail": "ddg@gg.com",
+              "interpreterBookingRef": "Test 2",
+              "interpreterFamilyName": "Test Family 2",
+              "interpreterGivenNames": "Interp Two",
+              "interpreterPhoneNumber": "07933333322"
+            }
+          }
+        ],
+        "interpreterLevelFlags": [
+          {
+            "id": "1",
+            "value": {
+              "partyName": "Interp One Test Family 1",
+              "roleOnCase": "Interpreter",
+              "details": []
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "partyName": "Interp Two Test Family 2",
+              "roleOnCase": "Interpreter",
+              "details": []
+            }
+          }
+        ]
+      }
+    }
+  }
+}

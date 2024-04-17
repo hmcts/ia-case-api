@@ -514,6 +514,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_MOBILE_NUMBER);
         verify(asylumCase, times(1)).clear(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
+        verify(asylumCase, times(1)).clear(SPONSOR_PARTY_ID);
     }
 
     private void verifyUnclearedFields(AsylumCase asylumCase) {

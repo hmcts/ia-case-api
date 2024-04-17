@@ -1,0 +1,78 @@
+{
+  "description": "RIA-7635 About to submit Manage interpreter details",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7635,
+      "eventId": "updateInterpreterDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "interpreterDetails": [
+            {
+              "id": "1",
+              "value": {
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "interpreterDetails": [
+          {
+            "id": "1",
+            "value": {
+              "interpreterId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "interpreterBookingRef": "ref",
+              "interpreterGivenNames": "john",
+              "interpreterFamilyName": "smith",
+              "interpreterPhoneNumber": "123",
+              "interpreterEmail": "test@test.com",
+              "interpreterNote": "note"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "interpreterId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "interpreterBookingRef": "ref",
+              "interpreterGivenNames": "john",
+              "interpreterFamilyName": "smith",
+              "interpreterPhoneNumber": "123",
+              "interpreterEmail": "test@test.com",
+              "interpreterNote": "note"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

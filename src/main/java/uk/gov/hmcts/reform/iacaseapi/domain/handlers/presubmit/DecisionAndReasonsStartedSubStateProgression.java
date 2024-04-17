@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -12,9 +13,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @Component
+@RequiredArgsConstructor
 public class DecisionAndReasonsStartedSubStateProgression implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -35,9 +40,12 @@ public class DecisionAndReasonsStartedSubStateProgression implements PreSubmitCa
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase = callback
-            .getCaseDetails()
-            .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase)) {
+            asylumCase = autoRequestHearingService
+                .autoCreateHearing(callback);
+        }
 
         asylumCase.write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
         asylumCase.write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);

@@ -1,0 +1,46 @@
+{
+  "description": "RIA-8014 Record adjournment details auto hearing request confirmation",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 80143,
+      "eventId": "recordAdjournmentDetails",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "isIntegrated": "Yes",
+          "manualCreHearingRequired": "No",
+          "relistCaseImmediately": "Yes",
+          "hearingAdjournmentWhen": "onHearingDate"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have recorded the adjournment details",
+      "body": "#### Do this next\n\nThe hearing request has been created and is visible on the [Hearings tab](/cases/case-details/80143/hearings)"
+    },
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "366559"
+        },
+        "manualCreHearingRequired": "No",
+        "relistCaseImmediately": "Yes",
+        "hearingAdjournmentWhen": "onHearingDate",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
