@@ -74,10 +74,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
-    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
-        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
@@ -112,10 +110,6 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
-
-        if (!HandlerUtils.isAipJourney(asylumCase)) {
-            sendPaymentCallback(callback);
-        }
 
         if (isInternalCase(asylumCase)) {
             postSubmitResponse.setConfirmationHeader(
@@ -164,7 +158,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
                     if (paymentOption.equals("payLater")) {
-                        setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
+                        setWaysToPayLabelPaPayLater(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
                     } else {
                         setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
                     }
@@ -351,7 +345,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         }
     }
 
-    private void setWaysToPayLabelPaPayNowPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
+    private void setWaysToPayLabelPaPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime,
                                          AsylumCase asylumCase) {
@@ -387,17 +381,5 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             return List.of(EA, HU, PA, EU).contains(appealType);
         }
         return false;
-    }
-
-    private void sendPaymentCallback(Callback<AsylumCase> callback) {
-
-        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
-            callback.getCaseDetails(),
-            callback.getCaseDetailsBefore(),
-            Event.SUBMIT_APPEAL
-        );
-        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
-        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
-
     }
 }
