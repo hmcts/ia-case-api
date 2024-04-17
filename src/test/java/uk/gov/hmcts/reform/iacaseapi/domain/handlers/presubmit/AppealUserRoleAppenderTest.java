@@ -121,7 +121,6 @@ class AppealUserRoleAppenderTest {
         assertThatThrownBy(() -> appealUserRoleAppender.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-
     }
 
 }
