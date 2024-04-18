@@ -46,17 +46,14 @@ def get_latest_file(dir_path: str, file_prefix: str) -> str:
 
 
 def replace_case_data_id(new_id: str, file_path: str):
-    # Read the CSV file and create a list of dictionaries
     with open(file_path, 'r') as file:
         reader = csv.DictReader(file)
         data_list = list(reader)
 
-    # Replace values in the 'case_data_id' column with the new_id
     for row in data_list:
         if 'case_data_id' in row:
             row['case_data_id'] = new_id
 
-    # Write the modified data back to the CSV file
     with open(file_path, 'w', newline='') as file:
         fieldnames = reader.fieldnames
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -65,4 +62,4 @@ def replace_case_data_id(new_id: str, file_path: str):
     return file_path
 
 
-prep_import_data(events_to_get_individual_json=range(1,13))
+prep_import_data(events_to_get_individual_json=range(1, 39))
