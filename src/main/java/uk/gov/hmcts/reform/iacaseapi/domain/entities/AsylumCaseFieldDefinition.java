@@ -1697,6 +1697,24 @@ public enum AsylumCaseFieldDefinition {
     HELP_WITH_FEES_OPTION(
         "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
 
+    CORRECTED_DECISION_AND_REASONS(
+            "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
+
+    SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT(
+            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){}),
+
+    APPEAL_DECISION_LABEL(
+        "appealDecisionLabel", new TypeReference<String>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_DATE(
+        "updateTribunalDecisionDate", new TypeReference<String>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_DATE_RULE_32(
+            "updateTribunalDecisionDateRule32", new TypeReference<String>(){}),
+
+    REASON_REHEARING_RULE_32(
+            "reasonRehearingRule32", new TypeReference<String>(){}),
+
     HELP_WITH_FEES_REF_NUMBER(
         "helpWithFeesRefNumber", new TypeReference<String>(){}),
 
@@ -1717,24 +1735,6 @@ public enum AsylumCaseFieldDefinition {
 
     LATE_LOCAL_AUTHORITY_LETTERS(
         "lateLocalAuthorityLetters", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
-
-    CORRECTED_DECISION_AND_REASONS(
-            "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
-
-    SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT(
-            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){}),
-
-    APPEAL_DECISION_LABEL(
-        "appealDecisionLabel", new TypeReference<String>(){}),
-
-    UPDATE_TRIBUNAL_DECISION_DATE(
-        "updateTribunalDecisionDate", new TypeReference<String>(){}),
-
-    UPDATE_TRIBUNAL_DECISION_DATE_RULE_32(
-            "updateTribunalDecisionDateRule32", new TypeReference<String>(){}),
-
-    REASON_REHEARING_RULE_32(
-            "reasonRehearingRule32", new TypeReference<String>(){}),
 
     REQUEST_FEE_REMISSION_DATE(
         "requestFeeRemissionDate", new TypeReference<String>(){}),
