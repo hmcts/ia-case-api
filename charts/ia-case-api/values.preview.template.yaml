@@ -1,3 +1,4 @@
+enabled: false
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
