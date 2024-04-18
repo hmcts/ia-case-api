@@ -1,4 +1,3 @@
-enabled: false
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
@@ -1272,21 +1271,9 @@ am-org-role-mapping-service:
 
 
 postgresql:
-  enabled: false
+  enabled: true
   flexibleserver: ia-preview
   setup:
     databases:
-      - name: "pr-${CHANGE_ID}-data-store"
-      - name: "pr-${CHANGE_ID}-definition-store"
-      - name: "pr-${CHANGE_ID}-user-profile"
-      - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-ia-case-api"
-      - name: "pr-${CHANGE_ID}-emstitch"
-      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
-      - name: "pr-${CHANGE_ID}-wa_workflow_api"
-      - name: "pr-${CHANGE_ID}-camunda"
-      - name: "pr-${CHANGE_ID}-cft_task_db"
-      - name: "pr-${CHANGE_ID}-cft_task_db_replica"
-      - name: "pr-${CHANGE_ID}-org_role_mapping"
-
 
