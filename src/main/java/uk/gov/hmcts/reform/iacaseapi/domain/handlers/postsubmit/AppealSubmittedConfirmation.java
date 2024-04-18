@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @Slf4j
@@ -38,6 +37,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String PAYMENT_OPTION_PAY_OFFLINE = "payOffline";
     private static final String PAYMENT_OPTION_PAY_LATER = "payLater";
     private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
+    private static final String DO_THIS_NEXT_LABEL = "#### Do this next\n\n";
     private static final String PA_PAY_APPEAL_LABEL =
         "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
     private static final String EU_HU_PAY_APPEAL_LABEL = PA_PAY_APPEAL_LABEL
@@ -54,6 +54,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeAdminConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL = OUT_OF_TIME_ADMIN_PNG + WHAT_HAPPENS_NEXT_LABEL;
+    private static final String OUT_OF_TIME_DO_THIS_NEXT_LABEL = OUT_OF_TIME_PNG + DO_THIS_NEXT_LABEL;
     private static final String DEFAULT_LABEL =
         "You will receive an email confirming that this appeal has been submitted successfully.";
     private static final String ADMIN_LABEL =
@@ -72,10 +73,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
-    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
-        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
@@ -111,10 +110,6 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-        if (!HandlerUtils.isAipJourney(asylumCase)) {
-            sendPaymentCallback(callback);
-        }
-
         if (isInternalCase(asylumCase)) {
             postSubmitResponse.setConfirmationHeader(
                     submissionOutOfTime == NO ? ADMIN_HEADER : ""
@@ -148,6 +143,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 break;
 
             case PA:
+                String paymentOption = asylumCase
+                    .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+                    .orElse("");
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
                     setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime, asylumCase);
@@ -158,7 +156,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
-                    setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
+                    if (paymentOption.equals("payLater")) {
+                        setWaysToPayLabelPaPayLater(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
+                    } else {
+                        setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
+                    }
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
@@ -323,8 +325,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          YesOrNo submissionOutOfTime,
                                          AsylumCase asylumCase) {
 
-        String payForAppeal = "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
-                                     + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+        String payForAppeal = "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/"
+                + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
+                + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         if (isInternalCase(asylumCase)) {
             postSubmitCallbackResponse.setConfirmationBody(
@@ -335,31 +338,32 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         } else {
             postSubmitCallbackResponse.setConfirmationBody(
                     submissionOutOfTime == NO
-                            ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
-                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
+                            ? DO_THIS_NEXT_LABEL + payForAppeal
+                            : OUT_OF_TIME_DO_THIS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
             );
         }
     }
 
-    private void setWaysToPayLabelPaPayNowPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
+    private void setWaysToPayLabelPaPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
                                          Callback<AsylumCase> callback,
                                          YesOrNo submissionOutOfTime,
                                          AsylumCase asylumCase) {
 
-        String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
-                              + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+        String paPayLaterLabel = "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/"
+            + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
+            + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         if (isInternalCase(asylumCase)) {
             postSubmitCallbackResponse.setConfirmationBody(
                     submissionOutOfTime == NO
-                            ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
-                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
+                            ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + paPayLaterLabel + REVIEW_LABEL
             );
         } else {
             postSubmitCallbackResponse.setConfirmationBody(
                     submissionOutOfTime == NO
-                            ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
-                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
+                            ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel + REVIEW_LABEL
             );
         }
 
@@ -376,17 +380,5 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             return List.of(EA, HU, PA, EU).contains(appealType);
         }
         return false;
-    }
-
-    private void sendPaymentCallback(Callback<AsylumCase> callback) {
-
-        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
-            callback.getCaseDetails(),
-            callback.getCaseDetailsBefore(),
-            Event.SUBMIT_APPEAL
-        );
-        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
-        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
-
     }
 }

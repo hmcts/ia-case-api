@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @SuppressWarnings("unchecked")
 class SendDecisionAndReasonsMidEventHandlerTest {
     @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -40,7 +43,7 @@ class SendDecisionAndReasonsMidEventHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        sendDecisionAndReasonsMidEventHandler = new SendDecisionAndReasonsMidEventHandler();
+        sendDecisionAndReasonsMidEventHandler = new SendDecisionAndReasonsMidEventHandler(documentReceiver);
     }
 
     @Test

@@ -311,11 +311,6 @@ dependencyManagement {
         dependencySet(group: 'com.fasterxml.jackson.module', version: '2.16.0') {
             entry 'jackson-module-parameter-names'
         }
-
-        dependencySet(group: 'net.minidev', version: '2.4.10') {
-            entry 'json-smart'
-        }
-
     }
 }
 
@@ -400,6 +395,11 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-crypto'
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
+
+    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
