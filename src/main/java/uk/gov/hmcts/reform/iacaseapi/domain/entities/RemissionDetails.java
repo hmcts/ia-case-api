@@ -29,7 +29,7 @@ public class RemissionDetails {
     private String amountRemitted;
     private String amountLeftToPay;
     private String remissionDecisionReason;
-    private List<IdValue<DocumentWithMetadata>> localAuthorityLetter;
+    private List<IdValue<DocumentWithMetadata>> localAuthorityLetters;
     private String helpWithFeesOption;
 
     private RemissionDetails() {
@@ -73,8 +73,8 @@ public class RemissionDetails {
         this.feeRemissionType = feeRemissionType;
     }
 
-    public RemissionDetails(String feeRemissionType, List<IdValue<DocumentWithMetadata>> localAuthorityLetter) {
+    public RemissionDetails(String feeRemissionType, List<IdValue<DocumentWithMetadata>> localAuthorityLetters) {
         this.feeRemissionType = feeRemissionType;
-        this.localAuthorityLetter = localAuthorityLetter;
+        this.localAuthorityLetters = localAuthorityLetters;
     }
 }

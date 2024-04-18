@@ -1,0 +1,26 @@
+{
+  "description": "RIA-8230 DLRM Manage fee update - Refund tribunal action - confirmation screen",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "manageFeeUpdate",
+      "state": "appealSubmitted",
+      "id": 8230,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isDlrmFeeRefundEnabled": "Yes",
+          "feeUpdateTribunalAction": "refund"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have recorded a fee update",
+      "body": "#### What happens next\n\nThe appropriate team will be notified to review the fee update and process a refund."
+    }
+  }
+}
