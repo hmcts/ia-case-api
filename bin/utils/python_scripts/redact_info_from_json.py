@@ -164,8 +164,6 @@ def replace_specific_field_in_csv_file_of_jsons(
 # redact_values_from_csv(
 #     'case_event_202401261547.csv')
 
-replace_specific_field_in_json_file('/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/output_jsons/output_jsons_latest/case_7088977_event_1_recordRemissionDecision.json', 'document_filename', ['caseNotes', 'value', 'caseNoteDocument'])
+# replace_specific_field_in_json_file('case_7088977_event_1_recordRemissionDecision.json', 'document_filename', ['caseNotes', 'value', 'caseNoteDocument'])
 
-# replace_specific_field_in_json_file('bin/utils/python_scripts/output_jsons/output_jsons_latest/case_7088977_event_1_recordRemissionDecision.json', 'document_filename', ['caseNotes', 'value', 'caseNoteDocument'], ['3'])
-
-# replace_specific_field_in_csv_file_of_jsons('/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/output_csv_files/case_event_202403261448_redacted.csv', 'document_filename', path_fields=['caseNotes', 'value', 'caseNoteDocument'], id_list=['1'])
+# replace_specific_field_in_csv_file_of_jsons('case_event_202403261448_redacted.csv', 'document_filename', path_fields=['caseNotes', 'value', 'caseNoteDocument'], id_list=['1'])
