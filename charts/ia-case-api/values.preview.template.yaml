@@ -61,7 +61,7 @@ global:
 
 
 ia-case-payments-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:pr-259 #:pr-259 or relevant PR number to change
@@ -95,7 +95,7 @@ ia-case-payments-api:
           - ia-config-validator-secret
 
 ia-case-documents-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:pr-520 #pr-520 or relevant PR number to change
@@ -144,7 +144,7 @@ ia-case-documents-api:
           - ia-config-validator-secret
 
 ia-case-notifications-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-724 #pr-724 or relevant PR number to change
@@ -338,7 +338,7 @@ ia-case-notifications-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-bail-case-api:
-  enabled: false
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
@@ -388,7 +388,7 @@ ia-bail-case-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-timed-event-service:
-  enabled: false
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
@@ -417,7 +417,7 @@ ia-timed-event-service:
           - ia-config-validator-secret
 
 ia-home-office-integration-api:
-  enabled: false #set to true if testing against a local branch
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-285 #pr-285 or relevant PR number to change
@@ -446,7 +446,7 @@ ia-home-office-integration-api:
           - ia-config-validator-secret
 
 ia-case-access-api:
-   enabled: false
+   enabled: true
    java:
      image: hmctspublic.azurecr.io/ia/case-access-api:latest
      # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
@@ -466,7 +466,7 @@ ia-case-access-api:
            - ia-config-validator-secret
 
 ia-aip-frontend:
-  enabled: false
+  enabled: true
   nodejs:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/aip-frontend:latest
@@ -535,7 +535,7 @@ ia-aip-frontend:
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
-  enabled: false
+  enabled: true
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
@@ -545,7 +545,7 @@ idam-pr:
       - https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
 
 ccd-case-document-am-api:
-  enabled: false
+  enabled: true
   java:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
@@ -559,7 +559,7 @@ ccd-case-document-am-api:
 
 # https://github.com/hmcts/rpx-xui-webapp/blob/master/charts/xui-webapp/Chart.yaml
 xui-webapp:
-  enabled: false
+  enabled: true
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
@@ -622,7 +622,7 @@ xui-webapp:
           - system-user-password
 
 ccd:
-  enabled: false
+  enabled: true
   ccd:
     adminWeb:
       enabled: true
@@ -981,7 +981,7 @@ ccd:
         }
 
 em-ccdorc:
-  enabled: false
+  enabled: true
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
@@ -998,7 +998,7 @@ em-ccdorc:
       CALLBACK_HTTP_SCHEME: https
 
 em-stitching:
-  enabled: false
+  enabled: true
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
@@ -1029,7 +1029,7 @@ em-stitching:
         disabled: false
 
 aac-manage-case-assignment:
-  enabled: false
+  enabled: true
   java:
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
@@ -1078,7 +1078,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: false
+  enabled: true
   global:
     postgresUsername: hmcts
     postgresSecret: postgres
@@ -1163,7 +1163,7 @@ wa:
 
 
 servicebus:
-  enabled: false
+  enabled: true
   releaseNameOverride: ${SERVICE_NAME}
   resourceGroup: ia-aso-preview-rg
   sbNamespace: ia-servicebus-preview
@@ -1178,7 +1178,7 @@ servicebus:
         subscriptionNeeded: yes
 
 ccd-message-publisher:
-  enabled: false
+  enabled: true
   servicebus:
     enabled: false
   java:
@@ -1209,7 +1209,7 @@ ccd-message-publisher:
         disabled: false
 
 am-org-role-mapping-service:
-  enabled: false
+  enabled: true
   java:
     image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
@@ -1275,5 +1275,16 @@ postgresql:
   flexibleserver: ia-preview
   setup:
     databases:
+      - name: "pr-${CHANGE_ID}-data-store"
+      - name: "pr-${CHANGE_ID}-definition-store"
+      - name: "pr-${CHANGE_ID}-user-profile"
+      - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-ia-case-api"
+      - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
+      - name: "pr-${CHANGE_ID}-wa_workflow_api"
+      - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
+      - name: "pr-${CHANGE_ID}-cft_task_db_replica"
+      - name: "pr-${CHANGE_ID}-org_role_mapping"
 
