@@ -1,0 +1,51 @@
+{
+  "description": "DIAC-323 Submit appeal with section 20 fee remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "feeRemissionType": "Section 20",
+          "section20Document": {
+            "document_url": "http://url",
+            "document_binary_url": "http://url/binary",
+            "document_filename": "file1.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "tempPreviousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeRemissionType": "Section 20",
+              "section20Document": {
+                "document_url": "http://url",
+                "document_binary_url": "http://url/binary",
+                "document_filename": "file1.pdf"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
