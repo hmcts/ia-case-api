@@ -281,6 +281,7 @@ security:
       - "createFlag"
       - "updateS94bStatus"
     caseworker-ia-admofficer:
+      - "startAppeal"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
