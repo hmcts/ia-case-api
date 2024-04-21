@@ -83,6 +83,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
                 case EA:
                 case HU:
                 case PA:
+                case EU:
                     appendTempPreviousRemissionDetails(asylumCase, feeRemissionTypeOpt.get());
                     break;
 
