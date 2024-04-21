@@ -22,6 +22,10 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EXCEPTIONAL_CIRCUMSTANCES;
@@ -79,13 +83,8 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         log.info("SubmitAppeal feeRemissionTypeOpt: " + feeRemissionTypeOpt);
         if (feeRemissionTypeOpt.isPresent()) {
             log.info("SubmitAppeal appealType: " + appealType);
-            switch (appealType) {
-                case EA, HU, PA, EU:
-                    appendTempPreviousRemissionDetails(asylumCase, feeRemissionTypeOpt.get());
-                    break;
-
-                default:
-                    break;
+            if (appealType == EA || appealType == HU || appealType == PA || appealType == EU) {
+                appendTempPreviousRemissionDetails(asylumCase, feeRemissionTypeOpt.get());
             }
         }
 
