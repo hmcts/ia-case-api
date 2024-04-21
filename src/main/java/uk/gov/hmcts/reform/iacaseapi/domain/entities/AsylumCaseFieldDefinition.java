@@ -1466,6 +1466,9 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_REMISSION_DETAILS(
         "previousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
 
+    TEMP_PREVIOUS_REMISSION_DETAILS(
+        "tempPreviousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
+
     OUT_OF_TIME_DECISION_MAKER(
         "outOfTimeDecisionMaker", new TypeReference<String>(){}),
 
@@ -1561,6 +1564,9 @@ public enum AsylumCaseFieldDefinition {
 
     HAS_SERVICE_REQUEST_ALREADY(
         "hasServiceRequestAlready", new TypeReference<YesOrNo>(){}),
+
+    SERVICE_REQUEST_REFERENCE(
+            "serviceRequestReference", new TypeReference<String>(){}),
 
     IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS(
         "isServiceRequestTabVisibleConsideringRemissions", new TypeReference<YesOrNo>(){}),
