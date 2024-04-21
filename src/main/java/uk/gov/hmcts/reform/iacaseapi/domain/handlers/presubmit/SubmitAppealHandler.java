@@ -80,10 +80,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         if (feeRemissionTypeOpt.isPresent()) {
             log.info("SubmitAppeal appealType: " + appealType);
             switch (appealType) {
-                case EA:
-                case HU:
-                case PA:
-                case EU:
+                case EA, HU, PA, EU:
                     appendTempPreviousRemissionDetails(asylumCase, feeRemissionTypeOpt.get());
                     break;
 
