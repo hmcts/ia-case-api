@@ -72,7 +72,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_asylum_support(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -91,7 +91,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_legal_aid(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -109,7 +109,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_section_17(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -127,7 +127,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_section_20(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -145,7 +145,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_home_office_waiver(AppealType appealType
     ) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -164,7 +164,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_help_with_fees(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -182,7 +182,7 @@ class SubmitAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_exceptional_circumstances(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
