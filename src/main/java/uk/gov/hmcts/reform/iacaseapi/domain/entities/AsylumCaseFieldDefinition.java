@@ -1739,6 +1739,9 @@ public enum AsylumCaseFieldDefinition {
     REQUEST_FEE_REMISSION_DATE(
         "requestFeeRemissionDate", new TypeReference<String>(){}),
 
+    AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
+        "automaticRemissionReminderLegalRep", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
