@@ -211,12 +211,12 @@ class FtpaAppellantPreparerTest {
     }
 
     @Test
-    void should_not_clear_existing_fields_when_feature_flag_disabled() {
+    void should_clear_existing_fields_after_ftpa_loop() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.of("Yes"));
+        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.empty());
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -224,8 +224,8 @@ class FtpaAppellantPreparerTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(0)).clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
-        verify(asylumCase, times(0)).clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
 
     }
 
