@@ -41,9 +41,9 @@
         "asylumSupportRefNumber": "12345",
         "lateRemissionOption": null,
         "lateAsylumSupportRefNumber": null,
-        "remissionDecision": "approved",
-        "amountRemitted": "140.00",
-        "amountLeftToPay": "00.00"
+        "remissionDecision": null,
+        "amountRemitted": null,
+        "amountLeftToPay": null
       }
     }
   }
