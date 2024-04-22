@@ -1117,7 +1117,7 @@ wa:
   wa-workflow-api:
     java:    
       environment:
-         DB_READER_USERNAME: "hmcts"        
+         DB_READER_USERNAME: "hmcts"
   wa:
     postgresql:
       enabled: false

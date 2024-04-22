@@ -9,6 +9,8 @@ import static org.mockito.Mockito.reset;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.util.Optional;
@@ -32,7 +34,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +49,9 @@ class MarkPaymentPaidPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
+
 
     private MarkPaymentPaidPreparer markPaymentPaidPreparer;
 
@@ -54,7 +61,7 @@ class MarkPaymentPaidPreparerTest {
         MockitoAnnotations.openMocks(this);
 
         markPaymentPaidPreparer =
-            new MarkPaymentPaidPreparer(true);
+            new MarkPaymentPaidPreparer(true, featureToggler);
     }
 
     @Test
@@ -120,6 +127,47 @@ class MarkPaymentPaidPreparerTest {
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
         Mockito.when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
         Mockito.when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
+    void should_return_error_for_old_pa_ea_hu_cases_when_is_lr_journey_and_dlrm_fee_remission_is_enabled(AppealType appealType) {
+        Mockito.when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        Mockito.when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+        Mockito.when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
+    void should_return_error_for_pa_ea_hu_cases_when_is_aip_journey_dlrm_fee_remission_is_enabled_and_no_remission_is_created(AppealType appealType) {
+        Mockito.when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(NO_REMISSION));
+        when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)).thenReturn(Optional.of(WILL_PAY_FOR_APPEAL));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
