@@ -17,9 +17,9 @@ public enum AppealType {
 
 
     @JsonValue
-    private String value;
+    private final String value;
 
-    private String description;
+    private final String description;
 
     AppealType(String value, String description) {
         this.value = value;

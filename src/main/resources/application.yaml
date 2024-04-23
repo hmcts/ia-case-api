@@ -440,9 +440,6 @@ security:
       - "endAppealAutomatically"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
-    caseworker-ia-task-retrigger:
-      - "reTriggerWaTasks"
-      - "reTriggerWaBulkTasks"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
