@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTOMATIC_REMISSION_REMINDER_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import java.time.*;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
@@ -85,6 +87,7 @@ class CancelAutomaticPaymentReminderRemissionLegalRepTriggerTest {
 
         when(dateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
         when(callback.getCaseDetails().getId()).thenReturn(12345L);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             cancelAutomaticPaymentReminderRemissionLegalRepTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
