@@ -1,21 +1,21 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,17 +83,5 @@ class HandlerUtilsTest {
         String filePath = "/readJsonNonArray.json";
         List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
         assertEquals(new ArrayList<>(), result);
-    }
-
-    @Test
-    void sourceOfAppeal_should_return_true() {
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL));
-        assertTrue(HandlerUtils.sourceOfAppeal(asylumCase));
-    }
-
-    @Test
-    void sourceOfAppeal_should_return_false() {
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
-        assertFalse(HandlerUtils.sourceOfAppeal(asylumCase));
     }
 }
