@@ -6,7 +6,7 @@ public enum Parties {
 
     LEGAL_REPRESENTATIVE("legalRepresentative"),
     RESPONDENT("respondent"),
-    BOTH("both"),
+    BOTH("both"), // Legal rep and respondent
     APPELLANT("appellant"),
     APPELLANT_AND_RESPONDENT("appellantAndRespondent");
 
