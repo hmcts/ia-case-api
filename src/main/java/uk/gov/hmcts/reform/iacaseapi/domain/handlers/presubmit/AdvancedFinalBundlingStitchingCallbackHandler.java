@@ -96,13 +96,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
-        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
-
-        boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
-                                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
-
         if (stitchedDocument.isPresent()) {
-            saveHearingBundleDocument(asylumCase, stitchedDocument, isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+            saveHearingBundleDocument(asylumCase, stitchedDocument);
         }
 
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");
@@ -158,13 +153,15 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         }
     }
 
-    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument, AsylumCaseFieldDefinition field) {
+    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument) {
 
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-            asylumCase.read(field);
+        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
-        final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-            maybeHearingDocuments.orElse(emptyList());
+        boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
+                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
+        boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
+
+        final List<IdValue<DocumentWithMetadata>> hearingDocuments = fetchHearingDocuments(asylumCase, isReheardCase, isRemittedFeature);
 
         List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
 
@@ -184,6 +181,37 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 DocumentTag.HEARING_BUNDLE
             );
 
-        asylumCase.write(field, allHearingDocuments);
+        if (isReheardCase) {
+            if (isRemittedFeature) {
+                Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                        asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+                List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+                if (!existingReheardDocuments.isEmpty()) {
+                    existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
+                    asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
+                }
+            } else {
+                asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+            }
+        } else {
+            asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
+        }
+    }
+
+    private List<IdValue<DocumentWithMetadata>> fetchHearingDocuments(AsylumCase asylumCase,
+                                                                      boolean isReheardCase,
+                                                                      boolean isRemittedFeature) {
+        if (isReheardCase && isRemittedFeature) {
+            Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                    asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+            List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+
+            return (!existingReheardDocuments.isEmpty())
+                    ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
+                    : emptyList();
+        }
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
+                asylumCase.read(isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+        return maybeHearingDocuments.orElse(emptyList());
     }
 }
