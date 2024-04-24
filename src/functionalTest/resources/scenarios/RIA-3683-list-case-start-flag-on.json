@@ -64,6 +64,7 @@
         "ariaListingReference": "LP/12345/2019",
         "hearingCentre": "manchester",
         "listCaseHearingCentre": "manchester",
+        "listCaseHearingCentreAddress": "Manchester Crown Court (Crown Square), Courts of Justice, Crown Square, M3 3FL",
         "listCaseHearingLength": "300",
         "listCaseHearingDate": "2020-10-28T10:30:00.000",
         "listCaseRequirementsVulnerabilities": "some vulnerabilities",
