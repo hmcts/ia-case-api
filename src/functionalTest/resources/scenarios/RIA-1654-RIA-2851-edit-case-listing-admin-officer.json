@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "manchester",
-          "listCaseHearingCentreAddress": "Manchester Crown Court (Crown Square), Courts of Justice, Crown Square, M3 3FL",
+          "listCaseHearingCentreAddress": "Manchester Tribunal Hearing Centre - Piccadilly Exchange, Piccadilly Plaza, M1 4AH",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
@@ -42,7 +42,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "manchester",
-          "listCaseHearingCentreAddress": "Manchester Crown Court (Crown Square), Courts of Justice, Crown Square, M3 3FL",
+          "listCaseHearingCentreAddress": "Manchester Tribunal Hearing Centre - Piccadilly Exchange, Piccadilly Plaza, M1 4AH",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
@@ -107,7 +107,7 @@
         ],
         "listCaseHearingCentre": "manchester",
         "hearingCentre": "manchester",
-        "listCaseHearingCentreAddress": "Manchester Crown Court (Crown Square), Courts of Justice, Crown Square, M3 3FL",
+        "listCaseHearingCentreAddress": "Manchester Tribunal Hearing Centre - Piccadilly Exchange, Piccadilly Plaza, M1 4AH",
         "listCaseHearingLength": "60",
         "listCaseHearingDate": "2018-12-31T12:34:56",
         "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
