@@ -1,7 +1,5 @@
 {
   "description": "RIA-8677 AIP Remissions - Admin officer record partially-approved remission decision",
-  "launchDarklyKey": "remissions-feature:true",
-  "launchDarklyKey": "dlrm-fee-remission-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -16,7 +14,6 @@
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
           "remissionDecision": "partiallyApproved",
-          "remissionType": "exceptionalCircumstancesRemission",
           "remittedAmount": "10000",
           "amountLeftToPay": "4000",
           "sendDirectionActionAvailable": "No"
@@ -34,7 +31,6 @@
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "remissionDecision": "partiallyApproved",
-        "remissionType": "exceptionalCircumstancesRemission",
         "remittedAmount": "10000",
         "amountLeftToPay": "4000",
         "sendDirectionActionAvailable": "No"

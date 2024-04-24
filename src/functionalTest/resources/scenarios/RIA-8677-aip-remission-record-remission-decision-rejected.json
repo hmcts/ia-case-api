@@ -1,7 +1,5 @@
 {
   "description": "RIA-8677 AIP Remissions - Admin officer record rejected remission decision",
-  "launchDarklyKey": "remissions-feature:true",
-  "launchDarklyKey": "dlrm-fee-remission-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

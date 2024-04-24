@@ -1,6 +1,5 @@
 {
   "description": "RIA-3517 Admin officer record approved remission decision partially approved",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -13,7 +12,6 @@
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
-          "remissionType": "exceptionalCircumstancesRemission",
           "remissionDecision": "partiallyApproved",
           "remittedAmount": "10000",
           "amountLeftToPay": "4000"
@@ -31,7 +29,6 @@
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "remissionDecision": "partiallyApproved",
-        "remissionType": "exceptionalCircumstancesRemission",
         "sendDirectionActionAvailable": "No",
         "currentCaseStateVisibleToAdminOfficer": "pendingPayment",
         "remittedAmount": "10000",
