@@ -21,4 +21,6 @@ public class CourtVenue {
     private String siteName;
     private String courtName;
     private String epimmsId;
+    private String isHearingLocation;
+    private String courtStatus;
 }
