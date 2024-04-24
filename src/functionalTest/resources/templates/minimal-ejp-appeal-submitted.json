@@ -1,0 +1,38 @@
+{
+  "homeOfficeReferenceNumber": "123456789",
+  "homeOfficeDecisionDate": "{$TODAY}",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "mobileNumber": "07977111111",
+  "appealType": "protection",
+  "appealTypeForDisplay": "protection",
+  "appealGroundsProtection": {
+    "values": [
+      "refugeeConvention"
+    ]
+  },
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No",
+  "appellantNameForDisplay": "Talha Awan",
+  "appealReferenceNumber": "PA/12345/2018",
+  "sendDirectionActionAvailable": "Yes",
+  "hearingCentre": "newport",
+  "submissionOutOfTime": "No",
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "appellantInUk": null,
+  "isAdmin": "Yes",
+  "isEjp": "Yes"
+}

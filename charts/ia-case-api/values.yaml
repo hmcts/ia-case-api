@@ -29,15 +29,19 @@ java:
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CASE_DOCUMENT_AM_URL: "http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     LEGAL_REP_BUILD_CASE_DUE_IN_DAYS: 28
+    LEGAL_REP_BUILD_CASE_ADA_DUE_IN_DAYS: 13
     LEGAL_REP_BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE: 42
     LEGAL_REP_HEARING_REQUIREMENTS_DUE_IN_DAYS: 5
     LEGAL_REP_REVIEW_DUE_IN_DAYS: 5
     REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS: 14
+    REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS: 3
     REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS: 14
+    REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS: 2
     APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS: 28
     PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 20160
     PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 20160
-  postgresql:    
+    ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS: 15
+  postgresql:
     auth:
       username: ia_case_api
       password: ${PG_AUTH_VALUES_YAML_PASS}
@@ -97,4 +101,16 @@ ccd-case-document-am-api:
 em-ccdorc:
   enabled: false
 em-stitching:
+  enabled: false
+wa:
+  enabled: false
+servicebus:
+  enabled: false
+ccd-message-publisher:
+  enabled: false
+aac-manage-case-assignment:
+  enabled: false
+am-org-role-mapping-service:
+  enabled: false
+redis:
   enabled: false

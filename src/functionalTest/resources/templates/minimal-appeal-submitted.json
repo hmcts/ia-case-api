@@ -18,6 +18,7 @@
   "wantsSms": "Text message",
   "mobileNumber": "07977111111",
   "appealType": "protection",
+  "appealTypeForDisplay": "protection",
   "appealGroundsProtection": {
     "values": [
       "refugeeConvention"
@@ -32,5 +33,6 @@
   "sendDirectionActionAvailable": "Yes",
   "hearingCentre": "newport",
   "submissionOutOfTime": "No",
-  "uploadAdditionalEvidenceActionAvailable": "No"
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "appellantInUk": "Yes"
 }

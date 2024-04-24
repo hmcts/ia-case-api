@@ -8,6 +8,7 @@ class DirectionTagTest {
 
     @Test
     void has_correct_values() {
+        assertEquals("adaListCase", DirectionTag.ADA_LIST_CASE.toString());
         assertEquals("buildCase", DirectionTag.BUILD_CASE.toString());
         assertEquals("caseEdit", DirectionTag.CASE_EDIT.toString());
         assertEquals("legalRepresentativeReview", DirectionTag.LEGAL_REPRESENTATIVE_REVIEW.toString());
@@ -27,6 +28,6 @@ class DirectionTagTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(14, DirectionTag.values().length);
+        assertEquals(15, DirectionTag.values().length);
     }
 }

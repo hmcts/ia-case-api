@@ -11,20 +11,26 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -39,6 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
@@ -93,6 +100,8 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
@@ -154,6 +163,8 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
@@ -205,6 +216,8 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
@@ -260,6 +273,8 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
@@ -313,7 +328,8 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -333,6 +349,8 @@ class DirectionHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of("Do the thing"));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.empty());
 
@@ -344,6 +362,11 @@ class DirectionHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
+
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -354,30 +377,46 @@ class DirectionHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    static Stream<Arguments> exAdaHearingReq() {
+        return Stream.of(
+            Arguments.of(YesOrNo.YES, YesOrNo.YES),
+            Arguments.of(YesOrNo.YES, YesOrNo.NO),
+            Arguments.of(YesOrNo.NO, YesOrNo.YES),
+            Arguments.of(YesOrNo.NO, YesOrNo.NO)
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("exAdaHearingReq")
+    void it_can_handle_callback(YesOrNo isExAda, YesOrNo adaHearingReqSubmitted) {
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(isExAda));
+            when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(adaHearingReqSubmitted));
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = directionHandler.canHandle(callbackStage, callback);
 
+                Set<Event> eligibleEvents = Sets.newHashSet(Event.SEND_DIRECTION,
+                    Event.REQUEST_CASE_EDIT,
+                    Event.REQUEST_RESPONDENT_EVIDENCE,
+                    Event.REQUEST_RESPONDENT_REVIEW,
+                    Event.REQUEST_CASE_BUILDING,
+                    Event.FORCE_REQUEST_CASE_BUILDING,
+                    Event.REQUEST_REASONS_FOR_APPEAL,
+                    Event.REQUEST_RESPONSE_AMEND);
+
+                if (isExAda.equals(YesOrNo.NO) || adaHearingReqSubmitted.equals(YesOrNo.NO)) {
+                    eligibleEvents.add(Event.REQUEST_RESPONSE_REVIEW);
+                }
+
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    &&
-                    Arrays.asList(
-                        Event.SEND_DIRECTION,
-                        Event.REQUEST_CASE_EDIT,
-                        Event.REQUEST_RESPONDENT_EVIDENCE,
-                        Event.REQUEST_RESPONDENT_REVIEW,
-                        Event.REQUEST_CASE_BUILDING,
-                        Event.FORCE_REQUEST_CASE_BUILDING,
-                        Event.REQUEST_REASONS_FOR_APPEAL,
-                        Event.REQUEST_RESPONSE_REVIEW,
-                        Event.REQUEST_RESPONSE_AMEND
-                    ).contains(event)) {
+                    && eligibleEvents.contains(event)) {
 
                     assertTrue(canHandle);
                 } else {
