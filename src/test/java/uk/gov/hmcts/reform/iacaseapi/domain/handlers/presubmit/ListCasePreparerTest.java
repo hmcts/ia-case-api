@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 
@@ -213,6 +214,7 @@ class ListCasePreparerTest {
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_CENTRE);
+        verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_CENTRE_ADDRESS);
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_LENGTH);
         verify(asylumCase, times(1)).clear(LISTING_LENGTH);
@@ -227,6 +229,7 @@ class ListCasePreparerTest {
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE_ADDRESS);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
         verify(asylumCase, times(0)).clear(LISTING_LENGTH);
@@ -242,6 +245,7 @@ class ListCasePreparerTest {
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE_ADDRESS);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
         verify(asylumCase, times(0)).clear(LISTING_LENGTH);

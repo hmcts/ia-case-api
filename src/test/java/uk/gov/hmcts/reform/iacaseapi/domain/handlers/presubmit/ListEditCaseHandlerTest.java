@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 
@@ -44,11 +45,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class ListEditCaseHandlerTest {
+
+    private static final String NEWPORT_ADDRESS = "Newport (South Wales) Immigration and Asylum Tribunal, "
+                            + "Langstone Business Park, Newport, NP18 2LX";
+    private static final String COVENTRY_ADDRESS = "Coventry Magistrates Court, Little Park Street, CV1 2SQ";
+    private static final String MANCHESTER_ADDRESS = "Manchester Crown Court (Crown Square), "
+                                                  + "Courts of Justice, Crown Square, M3 3FL";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -60,6 +68,8 @@ class ListEditCaseHandlerTest {
     private HearingCentreFinder hearingCentreFinder;
     @Mock
     private CaseManagementLocationService caseManagementLocationService;
+    @Mock
+    private LocationRefDataService locationRefDataService;
 
     private ListEditCaseHandler listEditCaseHandler;
 
@@ -67,7 +77,7 @@ class ListEditCaseHandlerTest {
     public void setUp() {
 
         listEditCaseHandler =
-            new ListEditCaseHandler(hearingCentreFinder, caseManagementLocationService);
+            new ListEditCaseHandler(hearingCentreFinder, caseManagementLocationService, locationRefDataService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
@@ -77,6 +87,9 @@ class ListEditCaseHandlerTest {
     @Test
     void should_set_default_list_case_hearing_centre_field() {
 
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.NEWPORT))
+            .thenReturn(NEWPORT_ADDRESS);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -84,6 +97,8 @@ class ListEditCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, NEWPORT_ADDRESS);
+
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
@@ -106,7 +121,9 @@ class ListEditCaseHandlerTest {
             .thenReturn(Optional.of(HearingCentre.REMOTE_HEARING));
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.COVENTRY));
-
+        String remoteAddress = "Remote hearing";
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.REMOTE_HEARING))
+            .thenReturn(remoteAddress);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -114,6 +131,8 @@ class ListEditCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, remoteAddress);
+
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
@@ -134,6 +153,8 @@ class ListEditCaseHandlerTest {
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(hearingCentreFinder.hearingCentreIsActive(HearingCentre.MANCHESTER)).thenReturn(false);
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.MANCHESTER))
+            .thenReturn(MANCHESTER_ADDRESS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -142,6 +163,7 @@ class ListEditCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, MANCHESTER_ADDRESS);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
@@ -164,6 +186,8 @@ class ListEditCaseHandlerTest {
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.COVENTRY));
         when(hearingCentreFinder.hearingCentreIsActive(HearingCentre.COVENTRY)).thenReturn(true);
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.COVENTRY))
+            .thenReturn(COVENTRY_ADDRESS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -172,6 +196,7 @@ class ListEditCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, COVENTRY_ADDRESS);
         verify(asylumCase, times(0)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
@@ -195,6 +220,8 @@ class ListEditCaseHandlerTest {
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(hearingCentreFinder.hearingCentreIsActive(HearingCentre.MANCHESTER)).thenReturn(true);
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.MANCHESTER))
+            .thenReturn(MANCHESTER_ADDRESS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -203,6 +230,7 @@ class ListEditCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, MANCHESTER_ADDRESS);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);

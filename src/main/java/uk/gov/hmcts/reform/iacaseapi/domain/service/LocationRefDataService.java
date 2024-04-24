@@ -1,12 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.REMOTE_HEARING;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CourtLocationCategory;
@@ -34,7 +39,7 @@ public class LocationRefDataService {
             .toList());
     }
 
-    private List<CourtVenue> getCourtVenues() {
+    public List<CourtVenue> getCourtVenues() {
 
         CourtLocationCategory locationCategory = locationRefDataApi
             .getCourtVenues(userDetails.getAccessToken(), authTokenGenerator.generate(), serviceId);
@@ -51,5 +56,23 @@ public class LocationRefDataService {
     private boolean isOpenHearingLocation(CourtVenue courtVenue) {
         return StringUtils.equals(courtVenue.getCourtStatus(), OPEN)
                && StringUtils.equals(courtVenue.getIsHearingLocation(), Y);
+    }
+
+    public String getHearingCentreAddress(HearingCentre hearingCentre) {
+        if (Objects.equals(hearingCentre, REMOTE_HEARING)) {
+            return "Remote hearing";
+        }
+        return getCourtVenues()
+            .stream()
+            .filter(courtVenue -> StringUtils.equals(courtVenue.getEpimmsId(), hearingCentre.getEpimsId()))
+            .findFirst()
+            .map(this::assembleCourtVenueAddress)
+            .orElse("");
+    }
+
+    private String assembleCourtVenueAddress(CourtVenue courtVenue) {
+        return defaultIfNull(courtVenue.getCourtName(), "") + ", "
+               + defaultIfNull(courtVenue.getCourtAddress(), "") + ", "
+               + defaultIfNull(courtVenue.getPostcode(), "");
     }
 }
