@@ -101,6 +101,7 @@ requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:1
 requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
+legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
@@ -307,6 +308,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "recordRemissionReminder"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -385,6 +387,7 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
+      - "recordRemissionReminder"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
