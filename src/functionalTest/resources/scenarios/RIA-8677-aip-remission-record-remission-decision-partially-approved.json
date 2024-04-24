@@ -16,6 +16,7 @@
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
           "remissionDecision": "partiallyApproved",
+          "remissionType": "exceptionalCircumstancesRemission",
           "remittedAmount": "10000",
           "amountLeftToPay": "4000",
           "sendDirectionActionAvailable": "No"
@@ -33,6 +34,7 @@
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "remissionDecision": "partiallyApproved",
+        "remissionType": "exceptionalCircumstancesRemission",
         "remittedAmount": "10000",
         "amountLeftToPay": "4000",
         "sendDirectionActionAvailable": "No"
