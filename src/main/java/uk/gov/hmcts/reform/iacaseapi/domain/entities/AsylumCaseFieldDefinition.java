@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
@@ -1583,9 +1583,6 @@ public enum AsylumCaseFieldDefinition {
 
     IS_ADMIN(
         "isAdmin", new TypeReference<YesOrNo>() {}),
-
-    SOURCE_OF_APPEAL(
-        "sourceOfAppeal", new TypeReference<SourceOfAppeal>(){}),
 
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
