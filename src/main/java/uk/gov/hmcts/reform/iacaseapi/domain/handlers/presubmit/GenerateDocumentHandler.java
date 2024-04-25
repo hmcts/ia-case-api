@@ -3,10 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
-import com.google.common.collect.Lists;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @Component
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -34,18 +39,36 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     private final DocumentGenerator<AsylumCase> documentGenerator;
     private final DateProvider dateProvider;
     private final boolean isSaveAndContinueEnabled;
+    private final DueDateService dueDateService;
+    private final int ftpaAppealOutOfTimeWorkingDaysAdaAppeal;
+    private final int ftpaAppealOutOfTimeDaysUk;
+    private final int ftpaAppealOutOfTimeDaysOoc;
+    private final int ftpaAppealOutOfTimeWorkingDaysInternalAdaCases;
+    private final int ftpaAppealOutOfTimeDaysInternalNonAdaCases;
 
     public GenerateDocumentHandler(
             @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
             @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
             DocumentGenerator<AsylumCase> documentGenerator,
             DateProvider dateProvider,
-            @Value("${featureFlag.isSaveAndContinueEnabled}") boolean isSaveAndContinueEnabled) {
+            @Value("${featureFlag.isSaveAndContinueEnabled}") boolean isSaveAndContinueEnabled,
+            DueDateService dueDateService,
+            @Value("${ftpaAppealOutOfTimeDaysUk}") int ftpaAppealOutOfTimeDaysUk,
+            @Value("${ftpaAppealOutOfTimeDaysOoc}") int ftpaAppealOutOfTimeDaysOoc,
+            @Value("${ftpaAppealOutOfTimeWorkingDaysAdaAppeal}") int ftpaAppealOutOfTimeWorkingDaysAdaAppeal,
+            @Value("${ftpaAppealOutOfTimeWorkingDaysInternalAdaCases}") int ftpaAppealOutOfTimeWorkingDaysInternalAdaCases,
+            @Value("${ftpaAppealOutOfTimeDaysInternalNonAdaCases}") int ftpaAppealOutOfTimeDaysInternalNonAdaCases) {
         this.isDocmosisEnabled = isDocmosisEnabled;
         this.isEmStitchingEnabled = isEmStitchingEnabled;
         this.documentGenerator = documentGenerator;
         this.dateProvider = dateProvider;
         this.isSaveAndContinueEnabled = isSaveAndContinueEnabled;
+        this.dueDateService = dueDateService;
+        this.ftpaAppealOutOfTimeWorkingDaysAdaAppeal = ftpaAppealOutOfTimeWorkingDaysAdaAppeal;
+        this.ftpaAppealOutOfTimeDaysUk = ftpaAppealOutOfTimeDaysUk;
+        this.ftpaAppealOutOfTimeDaysOoc = ftpaAppealOutOfTimeDaysOoc;
+        this.ftpaAppealOutOfTimeWorkingDaysInternalAdaCases = ftpaAppealOutOfTimeWorkingDaysInternalAdaCases;
+        this.ftpaAppealOutOfTimeDaysInternalNonAdaCases = ftpaAppealOutOfTimeDaysInternalNonAdaCases;
     }
 
     @Override
@@ -79,6 +102,39 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+            Event.GENERATE_UPPER_TRIBUNAL_BUNDLE,
+            Event.ADA_SUITABILITY_REVIEW,
+            Event.REQUEST_CASE_BUILDING,
+            Event.REQUEST_RESPONDENT_REVIEW,
+            Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+            Event.ASYNC_STITCHING_COMPLETE,
+            Event.RECORD_OUT_OF_TIME_DECISION,
+            Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.RECORD_REMISSION_DECISION,
+            Event.MARK_APPEAL_PAID,
+            Event.REQUEST_RESPONSE_REVIEW,
+            Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.MARK_APPEAL_AS_ADA,
+            Event.DECIDE_AN_APPLICATION,
+            Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.TRANSFER_OUT_OF_ADA,
+            Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.APPLY_FOR_FTPA_APPELLANT,
+            Event.MAINTAIN_CASE_LINKS,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE,
+            Event.CHANGE_HEARING_CENTRE,
+            Event.CREATE_CASE_LINK,
+            Event.REQUEST_RESPONSE_AMEND,
+            Event.SEND_DIRECTION,
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.CHANGE_DIRECTION_DUE_DATE,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE,
+            Event.UPDATE_HEARING_ADJUSTMENTS,
+            Event.REINSTATE_APPEAL
+        );
             Event.GENERATE_UPPER_TRIBUNAL_BUNDLE,
             Event.UPDATE_TRIBUNAL_DECISION);
         if (isEmStitchingEnabled) {
@@ -127,8 +183,11 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
                     .getValue()
             )
         );
-        asylumCase.write(APPEAL_DATE, dateProvider.now().toString());
-        asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
+
+        LocalDate appealDate = dateProvider.now();
+        asylumCase.write(APPEAL_DATE, appealDate.toString());
+        asylumCase.write(APPEAL_DECISION_AVAILABLE, YES);
+        asylumCase.write(FTPA_APPLICATION_DEADLINE, getFtpaApplicationDeadline(asylumCase, appealDate));
         asylumCase.clear(UPDATED_APPEAL_DECISION);
     }
 
@@ -180,4 +239,35 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             }
         }
     }
+
+    private String getFtpaApplicationDeadline(AsylumCase asylumCase, LocalDate appealDate) {
+        boolean isInternalCase = isInternalCase(asylumCase);
+        boolean isAda = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO).equals(YES);
+
+        if (isInternalCase) {
+            return getFtpaApplicationDeadlineForInternalCase(appealDate, isAda).toString();
+        }
+
+        LocalDate ftpaApplicationDeadline;
+
+        // APPEAL_OUT_OF_COUNTRY used instead of previous OUT_OF_COUNTRY_DECISION_TYPE because in AiP UI screen with OUT_OF_COUNTRY_DECISION_TYPE is not implemented yet
+        boolean isOoc = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> YES == ooc).orElse(false);
+
+        if (isAda) {
+            ftpaApplicationDeadline = dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC), ftpaAppealOutOfTimeWorkingDaysAdaAppeal).toLocalDate();
+        } else if (isOoc) {
+            ftpaApplicationDeadline = appealDate.plusDays(ftpaAppealOutOfTimeDaysOoc);
+        } else {
+            ftpaApplicationDeadline = appealDate.plusDays(ftpaAppealOutOfTimeDaysUk);
+        }
+
+        return ftpaApplicationDeadline.toString();
+    }
+
+    private LocalDate getFtpaApplicationDeadlineForInternalCase(LocalDate appealDate, boolean isAda) {
+        return isAda ? dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC),
+                        ftpaAppealOutOfTimeWorkingDaysInternalAdaCases).toLocalDate() :
+                appealDate.plusDays(ftpaAppealOutOfTimeDaysInternalNonAdaCases);
+    }
 }
+

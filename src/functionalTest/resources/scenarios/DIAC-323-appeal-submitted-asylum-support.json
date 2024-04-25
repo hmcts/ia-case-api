@@ -1,0 +1,61 @@
+{
+  "description": "DIAC-323 Submit appeal with asylum support fee remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "feeRemissionType": "Asylum support",
+          "asylumSupportReference": "123/456",
+          "asylumSupportDocument": {
+            "document_url": "http://url",
+            "document_binary_url": "http://url/binary",
+            "document_filename": "file1.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "isRemissionsEnabled": "Yes",
+        "feeRemissionType": "Asylum support",
+        "asylumSupportReference": "123/456",
+        "asylumSupportDocument": {
+          "document_url": "http://url",
+          "document_binary_url": "http://url/binary",
+          "document_filename": "file1.pdf"
+        },
+        "tempPreviousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeRemissionType": "Asylum support",
+              "asylumSupportReference": "123/456",
+              "asylumSupportDocument": {
+                "document_url": "http://url",
+                "document_binary_url": "http://url/binary",
+                "document_filename": "file1.pdf"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

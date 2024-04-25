@@ -1,6 +1,10 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  devcpuRequests: 500m
+  devmemoryRequests: 1Gi
+  devcpuLimits: 2
+  devmemoryLimits: 4Gi
   environment:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
@@ -57,7 +61,7 @@ global:
   databaseNamePrefix: "pr-${CHANGE_ID}-"
 
 ia-case-payments-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:pr-352 #:pr-259 or relevant PR number to change
@@ -91,7 +95,7 @@ ia-case-payments-api:
           - ia-config-validator-secret
 
 ia-case-documents-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:pr-808 #pr-808 or relevant PR number to change DLRM
@@ -140,7 +144,7 @@ ia-case-documents-api:
           - ia-config-validator-secret
 
 ia-case-notifications-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1069 #pr-1069 or relevant PR number to change
@@ -413,7 +417,7 @@ ia-timed-event-service:
           - ia-config-validator-secret
 
 ia-home-office-integration-api:
-  enabled: true #set to true if testing against a local branch 
+  enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-375 #pr-375 or relevant PR number to change
@@ -685,13 +689,13 @@ ccd:
 
   ccd-data-store-api:
     java:
+      autoscaling:
+        enabled: false
       imagePullPolicy: Always
       devcpuRequests: 1000m
       devmemoryRequests: 1Gi
       devcpuLimits: 1
       devmemoryLimits: 4Gi
-      autoscaling:
-        enabled: false
       disableKeyVaults: true
       environment:
         DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
@@ -726,6 +730,10 @@ ccd:
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/am/role-assignment-service:latest
       ingressHost: am-role-assignment-${SERVICE_FQDN}
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
@@ -736,11 +744,16 @@ ccd:
       keyVaults:
         am:
           secrets:
-            - am-role-assignment-service-s2s-secret
-            - app-insights-connection-string
-            - role-assignment-service-IDAM-CLIENT-SECRET
-            - role-assignment-service-IDAM-ADMIN-SECRET
-            - role-assignment-service-LD-SDK-KEY
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
 
   ccd-admin-web:
     nodejs:
@@ -759,9 +772,9 @@ ccd:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
       devcpuRequests: 500m
-      devmemoryRequests: 512Mi
+      devmemoryRequests: 1Gi
       devcpuLimits: 2
-      devmemoryLimits: 1Gi
+      devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
       environment:
@@ -991,6 +1004,10 @@ em-stitching:
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
     environment:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
@@ -1015,6 +1032,10 @@ em-stitching:
 aac-manage-case-assignment:
   enabled: true
   java:
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
     image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
@@ -1079,12 +1100,20 @@ wa:
 
   camunda-bpm:
     java:
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
 
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
@@ -1111,19 +1140,19 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events  
-  wa-task-monitor:
-    java:
-      ingressHost: wa-task-monitor-${SERVICE_FQDN}
-      environment:
-        WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-  wa-workflow-api:
-    java:    
-      environment:
-         DB_READER_USERNAME: "hmcts" 
-  wa:
-    postgresql:
-      enabled: false
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
+    wa-task-monitor:
+      java:
+        ingressHost: wa-task-monitor-${SERVICE_FQDN}
+        environment:
+          WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
+    wa-workflow-api:
+      java:
+        environment:
+          DB_READER_USERNAME: "hmcts"
+    wa:
+      postgresql:
+        enabled: false
 
 
 servicebus:
@@ -1216,7 +1245,7 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
-            
+
 
 
 postgresql:
@@ -1236,5 +1265,4 @@ postgresql:
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
-
 

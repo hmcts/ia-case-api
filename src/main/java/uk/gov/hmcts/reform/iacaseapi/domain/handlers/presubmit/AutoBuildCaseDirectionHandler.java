@@ -91,7 +91,7 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
                     + "- a schedule of issues\n"
                     + "- why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon\n\n"
                     + "# Next steps\n\n"
-                    + "Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Tribunal Caseworker will review everything you've added.\n\n"
+                    + "Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Legal Officer will review everything you've added.\n\n"
                     + "If your case looks ready, the Tribunal will send it to the respondent to review.",
                     Parties.LEGAL_REPRESENTATIVE,
                     getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, buildCaseDueInDays).toString(),

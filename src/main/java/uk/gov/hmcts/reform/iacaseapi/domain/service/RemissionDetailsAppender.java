@@ -21,7 +21,8 @@ public class RemissionDetailsAppender {
         String asylumSupportReference,
         Document asylumSupportDocument
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
+        final RemissionDetails newRemissionDetails =
+                new RemissionDetails(feeRemissionType, asylumSupportReference, asylumSupportDocument);
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -31,7 +32,11 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         String legalAidAccountNumber
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, legalAidAccountNumber, "");
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            legalAidAccountNumber,
+            ""
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -41,7 +46,11 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         String helpWithFeesReferenceNumber
     ) {
-        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, null, helpWithFeesReferenceNumber);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            null,
+            helpWithFeesReferenceNumber
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -51,8 +60,12 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         Document section17Document
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, section17Document, null, null);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            section17Document,
+            null,
+            null
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -62,8 +75,12 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         Document section20Document
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, null, section20Document, null);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            null,
+            section20Document,
+            null
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -73,8 +90,12 @@ public class RemissionDetailsAppender {
         String feeRemissionType,
         Document homeOfficeWaiverDocument
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, null, null, homeOfficeWaiverDocument);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            null,
+            null,
+            homeOfficeWaiverDocument
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -85,8 +106,11 @@ public class RemissionDetailsAppender {
         String exceptionalCircumstances,
         List<IdValue<Document>> remissionEcEvidenceDocuments
     ) {
-        final RemissionDetails newRemissionDetails =
-            new RemissionDetails(feeRemissionType, exceptionalCircumstances, remissionEcEvidenceDocuments);
+        RemissionDetails newRemissionDetails = new RemissionDetails(
+            feeRemissionType,
+            exceptionalCircumstances,
+            remissionEcEvidenceDocuments
+        );
 
         return append(existingRemissionDetails, newRemissionDetails);
     }
@@ -100,7 +124,6 @@ public class RemissionDetailsAppender {
         int index = existingRemissionDetails.size() + 1;
 
         allRemissionDetails.add(new IdValue<>(String.valueOf(index--), newRemissionDetails));
-
 
         for (IdValue<RemissionDetails> existingRemission : existingRemissionDetails) {
             allRemissionDetails.add(new IdValue<>(String.valueOf(index--), existingRemission.getValue()));

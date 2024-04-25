@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -86,11 +87,26 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         switch (appealType) {
+            case AG:
             case EA:
             case HU:
             case PA:
             case EU:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+                Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+
+                if ((isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(YES))) || sourceOfAppealEjp(asylumCase)) {
+                    // Accelerated Detained Appeals should be treated as RP/DC - no payment fees OR EJP appeals have no payments associated with them.
+                    String hearingOption = asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
+                        .orElse("decisionWithHearing");
+                    asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
+                    asylumCase.clear(REMISSION_TYPE);
+                    asylumCase.clear(FEE_REMISSION_TYPE);
+                    asylumCase.clear(PAYMENT_STATUS);
+                    clearFeeOptionDetails(asylumCase);
+                    clearRemissionDetails(asylumCase);
+                    break;
+                }
 
                 asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()

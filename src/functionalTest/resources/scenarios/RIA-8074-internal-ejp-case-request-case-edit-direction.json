@@ -1,0 +1,36 @@
+{
+  "description": "RIA-8074 Request case edit - EJP Unrep Non-detained - Appellant party",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestCaseEdit",
+      "state": "caseUnderReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "isEjp": "Yes",
+          "appellantInDetention": "No",
+          "isLegallyRepresentedEjp": "No",
+          "sendDirectionExplanation": null,
+          "sendDirectionParties": null,
+          "sendDirectionDateDue": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "sendDirectionExplanation": null,
+        "sendDirectionParties": "appellant",
+        "sendDirectionDateDue": null
+      }
+    }
+  }
+}

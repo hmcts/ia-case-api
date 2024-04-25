@@ -83,6 +83,7 @@ spring:
   profiles:
     include:
       - postcodes
+      - hc-mapping
   flyway.enabled: true
   flyway.baselineOnMigrate: true
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
@@ -98,14 +99,18 @@ featureFlag:
   isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
 legalRepresentativeBuildCase.dueInDays: ${LEGAL_REP_BUILD_CASE_DUE_IN_DAYS:28}
+legalRepresentativeBuildCaseAda.dueInDay: ${LEGAL_REP_BUILD_CASE_ADA_DUE_IN_DAYS:13}
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: ${LEGAL_REP_BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE:42}
 legalRepresentativeHearingRequirements.dueInDays: ${LEGAL_REP_HEARING_REQUIREMENTS_DUE_IN_DAYS:5}
 legalRepresentativeReview.dueInDays: ${LEGAL_REP_REVIEW_DUE_IN_DAYS:5}
 requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:14}
+requestRespondentEvidence.dueInDaysAda: ${REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS:3}
 requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
+requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
+adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -138,6 +143,12 @@ ftpaAppellantAppealOutOfTimeDaysUk: 14
 ftpaAppellantAppealOutOfTimeDaysOoc: 28
 ftpaRespondentAppealOutOfTimeDaysUk: 14
 ftpaRespondentAppealOutOfTimeDaysOoc: 28
+appealOutOfTimeAcceleratedDetainedWorkingDays: 5
+ftpaAppealOutOfTimeWorkingDaysAdaAppeal: 7
+ftpaAppealOutOfTimeDaysUk: 14
+ftpaAppealOutOfTimeDaysOoc: 28
+ftpaAppealOutOfTimeWorkingDaysInternalAdaCases: 7
+ftpaAppealOutOfTimeDaysInternalNonAdaCases: 14
 
 defaultHearingCentre: newport
 
@@ -210,6 +221,9 @@ security:
       - "generateServiceRequest"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "applyForCosts"
+      - "respondToCosts"
+      - "addEvidenceForCosts"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "sendDirection"
@@ -280,7 +294,24 @@ security:
       - "maintainCaseLinks"
       - "createFlag"
       - "updateS94bStatus"
+      - "updateDetentionLocation"
+      - "buildCase"
+      - "listCase"
+      - "draftHearingRequirements"
+      - "recordAttendeesAndDuration"
+      - "uploadHearingRecording"
+      - "turnOnNotifications"
     caseworker-ia-admofficer:
+      - "startAppeal"
+      - "submitAppeal"
+      - "editAppeal"
+      - "makeAnApplication"
+      - "draftHearingRequirements"
+      - "buildCase"
+      - "submitCase"
+      - "uploadAdditionalEvidence"
+      - "applyForFTPAAppellant"
+      - "requestFeeRemission"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -308,26 +339,42 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
+      - "editAppealAfterSubmit"
+      - "markAppealAsAda"
+      - "removeDetainedStatus"
+      - "markAppealAsDetained"
+      - "markAsReadyForUtTransfer"
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "updateDetentionLocation"
+      - "turnOnNotifications"
       - "generateServiceRequest"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
       - "makeAnApplication"
+      - "applyForCosts"
+      - "respondToCosts"
+      - "addEvidenceForCosts"
     caseworker-ia-homeofficelart:
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
       - "makeAnApplication"
+      - "applyForCosts"
+      - "respondToCosts"
+      - "addEvidenceForCosts"
     caseworker-ia-homeofficepou:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
       - "applyForFTPARespondent"
       - "makeAnApplication"
+      - "applyForCosts"
+      - "respondToCosts"
+      - "addEvidenceForCosts"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
@@ -335,6 +382,9 @@ security:
       - "uploadAddendumEvidenceHomeOffice"
       - "applyForFTPARespondent"
       - "makeAnApplication"
+      - "applyForCosts"
+      - "respondToCosts"
+      - "addEvidenceForCosts"
     citizen:
       - "startAppeal"
       - "editAppeal"
@@ -377,9 +427,14 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markAddendumEvidenceAsReviewed"
+      - "adaSuitabilityReview"
+      - "transferOutOfAda"
+      - "reviewHearingRequirements"
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "decideCostsApplication"
+      - "considerMakingCostsOrder"
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
@@ -447,5 +502,8 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+govUkHolidays:
+  url: https://www.gov.uk/
 
 caseIdListJsonLocation: caseIdForRetrigger.json

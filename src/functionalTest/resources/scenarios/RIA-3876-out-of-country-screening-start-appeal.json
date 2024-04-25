@@ -1,6 +1,5 @@
 {
   "description": "RIA-3876 Out of country screening for Start appeal",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -22,7 +21,10 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "appellantInUk": "No",
-        "appealOutOfCountry": "Yes"
+        "appealOutOfCountry": "Yes",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null
       }
     }
   }

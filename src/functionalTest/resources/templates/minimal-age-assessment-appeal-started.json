@@ -1,0 +1,27 @@
+{
+  "decisionLetterReferenceNumber": "AG/50052/2022",
+  "dateOnDecisionLetter": "{$TODAY}",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "aaAppellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "mobileNumber": "07977111111",
+  "appealReferenceNumber": "DRAFT",
+  "appellantInUk": "Yes",
+  "ageAssessment": "Yes",
+  "organisationOnDecisionLetter": "localAuthority",
+  "localAuthority": "localAuth1",
+  "appellantInDetention": "No",
+  "isNabaEnabled": "Yes"
+}

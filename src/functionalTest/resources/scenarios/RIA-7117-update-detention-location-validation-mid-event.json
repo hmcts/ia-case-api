@@ -1,0 +1,27 @@
+{
+  "description": "RIA-7117 Update detention location Mid-Event - prison for ADA appeal",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=detentionFacility",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "updateDetentionLocation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-ada-appeal-submitted.json",
+        "replacements": {
+          "detentionFacility": "prison"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You cannot update the detention location to a prison because this is an accelerated detained appeal."],
+    "caseData": {
+      "template": "minimal-ada-appeal-submitted.json",
+      "replacements": {
+        "detentionFacility": "prison"
+      }
+    }
+  }
+}

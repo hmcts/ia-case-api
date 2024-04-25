@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,10 +41,13 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
+
         Event event = callback.getEvent();
         boolean isCitizen = userDetailsProvider.getUserDetails().getRoles().contains(CITIZEN);
 
-        return event != START_APPEAL || !isCitizen;
+        return event != START_APPEAL && !isCitizen;
     }
 
     @Override
