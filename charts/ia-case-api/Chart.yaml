@@ -42,10 +42,6 @@ dependencies:
     version: 0.0.43
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
-  - name: ia-timed-event-service
-    version: 0.0.27
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: ia-timed-event-service.enabled
   - name: ccd-case-document-am-api
     version: 1.7.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
