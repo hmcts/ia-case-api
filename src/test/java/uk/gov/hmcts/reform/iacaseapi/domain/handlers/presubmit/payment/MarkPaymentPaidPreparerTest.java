@@ -193,6 +193,7 @@ class MarkPaymentPaidPreparerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
     void should_return_error_for_old_pa_ea_hu_cases_when_is_lr_journey_and_dlrm_fee_remission_is_enabled(AppealType appealType) {
         Mockito.when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -214,6 +215,7 @@ class MarkPaymentPaidPreparerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
     void should_return_error_for_pa_ea_hu_cases_when_is_aip_journey_dlrm_fee_remission_is_enabled_and_no_remission_is_created(AppealType appealType) {
         Mockito.when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);

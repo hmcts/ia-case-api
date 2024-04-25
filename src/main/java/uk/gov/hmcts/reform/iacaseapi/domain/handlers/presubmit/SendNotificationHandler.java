@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
+
 @Component
 public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -67,11 +68,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         if (isInternalCase(asylumCase)) {
             return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && getInternalEventsToHandle(callback).contains(callback.getEvent());
+                && getInternalEventsToHandle(callback).contains(callback.getEvent());
         }
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && getEventsToHandle(callback).contains(callback.getEvent());
+            && getEventsToHandle(callback).contains(callback.getEvent());
 
     }
 
@@ -96,7 +97,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
             Event.REQUEST_CASE_BUILDING,
             Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-            Event.REQUEST_RESPONSE_REVIEW,
             Event.SEND_DECISION_AND_REASONS,
             Event.UPLOAD_ADDITIONAL_EVIDENCE,
             Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
@@ -112,12 +112,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.APPLY_FOR_FTPA_APPELLANT,
             Event.APPLY_FOR_FTPA_RESPONDENT,
             Event.REVIEW_TIME_EXTENSION,
+            Event.SUBMIT_TIME_EXTENSION,
             Event.SEND_DIRECTION_WITH_QUESTIONS,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
             Event.REQUEST_CASE_EDIT,
             Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-            Event.SUBMIT_TIME_EXTENSION,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
@@ -184,54 +184,54 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private Set<Event> getInternalEventsToHandle(Callback<AsylumCase> callback) {
         Set<Event> eventsToHandle = Sets.newHashSet(
-                Event.EDIT_APPEAL_AFTER_SUBMIT,
-                Event.REQUEST_RESPONDENT_EVIDENCE,
-                Event.REQUEST_RESPONDENT_REVIEW,
-                Event.DECIDE_AN_APPLICATION,
-                Event.MAKE_AN_APPLICATION,
-                Event.ADA_SUITABILITY_REVIEW,
-                Event.APPLY_FOR_FTPA_APPELLANT,
-                Event.APPLY_FOR_FTPA_RESPONDENT,
-                Event.REMOVE_DETAINED_STATUS,
-                Event.REINSTATE_APPEAL,
-                Event.RECORD_OUT_OF_TIME_DECISION,
-                Event.END_APPEAL,
-                Event.SUBMIT_APPEAL,
-                Event.UPDATE_HEARING_ADJUSTMENTS,
-                Event.MARK_AS_READY_FOR_UT_TRANSFER,
-                Event.REQUEST_CASE_BUILDING,
-                Event.UPDATE_DETENTION_LOCATION,
-                Event.GENERATE_HEARING_BUNDLE,
-                Event.SEND_DECISION_AND_REASONS,
-                Event.END_APPEAL_AUTOMATICALLY,
-                Event.RECORD_REMISSION_DECISION,
-                Event.MARK_APPEAL_PAID,
-                Event.LIST_CASE,
-                Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                Event.REQUEST_RESPONSE_REVIEW,
-                Event.MARK_APPEAL_AS_ADA,
-                Event.EDIT_CASE_LISTING,
-                Event.TRANSFER_OUT_OF_ADA,
-                Event.SEND_DIRECTION,
-                Event.RESIDENT_JUDGE_FTPA_DECISION,
-                Event.MAINTAIN_CASE_LINKS,
-                Event.CHANGE_HEARING_CENTRE,
-                Event.CREATE_CASE_LINK,
-                Event.UPLOAD_ADDITIONAL_EVIDENCE,
-                Event.REQUEST_RESPONSE_AMEND,
-                Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                Event.EDIT_APPEAL_AFTER_SUBMIT,
-                Event.CHANGE_HEARING_CENTRE,
-                Event.CHANGE_DIRECTION_DUE_DATE,
-                Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                Event.UPLOAD_ADDENDUM_EVIDENCE,
-                Event.TURN_ON_NOTIFICATIONS,
-                Event.DECISION_WITHOUT_HEARING,
-                Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                Event.REMOVE_APPEAL_FROM_ONLINE,
-                Event.ADJOURN_HEARING_WITHOUT_DATE
-                );
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.REQUEST_RESPONDENT_REVIEW,
+            Event.DECIDE_AN_APPLICATION,
+            Event.MAKE_AN_APPLICATION,
+            Event.ADA_SUITABILITY_REVIEW,
+            Event.APPLY_FOR_FTPA_APPELLANT,
+            Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.REMOVE_DETAINED_STATUS,
+            Event.REINSTATE_APPEAL,
+            Event.RECORD_OUT_OF_TIME_DECISION,
+            Event.END_APPEAL,
+            Event.SUBMIT_APPEAL,
+            Event.UPDATE_HEARING_ADJUSTMENTS,
+            Event.MARK_AS_READY_FOR_UT_TRANSFER,
+            Event.REQUEST_CASE_BUILDING,
+            Event.UPDATE_DETENTION_LOCATION,
+            Event.GENERATE_HEARING_BUNDLE,
+            Event.SEND_DECISION_AND_REASONS,
+            Event.END_APPEAL_AUTOMATICALLY,
+            Event.RECORD_REMISSION_DECISION,
+            Event.MARK_APPEAL_PAID,
+            Event.LIST_CASE,
+            Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.REQUEST_RESPONSE_REVIEW,
+            Event.MARK_APPEAL_AS_ADA,
+            Event.EDIT_CASE_LISTING,
+            Event.TRANSFER_OUT_OF_ADA,
+            Event.SEND_DIRECTION,
+            Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.MAINTAIN_CASE_LINKS,
+            Event.CHANGE_HEARING_CENTRE,
+            Event.CREATE_CASE_LINK,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE,
+            Event.REQUEST_RESPONSE_AMEND,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.CHANGE_HEARING_CENTRE,
+            Event.CHANGE_DIRECTION_DUE_DATE,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE,
+            Event.TURN_ON_NOTIFICATIONS,
+            Event.DECISION_WITHOUT_HEARING,
+            Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+            Event.REMOVE_APPEAL_FROM_ONLINE,
+            Event.ADJOURN_HEARING_WITHOUT_DATE
+        );
 
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
@@ -256,10 +256,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-        AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         setDlrmSetAsideFeatureFlag(callback.getEvent(), asylumCase);
         setDlrmFeeRemissionFeatureFlag(callback.getEvent(), asylumCase);
@@ -279,12 +277,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private boolean isExAdaCaseWithHearingRequirementsSubmitted(Callback<AsylumCase> callback) {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         return asylumCase
-                   .read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
-                   .orElse(NO)
-                   .equals(YES)
-               && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
-                   .orElse(NO)
-                   .equals(YES);
+            .read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
+            .orElse(NO)
+            .equals(YES)
+            && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .orElse(NO)
+            .equals(YES);
     }
 
     private boolean isRespondentApplication(AsylumCase asylumCase) {
@@ -294,10 +292,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private void setDlrmSetAsideFeatureFlag(Event event, AsylumCase asylumCase) {
         if (List.of(Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                Event.RESIDENT_JUDGE_FTPA_DECISION,
-                Event.DECIDE_FTPA_APPLICATION).contains(event)) {
+            Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.DECIDE_FTPA_APPLICATION).contains(event)) {
             asylumCase.write(IS_DLRM_SET_ASIDE_ENABLED,
-                    featureToggler.getValue("dlrm-setaside-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
+                featureToggler.getValue("dlrm-setaside-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
         }
     }
 

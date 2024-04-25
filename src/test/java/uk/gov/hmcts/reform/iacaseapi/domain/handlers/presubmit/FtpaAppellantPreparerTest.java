@@ -251,6 +251,9 @@ class FtpaAppellantPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of("2023-01-01"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(LocalDate.now());
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);

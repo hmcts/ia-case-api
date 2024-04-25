@@ -102,7 +102,6 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-            Event.GENERATE_UPPER_TRIBUNAL_BUNDLE,
             Event.ADA_SUITABILITY_REVIEW,
             Event.REQUEST_CASE_BUILDING,
             Event.REQUEST_RESPONDENT_REVIEW,
@@ -127,14 +126,12 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.CREATE_CASE_LINK,
             Event.REQUEST_RESPONSE_AMEND,
             Event.SEND_DIRECTION,
-            Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
             Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
             Event.UPLOAD_ADDENDUM_EVIDENCE,
             Event.UPDATE_HEARING_ADJUSTMENTS,
-            Event.REINSTATE_APPEAL
-        );
+            Event.REINSTATE_APPEAL,
             Event.GENERATE_UPPER_TRIBUNAL_BUNDLE,
             Event.UPDATE_TRIBUNAL_DECISION);
         if (isEmStitchingEnabled) {
