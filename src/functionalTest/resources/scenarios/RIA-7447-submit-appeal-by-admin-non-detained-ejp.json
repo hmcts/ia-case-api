@@ -1,0 +1,29 @@
+{
+  "description": "RIA-7447 Submit an EJP (non-detained) appeal by admin",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-ejp-appeal-started.json",
+        "replacements": {
+          "appealReferenceNumber": "HU/50001/2023",
+          "appellantInUk": null,
+          "appellantInDetention": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ejp-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "HU/50001/2023"
+      }
+    }
+  }
+}

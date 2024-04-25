@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AutomaticEndAppealForRemissionRejectedTrigger;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -200,5 +198,25 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         assertThatThrownBy(() -> autoEndAppealTrigger.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_fail_can_handle_for_ada_appeals() {
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+                .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+                .thenReturn(Optional.of(AppealType.HU));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+                .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 }

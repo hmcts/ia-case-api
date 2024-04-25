@@ -12,7 +12,9 @@ public enum AppealType {
     EA("refusalOfEu", "Refusal of application under the EEA regulations"),
     HU("refusalOfHumanRights", "Refusal of a human rights claim"),
     DC("deprivation", "Deprivation of citizenship"),
-    EU("euSettlementScheme", "EU Settlement Scheme");
+    EU("euSettlementScheme", "EU Settlement Scheme"),
+    AG("ageAssessment", "Age assessment appeal");
+
 
     @JsonValue
     private final String value;

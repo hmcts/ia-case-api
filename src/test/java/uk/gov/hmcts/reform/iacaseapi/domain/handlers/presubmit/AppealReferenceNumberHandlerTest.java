@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -49,13 +50,14 @@ class AppealReferenceNumberHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
     @Mock
     private DateProvider dateProvider;
     @Mock
     private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     private AppealReferenceNumberHandler appealReferenceNumberHandler;
+
+    private String tribunalReceivedDate = "02-02-2023";
 
     @BeforeEach
     public void setUp() {
@@ -96,7 +98,31 @@ class AppealReferenceNumberHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
-        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA, false))
+            .thenReturn("the-next-appeal-reference-number");
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
+    }
+
+    @Test
+    void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted_detained() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
+
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA, true))
             .thenReturn("the-next-appeal-reference-number");
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
@@ -118,7 +144,30 @@ class AppealReferenceNumberHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
-        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA, false))
+            .thenReturn("the-next-appeal-reference-number");
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
+    }
+
+    @Test
+    void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal_detained() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
+
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA, true))
             .thenReturn("the-next-appeal-reference-number");
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
@@ -152,6 +201,7 @@ class AppealReferenceNumberHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -161,6 +211,35 @@ class AppealReferenceNumberHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
 
         verifyNoInteractions(appealReferenceNumberGenerator);
+    }
+
+    @Test
+    void should_write_to_internal_fields_when_case_is_created_by_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
+
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class)).thenReturn(Optional.of(tribunalReceivedDate));
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+
+        final LocalDate now = LocalDate.now();
+        when(dateProvider.now()).thenReturn(now);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_INTERNAL_DATE, now.toString());
+
     }
 
     @Test

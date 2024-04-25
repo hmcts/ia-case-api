@@ -1,5 +1,6 @@
 {
   "description": "RIA-1308/RIA-2034 Amend respondent evidence (HO - GENERIC)- upload Home Office bundle",
+  "disable": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",

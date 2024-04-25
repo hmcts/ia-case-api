@@ -1,11 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -15,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
@@ -46,8 +52,21 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isNotificationTurnedOff(asylumCase)) {
+            return false;
+        }
+
+        if (isInternalCase(asylumCase)) {
+            return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    && getInternalEventsToHandle(callback).contains(callback.getEvent());
+        }
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && getEventsToHandle(callback).contains(callback.getEvent());
+                && getEventsToHandle(callback).contains(callback.getEvent());
+
     }
 
     private List<Event> getEventsToHandle(Callback<AsylumCase> callback) {
@@ -71,7 +90,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
             Event.REQUEST_CASE_BUILDING,
             Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-            Event.REQUEST_RESPONSE_REVIEW,
             Event.SEND_DECISION_AND_REASONS,
             Event.UPLOAD_ADDITIONAL_EVIDENCE,
             Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
@@ -120,9 +138,22 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.END_APPEAL_AUTOMATICALLY,
             Event.UPDATE_PAYMENT_STATUS,
+            Event.ADA_SUITABILITY_REVIEW,
+            Event.TRANSFER_OUT_OF_ADA,
+            Event.MARK_APPEAL_AS_ADA,
+            Event.UPDATE_PAYMENT_STATUS,
+            Event.REMOVE_DETAINED_STATUS,
+            Event.MARK_APPEAL_AS_DETAINED,
             Event.CREATE_CASE_LINK,
             Event.MAINTAIN_CASE_LINKS,
-            Event.UPDATE_PAYMENT_STATUS
+            Event.UPDATE_PAYMENT_STATUS,
+            Event.MARK_AS_READY_FOR_UT_TRANSFER,
+            Event.UPDATE_DETENTION_LOCATION,
+            Event.APPLY_FOR_COSTS,
+            Event.RESPOND_TO_COSTS,
+            Event.ADD_EVIDENCE_FOR_COSTS,
+            Event.CONSIDER_MAKING_COSTS_ORDER,
+            Event.DECIDE_COSTS_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -140,6 +171,76 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.remove(Event.APPLY_FOR_FTPA_RESPONDENT);
             eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
         }
+        if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
+            eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
+        }
+        return eventsToHandle;
+    }
+
+    private Set<Event> getInternalEventsToHandle(Callback<AsylumCase> callback) {
+        Set<Event> eventsToHandle = Sets.newHashSet(
+                Event.EDIT_APPEAL_AFTER_SUBMIT,
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_RESPONDENT_REVIEW,
+                Event.DECIDE_AN_APPLICATION,
+                Event.MAKE_AN_APPLICATION,
+                Event.ADA_SUITABILITY_REVIEW,
+                Event.APPLY_FOR_FTPA_APPELLANT,
+                Event.APPLY_FOR_FTPA_RESPONDENT,
+                Event.REMOVE_DETAINED_STATUS,
+                Event.REINSTATE_APPEAL,
+                Event.RECORD_OUT_OF_TIME_DECISION,
+                Event.END_APPEAL,
+                Event.SUBMIT_APPEAL,
+                Event.UPDATE_HEARING_ADJUSTMENTS,
+                Event.MARK_AS_READY_FOR_UT_TRANSFER,
+                Event.REQUEST_CASE_BUILDING,
+                Event.UPDATE_DETENTION_LOCATION,
+                Event.GENERATE_HEARING_BUNDLE,
+                Event.SEND_DECISION_AND_REASONS,
+                Event.END_APPEAL_AUTOMATICALLY,
+                Event.RECORD_REMISSION_DECISION,
+                Event.MARK_APPEAL_PAID,
+                Event.LIST_CASE,
+                Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                Event.REQUEST_RESPONSE_REVIEW,
+                Event.MARK_APPEAL_AS_ADA,
+                Event.EDIT_CASE_LISTING,
+                Event.TRANSFER_OUT_OF_ADA,
+                Event.SEND_DIRECTION,
+                Event.RESIDENT_JUDGE_FTPA_DECISION,
+                Event.MAINTAIN_CASE_LINKS,
+                Event.CHANGE_HEARING_CENTRE,
+                Event.CREATE_CASE_LINK,
+                Event.UPLOAD_ADDITIONAL_EVIDENCE,
+                Event.REQUEST_RESPONSE_AMEND,
+                Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                Event.EDIT_APPEAL_AFTER_SUBMIT,
+                Event.CHANGE_HEARING_CENTRE,
+                Event.CHANGE_DIRECTION_DUE_DATE,
+                Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                Event.UPLOAD_ADDENDUM_EVIDENCE,
+                Event.TURN_ON_NOTIFICATIONS,
+                Event.DECISION_WITHOUT_HEARING,
+                Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+                Event.REMOVE_APPEAL_FROM_ONLINE,
+                Event.ADJOURN_HEARING_WITHOUT_DATE
+                );
+
+        if (!isSaveAndContinueEnabled) {
+            //eventsToHandle.add(Event.BUILD_CASE);
+        }
+        if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
+            eventsToHandle.add(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
+        }
+
+        // @TODO Get rid of this condition when appellant application notification is implemented
+        if (isRespondentApplication(callback.getCaseDetails().getCaseData())) {
+            eventsToHandle.add(Event.RESIDENT_JUDGE_FTPA_DECISION);
+            eventsToHandle.add(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        }
+
         return eventsToHandle;
     }
 
@@ -161,5 +262,21 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             .read(PAYMENT_STATUS, PaymentStatus.class)
             .map(paymentStatus -> paymentStatus.equals(PaymentStatus.PAID))
             .orElse(false);
+    }
+
+    private boolean isExAdaCaseWithHearingRequirementsSubmitted(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        return asylumCase
+                   .read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES)
+               && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES);
+    }
+
+    private boolean isRespondentApplication(AsylumCase asylumCase) {
+        return asylumCase.read(FTPA_APPLICANT_TYPE, String.class)
+            .map("respondent"::equals).orElse(false);
     }
 }

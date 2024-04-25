@@ -1,0 +1,30 @@
+{
+  "description": "RIA-6655 Confirm detention status set correctly for detained non-ada cases -- Tests DetentionStatusHandler specifically",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "detentionStatus": "detained",
+        "appellantInDetention": "Yes",
+        "isAcceleratedDetainedAppeal": "No"
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@
           "ftpaAppellantSubmitted": "Yes",
           "ftpaAppellantSubmissionOutOfTime": "No",
           "ftpaAppellantApplicationDate": "{$TODAY}",
+          "ftpaApplicationDeadline": "{$TODAY+1}",
           "ftpaAppellantDocuments": [
             {
               "id": "1",

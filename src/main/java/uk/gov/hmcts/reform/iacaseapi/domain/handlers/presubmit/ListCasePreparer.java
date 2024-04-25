@@ -48,9 +48,6 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<HearingCentre> maybeHearingCentre =
-            asylumCase.read(HEARING_CENTRE);
-
         if (asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
             && asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
 
@@ -65,14 +62,31 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             asylumCase.clear(LIST_CASE_HEARING_DATE);
             asylumCase.clear(LIST_CASE_HEARING_LENGTH);
         } else {
-
-            maybeHearingCentre.ifPresent(hearingCentre -> {
-                if (hearingCentre.equals(HearingCentre.GLASGOW)) {
-                    asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
-                } else {
-                    asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre);
-                }
+            Optional<HearingCentre> hearingCentreOptional =
+                asylumCase.read(HEARING_CENTRE);
+            hearingCentreOptional.ifPresent(hearingCentre -> {
+                asylumCase.write(
+                    LIST_CASE_HEARING_CENTRE,
+                    hearingCentre == HearingCentre.GLASGOW ? HearingCentre.GLASGOW_TRIBUNALS_CENTRE : hearingCentre);
             });
+        }
+
+        boolean hasTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(field -> field.equals(YesOrNo.YES))
+            .orElse(false);
+
+        boolean listCaseWasTriggeredInAdaJourney = asylumCase.read(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.class)
+            .map(field -> field.equals(YesOrNo.YES))
+            .orElse(false);
+
+        if (callback.getEvent().equals(Event.LIST_CASE)
+            && hasTransferredOutOfAda
+            && listCaseWasTriggeredInAdaJourney) {
+            // direct user to use EDIT_CASE_LISTING instead of LIST_CASE if the appeal was transferred out of ADA after listing
+
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError("Case was listed before being transferred out of ADA. Edit case listing instead.");
+            return response;
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
