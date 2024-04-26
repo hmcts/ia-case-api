@@ -1,0 +1,39 @@
+{
+  "description": "RIA-7908 Request case building direction confirmation when direction sent to appellant(for Internal case, Appellant in detention, Accelerated, Detained appeal)",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestCaseBuilding",
+      "state": "*",
+      "id": 7908,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "Test direction",
+                "parties": "appellant",
+                "dateDue": "{$TODAY+28}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestCaseBuilding"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have sent a direction",
+      "body": "#### What happens next\n\nAppellant will be notified by email."
+    }
+  }
+}

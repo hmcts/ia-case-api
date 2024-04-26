@@ -19,6 +19,7 @@ properties([
 ])
 
 @Library("Infrastructure")
+import uk.gov.hmcts.contino.GradleBuilder
 
 def type = "java"
 def product = "ia"
@@ -90,6 +91,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+GradleBuilder builder = new GradleBuilder(this, product)
+
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.Rules = params.SecurityRules
@@ -110,10 +113,6 @@ withNightlyPipeline(type, product, component) {
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
 
     loadVaultSecrets(secrets)
-
-    enableSecurityScan()
-    enableMutationTest()
-
     if (!params.skipFortifyScan) {
         enableFortifyScan()
     }
@@ -126,7 +125,6 @@ withNightlyPipeline(type, product, component) {
     if (!params.skipFullFunctionalTests) {
         enableFullFunctionalTest()
     }
-
     enableSlackNotifications('#ia-tech')
 
     afterAlways('build') {

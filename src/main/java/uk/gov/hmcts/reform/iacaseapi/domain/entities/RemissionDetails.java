@@ -32,29 +32,43 @@ public class RemissionDetails {
 
     }
 
-    public RemissionDetails(String feeRemissionType, String asylumSupportReference, Document asylumSupportDocument) {
+    public RemissionDetails(
+            String feeRemissionType,
+            String asylumSupportReference,
+            Document asylumSupportDocument
+    ) {
         this.feeRemissionType = feeRemissionType;
         this.asylumSupportReference = asylumSupportReference;
         this.asylumSupportDocument = asylumSupportDocument;
     }
 
-    public RemissionDetails(String feeRemissionType, String legalAidAccountNumber, String helpWithFeesReferenceNumber) {
+    public RemissionDetails(
+            String feeRemissionType,
+            String legalAidAccountNumber,
+            String helpWithFeesReferenceNumber
+    ) {
         this.feeRemissionType = feeRemissionType;
         this.legalAidAccountNumber = legalAidAccountNumber;
         this.helpWithFeesReferenceNumber = helpWithFeesReferenceNumber;
     }
 
     public RemissionDetails(
-        String feeRemissionType, Document section17Document,
-        Document section20Document, Document homeOfficeWaiverDocument) {
+            String feeRemissionType,
+            Document section17Document,
+            Document section20Document,
+            Document homeOfficeWaiverDocument
+    ) {
         this.feeRemissionType = feeRemissionType;
         this.section17Document = section17Document;
         this.section20Document = section20Document;
         this.homeOfficeWaiverDocument = homeOfficeWaiverDocument;
     }
 
-    public RemissionDetails(String feeRemissionType,
-                            String exceptionalCircumstances, List<IdValue<Document>> remissionEcEvidenceDocuments) {
+    public RemissionDetails(
+            String feeRemissionType,
+            String exceptionalCircumstances,
+            List<IdValue<Document>> remissionEcEvidenceDocuments
+    ) {
         this.feeRemissionType = feeRemissionType;
         this.exceptionalCircumstances = exceptionalCircumstances;
         this.remissionEcEvidenceDocuments = remissionEcEvidenceDocuments;

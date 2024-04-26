@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegallyRepresentedEjpCase;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,22 +17,30 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @Component
 public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int legalRepresentativeBuildCaseDueInDays;
     private final int legalRepresentativeBuildCaseDueFromSubmissionDate;
+    private final int legalRepresentativeBuildCaseDueInDaysAda;
     private final DateProvider dateProvider;
+    private final DueDateService dueDateService;
 
     public RequestCaseBuildingPreparer(
             @Value("${legalRepresentativeBuildCase.dueInDays}") int legalRepresentativeBuildCaseDueInDays,
             @Value("${legalRepresentativeBuildCase.dueInDaysFromSubmissionDate}") int legalRepresentativeBuildCaseDueFromSubmissionDate,
+            @Value("${legalRepresentativeBuildCaseAda.dueInDay}") int legalRepresentativeBuildCaseDueInDaysAda,
+            DueDateService dueDateService,
             DateProvider dateProvider
     ) {
         this.legalRepresentativeBuildCaseDueInDays = legalRepresentativeBuildCaseDueInDays;
         this.legalRepresentativeBuildCaseDueFromSubmissionDate = legalRepresentativeBuildCaseDueFromSubmissionDate;
+        this.legalRepresentativeBuildCaseDueInDaysAda = legalRepresentativeBuildCaseDueInDaysAda;
+        this.dueDateService = dueDateService;
         this.dateProvider = dateProvider;
     }
 
@@ -63,15 +71,28 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
                         + "- a schedule of issues\n"
                         + "- why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon\n\n"
                         + "# Next steps\n\n"
-                        + "Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Tribunal Caseworker will review everything you've added.\n\n"
+                        + "Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Legal Officer will review everything you've added.\n\n"
                         + "If your case looks ready, the Tribunal will send it to the respondent to review."
         );
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+        boolean isInternalDetained = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase));
+        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
 
-        LocalDate dueDate = getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, legalRepresentativeBuildCaseDueInDays);
+        if (isAcceleratedDetainedAppeal) {
+            ZonedDateTime dueDateTime = dueDateService.calculateDueDate(ZonedDateTime.now(), legalRepresentativeBuildCaseDueInDaysAda);
+            LocalDate dueDate = dueDateTime.toLocalDate();
+            asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
+        } else {
+            LocalDate dueDate = getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, legalRepresentativeBuildCaseDueInDays);
+            asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
+        }
 
-        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
+        if (isInternalDetained || isEjpUnrepNonDetained) {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
+        } else {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -16,6 +16,7 @@ class AppealTypeTest {
         assertThat(AppealType.from("refusalOfHumanRights").equals(Optional.of(AppealType.HU)));
         assertThat(AppealType.from("deprivation").equals(Optional.of(AppealType.DC)));
         assertThat(AppealType.from("euSettlementScheme").equals(Optional.of(AppealType.EU)));
+        assertThat(AppealType.from("ageAssessment").equals(Optional.of(AppealType.AG)));        
     }
 
     @Test
@@ -26,6 +27,7 @@ class AppealTypeTest {
         assertEquals("Refusal of a human rights claim", AppealType.HU.getDescription());
         assertEquals("Deprivation of citizenship", AppealType.DC.getDescription());
         assertEquals("EU Settlement Scheme", AppealType.EU.getDescription());
+        assertEquals("Age assessment appeal", AppealType.AG.getDescription());        
     }
 
     @Test
@@ -35,6 +37,6 @@ class AppealTypeTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(6, AppealType.values().length);
+        assertEquals(7, AppealType.values().length);
     }
 }

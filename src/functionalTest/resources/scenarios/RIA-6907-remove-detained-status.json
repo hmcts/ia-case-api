@@ -1,0 +1,40 @@
+{
+  "description": "RIA-6907 Remove detained status",
+  "enabled": "false",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "removeDetainedStatus",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantInDetention": "Yes",
+          "detentionFacility": "prison",
+          "prisonName": "Birmingham",
+          "prisonNOMSNumber": {
+            "prison": "123456"
+          },
+          "custodialSentence": "No",
+          "hasPendingBailApplications": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantInDetention": "No",
+        "detentionFacility": null,
+        "prisonName": null,
+        "prisonNOMSNumber": null,
+        "custodialSentence": null,
+        "hasPendingBailApplications": null
+      }
+    }
+  }
+}

@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
@@ -75,6 +79,9 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
+
+    APPEAL_TYPE_FOR_DISPLAY(
+        "appealTypeForDisplay", new TypeReference<AppealTypeForDisplay>(){}),
 
     APPEAL_TYPE_PREVIOUS_SELECTION(
         "appealTypePreviousSelection", new TypeReference<AppealType>(){}),
@@ -408,6 +415,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_THE_NOTICE_OF_DECISION_DOCS(
         "uploadTheNoticeOfDecisionDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOAD_THE_APPEAL_FORM_DOCS(
+        "uploadTheAppealFormDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION(
         "uploadTheNoticeOfDecisionExplanation", new TypeReference<String>(){}),
 
@@ -548,6 +558,15 @@ public enum AsylumCaseFieldDefinition {
 
     DECISION_AND_REASONS_AVAILABLE(
         "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPLICATION_DEADLINE(
+            "ftpaApplicationDeadline", new TypeReference<String>(){}),
+
+    APPEAL_SUBMISSION_INTERNAL_DATE(
+            "appealSubmissionInternalDate", new TypeReference<String>(){}),
+
+    TRIBUNAL_RECEIVED_DATE(
+            "tribunalReceivedDate", new TypeReference<String>(){}),
 
     ADD_CASE_NOTE_SUBJECT(
         "addCaseNoteSubject", new TypeReference<String>(){}),
@@ -718,6 +737,12 @@ public enum AsylumCaseFieldDefinition {
     JOURNEY_TYPE(
         "journeyType", new TypeReference<JourneyType>(){}),
 
+    HEARING_TYPE_RESULT(
+        "hearingTypeResult", new TypeReference<YesOrNo>(){}),
+
+    LETTER_SENT_OR_RECEIVED(
+            "letterSentOrReceived", new TypeReference<String>(){}),
+
     PREV_JOURNEY_TYPE(
         "prevJourneyType", new TypeReference<JourneyType>(){}),
 
@@ -801,6 +826,24 @@ public enum AsylumCaseFieldDefinition {
 
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
         "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
+
+    ACCELERATED_DETAINED_APPEAL_LISTED(
+        "acceleratedDetainedAppealListed", new TypeReference<YesOrNo>() {}),
+
+    ADA_HEARING_REQUIREMENTS_SUBMITTABLE(
+        "adaHearingRequirementsSubmittable", new TypeReference<YesOrNo>() {}),
+
+    ADA_HEARING_REQUIREMENTS_TO_REVIEW(
+        "adaHearingRequirementsToReview", new TypeReference<YesOrNo>() {}),
+
+    ADA_HEARING_REQUIREMENTS_UPDATABLE(
+            "adaHearingRequirementsUpdatable", new TypeReference<YesOrNo>() {}),
+
+    ADA_HEARING_ADJUSTMENTS_UPDATABLE(
+            "adaHearingAdjustmentsUpdatable", new TypeReference<YesOrNo>() {}),
+
+    ADA_EDIT_LISTING_AVAILABLE(
+            "adaEditListingAvailable", new TypeReference<YesOrNo>() {}),
 
     AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS(
         "automaticDirectionRequestingHearingRequirements", new TypeReference<String>(){}),
@@ -1403,9 +1446,19 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_OUT_OF_COUNTRY(
         "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
 
-    IS_OUT_OF_COUNTRY_ENABLED(
-        "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
+    IS_AGE_ASSESSMENT_ENABLED(
+        "isAgeAssessmentEnabled", new TypeReference<YesOrNo>() {}),
 
+    IS_AGE_ASSESSMENT_VISIBLE(
+        "isAgeAssessmentVisible", new TypeReference<YesOrNo>() {}),
+
+    IS_NABA_ENABLED(
+            "isNabaEnabled", new TypeReference<YesOrNo>() {}),
+
+    IS_NABA_ENABLED_OOC(
+        "isNabaEnabledOoc", new TypeReference<YesOrNo>() {}),
+    IS_NABA_ADA_ENABLED(
+        "isNabaAdaEnabled", new TypeReference<YesOrNo>() {}),
     HAS_CORRESPONDENCE_ADDRESS(
         "hasCorrespondenceAddress", new TypeReference<YesOrNo>() {}),
 
@@ -1473,6 +1526,9 @@ public enum AsylumCaseFieldDefinition {
 
     PREVIOUS_REMISSION_DETAILS(
         "previousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
+
+    TEMP_PREVIOUS_REMISSION_DETAILS(
+        "tempPreviousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
 
     OUT_OF_TIME_DECISION_MAKER(
         "outOfTimeDecisionMaker", new TypeReference<String>(){}),
@@ -1583,6 +1639,63 @@ public enum AsylumCaseFieldDefinition {
 
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
+    APPELLANT_IN_DETENTION(
+        "appellantInDetention", new TypeReference<YesOrNo>(){}),
+
+    IS_ACCELERATED_DETAINED_APPEAL(
+        "isAcceleratedDetainedAppeal", new TypeReference<YesOrNo>(){}),
+
+    DETENTION_STATUS(
+        "detentionStatus", new TypeReference<String>(){}),
+
+    DETENTION_FACILITY(
+        "detentionFacility", new TypeReference<String>(){}),
+
+    PRISON_NOMS(
+        "prisonNOMSNumber", new TypeReference<PrisonNomsNumber>(){}),
+
+    PRISON_NOMS_AO(
+        "prisonNOMSNumberAo", new TypeReference<PrisonNomsNumber>(){}),
+
+    IRC_NAME(
+        "ircName", new TypeReference<String>(){}),
+
+    PRISON_NAME(
+        "prisonName", new TypeReference<String>(){}),
+
+    OTHER_DETENTION_FACILITY_NAME(
+        "otherDetentionFacilityName", new TypeReference<OtherDetentionFacilityName>(){}),
+
+    CUSTODIAL_SENTENCE(
+        "custodialSentence", new TypeReference<YesOrNo>(){}),
+
+    DATE_CUSTODIAL_SENTENCE(
+        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+
+    DATE_CUSTODIAL_SENTENCE_AO(
+        "dateCustodialSentenceAo", new TypeReference<CustodialSentenceDate>(){}),
+
+    BAIL_APPLICATION_NUMBER(
+             "bailApplicationNumber", new TypeReference<String>(){}),
+
+    HAS_PENDING_BAIL_APPLICATIONS(
+             "hasPendingBailApplications", new TypeReference<BailApplicationStatus>(){}),
+
+    DATE_ON_DECISION_LETTER(
+        "dateOnDecisionLetter", new TypeReference<String>(){}),
+
+    AGE_ASSESSMENT(
+        "ageAssessment", new TypeReference<YesOrNo>(){}),
+
+    AA_APPELLANT_DATE_OF_BIRTH(
+        "aaAppellantDateOfBirth", new TypeReference<String>() {}),
+
+    REMOVAL_ORDER_OPTIONS(
+        "removalOrderOptions", new TypeReference<YesOrNo>(){}),
+
+    REMOVAL_ORDER_DATE(
+        "removalOrderDate", new TypeReference<String>(){}),
+
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
 
@@ -1597,6 +1710,254 @@ public enum AsylumCaseFieldDefinition {
 
     S94B_STATUS(
         "s94bStatus", new TypeReference<YesOrNo>(){}),
+
+    LISTING_AVAILABLE_FOR_ADA(
+        "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
+
+    CALCULATED_HEARING_DATE(
+        "calculatedHearingDate", new TypeReference<String>(){}),
+
+    ORGANISATION_ON_DECISION_LETTER(
+            "organisationOnDecisionLetter", new TypeReference<String>(){}),
+
+    LOCAL_AUTHORITY(
+            "localAuthority", new TypeReference<String>(){}),
+
+    HSC_TRUST(
+            "hscTrust", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND(
+            "litigationFriend", new TypeReference<YesOrNo>(){}),
+
+    LITIGATION_FRIEND_GIVEN_NAME(
+            "litigationFriendGivenName", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_FAMILY_NAME(
+            "litigationFriendFamilyName", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_COMPANY(
+            "litigationFriendCompany", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_CONTACT_PREFERENCE(
+            "litigationFriendContactPreference", new TypeReference<ContactPreference>(){}),
+
+    LITIGATION_FRIEND_EMAIL(
+            "litigationFriendEmail", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_PHONE_NUMBER(
+            "litigationFriendPhoneNumber", new TypeReference<String>(){}),
+
+    DECISION_LETTER_REFERENCE_NUMBER(
+            "decisionLetterReferenceNumber", new TypeReference<String>(){}),
+
+    SUITABILITY_REVIEW_DECISION(
+            "suitabilityReviewDecision", new TypeReference<AdaSuitabilityReviewDecision>(){}),
+
+    HAS_TRANSFERRED_OUT_OF_ADA(
+            "hasTransferredOutOfAda", new TypeReference<YesOrNo>(){}),
+
+    TRANSFER_OUT_OF_ADA_DATE(
+            "transferOutOfAdaDate", new TypeReference<String>(){}),
+
+    IS_ADMIN(
+            "isAdmin", new TypeReference<YesOrNo>() {}),
+
+    ADA_SUFFIX(
+        "adaSuffix", new TypeReference<String>(){}),
+
+    HEARING_REQ_SUFFIX(
+        "hearingReqSuffix", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_EMAIL(
+            "internalAppellantEmail", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_MOBILE_NUMBER(
+            "internalAppellantMobileNumber", new TypeReference<String>(){}),
+
+    DATE_MARKED_AS_ADA(
+            "dateMarkedAsAda", new TypeReference<String>(){}),
+    MARK_APPEAL_AS_ADA_EXPLANATION(
+        "markAppealAsAdaExplanation", new TypeReference<String>(){}),
+    REASON_APPEAL_MARKED_AS_ADA(
+        "reasonAppealMarkedAsAda", new TypeReference<String>(){}),
+
+    ADA_HEARING_REQUIREMENTS_SUBMITTED(
+            "adaHearingRequirementsSubmitted", new TypeReference<YesOrNo>(){}),
+    UT_APPEAL_REFERENCE_NUMBER(
+            "utAppealReferenceNumber", new TypeReference<String>() {}),
+    UT_INSTRUCTION_DATE(
+            "utInstructionDate", new TypeReference<String>(){}),
+    NOTICE_OF_DECISION_UT_TRANSFER_DOCUMENT(
+        "noticeOfDecisionUtTransferDocument", new TypeReference<Document>(){}),
+    APPEAL_READY_FOR_UT_TRANSFER(
+            "appealReadyForUtTransfer", new TypeReference<YesOrNo>(){}),
+    APPEAL_READY_FOR_UT_TRANSFER_OUTCOME(
+            "appealReadyForUtTransferOutcome", new TypeReference<String>(){}),
+
+    PREVIOUS_DETENTION_LOCATION(
+            "previousDetentionLocation", new TypeReference<String>() {}),
+
+    SUITABILITY_HEARING_TYPE_YES_OR_NO(
+        "suitabilityHearingTypeYesOrNo", new TypeReference<YesOrNo>() {}),
+
+    SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1(
+        "suitabilityAppellantAttendanceYesOrNo1", new TypeReference<YesOrNo>() {}),
+
+    SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2(
+        "suitabilityAppellantAttendanceYesOrNo2", new TypeReference<YesOrNo>() {}),
+
+    SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO(
+        "suitabilityInterpreterServicesYesOrNo", new TypeReference<YesOrNo>() {}),
+
+    SUITABILITY_INTERPRETER_SERVICES_LANGUAGE(
+        "suitabilityInterpreterServicesLanguage", new TypeReference<String>() {}),
+
+    SOURCE_OF_APPEAL(
+        "sourceOfAppeal", new TypeReference<SourceOfAppeal>(){}),
+
+    APPLIED_COSTS_TYPES(
+            "appliedCostsTypes", new TypeReference<DynamicList>(){}),
+
+    ARGUMENTS_AND_EVIDENCE_DETAILS(
+        "argumentsAndEvidenceDetails", new TypeReference<String>(){}),
+
+    ARGUMENTS_AND_EVIDENCE_DOCUMENTS(
+        "argumentsAndEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    SCHEDULE_OF_COSTS_DOCUMENTS(
+        "scheduleOfCostsDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    APPLY_FOR_COSTS_HEARING_TYPE(
+        "applyForCostsHearingType", new TypeReference<YesOrNo>(){}),
+
+    APPLY_FOR_COSTS_HEARING_TYPE_EXPLANATION(
+        "applyForCostsHearingTypeExplanation", new TypeReference<String>(){}),
+
+    APPLIES_FOR_COSTS(
+        "appliesForCosts", new TypeReference<List<IdValue<ApplyForCosts>>>(){}),
+
+    APPLY_FOR_COSTS_DECISION(
+            "applyForCostsDecision", new TypeReference<CostsDecision>(){}),
+
+    APPLY_FOR_COSTS_APPLICANT_TYPE(
+            "applyForCostsApplicantType", new TypeReference<String>(){}),
+
+    APPLY_FOR_COSTS_CREATION_DATE(
+            "applyForCostsCreationDate", new TypeReference<String>(){}),
+
+    IS_APPLIED_FOR_COSTS(
+            "isAppliedForCosts", new TypeReference<String>(){}),
+
+    UPPER_TRIBUNAL_REFERENCE_NUMBER(
+        "upperTribunalReferenceNumber", new TypeReference<String>() {}),
+
+    IS_EJP(
+        "isEjp", new TypeReference<YesOrNo>() {}),
+
+    IS_NOTIFICATION_TURNED_OFF(
+            "isNotificationTurnedOff", new TypeReference<YesOrNo>() {}),
+
+    UT_TRANSFER_DOC(
+            "utTransferDoc", new TypeReference<List<IdValue<Document>>>(){}),
+
+    UPLOAD_EJP_APPEAL_FORM_DOCS(
+            "uploadEjpAppealFormDocs", new TypeReference<List<IdValue<Document>>>(){}),
+
+    IS_LEGALLY_REPRESENTED_EJP(
+        "isLegallyRepresentedEjp", new TypeReference<YesOrNo>() {}),
+
+    CONTACT_PREFERENCE_UNREP(
+        "contactPreferenceUnrep", new TypeReference<List<ContactPreferenceUnrep>>(){}),
+
+    EMAIL_UNREP(
+        "emailUnrep", new TypeReference<String>(){}),
+
+    MOBILE_NUMBER_UNREP(
+        "mobileNumberUnrep", new TypeReference<String>(){}),
+
+    IS_APPLY_FOR_COSTS_OOT(
+            "isApplyForCostsOot", new TypeReference<YesOrNo>() {}),
+
+    SEND_DECISIONS_AND_REASONS_DATE(
+        "sendDecisionsAndReasonsDate", new TypeReference<String>(){}),
+
+    APPLY_FOR_COSTS_OOT_EXPLANATION(
+            "applyForCostsOotExplanation", new TypeReference<String>(){}),
+
+    OOT_UPLOAD_EVIDENCE_DOCUMENTS(
+            "ootUploadEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    RESPOND_TO_COSTS_LIST(
+        "respondToCostsList", new TypeReference<DynamicList>(){}),
+
+    RESPONSE_TO_APPLICATION_TEXT_AREA(
+        "responseToApplicationTextArea", new TypeReference<String>(){}),
+
+    RESPONSE_TO_APPLICATION_EVIDENCE(
+        "responseToApplicationEvidence", new TypeReference<List<IdValue<Document>>>(){}),
+
+    TYPE_OF_HEARING_OPTION(
+        "typeOfHearingOption", new TypeReference<YesOrNo>(){}),
+
+    TYPE_OF_HEARING_EXPLANATION(
+        "typeOfHearingExplanation", new TypeReference<String>(){}),
+
+    ADD_EVIDENCE_FOR_COSTS_LIST(
+        "addEvidenceForCostsList", new TypeReference<DynamicList>(){}),
+
+    ADDITIONAL_EVIDENCE_FOR_COSTS(
+        "additionalEvidenceForCosts", new TypeReference<List<IdValue<Document>>>(){}),
+
+    DECIDE_COSTS_APPLICATION_LIST(
+        "decideCostsApplicationList", new TypeReference<DynamicList>(){}),
+
+    COSTS_DECISION_TYPE(
+        "costsDecisionType", new TypeReference<CostsDecisionType>(){}),
+
+    COSTS_ORAL_HEARING_DATE(
+        "costsOralHearingDate", new TypeReference<String>(){}),
+
+    UPLOAD_COSTS_ORDER(
+        "uploadCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
+
+    JUDGE_APPLIED_COSTS_TYPES(
+        "judgeAppliedCostsTypes", new TypeReference<DynamicList>(){}),
+
+    RESPONDENT_TO_COSTS_ORDER(
+        "respondentToCostsOrder", new TypeReference<String>(){}),
+
+    TRIBUNAL_CONSIDERING_REASON(
+    "tribunalConsideringReason", new TypeReference<String>(){}),
+
+    JUDGE_EVIDENCE_FOR_COSTS_ORDER(
+    "judgeEvidenceForCostsOrder", new TypeReference<List<IdValue<Document>>>(){}),
+
+    LEGAL_REP_COMPANY_EJP(
+        "legalRepCompanyEjp", new TypeReference<String>(){}),
+
+    LEGAL_REP_GIVEN_NAME_EJP(
+        "legalRepGivenNameEjp", new TypeReference<String>(){}),
+
+    LEGAL_REP_FAMILY_NAME_EJP(
+        "legalRepFamilyNameEjp", new TypeReference<String>(){}),
+
+    LEGAL_REP_EMAIL_EJP(
+        "legalRepEmailEjp", new TypeReference<String>(){}),
+
+    LEGAL_REP_REFERENCE_EJP(
+        "legalRepReferenceEjp", new TypeReference<String>(){}),
+
+    FIRST_TIER_TRIBUNAL_TRANSFER_DATE(
+        "firstTierTribunalTransferDate", new TypeReference<String>(){}),
+
+    STATE_OF_THE_APPEAL(
+        "stateOfTheAppeal", new TypeReference<String>(){}),
+
+    LEGAL_PRACTICE_ADDRESS_EJP(
+        "legalPracticeAddressEjp", new TypeReference<AddressUk>(){}),
+
+    IS_OUT_OF_COUNTRY_ENABLED(
+        "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
 
     FTPA_APPELLANT_DECISION_OBJECTIONS(
             "ftpaAppellantDecisionObjections", new TypeReference<String>(){}),

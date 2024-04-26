@@ -65,4 +65,4 @@ def replace_case_data_id(new_id: str, file_path: str):
     return file_path
 
 
-prep_import_data(events_to_get_individual_json=range(1,13))
+prep_import_data(events_to_get_individual_json=range(1, 39))

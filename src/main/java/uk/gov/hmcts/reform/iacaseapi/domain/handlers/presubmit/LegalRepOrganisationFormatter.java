@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +57,9 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (HandlerUtils.isRepJourney(asylumCase)) {
+        if (HandlerUtils.isRepJourney(asylumCase)
+                && !isInternalCase(asylumCase)) {
+
             final OrganisationEntityResponse organisationEntityResponse =
                     professionalOrganisationRetriever.retrieve();
 
