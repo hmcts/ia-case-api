@@ -41,7 +41,7 @@ public class MakeAnApplicationTypesProvider {
         boolean hasHomeOfficeRole = userDetails.getRoles()
             .stream().anyMatch(HO_ROLES::contains);
         boolean isInternalAdaAndAdminRole = hasRole(ROLE_ADMIN)
-                && isInternalCase(asylumCase) && isAcceleratedDetainedAppeal(asylumCase);
+            && isInternalCase(asylumCase) && isAcceleratedDetainedAppeal(asylumCase);
 
         DynamicList dynamicList;
         final List<Value> values = new ArrayList<>();
@@ -66,9 +66,9 @@ public class MakeAnApplicationTypesProvider {
 
                 if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_ADMIN) && isInternalCase(asylumCase)) {
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
-                            UPDATE_APPEAL_DETAILS.toString()));
+                        UPDATE_APPEAL_DETAILS.toString()));
                 }
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
@@ -111,9 +111,9 @@ public class MakeAnApplicationTypesProvider {
                     }
                     if (currentState != PENDING_PAYMENT) {
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                         values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
-                                UPDATE_APPEAL_DETAILS.toString()));
+                            UPDATE_APPEAL_DETAILS.toString()));
                     }
                 }
 
@@ -137,11 +137,11 @@ public class MakeAnApplicationTypesProvider {
                 }
 
                 if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)
-                        && currentState != PENDING_PAYMENT
-                        && currentState != AWAITING_REASONS_FOR_APPEAL
-                        && currentState != AWAITING_CLARIFYING_QUESTIONS_ANSWERS
-                        && currentState != AWAITING_CMA_REQUIREMENTS
-                        && currentState != REASONS_FOR_APPEAL_SUBMITTED) {
+                    && currentState != PENDING_PAYMENT
+                    && currentState != AWAITING_REASONS_FOR_APPEAL
+                    && currentState != AWAITING_CLARIFYING_QUESTIONS_ANSWERS
+                    && currentState != AWAITING_CMA_REQUIREMENTS
+                    && currentState != REASONS_FOR_APPEAL_SUBMITTED) {
 
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
@@ -150,7 +150,6 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -172,15 +171,14 @@ public class MakeAnApplicationTypesProvider {
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     if (hasSubmittedHearingRequirements(asylumCase)) {
                         values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                                UPDATE_HEARING_REQUIREMENTS.toString()));
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
                     }
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
-                            UPDATE_APPEAL_DETAILS.toString()));
+                        UPDATE_APPEAL_DETAILS.toString()));
                 }
 
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -222,9 +220,9 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
-                            UPDATE_APPEAL_DETAILS.toString()));
+                        UPDATE_APPEAL_DETAILS.toString()));
                     if (hasSubmittedHearingRequirements(asylumCase)) {
                         values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
                             UPDATE_HEARING_REQUIREMENTS.toString()));
@@ -233,7 +231,6 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -271,9 +268,9 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
-                            UPDATE_APPEAL_DETAILS.toString()));
+                        UPDATE_APPEAL_DETAILS.toString()));
                     if (hasSubmittedHearingRequirements(asylumCase)) {
                         values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
                             UPDATE_HEARING_REQUIREMENTS.toString()));
@@ -282,7 +279,6 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 break;
 
             case ADJOURNED:
@@ -319,17 +315,16 @@ public class MakeAnApplicationTypesProvider {
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     if (hasSubmittedHearingRequirements(asylumCase)) {
                         values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
-                                UPDATE_HEARING_REQUIREMENTS.toString()));
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
                     }
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
-                            UPDATE_APPEAL_DETAILS.toString()));
+                        UPDATE_APPEAL_DETAILS.toString()));
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                 }
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -350,17 +345,15 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
                 if (hasRole(ROLE_ADMIN)
-                        && isInternalCase(asylumCase)
-                        && isAcceleratedDetainedAppeal(asylumCase)) {
+                    && isInternalCase(asylumCase)
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
 
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
-                values.add(new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 

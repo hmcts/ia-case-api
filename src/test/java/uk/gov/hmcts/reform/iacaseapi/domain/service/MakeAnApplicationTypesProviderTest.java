@@ -4,36 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.APPLICATION_UNDER_RULE_31_OR_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW_LO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.REINSTATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TIME_EXTENSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_TAKEN_OFFLINE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -111,8 +86,6 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
-            new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
@@ -211,7 +184,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(OTHER.name(), OTHER.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                    TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()));
 
         DynamicList actualList =
@@ -482,9 +455,9 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-                new Value(TRANSFER.name(), TRANSFER.toString()));
+            new Value(TRANSFER.name(), TRANSFER.toString()));
         DynamicList expectedList =
-                new DynamicList(values.get(0), values);
+            new DynamicList(values.get(0), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -506,9 +479,9 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-                new Value(TRANSFER.name(), TRANSFER.toString()));
+            new Value(TRANSFER.name(), TRANSFER.toString()));
         DynamicList expectedList =
-                new DynamicList(values.get(0), values);
+            new DynamicList(values.get(0), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -530,11 +503,11 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-                new Value(ADJOURN.name(), ADJOURN.toString()),
-                new Value(EXPEDITE.name(), EXPEDITE.toString())
+            new Value(ADJOURN.name(), ADJOURN.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString())
         );
         DynamicList expectedList =
-                new DynamicList(values.get(0), values);
+            new DynamicList(values.get(0), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -565,11 +538,11 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-                new Value(ADJOURN.name(), ADJOURN.toString()),
-                new Value(EXPEDITE.name(), EXPEDITE.toString())
+            new Value(ADJOURN.name(), ADJOURN.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString())
         );
         DynamicList expectedList =
-                new DynamicList(values.get(0), values);
+            new DynamicList(values.get(0), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);

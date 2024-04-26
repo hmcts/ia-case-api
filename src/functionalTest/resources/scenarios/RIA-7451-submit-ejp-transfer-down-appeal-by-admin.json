@@ -1,4 +1,4 @@
-{
+ {
   "description": "RIA-7451 Submit an EJP transfer down appeal by admin should turn off notifications",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
