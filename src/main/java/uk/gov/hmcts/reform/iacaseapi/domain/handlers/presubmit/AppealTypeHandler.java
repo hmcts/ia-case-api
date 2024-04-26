@@ -75,6 +75,10 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 = featureToggler.getValue("naba-ada-feature-flag", false) ? YES : NO;
             asylumCase.write(IS_NABA_ADA_ENABLED, isAdaEnabled);
             isNabaEnabled = Optional.of(isNabaEnabledFlag);
+        }
+
+        Optional<YesOrNo> isOocEnabled = asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class);
+        if (callback.getEvent() == START_APPEAL && isOocEnabled.isEmpty()) {
             YesOrNo isOutOfCountryEnabled
                 = featureToggler.getValue("out-of-country-feature", false) ? YES : NO;
             asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, isOutOfCountryEnabled);
