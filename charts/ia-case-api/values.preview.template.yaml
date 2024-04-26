@@ -1141,18 +1141,18 @@ wa:
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-    wa-task-monitor:
-      java:
-        ingressHost: wa-task-monitor-${SERVICE_FQDN}
-        environment:
-          WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-    wa-workflow-api:
-      java:
-        environment:
-          DB_READER_USERNAME: "hmcts"
-    wa:
-      postgresql:
-        enabled: false
+  wa-task-monitor:
+    java:
+      ingressHost: wa-task-monitor-${SERVICE_FQDN}
+      environment:
+        WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
+  wa-workflow-api:
+    java:
+      environment:
+        DB_READER_USERNAME: "hmcts"
+  wa:
+    postgresql:
+      enabled: false
 
 
 servicebus:
