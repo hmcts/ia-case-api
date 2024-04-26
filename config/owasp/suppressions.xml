@@ -9,14 +9,27 @@
     </suppress>
     <suppress until="2024-06-01">
         <notes>![CDATA[
-        False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
+            False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
 
-        We do not use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
-        Try to remove it when a dependencycheck upgrade becomes available.
-        If this still happens, check that we do not use hutool-json and json-java. If we don't, extend the suppression date by another year.
-        ]]</notes>
+            We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
+            Try to remove it when a dependencycheck upgrade becomes available.
+            If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
+            ]]</notes>
         <cve>CVE-2022-45688</cve>
         <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress until="2024-01-01">
+        <cve>CVE-2023-42794</cve>
+        <cve>CVE-2023-42795</cve>
+        <cve>CVE-2023-45648</cve>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-44487</cve>
+    </suppress>
+    <suppress until="2023-06-18">
+        <notes>Temporarily suppress vulnerability</notes>
+        <cve>CVE-2023-20863</cve>
+        <cve>CVE-2023-20873</cve>
+        <cve>CVE-2023-20862</cve>
     </suppress>
     <suppress>
         <cve>CVE-2023-2976</cve>
@@ -27,6 +40,16 @@
         <cve>CVE-2023-34034</cve>
         <cve>CVE-2020-8908</cve>
         <cve>CVE-2023-41080</cve>
+    </suppress>
+    <suppress until="2023-07-27">
+        <notes>Temporarily suppress vulnerability</notes>
+        <cve>CVE-2023-20863</cve>
+        <cve>CVE-2023-20873</cve>
+        <cve>CVE-2023-20862</cve>
+        <cve>CVE-2023-20883</cve>
+        <cve>CVE-2023-35116</cve>
+        <cve>CVE-2023-2976</cve>
+        <cve>CVE-2023-34981</cve>
     </suppress>
     <suppress until="2023-08-31">
         <notes>Temporarily suppress vulnerability</notes>
@@ -34,9 +57,14 @@
         <cve>CVE-2023-20873</cve>
         <cve>CVE-2023-20862</cve>
         <cve>CVE-2023-20883</cve>
+        <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-2976</cve>
         <cve>CVE-2023-34981</cve>
         <cve>CVE-2023-34034</cve>
+    </suppress>
+    <suppress until="2023-09-30">
+        <notes>Temporarily suppress vulnerability as no current fix</notes>
+        <cve>CVE-2023-35116</cve>
     </suppress>
     <suppress until="2023-11-30">
         <notes>Temporarily suppress vulnerability as no current fix</notes>
@@ -54,6 +82,7 @@
     </suppress>
     <suppress until="2024-02-29">
         <notes>Temporarily suppress vulnerability</notes>
+        <cve>CVE-2023-35116</cve>
         <cve>CVE-2023-41080</cve>
         <cve>CVE-2023-31582</cve>
         <cve>CVE-2023-5072</cve>
@@ -64,57 +93,21 @@
         <cve>CVE-2023-34055</cve>
         <cve>CVE-2023-46589</cve>
         <cve>CVE-2023-6481</cve>
-        <cve>CVE-2023-20883</cve>
     </suppress>
-    <suppress until="2024-04-01">
-        <cve>CVE-2023-42794</cve>
-        <cve>CVE-2023-42795</cve>
-        <cve>CVE-2023-45648</cve>
+    <suppress until="2024-02-28">
+        <notes>Until gov notify client is updated</notes>
         <cve>CVE-2023-5072</cve>
-        <cve>CVE-2023-44487</cve>
     </suppress>
-    <suppress>
-        <cve>CVE-2023-2976</cve>
-        <cve>CVE-2023-34981</cve>
-        <cve>CVE-2023-35116</cve>
-        <cve>CVE-2023-34981</cve>
-        <cve>CVE-2023-2976</cve>
-        <cve>CVE-2023-34034</cve>
-        <cve>CVE-2020-8908</cve>
-        <cve>CVE-2023-41080</cve>
-    </suppress>
-    <suppress until="2023-08-31">
-        <notes>Temporarily suppress vulnerability</notes>
-        <cve>CVE-2023-20883</cve>
-        <cve>CVE-2023-2976</cve>
-        <cve>CVE-2023-34981</cve>
-        <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress until="2023-11-30">
-        <notes>Temporarily suppress vulnerability as no current fix</notes>
-        <cve>CVE-2023-5072</cve>
-        <cve>CVE-2023-44487</cve>
-        <cve>CVE-2023-44487</cve>
-    </suppress>
-    <suppress>
-        <cve>CVE-2023-42794</cve>
-        <cve>CVE-2023-42795</cve>
-        <cve>CVE-2023-45648</cve>
-        <cve>CVE-2023-31582</cve>
+    <suppress until="2024-02-28">
+        <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
+        <cve>CVE-2023-33202</cve>
     </suppress>
     <suppress until="2024-06-30">
-        <cve>CVE-2023-41080</cve>
-        <cve>CVE-2023-31582</cve>
-        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-35116</cve>
     </suppress>
-    <suppress until="2024-05-15">
-        <cve>CVE-2023-33202</cve>
-        <cve>CVE-2023-6378</cve>
-        <cve>CVE-2023-34055</cve>
-        <cve>CVE-2023-46589</cve>
-        <cve>CVE-2023-6481</cve>
-        <cve>CVE-2023-34042</cve>
+    <suppress until="2024-06-30">
         <cve>CVE-2024-1597</cve>
         <cve>CVE-2023-1370</cve>
     </suppress>
+
 </suppressions>
