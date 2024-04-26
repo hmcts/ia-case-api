@@ -275,10 +275,12 @@ public class AppealTypeHandlerTest {
         when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.empty());
         when(featureToggler.getValue("naba-feature-flag", false)).thenReturn(false);
         when(featureToggler.getValue("naba-ada-feature-flag", false)).thenReturn(false);
+        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(false);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
         verify(asylumCase, times(1)).write(IS_NABA_ENABLED, NO);
         verify(asylumCase, times(1)).write(IS_NABA_ENABLED_OOC, NO);
         verify(asylumCase, times(1)).write(IS_NABA_ADA_ENABLED, NO);
+        verify(asylumCase, times(1)).write(IS_OUT_OF_COUNTRY_ENABLED, NO);
     }
 }
