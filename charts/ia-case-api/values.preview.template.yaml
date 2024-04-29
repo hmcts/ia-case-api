@@ -65,6 +65,7 @@ ia-case-payments-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
+    #    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-343
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -99,6 +100,7 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+#    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-816
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -148,6 +150,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+#    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1081
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -421,6 +424,7 @@ ia-home-office-integration-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+#    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-373
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
