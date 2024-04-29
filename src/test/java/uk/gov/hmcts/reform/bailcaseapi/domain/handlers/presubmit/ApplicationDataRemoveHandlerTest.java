@@ -534,7 +534,7 @@ public class ApplicationDataRemoveHandlerTest {
     }
 
     private void assertFinancialConditionSupporter1Removed() {
-        verify(bailCase, times(1)).removeByString(HAS_FINANCIAL_COND_SUPPORTER.value());
+        verify(bailCase, times(1)).write(HAS_FINANCIAL_COND_SUPPORTER, NO);
         verify(bailCase, times(1)).remove(SUPPORTER_GIVEN_NAMES);
         verify(bailCase, times(1)).remove(SUPPORTER_FAMILY_NAMES);
         verify(bailCase, times(1)).remove(SUPPORTER_ADDRESS_DETAILS);
