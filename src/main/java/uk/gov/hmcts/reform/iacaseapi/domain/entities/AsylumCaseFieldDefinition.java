@@ -444,6 +444,12 @@ public enum AsylumCaseFieldDefinition {
     LIST_CASE_HEARING_CENTRE_ADDRESS(
         "listCaseHearingCentreAddress", new TypeReference<HearingCentre>(){}),
 
+    LISTING_LOCATION(
+        "listingLocation", new TypeReference<DynamicList>(){}),
+
+    IS_CASE_USING_LOCATION_REF_DATA(
+        "isCaseUsingLocationRefData", new TypeReference<YesOrNo>(){}),
+
     LIST_CASE_HEARING_DATE(
         "listCaseHearingDate", new TypeReference<String>(){}),
 
