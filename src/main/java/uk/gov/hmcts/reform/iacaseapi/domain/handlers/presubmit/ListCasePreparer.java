@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -14,14 +18,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
 public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
+    private final LocationRefDataService locationRefDataService;
 
-    public ListCasePreparer(FeatureToggler featureToggler) {
+    public ListCasePreparer(FeatureToggler featureToggler, LocationRefDataService locationRefDataService) {
         this.featureToggler = featureToggler;
+        this.locationRefDataService = locationRefDataService;
     }
 
     public boolean canHandle(
@@ -77,6 +84,35 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             });
         }
 
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            asylumCase.write(LISTING_LOCATION, prepareLocationDynamicList(asylumCase));
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private DynamicList prepareLocationDynamicList(AsylumCase asylumCase) {
+        DynamicList dynamicList = locationRefDataService.getHearingLocationsDynamicList();
+
+        asylumCase.read(LISTING_LOCATION, DynamicList.class)
+            .ifPresentOrElse(existingDynamicList -> {
+
+                // find selected value if selection had already been made before
+                Value selectedLocation = existingDynamicList.getValue();
+
+                // set the value in the new list, as long as that the LoV still includes it
+                if (dynamicList.getListItems().contains(selectedLocation)) {
+                    dynamicList.setValue(selectedLocation);
+                }
+            },
+                // if listingLocation empty, read selection from listCaseHearingCentre
+                () -> asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+                    .flatMap(hearingCentre -> dynamicList.getListItems()
+                        .stream() // find selected epimsId in new dynamic list
+                        .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
+                        .findAny())
+                    .ifPresent(dynamicList::setValue));
+
+        return dynamicList;
     }
 }
