@@ -219,9 +219,11 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
-    @Test
-    void should_keep_listing_length_and_list_case_hearing_centre_aligned() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void should_keep_listing_location_and_list_case_hearing_centre_aligned(Event event) {
 
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
             .thenReturn(Optional.of(
