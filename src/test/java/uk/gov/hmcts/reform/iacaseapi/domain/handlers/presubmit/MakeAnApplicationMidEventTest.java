@@ -182,7 +182,7 @@ class MakeAnApplicationMidEventTest {
             case SET_ASIDE_A_DECISION:
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
-                        "Explain why the decision should be set aside or changed.");
+                        "Explain why the decision should be set aside.");
                 break;
             default:
                 break;
