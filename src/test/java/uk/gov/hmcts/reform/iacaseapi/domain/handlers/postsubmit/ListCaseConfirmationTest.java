@@ -7,11 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS;
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -20,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -33,12 +37,17 @@ class ListCaseConfirmationTest {
 
     private ListCaseConfirmation listCaseConfirmation = new ListCaseConfirmation();
 
-    @Test
-    void should_return_confirmation() {
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = { "NO", "YES" })
+    void should_return_confirmation(YesOrNo isAda) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+
+        when(asylumCase.read(HOME_OFFICE_HEARING_INSTRUCT_STATUS, String.class))
+                .thenReturn(Optional.of(" "));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(isAda));
 
         PostSubmitCallbackResponse callbackResponse =
             listCaseConfirmation.handle(callback);
@@ -47,19 +56,35 @@ class ListCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have listed the case");
+        if (isAda.equals(YesOrNo.YES)) {
+            assertThat(
+                    callbackResponse.getConfirmationHeader().get())
+                    .contains("You have listed the case");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The hearing notice will be sent to all parties.<br>");
+            assertThat(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains("The legal representative will be directed to submit the appellant's hearing<br>");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You don't need to do any more on this case.");
+            assertThat(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains("requirements and a Notice of Hearing will be sent to all parties.");
+
+        } else {
+            assertThat(
+                    callbackResponse.getConfirmationHeader().get())
+                    .contains("You have listed the case");
+
+            assertThat(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains("The hearing notice will be sent to all parties.<br>");
+
+            assertThat(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains("You don't need to do any more on this case.");
+        }
 
     }
+
 
     @Test
     void should_return_notification_failed_confirmation() {
@@ -67,7 +92,7 @@ class ListCaseConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
-        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS, String.class))
+        when(asylumCase.read(HOME_OFFICE_HEARING_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of("FAIL"));
 
         PostSubmitCallbackResponse callbackResponse =

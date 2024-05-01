@@ -11,6 +11,7 @@
         "replacements": {
           "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
           "appealType": "revocationOfProtection",
+          "appealTypeForDisplay": "revocationOfProtection",
           "appealGroundsRevocation": {
             "values": [
               "revocationHumanitarianProtection",
@@ -29,6 +30,7 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "appealType": "revocationOfProtection",
+        "appealTypeForDisplay": "revocationOfProtection",
         "appealGroundsForDisplay": [
           "revocationHumanitarianProtection",
           "revocationRefugeeConvention"

@@ -20,6 +20,8 @@ public enum HearingCentre {
     NOTTINGHAM("nottingham"),
     TAYLOR_HOUSE("taylorHouse"),
     BELFAST("belfast"),
+    HARMONDSWORTH("harmondsworth"),
+    YARLSWOOD("yarlswood"),
     REMOTE_HEARING("remoteHearing"),
     DECISION_WITHOUT_HEARING("decisionWithoutHearing");
 

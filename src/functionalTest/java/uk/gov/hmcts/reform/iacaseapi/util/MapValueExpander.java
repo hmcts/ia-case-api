@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -16,6 +17,8 @@ import uk.gov.hmcts.reform.iacaseapi.fixtures.DocumentManagementFilesFixture;
 public final class MapValueExpander {
 
     private static final Pattern TODAY_PATTERN = Pattern.compile("\\{\\$TODAY([+-]?\\d*?)}");
+    private static final Pattern TODAY_FULL_DATE_PATTERN = Pattern.compile("\\{\\$TODAY_FULL_DATE([+-]?\\d*?)}");
+    private static final Pattern TODAY_FULL_DATE_PATTERN_2 = Pattern.compile("\\{\\$TODAY_FULL_DATE_2([+-]?\\d*?)}");
     private static final Pattern ENVIRONMENT_PROPERTY_PATTERN = Pattern.compile("\\{\\$([a-zA-Z0-9].+?)}");
     public static final Properties ENVIRONMENT_PROPERTIES = new Properties(System.getProperties());
 
@@ -62,6 +65,14 @@ public final class MapValueExpander {
                 value = expandToday(value);
             }
 
+            if (TODAY_FULL_DATE_PATTERN.matcher(value).find()) {
+                value = expandTodayFullDate(value, TODAY_FULL_DATE_PATTERN, "dd MMMM yyyy");
+            }
+
+            if (TODAY_FULL_DATE_PATTERN_2.matcher(value).find()) {
+                value = expandTodayFullDate(value, TODAY_FULL_DATE_PATTERN_2, "d MMM yyyy");
+            }
+
             if (ENVIRONMENT_PROPERTY_PATTERN.matcher(value).find()) {
                 value = expandEnvironmentProperty(value);
             }
@@ -101,6 +112,40 @@ public final class MapValueExpander {
             String token = matcher.group(0);
 
             expandedValue = expandedValue.replace(token, now.toString());
+        }
+
+        return expandedValue;
+    }
+
+    private static String expandTodayFullDate(String value, Pattern pattern, String datePattern) {
+
+        Matcher matcher = pattern.matcher(value);
+
+        String expandedValue = value;
+
+        while (matcher.find()) {
+
+            char plusOrMinus = '+';
+            int dayAdjustment = 0;
+
+            if (matcher.groupCount() == 1
+                && !matcher.group(1).isEmpty()) {
+
+                plusOrMinus = matcher.group(1).charAt(0);
+                dayAdjustment = Integer.valueOf(matcher.group(1).substring(1));
+            }
+
+            LocalDate now = LocalDate.now();
+
+            if (plusOrMinus == '+') {
+                now = now.plusDays(dayAdjustment);
+            } else {
+                now = now.minusDays(dayAdjustment);
+            }
+
+            String token = matcher.group(0);
+
+            expandedValue = expandedValue.replace(token, now.format(DateTimeFormatter.ofPattern(datePattern)));
         }
 
         return expandedValue;

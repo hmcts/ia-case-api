@@ -35,11 +35,16 @@ class DocumentTagTest {
         assertEquals("appealReasons", DocumentTag.APPEAL_REASONS.toString());
         assertEquals("clarifyingQuestions", DocumentTag.CLARIFYING_QUESTIONS.toString());
         assertEquals("endAppealAutomatically", DocumentTag.END_APPEAL_AUTOMATICALLY.toString());
+        assertEquals("appealForm", DocumentTag.APPEAL_FORM.toString());
+        assertEquals("noticeOfDecisionUtTransfer", DocumentTag.NOTICE_OF_DECISION_UT_TRANSFER.toString());
+        assertEquals("internalAdaSuitability", DocumentTag.INTERNAL_ADA_SUITABILITY.toString());
+        assertEquals("upperTribunalTransferOrderDocument", DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT.toString());
+        assertEquals("iAUT2Form", DocumentTag.IAUT_2_FORM.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(28, DocumentTag.values().length);
+        assertEquals(35, DocumentTag.values().length);
     }
 }

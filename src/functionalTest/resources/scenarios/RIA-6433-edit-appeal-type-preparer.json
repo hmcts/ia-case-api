@@ -1,0 +1,28 @@
+{
+  "description": "RIA-6433 Set appealTypeForDisplay from appealType (not AAA). Post NABA release",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appealTypeForDisplay": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealTypeForDisplay": "protection"
+      }
+    }
+  }
+}

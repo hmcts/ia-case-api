@@ -1,0 +1,83 @@
+{
+  "description": "RIA-6856: Admins make an application for internal ADA case after submitting hearing requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 68562,
+      "eventId": "makeAnApplication",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "appealType": "refusalOfEu",
+          "adaHearingRequirementsToReview": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfEu",
+        "isAdmin": "Yes",
+        "isAcceleratedDetainedAppeal": "Yes",
+        "adaHearingRequirementsToReview": "Yes",
+        "makeAnApplicationTypes": {
+          "value": {
+            "code": "ADJOURN",
+            "label": "Adjourn"
+          },
+          "list_items": [
+            {
+              "code": "ADJOURN",
+              "label": "Adjourn"
+            },
+            {
+              "code": "EXPEDITE",
+              "label": "Expedite"
+            },
+            {
+              "code": "UPDATE_HEARING_REQUIREMENTS",
+              "label": "Update hearing requirements"
+            },
+            {
+              "code": "TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS",
+              "label": "Transfer out of accelerated detained appeals process"
+            },
+            {
+              "code": "UPDATE_APPEAL_DETAILS",
+              "label":"Update appeal details"
+            },
+            {
+              "code": "JUDGE_REVIEW_LO",
+              "label": "Judge's review of Legal Officer decision"
+            },
+            {
+              "code": "TIME_EXTENSION",
+              "label": "Time extension"
+            },
+            {
+              "code": "WITHDRAW",
+              "label": "Withdraw"
+            },
+            {
+              "code": "LINK_OR_UNLINK",
+              "label": "Link/unlink appeals"
+            },
+            {
+              "code": "OTHER",
+              "label": "Other"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+

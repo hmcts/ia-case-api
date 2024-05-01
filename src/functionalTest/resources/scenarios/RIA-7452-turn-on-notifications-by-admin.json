@@ -1,0 +1,33 @@
+{
+  "description": "RIA-7452 Turn on notifications an EJP transfer down appeal by admin",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "turnOnNotifications",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-ejp-appeal-submitted.json",
+        "replacements": {
+          "appealReferenceNumber": "PA/12345/2018",
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse",
+          "isNotificationTurnedOff": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ejp-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "PA/12345/2018",
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse"
+      }
+    }
+  }
+}
