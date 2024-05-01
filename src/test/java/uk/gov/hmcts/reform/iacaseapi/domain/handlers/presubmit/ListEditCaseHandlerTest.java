@@ -21,11 +21,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +41,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -102,7 +108,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
-        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
         verify(asylumCase, times(1)).clear(ATTENDING_TCW);
         verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
         verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
@@ -135,7 +141,7 @@ class ListEditCaseHandlerTest {
 
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
-        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
         verify(asylumCase, times(1)).clear(ATTENDING_TCW);
         verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
         verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
@@ -168,7 +174,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
-        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
         verify(asylumCase, times(1)).clear(ATTENDING_TCW);
         verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
         verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
@@ -201,7 +207,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
-        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
         verify(asylumCase, times(1)).clear(ATTENDING_TCW);
         verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
         verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
@@ -211,6 +217,30 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+    }
+
+    @Test
+    void should_keep_listing_length_and_list_case_hearing_centre_aligned() {
+
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(
+                new DynamicList(
+                    new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                    List.of(
+                        new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                        new Value("698118", "Bradford Tribunal Hearing Centre"),
+                        new Value("765324", "Taylor House Tribunal Hearing Centre"))
+                )
+            ));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.HATTON_CROSS);
     }
 
 
@@ -235,7 +265,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
-        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
         verify(asylumCase, times(1)).clear(ATTENDING_TCW);
         verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
         verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);

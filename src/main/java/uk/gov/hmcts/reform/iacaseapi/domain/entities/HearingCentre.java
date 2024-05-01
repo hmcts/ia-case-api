@@ -63,6 +63,14 @@ public enum HearingCentre {
             .findFirst();
     }
 
+    public static Optional<HearingCentre> fromEpimsId(
+        String epimsId
+    ) {
+        return stream(values())
+            .filter(v -> v.getEpimsId().equals(epimsId))
+            .findFirst();
+    }
+
     public String getValue() {
         return value;
     }
