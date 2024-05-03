@@ -41,6 +41,7 @@ public class LocationRefDataServiceTest {
                                                "Manchester Magistrates Court",
                                                "783803",
                                                "Y",
+                                               "Y",
                                                "Open",
                                                "The Court House, Minshull Street",
                                                "M1 3FS");
@@ -48,6 +49,7 @@ public class LocationRefDataServiceTest {
     private CourtVenue closedHearingCourtVenue = new CourtVenue("Manchester Magistrates",
                                                  "Manchester Magistrates Court",
                                                  "783803",
+                                                 "Y",
                                                  "Y",
                                                  "Closed",
                                                  "The Court House, Minshull Street",
@@ -57,6 +59,7 @@ public class LocationRefDataServiceTest {
                                                   "Birmingham Civil and Family Justice Centre",
                                                   "231596",
                                                   "N",
+                                                  "N",
                                                   "Open",
                                                   "Priory Courts, 33 Bull Street",
                                                   "B4 6DS");
@@ -64,6 +67,7 @@ public class LocationRefDataServiceTest {
     private CourtVenue closedNonHearingCourtVenue = new CourtVenue("Birmingham Civil and Family Justice Centre",
                                                     "Birmingham Civil and Family Justice Centre",
                                                     "231596",
+                                                    "N",
                                                     "N",
                                                     "Closed",
                                                     "Priory Courts, 33 Bull Street",

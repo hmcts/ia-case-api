@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,6 +34,8 @@ class HearingCentreTest {
         assertEquals("nthTyneMags", HearingCentre.NTH_TYNE_MAGS.toString());
         assertEquals("leedsMags", HearingCentre.LEEDS_MAGS.toString());
         assertEquals("alloaSherrif", HearingCentre.ALLOA_SHERRIF.toString());
+        assertEquals("arnhemHouse", HearingCentre.ARNHEM_HOUSE.toString());
+        assertEquals("crownHouse", HearingCentre.CROWN_HOUSE.toString());
         assertEquals("remoteHearing", HearingCentre.REMOTE_HEARING.toString());
         assertEquals("decisionWithoutHearing", HearingCentre.DECISION_WITHOUT_HEARING.toString());
     }
@@ -62,6 +65,8 @@ class HearingCentreTest {
         assertEquals(HearingCentre.NTH_TYNE_MAGS, HearingCentre.from("nthTyneMags").get());
         assertEquals(HearingCentre.LEEDS_MAGS, HearingCentre.from("leedsMags").get());
         assertEquals(HearingCentre.ALLOA_SHERRIF, HearingCentre.from("alloaSherrif").get());
+        assertEquals(HearingCentre.ARNHEM_HOUSE, HearingCentre.from("arnhemHouse").get());
+        assertEquals(HearingCentre.CROWN_HOUSE, HearingCentre.from("crownHouse").get());
         assertEquals(HearingCentre.REMOTE_HEARING, HearingCentre.from("remoteHearing").get());
         assertEquals(HearingCentre.DECISION_WITHOUT_HEARING, HearingCentre.from("decisionWithoutHearing").get());
     }
@@ -72,6 +77,7 @@ class HearingCentreTest {
         "bradford, 698118",
         "coventry, 787030",
         "glasgowTribunalsCentre, 366559",
+        "glasgow, 366559",
         "hattonCross, 386417",
         "manchester, 512401",
         "newcastle, 366796",
@@ -88,15 +94,22 @@ class HearingCentreTest {
         "manchesterMags, 783803",
         "nthTyneMags, 443257",
         "leedsMags, 569737",
-        "alloaSherrif, 999971"
+        "alloaSherrif, 999971",
+        "arnhemHouse, 324339",
+        "crownHouse, 420587"
     })
     void should_return_epims_id_or_value_by_using_mapping_list(String value, String epimsId) {
         assertEquals(epimsId, HearingCentre.getEpimsIdByValue(value));
-        assertEquals(value, HearingCentre.getValueByEpimsId(epimsId));
+
+        boolean isGlasgowListCaseHearingCentre =
+            Objects.equals(HearingCentre.GLASGOW_TRIBUNALS_CENTRE.getValue(), value);
+        String actualValue = HearingCentre.fromEpimsId(epimsId, isGlasgowListCaseHearingCentre)
+            .map(HearingCentre::getValue).orElse(null);
+        assertEquals(value, actualValue);
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(25, HearingCentre.values().length);
+        assertEquals(27, HearingCentre.values().length);
     }
 }

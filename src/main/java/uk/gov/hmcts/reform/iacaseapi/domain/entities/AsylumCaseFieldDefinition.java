@@ -2298,21 +2298,28 @@ public enum AsylumCaseFieldDefinition {
 
     DATE_MARKED_AS_ADA(
             "dateMarkedAsAda", new TypeReference<String>(){}),
+
     MARK_APPEAL_AS_ADA_EXPLANATION(
         "markAppealAsAdaExplanation", new TypeReference<String>(){}),
+
     REASON_APPEAL_MARKED_AS_ADA(
         "reasonAppealMarkedAsAda", new TypeReference<String>(){}),
 
     ADA_HEARING_REQUIREMENTS_SUBMITTED(
             "adaHearingRequirementsSubmitted", new TypeReference<YesOrNo>(){}),
+
     UT_APPEAL_REFERENCE_NUMBER(
             "utAppealReferenceNumber", new TypeReference<String>() {}),
+
     UT_INSTRUCTION_DATE(
             "utInstructionDate", new TypeReference<String>(){}),
+
     NOTICE_OF_DECISION_UT_TRANSFER_DOCUMENT(
         "noticeOfDecisionUtTransferDocument", new TypeReference<Document>(){}),
+
     APPEAL_READY_FOR_UT_TRANSFER(
             "appealReadyForUtTransfer", new TypeReference<YesOrNo>(){}),
+
     APPEAL_READY_FOR_UT_TRANSFER_OUTCOME(
             "appealReadyForUtTransferOutcome", new TypeReference<String>(){}),
 
@@ -2622,7 +2629,7 @@ public enum AsylumCaseFieldDefinition {
     REHEARD_HEARING_DOCUMENTS_COLLECTION(
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
-    ;
+    HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

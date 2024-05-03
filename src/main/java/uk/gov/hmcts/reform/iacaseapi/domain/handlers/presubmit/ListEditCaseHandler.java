@@ -103,7 +103,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             asylumCase.read(LISTING_LOCATION, DynamicList.class)
                 .ifPresent(dynamicList -> {
                     String epimsId = dynamicList.getValue().getCode();
-                    HearingCentre.fromEpimsId(epimsId)
+                    HearingCentre.fromEpimsId(epimsId, true)
                         .ifPresent(hc ->
                             asylumCase.write(LIST_CASE_HEARING_CENTRE, hc));
                 });

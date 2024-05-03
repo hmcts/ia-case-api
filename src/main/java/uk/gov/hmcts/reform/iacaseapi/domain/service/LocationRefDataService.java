@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -34,7 +33,15 @@ public class LocationRefDataService {
     public DynamicList getHearingLocationsDynamicList() {
 
         return new DynamicList(new Value("", ""), getCourtVenues().stream()
-            .filter(this::isOpenHearingLocation)
+            .filter(courtVenue -> isOpenLocation(courtVenue) && isCaseManagementLocation(courtVenue))
+            .map(courtVenue -> new Value(courtVenue.getEpimmsId(), courtVenue.getCourtName()))
+            .toList());
+    }
+
+    public DynamicList getHearingCentreDynamicList() {
+
+        return new DynamicList(new Value("", ""), getCourtVenues().stream()
+            .filter(courtVenue -> isOpenLocation(courtVenue) && isHearingLocation(courtVenue))
             .map(courtVenue -> new Value(courtVenue.getEpimmsId(), courtVenue.getCourtName()))
             .toList());
     }
@@ -53,9 +60,16 @@ public class LocationRefDataService {
         this.serviceId = serviceId;
     }
 
-    private boolean isOpenHearingLocation(CourtVenue courtVenue) {
-        return StringUtils.equals(courtVenue.getCourtStatus(), OPEN)
-               && StringUtils.equals(courtVenue.getIsHearingLocation(), Y);
+    private boolean isOpenLocation(CourtVenue courtVenue) {
+        return Objects.equals(courtVenue.getCourtStatus(), OPEN);
+    }
+
+    private boolean isHearingLocation(CourtVenue courtVenue) {
+        return Objects.equals(courtVenue.getIsHearingLocation(), Y);
+    }
+
+    private boolean isCaseManagementLocation(CourtVenue courtVenue) {
+        return Objects.equals(courtVenue.getIsCaseManagementLocation(), Y);
     }
 
     public String getHearingCentreAddress(HearingCentre hearingCentre) {
@@ -64,7 +78,7 @@ public class LocationRefDataService {
         }
         return getCourtVenues()
             .stream()
-            .filter(courtVenue -> StringUtils.equals(courtVenue.getEpimmsId(), hearingCentre.getEpimsId()))
+            .filter(courtVenue -> Objects.equals(courtVenue.getEpimmsId(), hearingCentre.getEpimsId()))
             .findFirst()
             .map(this::assembleCourtVenueAddress)
             .orElse("");

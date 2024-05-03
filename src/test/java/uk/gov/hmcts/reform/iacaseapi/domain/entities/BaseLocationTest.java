@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +8,7 @@ class BaseLocationTest {
 
     @Test
     void has_correct_asylum_appeal_types_description() {
+
         assertEquals("231596", BaseLocation.BIRMINGHAM.getId());
         assertEquals("698118", BaseLocation.BRADFORD.getId());
         assertEquals("198444", BaseLocation.GLASGOW_DEPRECATED.getId());
@@ -21,10 +22,13 @@ class BaseLocationTest {
         assertEquals("324339", BaseLocation.ARNHEM_HOUSE.getId());
         assertEquals("28837", BaseLocation.HARMONDSWORTH.getId());
         assertEquals("649000", BaseLocation.YARLS_WOOD.getId());
+        assertEquals("999971", BaseLocation.ALLOA_SHERRIF.getId());
+        assertEquals("420587", BaseLocation.CROWN_HOUSE.getId());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(13, BaseLocation.values().length);
+
+        assertEquals(15, BaseLocation.values().length);
     }
 }
