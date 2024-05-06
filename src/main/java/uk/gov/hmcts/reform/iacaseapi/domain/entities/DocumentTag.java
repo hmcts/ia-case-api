@@ -44,15 +44,6 @@ public enum DocumentTag {
     UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT("upperTribunalTransferOrderDocument"),
     IAUT_2_FORM("iAUT2Form"),
 
-
-    ADA_SUITABILITY("adaSuitability"),
-    INTERNAL_ADA_SUITABILITY("internalAdaSuitability"),
-    NOTICE_OF_DECISION_UT_TRANSFER("noticeOfDecisionUtTransfer"),
-    INTERNAL_EDIT_APPEAL_LETTER("internalEditAppealLetter"),
-    UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT("upperTribunalTransferOrderDocument"),
-    IAUT_2_FORM("iAUT2Form"),
-
-
     @JsonEnumDefaultValue
     NONE("");
 
