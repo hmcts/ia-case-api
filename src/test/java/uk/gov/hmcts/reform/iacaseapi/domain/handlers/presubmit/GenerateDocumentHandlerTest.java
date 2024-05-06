@@ -162,8 +162,6 @@ class GenerateDocumentHandlerTest {
         applicationStatus
     )));
 
-    private LocalDate now = LocalDate.now();
-
     private GenerateDocumentHandler generateDocumentHandler;
 
     @BeforeEach
