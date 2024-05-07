@@ -347,6 +347,7 @@ ia-bail-case-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
     # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
+    applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -392,6 +393,8 @@ ia-bail-case-api:
             alias: LAUNCH_DARKLY_SDK_KEY
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
@@ -508,6 +511,7 @@ ia-aip-frontend:
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
+      TIMELINE_ENABLED: true
     keyVaults:
       ia:
         secrets:
@@ -711,6 +715,8 @@ ccd:
       environment:
         DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
+        DATA_STORE_DB_USERNAME: hmcts
+        DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -1021,6 +1027,7 @@ em-stitching:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
+      SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
