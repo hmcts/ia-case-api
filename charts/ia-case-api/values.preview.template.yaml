@@ -9,6 +9,7 @@ java:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
@@ -353,14 +354,18 @@ ia-bail-case-api:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
-      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
       ia:
         resourceGroup: ia
