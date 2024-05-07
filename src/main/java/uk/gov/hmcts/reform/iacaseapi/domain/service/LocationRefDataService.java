@@ -33,7 +33,7 @@ public class LocationRefDataService {
     public DynamicList getHearingLocationsDynamicList() {
 
         return new DynamicList(new Value("", ""), getCourtVenues().stream()
-            .filter(courtVenue -> isOpenLocation(courtVenue) && isCaseManagementLocation(courtVenue))
+            .filter(courtVenue -> isOpenLocation(courtVenue) && isHearingLocation(courtVenue))
             .map(courtVenue -> new Value(courtVenue.getEpimmsId(), courtVenue.getCourtName()))
             .toList());
     }
@@ -41,7 +41,9 @@ public class LocationRefDataService {
     public DynamicList getHearingCentreDynamicList() {
 
         return new DynamicList(new Value("", ""), getCourtVenues().stream()
-            .filter(courtVenue -> isOpenLocation(courtVenue) && isHearingLocation(courtVenue))
+            .filter(courtVenue -> isOpenLocation(courtVenue)
+                                  && isHearingLocation(courtVenue)
+                                  && isCaseManagementLocation(courtVenue))
             .map(courtVenue -> new Value(courtVenue.getEpimmsId(), courtVenue.getCourtName()))
             .toList());
     }
@@ -60,6 +62,18 @@ public class LocationRefDataService {
         this.serviceId = serviceId;
     }
 
+    public boolean isCaseManagementLocation(String epimsId) {
+
+        return getCourtVenues()
+            .stream()
+            .filter(this::isCaseManagementLocation)
+            .anyMatch(courtVenue -> Objects.equals(courtVenue.getEpimmsId(), epimsId));
+    }
+
+    private boolean isCaseManagementLocation(CourtVenue courtVenue) {
+        return Objects.equals(courtVenue.getIsCaseManagementLocation(), Y);
+    }
+
     private boolean isOpenLocation(CourtVenue courtVenue) {
         return Objects.equals(courtVenue.getCourtStatus(), OPEN);
     }
@@ -68,17 +82,19 @@ public class LocationRefDataService {
         return Objects.equals(courtVenue.getIsHearingLocation(), Y);
     }
 
-    private boolean isCaseManagementLocation(CourtVenue courtVenue) {
-        return Objects.equals(courtVenue.getIsCaseManagementLocation(), Y);
-    }
-
     public String getHearingCentreAddress(HearingCentre hearingCentre) {
         if (Objects.equals(hearingCentre, REMOTE_HEARING)) {
             return "Remote hearing";
         }
+
+        return getHearingCentreAddress(hearingCentre.getEpimsId());
+    }
+
+    public String getHearingCentreAddress(String epimsId) {
+
         return getCourtVenues()
             .stream()
-            .filter(courtVenue -> Objects.equals(courtVenue.getEpimmsId(), hearingCentre.getEpimsId()))
+            .filter(courtVenue -> Objects.equals(courtVenue.getEpimmsId(), epimsId))
             .findFirst()
             .map(this::assembleCourtVenueAddress)
             .orElse("");

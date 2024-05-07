@@ -74,7 +74,9 @@ public enum HearingCentre {
             }
         }
 
-        return Optional.of(epimsIdMapping.get(epimsId));
+        return epimsIdMapping.containsKey(epimsId)
+            ? Optional.of(epimsIdMapping.get(epimsId))
+            : Optional.empty();
     }
 
     public String getValue() {

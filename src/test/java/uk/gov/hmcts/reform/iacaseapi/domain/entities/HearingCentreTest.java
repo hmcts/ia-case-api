@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
@@ -106,6 +107,12 @@ class HearingCentreTest {
         String actualValue = HearingCentre.fromEpimsId(epimsId, isGlasgowListCaseHearingCentre)
             .map(HearingCentre::getValue).orElse(null);
         assertEquals(value, actualValue);
+    }
+
+    @Test
+    void fromEpisId_should_return_empty_optional() {
+
+        assertTrue(HearingCentre.fromEpimsId("1111111111111111", false).isEmpty());
     }
 
     @Test

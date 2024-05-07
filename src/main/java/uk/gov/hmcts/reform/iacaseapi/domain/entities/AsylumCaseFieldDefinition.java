@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
@@ -2126,9 +2125,6 @@ public enum AsylumCaseFieldDefinition {
 
     SPONSOR_PARTY_ID(
             "sponsorPartyId", new TypeReference<String>() {}),
-
-    EPIMS_ID(
-            "epimsId", new TypeReference<String>() {}),
 
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),

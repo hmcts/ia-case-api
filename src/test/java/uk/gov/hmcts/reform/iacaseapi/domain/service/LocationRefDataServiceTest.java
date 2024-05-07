@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.BIRMINGHAM;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.REMOTE_HEARING;
@@ -38,40 +40,50 @@ public class LocationRefDataServiceTest {
     private CourtLocationCategory locationCategory;
 
     private CourtVenue openHearingCourtVenue = new CourtVenue("Manchester Magistrates",
-                                               "Manchester Magistrates Court",
-                                               "783803",
-                                               "Y",
-                                               "Y",
-                                               "Open",
-                                               "The Court House, Minshull Street",
-                                               "M1 3FS");
+        "Manchester Magistrates Court",
+        "783803",
+        "Y",
+        "N",
+        "Open",
+        "The Court House, Minshull Street",
+        "M1 3FS");
+
+    private CourtVenue openHearingCourtVenueAndCaseManagementLocation = new CourtVenue(
+        "Newcastle Civil & Family Courts and Tribunals Centre",
+        "Newcastle Civil And Family Courts And Tribunals Centre",
+        "366796",
+        "Y",
+        "Y",
+        "Open",
+        "Barras Bridge, Newcastle-Upon-Tyne",
+        "NE1 8QF");
 
     private CourtVenue closedHearingCourtVenue = new CourtVenue("Manchester Magistrates",
-                                                 "Manchester Magistrates Court",
-                                                 "783803",
-                                                 "Y",
-                                                 "Y",
-                                                 "Closed",
-                                                 "The Court House, Minshull Street",
-                                                 "M1 3FS");
+        "Manchester Magistrates Court",
+        "783803",
+        "Y",
+        "N",
+        "Closed",
+        "The Court House, Minshull Street",
+        "M1 3FS");
 
     private CourtVenue openNonHearingCourtVenue = new CourtVenue("Birmingham Civil and Family Justice Centre",
-                                                  "Birmingham Civil and Family Justice Centre",
-                                                  "231596",
-                                                  "N",
-                                                  "N",
-                                                  "Open",
-                                                  "Priory Courts, 33 Bull Street",
-                                                  "B4 6DS");
+        "Birmingham Civil and Family Justice Centre",
+        "231596",
+        "N",
+        "N",
+        "Open",
+        "Priory Courts, 33 Bull Street",
+        "B4 6DS");
 
     private CourtVenue closedNonHearingCourtVenue = new CourtVenue("Birmingham Civil and Family Justice Centre",
-                                                    "Birmingham Civil and Family Justice Centre",
-                                                    "231596",
-                                                    "N",
-                                                    "N",
-                                                    "Closed",
-                                                    "Priory Courts, 33 Bull Street",
-                                                    "B4 6DS");
+        "Birmingham Civil and Family Justice Centre",
+        "231596",
+        "N",
+        "N",
+        "Closed",
+        "Priory Courts, 33 Bull Street",
+        "B4 6DS");
 
     @Mock
     DynamicList dynamicList;
@@ -103,7 +115,8 @@ public class LocationRefDataServiceTest {
             openHearingCourtVenue,
             openNonHearingCourtVenue,
             closedHearingCourtVenue,
-            closedNonHearingCourtVenue)
+            closedNonHearingCourtVenue,
+            openHearingCourtVenueAndCaseManagementLocation)
         );
     }
 
@@ -112,9 +125,35 @@ public class LocationRefDataServiceTest {
 
         dynamicList = new DynamicList(new Value("", ""),
             List.of(new Value(openHearingCourtVenue.getEpimmsId(),
-                openHearingCourtVenue.getCourtName())));
+                openHearingCourtVenue.getCourtName()),
+                new Value(openHearingCourtVenueAndCaseManagementLocation.getEpimmsId(),
+                    openHearingCourtVenueAndCaseManagementLocation.getCourtName())));
 
         assertEquals(dynamicList, locationRefDataService.getHearingLocationsDynamicList());
+    }
+
+    @Test
+    void should_return_dynamicList_when_getHearingCentreDynamicList() {
+
+        dynamicList = new DynamicList(new Value("", ""),
+            List.of(new Value(openHearingCourtVenueAndCaseManagementLocation.getEpimmsId(),
+                openHearingCourtVenueAndCaseManagementLocation.getCourtName())));
+
+        assertEquals(dynamicList, locationRefDataService.getHearingCentreDynamicList());
+    }
+
+    @Test
+    void isCaseManagementLocation_should_return_true() {
+
+        assertTrue(locationRefDataService
+            .isCaseManagementLocation(openHearingCourtVenueAndCaseManagementLocation.getEpimmsId()));
+    }
+
+    @Test
+    void isCaseManagementLocation_should_return_false() {
+
+        assertFalse(locationRefDataService
+            .isCaseManagementLocation(openHearingCourtVenue.getEpimmsId()));
     }
 
     @Test
