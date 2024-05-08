@@ -1,7 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_EDIT_LISTING_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMEND_RESPONSE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_RESPONSE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -48,6 +56,15 @@ public class ReviewAmendDirectionHandler implements PreSubmitCallbackHandler<Asy
             asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.YES);
+
+            if (appealTransferredOutOfAda(asylumCase)) {
+                asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
+
+                // no need to review hearing requirements if submitted when case was ADA
+                if (hasSubmittedAdaHearingRequirements(asylumCase)) {
+                    asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+                }
+            }
         } else {
             asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
@@ -56,5 +73,17 @@ public class ReviewAmendDirectionHandler implements PreSubmitCallbackHandler<Asy
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean hasSubmittedAdaHearingRequirements(AsylumCase asylumCase) {
+        return asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+    }
+
+    private boolean appealTransferredOutOfAda(AsylumCase asylumCase) {
+        return asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
     }
 }

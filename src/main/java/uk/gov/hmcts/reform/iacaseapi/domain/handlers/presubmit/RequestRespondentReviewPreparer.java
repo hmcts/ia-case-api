@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -13,20 +15,28 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @Component
 public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int requestRespondentReviewDueInDays;
+    private final int requestRespondentReviewDueInDaysForAda;
     private final DateProvider dateProvider;
+    private final DueDateService dueDateService;
 
     public RequestRespondentReviewPreparer(
         @Value("${requestRespondentReview.dueInDays}") int requestRespondentReviewDueInDays,
-        DateProvider dateProvider
+        @Value("${requestRespondentReviewAda.dueInDays}") int requestRespondentReviewDueInDaysForAda,
+        DateProvider dateProvider,
+        DueDateService dueDateService
     ) {
         this.requestRespondentReviewDueInDays = requestRespondentReviewDueInDays;
+        this.requestRespondentReviewDueInDaysForAda = requestRespondentReviewDueInDaysForAda;
         this.dateProvider = dateProvider;
+        this.dueDateService = dueDateService;
     }
 
     public boolean canHandle(
@@ -70,13 +80,11 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
         );
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
-
-        asylumCase.write(SEND_DIRECTION_DATE_DUE,
-            dateProvider
-                .now()
-                .plusDays(requestRespondentReviewDueInDays)
-                .toString()
-        );
+        
+        LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
+                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentReviewDueInDaysForAda).toLocalDate()
+                : dateProvider.now().plusDays(requestRespondentReviewDueInDays);
+        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
         asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
 

@@ -1,0 +1,27 @@
+{
+  "description": "RIA-6604 ada suitability review confirmation - suitable",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "adaSuitabilityReview",
+      "state": "respondentReview",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-ada-appeal-submitted.json",
+        "replacements": {
+          "suitabilityReviewJudge": "Judge x",
+          "suitabilityReviewDecision": "suitable",
+          "suitabilityReviewReason": "Reason1"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Appeal determined suitable to continue as ADA",
+      "body": "#### What happens next\n\nAll parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>"
+    }
+  }
+}

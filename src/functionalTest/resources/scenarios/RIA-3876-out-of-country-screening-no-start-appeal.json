@@ -1,6 +1,5 @@
 {
   "description": "RIA-3876 Out of country screening, living in UK for Start appeal",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

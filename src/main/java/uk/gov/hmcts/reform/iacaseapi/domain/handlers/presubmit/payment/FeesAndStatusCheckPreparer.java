@@ -103,6 +103,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                     case EA:
                     case HU:
                     case EU:
+                    case AG:
                         if (paymentStatus.equals(PAID)
                             || remissionPartiallyApproved
                             || remissionApproved) {

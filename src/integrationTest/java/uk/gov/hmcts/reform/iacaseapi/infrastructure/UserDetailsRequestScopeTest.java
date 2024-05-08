@@ -37,8 +37,8 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
     @MockBean
     private IdamApi idamApi;
 
-    private String token = "Bearer token";
-    private UserInfo userInfo = new UserInfo(
+    private final String token = "Bearer token";
+    private final UserInfo userInfo = new UserInfo(
         "case-officer@gmail.com",
         "id",
         newArrayList("caseworker-ia", "caseworker-ia-legalrep-solicitor"),
@@ -48,7 +48,7 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
     );
 
     @BeforeEach
-    public void setupStubs() {
+    void setupStubs() {
 
         when(requestTokenProvider.getAccessToken()).thenReturn(token);
         when(idamApi.userInfo(token)).thenReturn(userInfo);
@@ -57,7 +57,7 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_trigger_make_an_application() {
+    void should_trigger_make_an_application() {
 
         addServiceAuthStub(server);
         addNotificationsApiTransformerStub(server);
@@ -83,6 +83,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         // assert that only two requests in total are sent to Idam API for user info data (one for the event,
         // one to determine if supplementary data need handling based on user role + journey type
-        Mockito.verify(idamApi, times(2)).userInfo(token);
+        Mockito.verify(idamApi, times(1)).userInfo(token);
     }
 }

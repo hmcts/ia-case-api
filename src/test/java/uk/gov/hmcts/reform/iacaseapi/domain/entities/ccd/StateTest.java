@@ -9,6 +9,7 @@ class StateTest {
     @Test
     void has_correct_values() {
         assertEquals("appealStarted", State.APPEAL_STARTED.toString());
+        assertEquals("appealStartedByAdmin", State.APPEAL_STARTED_BY_ADMIN.toString());
         assertEquals("appealSubmitted", State.APPEAL_SUBMITTED.toString());
         assertEquals("appealSubmittedOutOfTime", State.APPEAL_SUBMITTED_OUT_OF_TIME.toString());
         assertEquals("pendingPayment", State.PENDING_PAYMENT.toString());

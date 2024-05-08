@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
@@ -97,8 +96,6 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, YES);
 
         final long caseId = callback.getCaseDetails().getId();
         boolean holdFieldsForInUkChange = true;

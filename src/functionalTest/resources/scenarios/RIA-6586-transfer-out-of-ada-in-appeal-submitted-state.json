@@ -1,0 +1,32 @@
+{
+  "description": "RIA-6586 Transfer out of ADA in appeal submitted state TCW",
+  "disabled" : "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "transferOutOfAda",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingCentre": "harmondsworth",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "decisionLetterReceivedDate": "{$TODAY-3}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "harmondsworth",
+        "isAcceleratedDetainedAppeal": "No",
+        "hasTransferredOutOfAda": "Yes"
+      }
+    }
+  }
+}

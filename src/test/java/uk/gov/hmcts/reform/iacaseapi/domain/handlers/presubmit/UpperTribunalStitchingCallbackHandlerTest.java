@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -96,6 +98,17 @@ class UpperTribunalStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).read(UPPER_TRIBUNAL_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.UPPER_TRIBUNAL_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.UPPER_TRIBUNAL_BUNDLE));
+    }
+
+    @Test
+    void handler_should_not_send_notification_when_is_notification_turned_off_() {
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                upperTribunalStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(response).isNotNull();
+        verify(notificationSender, times(0)).send(callback);
     }
 
     @Test
