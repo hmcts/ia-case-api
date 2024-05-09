@@ -74,7 +74,7 @@ class Settings:
         "legalrepresentativeemailaddress": "email@email.co.uk",
         "remotevideocalltribunalresponse": "redacted",
         "appellantnationalitiesdescription": "France",
-        "language": "English",
+        "language": "Arabic",
         "languagedialect": "redacted",
         "legalaidaccountnumber": "OG123V1",
         "appellantphonenumber": "07451111111",
@@ -97,7 +97,10 @@ class Settings:
         "applicationOutOfTimeExplanation": "redacted",
         "caseName": 'redacted',
         "additionalRequestsDescription": "redacted",
-        "uploadedHomeOfficeBundleDocs": "redacted.pdf"
+        "uploadedHomeOfficeBundleDocs": "redacted.pdf",
+        "applicantFullName": "redacted",
+        "applicantGivenNames": "redacted",
+        "applicantDateOfBirth": "1990-01-10"
     }
 
     csv_rows_to_redact = {
