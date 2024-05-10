@@ -56,7 +56,6 @@ public class Callback<T extends CaseData> {
     public Optional<CaseDetails<T>> getCaseDetailsBefore() {
 
         return caseDetailsBefore;
-
     }
 
     public String getPageId() {
@@ -66,4 +65,5 @@ public class Callback<T extends CaseData> {
     public void setPageId(String pageId) {
         this.pageId = pageId;
     }
+
 }

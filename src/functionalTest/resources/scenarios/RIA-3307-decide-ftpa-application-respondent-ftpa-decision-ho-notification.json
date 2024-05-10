@@ -1,34 +1,29 @@
 {
-  "description": "RIA-3651 Resident judge record respondent FTPA decision (Reheard Rule 32) - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
+  "description": "RIA-3307 Decide FTPA application respondent decision - HO notification",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
     "input": {
       "id": 1234,
-      "eventId": "residentJudgeFtpaDecision",
+      "eventId": "decideFtpaApplication",
       "state": "ftpaSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "ftpaApplicantType": "respondent",
           "ftpaRespondentSubmitted": "Yes",
-          "ftpaRespondentRjDecisionOutcomeType": "reheardRule32",
+          "ftpaRespondentRjDecisionOutcomeType": "granted",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse",
-          "ftpaRespondentDecisionDocument": [
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
-                },
-                "description": "Some FTPA respondent decision and reasons"
-              }
-            }
-          ],
+          "ftpaApplicationRespondentDocument": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
+          },
           "ftpaRespondentNoticeDocument": [
             {
               "id": "2",
@@ -44,6 +39,15 @@
           ],
           "allFtpaRespondentDecisionDocuments": []
         }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentSubmitted": "Yes",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
+        }
       }
     }
   },
@@ -53,8 +57,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isReheardAppealEnabled": "Yes",
-        "caseFlagSetAsideReheardExists": "Yes",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "ftpaRespondentDecisionDate": "{$TODAY}",
         "isFtpaRespondentDecided": "Yes",
         "allFtpaRespondentDecisionDocs": [
@@ -66,7 +71,7 @@
                 "document_binary_url": "http://document-store/BBB/binary",
                 "document_filename": "some-ftpa-respondent-decision-and-reasons.pdf"
               },
-              "description": "Some FTPA respondent decision and reasons",
+              "description": "ftpaDecisionsAndReasonsDocumentDescription",
               "dateUploaded": "{$TODAY}",
               "tag": "ftpaDecisionAndReasons"
             }
@@ -85,7 +90,8 @@
             }
           }
         ],
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
       }
     }
   }

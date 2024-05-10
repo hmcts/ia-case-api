@@ -64,8 +64,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
-    #    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-343
+    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-352 #:pr-259 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -99,8 +98,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-#    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-816
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-808 #pr-808 or relevant PR number to change DLRM
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -149,8 +147,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
-#    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1081
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1069 #pr-1069 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -345,7 +342,7 @@ ia-bail-case-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
-    # image: hmctspublic.azurecr.io/ia/bail-case-api:pr-360
+    applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -353,14 +350,18 @@ ia-bail-case-api:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
-      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
       ia:
         resourceGroup: ia
@@ -395,7 +396,7 @@ ia-timed-event-service:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
-    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-93
+    #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:
@@ -423,8 +424,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
-#    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-373
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-375 #pr-375 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -450,31 +450,31 @@ ia-home-office-integration-api:
           - ia-config-validator-secret
 
 ia-case-access-api:
-   enabled: true
-   java:
-     image: hmctspublic.azurecr.io/ia/case-access-api:latest
-     # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
-     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
-     keyVaults:
-       ia:
-         resourceGroup: ia
-         secrets:
-           - idam-client-id
-           - idam-secret
-           - idam-redirect-uri
-           - ia-system-access-username
-           - ia-system-access-password
-           - s2s-secret
-           - s2s-microservice
-           - AppInsightsInstrumentationKey
-           - ia-config-validator-secret
+  enabled: true
+  java:
+    image: hmctspublic.azurecr.io/ia/case-access-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
+    ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - idam-client-id
+          - idam-secret
+          - idam-redirect-uri
+          - ia-system-access-username
+          - ia-system-access-password
+          - s2s-secret
+          - s2s-microservice
+          - AppInsightsInstrumentationKey
+          - ia-config-validator-secret
 
 ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-966
+    #    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1038
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -503,6 +503,7 @@ ia-aip-frontend:
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
+      TIMELINE_ENABLED: true
     keyVaults:
       ia:
         secrets:
@@ -1160,7 +1161,7 @@ wa:
       devcpuLimits: 2
       devmemoryLimits: 4Gi
       environment:
-         DB_READER_USERNAME: "hmcts"
+        DB_READER_USERNAME: "hmcts"
   wa:
     postgresql:
       enabled: false

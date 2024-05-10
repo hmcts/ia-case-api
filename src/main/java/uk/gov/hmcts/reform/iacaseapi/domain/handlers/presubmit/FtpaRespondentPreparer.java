@@ -73,10 +73,8 @@ public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCa
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (isFtpaSetAsideAndReheard) {
-            asylumCase.clear(FTPA_RESPONDENT_GROUNDS_DOCUMENTS);
-            asylumCase.clear(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS);
-        }
+        asylumCase.clear(FTPA_RESPONDENT_GROUNDS_DOCUMENTS);
+        asylumCase.clear(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS);
 
         final Optional<String> ftpaApplicationDeadline =
                 asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE, String.class);
