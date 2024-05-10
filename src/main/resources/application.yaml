@@ -282,6 +282,7 @@ security:
       - "updateS94bStatus"
     caseworker-ia-admofficer:
       - "startAppeal"
+      - "submitAppeal"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
