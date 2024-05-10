@@ -179,7 +179,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
             .ifPresent(paymentOption -> {
 
-                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE)&& !isInternalCase(asylumCase)) {
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
 
                     postSubmitCallbackResponse.setConfirmationBody(
                         submissionOutOfTime == NO
