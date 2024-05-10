@@ -99,7 +99,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
 
-        if(isInternalCase(asylumCase)){
+        if (isInternalCase(asylumCase)) {
             postSubmitResponse.setConfirmationHeader(DEFAULT_HEADER_ADMIN);
             setAdminConfirmation(postSubmitResponse);
             return postSubmitResponse;
@@ -268,7 +268,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         );
     }
 
-    private void setAdminConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse){
+    private void setAdminConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse) {
         String adminConfirmationBody = WHAT_HAPPENS_NEXT_LABEL +
             "A legal officer will check the appeal is valid and all parties will be notified of "
             + "next steps.\n\n";

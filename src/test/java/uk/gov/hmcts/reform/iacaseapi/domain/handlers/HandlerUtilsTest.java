@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.io.IOException;
@@ -100,15 +99,4 @@ class HandlerUtilsTest {
         assertFalse(HandlerUtils.isInternalCase(asylumCase));
     }
 
-    @Test
-    void isEjpCase_should_return_true() {
-        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        assertTrue(HandlerUtils.isEjpCase(asylumCase));
-    }
-
-    @Test
-    void isEjpCase_should_return_false() {
-        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        assertFalse(HandlerUtils.isEjpCase(asylumCase));
-    }
 }

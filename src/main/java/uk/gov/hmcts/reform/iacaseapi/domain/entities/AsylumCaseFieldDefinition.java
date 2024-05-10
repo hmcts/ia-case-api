@@ -1592,8 +1592,6 @@ public enum AsylumCaseFieldDefinition {
 
     S94B_STATUS(
         "s94bStatus", new TypeReference<YesOrNo>(){}),
-    IS_EJP(
-        "isEjp", new TypeReference<YesOrNo>() {}),
     ;
 
     private final String value;
