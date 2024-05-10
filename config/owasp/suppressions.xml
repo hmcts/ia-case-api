@@ -13,7 +13,7 @@
 
             We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
             Try to remove it when a dependencycheck upgrade becomes available.
-            If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
+            If it still happens, check that we do not use hutool-json and json-java. If we don't, extend the suppression date by another year.
             ]]</notes>
         <cve>CVE-2022-45688</cve>
         <cve>CVE-2023-5072</cve>
