@@ -64,7 +64,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-352 #:pr-259 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -98,7 +98,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-808 #pr-808 or relevant PR number to change DLRM
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -147,7 +147,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1069 #pr-1069 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -424,7 +424,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-375 #pr-375 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -473,8 +473,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    #    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1038
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
