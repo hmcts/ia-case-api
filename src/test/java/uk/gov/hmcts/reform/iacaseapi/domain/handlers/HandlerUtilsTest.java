@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -83,5 +86,29 @@ class HandlerUtilsTest {
         String filePath = "/readJsonNonArray.json";
         List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
         assertEquals(new ArrayList<>(), result);
+    }
+
+    @Test
+    void isInternalCase_should_return_true() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isInternalCase(asylumCase));
+    }
+
+    @Test
+    void isInternalCase_should_return_false() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isInternalCase(asylumCase));
+    }
+
+    @Test
+    void isEjpCase_should_return_true() {
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isEjpCase(asylumCase));
+    }
+
+    @Test
+    void isEjpCase_should_return_false() {
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isEjpCase(asylumCase));
     }
 }

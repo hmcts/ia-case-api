@@ -75,10 +75,10 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         }
 
         String submitAppealUrl = "/trigger/submitAppeal";
-        String submitLabel = "submit your appeal";
+        String submitLabel = "submit the appeal";
 
 
-        postSubmitResponse.setConfirmationHeader("# Your appeal details have been saved\n# You still need to submit it");
+        postSubmitResponse.setConfirmationHeader("# The appeal has been saved\n# You still need to submit it");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
             + "If you're ready to proceed [" + submitLabel + "](/case/IA/Asylum/"

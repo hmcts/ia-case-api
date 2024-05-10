@@ -6,12 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -61,6 +56,8 @@ class AppealSubmittedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         appealSubmittedConfirmation = new AppealSubmittedConfirmation(ccdSupplementaryUpdater);
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
     }
 
     @Test
@@ -105,10 +102,39 @@ class AppealSubmittedConfirmationTest {
     }
 
     @Test
+    void should_return_standard_confirmation_when_not_out_of_time_for_internal_cases() {
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get()).contains("submitted");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("A Legal Officer will check the appeal is valid and all parties will be notified of next steps.");
+    }
+
+    @Test
     void should_return_out_of_time_confirmation_for_nonpayment_appeal() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn((Optional.of(NO)));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -132,6 +158,63 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead.");
+    }
+
+    @Test
+    void should_return_out_of_time_confirmation_for_nonpayment_appeal_for_internal_cases() {
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeAdminConfirmation.png)\n");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "A Legal Officer will decide if the appeal can proceed.");
+    }
+
+    @Test
+    void should_return_ejp_confirmation_for_all_appeal_for_ejp_cases() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "A Legal Officer will progress the case to the correct state and upload the relevant documents at each point.");
     }
 
     @Test

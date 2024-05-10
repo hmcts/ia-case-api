@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class HandlerUtils {
 
@@ -60,5 +63,14 @@ public class HandlerUtils {
         }
 
         return valueList;
+    }
+
+    public static boolean isInternalCase(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
+    public static boolean isEjpCase(AsylumCase asylumCase) {
+        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 }
