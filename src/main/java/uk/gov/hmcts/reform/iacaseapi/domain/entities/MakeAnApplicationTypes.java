@@ -16,6 +16,7 @@ public enum  MakeAnApplicationTypes {
     UPDATE_APPEAL_DETAILS("Update appeal details"),
     REINSTATE("Reinstate an ended appeal"),
     TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS("Transfer out of accelerated detained appeals process"),
+    SET_ASIDE_A_DECISION("Set aside a decision"),
     OTHER("Other");
 
     @JsonValue

@@ -22,10 +22,11 @@ class MakeAnApplicationTypesTest {
         assertEquals("Transfer out of accelerated detained appeals process",
             MakeAnApplicationTypes.TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString());
         assertEquals("Other", MakeAnApplicationTypes.OTHER.toString());
+        assertEquals("Set aside a decision", MakeAnApplicationTypes.SET_ASIDE_A_DECISION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(13, MakeAnApplicationTypes.values().length);
+        assertEquals(14, MakeAnApplicationTypes.values().length);
     }
 }

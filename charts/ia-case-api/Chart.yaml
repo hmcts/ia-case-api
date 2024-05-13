@@ -42,6 +42,10 @@ dependencies:
     version: 0.0.48
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
+  - name: ia-bail-case-api
+    version: 0.0.17
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-bail-case-api.enabled
   - name: ccd-case-document-am-api
     version: 1.7.14
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
