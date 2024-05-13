@@ -39,11 +39,11 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
-    version: 0.0.48
+    version: 0.0.49
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
   - name: ia-bail-case-api
-    version: 0.0.17
+    version: 0.0.19
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-bail-case-api.enabled
   - name: ccd-case-document-am-api
