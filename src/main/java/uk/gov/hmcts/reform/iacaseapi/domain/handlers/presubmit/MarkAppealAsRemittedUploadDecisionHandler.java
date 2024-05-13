@@ -101,9 +101,14 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
             //Add metadata to the documents in collection
             for (IdValue<DocumentWithDescription> otherDocument : mayBeOtherDocuments.get()) {
                 DocumentWithDescription documentWithDescription = otherDocument.getValue();
-                DocumentWithMetadata documentWithMetaData = new DocumentWithMetadata(documentWithDescription.getDocument().get(),
-                    documentWithDescription.getDescription().get(), LocalDate.now().toString(), DocumentTag.REMITTAL_DECISION);
-                otherDocuments.add(new IdValue<>(index + indexForCollection++, documentWithMetaData));
+                if(!documentWithDescription.getDocument().isPresent() || !documentWithDescription.getDescription().isPresent()){
+                    DocumentWithMetadata documentWithMetaData = new DocumentWithMetadata(documentWithDescription.getDocument().get(),
+                        documentWithDescription.getDescription().get(), LocalDate.now().toString(), DocumentTag.REMITTAL_DECISION);
+                    otherDocuments.add(new IdValue<>(index + indexForCollection++, documentWithMetaData));
+                } else {
+                    new IllegalStateException("documentWithDescription document is not present");
+                }
+
             }
         }
         DocumentWithMetadata decisionWithMetaData = new DocumentWithMetadata(renamedDecisionDocument, "", LocalDate.now().toString(), DocumentTag.REMITTAL_DECISION);
