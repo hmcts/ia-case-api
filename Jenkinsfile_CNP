@@ -11,12 +11,12 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "master"
+def dmnBranch = "ia-task-configuration-internal"
 def bpmnBranch = "master"
 
 def secrets = [
     'rpx-${env}': [
-        secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+            secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
     ],
     'ia-${env}': [
 
@@ -154,9 +154,9 @@ withPipeline(type, product, component) {
             env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
             sh """
-            ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-            ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-        """
+    ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+    ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+    """
         }
     }
 
@@ -165,7 +165,7 @@ withPipeline(type, product, component) {
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         sh """
-      ./bin/add-org-roles-to-users.sh
+    ./bin/add-org-roles-to-users.sh
     """
     }
 
