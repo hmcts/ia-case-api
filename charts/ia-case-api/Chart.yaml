@@ -27,7 +27,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
-    version: 0.0.26
+    version: 0.0.39
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-documents-api.enabled
   - name: ia-case-notifications-api
