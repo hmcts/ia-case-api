@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +90,8 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
         if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class).isPresent()
             && callback.getEvent() == Event.START_APPEAL
-            && featureToggler.getValue("share-case-feature", false)) {
+            && featureToggler.getValue("share-case-feature", false)
+            && !isInternalCase(asylumCase)) {
 
             final String organisationIdentifier =
                 professionalOrganisationRetriever
