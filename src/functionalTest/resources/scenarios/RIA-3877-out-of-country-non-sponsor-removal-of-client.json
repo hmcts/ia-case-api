@@ -1,6 +1,5 @@
 {
   "description": "RIA-3877 Out of country no sponsor removal of client",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -32,7 +31,10 @@
         "appellantOutOfCountryAddress": "Kabul, Afghanistan",
         "hasSponsor": "No",
         "decisionLetterReceivedDate":"{$TODAY-7}",
-        "outOfCountryDecisionType":"removalOfClient"
+        "outOfCountryDecisionType":"removalOfClient",
+        "appellantHasFixedAddress": null,
+        "homeOfficeDecisionDate": null,
+        "homeOfficeReferenceNumber": null
       }
     }
   }

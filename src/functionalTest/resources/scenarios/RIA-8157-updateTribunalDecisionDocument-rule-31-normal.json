@@ -1,0 +1,43 @@
+{
+  "description": "RIA-8157 Update Tribunal Decision Document Rule 31 Normal",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=decisionAndReasonsDocumentUploadPage",
+    "credentials": "Judge",
+    "input": {
+      "id": 8157,
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "updateTribunalDecisionList": "underRule31",
+          "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
+          "ftpaAppellantSubmitted": "Yes",
+          "decisionAndReasonDocsUpload": {
+            "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+            "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
+            "document_filename": "sample-name.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "updateTribunalDecisionList": "underRule31",
+        "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
+        "decisionAndReasonDocsUpload": {
+          "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+          "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary",
+          "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
+        },
+        "ftpaAppellantSubmitted": null
+      }
+    }
+  }
+}

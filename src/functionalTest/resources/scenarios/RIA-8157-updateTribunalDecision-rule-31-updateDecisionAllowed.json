@@ -1,0 +1,48 @@
+{
+  "description": "RIA-8157 Update Tribunal Decision Rule 31 - Updated decision Allowed",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=tribunalDecisionType",
+    "credentials": "Judge",
+    "input": {
+      "id": 8157,
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "updateTribunalDecisionList": "underRule31",
+          "updatedAppealDecision": "Allowed",
+          "updateTribunalDecisionAndReasonsFinalCheck": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "updateTribunalDecisionList": "underRule31",
+        "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
+        "typesOfUpdateTribunalDecision": {
+          "value": {
+            "code": "",
+            "label": ""
+          },
+          "list_items": [
+            {
+              "code": "dismissed",
+              "label": "Yes, change decision to Dismissed"
+            },
+            {
+              "code": "allowed",
+              "label": "No"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

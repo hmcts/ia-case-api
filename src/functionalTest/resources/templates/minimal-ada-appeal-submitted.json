@@ -1,0 +1,44 @@
+{
+  "homeOfficeReferenceNumber": "123456789",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "mobileNumber": "07977111111",
+  "appealType": "protection",
+  "appealGroundsProtection": {
+    "values": [
+      "refugeeConvention"
+    ]
+  },
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No",
+  "appellantNameForDisplay": "Talha Awan",
+  "appealReferenceNumber": "PA/12345/2018",
+  "legalRepresentativeName": "{$IA_USER_PREFIX}A Test Legal Rep",
+  "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+  "sendDirectionActionAvailable": "Yes",
+  "submissionOutOfTime": "No",
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "appellantInUk": "Yes",
+  "hearingCentre": "harmondsworth",
+  "detentionStatus": "detainedAccelerated",
+  "legalRepCompany": "j",
+  "isAppellantMinor": "No",
+  "detentionFacility": "immigrationRemovalCentre",
+  "ircName": "Derwentside",
+  "isAcceleratedDetainedAppeal": "Yes",
+  "decisionLetterReceivedDate": "{$TODAY-4}",
+  "appellantInDetention": "Yes"
+}

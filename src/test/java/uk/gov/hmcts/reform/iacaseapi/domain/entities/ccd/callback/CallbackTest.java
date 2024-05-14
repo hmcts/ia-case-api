@@ -42,6 +42,7 @@ class CallbackTest {
         assertEquals(caseDetails, callback.getCaseDetails());
         assertEquals(caseDetailsBefore, callback.getCaseDetailsBefore());
         assertEquals(event, callback.getEvent());
+        assertEquals(event, callback.getEvent());
     }
 
     @Test

@@ -1,0 +1,28 @@
+{
+  "description": "RIA-7119 startAppeal isAcceleratedDetainedAppeal should be set to 'no' when 'other' is selected for detention facility",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=detentionFacility",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "detentionFacility": "other"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAcceleratedDetainedAppeal": "No",
+        "detentionFacility": "other"
+      }
+    }
+  }
+}

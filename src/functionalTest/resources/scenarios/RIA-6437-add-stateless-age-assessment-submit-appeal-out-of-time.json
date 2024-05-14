@@ -1,0 +1,33 @@
+{
+  "description": "RIA-6437-add-stateless-age-assessment-submit-appeal-out-of-time",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-age-assessment-appeal-started.json",
+        "replacements": {
+          "appealType": "ageAssessment",
+          "appellantInUk": "Yes",
+          "ageAssessment": "Yes",
+          "dateOnDecisionLetter": "{$TODAY-15}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-age-assessment-appeal-started.json",
+      "replacements": {
+        "appealType": "ageAssessment",
+        "submissionOutOfTime": "Yes",
+        "dateOnDecisionLetter": "{$TODAY-15}"
+      }
+    }
+  }
+}

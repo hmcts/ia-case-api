@@ -7,20 +7,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
+
+    public ReviewDraftHearingRequirementsPreparer(
+        UserDetails userDetails, UserDetailsHelper userDetailsHelper
+    ) {
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -49,13 +58,28 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
         final Optional<YesOrNo> reviewedHearingRequirements =
             asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
 
+        final boolean exAdaWithSubmittedHearingRequirements =
+            asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
+            && asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+
+        // If Judge tries to trigger this for any non-ADA case, an error will be thrown on UI
+        if (isJudgeAndNonAdaAppeal(asylumCase)) {
+            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            asylumCasePreSubmitCallbackResponse.addError("This option is not available. You can only review hearing requirements for accelerated detained appeals.");
+            return asylumCasePreSubmitCallbackResponse;
+        }
+
         if (!reviewedHearingRequirements.isPresent()) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The case is already listed, you can't request hearing requirements");
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS && reviewedHearingRequirements.get().equals(YesOrNo.YES)) {
+        // prevent triggering if hearing requirements already reviewed or if case has transferred out of ADA after having
+        // already submitted hearing requirements
+
+        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS
+            && (reviewedHearingRequirements.get().equals(YesOrNo.YES) || exAdaWithSubmittedHearingRequirements)) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
             return asylumCasePreSubmitCallbackResponse;
@@ -110,4 +134,12 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.NO);
         }
     }
+
+    private boolean isJudgeAndNonAdaAppeal(AsylumCase asylumCase) {
+
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
+        return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.JUDGE) && !isAcceleratedDetainedAppeal;
+    }
+
 }

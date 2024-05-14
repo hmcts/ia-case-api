@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,14 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
                        + "If you do not respond by the date indicated below, the case will automatically go to hearing."
         );
 
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        boolean isInternalDetainedNonAda = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase));
+        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
+
+        if (isInternalDetainedNonAda || isEjpUnrepNonDetained) {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
+        } else {
+            asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        }
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE,
                 dateProvider

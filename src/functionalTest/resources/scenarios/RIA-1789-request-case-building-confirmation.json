@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1789 Request case building direction confirmation",
+  "description": "RIA-1789 Request case building direction confirmation when direction sent to legalRepresentative",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",
@@ -8,7 +8,21 @@
       "state": "awaitingRespondentEvidence",
       "id": 1789,
       "caseData": {
-        "template": "minimal-appeal-submitted.json"
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "Test direction",
+                "parties": "legalRepresentative",
+                "dateDue": "{$TODAY+28}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestCaseBuilding"
+              }
+            }
+          ]
+        }
       }
     }
   },

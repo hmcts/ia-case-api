@@ -45,7 +45,7 @@ class AppealUserRoleAppenderTest {
     @BeforeEach
     public void setUp() {
         appealUserRoleAppender =
-            new AppealUserRoleAppender(userDetails, userDetailsHelper);
+                new AppealUserRoleAppender(userDetails, userDetailsHelper);
     }
 
     @Test
@@ -57,7 +57,7 @@ class AppealUserRoleAppenderTest {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            appealUserRoleAppender.handle(ABOUT_TO_START, callback);
+                appealUserRoleAppender.handle(ABOUT_TO_START, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
@@ -75,7 +75,7 @@ class AppealUserRoleAppenderTest {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            appealUserRoleAppender.handle(ABOUT_TO_START, callback);
+                appealUserRoleAppender.handle(ABOUT_TO_START, callback);
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
@@ -94,7 +94,7 @@ class AppealUserRoleAppenderTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = appealUserRoleAppender.canHandle(callbackStage, callback);
                 if ((callbackStage == ABOUT_TO_START || callbackStage == ABOUT_TO_SUBMIT)
-                    && callback.getEvent() == START_APPEAL) {
+                        && callback.getEvent() == START_APPEAL) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -107,20 +107,21 @@ class AppealUserRoleAppenderTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealUserRoleAppender.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> appealUserRoleAppender.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> appealUserRoleAppender.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> appealUserRoleAppender.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
+
     }
 
 }
