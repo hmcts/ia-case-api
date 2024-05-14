@@ -57,7 +57,8 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
             Optional<String> maybeHomeOfficeReferenceNumber =
                 asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER);
 
-            if (maybeHomeOfficeReferenceNumber.isEmpty() && HandlerUtils.isAipJourney(asylumCase)) {
+            if ((maybeHomeOfficeReferenceNumber.isEmpty() && HandlerUtils.isAipJourney(asylumCase))
+                || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 

@@ -1,0 +1,57 @@
+{
+  "homeOfficeReferenceNumber": "123456789",
+  "homeOfficeDecisionDate": "{$TODAY}",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "mobileNumber": "07977111111",
+  "appealType": "protection",
+  "appealTypeForDisplay": "protection",
+  "appealGroundsProtection": {
+    "values": [
+      "refugeeConvention"
+    ]
+  },
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No",
+  "appealReferenceNumber": "DRAFT",
+  "decisionLetterReceivedDate": "{$TODAY}",
+  "appealSubmissionDate": "{$TODAY}",
+  "appellantInUk": null,
+  "sourceOfAppeal": "transferredFromUpperTribunal",
+  "isAdmin": "Yes",
+  "isEjp": "Yes",
+  "isLegallyRepresentedEjp": "No",
+  "uploadEjpAppealFormDocs": [
+    {
+      "id": "a0cf7baa-5581-4dcb-95a4-09f503b528bb",
+      "value": {
+        "document_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2",
+        "document_filename": "upload8.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2/binary"
+      }
+    }
+  ],
+  "utTransferDoc": [
+    {
+      "id": "ed05595a-d512-41f5-8fef-0e5cd4b49c67",
+      "value": {
+        "document_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51",
+        "document_filename": "upload8.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51/binary"
+      }
+    }
+  ]
+}

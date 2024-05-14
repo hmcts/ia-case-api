@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -86,17 +91,20 @@ class PreSubmitCallbackControllerTest {
         );
     }
 
-    @Test
-    void should_dispatch_mid_event_callback_then_return_response() {
+    @ParameterizedTest
+    @ValueSource(strings = {"somePageId", ""})
+    void should_dispatch_mid_event_callback_then_return_response(String pageIdParam) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        doCallRealMethod().when(callback).setPageId(pageIdParam);
+        doCallRealMethod().when(callback).getPageId();
 
         doReturn(callbackResponse)
             .when(callbackDispatcher)
             .handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
-            preSubmitCallbackController.ccdMidEvent(callback);
+            preSubmitCallbackController.ccdMidEvent(callback, pageIdParam);
 
         assertNotNull(actualResponse);
 
@@ -104,6 +112,31 @@ class PreSubmitCallbackControllerTest {
             PreSubmitCallbackStage.MID_EVENT,
             callback
         );
+        assertEquals(pageIdParam, callback.getPageId());
+    }
+
+    @Test
+    void should_dispatch_mid_event_callback_withou_breaking_if_pageId_null() {
+
+        String pageIdParam = null;
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        doCallRealMethod().when(callback).setPageId(pageIdParam);
+        doCallRealMethod().when(callback).getPageId();
+
+        doReturn(callbackResponse)
+            .when(callbackDispatcher)
+            .handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
+            preSubmitCallbackController.ccdMidEvent(callback, pageIdParam);
+
+        assertNotNull(actualResponse);
+
+        verify(callbackDispatcher, times(1)).handle(
+            PreSubmitCallbackStage.MID_EVENT,
+            callback
+        );
+        assertEquals(pageIdParam, callback.getPageId());
     }
 
     @Test

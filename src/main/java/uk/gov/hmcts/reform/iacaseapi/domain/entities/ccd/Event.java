@@ -67,6 +67,7 @@ public enum Event {
     APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
     LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
     RESIDENT_JUDGE_FTPA_DECISION("residentJudgeFtpaDecision"),
+    DECIDE_FTPA_APPLICATION("decideFtpaApplication"),
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
     EDIT_TIME_EXTENSION("editTimeExtension"),
     SUBMIT_TIME_EXTENSION("submitTimeExtension"),
@@ -119,11 +120,24 @@ public enum Event {
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
     GENERATE_SERVICE_REQUEST("generateServiceRequest"),
+    TRANSFER_OUT_OF_ADA("transferOutOfAda"),
+    MARK_APPEAL_AS_ADA("markAppealAsAda"),
     CREATE_CASE_LINK("createCaseLink"),
     MAINTAIN_CASE_LINKS("maintainCaseLinks"),
-
     PIP_ACTIVATION("pipActivation"),
     UPDATE_S94B_STATUS("updateS94bStatus"),
+    ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
+    REMOVE_DETAINED_STATUS("removeDetainedStatus"),
+    MARK_APPEAL_AS_DETAINED("markAppealAsDetained"),
+    MARK_AS_READY_FOR_UT_TRANSFER("markAsReadyForUtTransfer"),
+    UPDATE_DETENTION_LOCATION("updateDetentionLocation"),
+    APPLY_FOR_COSTS("applyForCosts"),
+    TURN_ON_NOTIFICATIONS("turnOnNotifications"),
+    RESPOND_TO_COSTS("respondToCosts"),
+    ADD_EVIDENCE_FOR_COSTS("addEvidenceForCosts"),
+    DECIDE_COSTS_APPLICATION("decideCostsApplication"),
+    CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
+    UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

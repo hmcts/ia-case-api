@@ -41,6 +41,9 @@
           ],
           "ftpaAppellantSubmissionOutOfTime": "No"
         }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },

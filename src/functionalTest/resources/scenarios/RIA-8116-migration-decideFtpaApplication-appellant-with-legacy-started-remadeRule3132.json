@@ -1,0 +1,148 @@
+{
+  "description": "RIA-8116 Decide FTPA application Appellant (remadeRule32) with legacy FTPA Appellant && Respondent application started (Migration)",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8116,
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantSubmitted": "Yes",
+          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32",
+          "ftpaAppellantDecisionRemadeRule32Text": "Rule 32 decision text",
+          "allFtpaAppellantDecisionDocuments": []
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaRespondentRjDecisionOutcomeType": "remadeRule31",
+          "ftpaRespondentDecisionRemadeRule32Text": "Rule 31 decision text",
+          "ftpaRespondentDecisionDate": "{$TODAY-4}",
+          "ftpaRespondentApplicationDate": "{$TODAY-5}",
+          "ftpaRespondentGroundsDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/ZZZ",
+                  "document_binary_url": "http://document-store/ZZZ/binary",
+                  "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                },
+                "description": "Some FTPA respondent grounds of application"
+              }
+            }
+          ],
+          "ftpaAppellantApplicationDate": "{$TODAY-2}",
+          "ftpaAppellantGroundsDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                },
+                "description": "Some FTPA appellant grounds of application"
+              }
+            }
+          ],
+          "ftpaAppellantOutOfTimeDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "some-ftpa-appellant-out-of-time-reasons.pdf"
+                },
+                "description": "late FTPA appellant out of time application evidence"
+              }
+            }
+          ],
+          "ftpaAppellantOutOfTimeExplanation": "Some out of time explanation"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantDecisionDate": "{$TODAY}",
+        "isFtpaAppellantDecided": "Yes",
+        "sendDirectionActionAvailable": "No",
+        "ftpaList": [
+          {
+            "id": "2",
+            "value": {
+              "ftpaApplicant": "respondent",
+              "isFtpaNoticeOfDecisionSetAside": "No",
+              "ftpaGroundsDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/ZZZ",
+                      "document_binary_url": "http://document-store/ZZZ/binary",
+                      "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                    },
+                    "description": "Some FTPA respondent grounds of application"
+                  }
+                }
+              ],
+              "ftpaApplicationDate": "{$TODAY-5}",
+              "ftpaDecisionOutcomeType": "remadeRule31",
+              "ftpaDecisionDate": "{$TODAY-4}"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "ftpaApplicant": "appellant",
+              "isFtpaNoticeOfDecisionSetAside": "No",
+              "ftpaDecisionOutcomeType": "remadeRule32",
+              "ftpaDecisionRemadeRule32Text": "Rule 32 decision text",
+              "ftpaDecisionDate": "{$TODAY}",
+              "ftpaGroundsDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                    },
+                    "description": "Some FTPA appellant grounds of application"
+                  }
+                }
+              ],
+              "ftpaOutOfTimeDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/AAA",
+                      "document_binary_url": "http://document-store/AAA/binary",
+                      "document_filename": "some-ftpa-appellant-out-of-time-reasons.pdf"
+                    },
+                    "description": "late FTPA appellant out of time application evidence"
+                  }
+                }
+              ],
+              "ftpaOutOfTimeExplanation": "Some out of time explanation",
+              "ftpaApplicationDate": "{$TODAY-2}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

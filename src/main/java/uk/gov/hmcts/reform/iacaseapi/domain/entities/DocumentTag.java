@@ -25,13 +25,24 @@ public enum DocumentTag {
     FTPA_APPELLANT("ftpaAppellant"),
     FTPA_RESPONDENT("ftpaRespondent"),
     FTPA_DECISION_AND_REASONS("ftpaDecisionAndReasons"),
+    FTPA_SET_ASIDE("ftpaSetAside"),
     HO_DECISION_LETTER("homeOfficeDecisionLetter"),
+    APPEAL_FORM("appealForm"),
     SENSITIVE_DOCUMENT("sensitiveDocument"),
     RECORD_OUT_OF_TIME_DECISION_DOCUMENT("recordOutOfTimeDecisionDocument"),
     UPPER_TRIBUNAL_BUNDLE("upperTribunalBundle"),
     APPEAL_REASONS("appealReasons"),
     CLARIFYING_QUESTIONS("clarifyingQuestions"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
+    UPDATED_FINAL_DECISION_AND_REASONS_PDF("updatedFinalDecisionAndReasonsPdf"),
+    UPDATED_DECISION_AND_REASONS_COVER_LETTER("updatedDecisionAndReasonsCoverLetter"),
+
+    ADA_SUITABILITY("adaSuitability"),
+    INTERNAL_ADA_SUITABILITY("internalAdaSuitability"),
+    NOTICE_OF_DECISION_UT_TRANSFER("noticeOfDecisionUtTransfer"),
+    INTERNAL_EDIT_APPEAL_LETTER("internalEditAppealLetter"),
+    UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT("upperTribunalTransferOrderDocument"),
+    IAUT_2_FORM("iAUT2Form"),
 
     @JsonEnumDefaultValue
     NONE("");

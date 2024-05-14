@@ -1,0 +1,100 @@
+{
+  "description": "RIA-7717: Tribunal consider making costs",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 7717,
+      "eventId": "considerMakingCostsOrder",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "journeyType": "rep",
+          "appealType": "revocationOfProtection",
+          "appealGroundsRevocation": {
+            "values": [
+              "revocationRefugeeConvention",
+              "revocationHumanitarianProtection"
+            ]
+          },
+          "applyForCostsDecision": "Pending",
+          "respondentToCostsOrder": "Home office",
+          "tribunalConsideringReason": "Test reason",
+          "judgeAppliedCostsTypes": {
+            "value": {
+              "code": "TRIBUNAL_COSTS",
+              "label": "Tribunal costs"
+            },
+            "list_items": [
+              {
+                "code": "UNREASONABLE_COSTS",
+                "label": "Unreasonable costs"
+              },
+              {
+                "code": "UNREASONABLE_COSTS",
+                "label": "Unreasonable costs"
+              },
+              {
+                "code": "WASTED_COSTS",
+                "label": "Wasted costs"
+              }
+            ]
+          },
+          "judgeEvidenceForCostsOrder": [
+            {
+              "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+              "value": {
+                "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                "document_filename": "test.pdf",
+                "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+              }
+            }
+          ],
+          "appliesForCosts": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "revocationOfProtection",
+        "appealGroundsRevocation": {
+          "values": [
+            "revocationRefugeeConvention",
+            "revocationHumanitarianProtection"
+          ]
+        },
+        "appliesForCosts": [
+          {
+            "id": "1",
+            "value": {
+              "appliedCostsType": "Tribunal costs",
+              "applyForCostsDecision": "Pending",
+              "respondentToCostsOrder": "Home office",
+              "applyForCostsRespondentRole": "Home office",
+              "tribunalConsideringReason": "Test reason",
+              "applyForCostsCreationDate": "{$TODAY}",
+              "applyForCostsApplicantType": "Tribunal",
+              "judgeEvidenceForCostsOrder": [
+                {
+                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                  "value": {
+                    "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                    "document_filename": "test.pdf",
+                    "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+

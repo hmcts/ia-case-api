@@ -60,6 +60,9 @@
           ],
           "ftpaRespondentSubmissionOutOfTime": "Yes"
         }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },

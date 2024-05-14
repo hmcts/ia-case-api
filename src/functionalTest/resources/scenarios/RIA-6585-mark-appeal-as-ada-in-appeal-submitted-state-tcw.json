@@ -1,0 +1,40 @@
+{
+  "description": "RIA-6585 Mark appeal as ADA in appeal submitted state TCW",
+  "disabled" : "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "markAppealAsAda",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingCentre": "harmondsworth",
+          "isAcceleratedDetainedAppeal": "No",
+          "appellantInDetention": "Yes",
+          "appealType": "protection",
+          "markAppealAsAdaExplanation": "Some explanation"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "harmondsworth",
+        "isAcceleratedDetainedAppeal": "Yes",
+        "appellantInDetention": "Yes",
+        "appealType": "protection",
+        "reasonAppealMarkedAsAda": "Some explanation",
+        "dateMarkedAsAda": "{$TODAY}",
+        "adaSuffix": "_ada",
+        "homeOfficeDecisionDate": null,
+        "decisionLetterReceivedDate": "{$TODAY}"
+      }
+    }
+  }
+}

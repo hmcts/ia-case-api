@@ -108,7 +108,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -153,7 +153,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -198,7 +198,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -243,7 +243,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -290,7 +290,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -336,7 +336,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -375,7 +375,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -408,7 +408,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -440,7 +440,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -546,7 +546,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit the appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(

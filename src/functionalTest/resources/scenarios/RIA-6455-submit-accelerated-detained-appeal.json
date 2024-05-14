@@ -1,0 +1,32 @@
+{
+  "description": "RIA-6455 Legal representative submits accelerated detained appeal",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingCentre": "harmondsworth",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "decisionLetterReceivedDate": "{$TODAY-3}",
+          "appellantInDetention": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "harmondsworth",
+        "decisionLetterReceivedDate": "{$TODAY-3}"
+      }
+    }
+  }
+}

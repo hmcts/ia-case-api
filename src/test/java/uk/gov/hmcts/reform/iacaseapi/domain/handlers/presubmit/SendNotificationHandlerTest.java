@@ -11,6 +11,12 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
@@ -19,6 +25,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -31,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
@@ -63,6 +72,8 @@ class SendNotificationHandlerTest {
         lenient().when(callback.getCaseDetails()).thenReturn(caseDetails);
         lenient().when(caseDetails.getCaseData()).thenReturn(asylumCase);
         lenient().when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        lenient().when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        lenient().when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
     }
 
     @Test
@@ -134,8 +145,18 @@ class SendNotificationHandlerTest {
             Event.REQUEST_FEE_REMISSION,
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.UPDATE_PAYMENT_STATUS,
+            Event.ADA_SUITABILITY_REVIEW,
+            Event.TRANSFER_OUT_OF_ADA,
+            Event.MARK_APPEAL_AS_ADA,
+            Event.REMOVE_DETAINED_STATUS,
+            Event.MARK_APPEAL_AS_DETAINED,
             Event.CREATE_CASE_LINK,
-            Event.MAINTAIN_CASE_LINKS
+            Event.MAINTAIN_CASE_LINKS,
+            Event.MARK_AS_READY_FOR_UT_TRANSFER,
+            Event.REQUEST_RESPONSE_AMEND,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+            Event.MAINTAIN_CASE_LINKS,
+            Event.DECIDE_FTPA_APPLICATION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -155,7 +176,6 @@ class SendNotificationHandlerTest {
             assertEquals(expectedUpdatedCase, callbackResponse.getData());
 
             verify(notificationSender, times(1)).send(callback);
-
             reset(callback);
             reset(notificationSender);
         });
@@ -238,8 +258,6 @@ class SendNotificationHandlerTest {
                         Event.UPLOAD_HOME_OFFICE_BUNDLE,
                         Event.REQUEST_CASE_BUILDING,
                         Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                        Event.REQUEST_RESPONSE_REVIEW,
-                        Event.SUBMIT_CASE,
                         Event.SEND_DECISION_AND_REASONS,
                         Event.UPLOAD_ADDITIONAL_EVIDENCE,
                         Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
@@ -261,20 +279,20 @@ class SendNotificationHandlerTest {
                         Event.REQUEST_CASE_EDIT,
                         Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
                         Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                        Event.SUBMIT_TIME_EXTENSION,
                         Event.ADJOURN_HEARING_WITHOUT_DATE,
                         Event.RESTORE_STATE_FROM_ADJOURN,
                         Event.REQUEST_CMA_REQUIREMENTS,
                         Event.SUBMIT_CMA_REQUIREMENTS,
-                        Event.LIST_CMA,
+                        Event.SUBMIT_CASE,
                         Event.EDIT_APPEAL_AFTER_SUBMIT,
-                        Event.UNLINK_APPEAL,
                         Event.LINK_APPEAL,
+                        Event.UNLINK_APPEAL,
                         Event.EDIT_DOCUMENTS,
+                        Event.LIST_CMA,
                         Event.FORCE_REQUEST_CASE_BUILDING,
                         Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION,
                         Event.REQUEST_RESPONSE_AMEND,
+                        Event.RESIDENT_JUDGE_FTPA_DECISION,
                         Event.MARK_APPEAL_PAID,
                         Event.MAKE_AN_APPLICATION,
                         Event.REINSTATE_APPEAL,
@@ -286,10 +304,24 @@ class SendNotificationHandlerTest {
                         Event.RECORD_OUT_OF_TIME_DECISION,
                         Event.END_APPEAL_AUTOMATICALLY,
                         Event.UPDATE_PAYMENT_STATUS,
+                        Event.ADA_SUITABILITY_REVIEW,
+                        Event.TRANSFER_OUT_OF_ADA,
+                        Event.MARK_APPEAL_AS_ADA,
+                        Event.REMOVE_DETAINED_STATUS,
+                        Event.MARK_APPEAL_AS_DETAINED,
                         Event.CREATE_CASE_LINK,
-                        Event.MAINTAIN_CASE_LINKS
+                        Event.MAINTAIN_CASE_LINKS,
+                        Event.MARK_AS_READY_FOR_UT_TRANSFER,
+                        Event.UPDATE_DETENTION_LOCATION,
+                        Event.APPLY_FOR_COSTS,
+                        Event.RESPOND_TO_COSTS,
+                        Event.ADD_EVIDENCE_FOR_COSTS,
+                        Event.CONSIDER_MAKING_COSTS_ORDER,
+                        Event.DECIDE_COSTS_APPLICATION,
+                        Event.DECIDE_FTPA_APPLICATION,
+                        Event.UPDATE_TRIBUNAL_DECISION,
+                        Event.REQUEST_RESPONSE_REVIEW
                     ).contains(event)) {
-
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -298,6 +330,31 @@ class SendNotificationHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void it_can_not_handle_callback_if_ex_ada_with_submitted_hearing_req() {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
+
+            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW) {
+
+                assertFalse(canHandle);
+            }
+        }
+
+        reset(callback);
     }
 
     @Test
@@ -329,6 +386,59 @@ class SendNotificationHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertFalse(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void cannot_handle_when_is_notification_turned_off() {
+        lenient().when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "LEADERSHIP_JUDGE_FTPA_DECISION", "RESIDENT_JUDGE_FTPA_DECISION", "DECIDE_FTPA_APPLICATION"
+    })
+    void should_set_dlrm_set_aside_feature_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
+
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(notificationSender, times(1)).send(callback);
+        verify(asylumCase, times(1)).write(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SUBMIT_APPEAL"
+    })
+    void should_set_dlrm_fee_remission_feature_flag(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(notificationSender, times(1)).send(callback);
+        verify(asylumCase, times(1)).write(IS_DLRM_FEE_REMISSION_ENABLED, YesOrNo.YES);
     }
 
     @Test

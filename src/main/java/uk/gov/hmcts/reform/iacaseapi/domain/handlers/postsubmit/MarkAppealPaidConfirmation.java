@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -31,10 +32,17 @@ public class MarkAppealPaidConfirmation implements PostSubmitCallbackHandler<Asy
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationHeader("# Your have marked the appeal as paid");
-        postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The Tribunal will be notified that the fee has been paid. The appeal will progress as usual."
-        );
+        if (isInternalCase(callback.getCaseDetails().getCaseData())) {
+            postSubmitResponse.setConfirmationBody(
+                "#### What happens next\n\n"
+                + "The appellant has been notified that the fee has been paid. The appeal will progress as usual."
+            );
+        } else {
+            postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                            + "The Tribunal will be notified that the fee has been paid. The appeal will progress as usual."
+            );
+        }
 
         return postSubmitResponse;
     }

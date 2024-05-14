@@ -9,10 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -76,13 +73,11 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         }
 
         String submitAppealUrl = "/trigger/submitAppeal";
-        String submitLabel = "submit the appeal";
-
 
         postSubmitResponse.setConfirmationHeader("# The appeal has been saved\n# You still need to submit it");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-            + "If you're ready to proceed [" + submitLabel + "](/case/IA/Asylum/"
+            + "If you're ready to proceed [submit the appeal](/case/IA/Asylum/"
             + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
             + "#### Not ready to submit yet?\n"
             + "You can return to the case details to make changes."

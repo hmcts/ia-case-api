@@ -71,6 +71,72 @@ class RecordRemissionDecisionPreparerTest {
 
     }
 
+    @Test
+    void handle_should_return_error_if_no_remission_exists_for_aip_cases_to_record_remission_decision() {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            recordRemissionDecisionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors()).contains("You cannot record a remission decision because a remission has not been requested for this appeal");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    void handle_should_not_return_error_if_remission_exists_for_aip_cases_to_record_remission_decision(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE));
+        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            recordRemissionDecisionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    void handle_should_not_return_error_if_remission_exists_with_help_with_fee_option_for_aip_cases_to_record_remission_decision(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)).thenReturn(Optional.of(HelpWithFeesOption.WANT_TO_APPLY));
+        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            recordRemissionDecisionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
     @ParameterizedTest
     @MethodSource("appealWithRemissionTypesAndRemissionDecision")
     void should_return_error_for_remission_decision_is_present(
@@ -103,79 +169,97 @@ class RecordRemissionDecisionPreparerTest {
             Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HO_WAIVER_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, REJECTED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HO_WAIVER_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HELP_WITH_FEES, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, REJECTED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HELP_WITH_FEES, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HO_WAIVER_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HO_WAIVER_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HELP_WITH_FEES, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HELP_WITH_FEES, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HO_WAIVER_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HELP_WITH_FEES, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, PARTIALLY_APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HO_WAIVER_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, REJECTED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HO_WAIVER_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HELP_WITH_FEES, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, REJECTED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HELP_WITH_FEES, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REJECTED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HO_WAIVER_REMISSION, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HO_WAIVER_REMISSION, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.HELP_WITH_FEES, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.HELP_WITH_FEES, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(AppealType.EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, LATE_REMISSION_TYPE),
-            Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, LATE_REMISSION_TYPE)
+            Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.AG, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, APPROVED, LATE_REMISSION_TYPE)
         );
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "AG" })
     void should_set_fees_data_for_valid_appeal_types(AppealType type) {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -198,7 +282,7 @@ class RecordRemissionDecisionPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
     void handle_should_error_for_payment_status_paid(AppealType type) {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);

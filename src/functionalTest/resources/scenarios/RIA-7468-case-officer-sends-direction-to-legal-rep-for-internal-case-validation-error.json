@@ -1,0 +1,29 @@
+{
+  "description": "RIA-7468: Case officer sends non standard direction to Legal representative for internal case should return validation error",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7468,
+      "eventId": "sendDirection",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "sendDirectionExplanation": "Some direction.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "sendDirectionParties": "legalRepresentative",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["This is an appellant in person case. You cannot select legal representative as the recipient."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}

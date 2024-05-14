@@ -9,6 +9,7 @@ public enum DirectionTag {
     CASE_EDIT("caseEdit"),
     LEGAL_REPRESENTATIVE_REVIEW("legalRepresentativeReview"),
     LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS("legalRepresentativeHearingRequirements"),
+    ADA_LIST_CASE("adaListCase"),
     REQUEST_NEW_HEARING_REQUIREMENTS("requestNewHearingRequirements"),
     RESPONDENT_EVIDENCE("respondentEvidence"),
     RESPONDENT_REVIEW("respondentReview"),
