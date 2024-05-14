@@ -1761,10 +1761,6 @@ public enum AsylumCaseFieldDefinition {
 
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
-
-    IS_ADMIN(
-            "isAdmin", new TypeReference<YesOrNo>() {}),
-
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
 
