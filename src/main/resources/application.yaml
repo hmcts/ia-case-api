@@ -124,6 +124,14 @@ security:
       - "editBailApplication"
       - "makeNewApplication"
       - "viewPreviousApplications"
+    caseworker-ia-homeofficepou:
+      - "startApplication"
+      - "uploadBailSummary"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"      
     caseworker-ia-iacjudge:
       - "recordTheDecision"
       - "addCaseNote"
