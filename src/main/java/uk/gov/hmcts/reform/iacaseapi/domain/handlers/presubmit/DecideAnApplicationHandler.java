@@ -61,6 +61,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
     private final UserDetailsHelper userDetailsHelper;
     private final FeatureToggler featureToggler;
     private final IaHearingsApiService iaHearingsApiService;
+    private final String oldLegalOfficerDisplayName = "Tribunal Caseworker";
+    private final String newLegalOfficerDisplayName = "Legal Officer";
 
     public DecideAnApplicationHandler(
         DateProvider dateProvider,
@@ -105,6 +107,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         String decisionReason = asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)
             .orElseThrow(() -> new IllegalStateException("No application decision reason is present"));
         String decisionMakerRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
+        String updatedDecisionMakerRole = decisionMakerRole.equals(oldLegalOfficerDisplayName) ? newLegalOfficerDisplayName : decisionMakerRole;
 
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
@@ -119,7 +122,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .filter(a -> a.getId().equals(applicationId))
             .forEach(application -> {
                 MakeAnApplication makeAnApplication = application.getValue();
-                setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), decisionMakerRole);
+                setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), updatedDecisionMakerRole);
                 if (isIntegrated && isHearingDeletionNecessary(makeAnApplication, currentState)) {
                     delegateToIaHearingsApi(callback, response);
                 }

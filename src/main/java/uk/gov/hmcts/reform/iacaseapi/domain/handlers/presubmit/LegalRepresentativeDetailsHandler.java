@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -50,39 +51,45 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
                         .getCaseDetails()
                         .getCaseData();
 
-        if (asylumCase.read(LEGAL_REPRESENTATIVE_NAME).isEmpty()) {
-            asylumCase.write(
-                    LEGAL_REPRESENTATIVE_NAME,
-                    userDetails.getForename() + " " + userDetails.getSurname()
-            );
-        }
+        YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
-        if (asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isEmpty()) {
-            asylumCase.write(
-                    LEGAL_REPRESENTATIVE_EMAIL_ADDRESS,
-                    userDetails.getEmailAddress()
-            );
-        }
+        if (isAdmin.equals(YesOrNo.NO)) {
+            if (asylumCase.read(LEGAL_REPRESENTATIVE_NAME).isEmpty()) {
+                asylumCase.write(
+                        LEGAL_REPRESENTATIVE_NAME,
+                        userDetails.getForename() + " " + userDetails.getSurname()
+                );
+            }
 
-        if (asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER).isEmpty()) {
-            asylumCase.write(
-                    LEGAL_REP_MOBILE_PHONE_NUMBER,
-                    asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class).orElse("")
-            );
-        }
+            if (asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER).isEmpty()) {
+                asylumCase.write(
+                        LEGAL_REP_MOBILE_PHONE_NUMBER,
+                        asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class).orElse("")
+                );
+            }
 
-        if (asylumCase.read(LEGAL_REP_COMPANY).isEmpty()) {
-            asylumCase.write(
-                LEGAL_REP_COMPANY,
-                asylumCase.read(LEGAL_REP_COMPANY, String.class).orElse("")
-            );
-        }
 
-        if (asylumCase.read(LEGAL_REP_NAME).isEmpty()) {
-            asylumCase.write(
-                LEGAL_REP_NAME,
-                asylumCase.read(LEGAL_REP_NAME, String.class).orElse("")
-            );
+            if (asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isEmpty()) {
+                asylumCase.write(
+                        LEGAL_REPRESENTATIVE_EMAIL_ADDRESS,
+                        userDetails.getEmailAddress()
+                );
+            }
+
+
+            if (asylumCase.read(LEGAL_REP_COMPANY).isEmpty()) {
+                asylumCase.write(
+                        LEGAL_REP_COMPANY,
+                        asylumCase.read(LEGAL_REP_COMPANY, String.class).orElse("")
+                );
+            }
+
+            if (asylumCase.read(LEGAL_REP_NAME).isEmpty()) {
+                asylumCase.write(
+                        LEGAL_REP_NAME,
+                        asylumCase.read(LEGAL_REP_NAME, String.class).orElse("")
+                );
+            }
         }
 
         if (asylumCase.read(LEGAL_REP_FAMILY_NAME).isEmpty()) {

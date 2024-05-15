@@ -1,18 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_HEARING_REQUEST_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_LOCATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_READONLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EVIDENCE_FROM_OUTSIDE_UK_OOC;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS_READONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -26,6 +15,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -42,6 +33,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 @RequiredArgsConstructor
 public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
     private final LocationBasedFeatureToggler locationBasedFeatureToggler;
     private final LocationRefDataService locationRefDataService;
 
@@ -72,13 +65,28 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
         final Optional<YesOrNo> reviewedHearingRequirements =
             asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
 
+        final boolean exAdaWithSubmittedHearingRequirements =
+            asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
+            && asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
+
+        // If Judge tries to trigger this for any non-ADA case, an error will be thrown on UI
+        if (isJudgeAndNonAdaAppeal(asylumCase)) {
+            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            asylumCasePreSubmitCallbackResponse.addError("This option is not available. You can only review hearing requirements for accelerated detained appeals.");
+            return asylumCasePreSubmitCallbackResponse;
+        }
+
         if (!reviewedHearingRequirements.isPresent()) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The case is already listed, you can't request hearing requirements");
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS && reviewedHearingRequirements.get().equals(YesOrNo.YES)) {
+        // prevent triggering if hearing requirements already reviewed or if case has transferred out of ADA after having
+        // already submitted hearing requirements
+
+        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS
+            && (reviewedHearingRequirements.get().equals(YesOrNo.YES) || exAdaWithSubmittedHearingRequirements)) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
             return asylumCasePreSubmitCallbackResponse;
@@ -169,4 +177,13 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             }
         }
     }
+
+    private boolean isJudgeAndNonAdaAppeal(AsylumCase asylumCase) {
+
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
+        return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.JUDGE) && !isAcceleratedDetainedAppeal;
+    }
+
+
 }

@@ -1,0 +1,29 @@
+{
+  "description": "ria-6428-age assessment - applicant date of birth date validation fail",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=aaAppellantDateOfBirth",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1111,
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "aaAppellantDateOfBirth": "9999-01-01",
+          "ageAssessment": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["The date must not be a future date."],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "ageAssessment": "Yes"
+      }
+    }
+  }
+}

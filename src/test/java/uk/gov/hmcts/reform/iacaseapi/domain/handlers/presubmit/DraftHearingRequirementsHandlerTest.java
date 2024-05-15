@@ -231,6 +231,31 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
+    void should_set_review_hearing_requirements_flag_to_yes_for_ada_cases() {
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1))
+            .write(eq(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW), eq(YesOrNo.YES));
+    }
+
+    @Test
+    void should_set_hearing_requirements_submitted_flag_to_yes_for_ada_cases() {
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.YES);
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(

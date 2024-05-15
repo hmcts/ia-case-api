@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LENGTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LOCATION;
@@ -108,8 +107,6 @@ class ListCasePreparerTest {
     @Test
     void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
-        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -117,6 +114,21 @@ class ListCasePreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    void should_set_default_list_case_hearing_centre_for_aaa_cases_to_harmondsworth() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.HARMONDSWORTH));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.HARMONDSWORTH);
     }
 
     @Test
@@ -190,6 +202,23 @@ class ListCasePreparerTest {
             .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+    }
+
+    @Test
+    void should_set_error_when_transferred_out_of_ada_after_listing() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        Assertions.assertThat(callbackResponse.getErrors()).hasSize(1);
+        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
+            "Case was listed before being transferred out of ADA. Edit case listing instead.");
     }
 
     @Test

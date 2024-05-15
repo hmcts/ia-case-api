@@ -140,11 +140,11 @@ class ReviewHearingRequirementsConfirmationTest {
     @Test
     void should_return_failed_confirmation_for_auto_request_hearing() {
         expectedResponse.setConfirmationBody("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                                 + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                                 + "\n\n"
-                                 + "#### What happens next\n\n"
-                                 + "The hearing could not be auto-requested. Please manually request the "
-                                 + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+                                             + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
+                                             + "\n\n"
+                                             + "#### What happens next\n\n"
+                                             + "The hearing could not be auto-requested. Please manually request the "
+                                             + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
         String header = "# Hearing listed";
         expectedResponse.setConfirmationHeader(header);
 
@@ -169,13 +169,13 @@ class ReviewHearingRequirementsConfirmationTest {
     void should_return_confirmation_when_panel_not_required() {
         final String header = "# You've recorded the agreed hearing adjustments";
         final String body = "#### What happens next\n\n"
-                                 + "You should ensure that the case flags reflect "
-                                 + "the hearing requests that have been approved. "
-                                 + "This may require adding new case flags or making active flags inactive.\n\n"
-                                 + "[Add case flag](/case/IA/Asylum/1/trigger/createFlag)<br>"
-                                 + "[Manage case flags](/case/IA/Asylum/1/trigger/manageFlags)<br><br>"
-                                 + "The listing team will now list the case. "
-                                 + "All parties will be notified when the Hearing Notice is available to view.<br><br>";
+                            + "You should ensure that the case flags reflect "
+                            + "the hearing requests that have been approved. "
+                            + "This may require adding new case flags or making active flags inactive.\n\n"
+                            + "[Add case flag](/case/IA/Asylum/1/trigger/createFlag)<br>"
+                            + "[Manage case flags](/case/IA/Asylum/1/trigger/manageFlags)<br><br>"
+                            + "The listing team will now list the case. "
+                            + "All parties will be notified when the Hearing Notice is available to view.<br><br>";
 
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false)).thenReturn(false);
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));

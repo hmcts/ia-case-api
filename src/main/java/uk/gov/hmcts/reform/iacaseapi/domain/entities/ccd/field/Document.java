@@ -9,9 +9,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//Ignoring unknown property 'document_hash' for now until we are integrating it later.
+@JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode
 @ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Document {
 
     private String documentUrl;
@@ -24,9 +25,9 @@ public class Document {
     }
 
     public Document(
-        String documentUrl,
-        String documentBinaryUrl,
-        String documentFilename
+            String documentUrl,
+            String documentBinaryUrl,
+            String documentFilename
     ) {
         requireNonNull(documentUrl);
         requireNonNull(documentBinaryUrl);
@@ -47,5 +48,9 @@ public class Document {
 
     public String getDocumentFilename() {
         return documentFilename;
+    }
+
+    public void setDocumentFilename(String documentFilename) {
+        this.documentFilename = documentFilename;
     }
 }

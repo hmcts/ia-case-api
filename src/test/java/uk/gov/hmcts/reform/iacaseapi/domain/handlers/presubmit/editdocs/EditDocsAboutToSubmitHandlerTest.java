@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,21 +9,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_DOCUMENTS;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -44,17 +40,47 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class EditDocsAboutToSubmitHandlerTest {
 
     public static final String ID_VALUE = "0a165fa5-086b-49d6-8b7e-f00ed34d941a";
+
+    private final Document newUtTransferOrderDocumentOne = new Document(
+            "someurl_ut_transfer_order_one",
+            "someurl_ut_transfer_order_binaryurl_one",
+            "someurl_ut_transfer_order_filename_one.pdf");
+
+    private final Document newEjpAppealFormDocumentOne = new Document(
+            "someurl_ejp_appeal_form_one",
+            "someurl_ejp_appeal_form_binaryurl_one",
+            "someurl_ejp_appeal_form_filename_one.pdf");
+
+    private final DocumentWithMetadata someTribunalMetaOne = new DocumentWithMetadata(
+            newUtTransferOrderDocumentOne,
+            "some description",
+            "21/07/2021",
+            DocumentTag.UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT,
+            "some supplier"
+    );
+
+    private final DocumentWithMetadata someTribunalMetaTwo = new DocumentWithMetadata(
+            newEjpAppealFormDocumentOne,
+            "some description",
+            "21/07/2021",
+            DocumentTag.IAUT_2_FORM,
+            "some supplier"
+    );
+
+    private List<IdValue<DocumentWithMetadata>> existingTribunalDocuments;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCaseEjp;
     @Mock
     private EditDocsCaseNoteService editDocsCaseNoteService;
     @Mock
@@ -127,6 +153,64 @@ class EditDocsAboutToSubmitHandlerTest {
         then(editDocsCaseNoteService).should(times(1))
             .writeAuditCaseNoteForGivenCaseId(anyLong(), any(AsylumCase.class), any());
         then(editDocService).should(times(1)).cleanUpOverviewTabDocs(any(), any());
+    }
+
+    @Test
+    void shouldHandleUpdateEjpDocuments() {
+        given(callback.getCaseDetails()).willReturn(caseDetails);
+        given(caseDetails.getCaseData()).willReturn(asylumCaseEjp);
+
+        existingTribunalDocuments = List.of(
+                new IdValue<>("1", someTribunalMetaOne),
+                new IdValue<>("1", someTribunalMetaTwo)
+        );
+
+        when(asylumCaseEjp.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(existingTribunalDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> currentResult = editDocsAboutToSubmitHandler
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(currentResult).isNotNull();
+
+        verify(asylumCaseEjp, times(1)).write(UT_TRANSFER_DOC,
+                List.of(new IdValue<>("1", newUtTransferOrderDocumentOne)));
+        verify(asylumCaseEjp, times(1)).write(UPLOAD_EJP_APPEAL_FORM_DOCS,
+                List.of(new IdValue<>("1", newEjpAppealFormDocumentOne)));
+
+    }
+
+    @Test
+    void shouldHandleRemoveEjpDocuments() {
+        given(callback.getCaseDetails()).willReturn(caseDetails);
+        given(caseDetails.getCaseData()).willReturn(asylumCaseEjp);
+
+        Document exampleTribunalDoc = new Document(
+                "someurl_example_one",
+                "someurl_example_binaryurl_one",
+                "someurl_example_filename_one.pdf");
+
+        DocumentWithMetadata exampleTribunalMetaOne = new DocumentWithMetadata(
+                exampleTribunalDoc,
+                "some description",
+                "21/07/2021",
+                APPEAL_FORM,
+                "some supplier"
+        );
+
+        existingTribunalDocuments = List.of(
+                new IdValue<>("1", exampleTribunalMetaOne)
+        );
+
+        when(asylumCaseEjp.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(existingTribunalDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> currentResult = editDocsAboutToSubmitHandler
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(currentResult).isNotNull();
+
+        verify(asylumCaseEjp, times(1)).clear(UT_TRANSFER_DOC);
+        verify(asylumCaseEjp, times(1)).clear(UPLOAD_EJP_APPEAL_FORM_DOCS);
+
     }
 
     private boolean isDeletedFileScenario(String expectedSuppliedBy) {

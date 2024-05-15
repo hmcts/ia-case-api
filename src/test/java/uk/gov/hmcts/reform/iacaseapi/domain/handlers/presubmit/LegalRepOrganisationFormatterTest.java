@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
@@ -99,6 +100,8 @@ class LegalRepOrganisationFormatterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
@@ -153,6 +156,8 @@ class LegalRepOrganisationFormatterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
@@ -176,6 +181,8 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(null);
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -195,6 +202,8 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
@@ -217,6 +226,8 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(null);
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
 
@@ -262,6 +273,35 @@ class LegalRepOrganisationFormatterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                legalRepOrganisationFormatter.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                        callback
+                );
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        OrganisationPolicy skeletonPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                        .organisationID(null)
+                        .build()
+                )
+                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
+                .build();
+
+        verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, skeletonPolicy);
+    }
+
+    @Test
+    void should_write_skeleton_local_authority_policy_for_internal_case_journey() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 legalRepOrganisationFormatter.handle(
