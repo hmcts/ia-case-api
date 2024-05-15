@@ -35,7 +35,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
   - name: ia-home-office-integration-api
-    version: 0.0.20
+    version: 0.0.25
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
