@@ -23,7 +23,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ia-case-payments-api
-    version: 0.0.15
+    version: 0.0.21
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
