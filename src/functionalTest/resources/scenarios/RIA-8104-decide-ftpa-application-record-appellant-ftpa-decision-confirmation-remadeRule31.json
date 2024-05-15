@@ -1,0 +1,31 @@
+{
+  "description": "RIA-8104 Decide FTPA application appellant decision confirmation (remadeRule31)",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "decideFtpaApplication",
+      "ftpaAppellantDecisionRemadeRule32": "allowed",
+      "state": "ftpaSubmitted",
+      "id": 8104,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "remadeRule31",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
+        }
+
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've disposed of the application",
+      "body": "#### What happens next\n\nA Judge will update the decision.<br>"
+    }
+  }
+}

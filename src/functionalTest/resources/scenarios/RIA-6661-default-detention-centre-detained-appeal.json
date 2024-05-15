@@ -1,0 +1,31 @@
+{
+  "description": "RIA-6661 default detention centre for detained appeals",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingCentre": "harmondsworth",
+          "decisionLetterReceivedDate": "{$TODAY-3}",
+          "appellantInDetention": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "harmondsworth",
+        "decisionLetterReceivedDate": "{$TODAY-3}"
+      }
+    }
+  }
+}

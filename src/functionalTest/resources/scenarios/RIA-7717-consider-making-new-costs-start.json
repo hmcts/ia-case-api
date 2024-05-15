@@ -1,0 +1,51 @@
+{
+  "description": "RIA-7717 Tribunal consider making costs start event",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "considerMakingCostsOrder",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "No",
+          "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAdmin": "No",
+        "appellantInDetention": "Yes",
+        "isAcceleratedDetainedAppeal": "No",
+        "judgeAppliedCostsTypes": {
+          "value": {
+            "code": "",
+            "label": ""
+          },
+          "list_items": [
+            {
+              "code": "TRIBUNAL_COSTS",
+              "label": "Tribunal costs"
+            },
+            {
+              "code": "UNREASONABLE_COSTS",
+              "label": "Unreasonable costs"
+            },
+            {
+              "code": "WASTED_COSTS",
+              "label": "Wasted costs"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

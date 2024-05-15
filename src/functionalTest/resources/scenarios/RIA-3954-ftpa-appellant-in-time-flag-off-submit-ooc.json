@@ -1,6 +1,5 @@
 {
   "description": "RIA-3954 FTPA appellant sets out of time flag off for application submission in out of country",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
@@ -11,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealDate": "{$TODAY-20}",
+          "ftpaApplicationDeadline": "{$TODAY+28}",
           "outOfCountryDecisionType":"refusalOfHumanRights"
         }
       }
@@ -24,7 +23,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "ftpaAppellantSubmissionOutOfTime": "No",
-        "appealDate": "{$TODAY-20}",
         "sendDirectionActionAvailable": "Yes",
         "outOfCountryDecisionType":"refusalOfHumanRights"
       }

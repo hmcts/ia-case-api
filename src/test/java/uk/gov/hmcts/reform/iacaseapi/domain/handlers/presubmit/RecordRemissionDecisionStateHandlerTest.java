@@ -16,10 +16,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -36,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class RecordRemissionDecisionStateHandlerTest {
 
@@ -73,7 +77,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU"})
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
     void handling_should_throw_if_remission_decision_is_not_present(AppealType type) {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -91,8 +95,8 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
-    void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu(AppealType type) {
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
+    void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu_eu_ag(AppealType type) {
         // and service-request tab should be hidden (no payment to take care of)
         // and markAppealAsPaid should be hidden (no payment to take care of, case state already sorted)
 
@@ -121,7 +125,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
         // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
         // and markAppealAsPaid should be visible, to allow admins to process offline payments
@@ -174,8 +178,8 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
-    void handle_should_return_payment_due_for_remission_rejected(AppealType type) {
+    @CsvSource({ "EA, YES", "HU, YES", "PA, YES", "EU, YES", "AG, YES", "EA, NO", "HU, NO", "PA, NO", "EU, NO", "AG, NO" })
+    void handle_should_return_payment_due_for_remission_rejected(AppealType type, String isAdmin) {
         // and service-request tab should be visible (payment is handled via waysToPay service-request)
         // and markAppealAsPaid should not be visible, (payment handled via waysToPay service-request)
 
@@ -186,6 +190,7 @@ class RecordRemissionDecisionStateHandlerTest {
         when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(isAdmin)));
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
@@ -202,13 +207,13 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, isAdmin.equals("NO") ? YesOrNo.YES : YesOrNo.NO);
 
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
-    void handle_should_leave_payment_status_as_is_if_present_for_remission_rejected(AppealType type) {
+    @CsvSource({ "EA, YES", "HU, YES", "PA, YES", "EU, YES", "AG, YES", "EA, NO", "HU, NO", "PA, NO", "EU, NO", "AG, NO" })
+    void handle_should_leave_payment_status_as_is_if_present_for_remission_rejected(AppealType type, String isAdmin) {
         // payment status gets left alone (e.g. when appeal gets paid for, THEN remissions are requested and decided)
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -222,6 +227,7 @@ class RecordRemissionDecisionStateHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(isAdmin)));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -235,7 +241,7 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, isAdmin.equals("NO") ? YesOrNo.YES : YesOrNo.NO);
 
     }
 
