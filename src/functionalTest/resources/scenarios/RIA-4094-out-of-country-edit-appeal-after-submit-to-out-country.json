@@ -1,6 +1,5 @@
 {
   "description": "RIA-4094 Edit appeal after submit for Out of country, change In country appeal to OOC",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

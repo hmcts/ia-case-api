@@ -40,11 +40,11 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final FeatureToggler featureToggler;
 
     public UpdateTribunalDecisionHandler(
-            DateProvider dateProvider,
-            Appender<DecisionAndReasons> decisionAndReasonsAppender,
-            DocumentReceiver documentReceiver,
-            DocumentsAppender documentsAppender,
-            FeatureToggler featureToggler
+        DateProvider dateProvider,
+        Appender<DecisionAndReasons> decisionAndReasonsAppender,
+        DocumentReceiver documentReceiver,
+        DocumentsAppender documentsAppender,
+        FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
@@ -58,7 +58,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
+               && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {

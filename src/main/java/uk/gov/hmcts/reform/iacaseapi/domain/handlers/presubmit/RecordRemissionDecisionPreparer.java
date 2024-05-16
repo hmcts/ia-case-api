@@ -68,6 +68,7 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
             case HU:
             case EU:
             case PA:
+            case AG:
                 Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
 
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);

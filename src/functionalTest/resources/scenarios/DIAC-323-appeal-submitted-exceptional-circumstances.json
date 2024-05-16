@@ -1,0 +1,76 @@
+{
+  "description": "DIAC-323 Submit appeal with exceptional circumstances fee remission",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "feeRemissionType": "Exceptional circumstances",
+          "exceptionalCircumstances": "Exceptional circumstances details",
+          "remissionEcEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document_url": "http://url",
+                "document_binary_url": "http://url/binary",
+                "document_filename": "file1.pdf"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "isRemissionsEnabled": "Yes",
+        "feeRemissionType": "Exceptional circumstances",
+        "exceptionalCircumstances": "Exceptional circumstances details",
+        "remissionEcEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document_url": "http://url",
+              "document_binary_url": "http://url/binary",
+              "document_filename": "file1.pdf"
+            }
+          }
+        ],
+        "tempPreviousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeRemissionType": "Exceptional circumstances",
+              "exceptionalCircumstances": "Exceptional circumstances details",
+              "remissionEcEvidenceDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document_url": "http://url",
+                    "document_binary_url": "http://url/binary",
+                    "document_filename": "file1.pdf"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

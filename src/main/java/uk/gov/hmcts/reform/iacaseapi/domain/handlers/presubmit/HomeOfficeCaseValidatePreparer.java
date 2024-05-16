@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -16,12 +15,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 @Component
-@Slf4j
 public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isHomeOfficeIntegrationEnabled;
@@ -46,6 +45,8 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
             && (callback.getEvent() == SUBMIT_APPEAL
             || callback.getEvent() == MARK_APPEAL_PAID
@@ -60,32 +61,43 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        //Check if home office is enabled and set field for CCD definition
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        long caseId = callback.getCaseDetails().getId();
 
+        boolean aaaOrDetained = HandlerUtils.isAppellantInDetention(asylumCase)
+            || HandlerUtils.isAgeAssessmentAppeal(asylumCase);
+
+        boolean isEjpCase = HandlerUtils.isEjpCase(asylumCase);
+
+        if ((callback.getEvent() == REQUEST_HOME_OFFICE_DATA) && (aaaOrDetained || isEjpCase)) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError("You cannot request Home Office data for this appeal");
+
+            return response;
+        }
+
+        //Check if home office is enabled and set field for CCD definition
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
-        boolean isAppealTypeEnabled = HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType);
-        log.info("Case id: {}. Is appeal type enabled for appeal type {}? {}", caseId, appealType, isAppealTypeEnabled);
+        boolean appealTypeEnabled = HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType);
 
-        if (!isAppealTypeEnabled) {
-            log.info("Case id: {}. Appeal type not enabled. Returning without evaluating home office call.", caseId);
+        if (!appealTypeEnabled) {
+
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        log.info("Case id: {}. Is Home Office Integration feature flag enabled? {}", caseId, isHomeOfficeIntegrationEnabled);
         if (isHomeOfficeIntegrationEnabled) {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-            boolean homeOfficeUanFeature = featureToggler.getValue("home-office-uan-feature", false);
-            log.info("Case id: {}. home-office-uan-feature feature flag: {}", caseId, homeOfficeUanFeature);
-            asylumCase = homeOfficeUanFeature ? homeOfficeApi.aboutToStart(callback) : asylumCase;
+            boolean homeOfficeUanFeatureEnabled = featureToggler.getValue("home-office-uan-feature", false);
+
+            if (homeOfficeUanFeatureEnabled
+                && appealTypeEnabled && !aaaOrDetained && !isEjpCase) {
+                asylumCase = homeOfficeApi.aboutToStart(callback);
+            }
         } else {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
         }
 
-        log.info("Case id: {}. Asylum case preparation completed. Returning response.", caseId);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

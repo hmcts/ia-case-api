@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +15,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +36,9 @@ class GenerateServiceRequestMakeAPaymentConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
     private GenerateServiceRequestMakeAPaymentConfirmation generateServiceRequestMakeAPaymentConfirmation;
 
     @BeforeEach
@@ -45,19 +47,39 @@ class GenerateServiceRequestMakeAPaymentConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        generateServiceRequestMakeAPaymentConfirmation = new GenerateServiceRequestMakeAPaymentConfirmation(asylumCasePostFeePaymentService);
+        generateServiceRequestMakeAPaymentConfirmation = new GenerateServiceRequestMakeAPaymentConfirmation(userDetails, userDetailsHelper);
     }
 
     @Test
-    void should_send_postSubmit_payment_callback() {
-
+    void should_return_legal_rep_confirmation_page() {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         PostSubmitCallbackResponse callbackResponse =
             generateServiceRequestMakeAPaymentConfirmation.handle(callback);
 
-        verify(asylumCasePostFeePaymentService, times(1)).ccdSubmitted(any(Callback.class));
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getConfirmationHeader()).isPresent();
+        assertThat(callbackResponse.getConfirmationBody()).isPresent();
+        assertThat(callbackResponse.getConfirmationHeader()).contains("# You have created a service request");
+        assertThat(callbackResponse.getConfirmationBody())
+            .contains("### What happens next\n\n"
+                + "You can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n"
+                + "[Service requests](cases/case-details/"
+                + callback.getCaseDetails().getId() + "#Service%20Request)\n\n");
+    }
+
+    @Test
+    void should_return_admin_confirmation_page() {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        PostSubmitCallbackResponse callbackResponse =
+            generateServiceRequestMakeAPaymentConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
-
+        assertThat(callbackResponse.getConfirmationHeader()).isPresent();
+        assertThat(callbackResponse.getConfirmationBody()).isPresent();
+        assertThat(callbackResponse.getConfirmationHeader()).contains("# You have created a service request");
+        assertThat(callbackResponse.getConfirmationBody())
+            .contains("### What happens next\n\n"
+                + "The legal representative can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n");
     }
 
     @Test

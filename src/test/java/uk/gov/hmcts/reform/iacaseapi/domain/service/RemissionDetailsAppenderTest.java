@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
+import static java.util.Collections.singletonList;
+
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -30,7 +29,7 @@ class RemissionDetailsAppenderTest {
     private IdValue<RemissionDetails> remissionDetailsById1;
     private RemissionDetailsAppender remissionDetailsAppender;
 
-    private String feeRemissionType = "feeRemissionType";
+    private final String feeRemissionType = "feeRemissionType";
 
     @BeforeEach
     void setUp() {
@@ -47,7 +46,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender
@@ -65,7 +64,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender.appendLegalAidRemissionDetails(existingRemissionDetails, feeRemissionType, legalAidAccountNumber);
@@ -82,7 +81,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(existingRemissionDetails, feeRemissionType, helpWithFeeReference);
@@ -99,7 +98,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender.appendSection17RemissionDetails(existingRemissionDetails, feeRemissionType, section17Document);
@@ -116,7 +115,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender.appendSection17RemissionDetails(existingRemissionDetails, feeRemissionType, section20Document);
@@ -133,7 +132,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender.appendSection17RemissionDetails(existingRemissionDetails, feeRemissionType, homeOfficeWaiver);
@@ -151,7 +150,7 @@ class RemissionDetailsAppenderTest {
         RemissionDetails remissionDetails1 = mock(RemissionDetails.class);
         when(remissionDetailsById1.getValue()).thenReturn(remissionDetails1);
 
-        List<IdValue<RemissionDetails>> existingRemissionDetails = Arrays.asList(remissionDetailsById1);
+        List<IdValue<RemissionDetails>> existingRemissionDetails = singletonList(remissionDetailsById1);
 
         List<IdValue<RemissionDetails>> remissionDetails =
             remissionDetailsAppender

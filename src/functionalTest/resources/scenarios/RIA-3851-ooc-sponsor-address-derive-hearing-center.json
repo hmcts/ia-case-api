@@ -1,6 +1,5 @@
 {
   "description": "RIA-3851 Derive hearing centre from Sponsor address postcode when Sponsor is selected",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -50,6 +49,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "appellantInUk": "No",
         "hearingCentre": "newcastle"
       }
     }

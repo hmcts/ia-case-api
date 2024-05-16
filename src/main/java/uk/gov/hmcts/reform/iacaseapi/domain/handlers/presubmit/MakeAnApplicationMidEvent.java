@@ -65,7 +65,6 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
     }
 
     private void setMakeAnApplicationDescriptionLabel(String applicationType, AsylumCase asylumCase) {
-
         switch (MakeAnApplicationTypes.valueOf(applicationType)) {
             case ADJOURN:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
@@ -82,6 +81,7 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                     + "of each appeal you want to link to or unlink from.");
                 break;
             case JUDGE_REVIEW:
+            case JUDGE_REVIEW_LO:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Tell us which application decision you want to be reviewed by a Judge and explain why you think the original decision "
                     + "was wrong.");
@@ -110,9 +110,17 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Explain why you want to withdraw the appeal.");
                 break;
+            case TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS:
+                asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                    "Explain why this appeal should be transferred out of the accelerated detained appeal process.");
+                break;
             case OTHER:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Describe the application you are making and explain the reasons for the application.");
+                break;
+            case SET_ASIDE_A_DECISION:
+                asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                    "Explain why the decision should be set aside.");
                 break;
             case APPLICATION_UNDER_RULE_31_OR_RULE_32:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,

@@ -1,0 +1,51 @@
+{
+  "description": "RIA-7458 Edit appeal after submit - Detained EJP case'",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "editAppealAfterSubmit",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-ejp-appeal-submitted.json",
+        "replacements": {
+          "sourceOfAppeal": "transferredFromUpperTribunal",
+          "upperTribunalReferenceNumber": "UI-2020-123451",
+          "firstTierTribunalTransferDate": "2024-02-13",
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse",
+          "hearingCentre": "taylorHouse",
+          "isLegallyRepresentedEjp": "Yes",
+          "legalRepCompanyEjp": "Company Name",
+          "legalRepGivenNameEjp": "FirstName",
+          "legalRepFamilyNameEjp": "LastName",
+          "legalRepEmailEjp": "legalrep@example.com",
+          "legalRepReferenceEjp": "REF123"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ejp-appeal-submitted.json",
+      "replacements": {
+        "sourceOfAppeal": "transferredFromUpperTribunal",
+        "upperTribunalReferenceNumber": "UI-2020-123451",
+        "firstTierTribunalTransferDate": "2024-02-13",
+        "appellantInDetention": "Yes",
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse",
+        "hearingCentre": "taylorHouse",
+        "isLegallyRepresentedEjp": "Yes",
+        "legalRepCompanyEjp": "Company Name",
+        "legalRepGivenNameEjp": "FirstName",
+        "legalRepFamilyNameEjp": "LastName",
+        "legalRepEmailEjp": "legalrep@example.com",
+        "legalRepReferenceEjp": "REF123"
+      }
+    }
+  }
+}

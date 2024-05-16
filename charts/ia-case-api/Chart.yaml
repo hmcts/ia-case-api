@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.46
+version: 0.0.45
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -15,7 +15,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
-    version: ~1.0.8
+    version: ~1.0.16
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-webapp.enabled
   - name: idam-pr
@@ -42,6 +42,10 @@ dependencies:
     version: 0.0.43
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
+  - name: ia-bail-case-api
+    version: 0.0.17
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-bail-case-api.enabled
   - name: ccd-case-document-am-api
     version: 1.7.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
@@ -59,7 +63,7 @@ dependencies:
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: aac-manage-case-assignment.enabled
   - name: wa
-    version: ~1.0.5
+    version: ~1.0.4
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
