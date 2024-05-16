@@ -7,7 +7,7 @@ from filepath_settings import settings
 """
 Script for redacting data from a case data JSON or CSV.
 
-Usage: 
+Usage:
 
 Replace filepath with absolute filepath of JSON/CSV requiring redacting at the bottom of this file where
 desired function is called.
@@ -18,9 +18,7 @@ with '_redacted' suffix.
 Notes:
 
 Fields to be redacted are hardcoded in replace mapping dict in filepath_settings.py, so use with caution and double
-check redacted JSON (I suggest comparing two files in IDE) as it's only been tested on a few cases' data.
-
-Add any additionally required fields to be redacted in replace_mapping_dict with their corresponding
+check redacted JSON and add any additionally required fields to be redacted in replace_mapping_dict with their corresponding
 replace data
 
 Replaces all document filenames so if testing any specifics you may want to manually change the filenames
@@ -174,9 +172,4 @@ def replace_specific_field_in_csv_file_of_jsons(
 # replace_specific_field_in_json_file('case_7088977_event_1_recordRemissionDecision.json', 'document_filename', ['caseNotes', 'value', 'caseNoteDocument'])
 
 # replace_specific_field_in_csv_file_of_jsons('case_event_202403261448_redacted.csv', 'document_filename', path_fields=['caseNotes', 'value', 'caseNoteDocument'], id_list=['1'])
-# redact_values_from_json(
-#     'latest_data.json', replace_mapping_keys
-# )
 
-# redact_values_from_csv(
-#     'case_event_202401261547.csv')

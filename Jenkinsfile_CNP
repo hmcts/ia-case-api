@@ -15,10 +15,10 @@ def dmnBranch = "ia-task-configuration-remitted"
 def bpmnBranch = "master"
 
 def secrets = [
-        'rpx-${env}': [
-                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
-        ],
-        'ia-${env}': [
+    'rpx-${env}': [
+        secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+    ],
+    'ia-${env}': [
 
                 secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
                 secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),

@@ -16,4 +16,4 @@ SCOPE="openid%20profile%20roles"
 
 curl --silent --show-error \
     -H "Content-Type: application/x-www-form-urlencoded" \
-    -XPOST "${IDAM_API_BASE_URL}/o/token?grant_type=password&redirect_uri=${REDIRECT_URI}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${USERNAME}&password=${PASSWORD}&scope=${SCOPE}" -d "" | jq -r .access_token
+    -XPOST "${IDAM_API_BASE_URL}/o/token?grant_type=password&redirect_uri=${REDIRECT_URI}&client_id=${CLIENT_ID}&client_secret=${CCD_CLIENT_SECRET}&username=${USERNAME}&password=${CCD_UPLOAD_PASSWORD}&scope=${SCOPE}" -d "" | jq -r .access_token
