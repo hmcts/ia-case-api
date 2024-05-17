@@ -48,6 +48,7 @@ class StartAppealMidEventTest {
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
+    private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -70,6 +71,7 @@ class StartAppealMidEventTest {
     private String correctUpperTribunalReferenceFormat = "UI-2020-123456";
     private String wrongUpperTribunalReferenceFormat = "UI-123456-2020";
     private String utReferenceErrorMessage = "Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.";
+    private String provideFixedAddressError = "The appellant must have provided a fixed address";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -83,7 +85,7 @@ class StartAppealMidEventTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, ""})
+    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -100,6 +102,7 @@ class StartAppealMidEventTest {
                     && callbackStage == MID_EVENT
                     && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
                         || callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
+                        || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
                         || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
                     assertTrue(canHandle);
                 } else {
@@ -381,5 +384,35 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_error_when_appellant_has_no_fixed_address() {
+        when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(provideFixedAddressError);
+    }
+
+    @Test
+    void should_validate_when_appellant_has_fixed_address() {
+        when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
     }
 }
