@@ -6,12 +6,12 @@
 ##    - password: ID assigned to user in generated token. Default to `London01`.
 ##
 ## Returns a valid IDAM user token for the given username and password.
+## Set PASSWORD as servicesatcdmiac-password from ia-aat keyvault
+## Set CLIENT_SECRET as ccd-client-secret from ia-aat keyvault
 
 USERNAME=servicesatcdmiac@gmail.com
-PASSWORD=IacConfig29
 REDIRECT_URI="https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
 CLIENT_ID="ccd_admin"
-CLIENT_SECRET="HoxnBugNkz9jE9QK0pvMVGjgEhBtN9Zv"
 SCOPE="openid%20profile%20roles"
 
 curl --silent --show-error \
