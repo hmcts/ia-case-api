@@ -11,7 +11,8 @@
         "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "localAuthorityPolicy": null
+          "localAuthorityPolicy": null,
+          "isAdmin": "No"
         }
       }
     }
