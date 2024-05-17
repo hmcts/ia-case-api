@@ -27,11 +27,15 @@
         "isAdmin": "Yes",
         "isAcceleratedDetainedAppeal": "Yes",
         "makeAnApplicationTypes": {
-          "value": {
-            "code": "ADJOURN",
-            "label": "Adjourn"
+          "value":             {
+            "code": "TIME_EXTENSION",
+            "label": "Time extension"
           },
           "list_items": [
+            {
+              "code": "TIME_EXTENSION",
+              "label": "Time extension"
+            },
             {
               "code": "ADJOURN",
               "label": "Adjourn"
@@ -51,10 +55,6 @@
             {
               "code": "JUDGE_REVIEW_LO",
               "label": "Judge's review of Legal Officer decision"
-            },
-            {
-              "code": "TIME_EXTENSION",
-              "label": "Time extension"
             },
             {
               "code": "WITHDRAW",
