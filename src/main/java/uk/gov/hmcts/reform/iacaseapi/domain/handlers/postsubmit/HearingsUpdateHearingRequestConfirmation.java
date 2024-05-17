@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 public class HearingsUpdateHearingRequestConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public static final String HEARING_NEED_MANUAL_UPDATE =
-        "The hearing could not be automatically updated. You must manually update the hearing in the "
+        "<br>The hearing could not be automatically updated. You must manually update the hearing in the "
             + "[Hearings tab](/cases/case-details/%s/hearings)\n\n"
             + "If required, parties will be informed of the changes to the hearing.";
 
@@ -38,6 +38,7 @@ public class HearingsUpdateHearingRequestConfirmation implements PostSubmitCallb
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         if (asylumCase.read(MANUAL_UPDATE_HEARING_REQUIRED).isPresent()) {
+            postSubmitResponse.setConfirmationHeader("# Update hearing request complete");
             postSubmitResponse.setConfirmationBody(
                 String.format(HEARING_NEED_MANUAL_UPDATE, callback.getCaseDetails().getId())
             );
