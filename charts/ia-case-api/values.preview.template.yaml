@@ -9,9 +9,8 @@ java:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
-    #Uncomment APIs if you need to test a local version
+    #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
@@ -387,8 +386,8 @@ ia-bail-case-api:
             alias: PROF_REF_DATA_URL
           - name: launch-darkly-sdk-key
             alias: LAUNCH_DARKLY_SDK_KEY
-          - name: app-insights-connection-string
-            alias: app-insights-connection-string
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
@@ -569,7 +568,6 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    # temp fix 20 Feb 2024 - wait for XUI to merge
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     memoryRequests: 2Gi
@@ -709,8 +707,6 @@ ccd:
       environment:
         DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
-        DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -1021,7 +1017,6 @@ em-stitching:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
-      SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
