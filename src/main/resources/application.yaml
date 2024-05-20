@@ -350,6 +350,7 @@ security:
       - "updateDetentionLocation"
       - "turnOnNotifications"
       - "generateServiceRequest"
+      - "markAppealAsRemitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

@@ -34,6 +34,7 @@ public enum State {
     CMA_ADJUSTMENTS_AGREED("cmaAdjustmentsAgreed"),
     CMA_LISTED("cmaListed"),
     ADJOURNED("adjourned"),
+    REMITTED("remitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
