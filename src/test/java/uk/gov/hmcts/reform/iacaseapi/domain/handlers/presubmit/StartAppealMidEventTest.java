@@ -401,8 +401,10 @@ class StartAppealMidEventTest {
         assertThat(errors).hasSize(1).containsOnly(provideFixedAddressError);
     }
 
-    @Test
-    void should_validate_when_appellant_has_fixed_address() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT" })
+    void should_validate_when_appellant_has_fixed_address(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
