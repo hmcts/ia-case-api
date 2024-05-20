@@ -25,7 +25,7 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
     @Override
     public UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails) {
         switch (getLoggedInUserRole(userDetails)) {
-            case HOME_OFFICE_BAIL:
+            case HOME_OFFICE_BAIL, HOME_OFFICE_POU:
                 return UserRoleLabel.HOME_OFFICE_BAIL;
             case LEGAL_REPRESENTATIVE:
                 return UserRoleLabel.LEGAL_REPRESENTATIVE;

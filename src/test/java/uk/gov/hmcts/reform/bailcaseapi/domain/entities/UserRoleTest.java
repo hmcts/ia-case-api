@@ -15,11 +15,12 @@ class UserRoleTest {
         assertEquals("caseworker-ia-system", UserRole.SYSTEM.toString());
         assertEquals("caseworker-ia-admofficer", UserRole.ADMIN_OFFICER.toString());
         assertEquals("caseworker-ia-homeofficebail", UserRole.HOME_OFFICE_BAIL.toString());
+        assertEquals("caseworker-ia-homeofficepou", UserRole.HOME_OFFICE_POU.toString());
         assertEquals("citizen", UserRole.CITIZEN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(8, UserRole.values().length);
+        assertEquals(9, UserRole.values().length);
     }
 }
