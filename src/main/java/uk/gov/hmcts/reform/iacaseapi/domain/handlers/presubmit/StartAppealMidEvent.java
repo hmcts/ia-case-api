@@ -26,6 +26,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
+    private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
     public boolean canHandle(
@@ -44,7 +45,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
                     || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
                     || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID)
-                    || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID));
+                    || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID)
+                    || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -128,6 +130,12 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             if (!UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN.matcher(upperTribunalReferenceNumber).matches()) {
                 response.addError("Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.");
             }
+        }
+
+        if (callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
+            && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+            && asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class).equals(Optional.of(YesOrNo.NO))) {
+            response.addError("The appellant must have provided a fixed address");
         }
 
         return response;
