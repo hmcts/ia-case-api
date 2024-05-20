@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class HearingsUpdateHearingRequestConfirmationTest {
     public static final String MANUAL_HEARING_UPDATE_REQUIRED_TEXT =
-        "The hearing could not be automatically updated. You must manually update the hearing in the "
+        "<br>The hearing could not be automatically updated. You must manually update the hearing in the "
             + "[Hearings tab](/cases/case-details/0/hearings)\n\n"
             + "If required, parties will be informed of the changes to the hearing.";
 
@@ -72,6 +72,7 @@ public class HearingsUpdateHearingRequestConfirmationTest {
             hearingsUpdateHearingRequestConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
+        assertEquals("# Update hearing request complete", callbackResponse.getConfirmationHeader().get());
         assertEquals(MANUAL_HEARING_UPDATE_REQUIRED_TEXT, callbackResponse.getConfirmationBody().get());
     }
 }
