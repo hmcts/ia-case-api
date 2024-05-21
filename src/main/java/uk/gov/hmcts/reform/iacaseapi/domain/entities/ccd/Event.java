@@ -148,6 +148,7 @@ public enum Event {
     DECIDE_COSTS_APPLICATION("decideCostsApplication"),
     CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
+    MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

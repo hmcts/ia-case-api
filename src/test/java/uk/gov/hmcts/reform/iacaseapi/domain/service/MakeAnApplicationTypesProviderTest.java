@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 
-
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -617,6 +616,32 @@ class MakeAnApplicationTypesProviderTest {
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
         assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+    @Test
+    void should_return_given_application_types_in_remitted_state() {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(REMITTED);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(EXPEDITE.name(), EXPEDITE.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(OTHER.name(), OTHER.toString()),
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(TRANSFER.name(), TRANSFER.toString()),
+            new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList).isEqualTo(actualList);
     }
 
 }
