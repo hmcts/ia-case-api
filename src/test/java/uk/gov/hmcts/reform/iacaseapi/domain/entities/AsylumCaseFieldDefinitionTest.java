@@ -5,7 +5,6 @@ import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
