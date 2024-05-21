@@ -132,7 +132,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
-        if (callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
+        if (isAdmin.equals(YesOrNo.YES)
+            && callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
             && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
             && asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class).equals(Optional.of(YesOrNo.NO))) {
             response.addError("The appellant must have provided a fixed address");

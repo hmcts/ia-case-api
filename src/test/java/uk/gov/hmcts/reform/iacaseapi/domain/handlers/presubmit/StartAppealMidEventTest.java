@@ -389,8 +389,8 @@ class StartAppealMidEventTest {
     @Test
     void should_error_when_appellant_has_no_fixed_address() {
         when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -399,6 +399,21 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(1).containsOnly(provideFixedAddressError);
+    }
+
+    @Test
+    void should_pass_the_validation_if_user_is_not_admin() {
+        when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
     }
 
     @ParameterizedTest
