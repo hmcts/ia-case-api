@@ -201,6 +201,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
             .autoCreateHearing(callback);
     }
 
+    @Test
     void should_enable_flag_to_edit_case_listing_if_transferred_out_of_ada() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
