@@ -77,7 +77,6 @@ class StartAppealMidEventTest {
     @BeforeEach
     public void setUp() {
         startAppealMidEvent = new StartAppealMidEvent();
-
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
