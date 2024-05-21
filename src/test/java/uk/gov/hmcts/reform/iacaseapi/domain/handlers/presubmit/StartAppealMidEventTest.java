@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,6 +32,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -313,9 +315,12 @@ class StartAppealMidEventTest {
 
     }
 
-    @Test
-    void should_write_no_value_for_appellant_attendance_2_field_when_hearing_type_is_yes() {
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_write_no_value_for_appellant_attendance_2_field_when_hearing_type_is_yes(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(SUITABILITY_ATTENDANCE_PAGE_ID);
 
         when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class))
@@ -331,7 +336,7 @@ class StartAppealMidEventTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_no_value_for_appellant_attendance_1_field_when_hearing_type_is_no(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -387,7 +392,19 @@ class StartAppealMidEventTest {
     }
 
     @Test
-    void should_error_when_appellant_has_no_fixed_address() {
+    void should_validate_if_upper_tribunal_reference_number_is_missing() {
+        when(callback.getPageId()).thenReturn(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID);
+        when(asylumCase.read(UPPER_TRIBUNAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> startAppealMidEvent.handle(MID_EVENT, callback))
+            .hasMessage("upperTribunalReferenceNumber is missing")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT" })
+    void should_error_when_appellant_has_no_fixed_address(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -401,8 +418,10 @@ class StartAppealMidEventTest {
         assertThat(errors).hasSize(1).containsOnly(provideFixedAddressError);
     }
 
-    @Test
-    void should_pass_the_validation_if_user_is_not_admin() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT" })
+    void should_pass_the_validation_if_user_is_not_admin(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -413,7 +432,7 @@ class StartAppealMidEventTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(0);
+        assertThat(errors).isEmpty();
     }
 
     @ParameterizedTest
@@ -430,6 +449,6 @@ class StartAppealMidEventTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(0);
+        assertThat(errors).isEmpty();
     }
 }
