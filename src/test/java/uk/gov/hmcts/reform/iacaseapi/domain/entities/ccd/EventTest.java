@@ -139,10 +139,11 @@ class EventTest {
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("recordRemissionReminder", Event.RECORD_REMISSION_REMINDER.toString());
+        assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(135, Event.values().length);
+        assertEquals(136, Event.values().length);
     }
 }

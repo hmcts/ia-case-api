@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -301,6 +302,47 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_successfully_handle_the_callback_in_remitted_reheard_case() {
+
+        final List<IdValue<DocumentWithMetadata>> listOfDocumentsWithMetadata = Lists.newArrayList(allHearingDocuments);
+        IdValue<ReheardHearingDocuments> reheardHearingDocuments =
+                new IdValue<>("1", new ReheardHearingDocuments(listOfDocumentsWithMetadata));
+        final List<IdValue<ReheardHearingDocuments>> listOfReheardDocs = Lists.newArrayList(reheardHearingDocuments);
+
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
+        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("dlrm-remitted-feature-flag", false)).thenReturn(true);
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.of(listOfReheardDocs));
+        when(documentReceiver
+                .receive(
+                        stitchedDocument,
+                        "",
+                        DocumentTag.HEARING_BUNDLE
+                )).thenReturn(stitchedDocumentWithMetadata);
+
+        when(documentsAppender.append(
+                anyList(),
+                anyList(),
+                eq(DocumentTag.HEARING_BUNDLE)
+        )).thenReturn(allHearingDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS_COLLECTION, listOfReheardDocs);
+        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
+        verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
     }
 
     @Test

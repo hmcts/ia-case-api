@@ -321,7 +321,8 @@ class SendNotificationHandlerTest {
                         Event.DECIDE_FTPA_APPLICATION,
                         Event.UPDATE_TRIBUNAL_DECISION,
                         Event.REQUEST_RESPONSE_REVIEW,
-                        Event.RECORD_REMISSION_REMINDER
+                        Event.RECORD_REMISSION_REMINDER,
+                        Event.MARK_APPEAL_AS_REMITTED
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {

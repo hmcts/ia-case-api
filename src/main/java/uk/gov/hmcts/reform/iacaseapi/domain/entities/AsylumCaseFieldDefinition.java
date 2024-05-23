@@ -2046,6 +2046,18 @@ public enum AsylumCaseFieldDefinition {
     UPDATED_APPEAL_DECISION(
         "updatedAppealDecision", new TypeReference<String>(){}),
 
+    UPLOAD_REMITTAL_DECISION_DOC(
+        "uploadRemittalDecisionDoc", new TypeReference<Document>(){}),
+
+    UPLOAD_OTHER_REMITTAL_DOCS(
+        "uploadOtherRemittalDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    REMITTAL_DOCUMENTS(
+        "remittalDocuments", new TypeReference<List<IdValue<RemittalDocument>>>(){}),
+
+    COURT_REFERENCE_NUMBER(
+        "courtReferenceNumber", new TypeReference<String>(){}),
+
     REMISSION_OPTION(
         "remissionOption", new TypeReference<RemissionOption>(){}),
 
@@ -2099,6 +2111,24 @@ public enum AsylumCaseFieldDefinition {
 
     LATE_LOCAL_AUTHORITY_LETTERS(
         "lateLocalAuthorityLetters", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    SOURCE_OF_REMITTAL(
+        "sourceOfRemittal", new TypeReference<SourceOfRemittal>(){}),
+
+    JUDGES_NAMES_TO_EXCLUDE(
+        "judgesNamesToExclude", new TypeReference<String>(){}),
+
+    REMITTED_ADDITIONAL_INSTRUCTIONS(
+        "remittedAdditionalInstructions", new TypeReference<String>(){}),
+
+    APPEAL_REMITTED_DATE(
+        "appealRemittedDate", new TypeReference<String>() {}),
+
+    REHEARING_REASON(
+        "rehearingReason", new TypeReference<String>() {}),
+
+    REHEARD_HEARING_DOCUMENTS_COLLECTION(
+        "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
     REQUEST_FEE_REMISSION_DATE(
         "requestFeeRemissionDate", new TypeReference<String>(){}),

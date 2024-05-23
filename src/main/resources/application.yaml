@@ -352,6 +352,7 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "recordRemissionReminder"
+      - "markAppealAsRemitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

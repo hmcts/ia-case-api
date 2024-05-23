@@ -139,6 +139,7 @@ public enum Event {
     CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     RECORD_REMISSION_REMINDER("recordRemissionReminder"),
+    MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
