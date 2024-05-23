@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.StartAppealMidEvent.APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -443,9 +445,9 @@ class StartAppealMidEventTest {
 
     @Test
     void should_pass_the_validation_if_user_is_not_admin() {
-        when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_PAGE_ID);
+        when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -488,5 +490,22 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT" })
+    void should_validate_when_appellant_admin_journey_has_fixed_address(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID);
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
     }
 }
