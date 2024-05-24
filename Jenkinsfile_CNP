@@ -134,6 +134,7 @@ withPipeline(type, product, component) {
     env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
     env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
+    env.{LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES = "2"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()
