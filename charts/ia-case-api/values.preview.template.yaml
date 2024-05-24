@@ -405,6 +405,8 @@ ia-timed-event-service:
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       POSTGRES_HOST: ia-preview.postgres.database.azure.com
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: hmcts
       POSTGRES_CONNECTION_OPTIONS: ""
     postgresql:
       auth:
