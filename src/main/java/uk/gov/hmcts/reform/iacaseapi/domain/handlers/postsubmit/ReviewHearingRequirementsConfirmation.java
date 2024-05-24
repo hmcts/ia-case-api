@@ -43,7 +43,7 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
 
         return isAutoRequestHearing
             ? autoRequestHearingService.buildAutoHearingRequestConfirmation(
-                asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
+            asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
             : buildConfirmationResponse(isPanelRequired(asylumCase), callback.getCaseDetails().getId());
     }
 
@@ -54,20 +54,20 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
         if (panelRequired) {
             response.setConfirmationHeader("# Hearing requirements complete");
             response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
-                                     + "The listing team will now list the case. All parties will be notified when "
-                                     + "the Hearing Notice is available to view");
+                                         + "The listing team will now list the case. All parties will be notified when "
+                                         + "the Hearing Notice is available to view");
         } else {
             String addCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/createFlag";
             String manageCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/manageFlags";
 
             response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
             response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
-                + "You should ensure that the case flags reflect the hearing requests that have been approved. "
-                + "This may require adding new case flags or making active flags inactive.\n\n"
-                + "[Add case flag](" + addCaseFlagUrl + ")<br>"
-                + "[Manage case flags](" + manageCaseFlagUrl + ")<br><br>"
-                + "The listing team will now list the case. "
-                + "All parties will be notified when the Hearing Notice is available to view.<br><br>"
+                                         + "You should ensure that the case flags reflect the hearing requests that have been approved. "
+                                         + "This may require adding new case flags or making active flags inactive.\n\n"
+                                         + "[Add case flag](" + addCaseFlagUrl + ")<br>"
+                                         + "[Manage case flags](" + manageCaseFlagUrl + ")<br><br>"
+                                         + "The listing team will now list the case. "
+                                         + "All parties will be notified when the Hearing Notice is available to view.<br><br>"
             );
         }
 

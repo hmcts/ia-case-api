@@ -17,15 +17,18 @@ public class HearingCentreFinder {
     private final HearingCentre defaultHearingCentre;
     private final Map<HearingCentre, List<String>> hearingCentreCatchmentAreas;
     private final Map<HearingCentre, String> hearingCentreActivationDates;
+    private final Map<HearingCentre, List<String>> hearingCentreMappings;
 
     public HearingCentreFinder(
-        HearingCentre defaultHearingCentre,
-        Map<HearingCentre, List<String>> hearingCentreCatchmentAreas,
-        Map<HearingCentre, String> hearingCentreActivationDates
+            HearingCentre defaultHearingCentre,
+            Map<HearingCentre, List<String>> hearingCentreCatchmentAreas,
+            Map<HearingCentre, String> hearingCentreActivationDates,
+            Map<HearingCentre, List<String>> hearingCentreMappings
     ) {
         this.defaultHearingCentre = defaultHearingCentre;
         this.hearingCentreCatchmentAreas = ImmutableMap.copyOf(hearingCentreCatchmentAreas);
         this.hearingCentreActivationDates = ImmutableMap.copyOf(hearingCentreActivationDates);
+        this.hearingCentreMappings = ImmutableMap.copyOf(hearingCentreMappings);
     }
 
     public HearingCentre getDefaultHearingCentre() {
@@ -33,22 +36,22 @@ public class HearingCentreFinder {
     }
 
     public HearingCentre find(
-        String postcode
+            String postcode
     ) {
         Matcher postcodeAreaMatcher = POSTCODE_AREA_PATTERN.matcher(postcode);
 
         if (postcodeAreaMatcher.find()
-            && postcodeAreaMatcher.groupCount() == 1) {
+                && postcodeAreaMatcher.groupCount() == 1) {
 
             String postcodeArea = postcodeAreaMatcher.group(1).toUpperCase();
 
             Optional<HearingCentre> hearingCentre =
-                hearingCentreCatchmentAreas
-                    .entrySet()
-                    .stream()
-                    .filter(catchmentArea -> catchmentArea.getValue().contains(postcodeArea))
-                    .map(Map.Entry::getKey)
-                    .findFirst();
+                    hearingCentreCatchmentAreas
+                            .entrySet()
+                            .stream()
+                            .filter(catchmentArea -> catchmentArea.getValue().contains(postcodeArea))
+                            .map(Map.Entry::getKey)
+                            .findFirst();
 
             if (hearingCentre.isPresent()) {
                 if (hearingCentreIsActive(hearingCentreActivationDates.get(hearingCentre.get()))) {
@@ -58,6 +61,22 @@ public class HearingCentreFinder {
         }
 
         return defaultHearingCentre;
+    }
+
+    public HearingCentre findByDetentionFacility(String detentionFacilityName) {
+
+        Optional<HearingCentre> hearingCentre = hearingCentreMappings.entrySet().stream()
+                .filter(mapping -> mapping.getValue().contains(
+                        detentionFacilityName)).map(Map.Entry::getKey).findFirst();
+
+        if (hearingCentre.isPresent()) {
+
+            return hearingCentre.get();
+
+        }
+
+        throw new RuntimeException("Prison or Immigration Removal Centre is not mapped to a Hearing Centre");
+
     }
 
     public boolean hearingCentreIsActive(String hearingCentreActivationDate) {
@@ -88,5 +107,6 @@ public class HearingCentreFinder {
             HearingCentre.NTH_TYNE_MAGS,
             HearingCentre.LEEDS_MAGS,
             HearingCentre.ALLOA_SHERRIF).contains(hearingCentre);
+
     }
 }

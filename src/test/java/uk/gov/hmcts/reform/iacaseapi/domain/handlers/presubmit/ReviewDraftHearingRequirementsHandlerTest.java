@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -13,6 +14,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_EDIT_LISTING_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -70,12 +76,16 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Test
     void should_submit_review_hearing_requirements() {
 
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.YES);
 
         reset(callback);
         reset(asylumCase);
@@ -189,6 +199,23 @@ class ReviewDraftHearingRequirementsHandlerTest {
 
         verify(autoRequestHearingService, never())
             .autoCreateHearing(callback);
+    }
+
+    @Test
+    void should_enable_flag_to_edit_case_listing_if_transferred_out_of_ada() {
+
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1))
+            .write(eq(ADA_EDIT_LISTING_AVAILABLE), eq(YesOrNo.YES));
     }
 
     @Test

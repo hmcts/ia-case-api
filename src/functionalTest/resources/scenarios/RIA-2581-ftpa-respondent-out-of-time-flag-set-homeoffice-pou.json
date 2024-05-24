@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealDate": "{$TODAY-20}"
+          "ftpaApplicationDeadline": "{$TODAY-20}"
         }
       }
     }
@@ -22,7 +22,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "ftpaRespondentSubmissionOutOfTime": "Yes",
-        "appealDate": "{$TODAY-20}",
         "sendDirectionActionAvailable": "Yes"
       }
     }

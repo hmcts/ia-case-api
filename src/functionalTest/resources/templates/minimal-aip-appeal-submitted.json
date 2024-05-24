@@ -30,5 +30,6 @@
   "hearingCentre": "newport",
   "submissionOutOfTime": "No",
   "uploadAdditionalEvidenceActionAvailable": "No",
-  "journeyType": "aip"
+  "journeyType": "aip",
+  "appellantInUk": "Yes"
 }

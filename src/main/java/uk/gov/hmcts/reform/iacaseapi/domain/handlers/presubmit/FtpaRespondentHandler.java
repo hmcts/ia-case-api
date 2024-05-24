@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties.RESPONDENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -11,10 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -22,8 +21,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @Component
@@ -32,15 +33,21 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
+    private final Appender<FtpaApplications> ftpaAppender;
+    private final FeatureToggler featureToggler;
 
     public FtpaRespondentHandler(
-        DateProvider dateProvider,
-        DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender
+            DateProvider dateProvider,
+            DocumentReceiver documentReceiver,
+            DocumentsAppender documentsAppender,
+            Appender<FtpaApplications> ftpaAppender,
+            FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
+        this.ftpaAppender = ftpaAppender;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -143,6 +150,32 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
 
         asylumCase.write(FTPA_RESPONDENT_SUBMITTED, YES);
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
+
+        boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
+
+        if (isDlrmSetAside) {
+            final FtpaApplications newFtpaApplication =
+                    FtpaApplications.builder()
+                            .ftpaApplicant(RESPONDENT.toString())
+                            .ftpaApplicationDate(dateProvider.now().toString())
+                            .ftpaGroundsDocuments(ftpaRespondentGrounds)
+                            .ftpaEvidenceDocuments(ftpaRespondentEvidence)
+                            .build();
+
+            maybeOutOfTimeDocuments.ifPresent(newFtpaApplication::setFtpaOutOfTimeDocuments);
+
+            if (!ftpaRespondentOutOfTimeExplanation.isEmpty()) {
+                newFtpaApplication.setFtpaOutOfTimeExplanation(ftpaRespondentOutOfTimeExplanation);
+            }
+
+            Optional<List<IdValue<FtpaApplications>>> maybeExistingFtpaApplictions =
+                    asylumCase.read(FTPA_LIST);
+            List<IdValue<FtpaApplications>> allApplications =
+                    ftpaAppender.append(newFtpaApplication, maybeExistingFtpaApplictions.orElse(emptyList()));
+
+            asylumCase.write(FTPA_LIST, allApplications);
+            asylumCase.write(IS_FTPA_LIST_VISIBLE, YesOrNo.YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
         

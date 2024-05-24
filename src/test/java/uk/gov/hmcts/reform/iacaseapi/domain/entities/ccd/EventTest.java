@@ -117,6 +117,12 @@ class EventTest {
         assertEquals("endAppealAutomatically", Event.END_APPEAL_AUTOMATICALLY.toString());
         assertEquals("generateServiceRequest", Event.GENERATE_SERVICE_REQUEST.toString());
         assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
+        assertEquals("adaSuitabilityReview", Event.ADA_SUITABILITY_REVIEW.toString());
+        assertEquals("transferOutOfAda", Event.TRANSFER_OUT_OF_ADA.toString());
+        assertEquals("markAppealAsAda", Event.MARK_APPEAL_AS_ADA.toString());
+        assertEquals("removeDetainedStatus", Event.REMOVE_DETAINED_STATUS.toString());
+        assertEquals("markAppealAsDetained", Event.MARK_APPEAL_AS_DETAINED.toString());
+        assertEquals("markAsReadyForUtTransfer", Event.MARK_AS_READY_FOR_UT_TRANSFER.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
         assertEquals("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString());
@@ -128,12 +134,26 @@ class EventTest {
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
         assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
         assertEquals("decisionWithoutHearingListed", Event.DECISION_WITHOUT_HEARING_LISTED.toString());
+        assertEquals("updateDetentionLocation", Event.UPDATE_DETENTION_LOCATION.toString());
+        assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
+        assertEquals("turnOnNotifications", Event.TURN_ON_NOTIFICATIONS.toString());
+        assertEquals("respondToCosts", Event.RESPOND_TO_COSTS.toString());
+        assertEquals("addEvidenceForCosts", Event.ADD_EVIDENCE_FOR_COSTS.toString());
+        assertEquals("decideCostsApplication", Event.DECIDE_COSTS_APPLICATION.toString());
+        assertEquals("considerMakingCostsOrder", Event.CONSIDER_MAKING_COSTS_ORDER.toString());
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
+        assertEquals("decideFtpaApplication", Event.DECIDE_FTPA_APPLICATION.toString());
+        assertEquals("updateTribunalDecision", Event.UPDATE_TRIBUNAL_DECISION.toString());
+        assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
+        assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
+        assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(128, Event.values().length);
+
+        assertEquals(144, Event.values().length);
+
     }
 }

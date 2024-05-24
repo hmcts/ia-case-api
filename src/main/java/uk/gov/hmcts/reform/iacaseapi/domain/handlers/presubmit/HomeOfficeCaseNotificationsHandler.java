@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-
 @Component
 @Slf4j
 public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -69,7 +68,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     Event.LEADERSHIP_JUDGE_FTPA_DECISION,
                     Event.RESIDENT_JUDGE_FTPA_DECISION,
                     Event.END_APPEAL,
-                    Event.REQUEST_RESPONSE_AMEND
+                    Event.REQUEST_RESPONSE_AMEND,
+                    Event.DECIDE_FTPA_APPLICATION
                 ).contains(callback.getEvent())
                || (callback.getEvent() == Event.SEND_DIRECTION
                    && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE

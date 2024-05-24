@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,7 +31,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,12 +50,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
@@ -76,14 +88,33 @@ class ListEditCaseHandlerTest {
     private CaseManagementLocationService caseManagementLocationService;
     @Mock
     private LocationRefDataService locationRefDataService;
+    @Mock
+    private DirectionAppender directionAppender;
+    @Mock
+    private List<IdValue<Direction>> listOfDirections;
+    private int dueDaysSinceSubmission = 15;
+
+    private String directionExplanation = "You have a direction for this case.\n"
+                                          + "\n"
+                                          + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
+                                          + "\n"
+                                          + "# Next steps\n"
+                                          + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
+                                          + "\n"
+                                          + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
+                                          + "\n"
+                                          + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.";
 
     private ListEditCaseHandler listEditCaseHandler;
 
     @BeforeEach
     public void setUp() {
 
-        listEditCaseHandler =
-            new ListEditCaseHandler(hearingCentreFinder, caseManagementLocationService, locationRefDataService);
+        listEditCaseHandler = new ListEditCaseHandler(hearingCentreFinder,
+            caseManagementLocationService,
+            dueDaysSinceSubmission,
+            directionAppender,
+            locationRefDataService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
@@ -118,6 +149,109 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+    }
+
+    @Test
+    void should_set_flags_and_add_direction_if_ada_legal_rep_jounrey() {
+        Direction expectedDirection = new Direction(directionExplanation,
+            Parties.LEGAL_REPRESENTATIVE,
+            "2022-12-16",
+            LocalDate.now().toString(),
+            DirectionTag.ADA_LIST_CASE,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            "1",
+            Event.LIST_CASE.toString());
+
+        List<IdValue<Direction>> expectedListOfDirections = List.of(new IdValue<>("1", expectedDirection));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2022-12-01"));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(directionAppender.append(asylumCase,
+            Collections.emptyList(),
+            directionExplanation,
+            Parties.LEGAL_REPRESENTATIVE,
+            "2022-12-16",
+            DirectionTag.ADA_LIST_CASE,
+            Event.LIST_CASE.toString())).thenReturn(expectedListOfDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DIRECTIONS, expectedListOfDirections);
+    }
+
+    @Test
+    void should_set_flags_and_add_direction_if_ada_internal_case() {
+        Direction expectedDirection = new Direction(directionExplanation,
+                Parties.APPELLANT,
+                "2022-12-16",
+                LocalDate.now().toString(),
+                DirectionTag.ADA_LIST_CASE,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                "1",
+                Event.LIST_CASE.toString());
+
+        List<IdValue<Direction>> expectedListOfDirections = List.of(new IdValue<>("1", expectedDirection));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2022-12-01"));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(directionAppender.append(asylumCase,
+                Collections.emptyList(),
+                directionExplanation,
+                Parties.APPELLANT,
+                "2022-12-16",
+                DirectionTag.ADA_LIST_CASE,
+                Event.LIST_CASE.toString())).thenReturn(expectedListOfDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DIRECTIONS, expectedListOfDirections);
+    }
+
+    @Test
+    void should_set_flags_and_not_add_direction_if_edit_case_listing() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_CASE_LISTING);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2022-12-01"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        verify(directionAppender, times(0)).append(any(AsylumCase.class),
+                anyList(),
+                anyString(),
+                any(Parties.class),
+                anyString(),
+                any(DirectionTag.class),
+                anyString());
+        verify(asylumCase, times(0)).write(DIRECTIONS, listOfDirections);
     }
 
     @Test

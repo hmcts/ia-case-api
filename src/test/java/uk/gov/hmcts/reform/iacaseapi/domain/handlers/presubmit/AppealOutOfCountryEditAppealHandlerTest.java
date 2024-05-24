@@ -8,32 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DEPORTATION_ORDER_OPTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,12 +17,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -78,7 +55,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_in_country_clear_out_of_country_details(Event event) {
 
@@ -86,7 +63,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -108,7 +85,69 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_clear_decision_letter_receive_date_when_detained_non_ada(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).read(APPELLANT_IN_UK, YesOrNo.class);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
+        verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
+        verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
+        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
+        clearHumanRightsDecision(asylumCase);
+        clearRefusalOfProtection(asylumCase);
+        clearSponsor(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_clear_HO_decision_date_when_switching_to_ada_case(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).read(APPELLANT_IN_UK, YesOrNo.class);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(HAS_CORRESPONDENCE_ADDRESS);
+        verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
+        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
+        verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
+        clearHumanRightsDecision(asylumCase);
+        clearRefusalOfProtection(asylumCase);
+        clearSponsor(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_refusal_of_hr_clear_in_country_details(Event event) {
 
@@ -119,7 +158,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -140,11 +178,19 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
 
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+        clearAdaSuitabilityFields(asylumCase);
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_refusal_of_protection_clear_in_country_details(Event event) {
 
@@ -155,7 +201,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -171,12 +216,21 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).read(
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
+
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
 
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_removal_of_client_clear_in_country_details(Event event) {
 
@@ -187,7 +241,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -204,12 +257,21 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
+
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
 
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_out_of_country_sponsor_mobile_for_change_to_email(Event event) {
 
@@ -222,7 +284,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
             .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -240,11 +301,20 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
+
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_out_of_country_sponsor_email_for_change_to_phone(Event event) {
 
@@ -257,7 +327,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
             .thenReturn(Optional.of(ContactPreference.WANTS_SMS));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -275,13 +344,21 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAdaSuitabilityFields(asylumCase);
+
+        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
+        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
         assertThatThrownBy(
             () -> appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -298,12 +375,11 @@ class AppealOutOfCountryEditAppealHandlerTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
                 boolean canHandle = appealOutOfCountryEditAppealHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
+                    && (event.equals(Event.START_APPEAL) || event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
@@ -336,6 +412,20 @@ class AppealOutOfCountryEditAppealHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void should_throw_when_appellant_in_uk_not_present_and_not_ejp_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
+
+        assertThatThrownBy(() -> appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot verify if appeal is in UK or out of country")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
     private void clearHumanRightsDecision(AsylumCase asylumCase) {
         verify(asylumCase, times(1)).clear(GWF_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(DATE_ENTRY_CLEARANCE_DECISION);
@@ -356,6 +446,14 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_NAME_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_PARTY_ID);
+    }
+
+    private void clearAdaSuitabilityFields(AsylumCase asylumCase) {
+        verify(asylumCase, times(1)).clear(SUITABILITY_HEARING_TYPE_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1);
+        verify(asylumCase, times(1)).clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
+        verify(asylumCase, times(1)).clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
+        verify(asylumCase, times(1)).clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
     }
 
 }

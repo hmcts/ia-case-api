@@ -4,14 +4,12 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -75,13 +73,11 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         }
 
         String submitAppealUrl = "/trigger/submitAppeal";
-        String submitLabel = "submit your appeal";
 
-
-        postSubmitResponse.setConfirmationHeader("# Your appeal details have been saved\n# You still need to submit it");
+        postSubmitResponse.setConfirmationHeader("# The appeal has been saved\n# You still need to submit it");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-            + "If you're ready to proceed [" + submitLabel + "](/case/IA/Asylum/"
+            + "If you're ready to proceed [submit the appeal](/case/IA/Asylum/"
             + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
             + "#### Not ready to submit yet?\n"
             + "You can return to the case details to make changes."
@@ -89,7 +85,8 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
         if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class).isPresent()
             && callback.getEvent() == Event.START_APPEAL
-            && featureToggler.getValue("share-case-feature", false)) {
+            && featureToggler.getValue("share-case-feature", false)
+            && !isInternalCase(asylumCase)) {
 
             final String organisationIdentifier =
                 professionalOrganisationRetriever
