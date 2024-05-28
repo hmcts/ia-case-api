@@ -171,7 +171,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 
-    public void setHearingCentreFromDetentionFacilityName(AsylumCase asylumCase){
+    public void setHearingCentreFromDetentionFacilityName(AsylumCase asylumCase) {
         final String prisonName = asylumCase.read(PRISON_NAME, String.class).orElse("");
 
         final String ircName = asylumCase.read(IRC_NAME, String.class).orElse("");

@@ -190,6 +190,14 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 
+    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, DynamicList listingLocation) {
+
+        String staffLocationName = StaffLocation.getLocation(listingLocation.getValue().getCode()).getName();
+        asylumCase.write(STAFF_LOCATION, staffLocationName);
+        asylumCase.write(CASE_MANAGEMENT_LOCATION,
+            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+    }
+
     private AsylumCase addDirection(AsylumCase asylumCase) {
 
         LocalDate appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)
@@ -234,13 +242,5 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             return Parties.APPELLANT;
         }
         return Parties.LEGAL_REPRESENTATIVE;
-    }
-
-    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, DynamicList listingLocation) {
-
-        String staffLocationName = StaffLocation.getLocation(listingLocation.getValue().getCode()).getName();
-        asylumCase.write(STAFF_LOCATION, staffLocationName);
-        asylumCase.write(CASE_MANAGEMENT_LOCATION,
-            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 }
