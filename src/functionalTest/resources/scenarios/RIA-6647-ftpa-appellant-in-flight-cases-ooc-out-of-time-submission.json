@@ -1,0 +1,28 @@
+{
+  "description": "RIA-6647 Appellant FTPA out of time flag on late application submission for in flight out of country cases set to yes",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPAAppellant",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted-ooc.json",
+        "replacements": {
+          "appealDate": "{$TODAY-29}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted-ooc.json",
+      "replacements": {
+        "ftpaAppellantSubmissionOutOfTime": "Yes"
+      }
+    }
+  }
+}

@@ -5,6 +5,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW;
+
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +65,24 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
         if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoRequest(asylumCase))) {
             return new PreSubmitCallbackResponse<>(
                 autoRequestHearingService.autoCreateHearing(callback));
+        }
+
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
+        if (isAcceleratedDetainedAppeal) {
+            //For ADA case type - Set flag to no to remove event from being re-submittable
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
+            //Set flag to Yes to enable updateHearingRequirementsEvent for ada cases
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.YES);
+        }
+
+        boolean appealTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (appealTransferredOutOfAda) {
+            asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

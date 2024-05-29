@@ -1,29 +1,26 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -42,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -96,8 +94,8 @@ class RequestHearingRequirementsDirectionTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Parties.class, names = {"LEGAL_REPRESENTATIVE", "APPELLANT"})
-    void should_append_new_direction_to_existing_directions_for_the_case(Parties party) {
+    @MethodSource("caseTypeScenarios")
+    void should_append_new_direction_to_existing_directions_for_the_case(YesOrNo appellantInDetention, YesOrNo acceleratedDetainedAppeal, JourneyType journeyType, Parties party) {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -113,7 +111,9 @@ class RequestHearingRequirementsDirectionTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
 
-        JourneyType journeyType = (party == Parties.APPELLANT) ? JourneyType.AIP : JourneyType.REP;
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.ofNullable(acceleratedDetainedAppeal));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
 
         when(directionAppender.append(
@@ -197,6 +197,63 @@ class RequestHearingRequirementsDirectionTest {
         verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
+    @ParameterizedTest
+    @MethodSource("caseTypeScenariosEjp")
+    void should_append_new_direction_to_existing_directions_for_the_case_ejp_unrep_non_detained(
+        YesOrNo isEjp,
+        YesOrNo appellantInDetention,
+        YesOrNo isLegallyRepresentedEjp,
+        Parties party
+    ) {
+
+        final List<IdValue<Direction>> existingDirections = new ArrayList<>();
+        final List<IdValue<Direction>> allDirections = new ArrayList<>();
+
+        final String expectedExplanationPart =
+            "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.";
+        final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isEjp));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantInDetention));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.ofNullable(isLegallyRepresentedEjp));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(REP));
+
+        when(directionAppender.append(
+            eq(asylumCase),
+            eq(existingDirections),
+            contains(expectedExplanationPart),
+            eq(party),
+            eq(expectedDateDue),
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
+        )).thenReturn(allDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(directionAppender, times(1)).append(
+            eq(asylumCase),
+            eq(existingDirections),
+            contains(expectedExplanationPart),
+            eq(party),
+            eq(expectedDateDue),
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
+        );
+
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
+    }
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
@@ -256,5 +313,21 @@ class RequestHearingRequirementsDirectionTest {
             () -> requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    static Stream<Arguments> caseTypeScenarios() {
+        return Stream.of(
+                Arguments.of(NO, NO, AIP, Parties.APPELLANT),
+                Arguments.of(YES, YES, AIP, Parties.APPELLANT),
+                Arguments.of(YES, NO, REP, Parties.APPELLANT),
+                Arguments.of(YES, YES, REP, Parties.LEGAL_REPRESENTATIVE),
+                Arguments.of(NO, NO, REP, Parties.LEGAL_REPRESENTATIVE),
+                Arguments.of(NO, YES, REP, Parties.LEGAL_REPRESENTATIVE));
+    }
+
+    static Stream<Arguments> caseTypeScenariosEjp() {
+        return Stream.of(
+            Arguments.of(YES, NO, NO, Parties.APPELLANT),
+            Arguments.of(NO, NO, NO, Parties.LEGAL_REPRESENTATIVE));
     }
 }

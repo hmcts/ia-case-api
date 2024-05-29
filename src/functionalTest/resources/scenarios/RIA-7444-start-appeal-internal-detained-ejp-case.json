@@ -1,0 +1,37 @@
+{
+  "description": "RIA-7444 Start appeal case for internal EJP detained flow",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStartedByAdmin",
+      "caseData": {
+        "template": "minimal-ejp-appeal-started.json",
+        "replacements": {
+          "isNabaEnabled": "Yes",
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse",
+          "contactPreferenceUnrep": "wantsSms",
+          "mobileNumberUnrep": "07977111111"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ejp-appeal-started.json",
+      "replacements": {
+        "isNabaEnabled": "Yes",
+        "appellantInDetention": "Yes",
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse",
+        "contactPreferenceUnrep": "wantsSms",
+        "mobileNumber": "07977111111"
+      }
+    }
+  }
+}

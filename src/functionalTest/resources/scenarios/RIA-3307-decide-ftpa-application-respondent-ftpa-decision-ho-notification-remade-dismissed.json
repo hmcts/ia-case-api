@@ -1,0 +1,54 @@
+{
+  "description": "RIA-3307 Decide FTPA application respondent decision - HO notification - remade 32 (Dismissed)",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "decideFtpaApplication",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
+          "ftpaApplicantType": "respondent",
+          "ftpaRespondentSubmitted": "Yes",
+          "ftpaRespondentRjDecisionOutcomeType": "remadeRule32",
+          "ftpaRespondentDecisionRemadeRule32": "dismissed",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse",
+          "allFtpaRespondentDecisionDocuments": []
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantSubmitted": "Yes",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
+        "ftpaRespondentDecisionDate": "{$TODAY}",
+        "isFtpaRespondentDecided": "Yes",
+        "allFtpaRespondentDecisionDocs": [],
+        "sendDirectionActionAvailable": "No",
+        "homeOfficeFtpaRespondentDecidedInstructStatus": "OK"
+      }
+    }
+  }
+}

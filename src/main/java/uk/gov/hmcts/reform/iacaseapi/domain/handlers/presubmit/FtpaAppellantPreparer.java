@@ -7,10 +7,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -19,24 +20,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-
 @Component
 public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final int FTPA_DAYS_ALLOWED_UK = 14;
+    private static final int FTPA_DAYS_ALLOWED_OOC = 28;
     private final DateProvider dateProvider;
-    private final int ftpaAppellantAppealOutOfTimeDaysUk;
-    private final int ftpaAppellantAppealOutOfTimeDaysOoc;
     private final FeatureToggler featureToggler;
 
     public FtpaAppellantPreparer(
         DateProvider dateProvider,
-        @Value("${ftpaAppellantAppealOutOfTimeDaysUk}") int ftpaAppellantAppealOutOfTimeDaysUk,
-        @Value("${ftpaAppellantAppealOutOfTimeDaysOoc}") int ftpaAppellantAppealOutOfTimeDaysOoc,
         FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
-        this.ftpaAppellantAppealOutOfTimeDaysUk = ftpaAppellantAppealOutOfTimeDaysUk;
-        this.ftpaAppellantAppealOutOfTimeDaysOoc = ftpaAppellantAppealOutOfTimeDaysOoc;
         this.featureToggler = featureToggler;
     }
 
@@ -76,24 +72,47 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (isFtpaSetAsideAndReheard) {
-            asylumCase.clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
-            asylumCase.clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        asylumCase.clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        asylumCase.clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+
+        final Optional<String> ftpaApplicationDeadline =
+                asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE, String.class);
+
+        if (ftpaApplicationDeadline.isEmpty()) {
+            // For in-flight cases
+            asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, checkInFlightCaseFtpaOutOfTime(asylumCase));
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);
+        LocalDate ftpaApplicationDeadlineDate = LocalDate.parse(ftpaApplicationDeadline.get());
 
-        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-
-        final int ftpaAppellantAppealOutOfTimeDays =  maybeOutOfCountryDecisionType.isPresent() ? ftpaAppellantAppealOutOfTimeDaysOoc : ftpaAppellantAppealOutOfTimeDaysUk;
-
-        if (mayBeAppealDate.filter(s -> dateProvider.now().isAfter(LocalDate.parse(s).plusDays(ftpaAppellantAppealOutOfTimeDays))).isPresent()) {
+        if (dateProvider.now().isAfter(ftpaApplicationDeadlineDate)) {
             asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private YesOrNo checkInFlightCaseFtpaOutOfTime(AsylumCase asylumCase) {
+        Optional<String> appealDate = asylumCase.read(APPEAL_DATE, String.class);
+        Optional<YesOrNo> appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
+        if (appealDate.isEmpty()) {
+            throw new RequiredFieldMissingException("Appeal date missing.");
+        }
+        if (appellantInUk.isEmpty()) {
+            throw new RequiredFieldMissingException("Appellant in UK missing.");
+        }
+
+        LocalDate ftpaApplicationDeadline;
+        if (appellantInUk.equals(Optional.of(YES))) {
+            ftpaApplicationDeadline = LocalDate.parse(appealDate.get()).plusDays(FTPA_DAYS_ALLOWED_UK);
+        } else {
+            ftpaApplicationDeadline = LocalDate.parse(appealDate.get()).plusDays(FTPA_DAYS_ALLOWED_OOC);
+        }
+
+        return dateProvider.now().isBefore(ftpaApplicationDeadline) ? NO : YES;
     }
 
 }

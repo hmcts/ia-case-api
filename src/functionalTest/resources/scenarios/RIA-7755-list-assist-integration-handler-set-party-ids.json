@@ -44,31 +44,33 @@
     "errors": [],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
-      "appellantInUk": "No",
-      "hasSponsor": "Yes",
-      "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-      "legalRepIndividualPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-      "legalRepOrganisationPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-      "sponsorPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-      "isWitnessesAttending": "Yes",
-      "witnessDetails": [
-        {
-          "id": "1",
-          "value": {
-            "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-            "witnessName": "AWitness1",
-            "witnessFamilyName": "AFamilyName1"
+      "replacements": {
+        "appellantInUk": "No",
+        "hasSponsor": "Yes",
+        "appellantPartyId": null,
+        "legalRepIndividualPartyId": null,
+        "legalRepOrganisationPartyId": null,
+        "sponsorPartyId": null,
+        "isWitnessesAttending": "Yes",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "witnessPartyId": null,
+              "witnessName": "AWitness1",
+              "witnessFamilyName": "AFamilyName1"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "witnessPartyId": null,
+              "witnessName": "AWitness2",
+              "witnessFamilyName": "AFamilyName2"
+            }
           }
-        },
-        {
-          "id": "2",
-          "value": {
-            "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-            "witnessName": "AWitness2",
-            "witnessFamilyName": "AFamilyName2"
-          }
-        }
-      ]
+        ]
+      }
     }
   }
 }

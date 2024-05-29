@@ -1,0 +1,32 @@
+{
+  "description": "RIA-6433-change-litigation-friend-age-assessment-edit-appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-age-assessment-appeal-started.json",
+        "replacements": {
+          "litigationFriend": "No",
+          "litigationFriendGivenName": "Given name",
+          "litigationFriendFamilyName": "Family name"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-age-assessment-appeal-started.json",
+      "replacements": {
+        "appealType": "ageAssessment",
+        "litigationFriendGivenName": null,
+        "litigationFriendFamilyName": null
+      }
+    }
+  }
+}

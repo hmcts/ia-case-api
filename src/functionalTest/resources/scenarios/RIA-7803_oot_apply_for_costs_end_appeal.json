@@ -1,0 +1,109 @@
+{
+  "description": "RIA-7803: Home office lart applies for costs OOT",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "HomeOfficeLart",
+    "input": {
+      "id": 7803,
+      "eventId": "applyForCosts",
+      "state": "*",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionActionAvailable": "No",
+          "journeyType": "rep",
+          "appealType": "revocationOfProtection",
+          "appealGroundsRevocation": {
+            "values": [
+              "revocationRefugeeConvention",
+              "revocationHumanitarianProtection"
+            ]
+          },
+          "applyForCostsDecision": "Pending",
+          "respondentToCostsOrder": "Home office",
+          "applyForCostsHearingType": "No",
+          "scheduleOfCostsDocuments": [],
+          "argumentsAndEvidenceDetails": "",
+          "applyForCostsOotExplanation": "Test explanation",
+          "appliedCostsTypes": {
+            "value": {
+              "code": "UNREASONABLE_COSTS",
+              "label": "Unreasonable costs"
+            },
+            "list_items": [
+              {
+                "code": "UNREASONABLE_COSTS",
+                "label": "Unreasonable costs"
+              },
+              {
+                "code": "WASTED_COSTS",
+                "label": "Wasted costs"
+              }
+            ]
+          },
+          "argumentsAndEvidenceDocuments": [
+            {
+              "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+              "value": {
+                "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                "document_filename": "test.pdf",
+                "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+              }
+            }
+          ],
+          "applyForCostsHearingTypeExplanation": "",
+          "appliesForCosts": [],
+        "legalRepName": "Fake Org Ltd",
+        "isApplyForCostsOot": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "appealType": "revocationOfProtection",
+        "appealGroundsRevocation": {
+          "values": [
+            "revocationRefugeeConvention",
+            "revocationHumanitarianProtection"
+          ]
+        },
+        "appliesForCosts": [
+          {
+            "id": "1",
+            "value": {
+              "appliedCostsType": "Unreasonable costs",
+              "applyForCostsDecision": "Pending",
+              "respondentToCostsOrder": "Fake",
+              "applyForCostsHearingType": "No",
+              "scheduleOfCostsDocuments": [],
+              "applyForCostsCreationDate": "{$TODAY}",
+              "applyForCostsApplicantType": "Home office",
+              "argumentsAndEvidenceDetails": "",
+              "applyForCostsOotExplanation": "Test explanation",
+              "isApplyForCostsOot": "Yes",
+              "argumentsAndEvidenceDocuments": [
+                {
+                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                  "value": {
+                    "document_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8",
+                    "document_filename": "test.pdf",
+                    "document_binary_url": "http://dm-store:8080/documents/45ec3a85-8fad-4caa-81a5-6b3b5c3b3bb8/binary"
+                  }
+                }
+              ],
+              "applyForCostsHearingTypeExplanation": ""
+            }
+          }
+        ],
+      "legalRepName": "Fake"
+      }
+    }
+  }
+}
+

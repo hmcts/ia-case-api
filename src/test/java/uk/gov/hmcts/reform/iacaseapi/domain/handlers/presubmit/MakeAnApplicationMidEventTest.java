@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +86,9 @@ class MakeAnApplicationMidEventTest {
         "REINSTATE",
         "WITHDRAW",
         "OTHER",
-        "CHANGE_HEARING_TYPE"
+        "CHANGE_HEARING_TYPE",
+        "SET_ASIDE_A_DECISION",
+        "OTHER"
     })
     void should_return_valid_make_an_application_types(String type) {
 
@@ -99,7 +102,8 @@ class MakeAnApplicationMidEventTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
+            new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
             new DynamicList(values.get(0), values);
 
@@ -192,6 +196,11 @@ class MakeAnApplicationMidEventTest {
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Explain why you want to change the hearing type and the type of hearing that you would "
                             + "like to change to.");
+                break;
+            case SET_ASIDE_A_DECISION:
+                verify(asylumCase, times(1))
+                    .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                        "Explain why the decision should be set aside.");
                 break;
             default:
                 break;

@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandl
 @Component
 public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
+    private final String oldLegalOfficerDisplayName = "Tribunal Caseworker";
+    private final String newLegalOfficerDisplayName = "Legal Officer";
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
@@ -67,10 +69,14 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        asylumCase.write(REINSTATED_DECISION_MAKER, userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+        String decisionMakerRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
+        String updatedDecisionMakerRole = decisionMakerRole.equals(oldLegalOfficerDisplayName) ? newLegalOfficerDisplayName : decisionMakerRole;
+
+        asylumCase.write(REINSTATED_DECISION_MAKER, updatedDecisionMakerRole);
         asylumCase.write(APPEAL_STATUS, REINSTATED);
         asylumCase.write(REINSTATE_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);
+        asylumCase.write(IS_APPLY_FOR_COSTS_OOT, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase, stateBeforeEndAppeal.get());
     }
