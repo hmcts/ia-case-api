@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
@@ -15,8 +14,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,6 +32,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+
 
 public class HandlerUtils {
 
@@ -192,6 +196,65 @@ public class HandlerUtils {
             .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
     }
   
+    public static boolean isAgeAssessmentAppeal(AsylumCase asylumCase) {
+        return (asylumCase.read(APPEAL_TYPE, AppealType.class)).orElse(null) == AppealType.AG;
+    }
+
+    public static boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    public static boolean isAppellantInDetention(AsylumCase asylumCase) {
+        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    public static boolean isInternalCase(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    // This method uses the field isNotificationTurnedOff to check if
+    // notification need to be sent, in scope of EJP transfer down cases.
+    public static boolean isNotificationTurnedOff(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    public static String getAdaSuffix() {
+        return "_ada";
+    }
+
+    public static boolean isAppealPaid(AsylumCase asylumCase) {
+        return asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).orElse(null) == PaymentStatus.PAID;
+    }
+
+    public static String getAfterHearingReqSuffix() {
+        return "_afterHearingReq";
+    }
+
+    public static boolean isNabaEnabled(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    //Updated method to check if it is a LegalRep journey
+    public static boolean isLegalRepJourney(AsylumCase asylumCase) {
+        String legalRepName = asylumCase.read(LEGAL_REP_NAME, String.class).orElse("");
+        return !legalRepName.isEmpty();
+    }
+
+    // This method uses the Source of Appeal value to check if it is EJP during Start Appeal event
+    public static boolean sourceOfAppealEjp(AsylumCase asylumCase) {
+        return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL;
+    }
+
+    // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
+    public static boolean isEjpCase(AsylumCase asylumCase) {
+        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
+    // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
+    public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
+        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         ClassPathResource fileResource = new ClassPathResource(filePath);

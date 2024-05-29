@@ -1,0 +1,54 @@
+{
+  "description": "RIA-8253 Mark Appeal as Remitted",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8253,
+      "eventId": "markAppealAsRemitted",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "courtReferenceNumber": "UI-2023-000001",
+          "sourceOfRemittal": "Upper Tribunal",
+          "remittedAdditionalInstructions": "Listing instruction example",
+          "uploadRemittalDecisionDoc": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
+          },
+          "uploadOtherRemittalDocs": [
+            {
+              "id": "009c73da-ac39-4d8f-a24d-b24a6581912a",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_filename": "otherRemittalDoc.pdf",
+                  "document_binary_url": "http://document-store/BBB/binary"
+                },
+                "description": "test"
+              }
+            }
+          ],
+          "judgesNamesToExclude": "Judge John Doe"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "courtReferenceNumber": null,
+        "sourceOfRemittal": null,
+        "remittedAdditionalInstructions": null,
+        "uploadRemittalDecisionDoc": null,
+        "uploadOtherRemittalDocs": null,
+        "judgesNamesToExclude": "Judge John Doe"
+      }
+    }
+  }
+}

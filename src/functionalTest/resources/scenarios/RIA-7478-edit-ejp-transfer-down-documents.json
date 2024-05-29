@@ -1,0 +1,110 @@
+{
+  "description": "RIA-7478 Edit EJP transfer down documents",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "editDocuments",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "tribunalDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "upperTribunalTransferOrderDocument",
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010",
+                  "document_filename": "PA 50023 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
+                  "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
+                },
+                "description": "some updated description",
+                "dateUploaded": "2020-03-31"
+              }
+            }
+          ],
+          "uploadEjpAppealFormDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2",
+                "document_filename": "PA/12345/2018-Talha Awan-IAUT-2-appeal-form1.pdf",
+                "document_binary_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2/binary"
+              }
+            }
+          ],
+          "utTransferDoc": [
+            {
+              "id": "1",
+              "value": {
+                "document_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51",
+                "document_filename": "PA/12345/2018-Talha Awan-UT-transfer-order1.pdf",
+                "document_binary_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51/binary"
+              }
+            }
+          ],
+          "editDocumentsReason": "some reasons"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "tribunalDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "upperTribunalTransferOrderDocument",
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010",
+                  "document_filename": "123.PDF",
+                  "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
+                },
+                "description": "some updated description",
+                "dateUploaded": "2020-03-31"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "tribunalDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "upperTribunalTransferOrderDocument",
+              "document": {
+                "document_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010",
+                "document_filename": "PA 50023 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
+                "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
+              },
+              "description": "some updated description",
+              "dateUploaded": "2020-03-31"
+            }
+          }
+        ],
+        "uploadEjpAppealFormDocs": null,
+        "utTransferDoc": [
+          {
+            "id": "1",
+            "value": {
+              "document_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010",
+              "document_filename": "PA 50023 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
+              "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

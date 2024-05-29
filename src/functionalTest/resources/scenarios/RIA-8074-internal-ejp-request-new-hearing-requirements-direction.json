@@ -1,0 +1,35 @@
+{
+  "description": "RIA-8074 Request new hearing requirements - EJP Unrep Non-detained - Appellant party",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 8074,
+      "eventId": "requestNewHearingRequirements",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseFlagSetAsideReheardExists": "Yes",
+          "sendDirectionExplanation": "Test",
+          "sendDirectionDateDue": "{$TODAY+5}",
+          "isAdmin": "Yes",
+          "isEjp": "Yes",
+          "appellantInDetention": "No",
+          "isLegallyRepresentedEjp": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionParties": "appellant"
+      }
+    }
+  }
+}

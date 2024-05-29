@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReviewOutcome.DECISION_MAINTAINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_APPEAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -20,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
@@ -89,7 +93,9 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
         }
 
-        if (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isEligibleForAutomaticDirection(callback)) {
+        if (!isExAdaCaseWithHearingRequirementsSubmitted(asylumCase)
+            && (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isEligibleForAutomaticDirection(callback))) {
+
             TimedEvent timedEvent = scheduler.schedule(
                 new TimedEvent(
                     "",
@@ -121,5 +127,15 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
         }
         return callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW
             && reviewOutcome.get() == DECISION_MAINTAINED;
+    }
+
+    private boolean isExAdaCaseWithHearingRequirementsSubmitted(AsylumCase asylumCase) {
+        return asylumCase
+                   .read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES)
+               && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES);
     }
 }

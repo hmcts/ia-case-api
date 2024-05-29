@@ -1,0 +1,57 @@
+{
+  "description": "RIA-6733 Mark EA/HU appeal as paid Admin Officer",
+  "enabled": "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 6733,
+      "eventId": "markAppealPaid",
+      "state": "pendingPayment",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealReferenceNumber": "HU/50001/2020",
+          "appealType": "refusalOfHumanRights",
+          "appealGroundsProtection": {
+            "values": [
+              "protectionHumanRights"
+            ]
+          },
+          "paymentStatus": "Payment pending",
+          "eaHuAppealTypePaymentOption": "payOffline",
+          "paidDate": "2021-06-07",
+          "feeAmountGbp": "8000",
+          "paidAmount": "8000",
+          "hearingDecisionSelected": "Decision without a hearing. The fee for this type of appeal is £80",
+          "decisionHearingFeeOption": "decisionWithoutHearing",
+          "additionalPaymentInfo": "Payment for the appeal is now complete",
+          "legalRepresentativeDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "HU/50001/2020",
+        "appealType": "refusalOfHumanRights",
+        "appealGroundsProtection": {
+          "values": [
+            "protectionHumanRights"
+          ]
+        },
+        "submissionOutOfTime": "No",
+        "feeAmountGbp": "8000",
+        "paidDate": "2021-06-07",
+        "paymentDate": "7 Jun 2021",
+        "paymentStatus": "Paid",
+        "additionalPaymentInfo": "Payment for the appeal is now complete",
+        "currentCaseStateVisibleToCaseOfficer": "appealSubmitted"
+      }
+    }
+  }
+}

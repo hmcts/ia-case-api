@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,24 +21,32 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int requestRespondentEvidenceDueInDays;
+    private final int requestRespondentEvidenceDueInDaysAda;
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
+    private final DueDateService dueDateService;
 
     public RequestRespondentEvidencePreparer(
         @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
+        @Value("${requestRespondentEvidence.dueInDaysAda}") int requestRespondentEvidenceDueInDaysAda,
         FeatureToggler featureToggler,
-        DateProvider dateProvider
+        DateProvider dateProvider,
+        DueDateService dueDateService
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
+        this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
+        this.dueDateService = dueDateService;
     }
 
     public boolean canHandle(
@@ -71,13 +81,14 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         if (featureToggler.getValue("home-office-uan-feature", false)
                 && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
-            Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
-            YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO);
+            boolean isInCountryAppeal = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> NO == ooc).orElse(true);
 
-            if (isAppealOutOfCountry == NO && (!homeOfficeSearchStatus.isPresent()
-                    || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get()))) {
+            if (isInCountryAppeal
+                && shouldMatchAppellantDetails(asylumCase)
+                && appellantDetailsNotMatchedOrFailed(asylumCase)) {
 
-                callbackResponse.addError("You need to match the appellant details before you can request the respondent evidence.");
+                callbackResponse
+                    .addError("You need to match the appellant details before you can request the respondent evidence.");
                 return callbackResponse;
             }
         }
@@ -114,15 +125,25 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        asylumCase.write(SEND_DIRECTION_DATE_DUE,
-            dateProvider
-                .now()
-                .plusDays(requestRespondentEvidenceDueInDays)
-                .toString()
-        );
+        LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
+                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate()
+                : dateProvider.now().plusDays(requestRespondentEvidenceDueInDays);
+
+        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
         asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean shouldMatchAppellantDetails(AsylumCase asylumCase) {
+        return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase) || HandlerUtils.isAppellantInDetention(asylumCase));
+    }
+
+    private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
+        Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
+
+        return homeOfficeSearchStatus.isEmpty()
+            || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get());
     }
 }

@@ -47,6 +47,13 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
         // in fieldShowCondition, we set the original flag as well here for right rendering.
         asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
 
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
+        if (isAcceleratedDetainedAppeal) {
+            //For ADA case type - Clear flag to remove access to adjust hearing requirements event
+            asylumCase.clear(ADA_HEARING_ADJUSTMENTS_UPDATABLE);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

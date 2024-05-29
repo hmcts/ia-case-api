@@ -1,5 +1,6 @@
 {
   "description": "RIA-2527 Resident judge record respondent FTPA decision",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
@@ -15,7 +16,7 @@
           "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse",
-          "ftpaRespondentDecisionDocument": [
+          "ftpaApplicationRespondentDocument": [
             {
               "id": "1",
               "value": {

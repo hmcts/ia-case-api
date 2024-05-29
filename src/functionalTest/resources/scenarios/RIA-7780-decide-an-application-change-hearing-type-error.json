@@ -98,7 +98,7 @@
               "applicant": "Legal representative",
               "decisionDate": "{$TODAY}",
               "applicantRole": "caseworker-ia-legalrep-solicitor",
-              "decisionMaker": "Tribunal Caseworker",
+              "decisionMaker": "Legal Officer",
               "decisionReason": "A reason for the decision"
             }
           }

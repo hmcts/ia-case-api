@@ -1,0 +1,53 @@
+{
+  "description": "RIA-7457 Edit appeal - Non-detained Legally represented EJP case",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-ejp-appeal-started.json",
+        "replacements": {
+          "appealReferenceNumber": "PA/12345/2024",
+          "appellantHasFixedAddress": "Yes",
+          "contactPreference": "wantsEmail",
+          "email": "example@exampke.com",
+          "mobileNumber": null,
+          "homeOfficeDecisionDate": null,
+          "decisionLetterReceivedDate": "2024-01-29",
+          "appellantInDetention": "No",
+          "isLegallyRepresentedEjp": "Yes",
+          "legalRepCompanyEjp": "Company Name",
+          "legalRepGivenNameEjp": "FirstName",
+          "legalRepFamilyNameEjp": "LastName",
+          "legalRepEmailEjp": "legalrep@example.com",
+          "legalRepReferenceEjp": "REF123"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ejp-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "PA/12345/2024",
+        "appellantHasFixedAddress": "Yes",
+        "contactPreference": "wantsEmail",
+        "email": "example@exampke.com",
+        "mobileNumber": null,
+        "homeOfficeDecisionDate": null,
+        "decisionLetterReceivedDate": "2024-01-29",
+        "appellantInDetention": "No",
+        "isLegallyRepresentedEjp": "Yes",
+        "legalRepCompanyEjp": "Company Name",
+        "legalRepGivenNameEjp": "FirstName",
+        "legalRepFamilyNameEjp": "LastName",
+        "legalRepEmailEjp": "legalrep@example.com",
+        "legalRepReferenceEjp": "REF123"
+      }
+    }
+  }
+}

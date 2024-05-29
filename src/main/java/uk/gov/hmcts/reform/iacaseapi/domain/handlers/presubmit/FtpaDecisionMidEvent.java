@@ -28,7 +28,7 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && (callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION);
+            && (callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -49,8 +49,8 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
             .orElseThrow(() -> new IllegalStateException("FtpaApplicantType is not present"));
 
         Optional<String> ftpaRjDecisionOutcomeType = asylumCase.read(ftpaApplicantType.equals(APPELLANT.toString())
-                ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE
-                : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class);
+            ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE
+            : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class);
 
         if (!HandlerUtils.isRepJourney(asylumCase) && ftpaRjDecisionOutcomeType.isPresent()) {
             String ftpaRjDecisionOutcomeTypeValue = ftpaRjDecisionOutcomeType.get();
@@ -75,7 +75,7 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
                 asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. There is no appellant FTPA application to record the decision.");
                 return asylumCasePreSubmitCallbackResponse;
             } else if ((callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION)
-                       && ftpaApplicantType.equals(RESPONDENT.toString()) && !ftpaSubmitted.isPresent()) {
+                && ftpaApplicantType.equals(RESPONDENT.toString()) && !ftpaSubmitted.isPresent()) {
 
                 asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. There is no respondent FTPA application to record the decision.");
                 return asylumCasePreSubmitCallbackResponse;

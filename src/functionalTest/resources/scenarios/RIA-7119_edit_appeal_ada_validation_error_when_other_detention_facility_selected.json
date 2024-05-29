@@ -1,0 +1,30 @@
+{
+  "description": "RIA-7119 Edit appeal validation of ADA question based on detention facility - Error thrown when 'other' detention facility and ADA is 'Yes'",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAcceleratedDetainedAppeal": "Yes",
+          "detentionFacility": "other"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You can only select yes if the appellant is detained in an immigration removal centre"],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAcceleratedDetainedAppeal": "Yes",
+        "detentionFacility": "other"
+      }
+    }
+  }
+}

@@ -53,6 +53,7 @@ class ReviewUpdateHearingRequirementsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         reviewUpdateHearingRequirementsHandler =
             new ReviewUpdateHearingRequirementsHandler();
@@ -74,6 +75,7 @@ class ReviewUpdateHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).clear(DISABLE_OVERVIEW_PAGE);
         verify(asylumCase, times(1)).clear(UPDATE_HEARING_REQUIREMENTS_EXISTS);
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_ADJUSTMENTS_UPDATABLE);
 
         reset(callback);
         reset(asylumCase);

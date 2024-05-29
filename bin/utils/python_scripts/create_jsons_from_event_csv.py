@@ -13,12 +13,24 @@ def create_jsons_from_csv(csv_file, events: list[int] = None, output_dir_name_su
         for row in csv_reader:
             if 'data' in row and events_counter in events:
                 data = json.loads(row['data'])
-                filename = f"event_{events_counter}.json"
+                event_name = get_event_name(row)
+                case_id = get_case_id(row)
+                filename = f"case_{case_id}_event_{events_counter}_{event_name}.json"
                 full_filepath = os.path.join(dir_name, filename)
                 with open(full_filepath, 'w') as json_file:
                     json.dump(data, json_file, indent=2)
                 os.chmod(full_filepath, 0o777)
             events_counter += 1
+
+
+def get_event_name(row):
+    event_name = row['event_id']
+    return event_name
+
+
+def get_case_id(row):
+    case_id = row['case_data_id']
+    return case_id
 
 
 def make_output_dir(case_name: str) -> str:
