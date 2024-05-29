@@ -67,7 +67,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
                                LocationRefDataService locationRefDataService) {
-
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;

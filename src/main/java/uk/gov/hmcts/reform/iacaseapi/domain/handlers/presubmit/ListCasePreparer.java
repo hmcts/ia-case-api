@@ -83,7 +83,6 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
         if (isCaseUsingLocationRefData(asylumCase)) {
             asylumCase.write(LISTING_LOCATION, prepareLocationDynamicList(asylumCase));
         }
-
         boolean hasTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
             .map(field -> field.equals(YesOrNo.YES))
             .orElse(false);
