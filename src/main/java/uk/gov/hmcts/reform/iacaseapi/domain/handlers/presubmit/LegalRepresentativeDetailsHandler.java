@@ -97,6 +97,7 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
                     LEGAL_REP_FAMILY_NAME,
                     asylumCase.read(LEGAL_REP_FAMILY_NAME, String.class).orElse("")
             );
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

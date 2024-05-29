@@ -127,6 +127,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
                     delegateToIaHearingsApi(callback, response);
                 }
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
+
                 if (featureToggler.getValue("wa-R2-feature", false)) {
                     asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
                 }

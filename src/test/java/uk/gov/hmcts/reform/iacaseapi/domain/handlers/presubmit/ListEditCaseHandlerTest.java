@@ -86,10 +86,8 @@ class ListEditCaseHandlerTest {
     private HearingCentreFinder hearingCentreFinder;
     @Mock
     private CaseManagementLocationService caseManagementLocationService;
-    @Mock
-    private LocationRefDataService locationRefDataService;
-    @Mock
-    private DirectionAppender directionAppender;
+    @Mock private LocationRefDataService locationRefDataService;
+    @Mock private DirectionAppender directionAppender;
     @Mock
     private List<IdValue<Direction>> listOfDirections;
     private int dueDaysSinceSubmission = 15;

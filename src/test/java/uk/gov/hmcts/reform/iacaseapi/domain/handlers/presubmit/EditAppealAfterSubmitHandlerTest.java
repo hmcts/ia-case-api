@@ -468,6 +468,7 @@ class EditAppealAfterSubmitHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+
     @ParameterizedTest
     @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
     void should_set_homeOfficeReferenceNumber_as_GWFReferenceNumber_when_out_of_country_is_refusal_of_human_rights_or_refuse_permit(OutOfCountryDecisionType outOfCountryDecisionType) {
