@@ -1485,6 +1485,9 @@ public enum AsylumCaseFieldDefinition {
     DATE_CLIENT_LEAVE_UK(
         "dateClientLeaveUk", new TypeReference<String>(){}),
 
+    DATE_CLIENT_LEAVE_UK_ADMIN_J(
+        "dateClientLeaveUkAdminJ", new TypeReference<String>(){}),
+
     OUT_OF_COUNTRY_MOBILE_NUMBER(
         "outOfCountryMobileNumber", new TypeReference<String>(){}),
 
@@ -2101,8 +2104,9 @@ public enum AsylumCaseFieldDefinition {
 
     REHEARD_HEARING_DOCUMENTS_COLLECTION(
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
-
-    ;
+  
+    OOC_APPEAL_ADMIN_J(
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){});
 
     private final String value;
     private final TypeReference typeReference;

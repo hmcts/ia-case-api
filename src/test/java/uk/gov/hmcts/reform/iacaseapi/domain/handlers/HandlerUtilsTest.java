@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -175,5 +180,36 @@ class HandlerUtilsTest {
         String filePath = "/readJsonNonArray.json";
         List<String> result = HandlerUtils.readJsonFileList(filePath, "key");
         assertEquals(new ArrayList<>(), result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryDecisionType.class, names = { "REFUSAL_OF_PROTECTION", "REMOVAL_OF_CLIENT" })
+    public void outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit_returns_false(OutOfCountryDecisionType type) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(type));
+
+        assertFalse(outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryDecisionType.class, names = { "REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT" })
+    public void outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit_returns_true(OutOfCountryDecisionType type) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(type));
+
+        assertTrue(outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase));
+    }
+
+    @Test
+    public void outOfCountryCircumstances_returns_false() {
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(ENTRY_CLEARANCE_DECISION));
+
+        assertTrue(isEntryClearanceDecision(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryCircumstances.class, names = { "LEAVE_UK", "NONE" })
+    public void outOfCountryCircumstances_returns_true(OutOfCountryCircumstances outOfCountryCircumstances) {
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(outOfCountryCircumstances));
+
+        assertFalse(isEntryClearanceDecision(asylumCase));
     }
 }
