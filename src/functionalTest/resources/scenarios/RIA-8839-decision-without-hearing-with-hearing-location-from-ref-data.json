@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2122 Make decision without hearing",
+  "description": "RIA-8839 Make decision without hearing when listing location is from ref data",
   "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -10,8 +10,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isCaseUsingLocationRefData": "Yes",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
-          "listCaseHearingLength": "90"
+          "listCaseHearingLength": "120"
         }
       }
     }
@@ -22,10 +23,12 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "listCaseHearingCentre": "decisionWithoutHearing",
+        "isCaseUsingLocationRefData": "Yes",
+        "isDecisionWithoutHearing": "Yes",
+        "listCaseHearingCentre": null,
         "ariaListingReference": "XX/00000/0000",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
-        "listCaseHearingLength": "90"
+        "listCaseHearingLength": "120"
       }
     }
   }

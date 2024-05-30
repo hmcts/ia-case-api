@@ -179,7 +179,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

@@ -2622,10 +2622,11 @@ public enum AsylumCaseFieldDefinition {
     REHEARING_REASON(
         "rehearingReason", new TypeReference<String>() {}),
 
-    REHEARD_HEARING_DOCUMENTS_COLLECTION(
-            "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
+    REHEARD_HEARING_DOCUMENTS_COLLECTION("reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
-    HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<String>(){});
+    HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<String>(){}),
+
+    IS_DECISION_WITHOUT_HEARING("isDecisionWithoutHearing", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
