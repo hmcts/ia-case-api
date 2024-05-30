@@ -1482,6 +1482,9 @@ public enum AsylumCaseFieldDefinition {
     DATE_CLIENT_LEAVE_UK(
         "dateClientLeaveUk", new TypeReference<String>(){}),
 
+    DATE_CLIENT_LEAVE_UK_ADMIN_J(
+        "dateClientLeaveUkAdminJ", new TypeReference<String>(){}),
+
     OUT_OF_COUNTRY_MOBILE_NUMBER(
         "outOfCountryMobileNumber", new TypeReference<String>(){}),
 
@@ -2067,7 +2070,10 @@ public enum AsylumCaseFieldDefinition {
             "updateTribunalDecisionDateRule32", new TypeReference<String>(){}),
 
     REASON_REHEARING_RULE_32(
-            "reasonRehearingRule32", new TypeReference<String>(){})
+            "reasonRehearingRule32", new TypeReference<String>(){}),
+
+    OOC_APPEAL_ADMIN_J(
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
 
     ;
 
