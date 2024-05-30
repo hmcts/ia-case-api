@@ -1,0 +1,98 @@
+{
+  "description": "RIA-8772 Create case summary on remitted reheard should append to complex reheard documents collection",
+  "launchDarklyKey": "dlrm-remitted-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "createCaseSummary",
+      "state": "finalBundling",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseFlagSetAsideReheardExists": "Yes",
+          "caseSummaryDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "case-summary.pdf"
+          },
+          "caseSummaryDescription": "Case summary",
+          "reheardHearingDocumentsCollection": [
+            {
+              "id": "1",
+              "value": {
+                "reheardHearingDocs": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document": {
+                        "document_url": "http://document-store/BBB",
+                        "document_binary_url": "http://document-store/BBB/binary",
+                        "document_filename": "PA 11111 2019-Awan-hearing-notice.PDF"
+                      },
+                      "description": "",
+                      "dateUploaded": "{$TODAY}",
+                      "tag": "reheardHearingNotice",
+                      "suppliedBy": ""
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseSummaryDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "case-summary.pdf"
+        },
+        "caseSummaryDescription": "Case summary",
+        "reheardHearingDocumentsCollection": [
+          {
+            "id": "1",
+            "value": {
+              "reheardHearingDocs": [
+                {
+                  "id": "2",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/AAA",
+                      "document_binary_url": "http://document-store/AAA/binary",
+                      "document_filename": "case-summary.pdf"
+                    },
+                    "description": "Case summary",
+                    "dateUploaded": "{$TODAY}",
+                    "tag": "caseSummary"
+                  }
+                },
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "PA 11111 2019-Awan-hearing-notice.PDF"
+                    },
+                    "description": "",
+                    "dateUploaded": "{$TODAY}",
+                    "tag": "reheardHearingNotice",
+                    "suppliedBy": ""
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

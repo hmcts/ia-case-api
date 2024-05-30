@@ -320,7 +320,8 @@ class SendNotificationHandlerTest {
                         Event.DECIDE_COSTS_APPLICATION,
                         Event.DECIDE_FTPA_APPLICATION,
                         Event.UPDATE_TRIBUNAL_DECISION,
-                        Event.REQUEST_RESPONSE_REVIEW
+                        Event.REQUEST_RESPONSE_REVIEW,
+                        Event.MARK_APPEAL_AS_REMITTED
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {

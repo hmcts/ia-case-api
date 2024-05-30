@@ -16,12 +16,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_SUMMARY_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.assertj.core.util.Lists;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +37,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReheardHearingDocuments;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -44,6 +48,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -69,6 +74,8 @@ class CreateCaseSummaryHandlerTest {
     private List<IdValue<DocumentWithMetadata>> existingHearingDocuments;
     @Mock
     private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+    @Mock
+    private FeatureToggler featureToggler;
 
     @Captor
     private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> hearingDocumentsCaptor;
@@ -80,7 +87,8 @@ class CreateCaseSummaryHandlerTest {
         createCaseSummaryHandler =
             new CreateCaseSummaryHandler(
                 documentReceiver,
-                documentsAppender
+                documentsAppender,
+                featureToggler
             );
 
         when(callback.getEvent()).thenReturn(Event.CREATE_CASE_SUMMARY);
@@ -233,6 +241,63 @@ class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
 
+    }
+
+    @Test
+    void should_add_case_summary_to_the_reheard_documents_complex_collection() {
+        IdValue<DocumentWithMetadata> hearingDocWithMetadata = getDocumentWithMetadataIdValue();
+        final List<IdValue<DocumentWithMetadata>> listOfDocumentsWithMetadata = Lists.newArrayList(hearingDocWithMetadata);
+        IdValue<ReheardHearingDocuments> reheardHearingDocuments =
+                new IdValue<>("1", new ReheardHearingDocuments(listOfDocumentsWithMetadata));
+        final List<IdValue<ReheardHearingDocuments>> listOfReheardDocs = Lists.newArrayList(reheardHearingDocuments);
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("dlrm-remitted-feature-flag", false)).thenReturn(true);
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.of(listOfReheardDocs));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
+
+        verify(documentReceiver, times(1))
+                .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+
+        verify(documentsAppender, times(1)).append(
+                hearingDocumentsCaptor.capture(),
+                eq(Collections.singletonList(caseSummaryWithMetadata)),
+                eq(DocumentTag.CASE_SUMMARY)
+        );
+
+        verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS_COLLECTION, listOfReheardDocs);
+
+    }
+
+    @NotNull
+    private static IdValue<DocumentWithMetadata> getDocumentWithMetadataIdValue() {
+        final DocumentWithMetadata documentWithMetadata =
+                new DocumentWithMetadata(
+                        new Document("documentUrl1",
+                                "documentBinaryUrl1",
+                                "Reheard-hearing-notice"),
+                        "",
+                        "01-01-2024",
+                        DocumentTag.REHEARD_HEARING_NOTICE,
+                        ""
+                );
+
+        IdValue<DocumentWithMetadata> hearingDocWithMetadata =
+                new IdValue<>("1", documentWithMetadata);
+        return hearingDocWithMetadata;
     }
 
     @Test
