@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,17 +27,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
@@ -113,6 +111,47 @@ class PaymentStateHandlerTest {
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"APPEAL_STARTED", "APPEAL_STARTED_BY_ADMIN", "PENDING_PAYMENT", "ADJOURNED"}, mode = EXCLUDE)
+    void should_return_base_state_for_pa_pay_later_payment_appeal_any_state_dlrm_flag_on(State state) {
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
+        when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(state);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"APPEAL_STARTED", "APPEAL_STARTED_BY_ADMIN", "PENDING_PAYMENT", "ADJOURNED"}, mode = EXCLUDE)
+    void should_return_base_state_for_pa_pay_later_payment_appeal_any_state(State state) {
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
+        when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(state);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
