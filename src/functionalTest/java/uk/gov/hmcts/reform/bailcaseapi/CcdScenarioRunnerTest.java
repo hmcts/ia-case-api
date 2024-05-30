@@ -133,6 +133,8 @@ public class CcdScenarioRunnerTest {
                     Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                     final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
 
+                    description = MapValueExtractor.extract(scenario, "description");
+                    
                     Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
                         ? MapValueExtractor.extract(scenario, "launchDarklyKey")
                         : MapValueExtractor.extract(scenario, "enabled");
