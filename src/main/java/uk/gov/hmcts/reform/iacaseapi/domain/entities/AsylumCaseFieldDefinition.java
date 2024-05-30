@@ -2051,6 +2051,18 @@ public enum AsylumCaseFieldDefinition {
     UPDATED_APPEAL_DECISION(
         "updatedAppealDecision", new TypeReference<String>(){}),
 
+    UPLOAD_REMITTAL_DECISION_DOC(
+        "uploadRemittalDecisionDoc", new TypeReference<Document>(){}),
+
+    UPLOAD_OTHER_REMITTAL_DOCS(
+        "uploadOtherRemittalDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    REMITTAL_DOCUMENTS(
+        "remittalDocuments", new TypeReference<List<IdValue<RemittalDocument>>>(){}),
+
+    COURT_REFERENCE_NUMBER(
+        "courtReferenceNumber", new TypeReference<String>(){}),
+
     REMISSION_OPTION(
         "remissionOption", new TypeReference<RemissionOption>(){}),
 
@@ -2075,10 +2087,26 @@ public enum AsylumCaseFieldDefinition {
     REASON_REHEARING_RULE_32(
             "reasonRehearingRule32", new TypeReference<String>(){}),
 
-    OOC_APPEAL_ADMIN_J(
-    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
+    SOURCE_OF_REMITTAL(
+            "sourceOfRemittal", new TypeReference<SourceOfRemittal>(){}),
 
-    ;
+    JUDGES_NAMES_TO_EXCLUDE(
+            "judgesNamesToExclude", new TypeReference<String>(){}),
+
+    REMITTED_ADDITIONAL_INSTRUCTIONS(
+            "remittedAdditionalInstructions", new TypeReference<String>(){}),
+
+    APPEAL_REMITTED_DATE(
+        "appealRemittedDate", new TypeReference<String>() {}),
+
+    REHEARING_REASON(
+        "rehearingReason", new TypeReference<String>() {}),
+
+    REHEARD_HEARING_DOCUMENTS_COLLECTION(
+            "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
+  
+    OOC_APPEAL_ADMIN_J(
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){});
 
     private final String value;
     private final TypeReference typeReference;
