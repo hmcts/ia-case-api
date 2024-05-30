@@ -1,10 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ADJOURNED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED_BY_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.FAILED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 
 import java.util.List;
 import java.util.Optional;
@@ -89,36 +99,28 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
             .map(journeyType -> journeyType == JourneyType.AIP)
             .orElse(false);
+        State currentState = callback.getCaseDetails().getState();
+        List<State> invalidStates = List.of(APPEAL_STARTED, APPEAL_STARTED_BY_ADMIN, PENDING_PAYMENT, ADJOURNED);
+        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
+        boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
+        boolean isPaymentEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
+        boolean isValidState = !invalidStates.contains(currentState);
         if (isDlrmFeeRemission) {
             if (isAipJourney) {
                 Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
                 Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-                String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
-                State currentState = callback.getCaseDetails().getState();
                 State state = isRemissionExistsAip(remissionOption, helpWithFeesOption)
-                    && !paAppealTypePaymentOption.equals(PAY_LATER) ? PENDING_PAYMENT : APPEAL_SUBMITTED;
-                List<State> invalidStates = List.of(APPEAL_STARTED, APPEAL_STARTED_BY_ADMIN, PENDING_PAYMENT, ADJOURNED);
-                if (paAppealTypePaymentOption.equals(PAY_LATER)
-                    && callback.getEvent() == Event.PAYMENT_APPEAL
-                    && !invalidStates.contains(currentState)) {
+                    && !isPayLaterAppeal ? PENDING_PAYMENT : APPEAL_SUBMITTED;
+                if (isPayLaterAppeal && isPaymentEvent && isValidState) {
                     state = currentState;
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, state);
             } else {
                 return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
             }
+        } else if (isAipJourney && isPayLaterAppeal && isPaymentEvent && isValidState) {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
-            if (isAipJourney) {
-                String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
-                State currentState = callback.getCaseDetails().getState();
-                List<State> invalidStates = List.of(APPEAL_STARTED, APPEAL_STARTED_BY_ADMIN, PENDING_PAYMENT, ADJOURNED);
-                boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
-                boolean isPaymentEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
-                boolean isValidState = !invalidStates.contains(currentState);
-                if (isPayLaterAppeal && isPaymentEvent && isValidState) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, currentState);
-                }
-            }
             return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
