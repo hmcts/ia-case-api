@@ -425,10 +425,6 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
-            new Value(ADJOURN.name(), ADJOURN.toString()),
-            new Value(EXPEDITE.name(), EXPEDITE.toString()),
-            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
