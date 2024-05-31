@@ -31,6 +31,7 @@ java:
     AAC_URL: https://aac-${SERVICE_FQDN}
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+    DUMMY: true
   keyVaults:
     ia:
       secrets:
@@ -100,7 +101,7 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-609
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-889
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -149,7 +150,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-907
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1178
     #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net

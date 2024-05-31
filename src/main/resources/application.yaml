@@ -531,6 +531,9 @@ launchDarkly:
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
 
+govUkHolidays:
+  url: https://www.gov.uk/
+
 commonData:
   api:
     url: ${COMMON_DATA_API:http://localhost:8991}

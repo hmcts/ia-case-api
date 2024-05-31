@@ -45,6 +45,9 @@ def secrets = [
         secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
         secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
+        secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+        secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+
         secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
         secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 

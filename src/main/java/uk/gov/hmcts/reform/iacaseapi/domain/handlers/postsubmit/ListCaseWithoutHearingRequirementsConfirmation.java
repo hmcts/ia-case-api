@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
@@ -40,26 +41,38 @@ public class ListCaseWithoutHearingRequirementsConfirmation implements PostSubmi
         boolean isAutoRequestHearing = autoRequestHearingService
             .shouldAutoRequestHearing(asylumCase, !isPanelRequired(asylumCase));
 
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
         return isAutoRequestHearing
             ? autoRequestHearingService.buildAutoHearingRequestConfirmation(
                 asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
-            : buildConfirmationResponse(isPanelRequired(asylumCase));
+            : buildConfirmationResponse(isPanelRequired(asylumCase),
+                isAcceleratedDetainedAppeal);
     }
 
-    private PostSubmitCallbackResponse buildConfirmationResponse(boolean panelRequired) {
+    private PostSubmitCallbackResponse buildConfirmationResponse(boolean panelRequired,
+                                                                 boolean isAcceleratedDetainedAppeal) {
 
         PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
-        if (panelRequired) {
-            response.setConfirmationHeader("# List without requirements complete");
-            response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
-                                     + "The listing team will now list the case. All parties will be notified when "
-                                     + "the Hearing Notice is available to view");
-        } else {
+
+        if (isAcceleratedDetainedAppeal) {
             response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
             response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
-                + "The listing team will now list the case."
-                + " All parties will be notified when the Hearing Notice is available to view.<br><br>"
+                    + "All parties will be notified of the agreed adjustments.<br><br>"
             );
+        } else {
+            if (panelRequired) {
+                response.setConfirmationHeader("# List without requirements complete");
+                response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
+                        + "The listing team will now list the case. All parties will be notified when "
+                        + "the Hearing Notice is available to view");
+            } else {
+                response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
+                response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
+                        + "The listing team will now list the case."
+                        + " All parties will be notified when the Hearing Notice is available to view.<br><br>"
+                );
+            }
         }
 
         return response;
