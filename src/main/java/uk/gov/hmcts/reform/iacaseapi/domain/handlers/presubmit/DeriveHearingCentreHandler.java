@@ -3,15 +3,29 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.HARMONDSWORTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WA_DUMMY_POSTCODE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -22,20 +36,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @Component
+@RequiredArgsConstructor
 public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HearingCentreFinder hearingCentreFinder;
     private final CaseManagementLocationService caseManagementLocationService;
-
-    public DeriveHearingCentreHandler(
-            HearingCentreFinder hearingCentreFinder,
-            CaseManagementLocationService caseManagementLocationService) {
-        this.hearingCentreFinder = hearingCentreFinder;
-        this.caseManagementLocationService = caseManagementLocationService;
-    }
+    private final LocationRefDataService locationRefDataService;
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -64,22 +74,20 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        Optional<String> detentionFacility = asylumCase
+            .read(DETENTION_FACILITY, String.class);
+        boolean appellantInDetention = asylumCase
+            .read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
 
-        Optional<String> detentionFacility = asylumCase.read(DETENTION_FACILITY, String.class);
-
-        if (asylumCase.read(HEARING_CENTRE).isEmpty()
+        if (hearingCentreNotSet(asylumCase)
                 || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
-            if (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES) {
-
+            if (appellantInDetention) {
                 // for detained non-ADA non-AAA cases, set Hearing Centre according to Detention Facility
                 if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == NO
-                        && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO
-                        && !detentionFacility.equals(Optional.of(DetentionFacility.OTHER.getValue()))) {
+                    && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO
+                    && !detentionFacility.equals(Optional.of(DetentionFacility.OTHER.getValue()))) {
                     setHearingCentreFromDetentionFacilityName(asylumCase);
                 } else {
                     //assign dedicated Hearing Centre Harmondsworth for all other detained appeals
@@ -89,22 +97,21 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                     String staffLocationName = StaffLocation.getLocation(HARMONDSWORTH).getName();
                     asylumCase.write(STAFF_LOCATION, staffLocationName);
                     asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+                        caseManagementLocationService.getCaseManagementLocation(staffLocationName));
                 }
 
             } else {
                 // set Hearing Centre by Postcode for non-detained cases
-                trySetHearingCentreFromPostcode(asylumCase);
+                setHearingCentreFromPostcode(asylumCase);
             }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private Optional<String> getAppealPostcode(
-            AsylumCase asylumCase
-    ) {
+    private Optional<String> getAppealPostcode(AsylumCase asylumCase) {
         Optional<String> optionalWaDummyPostcode = asylumCase.read(WA_DUMMY_POSTCODE, String.class);
+
         if (optionalWaDummyPostcode.isPresent()) {
             return optionalWaDummyPostcode;
         }
@@ -139,32 +146,29 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         return Optional.empty();
     }
 
-    private void trySetHearingCentreFromPostcode(
-            AsylumCase asylumCase
-    ) {
+    private void setHearingCentreFromPostcode(AsylumCase asylumCase) {
         Optional<String> optionalAppellantPostcode = getAppealPostcode(asylumCase);
 
-        if (optionalAppellantPostcode.isPresent()) {
-            String appellantPostcode = optionalAppellantPostcode.get();
-            HearingCentre hearingCentre = hearingCentreFinder.find(appellantPostcode);
-            asylumCase.write(HEARING_CENTRE, hearingCentre);
-            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+        HearingCentre hearingCentre = optionalAppellantPostcode
+            .map(hearingCentreFinder::find)
+            .orElseGet(hearingCentreFinder::getDefaultHearingCentre);
 
-            String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
-            asylumCase.write(STAFF_LOCATION, staffLocationName);
-            asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                    caseManagementLocationService.getCaseManagementLocation(staffLocationName));
-        } else {
-            asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
-            asylumCase
-                    .write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            DynamicList hearingCentreDynamicList = locationRefDataService.getHearingCentreDynamicList();
+            hearingCentreDynamicList.getListItems().stream()
+                .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
+                .findFirst().ifPresent(hearingCentreDynamicList::setValue);
 
-            String staffLocationName =
-                    StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName();
-            asylumCase.write(STAFF_LOCATION, staffLocationName);
-            asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                    caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+            asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
         }
+
+        asylumCase.write(HEARING_CENTRE, hearingCentre);
+        asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+
+        String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
+        asylumCase.write(STAFF_LOCATION, staffLocationName);
+        asylumCase.write(CASE_MANAGEMENT_LOCATION,
+            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 
     public void setHearingCentreFromDetentionFacilityName(AsylumCase asylumCase) {
@@ -186,8 +190,14 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
             asylumCase.write(STAFF_LOCATION, staffLocationName);
             asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                    caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+                caseManagementLocationService.getCaseManagementLocation(staffLocationName));
         }
+    }
 
+    private boolean hearingCentreNotSet(AsylumCase asylumCase) {
+
+        return isCaseUsingLocationRefData(asylumCase)
+            ? asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST).isEmpty()
+            : asylumCase.read(HEARING_CENTRE).isEmpty();
     }
 }

@@ -12,10 +12,32 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IRC_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_PRACTICE_ADDRESS_EJP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WA_DUMMY_POSTCODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +50,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -38,6 +66,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @SuppressWarnings("unchecked")
@@ -60,13 +89,15 @@ class DeriveHearingCentreHandlerTest {
     private HearingCentreFinder hearingCentreFinder;
     @Mock
     private CaseManagementLocationService caseManagementLocationService;
+    @Mock
+    private LocationRefDataService locationRefDataService;
 
     private DeriveHearingCentreHandler deriveHearingCentreHandler;
 
     @BeforeEach
     public void setUp() {
         deriveHearingCentreHandler =
-            new DeriveHearingCentreHandler(hearingCentreFinder, caseManagementLocationService);
+            new DeriveHearingCentreHandler(hearingCentreFinder, caseManagementLocationService, locationRefDataService);
     }
 
     @ParameterizedTest
@@ -106,6 +137,58 @@ class DeriveHearingCentreHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(hearingCentreFinder, times(1)).find("A123 4BC");
         verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER, Manchester Tribunal Hearing Centre - Piccadilly Exchange,",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER, Manchester Tribunal Hearing Centre - Piccadilly Exchange,",
+
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE, Taylor House Tribunal Hearing Centre,",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE, Taylor House Tribunal Hearing Centre,",
+
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS, Hatton Cross Tribunal Hearing Centre,",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS, Hatton Cross Tribunal Hearing Centre,",
+
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle, NEWCASTLE, Newcastle Civil And Family Courts And Tribunals Centre,",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle, NEWCASTLE, Newcastle Civil And Family Courts And Tribunals Centre,"
+    })
+    void should_set_hearing_centre_dynamic_list_if_location_ref_data_enabled(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation, String courtName) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
+        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
+        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
+        DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
+        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(hearingCentreFinder, times(1)).find("A123 4BC");
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
 
         verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
         verify(asylumCase, times(1))
@@ -347,7 +430,7 @@ class DeriveHearingCentreHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(DetentionFacility.OTHER));
+        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(OTHER));
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.of(existingHearingCentre));
         when(asylumCase.read(STAFF_LOCATION))
             .thenReturn(Optional.of(StaffLocation.getLocation(existingHearingCentre).getName()));
@@ -369,7 +452,7 @@ class DeriveHearingCentreHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(DetentionFacility.OTHER));
+        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(OTHER));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -392,7 +475,7 @@ class DeriveHearingCentreHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(DetentionFacility.PRISON));
+        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(PRISON));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(PRISON_NAME, String.class)).thenReturn(Optional.of(prisonName));
@@ -428,7 +511,7 @@ class DeriveHearingCentreHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(DetentionFacility.IRC));
+        when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(IRC));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());

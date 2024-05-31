@@ -46,4 +46,30 @@ public class StaffLocation {
                 throw new IllegalArgumentException("no hearing centre found");
         }
     }
+
+    public static Location getLocation(String epimsId) throws IllegalArgumentException {
+        switch (epimsId) {
+            case "231596":
+            case "618632":
+            case "787030":
+                return new Location("", "Birmingham");
+            case "366559":
+            case "999973":
+                return new Location("", "Glasgow");
+            case "698118":
+                return new Location("", "Bradford");
+            case "386417":
+                return new Location("", "Hatton Cross");
+            case "512401":
+                return new Location("", "Manchester");
+            case "366796":
+                return new Location("", "Newcastle");
+            case "227101":
+                return new Location("", "Newport");
+            case "765324":
+                return new Location("", "Taylor House");
+            default:
+                throw new IllegalArgumentException("no hearing centre found");
+        }
+    }
 }
