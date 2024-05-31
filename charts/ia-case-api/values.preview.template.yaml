@@ -30,6 +30,7 @@ java:
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
     AAC_URL: https://aac-${SERVICE_FQDN}
     DUMMY: true
+    HEARINGS_EVENT_QUEUE_NAME: ${SERVICE_NAME}-servicebus-tribunals-to-hearing-api
   keyVaults:
     ia:
       secrets:
@@ -53,6 +54,12 @@ java:
       secretRef: postgres
       key: PASSWORD
       disabled: false
+    HEARINGS_EVENT_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: ia-sb-preview
+      key: connectionString
+    AMQP_PASSWORD:
+      secretRef: ia-sb-preview
+      key: primaryKey
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
@@ -391,6 +398,67 @@ ia-bail-case-api:
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/hearings-api:latest
+#    image: hmctspublic.azurecr.io/ia/hearings-api:pr-95
+    releaseNameOverride: ${SERVICE_NAME}-hearings-api
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+    environment:
+      HEARINGS_API_URL: "https://{{ .Release.Name }}-hearings-api.preview.platform.hmcts.net"
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-hearings-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      XUI_URL: "https://xui-{{ .Release.Name }}.preview.platform.hmcts.net"
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "hmc-ia-subs-to-cft-pr-2154"
+      HMC_HEARINGS_LISTENING_ENABLED: true
+      HMC_HEARINGS_TOPIC_POLICY_NAME: SendAndListenSharedAccessKey
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: docmosis-enabled
+            alias: IA_DOCMOSIS_ENABLED
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: prof-ref-data-url
+            alias: PROF_REF_DATA_URL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: hmc-servicebus-connection-string
+            alias: HEARINGS_TOPIC_CONNECTION_STRING
+          - name: hmc-servicebus-shared-access-key-tf
+            alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
+
 ia-timed-event-service:
   enabled: true
   java:
@@ -599,6 +667,8 @@ xui-webapp:
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
+      SERVICES_HEARINGS_COMPONENT_API: http://jurisdiction-hearings-api-aat.service.core-compute-aat.internal
+      SERVICES_HEARINGS_COMPONENT_API_IA: http://${SERVICE_NAME}-ia-hearings-api
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
@@ -1292,4 +1362,5 @@ postgresql:
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
+      - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
 

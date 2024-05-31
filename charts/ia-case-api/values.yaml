@@ -90,6 +90,8 @@ ia-home-office-integration-api:
   enabled: false
 ia-bail-case-api:
   enabled: false
+ia-hearings-api:
+  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:
