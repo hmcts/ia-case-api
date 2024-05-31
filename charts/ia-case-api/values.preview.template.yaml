@@ -402,8 +402,8 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/hearings-api:latest
-#    image: hmctspublic.azurecr.io/ia/hearings-api:pr-95
+#    image: hmctspublic.azurecr.io/ia/hearings-api:latest
+    image: hmctspublic.azurecr.io/ia/hearings-api:pr-416
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     environment:
@@ -412,7 +412,7 @@ ia-hearings-api:
       AAC_URL: https://aac-${SERVICE_FQDN}
       CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
       DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
-      IA_IDAM_REDIRECT_URI: "https://ia-hearings-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+      IA_IDAM_REDIRECT_URI: "https://{{ .Release.Name }}-hearings-api.preview.platform.hmcts.net/oauth2/callback"
       IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -668,7 +668,7 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       SERVICES_HEARINGS_COMPONENT_API: http://jurisdiction-hearings-api-aat.service.core-compute-aat.internal
-      SERVICES_HEARINGS_COMPONENT_API_IA: http://${SERVICE_NAME}-ia-hearings-api
+      SERVICES_HEARINGS_COMPONENT_API_IA: http://${SERVICE_NAME}-hearings-api
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
