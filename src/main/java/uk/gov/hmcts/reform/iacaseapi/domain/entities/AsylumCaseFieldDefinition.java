@@ -2106,7 +2106,11 @@ public enum AsylumCaseFieldDefinition {
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
   
     OOC_APPEAL_ADMIN_J(
-    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){});
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
+
+    IS_DECISION_RULE31_CHANGED(
+            "isDecisionRule31Changed", new TypeReference<YesOrNo>(){})
+    ;
 
     private final String value;
     private final TypeReference typeReference;
