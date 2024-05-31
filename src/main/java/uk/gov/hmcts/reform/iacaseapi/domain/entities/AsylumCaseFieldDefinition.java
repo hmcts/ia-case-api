@@ -462,7 +462,7 @@ public enum AsylumCaseFieldDefinition {
         "listCaseHearingCentre", new TypeReference<HearingCentre>(){}),
 
     LIST_CASE_HEARING_CENTRE_ADDRESS(
-        "listCaseHearingCentreAddress", new TypeReference<HearingCentre>(){}),
+        "listCaseHearingCentreAddress",  new TypeReference<String>(){}),
 
     LISTING_LOCATION(
         "listingLocation", new TypeReference<DynamicList>(){}),
