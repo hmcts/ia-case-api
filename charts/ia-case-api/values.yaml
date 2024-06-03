@@ -92,6 +92,8 @@ ia-bail-case-api:
   enabled: false
 ia-hearings-api:
   enabled: false
+hmc-cft-hearing-service:
+  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:

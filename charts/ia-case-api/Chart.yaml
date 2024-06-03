@@ -90,3 +90,7 @@ dependencies:
     version: 1.0.2
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: postgresql.enabled
+  - name: hmc-cft-hearing-service
+    version: 1.6.18
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: hmc-cft-hearing-service.enabled

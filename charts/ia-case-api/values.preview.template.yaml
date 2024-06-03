@@ -417,7 +417,8 @@ ia-hearings-api:
       OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      HMC_API_URL: "http://{{ .Release.Name }}-hmc-cft-hearing-service"
+      SERVICES_HMC_HEARINGS_COMPONENT_API: "http://{{ .Release.Name }}-hmc-cft-hearing-service"
       XUI_URL: "https://xui-{{ .Release.Name }}.preview.platform.hmcts.net"
       HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
       HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
@@ -461,6 +462,48 @@ ia-hearings-api:
             alias: HEARINGS_TOPIC_CONNECTION_STRING
           - name: hmc-servicebus-shared-access-key-tf
             alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
+
+hmc-cft-hearing-service:
+  enabled: true
+  java:
+    releaseNameOverride: ${SERVICE_NAME}-hmc-cft-hearing-service
+    image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
+    environment:
+      HMC_SERVICE_BUS_TOPIC: "hmc-to-cft"
+      HMC_SERVICE_BUS_SUBSCRIPTION: "hmc-ia-subs-to-cft"
+      HMC_SERVICE_BUS_QUEUE: hmc-from-hmi
+      HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi
+      CFT_HEARING_SERVICE_DB_HOST: ia-preview.postgres.database.azure.com
+      CFT_HEARING_SERVICE_DB_NAME: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
+      CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      CFT_HEARING_SERVICE_DB_PORT: 5432
+      ROLE_ASSIGNMENT_URL: "http://${SERVICE_NAME}-am-role-assignment-service"
+      SPRING_CONFIG_IMPORT: "optional:configtree:/mnt/secrets/hmc/,optional:configtree:/mnt/secrets/sscs/"
+      CCD_DATA_STORE_API_BASE_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      HMC_ACCESS_CONTROL_ENABLED: true
+    secrets:
+      HMC_SERVICE_BUS_CONNECTION_STRING:
+        secretRef: servicebus-secret-topic-{{ .Release.Name }}-servicebus-hmc-to-cft
+        key: connectionString
+      HMC_QUEUE_CONNECTION_STRING:
+        secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-from-hmi
+        key: connectionString
+      HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
+        secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-to-hmi
+        key: connectionString
+      CFT_HEARING_SERVICE_DB_PASSWORD:
+        secretRef: "{{ .Values.global.postgresSecret }}"
+        key: PASSWORD
+        disabled: false
+    keyVaults:
+      hmc:
+        resourceGroup: hmc-shared
+        secrets:
+          - name: AppInsightsInstrumentationKey
+      ia:
+        secrets:
+          - name: preview-ccd-db-username
+            alias: CFT_HEARING_SERVICE_DB_USERNAME
 
 ia-timed-event-service:
   enabled: true
@@ -672,6 +715,7 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       SERVICES_HEARINGS_COMPONENT_API: http://jurisdiction-hearings-api-aat.service.core-compute-aat.internal
       SERVICES_HEARINGS_COMPONENT_API_IAC: http://${SERVICE_NAME}-hearings-api
+      SERVICES_HMC_HEARINGS_COMPONENT_API: "http://{{ .Release.Name }}-hmc-cft-hearing-service"
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
@@ -781,7 +825,7 @@ ccd:
         DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,hmc_cft_hearing_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
