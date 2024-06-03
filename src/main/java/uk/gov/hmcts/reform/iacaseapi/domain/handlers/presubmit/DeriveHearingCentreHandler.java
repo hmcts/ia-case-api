@@ -75,38 +75,60 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<String> detentionFacility = asylumCase
-            .read(DETENTION_FACILITY, String.class);
-        boolean appellantInDetention = asylumCase
-            .read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
 
         if (hearingCentreNotSet(asylumCase)
                 || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
-            if (appellantInDetention) {
+            HearingCentre hearingCentre = getHearingCentreFromPostcode(asylumCase);
+
+            boolean appellantInDetention = asylumCase
+                .read(APPELLANT_IN_DETENTION, YesOrNo.class)
+                .map(inDetention -> YES == inDetention)
+                .orElse(false);
+
+            if (appellantInDetention && isDetainedNonAdaNonAaaAppeal(asylumCase)) {
                 // for detained non-ADA non-AAA cases, set Hearing Centre according to Detention Facility
-                if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == NO
-                    && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO
-                    && !detentionFacility.equals(Optional.of(DetentionFacility.OTHER.getValue()))) {
-                    setHearingCentreFromDetentionFacilityName(asylumCase);
-                } else {
-                    //assign dedicated Hearing Centre Harmondsworth for all other detained appeals
-                    asylumCase.write(HEARING_CENTRE, HARMONDSWORTH);
-                    asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HARMONDSWORTH);
-
-                    String staffLocationName = StaffLocation.getLocation(HARMONDSWORTH).getName();
-                    asylumCase.write(STAFF_LOCATION, staffLocationName);
-                    asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                        caseManagementLocationService.getCaseManagementLocation(staffLocationName));
-                }
-
-            } else {
-                // set Hearing Centre by Postcode for non-detained cases
-                setHearingCentreFromPostcode(asylumCase);
+                hearingCentre = getHearingCentreFromDetentionFacilityName(asylumCase);
+            } else if (appellantInDetention) {
+                //assign dedicated Hearing Centre Harmondsworth for all other detained appeals
+                hearingCentre = HARMONDSWORTH;
             }
+
+            setHearingCentre(asylumCase, hearingCentre);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isDetainedNonAdaNonAaaAppeal(AsylumCase asylumCase) {
+        Optional<String> detentionFacility = asylumCase
+            .read(DETENTION_FACILITY, String.class);
+
+        return asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == NO
+               && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO
+               && !detentionFacility.equals(Optional.of(DetentionFacility.OTHER.getValue()));
+    }
+
+    private HearingCentre getHearingCentreFromPostcode(AsylumCase asylumCase) {
+        Optional<String> optionalAppellantPostcode = getAppealPostcode(asylumCase);
+
+        return optionalAppellantPostcode
+            .map(hearingCentreFinder::find)
+            .orElseGet(hearingCentreFinder::getDefaultHearingCentre);
+    }
+
+    public HearingCentre getHearingCentreFromDetentionFacilityName(AsylumCase asylumCase) {
+        final String prisonName = asylumCase.read(PRISON_NAME, String.class).orElse("");
+        final String ircName = asylumCase.read(IRC_NAME, String.class).orElse("");
+
+        if (prisonName.isEmpty() && ircName.isEmpty()) {
+            throw new RequiredFieldMissingException("Prison name and IRC name missing");
+
+        } else {
+            String detentionFacilityName = prisonName.isEmpty() ? ircName : prisonName;
+
+            return hearingCentreFinder.findByDetentionFacility(detentionFacilityName);
+        }
     }
 
     private Optional<String> getAppealPostcode(AsylumCase asylumCase) {
@@ -146,12 +168,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         return Optional.empty();
     }
 
-    private void setHearingCentreFromPostcode(AsylumCase asylumCase) {
-        Optional<String> optionalAppellantPostcode = getAppealPostcode(asylumCase);
-
-        HearingCentre hearingCentre = optionalAppellantPostcode
-            .map(hearingCentreFinder::find)
-            .orElseGet(hearingCentreFinder::getDefaultHearingCentre);
+    private void setHearingCentre(AsylumCase asylumCase, HearingCentre hearingCentre) {
 
         if (isCaseUsingLocationRefData(asylumCase)) {
             DynamicList hearingCentreDynamicList = locationRefDataService.getHearingCentreDynamicList();
@@ -164,34 +181,10 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
         asylumCase.write(HEARING_CENTRE, hearingCentre);
         asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
-
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
-    }
-
-    public void setHearingCentreFromDetentionFacilityName(AsylumCase asylumCase) {
-        final String prisonName = asylumCase.read(PRISON_NAME, String.class).orElse("");
-
-        final String ircName = asylumCase.read(IRC_NAME, String.class).orElse("");
-
-        if (prisonName.isEmpty() && ircName.isEmpty()) {
-            throw new RequiredFieldMissingException("Prison name and IRC name missing");
-
-        } else {
-
-            String detentionFacilityName = !prisonName.isEmpty() ? prisonName : ircName;
-
-            HearingCentre hearingCentre = hearingCentreFinder.findByDetentionFacility(detentionFacilityName);
-            asylumCase.write(HEARING_CENTRE, hearingCentre);
-            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
-
-            String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
-            asylumCase.write(STAFF_LOCATION, staffLocationName);
-            asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                caseManagementLocationService.getCaseManagementLocation(staffLocationName));
-        }
     }
 
     private boolean hearingCentreNotSet(AsylumCase asylumCase) {
