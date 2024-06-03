@@ -481,25 +481,25 @@ hmc-cft-hearing-service:
       SPRING_CONFIG_IMPORT: "optional:configtree:/mnt/secrets/hmc/,optional:configtree:/mnt/secrets/sscs/"
       CCD_DATA_STORE_API_BASE_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
       HMC_ACCESS_CONTROL_ENABLED: true
-    secrets:
-      HMC_SERVICE_BUS_CONNECTION_STRING:
-        secretRef: servicebus-secret-topic-{{ .Release.Name }}-servicebus-hmc-to-cft
-        key: connectionString
-      HMC_QUEUE_CONNECTION_STRING:
-        secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-from-hmi
-        key: connectionString
-      HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
-        secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-to-hmi
-        key: connectionString
-      CFT_HEARING_SERVICE_DB_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-        disabled: false
-    keyVaults:
-      hmc:
-        resourceGroup: hmc-shared
-        secrets:
-          - name: AppInsightsInstrumentationKey
+#    secrets:
+#      HMC_SERVICE_BUS_CONNECTION_STRING:
+#        secretRef: servicebus-secret-topic-{{ .Release.Name }}-servicebus-hmc-to-cft
+#        key: connectionString
+#      HMC_QUEUE_CONNECTION_STRING:
+#        secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-from-hmi
+#        key: connectionString
+#      HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
+#        secretRef: servicebus-secret-queue-{{ .Release.Name }}-servicebus-hmc-to-hmi
+#        key: connectionString
+#      CFT_HEARING_SERVICE_DB_PASSWORD:
+#        secretRef: "{{ .Values.global.postgresSecret }}"
+#        key: PASSWORD
+#        disabled: false
+#    keyVaults:
+#      hmc:
+#        resourceGroup: hmc-shared
+#        secrets:
+#          - name: AppInsightsInstrumentationKey
 
 ia-timed-event-service:
   enabled: true
