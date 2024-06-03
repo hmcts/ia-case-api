@@ -24,4 +24,11 @@
     <suppress until="2024-07-03">
         <cve>CVE-2023-1370</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: json-20230227.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+        <cve>CVE-2023-5072</cve>
+    </suppress>
 </suppressions>
