@@ -500,10 +500,6 @@ hmc-cft-hearing-service:
         resourceGroup: hmc-shared
         secrets:
           - name: AppInsightsInstrumentationKey
-      ia:
-        secrets:
-          - name: preview-ccd-db-username
-            alias: CFT_HEARING_SERVICE_DB_USERNAME
 
 ia-timed-event-service:
   enabled: true
