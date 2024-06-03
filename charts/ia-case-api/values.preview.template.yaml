@@ -30,7 +30,7 @@ java:
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
     AAC_URL: https://aac-${SERVICE_FQDN}
     DUMMY: true
-    HEARINGS_EVENT_QUEUE_NAME: ${SERVICE_NAME}-servicebus-tribunals-to-hearing-api
+    HEARINGS_EVENT_QUEUE_NAME: ${SERVICE_NAME}-servicebus-hmc-to-hearings-api
   keyVaults:
     ia:
       secrets:
@@ -426,6 +426,9 @@ ia-hearings-api:
       HMC_HEARINGS_TOPIC_POLICY_NAME: SendAndListenSharedAccessKey
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
 
+      HMC_DEPLOYMENT_ID: deployment-${SERVICE_NAME}
+      HMC_DEPLOYMENT_FILTER_ENABLED: true
+      CORE_CASE_DATA_CASE_TYPE_ID: Bail
     keyVaults:
       ia:
         resourceGroup: ia
@@ -668,7 +671,7 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       SERVICES_HEARINGS_COMPONENT_API: http://jurisdiction-hearings-api-aat.service.core-compute-aat.internal
-      SERVICES_HEARINGS_COMPONENT_API_IA: http://${SERVICE_NAME}-hearings-api
+      SERVICES_HEARINGS_COMPONENT_API_IAC: http://${SERVICE_NAME}-hearings-api
       WA_SUPPORTED_JURISDICTIONS: IA
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
@@ -1251,6 +1254,10 @@ servicebus:
         subscriptionNeeded: yes
       - name: jrd-topic
         subscriptionNeeded: yes
+      - name: main-topic
+        subscriptionNeeded: yes
+    queues:
+      - name: hmc-to-hearing-api
 
 ccd-message-publisher:
   enabled: true
