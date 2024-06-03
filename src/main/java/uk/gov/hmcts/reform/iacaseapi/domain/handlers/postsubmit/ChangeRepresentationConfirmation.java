@@ -97,10 +97,10 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             }
         } catch (Exception e) {
             if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
-                log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
+                log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: ",
                     callback.getCaseDetails().getId(), e);
             } else {
-                log.error("Unable to change representation (apply noc) for case id {}. Cause: {}",
+                log.error("Unable to change representation (apply noc) for case id {}. Cause: ",
                     callback.getCaseDetails().getId(), e);
             }
 
