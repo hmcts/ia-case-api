@@ -98,7 +98,7 @@ class StartAppealMidEventTest {
     private String correctUpperTribunalReferenceFormat = "UI-2020-123456";
     private String wrongUpperTribunalReferenceFormat = "UI-123456-2020";
     private String utReferenceErrorMessage = "Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.";
-    private String provideFixedAddressError = "The appellant must have provided a fixed address";
+    private String providePostalAddressError = "The appellant must have provided a postal address";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -440,7 +440,7 @@ class StartAppealMidEventTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(1).containsOnly(provideFixedAddressError);
+        assertThat(errors).hasSize(1).containsOnly(providePostalAddressError);
     }
 
     @Test

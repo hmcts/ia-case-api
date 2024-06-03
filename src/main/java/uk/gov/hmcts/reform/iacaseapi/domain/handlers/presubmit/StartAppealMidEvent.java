@@ -139,7 +139,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
             && (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class).equals(Optional.of(YesOrNo.NO))
                 || asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J, YesOrNo.class).equals(Optional.of(YesOrNo.NO)))) {
-            response.addError("The appellant must have provided a fixed address");
+            response.addError("The appellant must have provided a postal address");
         }
 
         return response;
