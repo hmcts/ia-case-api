@@ -464,12 +464,12 @@ ia-hearings-api:
             alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
 
 hmc-cft-hearing-service:
-  enabled: false
+  enabled: true
   java:
     releaseNameOverride: ${SERVICE_NAME}-hmc-cft-hearing-service
     image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
     environment:
-      HMC_SERVICE_BUS_TOPIC: "hmc-to-cft"
+      HMC_SERVICE_BUS_TOPIC: "hmc-to-cft-aat"
       HMC_SERVICE_BUS_SUBSCRIPTION: "hmc-ia-subs-to-cft"
       HMC_SERVICE_BUS_QUEUE: hmc-from-hmi
       HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi
@@ -1296,7 +1296,12 @@ servicebus:
         subscriptionNeeded: yes
       - name: main-topic
         subscriptionNeeded: yes
+      - name: hmc-to-cft
+    subscriptions:
+      - name: hmc-subs-to-cft
     queues:
+      - name: hmc-from-hmi
+      - name: hmc-to-hmi
       - name: hmc-to-hearing-api
 
 ccd-message-publisher:
