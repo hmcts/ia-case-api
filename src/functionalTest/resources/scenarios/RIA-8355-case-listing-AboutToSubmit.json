@@ -1,6 +1,5 @@
 {
   "description": "RIA-8355 Case listing event by Admin",
-  "disabled": true,
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

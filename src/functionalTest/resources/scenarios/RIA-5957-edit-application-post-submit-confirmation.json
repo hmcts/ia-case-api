@@ -1,6 +1,5 @@
 {
   "description": "Edit the application confirmation (post-submit REST call)",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

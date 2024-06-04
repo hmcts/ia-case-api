@@ -1,6 +1,5 @@
 {
   "description": "Make new application by admin - hearing centre appender",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

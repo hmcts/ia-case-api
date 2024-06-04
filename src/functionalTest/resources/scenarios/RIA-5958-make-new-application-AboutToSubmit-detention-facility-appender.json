@@ -1,6 +1,5 @@
 {
   "description": "Make new application by admin - detention facility appender Prison",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

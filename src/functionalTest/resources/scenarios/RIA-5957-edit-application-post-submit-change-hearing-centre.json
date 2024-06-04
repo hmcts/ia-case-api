@@ -1,6 +1,5 @@
 {
   "description": "Edit the application to change the hearing centre (post-submit REST call)",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

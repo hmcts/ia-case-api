@@ -1,6 +1,6 @@
 {
   "description": "Make new application by admin - append prior applications",
-  "disabled": "true",
+  "disabled" : true,
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

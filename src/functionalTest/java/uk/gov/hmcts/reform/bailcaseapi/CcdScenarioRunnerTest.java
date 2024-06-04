@@ -134,7 +134,7 @@ public class CcdScenarioRunnerTest {
                     final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
 
                     description = MapValueExtractor.extract(scenario, "description");
-                    
+
                     Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
                         ? MapValueExtractor.extract(scenario, "launchDarklyKey")
                         : MapValueExtractor.extract(scenario, "enabled");
@@ -165,6 +165,7 @@ public class CcdScenarioRunnerTest {
 
                     if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
                         System.out.println((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
+                        i = 3;
                         continue;
                     }
 

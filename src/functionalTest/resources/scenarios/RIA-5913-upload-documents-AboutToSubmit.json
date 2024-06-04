@@ -1,6 +1,5 @@
 {
   "description": "Upload documents event - document sent by Applicant",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

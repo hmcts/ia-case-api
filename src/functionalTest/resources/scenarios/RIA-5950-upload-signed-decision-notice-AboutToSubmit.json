@@ -1,6 +1,6 @@
 {
   "description": "uploadSignedDecisionNotice - About to submit test",
-  "disabled": "true",
+  "disabled": true,
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -37,8 +37,8 @@
             "id":"1",
             "value":{
               "document":{
-                "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
-                "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
+                "document_url": "$/http.+\/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
+                "document_binary_url": "$/http.+\/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
                 "document_filename": "Upload-signed-decision-notice.pdf"
               },
               "description":"",

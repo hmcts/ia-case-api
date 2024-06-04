@@ -1,6 +1,6 @@
 {
   "description": "RIA-5951 Add case note by Admin Officer",
-  "disabled": "true",
+  "disabled" : true,
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

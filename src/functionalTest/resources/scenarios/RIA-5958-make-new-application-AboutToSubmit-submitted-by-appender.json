@@ -1,6 +1,5 @@
 {
   "description": "Make new application - application submitted by LR appender",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "LegalRepresentativeOrgSuccess",

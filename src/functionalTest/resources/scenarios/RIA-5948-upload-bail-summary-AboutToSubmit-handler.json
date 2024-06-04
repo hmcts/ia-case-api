@@ -1,6 +1,5 @@
 {
   "description": "RIA-5948 Upload bail summary by Home Office",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",

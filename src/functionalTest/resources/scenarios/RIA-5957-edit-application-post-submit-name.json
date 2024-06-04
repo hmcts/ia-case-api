@@ -1,6 +1,5 @@
 {
   "description": "5957Edit the application to change appellant name (post-submit REST call)",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

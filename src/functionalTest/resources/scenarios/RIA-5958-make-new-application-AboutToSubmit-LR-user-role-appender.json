@@ -1,6 +1,5 @@
 {
   "description": "Make new application by Legal Representative - append LR user role",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "LegalRepresentativeOrgSuccess",

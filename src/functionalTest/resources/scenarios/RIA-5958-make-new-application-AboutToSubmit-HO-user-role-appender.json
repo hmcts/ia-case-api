@@ -1,6 +1,5 @@
 {
   "description": "Make new application by Home Office about to submit - append HO user role",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",

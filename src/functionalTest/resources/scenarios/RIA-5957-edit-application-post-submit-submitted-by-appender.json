@@ -1,6 +1,5 @@
 {
   "description": "Edit the application by admin - application submitted by LR appender(post-submit)",
-  "disabled": "true",
   "request": {
     "uri": "/bail/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
