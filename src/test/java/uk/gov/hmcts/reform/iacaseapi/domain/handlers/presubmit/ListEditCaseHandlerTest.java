@@ -380,7 +380,6 @@ class ListEditCaseHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-<<<<<<< HEAD
     void should_set_hearing_centre_dynamic_list_and_hearing_centre(Event event) {
 
         final DynamicList listingLocation = new DynamicList(
@@ -395,12 +394,6 @@ class ListEditCaseHandlerTest {
         when(locationRefDataService.isCaseManagementLocation("386417")).thenReturn(true);
         when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
             .thenReturn(Optional.of(listingLocation));
-=======
-    void should_clear_is_decision_without_hearing_field(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
->>>>>>> 177d50f2e (RIA-8839: Refactor 'Decision Without Hearing' event)
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -408,9 +401,34 @@ class ListEditCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-<<<<<<< HEAD
         verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void should_clear_is_decision_without_hearing_field(Event event) {
+
+        final DynamicList listingLocation = new DynamicList(
+            new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"))
+        );
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(locationRefDataService.isCaseManagementLocation("386417")).thenReturn(true);
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).clear(IS_DECISION_WITHOUT_HEARING);
     }
 
     @Test
@@ -432,11 +450,6 @@ class ListEditCaseHandlerTest {
             .hasMessage("No Hearing Centre found for Listing location with Epimms ID: 3864177777")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
-=======
-        verify(asylumCase, times(1)).clear(IS_DECISION_WITHOUT_HEARING);
-    }
-
->>>>>>> 177d50f2e (RIA-8839: Refactor 'Decision Without Hearing' event)
 
     @Test
     void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only() {
