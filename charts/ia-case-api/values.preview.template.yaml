@@ -464,7 +464,7 @@ ia-hearings-api:
             alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
 
 hmc-cft-hearing-service:
-  enabled: true
+  enabled: false
   java:
     releaseNameOverride: ${SERVICE_NAME}-hmc-cft-hearing-service
     image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
