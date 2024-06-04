@@ -405,6 +405,25 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
     }
 
+    @Test
+    void handling_should_throw_when_listing_location_cannot_be_mapped_to_hearing_centre() {
+
+        final DynamicList listingLocation = new DynamicList(
+            new Value("3864177777", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"))
+        );
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("No Hearing Centre found for Listing location with Epimms ID: 3864177777")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
 
     @Test
     void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only() {

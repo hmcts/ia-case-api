@@ -12,6 +12,7 @@
         "replacements": {
           "isCaseUsingLocationRefData": "Yes",
           "ariaListingReference": "LP/12345/2019",
+          "isRemoteHearing": "No",
           "hearingCentre": "manchester",
           "listingLocation": {
             "value": {
@@ -64,6 +65,7 @@
       "replacements": {
         "isCaseUsingLocationRefData": "Yes",
         "currentHearingDetailsVisible": "Yes",
+        "isRemoteHearing": "No",
         "ariaListingReference": "LP/12345/2019",
         "hearingCentre": "manchester",
         "listCaseHearingCentre": "manchester",
