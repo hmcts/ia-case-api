@@ -469,81 +469,81 @@ hmc-cft-hearing-service:
     releaseNameOverride: ${SERVICE_NAME}-hmc-cft-hearing-service
     image: "hmctspublic.azurecr.io/hmc/cft-hearing-service:latest"
     environment:
-CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api,ia,iac
-HMC_SERVICE_BUS_TOPIC: hmc-to-cft-aat
-HMC_SERVICE_BUS_SUBSCRIPTION: hmc-ia-subs-to-cft-pr-2154
-HMC_SERVICE_BUS_QUEUE: hmc-from-hmi-aat
-HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi-aat
-IDAM_OIDC_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
-IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
-S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-HTTP_CLIENT_CONNECTION_TIMEOUT: '10000'
-HTTP_CLIENT_READ_TIMEOUT: '60000'
-HTTP_CLIENT_MAX_TOTAL: '200'
-HTTP_CLIENT_SECONDS_IDLE_CONNECTION: '120'
-HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '20'
-HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
-CCD_DATA_STORE_API_BASE_URL: "http://ccd-data-store-api-ia-case-api-pr-2154.preview.platform.hmcts.net"
-ROLE_ASSIGNMENT_URL: http://am-role-assignment-ia-case-api-pr-2154.preview.platform.hmcts.net
+      CFT_HEARING_SERVICE_S2S_AUTHORISED_SERVICES: xui_webapp,hmc_hmi_inbound_adapter,sscs,fis_hmc_api,ia,iac
+      HMC_SERVICE_BUS_TOPIC: hmc-to-cft-aat
+      HMC_SERVICE_BUS_SUBSCRIPTION: hmc-ia-subs-to-cft-pr-2154
+      HMC_SERVICE_BUS_QUEUE: hmc-from-hmi-aat
+      HMC_OUTBOUND_SERVICE_BUS_QUEUE: hmc-to-hmi-aat
+      IDAM_OIDC_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
+      IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      HTTP_CLIENT_CONNECTION_TIMEOUT: '10000'
+      HTTP_CLIENT_READ_TIMEOUT: '60000'
+      HTTP_CLIENT_MAX_TOTAL: '200'
+      HTTP_CLIENT_SECONDS_IDLE_CONNECTION: '120'
+      HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '20'
+      HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
+      CCD_DATA_STORE_API_BASE_URL: "http://ccd-data-store-api-ia-case-api-pr-2154.preview.platform.hmcts.net"
+      ROLE_ASSIGNMENT_URL: http://am-role-assignment-ia-case-api-pr-2154.preview.platform.hmcts.net
 
 
-HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
-HMI_SOURCE_SYSTEM: CFT
-HMI_DESTINATION_SYSTEM: SNL
-GRANT_TYPE: client_credentials
-FH_BASE_URL: https://login.microsoftonline.com
-CFT_HEARING_SERVICE_DB_HOST: "ia-preview.postgres.database.azure.com"
-CFT_HEARING_SERVICE_DB_NAME: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
-CFT_HEARING_SERVICE_DB_USERNAME: "hmcts"
-CFT_HEARING_SERVICE_DB_PASSWORD: "hmcts"
-CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
+      HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
+      HMI_SOURCE_SYSTEM: CFT
+      HMI_DESTINATION_SYSTEM: SNL
+      GRANT_TYPE: client_credentials
+      FH_BASE_URL: https://login.microsoftonline.com
+      CFT_HEARING_SERVICE_DB_HOST: "ia-preview.postgres.database.azure.com"
+      CFT_HEARING_SERVICE_DB_NAME: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
+      CFT_HEARING_SERVICE_DB_USERNAME: "hmcts"
+      CFT_HEARING_SERVICE_DB_PASSWORD: "hmcts"
+      CFT_HEARING_SERVICE_DB_OPTIONS: "?stringtype=unspecified"
 
-secrets:
-  HMC_SERVICE_BUS_CONNECTION_STRING:
-    secretRef: hmc-sb-preview
-    key: connectionString
-  HMC_QUEUE_CONNECTION_STRING:
-    secretRef: hmc-sb-preview
-    key: connectionString
-  HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
-    secretRef: hmc-sb-preview
-    key: connectionString
-  keyVaults:
-    hmc:
-      resourceGroup: hmc-aso-preview-rg
-      secrets:
-        - name: AppInsightsInstrumentationKey
-          alias: azure.application-insights.instrumentation-key
-        - name: app-insights-connection-string
-          alias: app-insights-connection-string
-        - name: cft-hearing-service-POSTGRES-USER
-          alias: CFT_HEARING_SERVICE_DB_USERNAME
-        - name: cft-hearing-service-POSTGRES-PASS
-          alias: CFT_HEARING_SERVICE_DB_PASSWORD
-        - name: cft-hearing-service-POSTGRES-HOST
-          alias: CFT_HEARING_SERVICE_DB_HOST
-        - name: cft-hearing-service-POSTGRES-PORT
-          alias: CFT_HEARING_SERVICE_DB_PORT
-        - name: cft-hearing-service-POSTGRES-DATABASE
-          alias: CFT_HEARING_SERVICE_DB_NAME
-        - name: idam-hmc-cft-hearing-service-client-secret
-          alias: CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET
-        - name: hmc-cft-hearing-service-s2s-secret
-          alias: IDAM_KEY_CFT_HEARING_SERVICE
-        - name: hmc-servicebus-connection-string
-          alias: HMC_SERVICE_BUS_CONNECTION_STRING
-        - name: hmc-servicebus-connection-string
-          alias: HMC_QUEUE_CONNECTION_STRING
-        - name: hmc-servicebus-connection-string
-          alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
-        - name: ClientId
-          alias: CLIENT_ID
-        - name: ClientSecret
-          alias: CLIENT_SECRET
-        - name: Scope
-          alias: SCOPE
-        - name: fh-get-token-url
-          alias: FH_GET_TOKEN_URL
+    secrets:
+      HMC_SERVICE_BUS_CONNECTION_STRING:
+        secretRef: hmc-sb-preview
+        key: connectionString
+      HMC_QUEUE_CONNECTION_STRING:
+        secretRef: hmc-sb-preview
+        key: connectionString
+      HMC_OUTBOUND_QUEUE_CONNECTION_STRING:
+        secretRef: hmc-sb-preview
+        key: connectionString
+      keyVaults:
+        hmc:
+          resourceGroup: hmc-shared
+          secrets:
+            - name: AppInsightsInstrumentationKey
+              alias: azure.application-insights.instrumentation-key
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: cft-hearing-service-POSTGRES-USER
+              alias: CFT_HEARING_SERVICE_DB_USERNAME
+            - name: cft-hearing-service-POSTGRES-PASS
+              alias: CFT_HEARING_SERVICE_DB_PASSWORD
+            - name: cft-hearing-service-POSTGRES-HOST
+              alias: CFT_HEARING_SERVICE_DB_HOST
+            - name: cft-hearing-service-POSTGRES-PORT
+              alias: CFT_HEARING_SERVICE_DB_PORT
+            - name: cft-hearing-service-POSTGRES-DATABASE
+              alias: CFT_HEARING_SERVICE_DB_NAME
+            - name: idam-hmc-cft-hearing-service-client-secret
+              alias: CFT_HEARING_SERVICE_IDAM_CLIENT_SECRET
+            - name: hmc-cft-hearing-service-s2s-secret
+              alias: IDAM_KEY_CFT_HEARING_SERVICE
+            - name: hmc-servicebus-connection-string
+              alias: HMC_SERVICE_BUS_CONNECTION_STRING
+            - name: hmc-servicebus-connection-string
+              alias: HMC_QUEUE_CONNECTION_STRING
+            - name: hmc-servicebus-connection-string
+              alias: HMC_OUTBOUND_QUEUE_CONNECTION_STRING
+            - name: ClientId
+              alias: CLIENT_ID
+            - name: ClientSecret
+              alias: CLIENT_SECRET
+            - name: Scope
+              alias: SCOPE
+            - name: fh-get-token-url
+              alias: FH_GET_TOKEN_URL
 
 ia-timed-event-service:
   enabled: true
