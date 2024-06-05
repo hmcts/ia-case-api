@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
@@ -65,10 +66,12 @@ public class AdvancedFinalBundlingStateHandler implements PreSubmitCallbackState
         final String stitchStatus = caseBundles.get(0).getStitchStatus().orElse("");
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
-
-        if (stitchStatus.equalsIgnoreCase("DONE")) {
+        YesOrNo isHearingBundleAmended = asylumCase
+            .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO);
+        if (stitchStatus.equalsIgnoreCase("DONE") && isHearingBundleAmended.equals(YesOrNo.NO)) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.PRE_HEARING);
         } else {
+            asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         }
     }
