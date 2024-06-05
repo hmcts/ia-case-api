@@ -30,13 +30,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -401,6 +402,7 @@ class ReviewDraftHearingRequirementsPreparerTest {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
         handlerUtilsMock.when(
             () -> HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)).thenReturn(true);
 
@@ -424,14 +426,18 @@ class ReviewDraftHearingRequirementsPreparerTest {
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
+
         verify(asylumCase, times(1)).read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class);
+
         verify(asylumCase, times(1)).read(WITNESS_DETAILS);
         verify(asylumCase, times(1)).read(INTERPRETER_LANGUAGE);
 
         verify(asylumCase, times(1)).write(
             WITNESS_DETAILS_READONLY,
+
             "Name\t\tWitness1Given Witness1Family\nName\t\tWitness2Given");
+
         verify(asylumCase, times(1)).write(
             INTERPRETER_LANGUAGE_READONLY,
             "Language\t\tIrish\nDialect\t\t\tN/A\n");

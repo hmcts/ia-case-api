@@ -31,6 +31,7 @@ java:
     AAC_URL: https://aac-${SERVICE_FQDN}
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+    DUMMY: true
   keyVaults:
     ia:
       secrets:

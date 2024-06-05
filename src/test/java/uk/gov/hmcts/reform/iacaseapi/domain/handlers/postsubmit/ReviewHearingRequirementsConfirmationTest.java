@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,11 +21,15 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -65,7 +70,7 @@ class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    void should_return_successful_confirmation_for_auto_request_hearing() {
+        void should_return_successful_confirmation_for_auto_request_hearing() {
         String header = "# Hearing listed";
         expectedResponse.setConfirmationHeader(header);
         expectedResponse.setConfirmationBody("""
@@ -230,6 +235,54 @@ class ReviewHearingRequirementsConfirmationTest {
         assertThatThrownBy(() -> handler.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = { "NO", "YES" })
+    void should_return_confirmation_ada_journey(YesOrNo yesOrNo) {
+
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+
+        PostSubmitCallbackResponse callbackResponse =
+            handler.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+
+        if (yesOrNo.equals(YesOrNo.NO)) {
+            assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# You've recorded the agreed hearing adjustments");
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "#### What happens next\n\n"
+                    + "You should ensure that the case flags reflect "
+                    + "the hearing requests that have been approved. "
+                    + "This may require adding new case flags or making active flags inactive.\n\n"
+                    + "[Add case flag](/case/IA/Asylum/1/trigger/createFlag)<br>"
+                    + "[Manage case flags](/case/IA/Asylum/1/trigger/manageFlags)<br><br>"
+                    + "The listing team will now list the case. "
+                    + "All parties will be notified when the Hearing Notice is available to view.<br><br>");
+
+        } else {
+            assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the agreed hearing adjustments");
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "All parties will be notified of the agreed adjustments.");
+        }
+
+
     }
 
 }

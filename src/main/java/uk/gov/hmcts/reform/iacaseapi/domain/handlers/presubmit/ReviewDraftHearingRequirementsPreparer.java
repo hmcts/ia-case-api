@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
@@ -28,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 
 @Component
 @RequiredArgsConstructor
@@ -184,6 +184,5 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.JUDGE) && !isAcceleratedDetainedAppeal;
     }
-
 
 }

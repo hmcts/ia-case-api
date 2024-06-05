@@ -147,6 +147,7 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                 }
 
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
@@ -155,7 +156,6 @@ public class MakeAnApplicationTypesProvider {
 
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
-                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
@@ -178,6 +178,7 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
 
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;

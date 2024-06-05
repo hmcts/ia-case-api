@@ -428,6 +428,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 
@@ -459,6 +460,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 

@@ -16,12 +16,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInteg
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -320,7 +318,7 @@ class HandlerUtilsTest {
 
         assertEquals(adjournmentDay == ON_HEARING_DATE, adjournedOnHearingDay(asylumCase));
     }
-  
+
     @Test
     public void read_json_file_list_valid_returns_list() throws IOException {
         String filePath = "/readJsonList.json";

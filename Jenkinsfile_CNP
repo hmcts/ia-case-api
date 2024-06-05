@@ -1,7 +1,7 @@
 #!groovy
 properties([
-    [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
-    pipelineTriggers([[$class: 'GitHubPushTrigger']])
+        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
+        pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
 @Library('Infrastructure')
@@ -44,6 +44,10 @@ def secrets = [
 
         secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
         secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+
+        secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+        secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+
 
         secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
         secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
@@ -104,6 +108,7 @@ def secrets = [
         secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
         secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
     ]
+
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -143,9 +148,9 @@ withPipeline(type, product, component) {
 
     before('smoketest:preview') {
         sh """
-      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      ./bin/add-roles.sh
-    """
+        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ./bin/add-roles.sh
+        """
     }
 
     afterSuccess('akschartsinstall') {
@@ -156,9 +161,11 @@ withPipeline(type, product, component) {
             env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
             sh """
+
             ./bin/pull-latest-dmn-files.sh ${dmnBranch}
             ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-        """
+            """
+
         }
     }
 
@@ -167,8 +174,8 @@ withPipeline(type, product, component) {
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         sh """
-      ./bin/add-org-roles-to-users.sh
-    """
+        ./bin/add-org-roles-to-users.sh
+        """
     }
 
     afterAlways('functionalTest:aat') {

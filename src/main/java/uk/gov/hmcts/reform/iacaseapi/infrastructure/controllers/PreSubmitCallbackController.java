@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
-
 import javax.validation.constraints.NotNull;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

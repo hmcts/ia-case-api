@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -195,7 +194,7 @@ public class HandlerUtils {
             .map(adjournedDay -> ON_HEARING_DATE == adjournedDay)
             .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
     }
-  
+
     public static boolean isAgeAssessmentAppeal(AsylumCase asylumCase) {
         return (asylumCase.read(APPEAL_TYPE, AppealType.class)).orElse(null) == AppealType.AG;
     }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
