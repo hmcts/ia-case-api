@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -23,13 +25,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
+@Slf4j
 @Component
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final DateProvider dateProvider;
+    private static final String HEARING_DELETION_CALLBACK_ERROR = "Could not delete some hearing request(s)";
 
-    private IaHearingsApiService iaHearingsApiService;
+    private final DateProvider dateProvider;
+    private final IaHearingsApiService iaHearingsApiService;
 
     public EndAppealHandler(DateProvider dateProvider,
                             IaHearingsApiService iaHearingsApiService) {
@@ -97,18 +102,40 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
 
-        if (callback.getEvent() == Event.END_APPEAL) {
-            asylumCase = deleteHearings(callback);
-        }
         // Prevents data populated in MarkAsReadyForUtTransferHandler being displayed on UI
         asylumCase.clear(APPEAL_READY_FOR_UT_TRANSFER);
         asylumCase.clear(UT_APPEAL_REFERENCE_NUMBER);
+
+        if (callback.getEvent() == Event.END_APPEAL) {
+            asylumCase = deleteHearings(callback);
+
+            if (!isDeletionRequestSuccessful(asylumCase)) {
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError(HEARING_DELETION_CALLBACK_ERROR);
+                return response;
+            }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private AsylumCase deleteHearings(Callback<AsylumCase> callback) {
-        return iaHearingsApiService.aboutToSubmit(callback);
+        try {
+
+            return iaHearingsApiService.aboutToSubmit(callback);
+        } catch (AsylumCaseServiceResponseException e) {
+            log.error(e.getMessage(), e);
+            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
+
+            return asylumCase;
+        }
+    }
+
+    private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {
+        return asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
+            .map(yesOrNo -> !yesOrNo.equals(YES))
+            .orElse(true);
     }
 
     private void changeWithdrawApplicationsToCompleted(AsylumCase asylumCase) {
