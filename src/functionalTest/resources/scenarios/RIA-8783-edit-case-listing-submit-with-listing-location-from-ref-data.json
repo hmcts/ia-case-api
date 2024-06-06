@@ -11,6 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isCaseUsingLocationRefData": "Yes",
+          "isRemoteHearing": "No",
           "ariaListingReference": "LP/12345/2019",
           "hearingCentre": "manchester",
           "listingLocation": {
@@ -58,6 +59,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isCaseUsingLocationRefData": "Yes",
+          "isRemoteHearing": "No",
           "ariaListingReference": "LP/12345/2019",
           "hearingCentre": "manchester",
           "listCaseHearingCentre": "manchester",
@@ -111,6 +113,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "isCaseUsingLocationRefData": "Yes",
+        "isRemoteHearing": "No",
         "currentHearingDetailsVisible": "Yes",
         "ariaListingReference": "LP/12345/2019",
         "hearingCentre": "manchester",

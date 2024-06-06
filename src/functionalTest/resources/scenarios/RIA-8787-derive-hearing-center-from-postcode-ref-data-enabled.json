@@ -1,0 +1,60 @@
+{
+  "description": "RIA-8787 Derive hearing centre from postcode (Set hearing centre using reference data)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isCaseUsingLocationRefData": "Yes",
+          "isRemoteHearing": "No",
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "PostCode": "M1 2AB"
+          },
+          "hearingCentre": null,
+          "uploadTheNoticeOfDecisionDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                  "document_filename": "some-notice-of-decision-letter.pdf",
+                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+                },
+                "description": "some notice of decision description"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isCaseUsingLocationRefData": "Yes",
+        "isRemoteHearing": "No",
+        "appellantHasFixedAddress": "Yes",
+        "hearingCentre": "manchester",
+        "hearingCentreDynamicList": {
+          "value": {
+            "code": "512401",
+            "label": "Manchester Tribunal Hearing Centre - Piccadilly Exchange"
+          }
+        },
+        "staffLocation": "Manchester",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "512401"
+        }
+      }
+    }
+  }
+}

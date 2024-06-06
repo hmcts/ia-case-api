@@ -80,10 +80,7 @@ public class HearingCentreFinder {
     }
 
     public boolean hearingCentreIsActive(String hearingCentreActivationDate) {
-        if (LocalDate.parse(hearingCentreActivationDate).isAfter(LocalDate.now())) {
-            return false;
-        }
-        return true;
+        return !LocalDate.parse(hearingCentreActivationDate).isAfter(LocalDate.now());
     }
 
     public boolean hearingCentreIsActive(HearingCentre hearingCentre) {

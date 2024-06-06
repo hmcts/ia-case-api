@@ -20,8 +20,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EPIMS_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
@@ -378,6 +378,52 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.HATTON_CROSS);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void should_set_hearing_centre_dynamic_list_and_hearing_centre(Event event) {
+
+        final DynamicList listingLocation = new DynamicList(
+            new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"))
+        );
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(locationRefDataService.isCaseManagementLocation("386417")).thenReturn(true);
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
+    }
+
+    @Test
+    void handling_should_throw_when_listing_location_cannot_be_mapped_to_hearing_centre() {
+
+        final DynamicList listingLocation = new DynamicList(
+            new Value("3864177777", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"))
+        );
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("No Hearing Centre found for Listing location with Epimms ID: 3864177777")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
 
     @Test
     void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only() {
@@ -412,42 +458,6 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = HearingCentre.class, names = {
-        "BIRMINGHAM",
-        "BRADFORD",
-        "COVENTRY",
-        "GLASGOW_TRIBUNALS_CENTRE",
-        "HATTON_CROSS",
-        "MANCHESTER",
-        "NEWCASTLE",
-        "NEWPORT",
-        "NOTTINGHAM",
-        "TAYLOR_HOUSE",
-        "BELFAST",
-        "HARMONDSWORTH",
-        "HENDON",
-        "YARLS_WOOD",
-        "BRADFORD_KEIGHLEY",
-        "MCC_MINSHULL",
-        "MCC_CROWN_SQUARE",
-        "MANCHESTER_MAGS",
-        "NTH_TYNE_MAGS",
-        "LEEDS_MAGS",
-        "ALLOA_SHERRIF"
-    })
-    void should_save_expected_epims_id_in_ccd_when_submit_list_case(HearingCentre hearingCentre) {
-
-        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
-                .thenReturn(Optional.of(hearingCentre));
-        when(hearingCentreFinder.hearingCentreIsActive(hearingCentre)).thenReturn(true);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(1)).write(EPIMS_ID, hearingCentre.getEpimsId());
-    }
-
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
@@ -458,6 +468,40 @@ class ListEditCaseHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void handling_should_throw_if_listing_location_missing(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Listing location is missing")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void handling_should_throw_if_listing_location_cannot_be_mapped_to_hearing_centre(Event event) {
+
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        final DynamicList listingLocation = new DynamicList(
+            new Value("386417777", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417777", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"))
+        );
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("No Hearing Centre found for Listing location with Epimms ID: 386417777")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 

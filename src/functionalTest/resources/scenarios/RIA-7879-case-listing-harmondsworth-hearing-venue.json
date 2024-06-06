@@ -24,7 +24,6 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "epimsId": "28837",
         "currentHearingDetailsVisible": "Yes",
         "ariaListingReference": "LP/12345/2019",
         "hearingCentre": "taylorHouse",

@@ -11,9 +11,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EPIMS_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LOCATION;
@@ -93,47 +93,56 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        // to keep LISTING_LOCATION aligned with LIST_CASE_HEARING_CENTRE
         if (isCaseUsingLocationRefData(asylumCase)) {
-            asylumCase.read(LISTING_LOCATION, DynamicList.class)
-                .ifPresent(dynamicList -> {
-                    String epimsId = dynamicList.getValue().getCode();
-                    HearingCentre.fromEpimsId(epimsId)
-                        .ifPresent(hc ->
-                            asylumCase.write(LIST_CASE_HEARING_CENTRE, hc));
-                });
-        }
+            DynamicList listingLocation = asylumCase.read(LISTING_LOCATION, DynamicList.class)
+                .orElseThrow(() -> new IllegalStateException("Listing location is missing"));
+            String listingLocationId = listingLocation.getValue().getCode();
 
-        HearingCentre listCaseHearingCentre =
-            asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
+            HearingCentre listCaseHearingCentre = HearingCentre
+                .fromEpimsId(listingLocationId, true)
+                .orElseThrow(() -> new IllegalStateException(
+                    String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
+            asylumCase.write(LIST_CASE_HEARING_CENTRE, listCaseHearingCentre);
 
-        HearingCentre hearingCentre =
-            asylumCase.read(HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
+            if (locationRefDataService.isCaseManagementLocation(listingLocationId)) {
+                HearingCentre hearingCentre = HearingCentre.fromEpimsId(listingLocationId, false)
+                    .orElseThrow(() -> new IllegalStateException(
+                        String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
+                asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
+                asylumCase.write(HEARING_CENTRE, hearingCentre);
+            }
 
-        if (!listCaseHearingCentre.equals(HearingCentre.REMOTE_HEARING)) {
-            if (!hearingCentreFinder.hearingCentreIsActive(listCaseHearingCentre)) {
+            asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
+                .getHearingCentreAddress(listingLocation.getValue().getCode()));
+
+            addBaseLocationAndStaffLocation(asylumCase, listingLocation);
+
+        } else {
+            HearingCentre listCaseHearingCentre =
+                asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
+            HearingCentre hearingCentre =
+                asylumCase.read(HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
+
+            if (listCaseHearingCentre.equals(HearingCentre.REMOTE_HEARING)) {
+                if (!hearingCentreFinder.hearingCentreIsActive(hearingCentre)) {
+                    asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
+                }
+            } else if (!hearingCentreFinder.hearingCentreIsActive(listCaseHearingCentre)) {
                 asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
                 asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
-            } else {
-                if (!hearingCentreFinder.isListingOnlyHearingCentre(listCaseHearingCentre)) {
-                    //Should also update the designated hearing centre
-                    asylumCase.write(HEARING_CENTRE, listCaseHearingCentre);
-                }
+            } else if (!hearingCentreFinder.isListingOnlyHearingCentre(listCaseHearingCentre)) {
+                //Should also update the designated hearing centre
+                asylumCase.write(HEARING_CENTRE, listCaseHearingCentre);
             }
-        } else {
-            if (!hearingCentreFinder.hearingCentreIsActive(hearingCentre)) {
-                asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
-            }
+
+            asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
+                .getHearingCentreAddress(listCaseHearingCentre));
+
+            addBaseLocationAndStaffLocation(asylumCase);
         }
 
-        asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
-            .getHearingCentreAddress(listCaseHearingCentre));
-        asylumCase.write(EPIMS_ID, HearingCentre.getEpimsIdByValue(listCaseHearingCentre.getValue()));
         asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         asylumCase.clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         asylumCase.clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
@@ -147,7 +156,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         asylumCase.clear(HEARING_CONDUCTION_OPTIONS);
         asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
         asylumCase.clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
-        addBaseLocationAndStaffLocationFromHearingCentre(asylumCase);
 
         boolean isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
             .orElse(YesOrNo.NO)
@@ -175,10 +183,19 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase) {
-        HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
-            .orElse(HearingCentre.TAYLOR_HOUSE);
+    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase) {
+
+        HearingCentre hearingCentre = asylumCase
+            .read(HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.TAYLOR_HOUSE);
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
+        asylumCase.write(STAFF_LOCATION, staffLocationName);
+        asylumCase.write(CASE_MANAGEMENT_LOCATION,
+            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+    }
+
+    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, DynamicList listingLocation) {
+
+        String staffLocationName = StaffLocation.getLocation(listingLocation.getValue().getCode()).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
