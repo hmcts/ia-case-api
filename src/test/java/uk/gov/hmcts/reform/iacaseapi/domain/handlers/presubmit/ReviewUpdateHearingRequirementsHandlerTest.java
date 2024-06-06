@@ -62,6 +62,12 @@ class ReviewUpdateHearingRequirementsHandlerTest {
     @Test
     void should_update_review_hearing_adjustments() {
 
+        when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_ADJUSTMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewUpdateHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 

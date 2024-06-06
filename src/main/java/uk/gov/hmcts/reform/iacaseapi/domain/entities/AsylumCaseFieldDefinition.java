@@ -1978,7 +1978,7 @@ public enum AsylumCaseFieldDefinition {
     IN_CAMERA_COURT("inCameraCourt", new TypeReference<YesOrNo>(){}),
 
     MULTIMEDIA_EVIDENCE("multimediaEvidence", new TypeReference<YesOrNo>(){}),
-  
+
     APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
         "appellantInterpreterSpokenLanguageBooking", new TypeReference<String>() {}),
 
