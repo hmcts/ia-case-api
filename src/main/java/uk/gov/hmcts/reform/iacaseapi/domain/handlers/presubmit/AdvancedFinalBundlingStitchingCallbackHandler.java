@@ -103,8 +103,14 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
+        // TODO use or remove comment
+        // boolean isAmendedBundle = callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
+
         if (stitchedDocument.isPresent()) {
-            saveHearingBundleDocument(asylumCase, stitchedDocument);
+            saveHearingBundleDocument(asylumCase, stitchedDocument
+            // TODO use or remove comment
+            //  , isAmendedBundle
+            );
         }
 
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");
@@ -161,7 +167,10 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         }
     }
 
-    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument) {
+    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument
+    // TODO use or remove comment
+    //, boolean isAmendedBundle
+    ) {
 
         Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
@@ -179,6 +188,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     stitchedDocument.orElse(null),
                     "",
                     DocumentTag.HEARING_BUNDLE
+                // TODO use or remove comment
+                // isAmendedBundle ? DocumentTag.AMENDED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
                 )
         );
 
@@ -187,6 +198,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 hearingDocuments,
                 hearingBundleDocuments,
                 DocumentTag.HEARING_BUNDLE
+                // TODO use or remove comment
+                // isAmendedBundle ? DocumentTag.AMENDED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
             );
 
         if (isReheardCase) {
