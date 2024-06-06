@@ -236,6 +236,7 @@ security:
       - "addAppealResponse"
       - "createCaseSummary"
       - "generateHearingBundle"
+      - "generateAmendedHearingBundle"
       - "customiseHearingBundle"
       - "asyncStitchingComplete"
       - "revertStateToAwaitingRespondentEvidence"
