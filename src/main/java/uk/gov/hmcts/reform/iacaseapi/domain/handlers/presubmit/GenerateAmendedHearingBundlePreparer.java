@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -9,9 +10,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
+import java.util.stream.Collectors;
+
 import static java.util.Objects.requireNonNull;
 
 
+@Slf4j
 @Component
 public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -30,7 +34,7 @@ public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHa
 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-
+        log.error("Cannot handle callback in canHandle");
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
                && callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
     }
@@ -40,10 +44,19 @@ public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHa
         Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
+            log.error("Cannot handle callback in handle");
             throw new IllegalStateException("Cannot handle callback");
         }
+        log.info("is here the error?");
+        AsylumCase docGenerator = documentGenerator.aboutToStart(callback);
+        log.info(String.valueOf(docGenerator));
+        log.info(String.join(", ", docGenerator.values().stream().map(Object::toString).toList()));
 
-        return new PreSubmitCallbackResponse<>(documentGenerator.aboutToStart(callback));
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(docGenerator);
+        log.info(String.join(", ", response.getErrors()));
+        log.info(String.join(", ", response.getData().values().stream().map(Object::toString).toList()));
+
+        return response;
     }
 
 }
