@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -298,8 +299,6 @@ class EndAppealHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(END_APPEAL);
-        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
         when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -307,7 +306,9 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        assertTrue(callbackResponse.getErrors().isEmpty());
+
+        verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(asylumCase, never()).write(eq(MANUAL_CANCEL_HEARINGS_REQUIRED), any());
     }
 
     @Test
@@ -324,7 +325,10 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        assertTrue(callbackResponse.getErrors().contains("Could not delete some hearing request(s)"));
+
+        verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(asylumCase, times(1))
+            .write(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.YES);
     }
 
     @Test
@@ -332,8 +336,6 @@ class EndAppealHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(END_APPEAL);
-        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(iaHearingsApiService.aboutToSubmit(callback))
             .thenThrow(new AsylumCaseServiceResponseException("Error message", null));
@@ -343,6 +345,9 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        assertTrue(callbackResponse.getErrors().contains("Could not delete some hearing request(s)"));
+
+        verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(asylumCase, times(1))
+            .write(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.YES);
     }
 }
