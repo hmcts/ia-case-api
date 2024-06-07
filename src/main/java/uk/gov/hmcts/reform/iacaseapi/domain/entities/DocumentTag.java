@@ -15,8 +15,6 @@ public enum DocumentTag {
     HEARING_REQUIREMENTS("hearingRequirements"),
     CASE_SUMMARY("caseSummary"),
     HEARING_BUNDLE("hearingBundle"),
-    // TODO use or remove comment
-    // AMENDED_HEARING_BUNDLE("amendedHearingBundle"),
     ADDENDUM_EVIDENCE("addendumEvidence"),
     DECISION_AND_REASONS_DRAFT("decisionAndReasons"),
     DECISION_AND_REASONS_COVER_LETTER("decisionAndReasonsCoverLetter"),

@@ -103,13 +103,11 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
-        // TODO use or remove comment
-        // boolean isAmendedBundle = callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
+        boolean isHearingBundleAmended = asylumCase
+            .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
 
         if (stitchedDocument.isPresent()) {
-            saveHearingBundleDocument(asylumCase, stitchedDocument
-            // TODO use or remove comment
-            //  , isAmendedBundle
+            saveHearingBundleDocument(asylumCase, stitchedDocument, isHearingBundleAmended
             );
         }
 
@@ -167,9 +165,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         }
     }
 
-    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument
-    // TODO use or remove comment
-    //, boolean isAmendedBundle
+    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument, boolean isHearingBundleAmended
     ) {
 
         Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
@@ -188,15 +184,14 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     stitchedDocument.orElse(null),
                     "",
                     DocumentTag.HEARING_BUNDLE
-                // TODO use or remove comment
-                // isAmendedBundle ? DocumentTag.AMENDED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
                 )
         );
 
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
                 hearingDocuments,
-                hearingBundleDocuments
+                hearingBundleDocuments,
+                isHearingBundleAmended ? DocumentTag.NONE : DocumentTag.HEARING_BUNDLE
             );
 
         if (isReheardCase) {

@@ -45,16 +45,8 @@ public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHa
             log.error("Cannot handle callback in handle");
             throw new IllegalStateException("Cannot handle callback");
         }
-        log.error("is here the error?");
-        AsylumCase docGenerator = documentGenerator.aboutToStart(callback);
-        log.error(String.valueOf(docGenerator));
-        log.error(String.join(", ", docGenerator.values().stream().map(Object::toString).toList()));
 
-        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(docGenerator);
-        log.error(String.join(", ", response.getErrors()));
-        log.error(String.join(", ", response.getData().values().stream().map(Object::toString).toList()));
-
-        return response;
+        return new PreSubmitCallbackResponse<>(documentGenerator.aboutToStart(callback));
     }
 
 }
