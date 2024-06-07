@@ -7,7 +7,7 @@
             https://github.com/spring-projects/spring-framework/issues/24434#issuecomment-1132113566]]></notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
-    <suppress until="2024-06-30">
+    <suppress until="2024-08-01">
         <notes>![CDATA[
             False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
 
