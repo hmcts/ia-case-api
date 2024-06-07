@@ -17,4 +17,4 @@ def convert_json_to_txt(file_path):
     print(f'file converted {output_file}')
 
 
-convert_json_to_txt("/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/output_jsons/SNI-5686/importing.json")
+convert_json_to_txt("importing.json")
