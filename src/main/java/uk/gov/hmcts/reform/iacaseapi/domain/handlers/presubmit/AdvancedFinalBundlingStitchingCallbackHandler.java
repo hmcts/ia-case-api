@@ -196,10 +196,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
                 hearingDocuments,
-                hearingBundleDocuments,
-                DocumentTag.HEARING_BUNDLE
-                // TODO use or remove comment
-                // isAmendedBundle ? DocumentTag.AMENDED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
+                hearingBundleDocuments
             );
 
         if (isReheardCase) {

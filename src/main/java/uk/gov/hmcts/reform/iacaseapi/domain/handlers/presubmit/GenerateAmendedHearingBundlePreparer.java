@@ -32,7 +32,7 @@ public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHa
 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        log.error("Cannot handle callback in canHandle");
+        log.error("Handling callback in canHandle");
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
                && callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
     }
