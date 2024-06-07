@@ -1,7 +1,6 @@
 import json
 
 
-# Your JSON data (example) 1677498210980054-data-annotated.json
 def convert_json_to_txt(file_path):
     # Read JSON data from the input file
     with open(file_path, "r") as json_file:
@@ -15,6 +14,7 @@ def convert_json_to_txt(file_path):
     # Write the compact text data to a text file
     with open(output_file, "w") as text_file:
         text_file.write(text_data)
+    print(f'file converted {output_file}')
 
 
-# convert_json_to_txt("event_1.json")
+convert_json_to_txt("/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/output_jsons/SNI-5686/importing.json")
