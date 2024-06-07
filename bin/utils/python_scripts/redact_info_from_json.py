@@ -6,14 +6,14 @@ from filepath_settings import settings
 
 """
 
-Usage: 
+Usage:
 
-Replace filepath with absolute filepath of JSON/CSV requiring redacting at the bottom of this file where 
+Replace filepath with absolute filepath of JSON/CSV requiring redacting at the bottom of this file where
 desired function is called.
 
 Notes:
 
-Fields to be redacted are hardcoded in replace mapping dict in filepath_settings.py, so use with caution and double 
+Fields to be redacted are hardcoded in replace mapping dict in filepath_settings.py, so use with caution and double
 check redacted JSON and add any additionally required fields to be redacted in replace_mapping_dict with their corresponding
 replace data
 

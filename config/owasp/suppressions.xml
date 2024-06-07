@@ -7,14 +7,14 @@
             https://github.com/spring-projects/spring-framework/issues/24434#issuecomment-1132113566]]></notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
-    <suppress until="2024-06-01">
+    <suppress until="2024-08-01">
         <notes>![CDATA[
-        False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
+            False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
 
-        We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
-        Try to remove it when a dependencycheck upgrade becomes available.
-        If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
-        ]]</notes>
+            We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
+            Try to remove it when a dependencycheck upgrade becomes available.
+            If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
+            ]]</notes>
         <cve>CVE-2022-45688</cve>
         <cve>CVE-2023-5072</cve>
     </suppress>

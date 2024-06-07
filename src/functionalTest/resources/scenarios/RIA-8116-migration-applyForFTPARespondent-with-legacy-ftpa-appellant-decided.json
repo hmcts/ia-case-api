@@ -1,0 +1,220 @@
+{
+  "description": "RIA-8116 Apply for FTPA Respondent permission to appeal with legacy FTPA Appellant application decided (Migration)",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "id": 8116,
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "manchester",
+          "ftpaRespondentDocuments": [],
+          "ftpaRespondentOutOfTimeDocuments": [],
+          "ftpaRespondentGroundsDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                },
+                "description": "Some FTPA respondent grounds of application"
+              }
+            }
+          ],
+          "ftpaRespondentEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-respondent-evidence.pdf"
+                },
+                "description": "Some FTPA respondent application evidence"
+              }
+            }
+          ],
+          "ftpaRespondentSubmissionOutOfTime": "No"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaAppellantRjDecisionOutcomeType": "granted",
+          "ftpaAppellantDecisionDocument": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+                },
+                "description": "Some FTPA appellant decision and reasons"
+              }
+            }
+          ],
+          "ftpaAppellantNoticeDocument": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-notice.pdf"
+                },
+                "description": "Some FTPA appellant notice"
+              }
+            }
+          ],
+          "ftpaAppellantRjDecisionNotesPoints": {
+            "specialReasons": [
+              "specialReasons"
+            ],
+            "countryGuidance": [
+              "countryGuidance"
+            ],
+            "specialDifficulty": [
+              "specialDifficulty"
+            ]
+          },
+          "ftpaAppellantDecisionObjections": "some objections",
+          "ftpaAppellantRjDecisionNotesDescription": "some notes description",
+          "ftpaAppellantDecisionDate": "{$TODAY-1}",
+          "ftpaAppellantApplicationDate": "{$TODAY-2}",
+          "ftpaAppellantGroundsDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                },
+                "description": "Some FTPA appellant grounds of application"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingCentre": "manchester",
+        "ftpaRespondentSubmitted": "Yes",
+        "ftpaRespondentSubmissionOutOfTime": "No",
+        "ftpaRespondentApplicationDate": "{$TODAY}",
+        "sendDirectionActionAvailable": "No",
+        "ftpaList": [
+          {
+            "id": "2",
+            "value": {
+              "ftpaApplicant": "respondent",
+              "ftpaOutOfTimeDocuments": [],
+              "ftpaGroundsDocuments": [
+                {
+                  "id": "2",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                    },
+                    "description": "Some FTPA respondent grounds of application"
+                  }
+                }
+              ],
+              "ftpaEvidenceDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/CCC",
+                      "document_binary_url": "http://document-store/CCC/binary",
+                      "document_filename": "some-ftpa-respondent-evidence.pdf"
+                    },
+                    "description": "Some FTPA respondent application evidence"
+                  }
+                }
+              ],
+              "ftpaApplicationDate": "{$TODAY}"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "ftpaApplicant": "appellant",
+              "isFtpaNoticeOfDecisionSetAside": "No",
+              "ftpaDecisionObjections": "some objections",
+              "ftpaNoticeDocument": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-appellant-notice.pdf"
+                    },
+                    "description": "Some FTPA appellant notice"
+                  }
+                }
+              ],
+              "ftpaGroundsDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                    },
+                    "description": "Some FTPA appellant grounds of application"
+                  }
+                }
+              ],
+              "ftpaApplicationDate": "{$TODAY-2}",
+              "ftpaDecisionOutcomeType": "granted",
+              "ftpaLegacyDecisionDocument": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_binary_url": "http://document-store/BBB/binary",
+                      "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+                    },
+                    "description": "Some FTPA appellant decision and reasons"
+                  }
+                }
+              ],
+              "ftpaDecisionNotesPoints": {
+                "specialDifficulty": [
+                  "specialDifficulty"
+                ],
+                "specialReasons": [
+                  "specialReasons"
+                ],
+                "countryGuidance": [
+                  "countryGuidance"
+                ]
+              },
+              "ftpaDecisionNotesDescription": "some notes description",
+              "ftpaDecisionDate": "{$TODAY-1}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

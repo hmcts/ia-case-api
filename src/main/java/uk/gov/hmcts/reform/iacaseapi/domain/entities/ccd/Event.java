@@ -67,6 +67,7 @@ public enum Event {
     APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
     LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
     RESIDENT_JUDGE_FTPA_DECISION("residentJudgeFtpaDecision"),
+    DECIDE_FTPA_APPLICATION("decideFtpaApplication"),
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
     EDIT_TIME_EXTENSION("editTimeExtension"),
     SUBMIT_TIME_EXTENSION("submitTimeExtension"),
@@ -136,6 +137,8 @@ public enum Event {
     ADD_EVIDENCE_FOR_COSTS("addEvidenceForCosts"),
     DECIDE_COSTS_APPLICATION("decideCostsApplication"),
     CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
+    UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
+    MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

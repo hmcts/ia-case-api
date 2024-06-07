@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -268,11 +270,16 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_DOCUMENT(
         "ftpaAppellantDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    FTPA_APPLICATION_APPELLANT_DOCUMENT(
+        "ftpaApplicationAppellantDocument", new TypeReference<Document>(){}),
     FTPA_APPELLANT_NOTICE_DOCUMENT(
         "ftpaAppellantNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     FTPA_RESPONDENT_DECISION_DOCUMENT(
         "ftpaRespondentDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_APPLICATION_RESPONDENT_DOCUMENT(
+        "ftpaApplicationRespondentDocument", new TypeReference<Document>(){}),
 
     FTPA_RESPONDENT_NOTICE_DOCUMENT(
         "ftpaRespondentNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
@@ -373,12 +380,17 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_REMADE_RULE_32(
         "ftpaAppellantDecisionRemadeRule32", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_DECISION_REMADE_RULE_32_TEXT(
+        "ftpaAppellantDecisionRemadeRule32Text", new TypeReference<String>(){}),
+
     FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL(
         "ftpaRespondentRjNewDecisionOfAppeal", new TypeReference<String>(){}),
 
     FTPA_RESPONDENT_DECISION_REMADE_RULE_32(
         "ftpaRespondentDecisionRemadeRule32", new TypeReference<String>(){}),
 
+    FTPA_RESPONDENT_DECISION_REMADE_RULE_32_TEXT(
+        "ftpaRespondentDecisionRemadeRule32Text", new TypeReference<String>(){}),
     FTPA_FIRST_DECISION(
         "ftpaFirstDecision", new TypeReference<String>() {}),
 
@@ -1946,6 +1958,148 @@ public enum AsylumCaseFieldDefinition {
 
     IS_OUT_OF_COUNTRY_ENABLED(
         "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
+
+    FTPA_APPELLANT_DECISION_OBJECTIONS(
+            "ftpaAppellantDecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_OBJECTIONS(
+            "ftpaRespondentDecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_LST_INS(
+            "ftpaAppellantDecisionLstIns", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_LST_INS(
+            "ftpaRespondentDecisionLstIns", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_NOTES_POINTS(
+            "ftpaAppellantRjDecisionNotesPoints", new TypeReference<FtpaDecisionCheckValues<String>>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_NOTES_POINTS(
+            "ftpaRespondentRjDecisionNotesPoints", new TypeReference<FtpaDecisionCheckValues<String>>(){}),
+
+    FTPA_APPELLANT_RJ_DECISION_NOTES_DESCRIPTION(
+            "ftpaAppellantRjDecisionNotesDescription", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_NOTES_DESCRIPTION(
+            "ftpaRespondentRjDecisionNotesDescription", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_REASON_REHEARING(
+            "ftpaAppellantReasonRehearing", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_REASON_REHEARING(
+            "ftpaRespondentReasonRehearing", new TypeReference<String>(){}),
+
+    FTPA_LIST(
+            "ftpaList", new TypeReference<List<IdValue<FtpaApplications>>>(){}),
+
+    IS_FTPA_LIST_VISIBLE(
+            "isFtpaListVisible", new TypeReference<YesOrNo>(){}),
+
+    IS_DLRM_SET_ASIDE_ENABLED(
+            "isDlrmSetAsideEnabled", new TypeReference<YesOrNo>(){}),
+
+    IS_DLRM_FEE_REMISSION_ENABLED(
+        "isDlrmFeeRemissionEnabled", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_R35_LISTING_ADDITIONAL_INS(
+            "ftpaAppellantR35ListingAdditionalIns", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_R35_LISTING_ADDITIONAL_INS(
+            "ftpaRespondentR35ListingAdditionalIns", new TypeReference<String>(){}),
+
+    FTPA_R35_APPELLANT_DOCUMENT(
+            "ftpaR35AppellantDocument", new TypeReference<Document>(){}),
+
+    FTPA_R35_RESPONDENT_DOCUMENT(
+            "ftpaR35RespondentDocument", new TypeReference<Document>(){}),
+
+    FTPA_APPELLANT_R35_DECISION_OBJECTIONS(
+            "ftpaAppellantR35DecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_R35_DECISION_OBJECTIONS(
+            "ftpaRespondentR35DecisionObjections", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_R35_NOTICE_DOCUMENT(
+            "ftpaAppellantR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_R35_NOTICE_DOCUMENT(
+            "ftpaRespondentR35NoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    RULE_32_NOTICE_DOCUMENT(
+            "rule32NoticeDocument", new TypeReference<Document>(){}),
+
+    ALL_SET_ASIDE_DOCS(
+            "allSetAsideDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    TYPES_OF_UPDATE_TRIBUNAL_DECISION(
+        "typesOfUpdateTribunalDecision", new TypeReference<DynamicList>(){}),
+
+    DECISION_AND_REASON_DOCS_UPLOAD(
+        "decisionAndReasonDocsUpload", new TypeReference<Document>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_LIST(
+            "updateTribunalDecisionList", new TypeReference<UpdateTribunalRules>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK(
+            "updateTribunalDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){}),
+
+    UPDATED_APPEAL_DECISION(
+        "updatedAppealDecision", new TypeReference<String>(){}),
+
+    UPLOAD_REMITTAL_DECISION_DOC(
+        "uploadRemittalDecisionDoc", new TypeReference<Document>(){}),
+
+    UPLOAD_OTHER_REMITTAL_DOCS(
+        "uploadOtherRemittalDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    REMITTAL_DOCUMENTS(
+        "remittalDocuments", new TypeReference<List<IdValue<RemittalDocument>>>(){}),
+
+    COURT_REFERENCE_NUMBER(
+        "courtReferenceNumber", new TypeReference<String>(){}),
+
+    REMISSION_OPTION(
+        "remissionOption", new TypeReference<RemissionOption>(){}),
+
+    HELP_WITH_FEES_OPTION(
+        "helpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
+
+    CORRECTED_DECISION_AND_REASONS(
+            "correctedDecisionAndReasons", new TypeReference<List<IdValue<DecisionAndReasons>>>(){}),
+
+    SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT(
+            "summariseTribunalDecisionAndReasonsDocument", new TypeReference<String>(){}),
+
+    APPEAL_DECISION_LABEL(
+        "appealDecisionLabel", new TypeReference<String>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_DATE(
+        "updateTribunalDecisionDate", new TypeReference<String>(){}),
+
+    UPDATE_TRIBUNAL_DECISION_DATE_RULE_32(
+            "updateTribunalDecisionDateRule32", new TypeReference<String>(){}),
+
+    REASON_REHEARING_RULE_32(
+            "reasonRehearingRule32", new TypeReference<String>(){}),
+
+    SOURCE_OF_REMITTAL(
+            "sourceOfRemittal", new TypeReference<SourceOfRemittal>(){}),
+
+    JUDGES_NAMES_TO_EXCLUDE(
+            "judgesNamesToExclude", new TypeReference<String>(){}),
+
+    REMITTED_ADDITIONAL_INSTRUCTIONS(
+            "remittedAdditionalInstructions", new TypeReference<String>(){}),
+
+    APPEAL_REMITTED_DATE(
+        "appealRemittedDate", new TypeReference<String>() {}),
+
+    REHEARING_REASON(
+        "rehearingReason", new TypeReference<String>() {}),
+
+    REHEARD_HEARING_DOCUMENTS_COLLECTION(
+            "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
+
     ;
 
     private final String value;

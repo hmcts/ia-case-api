@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReheardHearingDocuments;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -21,19 +22,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
+    private final FeatureToggler featureToggler;
 
     public CreateCaseSummaryHandler(
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender
+        DocumentsAppender documentsAppender,
+        FeatureToggler featureToggler
     ) {
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -78,28 +83,53 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
             );
 
         Optional<YesOrNo> caseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS);
-
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-            caseFlagSetAsideReheardExists.isPresent() && caseFlagSetAsideReheardExists.get() == YesOrNo.YES
-                ? asylumCase.read(REHEARD_HEARING_DOCUMENTS)
-                : asylumCase.read(HEARING_DOCUMENTS);
-
-        final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-            maybeHearingDocuments.orElse(emptyList());
+        boolean remittedFeatureFlag = featureToggler.getValue("dlrm-remitted-feature-flag", false);
 
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
-                hearingDocuments,
+                fetchHearingDocuments(asylumCase, caseFlagSetAsideReheardExists, remittedFeatureFlag),
                 singletonList(caseSummaryDocumentWithMetadata),
                 DocumentTag.CASE_SUMMARY
             );
 
         if (caseFlagSetAsideReheardExists.isPresent() && caseFlagSetAsideReheardExists.get() == YesOrNo.YES) {
-            asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+            if (remittedFeatureFlag) {
+                Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                        asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+                List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+                if (!existingReheardDocuments.isEmpty()) {
+                    existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
+                    asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
+                }
+            } else {
+                asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+            }
         } else {
             asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private List<IdValue<DocumentWithMetadata>> fetchHearingDocuments(AsylumCase asylumCase,
+                                                                      Optional<YesOrNo> caseFlagSetAsideReheardExists,
+                                                                      boolean remittedFlag) {
+
+        boolean isSetAsideReheard = caseFlagSetAsideReheardExists.map(flag -> flag.equals(YesOrNo.YES)).orElse(false);
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments = isSetAsideReheard
+                        ? asylumCase.read(REHEARD_HEARING_DOCUMENTS)
+                        : asylumCase.read(HEARING_DOCUMENTS);
+
+        if (isSetAsideReheard && remittedFlag) {
+            Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                    asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+            List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+
+            return (!existingReheardDocuments.isEmpty())
+                    ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
+                    : emptyList();
+        }
+        return maybeHearingDocuments.orElse(emptyList());
     }
 }

@@ -139,6 +139,10 @@ cache:
 
 appealOutOfTimeDaysUk: 14
 appealOutOfTimeDaysOoc: 28
+ftpaAppellantAppealOutOfTimeDaysUk: 14
+ftpaAppellantAppealOutOfTimeDaysOoc: 28
+ftpaRespondentAppealOutOfTimeDaysUk: 14
+ftpaRespondentAppealOutOfTimeDaysOoc: 28
 appealOutOfTimeAcceleratedDetainedWorkingDays: 5
 ftpaAppealOutOfTimeWorkingDaysAdaAppeal: 7
 ftpaAppealOutOfTimeDaysUk: 14
@@ -346,6 +350,7 @@ security:
       - "updateDetentionLocation"
       - "turnOnNotifications"
       - "generateServiceRequest"
+      - "markAppealAsRemitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -416,6 +421,7 @@ security:
       - "updateHearingAdjustments"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
       - "uploadSensitiveDocuments"
       - "decideAnApplication"
       - "requestNewHearingRequirements"
@@ -430,6 +436,7 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
@@ -438,6 +445,9 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
+      - "reTriggerWaTasks"
+      - "reTriggerWaBulkTasks"
+    caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
 

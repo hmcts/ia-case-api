@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,30 @@ class PreSubmitCallbackControllerTest {
     @ValueSource(strings = {"somePageId", ""})
     void should_dispatch_mid_event_callback_then_return_response(String pageIdParam) {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        doCallRealMethod().when(callback).setPageId(pageIdParam);
+        doCallRealMethod().when(callback).getPageId();
+
+        doReturn(callbackResponse)
+            .when(callbackDispatcher)
+            .handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
+            preSubmitCallbackController.ccdMidEvent(callback, pageIdParam);
+
+        assertNotNull(actualResponse);
+
+        verify(callbackDispatcher, times(1)).handle(
+            PreSubmitCallbackStage.MID_EVENT,
+            callback
+        );
+        assertEquals(pageIdParam, callback.getPageId());
+    }
+
+    @Test
+    void should_dispatch_mid_event_callback_withou_breaking_if_pageId_null() {
+
+        String pageIdParam = null;
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         doCallRealMethod().when(callback).setPageId(pageIdParam);
         doCallRealMethod().when(callback).getPageId();

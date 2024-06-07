@@ -1,0 +1,47 @@
+{
+  "description": "RIA-8721 Update Tribunal Decision Rule 31 should update updatedAppealDecision (from allowed to dismissed)",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8721,
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "updateTribunalDecisionList": "underRule31",
+          "isDecisionAllowed": "allowed",
+          "typesOfUpdateTribunalDecision": {
+            "value": {
+              "code": "dismissed",
+              "label": "Yes, change decision to Dismissed"
+            },
+            "list_items": [
+              {
+                "code": "dismissed",
+                "label": "Yes, change decision to Dismissed"
+              },
+              {
+                "code": "allowed",
+                "label": "No"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "updatedAppealDecision": "Dismissed"
+      }
+    }
+  }
+}

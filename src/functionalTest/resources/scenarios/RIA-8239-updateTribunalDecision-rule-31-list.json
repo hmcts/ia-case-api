@@ -1,0 +1,98 @@
+{
+  "description": "RIA-8239 Update Tribunal Decision Rule 31 should append correctedDecisionAndReasons",
+  "launchDarklyKey": "dlrm-setaside-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 8239,
+      "eventId": "updateTribunalDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "updateTribunalDecisionList": "underRule31",
+          "updateTribunalDecisionAndReasonsFinalCheck": "Yes",
+          "isDecisionAllowed": "dismissed",
+          "typesOfUpdateTribunalDecision": {
+            "value": {
+              "code": "allowed",
+              "label": "Yes, change decision to Allowed"
+            },
+            "list_items": [
+              {
+                "code": "allowed",
+                "label": "Yes, change decision to Allowed"
+              },
+              {
+                "code": "dismissed",
+                "label": "No"
+              }
+            ]
+          },
+          "decisionAndReasonDocsUpload": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
+          },
+          "summariseTribunalDecisionAndReasonsDocument": "Document summarised example"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "updatedAppealDecision": "Allowed",
+        "correctedDecisionAndReasons": [
+          {
+            "id": "1",
+            "value": {
+              "summariseChanges": "Document summarised example",
+              "updatedDecisionDate": "{$TODAY}",
+              "documentAndReasonsDocument": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
+              },
+              "dateDocumentAndReasonsDocumentUploaded": "{$TODAY}"
+            }
+          }
+        ],
+        "finalDecisionAndReasonsDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-Cover-letter-AMENDED.PDF"
+              },
+              "suppliedBy": "",
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "updatedDecisionAndReasonsCoverLetter"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "PA 12345 2018-Awan-Decision-and-reasons-AMENDED.pdf"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "updatedFinalDecisionAndReasonsPdf"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
