@@ -1,102 +1,29 @@
 import os
 import json
+import csv
+
+from filepath_settings import settings
 
 """
-Script for redacting data from a case data JSON.
 
-Usage: 
+Usage:
 
-Replace filepath with absolute filepath of JSON requiring redacting at the bottom of this file where 
-redact_values_from_file function is called.
-
-Run python bin/utils/python_scripts/redact_info_from_json.py while in ia/case/api directory
- 
-Script will output redacted JSON file in the same directory as original
-with '_redacted' suffix.
+Replace filepath with absolute filepath of JSON/CSV requiring redacting at the bottom of this file where
+desired function is called.
 
 Notes:
- 
-Fields to be redacted are hardcoded in replace mapping dict, so use with caution and double check redacted JSON 
-(I suggest comparing two files in IDE) as it's only been tested on a few cases' data.
 
-Add any additionally required fields (in full lowercase) to be redacted in replace_mapping_dict with their corresponding
+Fields to be redacted are hardcoded in replace mapping dict in filepath_settings.py, so use with caution and double
+check redacted JSON and add any additionally required fields to be redacted in replace_mapping_dict with their corresponding
 replace data
 
-Replaces all document filenames so if testing any specifics you may want to manually change the filenames
 """
 
-replace_mapping_dict = {
-    'email': 'email@email.com',
-    'postcode': 'N11 1yz',
-    'dateofbirth': '1980-01-01',
-    'document_filename': 'redacted.pdf',
-    'document_url': 'http://dm-store-aat.service.core-compute-aat.internal/documents/9ce3f9d5-31ef-4021-9aa5-4d017c404cfe',
-    'document_binary_url': 'http://dm-store-aat.service.core-compute-aat.internal/documents/9ce3f9d5-31ef-4021-9aa5-4d017c404cfe/binary',
-    'name': 'redacted.pdf',
-    'filename': 'redacted.pdf',
-    'addressline1': '10 street',
-    'addressline2': 'town',
-    'addressline3': 'city',
-    'attendingjudge': 'redacted',
-    'feedescription': 'redacted',
-    'searchpostcode': 'n11 1yz',
-    'posttown': 'town',
-    'details': 'redacted',
-    'decisionreason': 'redacted',
-    'appellantfamilyname': 'redacted',
-    'appellantgivennames': 'redacted',
-    'appellantdateofbirth': '1980-01-01',
-    'appellantemailaddress': 'email@email.com',
-    'casenotedescription': 'redacted',
-    'casenotesubject': 'redacted',
-    'user': 'redacted',
-    'question': 'redacted',
-    'explanation': 'redacted',
-    'address': 'redacted',
-    'bundlefilenameprefix': 'EA 50111 2023',
-    'casenamehmctsinternal': 'redacted',
-    'hmctscasenameinternal': 'redacted',
-    'appellantnamefordisplay': 'redacted',
-    'reasonsforappealdecision': 'redacted',
-    'description': 'redacted',
-    'answer': 'redacted',
-    "legalrepname": "redacted",
-    "mobilenumber": "07451111111",
-    "legalrepcompany": "redacted",
-    "partyname": "redacted",
-    "legalrepcompanyname": "redacted",
-    "county": "redacted",
-    "legalrepresentativename": "redacted",
-    "legalrepreferencenumber": "AA/1234",
-    "directioneditexplanation": 'redacted',
-    "fullname": "redacted",
-    "dayofbirth": 1,
-    "familyname": "redacted",
-    "yearofbirth": 1980,
-    "monthofbirth": 1,
-    "displaydateofbirth": "10 Jan 1980",
-    "documentreference": "012345678",
-    "displayappellantdetailstitle": "redacted",
-    "displayapplicationdetailstitle": "redacted",
-    "homeofficesearchresponse": 'redacted',
-    "remotevideocalldescription": 'redacted',
-    "hearingdaterangedescription": 'redacted',
-    "interpreterlanguagereadonly": "Language\t\tEnglish\nDialect\t\t\tENG",
-    "legalrepresentativeemailaddress": "email@email.co.uk",
-    "remotevideocalltribunalresponse": "redacted",
-    "appellantnationalitiesdescription": "France",
-    "language": "English",
-    "languagedialect": "redacted",
-    "legalaidaccountNumber": "OG123V1",
-    "appellantPhoneNumber": "07451111111",
-    "givenName": "redacted",
-
-}
-
-replace_mapping_keys = list(replace_mapping_dict.keys())
+replace_mapping_keys = [x.lower() for x in list(settings.replace_mapping_dict.keys())]
+replace_csv_mapping_keys = [x.lower() for x in list(settings.csv_rows_to_redact.keys())]
 
 
-def redact_values_from_file(file_path, keys_to_redact):
+def redact_values_from_json(file_path, keys_to_redact):
     with open(file_path, 'r') as file:
         json_data = json.load(file)
 
@@ -120,16 +47,123 @@ def redact_values(json_data, keys_to_redact):
             redact_values(item, keys_to_redact)
 
 
+def redact_values_from_csv(input_file_path, keys_to_redact=replace_mapping_keys) -> str:
+    with open(input_file_path, 'r', newline='') as input_file:
+        reader = csv.DictReader(input_file)
+        rows = list(reader)
+
+    redact_csv_rows(rows, keys_to_redact)
+
+    output_file_path = get_redacted_file_path(input_file_path)
+
+    with open(output_file_path, 'w', newline='') as output_file:
+        fieldnames = reader.fieldnames
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    return output_file_path
+
+
+def redact_csv_rows(rows, keys_to_redact):
+    for row in rows:
+        for key, value in row.items():
+            if key.lower() in keys_to_redact and isinstance(row, dict):
+                try:
+                    json_value = json.loads(value)
+                    redact_values(json_value, keys_to_redact)
+                    row[key] = json.dumps(json_value)
+                except json.JSONDecodeError:
+                    pass
+            elif key.lower() in replace_csv_mapping_keys:
+                row[key] = 'redacted'
+            else:
+                pass
+
+
 def get_redacted_file_path(original_file_path):
+    original_file_path = original_file_path.replace("input", "output")
     base_name, extension = os.path.splitext(original_file_path)
-    return f"{base_name}_redacted{extension}"
+    file_name = f"{base_name}_redacted{extension}"
+    return file_name
 
 
 def get_replace_term(key):
     key = key.lower()
-    return replace_mapping_dict.get(key, 'redacted')
+    return settings.replace_mapping_dict.get(key, 'redacted')
 
 
-redact_values_from_file(
-    '/Users/jacobcohensolirius/HMCTS/IA/ia-case-api/bin/utils/python_scripts/SNi_tickets/SNI-5296/latest_data.json', replace_mapping_keys
-)
+def replace_specific_field_in_json_file(
+        json_filepath: str,
+        field: str,
+        path_fields: list[str] = [],
+        id_list: list[str] = [],
+        replace_term: str = 'SPECIFICALLY_REDACTED'):
+
+    with open(json_filepath, 'r') as file:
+        json_data = json.load(file)
+        search_json_and_replace(json_data, field, path_fields, id_list, replace_term)
+
+    with open(json_filepath, 'w') as file:
+        json.dump(json_data, file, indent=4)
+
+
+def search_json_and_replace(obj, field, path_fields, id_list, replace_term):
+    field_should_be_parsed = True
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if id_list:
+                if key == 'id':
+                    current_id_value_being_parsed = obj[key]
+                    if current_id_value_being_parsed not in id_list:
+                        field_should_be_parsed = False
+            if key == field:
+                print(f'Replacing {obj[key]} with {replace_term}')
+                obj[key] = replace_term
+            elif key in path_fields and field_should_be_parsed:
+                search_json_and_replace(value, field, path_fields, id_list, replace_term)
+    elif isinstance(obj, list):
+        for item in obj:
+            search_json_and_replace(item, field, path_fields, id_list, replace_term)
+
+    return obj
+
+
+def replace_specific_field_in_csv_file_of_jsons(
+        input_file_path,
+        field: str,
+        events_to_redact: list[int] = [],
+        path_fields: list[str] = [],
+        id_list: list[str] = [],
+        replace_term: str = 'SPECIFICALLY_REDACTED'):
+
+    with open(input_file_path, 'r', newline='') as input_file:
+        reader = csv.DictReader(input_file)
+        rows = list(reader)
+
+        if not events_to_redact:
+            events_to_redact = list(range(1, len(rows)))
+
+        for idx, row in enumerate(rows):
+            if idx in events_to_redact:
+                json_data = json.loads(row['data'])
+                row['data'] = search_json_and_replace(json_data, field, path_fields, id_list, replace_term)
+
+        fieldnames = reader.fieldnames
+
+    with open(input_file_path, 'w', newline='') as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+# example usage
+
+# redact_values_from_json(
+#     'latest_data.json', replace_mapping_keys
+# )
+
+# redact_values_from_csv(
+#     'case_event_202401261547.csv')
+
+# replace_specific_field_in_json_file('case_7088977_event_1_recordRemissionDecision.json', 'document_filename', ['caseNotes', 'value', 'caseNoteDocument'])
+
+# replace_specific_field_in_csv_file_of_jsons('case_event_202403261448_redacted.csv', 'document_filename', path_fields=['caseNotes', 'value', 'caseNoteDocument'], id_list=['1'])

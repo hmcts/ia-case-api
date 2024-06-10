@@ -1,6 +1,5 @@
 {
   "description": "RIA-3954 FTPA Respondent (Generic) sets out of time flag on late application submission in out of country",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "HomeOfficeGeneric",
@@ -11,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealDate": "{$TODAY-29}",
+          "ftpaApplicationDeadline": "{$TODAY-29}",
           "outOfCountryDecisionType":"refusalOfHumanRights"
         }
       }
@@ -24,7 +23,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "ftpaRespondentSubmissionOutOfTime": "Yes",
-        "appealDate": "{$TODAY-29}",
         "sendDirectionActionAvailable": "Yes",
         "outOfCountryDecisionType":"refusalOfHumanRights"
       }

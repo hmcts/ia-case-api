@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -60,8 +59,10 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && !isAcceleratedDetainedAppeal(asylumCase)
                 && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
-                && (appealType.isPresent() && Set.of(EA, HU, EU).contains(appealType.get()));
+                && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
+
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

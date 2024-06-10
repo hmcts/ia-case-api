@@ -16,15 +16,19 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
-import com.google.common.collect.ImmutableSet;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -44,13 +48,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class GenerateDocumentHandlerTest {
 
+    private static final int FTPA_DUE_IN_WORKING_DAYS_ADA = 5;
+    private static final int FTPA_DUE_IN_DAYS_OOC = 28;
+    private static final int FTPA_DUE_IN_DAYS_UK = 14;
+    private static final int FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL = 7;
+    private static final int FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL = 14;
+    private static final LocalDate FAKE_APPEAL_DATE = LocalDate.parse("2023-02-11");
+    private static final LocalDate EXPECTED_FTPA_DEADLINE_ADA = LocalDate.parse("2023-02-21");
+    private static final LocalDate EXPECTED_FTPA_DEADLINE_UK = FAKE_APPEAL_DATE.plusDays(FTPA_DUE_IN_DAYS_UK);
+    private static final LocalDate EXPECTED_FTPA_DEADLINE_OOC = FAKE_APPEAL_DATE.plusDays(FTPA_DUE_IN_DAYS_OOC);
     @Mock
     private DocumentGenerator<AsylumCase> documentGenerator;
     @Mock
@@ -59,8 +74,11 @@ class GenerateDocumentHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private DueDateService dueDateService;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+
 
     private State state = State.UNKNOWN;
     private String applicationSupplier = "Legal representative";
@@ -83,8 +101,6 @@ class GenerateDocumentHandlerTest {
         applicationStatus
     )));
 
-    private LocalDate now = LocalDate.now();
-
     private GenerateDocumentHandler generateDocumentHandler;
 
     @BeforeEach
@@ -96,7 +112,30 @@ class GenerateDocumentHandlerTest {
                 true,
                 documentGenerator,
                 dateProvider,
-                true);
+                    true,
+                dueDateService,
+                FTPA_DUE_IN_DAYS_UK,
+                FTPA_DUE_IN_DAYS_OOC,
+                FTPA_DUE_IN_WORKING_DAYS_ADA,
+                FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+            );
+    }
+
+    void setUpSendDecisionsAndReasonsData(AsylumCase asylumCase) {
+        when(callback.getEvent()).thenReturn(SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(state);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
+                .thenReturn(Optional.empty());
+        when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
     }
 
     @Test
@@ -121,6 +160,8 @@ class GenerateDocumentHandlerTest {
             GENERATE_UPPER_TRIBUNAL_BUNDLE,
             SUBMIT_REASONS_FOR_APPEAL,
             SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+            REQUEST_CASE_BUILDING,
+            ASYNC_STITCHING_COMPLETE,
             UPDATE_TRIBUNAL_DECISION
         ).forEach(event -> {
 
@@ -138,7 +179,7 @@ class GenerateDocumentHandlerTest {
             if (event.equals(SEND_DECISION_AND_REASONS)) {
                 when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
                     .thenReturn(Optional.of(AppealDecision.ALLOWED));
-                when(dateProvider.now()).thenReturn(now);
+                when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
             }
 
             when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
@@ -161,7 +202,8 @@ class GenerateDocumentHandlerTest {
 
             if (event.equals(SEND_DECISION_AND_REASONS)) {
                 verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
-                verify(expectedUpdatedCase).write(APPEAL_DATE, now.toString());
+                verify(expectedUpdatedCase).write(APPEAL_DATE, FAKE_APPEAL_DATE.toString());
+                verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,EXPECTED_FTPA_DEADLINE_UK.toString());
                 verify(expectedUpdatedCase).clear(UPDATED_APPEAL_DECISION);
             }
 
@@ -230,7 +272,7 @@ class GenerateDocumentHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getEvent()).thenReturn(REMOVE_DETAINED_STATUS);
         assertThatThrownBy(() -> generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -254,6 +296,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CASE,
                         DRAFT_HEARING_REQUIREMENTS,
                         UPDATE_HEARING_REQUIREMENTS,
+                        UPDATE_HEARING_ADJUSTMENTS,
+                        ADA_SUITABILITY_REVIEW,
                         LIST_CASE,
                         EDIT_CASE_LISTING,
                         GENERATE_DECISION_AND_REASONS,
@@ -269,6 +313,39 @@ class GenerateDocumentHandlerTest {
                         EDIT_APPEAL_AFTER_SUBMIT,
                         GENERATE_UPPER_TRIBUNAL_BUNDLE,
                         SUBMIT_REASONS_FOR_APPEAL,
+                        SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                        REQUEST_CASE_BUILDING,
+                        REQUEST_RESPONDENT_REVIEW,
+                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                        ASYNC_STITCHING_COMPLETE,
+                        RECORD_OUT_OF_TIME_DECISION,
+                        REQUEST_RESPONDENT_EVIDENCE,
+                        RECORD_REMISSION_DECISION,
+                        MARK_APPEAL_PAID,
+                        REQUEST_RESPONSE_REVIEW,
+                        REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                        MARK_APPEAL_AS_ADA,
+                        DECIDE_AN_APPLICATION,
+                        APPLY_FOR_FTPA_RESPONDENT,
+                        TRANSFER_OUT_OF_ADA,
+                        RESIDENT_JUDGE_FTPA_DECISION,
+                        APPLY_FOR_FTPA_APPELLANT,
+                        MAINTAIN_CASE_LINKS,
+                        UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                        UPLOAD_ADDITIONAL_EVIDENCE,
+                        CHANGE_HEARING_CENTRE,
+                        CREATE_CASE_LINK,
+                        REQUEST_RESPONSE_AMEND,
+                        SEND_DIRECTION,
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        CHANGE_HEARING_CENTRE,
+                        CHANGE_DIRECTION_DUE_DATE,
+                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE,
+                        CHANGE_DIRECTION_DUE_DATE,
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        REINSTATE_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                         UPDATE_TRIBUNAL_DECISION
                     ).contains(event)) {
@@ -288,11 +365,18 @@ class GenerateDocumentHandlerTest {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
-                false,
-                true,
-                documentGenerator,
-                dateProvider,
-                true);
+                    false,
+                    true,
+                    documentGenerator,
+                    dateProvider,
+                    true,
+                    dueDateService,
+                    FTPA_DUE_IN_DAYS_UK,
+                    FTPA_DUE_IN_DAYS_OOC,
+                    FTPA_DUE_IN_WORKING_DAYS_ADA,
+                    FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                    FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+            );
 
         for (Event event : Event.values()) {
 
@@ -318,7 +402,14 @@ class GenerateDocumentHandlerTest {
                 false,
                 documentGenerator,
                 dateProvider,
-                true);
+                true,
+                dueDateService,
+                FTPA_DUE_IN_DAYS_UK,
+                FTPA_DUE_IN_DAYS_OOC,
+                FTPA_DUE_IN_WORKING_DAYS_ADA,
+                FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+            );
 
         for (Event event : Event.values()) {
 
@@ -333,6 +424,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_APPEAL,
                         DRAFT_HEARING_REQUIREMENTS,
                         UPDATE_HEARING_REQUIREMENTS,
+                        UPDATE_HEARING_ADJUSTMENTS,
+                        ADA_SUITABILITY_REVIEW,
                         LIST_CASE,
                         GENERATE_DECISION_AND_REASONS,
                         GENERATE_HEARING_BUNDLE,
@@ -348,6 +441,37 @@ class GenerateDocumentHandlerTest {
                         EDIT_APPEAL_AFTER_SUBMIT,
                         GENERATE_UPPER_TRIBUNAL_BUNDLE,
                         SUBMIT_REASONS_FOR_APPEAL,
+                        SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                        REQUEST_CASE_BUILDING,
+                        REQUEST_RESPONDENT_REVIEW,
+                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                        ASYNC_STITCHING_COMPLETE,
+                        RECORD_OUT_OF_TIME_DECISION,
+                        REQUEST_RESPONDENT_EVIDENCE,
+                        RECORD_REMISSION_DECISION,
+                        MARK_APPEAL_PAID,
+                        REQUEST_RESPONSE_REVIEW,
+                        REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                        MARK_APPEAL_AS_ADA,
+                        DECIDE_AN_APPLICATION,
+                        APPLY_FOR_FTPA_RESPONDENT,
+                        TRANSFER_OUT_OF_ADA,
+                        RESIDENT_JUDGE_FTPA_DECISION,
+                        APPLY_FOR_FTPA_APPELLANT,
+                        MAINTAIN_CASE_LINKS,
+                        UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                        UPLOAD_ADDITIONAL_EVIDENCE,
+                        CHANGE_HEARING_CENTRE,
+                        CREATE_CASE_LINK,
+                        REQUEST_RESPONSE_AMEND,
+                        SEND_DIRECTION,
+                        CHANGE_HEARING_CENTRE,
+                        CHANGE_DIRECTION_DUE_DATE,
+                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        UPLOAD_ADDENDUM_EVIDENCE,
+                        CHANGE_DIRECTION_DUE_DATE,
+                        REINSTATE_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                         UPDATE_TRIBUNAL_DECISION
                     );
@@ -388,4 +512,96 @@ class GenerateDocumentHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    void should_send_decision_and_reasons_and_populate_ftpa_field_ada_appeal() {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
+
+        when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        final ZonedDateTime fakeAppealDateTime = FAKE_APPEAL_DATE.atStartOfDay(ZoneOffset.UTC);
+        when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA))
+                .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_ADA.toString());
+    }
+
+    @Test
+    void should_send_decision_and_reasons_and_populate_ftpa_field_ooc_appeal() {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
+
+        when(expectedUpdatedCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_OOC.toString());
+    }
+
+    @Test
+    void should_send_decision_and_reasons_and_populate_ftpa_field_uk_appeal() {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_UK.toString());
+    }
+
+    @ParameterizedTest
+    @EnumSource(YesOrNo.class)
+    void should_populate_ftpa_deadline_for_internal_case(YesOrNo yesOrNo) {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
+
+        when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(yesOrNo));
+        when(expectedUpdatedCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final ZonedDateTime fakeAppealDateTime = FAKE_APPEAL_DATE.atStartOfDay(ZoneOffset.UTC);
+        when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL))
+                .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        if (yesOrNo.equals(YesOrNo.YES)) {
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_ADA.toString());
+        } else {
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_UK.toString());
+        }
+    }
+
 }

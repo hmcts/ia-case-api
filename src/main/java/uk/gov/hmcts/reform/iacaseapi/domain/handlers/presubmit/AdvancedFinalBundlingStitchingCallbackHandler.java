@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -51,6 +53,11 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         this.notificationSender = notificationSender;
         this.featureToggler = featureToggler;
         this.homeOfficeApi = homeOfficeApi;
+    }
+
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LAST;
     }
 
     public boolean canHandle(
@@ -96,13 +103,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
-        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
-
-        boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
-                                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
-
         if (stitchedDocument.isPresent()) {
-            saveHearingBundleDocument(asylumCase, stitchedDocument, isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+            saveHearingBundleDocument(asylumCase, stitchedDocument);
         }
 
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");
@@ -120,7 +122,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
             handleHomeOfficeNotification(callback, asylumCase);
         }
 
-        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
+        AsylumCase asylumCaseWithNotificationMarker = isNotificationTurnedOff(asylumCase)
+                ? asylumCase : notificationSender.send(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
@@ -158,13 +161,15 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         }
     }
 
-    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument, AsylumCaseFieldDefinition field) {
+    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument) {
 
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-            asylumCase.read(field);
+        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
-        final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-            maybeHearingDocuments.orElse(emptyList());
+        boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
+                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
+        boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
+
+        final List<IdValue<DocumentWithMetadata>> hearingDocuments = fetchHearingDocuments(asylumCase, isReheardCase, isRemittedFeature);
 
         List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
 
@@ -184,6 +189,37 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 DocumentTag.HEARING_BUNDLE
             );
 
-        asylumCase.write(field, allHearingDocuments);
+        if (isReheardCase) {
+            if (isRemittedFeature) {
+                Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                        asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+                List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+                if (!existingReheardDocuments.isEmpty()) {
+                    existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
+                    asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
+                }
+            } else {
+                asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+            }
+        } else {
+            asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
+        }
+    }
+
+    private List<IdValue<DocumentWithMetadata>> fetchHearingDocuments(AsylumCase asylumCase,
+                                                                      boolean isReheardCase,
+                                                                      boolean isRemittedFeature) {
+        if (isReheardCase && isRemittedFeature) {
+            Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                    asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+            List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+
+            return (!existingReheardDocuments.isEmpty())
+                    ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
+                    : emptyList();
+        }
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
+                asylumCase.read(isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+        return maybeHearingDocuments.orElse(emptyList());
     }
 }

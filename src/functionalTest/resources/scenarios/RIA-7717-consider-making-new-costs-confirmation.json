@@ -1,0 +1,27 @@
+{
+  "description": "RIA-7717 Tribunal consider making costs confirmation screen",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "considerMakingCostsOrder",
+      "state": "appealSubmitted",
+      "id": 77171,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "No",
+          "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# The Tribunal has given notice that it is considering making a costs order",
+      "body": "## What happens next\n\nBoth parties will be notified.\n\nYou can review your costs order in the [Costs tab](/cases/case-details/77171#Costs)."
+    }
+  }
+}

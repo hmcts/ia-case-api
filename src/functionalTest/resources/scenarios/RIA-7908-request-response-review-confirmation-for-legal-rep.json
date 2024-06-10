@@ -1,0 +1,36 @@
+{
+  "description": "RIA-7908 Request response review direction to appellant in detention, non-Ada",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestResponseReview",
+      "state": "*",
+      "id": 7908,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "Test direction",
+                "parties": "legalRepresentative",
+                "dateDue": "{$TODAY+28}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestResponseReview"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have sent a direction",
+      "body": "#### What happens next\n\nLegal representative will be notified by email."
+    }
+  }
+}

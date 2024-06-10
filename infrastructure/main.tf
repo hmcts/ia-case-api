@@ -1,5 +1,9 @@
 provider "azurerm" {
-  features {}
+    features {
+        resource_group {
+            prevent_deletion_if_contains_resources = false
+        }
+    }
 }
 
 provider "azurerm" {
@@ -56,6 +60,7 @@ module "ia-case-api-db-v15" {
   ]
   pgsql_version   = "15"
   admin_user_object_id = var.jenkins_AAD_objectId
+  force_user_permissions_trigger = "1"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-15" {

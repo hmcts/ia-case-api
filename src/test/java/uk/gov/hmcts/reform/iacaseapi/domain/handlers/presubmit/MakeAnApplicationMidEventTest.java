@@ -76,6 +76,7 @@ class MakeAnApplicationMidEventTest {
         "JUDGE_REVIEW",
         "REINSTATE",
         "WITHDRAW",
+        "SET_ASIDE_A_DECISION",
         "APPLICATION_UNDER_RULE_31_OR_RULE_32",
         "OTHER"
     })
@@ -91,6 +92,7 @@ class MakeAnApplicationMidEventTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(OTHER.name(), OTHER.toString()),
+            new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()),
             new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
             new DynamicList(values.get(0), values);
@@ -178,6 +180,11 @@ class MakeAnApplicationMidEventTest {
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Describe the application you are making and explain the reasons for the application.");
+                break;
+            case SET_ASIDE_A_DECISION:
+                verify(asylumCase, times(1))
+                    .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                        "Explain why the decision should be set aside.");
                 break;
             case APPLICATION_UNDER_RULE_31_OR_RULE_32:
                 verify(asylumCase, times(1))
