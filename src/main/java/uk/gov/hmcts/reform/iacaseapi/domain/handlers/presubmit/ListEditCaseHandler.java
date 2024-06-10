@@ -117,6 +117,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
                 .getHearingCentreAddress(listingLocation.getValue().getCode()));
 
+            asylumCase.clear(IS_DECISION_WITHOUT_HEARING);
+
             addBaseLocationAndStaffLocation(asylumCase, listingLocation);
 
         } else {
@@ -178,7 +180,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 addDirection(asylumCase);
             }
         }
-
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

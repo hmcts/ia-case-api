@@ -405,6 +405,32 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void should_clear_is_decision_without_hearing_field(Event event) {
+
+        final DynamicList listingLocation = new DynamicList(
+            new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"))
+        );
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(locationRefDataService.isCaseManagementLocation("386417")).thenReturn(true);
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).clear(IS_DECISION_WITHOUT_HEARING);
+    }
+
     @Test
     void handling_should_throw_when_listing_location_cannot_be_mapped_to_hearing_centre() {
 
