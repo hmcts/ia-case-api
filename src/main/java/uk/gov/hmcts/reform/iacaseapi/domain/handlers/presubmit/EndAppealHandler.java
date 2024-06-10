@@ -31,8 +31,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceRes
 @Component
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String HEARING_DELETION_CALLBACK_ERROR = "Could not delete some hearing request(s)";
-
     private final DateProvider dateProvider;
     private final IaHearingsApiService iaHearingsApiService;
 
@@ -106,35 +104,25 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(APPEAL_READY_FOR_UT_TRANSFER);
         asylumCase.clear(UT_APPEAL_REFERENCE_NUMBER);
 
-        if (callback.getEvent() == Event.END_APPEAL) {
-            asylumCase = deleteHearings(callback);
-
-            if (!isDeletionRequestSuccessful(asylumCase)) {
-                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError(HEARING_DELETION_CALLBACK_ERROR);
-                return response;
-            }
+        if (callback.getEvent() == Event.END_APPEAL && !deleteHearings(callback)) {
+            asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private AsylumCase deleteHearings(Callback<AsylumCase> callback) {
+    private boolean deleteHearings(Callback<AsylumCase> callback) {
         try {
-
-            return iaHearingsApiService.aboutToSubmit(callback);
+            return isDeletionRequestSuccessful(iaHearingsApiService.aboutToSubmit(callback));
         } catch (AsylumCaseServiceResponseException e) {
             log.error(e.getMessage(), e);
-            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-            asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
-
-            return asylumCase;
+            return false;
         }
     }
 
     private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {
         return asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)
-            .map(yesOrNo -> !yesOrNo.equals(YES))
+            .map(yesOrNo -> yesOrNo != YES)
             .orElse(true);
     }
 
