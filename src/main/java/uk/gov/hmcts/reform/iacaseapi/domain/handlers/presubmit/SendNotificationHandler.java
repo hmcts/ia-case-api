@@ -231,7 +231,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECISION_WITHOUT_HEARING,
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
             Event.REMOVE_APPEAL_FROM_ONLINE,
-            Event.ADJOURN_HEARING_WITHOUT_DATE
+            Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.MANAGE_FEE_UPDATE
         );
 
         if (!isSaveAndContinueEnabled) {
