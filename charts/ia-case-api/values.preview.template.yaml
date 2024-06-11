@@ -16,7 +16,7 @@ java:
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
-    IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+    IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
@@ -404,12 +404,21 @@ ia-timed-event-service:
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:
-      IDAM_URL: https://idam-web-public.{{ .Values.global.environment
-        }}.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment
-        }}.service.core-compute-{{ .Values.global.environment }}.internal
-      CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
-        }}.service.core-compute-{{ .Values.global.environment }}.internal
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
+      POSTGRES_NAME: "pr-${CHANGE_ID}-ia_timed_event_service"
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: hmcts
+      POSTGRES_CONNECTION_OPTIONS: ""
+    postgresql:
+      auth:
+        username: ia_tes
+        password: ia_tes
+        database: ia_tes
+      service:
+        port: 5432
     keyVaults:
       ia:
         resourceGroup: ia
@@ -1298,4 +1307,5 @@ postgresql:
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
+      - name: "pr-${CHANGE_ID}-ia_timed_event_service"
 
