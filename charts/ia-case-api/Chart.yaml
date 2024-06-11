@@ -1,21 +1,21 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.45
+version: 0.0.46
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.0.0
+    version: 5.2.1
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: ccd
-    version: ~9.0.22
+    version: ~9.1.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
-    version: ~1.0.16
+    version: ~1.0.17
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-webapp.enabled
   - name: idam-pr
@@ -23,39 +23,39 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ia-case-payments-api
-    version: 0.0.15
+    version: 0.0.22
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
-    version: 0.0.26
+    version: 0.0.40
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-documents-api.enabled
   - name: ia-case-notifications-api
-    version: 0.0.37
+    version: 0.0.49
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-case-notifications-api.enabled
   - name: ia-home-office-integration-api
-    version: 0.0.20
+    version: 0.0.26
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
-    version: 0.0.43
+    version: 0.0.49
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-aip-frontend.enabled
   - name: ia-bail-case-api
-    version: 0.0.17
+    version: 0.0.21
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-bail-case-api.enabled
   - name: ccd-case-document-am-api
-    version: 1.7.11
+    version: 1.7.14
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
-    version: 2.0.10
+    version: 2.0.23
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-ccdorc.enabled
   - name: em-stitching
-    version: 1.0.31
+    version: 1.0.53
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
@@ -63,7 +63,7 @@ dependencies:
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: aac-manage-case-assignment.enabled
   - name: wa
-    version: ~1.0.4
+    version: ~1.0.5
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
