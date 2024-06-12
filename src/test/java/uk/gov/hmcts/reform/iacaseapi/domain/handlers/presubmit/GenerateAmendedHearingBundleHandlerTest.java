@@ -29,11 +29,9 @@ class GenerateAmendedHearingBundleHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private DocumentGenerator<AsylumCase> documentGenerator;
 
     private final GenerateAmendedHearingBundleHandler generateAmendedHearingBundleHandler =
-        new GenerateAmendedHearingBundleHandler(documentGenerator);
+        new GenerateAmendedHearingBundleHandler();
 
     @Test
     void should_handle_for_generate_amended_hearing_bundle_event() {

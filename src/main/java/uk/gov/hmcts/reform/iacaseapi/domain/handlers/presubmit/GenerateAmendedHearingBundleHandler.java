@@ -17,14 +17,6 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class GenerateAmendedHearingBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final DocumentGenerator<AsylumCase> documentGenerator;
-
-    public GenerateAmendedHearingBundleHandler(
-        DocumentGenerator<AsylumCase> documentGenerator
-    ) {
-        this.documentGenerator = documentGenerator;
-    }
-
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
