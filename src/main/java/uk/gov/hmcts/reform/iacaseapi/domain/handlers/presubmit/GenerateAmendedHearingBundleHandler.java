@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
 
+@Slf4j
 @Component
 public class GenerateAmendedHearingBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -39,9 +41,9 @@ public class GenerateAmendedHearingBundleHandler implements PreSubmitCallbackHan
             callback
                 .getCaseDetails()
                 .getCaseData();
-
+        log.info("Setting IS_HEARING_BUNDLE_AMENDED to YES");
         asylumCase.write(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.YES);
-
+        log.info("Finished setting IS_HEARING_BUNDLE_AMENDED to YES");
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

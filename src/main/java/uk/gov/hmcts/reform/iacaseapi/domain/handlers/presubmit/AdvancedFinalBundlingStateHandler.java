@@ -5,6 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
 
+@Slf4j
 @Component
 public class AdvancedFinalBundlingStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
@@ -66,11 +69,14 @@ public class AdvancedFinalBundlingStateHandler implements PreSubmitCallbackState
         final String stitchStatus = caseBundles.get(0).getStitchStatus().orElse("");
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
+        log.info("Reading IS_HEARING_BUNDLE_AMENDED");
         YesOrNo isHearingBundleAmended = asylumCase
             .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO);
+        log.info("IS_HEARING_BUNDLE_AMENDED: " + isHearingBundleAmended);
         if (stitchStatus.equalsIgnoreCase("DONE") && isHearingBundleAmended.equals(YesOrNo.NO)) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.PRE_HEARING);
         } else {
+            log.info("Clearing IS_HEARING_BUNDLE_AMENDED");
             asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         }
