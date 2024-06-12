@@ -144,8 +144,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
         when(documentsAppender.append(
             anyList(),
-            anyList(),
-            eq(DocumentTag.NONE)
+            anyList()
         )).thenReturn(allHearingDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -158,7 +157,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
-        verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.NONE));
+        verify(documentsAppender).append(anyList(), anyList());
     }
 
     @ParameterizedTest

@@ -85,6 +85,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 .getCaseDetails()
                 .getCaseData();
 
+        boolean isHearingBundleAmended = asylumCase
+            .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
 
         Optional<List<IdValue<Bundle>>> maybeCaseBundles = asylumCase.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
 
@@ -102,9 +104,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         final Bundle hearingBundle = caseBundles.get(0);
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
-
-        boolean isHearingBundleAmended = asylumCase
-            .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
 
         if (stitchedDocument.isPresent()) {
             saveHearingBundleDocument(asylumCase, stitchedDocument, isHearingBundleAmended);
@@ -189,13 +188,22 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     DocumentTag.HEARING_BUNDLE
                 )
         );
-
-        List<IdValue<DocumentWithMetadata>> allHearingDocuments =
-            documentsAppender.append(
-                hearingDocuments,
-                hearingBundleDocuments,
-                isHearingBundleAmended ? DocumentTag.NONE : DocumentTag.HEARING_BUNDLE
-            );
+        log.info("isHearingBundleAmended value: " + isHearingBundleAmended);
+        List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+        if (isHearingBundleAmended) {
+            allHearingDocuments =
+                documentsAppender.append(
+                    hearingDocuments,
+                    hearingBundleDocuments
+                );
+        } else {
+            allHearingDocuments =
+                documentsAppender.append(
+                    hearingDocuments,
+                    hearingBundleDocuments,
+                    DocumentTag.HEARING_BUNDLE
+                );
+        }
         log.info("-----BEGIN allHearingDocuments-----");
         allHearingDocuments.forEach(idValue -> log.info(idValue.getValue().getDocument().getDocumentFilename()));
         log.info("------END allHearingDocuments------");
