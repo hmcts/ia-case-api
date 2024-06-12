@@ -76,8 +76,6 @@ public class AdvancedFinalBundlingStateHandler implements PreSubmitCallbackState
         if (stitchStatus.equalsIgnoreCase("DONE") && isHearingBundleAmended.equals(YesOrNo.NO)) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.PRE_HEARING);
         } else {
-            log.info("Clearing IS_HEARING_BUNDLE_AMENDED");
-            asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         }
     }

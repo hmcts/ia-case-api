@@ -158,6 +158,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList());
+        verify(asylumCase).clear(IS_HEARING_BUNDLE_AMENDED);
     }
 
     @ParameterizedTest

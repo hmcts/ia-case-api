@@ -197,6 +197,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     hearingDocuments,
                     hearingBundleDocuments
                 );
+            log.info("Clearing IS_HEARING_BUNDLE_AMENDED");
+            asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
         } else {
             allHearingDocuments =
                 documentsAppender.append(
