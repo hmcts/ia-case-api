@@ -43,6 +43,7 @@ public enum DocumentTag {
     UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT("upperTribunalTransferOrderDocument"),
     IAUT_2_FORM("iAUT2Form"),
     REMITTAL_DECISION("remittalDecision"),
+    APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
 
     @JsonEnumDefaultValue
     NONE("");
