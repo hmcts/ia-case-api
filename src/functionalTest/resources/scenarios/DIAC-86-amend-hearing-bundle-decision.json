@@ -119,6 +119,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "sendDirectionActionAvailable": "No",
         "hearingDocuments": [
           {
             "id": "2",
