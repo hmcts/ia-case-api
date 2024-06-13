@@ -1,5 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,15 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -32,10 +31,8 @@ public class HearingsUpdateHearingRequestSubmitTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private final String hearingsApiEndpoint = "hearings-end-point";
-    private final String aboutToSubmitPath = "/about-to-ccdAboutToSubmit";
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private IaHearingsApiService iaHearingsApiService;
     HearingsUpdateHearingRequestSubmit hearingsUpdateHearingRequestSubmit;
 
     @BeforeEach
@@ -44,28 +41,22 @@ public class HearingsUpdateHearingRequestSubmitTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         hearingsUpdateHearingRequestSubmit =
-                new HearingsUpdateHearingRequestSubmit(
-                        asylumCaseCallbackApiDelegator,
-                        hearingsApiEndpoint,
-                        aboutToSubmitPath
-                );
+                new HearingsUpdateHearingRequestSubmit(iaHearingsApiService);
     }
 
     @Test
     public void should_delegate_to_hearings_api_submit_event() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
-        when(asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToSubmitPath))
+        when(iaHearingsApiService.updateHearing(callback))
                 .thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 hearingsUpdateHearingRequestSubmit.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCaseCallbackApiDelegator, times(1))
-                .delegate(callback, hearingsApiEndpoint + aboutToSubmitPath);
+        verify(iaHearingsApiService, times(1)).updateHearing(callback);
         assertEquals(asylumCase, callbackResponse.getData());
     }
-
 
 }
 
