@@ -5,7 +5,7 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "amendHearingBundle",
+      "eventId": "generateAmendedHearingBundle",
       "state": "adjourned",
       "caseData": {
         "template": "minimal-appeal-submitted.json",

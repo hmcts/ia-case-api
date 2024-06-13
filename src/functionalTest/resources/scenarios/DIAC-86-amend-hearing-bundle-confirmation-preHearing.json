@@ -4,7 +4,7 @@
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "amendHearingBundle",
+      "eventId": "generateAmendedHearingBundle",
       "state": "preHearing",
       "id": 1234,
       "caseData": {
