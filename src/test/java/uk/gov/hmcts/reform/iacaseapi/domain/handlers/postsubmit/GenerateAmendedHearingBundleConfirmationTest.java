@@ -38,17 +38,16 @@ class GenerateAmendedHearingBundleConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("The amended hearing bundle is being generated");
+            .contains("The hearing bundle is being generated");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("What happens next");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You will soon be able to view the amended hearing bundle in the documents tab.</br>"
-                    + "You and the other parties will be notified when the amended hearing bundle is available.</br>"
-                    +
-                    "If the bundle fails to generate, you will be notified."
+                "You will soon be able to view the hearing bundle in the [Documents tab](/cases/case-details/1234#Documents) in your case details page.</br>"
+                    + "All other parties will be notified when the hearing bundle is available.</br>"
+                    + "If the bundle fails to generate, you will get a notification and you will need to try again."
             );
     }
 

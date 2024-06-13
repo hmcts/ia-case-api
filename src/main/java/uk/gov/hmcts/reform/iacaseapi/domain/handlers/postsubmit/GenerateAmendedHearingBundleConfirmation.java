@@ -29,12 +29,12 @@ public class GenerateAmendedHearingBundleConfirmation implements PostSubmitCallb
 
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# The amended hearing bundle is being generated");
+        postSubmitResponse.setConfirmationHeader("# The hearing bundle is being generated");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You will soon be able to view the amended hearing bundle in the documents tab.</br>"
-            + "You and the other parties will be notified when the amended hearing bundle is available.</br>"
-            + "If the bundle fails to generate, you will be notified."
+            + "You will soon be able to view the hearing bundle in the [Documents tab](/cases/case-details/1234#Documents) in your case details page.</br>"
+            + "All other parties will be notified when the hearing bundle is available.</br>"
+            + "If the bundle fails to generate, you will get a notification and you will need to try again."
         );
 
         return postSubmitResponse;

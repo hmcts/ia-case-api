@@ -85,10 +85,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 .getCaseDetails()
                 .getCaseData();
 
-        log.info("Reading IS_HEARING_BUNDLE_AMENDED");
         YesOrNo isHearingBundleAmended = asylumCase
             .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO);
-        log.info("IS_HEARING_BUNDLE_AMENDED: " + isHearingBundleAmended);
         Optional<List<IdValue<Bundle>>> maybeCaseBundles = asylumCase.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
 
         final List<Bundle> caseBundles = maybeCaseBundles
@@ -164,8 +162,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         }
     }
 
-    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument, YesOrNo isHearingBundleAmended
-    ) {
+    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument,
+                                           YesOrNo isHearingBundleAmended) {
 
         Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
@@ -174,10 +172,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
 
         final List<IdValue<DocumentWithMetadata>> hearingDocuments = fetchHearingDocuments(asylumCase, isReheardCase, isRemittedFeature);
-
-        log.info("-----BEGIN hearingDocuments-----");
-        hearingDocuments.forEach(idValue -> log.info(idValue.getValue().getDocument().getDocumentFilename()));
-        log.info("------END hearingDocuments------");
 
         List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
 
@@ -189,7 +183,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     DocumentTag.HEARING_BUNDLE
                 )
         );
-        log.info("isHearingBundleAmended value: " + isHearingBundleAmended);
         List<IdValue<DocumentWithMetadata>> allHearingDocuments;
         if (isHearingBundleAmended == YesOrNo.YES) {
             allHearingDocuments =
@@ -197,7 +190,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     hearingDocuments,
                     hearingBundleDocuments
                 );
-            log.info("Clearing IS_HEARING_BUNDLE_AMENDED");
             asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
         } else {
             allHearingDocuments =
@@ -207,11 +199,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     DocumentTag.HEARING_BUNDLE
                 );
         }
-        log.info("-----BEGIN allHearingDocuments-----");
-        allHearingDocuments.forEach(idValue -> log.info(idValue.getValue().getDocument().getDocumentFilename()));
-        log.info("------END allHearingDocuments------");
         if (isReheardCase) {
-
             if (isRemittedFeature) {
                 Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
                         asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
