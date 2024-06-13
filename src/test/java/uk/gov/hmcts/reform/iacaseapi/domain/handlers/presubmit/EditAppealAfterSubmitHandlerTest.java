@@ -132,6 +132,37 @@ class EditAppealAfterSubmitHandlerTest {
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }
 
+
+    @Test
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_ooc_and_is_internal_case() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPELLANT_IN_UK)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(IS_ADMIN)).thenReturn(Optional.of(YES));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(eq(SUBMISSION_OUT_OF_TIME), eq(YesOrNo.NO));
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
+        verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
+        verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
+        verify(asylumCase)
+            .write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
+
+        verify(asylumCase).clear(NEW_MATTERS);
+
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
     @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time_ooc() {
 
@@ -290,6 +321,8 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).write(eq(SUBMISSION_OUT_OF_TIME), eq(YesOrNo.YES));
     }
+
+
 
     @Test
     void should_set_submission_in_time_mid_event() {
