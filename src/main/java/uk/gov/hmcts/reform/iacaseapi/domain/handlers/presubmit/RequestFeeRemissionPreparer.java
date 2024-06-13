@@ -57,15 +57,11 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         switch (appealType) {
-            case DC:
-            case RP:
+            case DC, RP:
                 callbackResponse.addError("You cannot request a fee remission for this appeal");
                 break;
 
-            case EA:
-            case HU:
-            case PA:
-            case EU:
+            case EA, HU, PA, EU:
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
