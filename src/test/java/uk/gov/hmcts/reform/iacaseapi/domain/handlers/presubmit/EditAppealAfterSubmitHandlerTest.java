@@ -322,8 +322,6 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).write(eq(SUBMISSION_OUT_OF_TIME), eq(YesOrNo.YES));
     }
 
-
-
     @Test
     void should_set_submission_in_time_mid_event() {
 
