@@ -190,6 +190,10 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     hearingDocuments,
                     hearingBundleDocuments
                 );
+            AsylumCaseFieldDefinition amendedCountDefinition = isReheardCase ?
+                AsylumCaseFieldDefinition.AMENDED_REHEARD_BUNDLE_COUNT : AsylumCaseFieldDefinition.AMENDED_BUNDLE_COUNT;
+            Integer amendedCount = asylumCase.read(amendedCountDefinition, Integer.class).orElse(0);
+            asylumCase.write(amendedCountDefinition, amendedCount + 1);
             asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
         } else {
             allHearingDocuments =

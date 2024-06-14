@@ -1133,6 +1133,12 @@ public enum AsylumCaseFieldDefinition {
     IS_HEARING_BUNDLE_AMENDED(
         "isHearingBundleAmended", new TypeReference<YesOrNo>() {}),
 
+    AMENDED_BUNDLE_COUNT(
+        "amendedBundleCount", new TypeReference<Integer>() {}),
+
+    AMENDED_REHEARD_BUNDLE_COUNT(
+        "amendedReheardBundleCount", new TypeReference<Integer>() {}),
+
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 

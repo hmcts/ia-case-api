@@ -159,6 +159,11 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList());
         verify(asylumCase).clear(IS_HEARING_BUNDLE_AMENDED);
+        verify(asylumCase).write(AMENDED_BUNDLE_COUNT, 1);
+        when(asylumCase.read(AMENDED_BUNDLE_COUNT, Integer.class))
+            .thenReturn(Optional.of(1));
+        advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+        verify(asylumCase).write(AMENDED_BUNDLE_COUNT, 2);
     }
 
     @ParameterizedTest
@@ -206,6 +211,61 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
         verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
         verify(notificationSender, times(1)).send(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    void should_not_remove_existing_reheard_bundle_when_amended(AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
+
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertEquals(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class), Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.of(maybeHearingDocuments));
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
+
+        when(documentsAppender.append(
+            anyList(),
+            anyList()
+        )).thenReturn(allHearingDocuments);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).read(REHEARD_HEARING_DOCUMENTS);
+        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
+        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
+        verify(notificationSender, times(1)).send(callback);
+        verify(documentsAppender).append(anyList(), anyList());
+        verify(asylumCase).clear(IS_HEARING_BUNDLE_AMENDED);
+        verify(asylumCase).write(AMENDED_REHEARD_BUNDLE_COUNT, 1);
+        when(asylumCase.read(AMENDED_REHEARD_BUNDLE_COUNT, Integer.class))
+            .thenReturn(Optional.of(1));
+        advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+        verify(asylumCase).write(AMENDED_REHEARD_BUNDLE_COUNT, 2);
     }
 
     @ParameterizedTest
