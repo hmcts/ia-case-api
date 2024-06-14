@@ -3,23 +3,30 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static org.mockito.Mockito.*;
-
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +35,8 @@ class GenerateAmendedHearingBundlePreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
     @Mock
@@ -47,12 +56,51 @@ class GenerateAmendedHearingBundlePreparerTest {
     void should_call_document_generator() {
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
-
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(documentGenerator.aboutToStart(callback)).thenReturn(asylumCase);
-
-        final PreSubmitCallbackResponse<AsylumCase> handle = generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        when(asylumCase.read(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
+            .thenReturn(Optional.of(State.PRE_HEARING.toString()));
+        generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(documentGenerator).aboutToStart(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"PRE_HEARING", "DECISION"})
+    void should_call_when_adjourned_from_valid_state(State adjournedFromState) {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.ADJOURNED);
+        when(asylumCase.read(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
+            .thenReturn(Optional.of(adjournedFromState.toString()));
+        when(documentGenerator.aboutToStart(callback)).thenReturn(asylumCase);
+
+        generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(documentGenerator).aboutToStart(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, mode = EXCLUDE, names = {"PRE_HEARING", "DECISION"})
+    void should_call_when_adjourned_from_invalid_state(State adjournedFromState) {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.ADJOURNED);
+        when(asylumCase.read(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
+            .thenReturn(Optional.of(adjournedFromState.toString()));
+        when(documentGenerator.aboutToStart(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(documentGenerator, times(0)).aboutToStart(callback);
+        assertTrue(response.getErrors()
+            .contains("Case was adjourned before the initial hearing bundle was created."));
     }
 
     @Test
