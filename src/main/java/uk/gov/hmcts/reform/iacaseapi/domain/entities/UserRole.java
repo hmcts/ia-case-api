@@ -10,6 +10,7 @@ public enum UserRole {
     JUDICIARY("caseworker-ia-judiciary"),
     JUDGE("caseworker-ia-iacjudge"),
     SYSTEM("caseworker-ia-system"),
+    TASK_RETRIGGER("caseworker-ia-task-retrigger"),
     HOME_OFFICE_APC("caseworker-ia-homeofficeapc"),
     HOME_OFFICE_LART("caseworker-ia-homeofficelart"),
     HOME_OFFICE_POU("caseworker-ia-homeofficepou"),

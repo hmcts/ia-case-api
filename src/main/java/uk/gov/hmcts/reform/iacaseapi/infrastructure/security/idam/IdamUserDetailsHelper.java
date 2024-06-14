@@ -46,6 +46,8 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
                 return UserRoleLabel.CITIZEN;
             case SYSTEM:
                 return UserRoleLabel.SYSTEM;
+            case TASK_RETRIGGER:
+                return UserRoleLabel.TASK_RETRIGGER;
 
             default:
                 throw new IllegalStateException("Unauthorized role to make an application");

@@ -13,6 +13,7 @@ class UserRoleTest {
         assertEquals("caseworker-ia-judiciary", UserRole.JUDICIARY.toString());
         assertEquals("caseworker-ia-iacjudge", UserRole.JUDGE.toString());
         assertEquals("caseworker-ia-system", UserRole.SYSTEM.toString());
+        assertEquals("caseworker-ia-task-retrigger", UserRole.TASK_RETRIGGER.toString());
         assertEquals("caseworker-ia-admofficer", UserRole.ADMIN_OFFICER.toString());
         assertEquals("caseworker-ia-homeofficeapc", UserRole.HOME_OFFICE_APC.toString());
         assertEquals("caseworker-ia-homeofficelart", UserRole.HOME_OFFICE_LART.toString());
@@ -23,6 +24,6 @@ class UserRoleTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(11, UserRole.values().length);
+        assertEquals(12, UserRole.values().length);
     }
 }
