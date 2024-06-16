@@ -1,0 +1,51 @@
+{
+  "description": "RIA-8983 Submitted Manage interpreter details when update hearing failed",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 89832,
+      "eventId": "updateInterpreterDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "manualUpdHearingRequired": "Yes",
+          "interpreterDetails": [
+            {
+              "id": "1",
+              "value": {
+                "interpreterId": "testId",
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "interpreterId": "testId2",
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "body": "![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)\n\n#### What happens next\n\nThe interpreter details could not be updated in List Assist. Please try again later."
+    }
+  }
+}
