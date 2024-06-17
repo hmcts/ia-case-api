@@ -4,9 +4,11 @@ import static java.time.LocalDate.parse;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -85,6 +87,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseData();
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+        YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
 
         if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
                 .orElse(NO) == YES) {
@@ -98,6 +101,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
             handleInCountryAgeAssessmentAppeal(asylumCase);
             clearLitigationFriendDetails(asylumCase);
+        } else if (isInternalCase(asylumCase) && appellantInUk.equals(NO)) {
+            handleOutOfCountryAppeal(asylumCase, REFUSE_PERMIT);
         } else {
             handleInCountryAppeal(asylumCase);
         }
