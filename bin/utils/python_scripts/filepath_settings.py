@@ -100,7 +100,8 @@ class Settings:
         "uploadedHomeOfficeBundleDocs": "redacted.pdf",
         "applicantFullName": "redacted",
         "applicantGivenNames": "redacted",
-        "applicantDateOfBirth": "1990-01-10"
+        "applicantDateOfBirth": "1990-01-10",
+        "sponsorEmail": "redacted"
     }
 
     csv_rows_to_redact = {
