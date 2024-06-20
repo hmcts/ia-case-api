@@ -62,6 +62,7 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean legalRepDocumentsContainSupportDocs = false;
 
         YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
@@ -85,11 +86,26 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
             List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
                 maybeExistingLegalRepDocuments.orElse(emptyList());
 
-            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-                documentsAppender.prepend(existingLegalRepDocuments, appealWasNotSubmittedReasons);
+            for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
+                if (existingLegalRepDocument.getValue().getTag() != null) {
+                    if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)) {
+                        legalRepDocumentsContainSupportDocs = true;
+                    }
+                }
+            }
 
-            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+            if (legalRepDocumentsContainSupportDocs) {
+                return new PreSubmitCallbackResponse<>(asylumCase);
+            }
+
+            if (!appealWasNotSubmittedReasons.isEmpty()) {
+                List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                    documentsAppender.prepend(existingLegalRepDocuments, appealWasNotSubmittedReasons);
+
+                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+            }
         }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
