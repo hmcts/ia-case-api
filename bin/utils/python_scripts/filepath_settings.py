@@ -101,7 +101,24 @@ class Settings:
         "applicantFullName": "redacted",
         "applicantGivenNames": "redacted",
         "applicantDateOfBirth": "1990-01-10",
-        "sponsorEmail": "redacted"
+        "sponsorEmail": "redacted",
+        "exceptionalCircumstances": "redacted",
+        "supporterGivenNames": "redacted",
+        "supporterFamilyNames": "redacted",
+        "applicantFamilyName": "redacted",
+        "supporterEmailAddress1": "redacted",
+        "supporterMobileNumber1": "redacted",
+        "supporterMobileNumber2": "redacted",
+        "supporterEmailAddress2": "redacted",
+        "applicantMobileNumber1": "redacted",
+        "applicantMobileNumber2": "redacted",
+        "supporterOccupation": "redacted",
+        "supporterPassport": "123456789",
+        "supporterDOB": "1970-01-01",
+        "judgeDetailsName": "redacted",
+        "conditionsForBailActivities": "redacted",
+        "conditionsForBailAppearance": "redacted",
+        "conditionsForBailElectronicMonitoring": "redacted",
     }
 
     csv_rows_to_redact = {
