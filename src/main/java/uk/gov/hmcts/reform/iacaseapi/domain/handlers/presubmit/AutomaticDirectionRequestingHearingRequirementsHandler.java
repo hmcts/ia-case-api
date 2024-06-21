@@ -68,7 +68,6 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
         return timedEventServiceEnabled
                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
-                    Event.REQUEST_RESPONSE_REVIEW,
                     Event.ADD_APPEAL_RESPONSE)
                    .contains(callback.getEvent());
     }

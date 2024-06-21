@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -77,9 +76,7 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
     private static Stream<Arguments> provideParameterValues() {
         return Stream.of(
-            Arguments.of(JourneyType.AIP, Event.REQUEST_RESPONSE_REVIEW),
             Arguments.of(JourneyType.AIP, Event.ADD_APPEAL_RESPONSE),
-            Arguments.of(JourneyType.REP, Event.REQUEST_RESPONSE_REVIEW),
             Arguments.of(JourneyType.REP, Event.ADD_APPEAL_RESPONSE)
         );
     }
@@ -212,35 +209,11 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = JourneyType.class, names = {"AIP", "REP"})
-    void should_skip_timed_event_when_review_outcome_is_to_withdraw(JourneyType journeyType) {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
-        when(dateProvider.now()).thenReturn(now);
-
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
-            .thenReturn(Optional.of(journeyType));
-
-        when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
-            .thenReturn(Optional.of(AppealReviewOutcome.DECISION_WITHDRAWN));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(asylumCase).isEqualTo(callbackResponse.getData());
-
-        verify(scheduler, times(0)).schedule(any(TimedEvent.class));
-        verify(asylumCase, times(0)).write(AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS, id);
-    }
-
     @Test
     void should_skip_timed_event_if_hearing_req_submitted_when_case_was_ada() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
         when(dateProvider.now()).thenReturn(now);
 
@@ -257,20 +230,6 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
         verify(scheduler, times(0)).schedule(any(TimedEvent.class));
         verify(asylumCase, times(0)).write(AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS, id);
-    }
-
-    @Test
-    void should_throw_when_appeal_review_outcome_is_missing() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
-            .thenReturn(Optional.of(JourneyType.AIP));
-        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
-        when(dateProvider.now()).thenReturn(now);
-        assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Appeal Review Outcome is mandatory")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -298,7 +257,7 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
                 boolean canHandle = automaticDirectionHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && Arrays.asList(Event.REQUEST_RESPONSE_REVIEW, Event.ADD_APPEAL_RESPONSE).contains(event)) {
+                    && Arrays.asList(Event.ADD_APPEAL_RESPONSE).contains(event)) {
 
                     assertThat(canHandle).isTrue();
                 } else {
