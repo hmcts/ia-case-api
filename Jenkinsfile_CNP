@@ -169,9 +169,9 @@ withPipeline(type, product, component) {
     """
     }
 
-//    afterAlways('functionalTest:aat') {
-//        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-//    }
+    afterAlways('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
 
     enableSlackNotifications('#ia-tech')
 

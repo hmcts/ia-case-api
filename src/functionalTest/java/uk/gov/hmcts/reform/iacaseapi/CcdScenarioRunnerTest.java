@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,6 @@ import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @Slf4j
 @SpringBootTest
-@Disabled
 @ActiveProfiles("functional")
 public class CcdScenarioRunnerTest {
 
