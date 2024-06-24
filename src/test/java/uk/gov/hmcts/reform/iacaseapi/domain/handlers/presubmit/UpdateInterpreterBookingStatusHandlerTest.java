@@ -1,5 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,15 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -58,24 +55,11 @@ class UpdateInterpreterBookingStatusHandlerTest {
     @Test
     public void testHandleInterpreterDetails() {
 
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(iaHearingsApiService.updateHearing(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-    }
-
-    @Test
-    void should_throw_an_exception_when_hearing_service_is_not_working() {
-        when(iaHearingsApiService.aboutToSubmit(callback))
-                .thenThrow(new IllegalStateException("hearingService is down"));
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback);
-        assertNotNull(response);
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-
-        assertEquals(Set.of("Hearing cannot be auto updated for Case 0"), response.getErrors());
+        verify(iaHearingsApiService, times(1)).updateHearing(callback);
     }
 
 }

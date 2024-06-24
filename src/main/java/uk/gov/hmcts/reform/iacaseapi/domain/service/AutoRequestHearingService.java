@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -14,7 +12,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Slf4j
 @Component
@@ -37,71 +34,17 @@ public class AutoRequestHearingService {
 
     public AsylumCase autoCreateHearing(Callback<AsylumCase> callback) {
 
-        AsylumCase asylumCase;
-        try {
-
-            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
-            asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, NO);
-
-        } catch (AsylumCaseServiceResponseException e) {
-
-            log.error("Failed to auto create hearing for case ID {} during event {} with error: {}",
-                callback.getCaseDetails().getId(),
-                callback.getEvent().toString(),
-                e.getMessage());
-
-            asylumCase = callback.getCaseDetails().getCaseData();
-            asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, YES);
-
-        }
-
-        return asylumCase;
+        return iaHearingsApiService.createHearing(callback);
     }
 
     public AsylumCase autoUpdateHearing(Callback<AsylumCase> callback) {
 
-        AsylumCase asylumCase;
-        try {
-
-            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
-            asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, YES);
-
-        } catch (AsylumCaseServiceResponseException e) {
-
-            log.error("Failed to update hearing for case ID {} during event {} with error: {}",
-                callback.getCaseDetails().getId(),
-                callback.getEvent().toString(),
-                e.getMessage());
-
-            asylumCase = callback.getCaseDetails().getCaseData();
-            asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, NO);
-
-        }
-
-        return asylumCase;
+        return iaHearingsApiService.updateHearing(callback);
     }
 
     public AsylumCase autoCancelHearing(Callback<AsylumCase> callback) {
 
-        AsylumCase asylumCase;
-        try {
-
-            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
-            asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, NO);
-
-        } catch (AsylumCaseServiceResponseException e) {
-
-            log.error("Failed to cancel hearing for case ID {} during event {} with error: {}",
-                callback.getCaseDetails().getId(),
-                callback.getEvent().toString(),
-                e.getMessage());
-
-            asylumCase = callback.getCaseDetails().getCaseData();
-            asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
-
-        }
-
-        return asylumCase;
+        return iaHearingsApiService.deleteHearing(callback);
     }
 
     public PostSubmitCallbackResponse buildAutoHearingRequestConfirmation(

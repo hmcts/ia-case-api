@@ -2624,7 +2624,7 @@ public enum AsylumCaseFieldDefinition {
 
     REHEARD_HEARING_DOCUMENTS_COLLECTION("reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
-    HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<String>(){}),
+    HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<DynamicList>(){}),
 
     IS_DECISION_WITHOUT_HEARING("isDecisionWithoutHearing", new TypeReference<YesOrNo>(){});
 

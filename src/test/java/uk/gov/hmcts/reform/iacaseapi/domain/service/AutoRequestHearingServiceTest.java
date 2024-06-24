@@ -1,14 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -24,11 +19,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -68,49 +61,6 @@ class AutoRequestHearingServiceTest {
         when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(autoRequestEnabled);
 
         assertEquals(expected, autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoRequest));
-    }
-
-    @Test
-    void autoCreateHearing_should_successfully_call_hearings_service() {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
-
-        autoRequestHearingService.autoCreateHearing(callback);
-
-        verify(asylumCase, times(1)).write(MANUAL_CREATE_HEARING_REQUIRED, NO);
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-    }
-
-    @Test
-    void autoCreateHearing_should_set_request_status_when_call_fails() {
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
-
-        doThrow(AsylumCaseServiceResponseException.class).when(iaHearingsApiService).aboutToSubmit(callback);
-
-        autoRequestHearingService.autoCreateHearing(callback);
-
-        verify(asylumCase, times(1)).write(MANUAL_CREATE_HEARING_REQUIRED, YES);
-    }
-
-    @Test
-    void autoUpdateHearing_should_set_request_status_when_call_fails() {
-        when(callback.getEvent()).thenReturn(Event.RECORD_ADJOURNMENT_DETAILS);
-
-        doThrow(AsylumCaseServiceResponseException.class).when(iaHearingsApiService).aboutToSubmit(callback);
-
-        autoRequestHearingService.autoUpdateHearing(callback);
-
-        verify(asylumCase, times(1)).write(UPDATE_HMC_REQUEST_SUCCESS, NO);
-    }
-
-    @Test
-    void autoCancelHearing_should_set_request_status_when_call_fails() {
-        when(callback.getEvent()).thenReturn(Event.RECORD_ADJOURNMENT_DETAILS);
-
-        doThrow(AsylumCaseServiceResponseException.class).when(iaHearingsApiService).aboutToSubmit(callback);
-
-        autoRequestHearingService.autoCancelHearing(callback);
-
-        verify(asylumCase, times(1)).write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
     }
 
     @Test
