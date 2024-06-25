@@ -119,6 +119,10 @@ class Settings:
         "conditionsForBailActivities": "redacted",
         "conditionsForBailAppearance": "redacted",
         "conditionsForBailElectronicMonitoring": "redacted",
+        "legalRepEmail": "redacted@email.com",
+        "legalRepPhone": "01111111111",
+        "legalRepFamilyName": "redacted",
+
     }
 
     csv_rows_to_redact = {
