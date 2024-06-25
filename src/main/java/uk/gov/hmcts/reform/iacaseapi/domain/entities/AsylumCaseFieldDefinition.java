@@ -2626,7 +2626,15 @@ public enum AsylumCaseFieldDefinition {
 
     HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<DynamicList>(){}),
 
-    IS_DECISION_WITHOUT_HEARING("isDecisionWithoutHearing", new TypeReference<YesOrNo>(){});
+    IS_DECISION_WITHOUT_HEARING("isDecisionWithoutHearing", new TypeReference<YesOrNo>(){}),
+
+    IS_ADDITIONAL_INSTRUCTION_ALLOWED("isAdditionalInstructionAllowed", new TypeReference<YesOrNo>(){}),
+
+    ADDITIONAL_INSTRUCTIONS_TRIBUNAL_RESPONSE("additionalInstructionsTribunalResponse", new TypeReference<String>(){}),
+
+    ADDITIONAL_INSTRUCTIONS("additionalInstructions", new TypeReference<String>(){}),
+
+    ADDITIONAL_INSTRUCTIONS_DESCRIPTION("additionalInstructionsDescription", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
