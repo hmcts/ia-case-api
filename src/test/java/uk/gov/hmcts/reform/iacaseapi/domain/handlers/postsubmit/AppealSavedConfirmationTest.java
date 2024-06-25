@@ -107,7 +107,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "If you're ready to submit your appeal, select 'Submit your appeal' in the 'Next step' dropdown list from your case details page. "
+                "If you're ready to submit your appeal, select 'Submit your appeal' in " +
+                    "the 'Next step' dropdown list from your case details page."
             );
 
         assertThat(
