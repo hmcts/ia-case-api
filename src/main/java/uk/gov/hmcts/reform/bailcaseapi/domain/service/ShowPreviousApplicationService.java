@@ -37,8 +37,8 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FINANCIAL_COND_AMOUNT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.GROUNDS_FOR_BAIL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING_UT;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.INTERPRETER_LANGUAGES;
@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_LOCATION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REASONS_JUDGE_IS_MINDED_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REASON_FOR_REFUSAL_DETAILS;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST_IMA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_REFUSAL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OPTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_REFUSAL_REASON;
@@ -518,18 +520,37 @@ public class ShowPreviousApplicationService {
                         .replaceAll("[\\n]", "<br>"))
             .append("|\n");
 
-        stringBuilder
-            .append("|Transfer bail management|")
-            .append(previousBailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class).orElse(YesOrNo.YES))
-            .append("|\n");
-
-        if (previousBailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class).orElse(YesOrNo.YES) == YesOrNo.NO) {
+        if (previousBailCase.read(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION, YesOrNo.class).isPresent()) {
+            YesOrNo transferBailManagementObjectionValue = previousBailCase.read(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION, YesOrNo.class).orElse(YesOrNo.NO);
+            String transferBailManagementObjectionValueText = transferBailManagementObjectionValue == YesOrNo.YES ? "The applicant objects to the management being transferred": "The applicant consents to the management being transferred";
             stringBuilder
-                .append("|Reasons applicant does not consent to bail transfer|")
-                .append(previousBailCase.read(NO_TRANSFER_BAIL_MANAGEMENT_REASONS, String.class)
-                            .orElseThrow(getErrorThrowable(NO_TRANSFER_BAIL_MANAGEMENT_REASONS))
-                            .replaceAll("[\\n]", "<br>"))
+                .append("|Transfer of management to the Home Office|")
+                .append(transferBailManagementObjectionValueText)
                 .append("|\n");
+
+            if (transferBailManagementObjectionValue == YesOrNo.YES) {
+                stringBuilder
+                    .append("|Reasons why the applicant objects to the management of bail being transferred to the Home Office|")
+                    .append(previousBailCase.read(OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS, String.class)
+                                .orElseThrow(getErrorThrowable(OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS))
+                                .replaceAll("[\\n]", "<br>"))
+                    .append("|\n");
+            }
+        } else {
+            YesOrNo transferBailManagementValue = previousBailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class).orElse(YesOrNo.YES);
+            stringBuilder
+                .append("|Transfer bail management|")
+                .append(transferBailManagementValue)
+                .append("|\n");
+
+            if (transferBailManagementValue == YesOrNo.NO) {
+                stringBuilder
+                    .append("|Reasons applicant does not consent to bail transfer|")
+                    .append(previousBailCase.read(NO_TRANSFER_BAIL_MANAGEMENT_REASONS, String.class)
+                                .orElseThrow(getErrorThrowable(NO_TRANSFER_BAIL_MANAGEMENT_REASONS))
+                                .replaceAll("[\\n]", "<br>"))
+                    .append("|\n");
+            }
         }
         return stringBuilder.toString();
     }

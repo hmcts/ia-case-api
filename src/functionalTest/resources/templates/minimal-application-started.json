@@ -39,7 +39,7 @@
   "isLegallyRepresentedForFlag": "No",
   "agreesToBoundByFinancialCond": "No",
   "previousApplicationDoneViaCcd": "No",
-  "transferBailManagementYesOrNo": "Yes",
+  "transferBailManagementObjectionYesOrNo": "No",
   "currentCaseStateVisibleToJudge": "applicationStarted",
   "previousApplicationDoneViaAria": "No",
   "currentCaseStateVisibleToAllUsers": "applicationStarted",

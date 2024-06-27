@@ -241,8 +241,7 @@ public class CcdScenarioRunnerTest {
         System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
         System.out.println((char) 27 + "[0m");
         if (!haveAllPassed) {
-            throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + failedScenarios.stream().map(Object::toString).collect(
-                Collectors.joining(";\n")));
+            throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + String.join(";\n", failedScenarios) + ";");
         }
     }
 

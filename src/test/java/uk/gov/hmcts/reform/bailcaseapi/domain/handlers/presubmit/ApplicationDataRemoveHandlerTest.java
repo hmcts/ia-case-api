@@ -179,9 +179,30 @@ public class ApplicationDataRemoveHandlerTest {
     }
 
     @Test
-    void should_remove_transfer_management_reason_if_agreed() {
-        setUpValuesIfValuesAreRemoved();
+    void should_remove_old_transfer_management_reason_if_agreed() {
+        when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class)).thenReturn(Optional.of(YES));
         applicationDataRemoveHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(bailCase, times(1)).remove(NO_TRANSFER_BAIL_MANAGEMENT_REASONS);
+    }
+
+    @Test
+    void should_remove_new_transfer_management_reason_if_agreed() {
+        when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        applicationDataRemoveHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(bailCase, times(1)).remove(OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS);
+        verify(bailCase, times(0)).remove(TRANSFER_BAIL_MANAGEMENT_OPTION);
+        verify(bailCase, times(0)).remove(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION);
+    }
+
+
+    @Test
+    void should_remove_old_transfer_management_values_if_new_present() {
+        when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(bailCase.read(NO_TRANSFER_BAIL_MANAGEMENT_REASONS, String.class)).thenReturn(Optional.of("reason"));
+        applicationDataRemoveHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(bailCase, times(0)).remove(OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS);
+        verify(bailCase, times(1)).remove(TRANSFER_BAIL_MANAGEMENT_OPTION);
         verify(bailCase, times(1)).remove(NO_TRANSFER_BAIL_MANAGEMENT_REASONS);
     }
 

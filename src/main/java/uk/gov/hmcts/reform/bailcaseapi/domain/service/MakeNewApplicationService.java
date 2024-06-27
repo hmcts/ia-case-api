@@ -245,6 +245,8 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.BAIL_EVIDENCE.value(),
         BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OPTION.value(),
         BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS.value(),
+        BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION.value(),
+        BailCaseFieldDefinition.OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS.value(),
         BailCaseFieldDefinition.INTERPRETER_YESNO.value(),
         BailCaseFieldDefinition.INTERPRETER_LANGUAGES.value(),
         BailCaseFieldDefinition.APPLICANT_INTERPRETER_SPOKEN_LANGUAGE.value(),

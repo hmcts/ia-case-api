@@ -256,6 +256,10 @@ public enum BailCaseFieldDefinition {
         "transferBailManagementYesOrNo", new TypeReference<YesOrNo>(){}),
     NO_TRANSFER_BAIL_MANAGEMENT_REASONS(
         "noTransferBailManagementReasons", new TypeReference<String>(){}),
+    TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION(
+        "transferBailManagementObjectionYesOrNo", new TypeReference<YesOrNo>(){}),
+    OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS(
+        "objectedTransferBailManagementReasons", new TypeReference<String>(){}),
     APPLICATION_SUBMITTED_BY(
         "applicationSubmittedBy", new TypeReference<String>(){}),
     BAIL_REFERENCE_NUMBER(
@@ -413,7 +417,7 @@ public enum BailCaseFieldDefinition {
     PREV_APP_DECISION_DETAILS_LABEL(
         "prevAppDecisionDetailsLabel", new TypeReference<String>() {}),
     PREV_APP_DIRECTION_DETAILS(
-        "prevAppDirectionDetails", new TypeReference<String>() {}),    
+        "prevAppDirectionDetails", new TypeReference<String>() {}),
     PREV_APP_HEARING_DETAILS(
         "prevAppHearingDetails", new TypeReference<String>() {}),
     PREV_APP_HEARING_REQ_DETAILS(
