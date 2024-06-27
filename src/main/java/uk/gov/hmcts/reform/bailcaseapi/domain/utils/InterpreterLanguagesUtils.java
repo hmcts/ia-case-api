@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.utils;
 
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguageRefData;
@@ -12,37 +13,13 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.dto.hearingd
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.RefDataUserService;
 
 import java.util.List;
+import java.util.Optional;
 
 public class InterpreterLanguagesUtils {
     public static final String IS_CHILD_REQUIRED = "Y";
 
     private InterpreterLanguagesUtils() {
         // Utils classes should not have public or default constructors
-    }
-
-    public static InterpreterLanguageRefData generateDynamicList(RefDataUserService refDataUserService, String languageCategory) {
-        List<CategoryValues> languages;
-        DynamicList dynamicListOfLanguages;
-
-        try {
-            CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
-                languageCategory,
-                IS_CHILD_REQUIRED
-            );
-
-            languages = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, languageCategory);
-
-            dynamicListOfLanguages = new DynamicList(new Value("", ""),
-                                                     refDataUserService.mapCategoryValuesToDynamicListValues(languages));
-
-        } catch (Exception e) {
-            throw new BailCaseServiceResponseException(String.format("Could not read response by RefData service for %s(s)", languageCategory), e);
-        }
-
-        return new InterpreterLanguageRefData(
-            dynamicListOfLanguages,
-            "",
-            "");
     }
 
     public static final List<BailCaseFieldDefinition> FCS_N_INTERPRETER_LANGUAGE_CATEGORY_FIELD = List.of(
@@ -94,5 +71,55 @@ public class InterpreterLanguagesUtils {
         FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4
     );
 
+    public static InterpreterLanguageRefData generateDynamicList(RefDataUserService refDataUserService, String languageCategory) {
+        List<CategoryValues> languages;
+        DynamicList dynamicListOfLanguages;
 
+        try {
+            CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
+                languageCategory,
+                IS_CHILD_REQUIRED
+            );
+
+            languages = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, languageCategory);
+
+            dynamicListOfLanguages = new DynamicList(new Value("", ""),
+                                                     refDataUserService.mapCategoryValuesToDynamicListValues(languages));
+
+        } catch (Exception e) {
+            throw new BailCaseServiceResponseException(String.format("Could not read response by RefData service for %s(s)", languageCategory), e);
+        }
+
+        return new InterpreterLanguageRefData(
+            dynamicListOfLanguages,
+            "",
+            "");
+    }
+
+    public static void sanitizeInterpreterLanguageRefDataComplexType(BailCase bailCase, BailCaseFieldDefinition bailCaseFieldDefinition) {
+        InterpreterLanguageRefData sanitizedComplexType;
+        Optional<InterpreterLanguageRefData> language =
+            bailCase.read(bailCaseFieldDefinition, InterpreterLanguageRefData.class);
+
+        if (language.isPresent()) {
+            InterpreterLanguageRefData spokenComplexType = language.get();
+
+            sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+            bailCase.write(bailCaseFieldDefinition, sanitizedComplexType);
+        }
+    }
+
+    private static InterpreterLanguageRefData clearComplexTypeField(InterpreterLanguageRefData languageComplexType) {
+        if (languageComplexType.getLanguageManualEntry().contains("No")
+            && languageComplexType.getLanguageManualEntryDescription() != null) {
+
+            languageComplexType.setLanguageManualEntryDescription(null);
+
+        } else if (languageComplexType.getLanguageManualEntry().contains("Yes")
+            && languageComplexType.getLanguageRefData() != null) {
+
+            languageComplexType.setLanguageRefData(null);
+        }
+        return languageComplexType;
+    }
 }
