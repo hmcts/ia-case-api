@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECIDE_FTPA_APPLICATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
@@ -157,7 +158,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.ADD_EVIDENCE_FOR_COSTS,
             Event.CONSIDER_MAKING_COSTS_ORDER,
             Event.DECIDE_COSTS_APPLICATION,
-            Event.DECIDE_FTPA_APPLICATION,
+            DECIDE_FTPA_APPLICATION,
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.MARK_APPEAL_AS_REMITTED
         );
@@ -232,7 +233,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
             Event.REMOVE_APPEAL_FROM_ONLINE,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
-            Event.MANAGE_FEE_UPDATE
+            Event.MANAGE_FEE_UPDATE,
+            Event.DECIDE_FTPA_APPLICATION
         );
 
         if (!isSaveAndContinueEnabled) {
@@ -295,7 +297,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private void setDlrmSetAsideFeatureFlag(Event event, AsylumCase asylumCase) {
         if (List.of(Event.LEADERSHIP_JUDGE_FTPA_DECISION,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
-            Event.DECIDE_FTPA_APPLICATION).contains(event)) {
+            DECIDE_FTPA_APPLICATION).contains(event)) {
             asylumCase.write(IS_DLRM_SET_ASIDE_ENABLED,
                 featureToggler.getValue("dlrm-setaside-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
         }
