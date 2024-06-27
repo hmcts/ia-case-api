@@ -24,15 +24,4 @@
     <suppress until="2024-07-03">
         <cve>CVE-2023-1370</cve>
     </suppress>
-    <suppress>
-        <cve>CVE-2022-42003</cve>
-        <cve>CVE-2022-42004</cve>
-        <cve>CVE-2022-38752</cve>
-        <cve>CVE-2022-38751</cve>
-        <cve>CVE-2022-38750</cve>
-        <cve>CVE-2022-38749</cve>
-        <cve>CVE-2022-31690</cve>
-        <cve>CVE-2022-31692</cve>
-        <cve>CVE-2022-42252</cve>
-    </suppress>
 </suppressions>
