@@ -18,7 +18,7 @@
         <cve>CVE-2022-45688</cve>
         <cve>CVE-2023-5072</cve>
     </suppress>
-    <suppress until="2024-06-26">
+    <suppress until="2024-08-26">
         <cve>CVE-2024-1597</cve>
     </suppress>
     <suppress until="2024-07-03">

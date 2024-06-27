@@ -1,12 +1,12 @@
 {
-  "description": "RIA-7755 List Assist Integration handler: set party ids",
+  "description": "RIA-9191 List Assist Integration handler: update witness names",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "listAssistIntegration",
       "state": "appealSubmitted",
-      "id": 7755,
+      "id": 9191,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -23,15 +23,13 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness1",
-                "witnessFamilyName": "AFamilyName1"
+                "witnessName": "AWitness1 AFamilyName1"
               }
             },
             {
               "id": "2",
               "value": {
-                "witnessName": "AWitness2",
-                "witnessFamilyName": "AFamilyName2"
+                "witnessName": "AWitness2 AFamilyName2"
               }
             }
           ]
@@ -47,16 +45,16 @@
       "replacements": {
         "appellantInUk": "No",
         "hasSponsor": "Yes",
-        "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-        "legalRepIndividualPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-        "legalRepOrganisationPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-        "sponsorPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "appellantPartyId": null,
+        "legalRepIndividualPartyId": null,
+        "legalRepOrganisationPartyId": null,
+        "sponsorPartyId": null,
         "isWitnessesAttending": "Yes",
         "witnessDetails": [
           {
             "id": "1",
             "value": {
-              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessPartyId": null,
               "witnessName": "AWitness1",
               "witnessFamilyName": "AFamilyName1"
             }
@@ -64,7 +62,7 @@
           {
             "id": "2",
             "value": {
-              "witnessPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "witnessPartyId": null,
               "witnessName": "AWitness2",
               "witnessFamilyName": "AFamilyName2"
             }
