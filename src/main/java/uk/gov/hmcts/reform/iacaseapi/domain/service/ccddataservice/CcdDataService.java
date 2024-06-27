@@ -38,7 +38,7 @@ public class CcdDataService {
         String event = eventToAuthorize.toString();
 
         try {
-            userToken = idamService.getUserToken();
+            userToken = idamService.getServiceUserToken();
             log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
 
             s2sToken = serviceAuthorization.generate();
@@ -60,11 +60,10 @@ public class CcdDataService {
         String caseId,
         Map<String, Object> data,
         Map<String, Object> eventData,
-        String eventToken,
-        boolean ignoreWarning) {
+        String eventToken) {
 
         CaseDataContent request =
-            new CaseDataContent(caseId, data, eventData, eventToken, ignoreWarning);
+            new CaseDataContent(caseId, data, eventData, eventToken, true);
 
         return ccdDataApi.submitEvent(userToken, s2sToken, caseId, request);
     }
@@ -73,11 +72,10 @@ public class CcdDataService {
         String userToken,
         String s2sToken,
         String uid,
-        String jurisdiction,
         String caseType,
         String caseId,
         Event event) {
-        return ccdDataApi.startEvent(userToken, s2sToken, uid, jurisdiction, caseType,
+        return ccdDataApi.startEvent(userToken, s2sToken, uid, CcdDataService.JURISDICTION, caseType,
             caseId, event.toString());
     }
 

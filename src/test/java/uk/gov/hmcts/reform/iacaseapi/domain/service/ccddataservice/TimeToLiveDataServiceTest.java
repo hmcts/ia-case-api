@@ -72,7 +72,7 @@ public class TimeToLiveDataServiceTest {
 
     @Test
     void should_update_the_clock() {
-        when(idamService.getUserToken()).thenReturn(USER_TOKEN);
+        when(idamService.getServiceUserToken()).thenReturn(USER_TOKEN);
         when(serviceAuthorization.generate()).thenReturn(S2S_TOKEN);
         when(idamService.getSystemUserId(USER_TOKEN)).thenReturn(UID);
 

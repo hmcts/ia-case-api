@@ -34,7 +34,6 @@ public class TimeToLiveDataService extends CcdDataService {
             userToken,
             s2sToken,
             uid,
-            JURISDICTION,
             CASE_TYPE,
             caseId,
             Event.MANAGE_CASE_TTL);
@@ -49,7 +48,7 @@ public class TimeToLiveDataService extends CcdDataService {
         eventData.put("id", Event.MANAGE_CASE_TTL.toString());
 
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
-            startEventDetails.getToken(), true);
+            startEventDetails.getToken());
 
         log.info("TTL updated with systemTTL: {}, overrideTTL: {}, suspended: {}",
             ttlToBeUpdated.getSystemTTL(),
