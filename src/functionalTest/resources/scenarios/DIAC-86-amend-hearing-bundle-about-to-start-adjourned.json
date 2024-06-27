@@ -13,6 +13,7 @@
           "listCaseHearingCentre": "taylorHouse",
           "ariaListingReference": "LP/12345/2019",
           "legalRepReferenceNumber": "REF54321",
+          "stateBeforeAdjournWithoutDate": "preHearing",
           "hearingDocuments": [
             {
               "id": "2",
