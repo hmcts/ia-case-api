@@ -29,7 +29,7 @@ import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class CcdDataServiceTest {
+class CcdDataServiceTest {
 
     @Mock
     private CcdDataApi ccdDataApi;
@@ -101,7 +101,7 @@ public class CcdDataServiceTest {
 
         StartEventDetails result = ccdDataService.startEvent(userToken, s2sToken, uid, CcdDataService.CASE_TYPE, caseId, event);
 
-        verify(ccdDataApi).startEvent(eq(userToken), eq(s2sToken), eq(uid), eq(CcdDataService.JURISDICTION), eq(CcdDataService.CASE_TYPE), eq(caseId), eq(event.toString()));
+        verify(ccdDataApi).startEvent(userToken, s2sToken, uid, CcdDataService.JURISDICTION, CcdDataService.CASE_TYPE, caseId, event.toString());
         assertSame(startEventDetails, result);
     }
 }

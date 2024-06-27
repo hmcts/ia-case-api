@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -13,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
 
 @ExtendWith(MockitoExtension.class)
 class IdamServiceTest {
@@ -115,5 +119,15 @@ class IdamServiceTest {
 
         verify(idamApi, times(1)).userInfo(userToken);
         verify(userInfo, times(1)).getUid();
+    }
+
+    @Test
+    void getSystemUserId_should_throw_if_exception() {
+        String userToken = "some user token";
+        when(idamApi.userInfo(userToken)).thenThrow(FeignException.class);
+
+        assertThatThrownBy(() -> idamService.getSystemUserId(userToken))
+            .hasMessageContaining("Could not get system user id from IDAM")
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 }

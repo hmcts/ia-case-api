@@ -91,19 +91,6 @@ class EndAppealConfirmationTest {
     }
 
     @Test
-    void should_retrigger_manageCaseTtl_when_clock_has_not_starter() {
-        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
-            .thenReturn(Optional.of(""));
-
-        PostSubmitCallbackResponse callbackResponse =
-            endAppealConfirmation.handle(callback);
-
-    }
-
-    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> endAppealConfirmation.handle(callback))

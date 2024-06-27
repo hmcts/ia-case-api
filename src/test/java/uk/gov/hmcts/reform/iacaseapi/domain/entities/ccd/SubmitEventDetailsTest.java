@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class SubmitEventDetailsTest {
+class SubmitEventDetailsTest {
 
     private long id = 1000L;
     private String jurisdiction = "Jurisdiction";

@@ -56,8 +56,7 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
 
         switch (ftpaOutcomeType) {
 
-            case GRANTED:
-            case PARTIALLY_GRANTED:
+            case GRANTED, PARTIALLY_GRANTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"

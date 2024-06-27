@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 @SuppressWarnings("unchecked")
-public class StartEventDetailsTest {
+class StartEventDetailsTest {
 
     private Event eventId = Event.SUBMIT_APPEAL;
     private String token = "token";

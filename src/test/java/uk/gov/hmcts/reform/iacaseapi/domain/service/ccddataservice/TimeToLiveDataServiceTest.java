@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class TimeToLiveDataServiceTest {
+class TimeToLiveDataServiceTest {
 
     @Mock
     private CcdDataApi ccdDataApi;

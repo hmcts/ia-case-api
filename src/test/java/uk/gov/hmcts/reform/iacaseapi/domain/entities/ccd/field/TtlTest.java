@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class TtlTest {
+class TtlTest {
 
     private final String systemTTL = "2022-10-21";
     private final String overrideTTL = "2023-10-21";

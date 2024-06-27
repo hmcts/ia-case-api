@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class CaseDataContentTest {
+class CaseDataContentTest {
 
     private final String caseReference = "caseReference";
     private final Map<String, Object> data = Map.of("data", "data");

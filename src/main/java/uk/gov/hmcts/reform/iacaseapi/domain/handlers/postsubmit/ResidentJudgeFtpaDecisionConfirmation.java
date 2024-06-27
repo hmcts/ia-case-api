@@ -66,7 +66,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
         postSubmitResponse.setConfirmationHeader("# You've recorded the First-tier permission to appeal decision");
 
-        String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") == true ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
+        String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
         boolean isDlrmSetAside
@@ -74,24 +74,21 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
         switch (ftpaOutcomeType) {
 
-            case GRANTED:
-            case PARTIALLY_GRANTED:
+            case GRANTED, PARTIALLY_GRANTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                         + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
-            case REFUSED:
-            case NOT_ADMITTED:
+            case REFUSED, NOT_ADMITTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                         + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
-            case REHEARD_RULE_32:
-            case REHEARD_RULE_35:
+            case REHEARD_RULE_32, REHEARD_RULE_35:
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationBody(
                             "#### What happens next\n\n"
@@ -105,8 +102,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 }
                 break;
 
-            case REMADE_RULE_31:
-            case REMADE_RULE_32:
+            case REMADE_RULE_31, REMADE_RULE_32:
 
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
