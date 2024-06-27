@@ -158,7 +158,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.ADD_EVIDENCE_FOR_COSTS,
             Event.CONSIDER_MAKING_COSTS_ORDER,
             Event.DECIDE_COSTS_APPLICATION,
-            DECIDE_FTPA_APPLICATION,
+            Event.DECIDE_FTPA_APPLICATION,
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.MARK_APPEAL_AS_REMITTED
         );
@@ -234,6 +234,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_APPEAL_FROM_ONLINE,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.MANAGE_FEE_UPDATE,
+            Event.MARK_APPEAL_AS_REMITTED,
             Event.DECIDE_FTPA_APPLICATION
         );
 
@@ -297,7 +298,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private void setDlrmSetAsideFeatureFlag(Event event, AsylumCase asylumCase) {
         if (List.of(Event.LEADERSHIP_JUDGE_FTPA_DECISION,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
-            DECIDE_FTPA_APPLICATION).contains(event)) {
+            Event.DECIDE_FTPA_APPLICATION).contains(event)) {
             asylumCase.write(IS_DLRM_SET_ASIDE_ENABLED,
                 featureToggler.getValue("dlrm-setaside-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
         }
