@@ -1,0 +1,32 @@
+{
+  "description": "RIA-6542: Submit AIP EA appeal",
+  "disabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 1122,
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-aip-appeal-started.json",
+        "replacements": {
+          "appealType": "refusalOfEu",
+          "paymentStatus": "Payment pending"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-started.json",
+      "replacements": {
+        "appealType": "refusalOfEu",
+        "currentCaseStateVisibleToAdminOfficer": "pendingPayment"
+      }
+    }
+  }
+}
+

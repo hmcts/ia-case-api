@@ -38,7 +38,7 @@
                 "document_binary_url": "http://document-store/AAA/binary",
                 "document_filename": "appeal-response.pdf"
               },
-              "user": "{$IA_USER_PREFIX}Admin Officer",
+              "user": "{$IA_USER_PREFIX}Admin4 Officer",
               "dateAdded": "{$TODAY}"
             }
           }

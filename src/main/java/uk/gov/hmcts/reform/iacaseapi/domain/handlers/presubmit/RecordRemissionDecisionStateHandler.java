@@ -17,21 +17,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
 public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
+    private final FeePayment<AsylumCase> feePayment;
 
     public RecordRemissionDecisionStateHandler(
         FeatureToggler featureToggler,
-        DateProvider dateProvider
+        DateProvider dateProvider,
+        FeePayment<AsylumCase> feePayment
     ) {
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
+        this.feePayment = feePayment;
     }
 
     public boolean canHandle(
@@ -71,19 +76,39 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
         final RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
             .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
 
+        final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).orElse(PaymentStatus.PAYMENT_PENDING);
+
         switch (remissionDecision) {
             case APPROVED:
                 asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAID);
-                if (Arrays.asList(AppealType.EA, AppealType.HU).contains(appealType)) {
+                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+                asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+
+                if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(appealType)) {
                     return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             case PARTIALLY_APPROVED:
-            case REJECTED:
-                asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+                asylumCase.write(PAYMENT_STATUS, paymentStatus);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+
+                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+                asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
+
+                return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+
+            case REJECTED:
+                asylumCase.write(PAYMENT_STATUS, paymentStatus);
+                asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+                    LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+
+                feePayment.aboutToSubmit(callback);
+
+                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+                asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             default:

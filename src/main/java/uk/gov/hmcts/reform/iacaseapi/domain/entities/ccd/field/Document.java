@@ -2,12 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import static java.util.Objects.requireNonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//Ignoring unknown property 'document_hash' for now until we are integrating it later.
+@JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode
 @ToString
 public class Document {
@@ -17,13 +20,14 @@ public class Document {
     private String documentFilename;
 
     private Document() {
+        super();
         // noop -- for deserializer
     }
 
     public Document(
-        String documentUrl,
-        String documentBinaryUrl,
-        String documentFilename
+            String documentUrl,
+            String documentBinaryUrl,
+            String documentFilename
     ) {
         requireNonNull(documentUrl);
         requireNonNull(documentBinaryUrl);
@@ -44,5 +48,9 @@ public class Document {
 
     public String getDocumentFilename() {
         return documentFilename;
+    }
+
+    public void setDocumentFilename(String documentFilename) {
+        this.documentFilename = documentFilename;
     }
 }

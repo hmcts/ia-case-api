@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum RoleName {
     TRIBUNAL_CASEWORKER("tribunal-caseworker"),
-    SENIOR_TRIBUNAL_CASEWORKER("senior-tribunal-caseworker");
+    SENIOR_TRIBUNAL_CASEWORKER("senior-tribunal-caseworker"),
+    CREATOR("[CREATOR]");
 
     @JsonValue
     private final String value;

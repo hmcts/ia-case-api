@@ -1,0 +1,82 @@
+{
+  "description": "RIA-7450 Submit an EJP transfer down appeal by admin should append EJP documents (Upper Tribunal transfer order and IAUT-2 form)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-ejp-appeal-started.json",
+        "replacements": {
+          "appealReferenceNumber": "PA/12345/2018",
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ejp-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "PA/12345/2018",
+        "isNotificationTurnedOff": "Yes",
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse",
+        "hearingCentre": "taylorHouse",
+        "uploadEjpAppealFormDocs": [
+          {
+            "id": "a0cf7baa-5581-4dcb-95a4-09f503b528bb",
+            "value": {
+              "document_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2",
+              "document_filename": "PA/12345/2018-Talha-IAUT-2-appeal-form1.pdf",
+              "document_binary_url": "http://dm-store:8080/documents/e3d85975-efd6-4f26-a68e-ed1ccf3aa3d2/binary"
+            }
+          }
+        ],
+        "utTransferDoc": [
+          {
+            "id": "ed05595a-d512-41f5-8fef-0e5cd4b49c67",
+            "value": {
+              "document_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51",
+              "document_filename": "PA/12345/2018-Talha-UT-transfer-order1.pdf",
+              "document_binary_url": "http://dm-store:8080/documents/246c4f51-510d-4d3f-b831-2cd3b97cda51/binary"
+            }
+          }
+        ],
+        "tribunalDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA/12345/2018-Talha-UT-transfer-order1.pdf"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "upperTribunalTransferOrderDocument"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA/12345/2018-Talha-IAUT-2-appeal-form1.pdf"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "iAUT2Form"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

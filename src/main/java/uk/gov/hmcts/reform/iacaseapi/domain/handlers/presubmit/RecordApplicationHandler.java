@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_APPLICATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
 import java.util.List;
 import java.util.Optional;
@@ -207,7 +208,8 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
         asylumCase.write(APPLICATIONS, allApplications);
 
         // call ia-case-notification-api in this handler because we need to do some cleanups after call and use above validation
-        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(
+        AsylumCase asylumCaseWithNotificationMarker = isNotificationTurnedOff(asylumCase)
+                ? asylumCase : notificationSender.send(
             new Callback<>(
                 new CaseDetails<>(
                     callback.getCaseDetails().getId(),
@@ -215,7 +217,8 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
                     callback.getCaseDetails().getState(),
                     asylumCase,
                     callback.getCaseDetails().getCreatedDate(),
-                    callback.getCaseDetails().getSecurityClassification()
+                    callback.getCaseDetails().getSecurityClassification(),
+                    callback.getCaseDetails().getSupplementaryData()
                 ),
                 callback.getCaseDetailsBefore(),
                 callback.getEvent()

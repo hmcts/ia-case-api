@@ -110,7 +110,7 @@ class AppellantNameForDisplayFormatterTest {
     void handling_should_throw_if_cannot_actually_handle() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(
             () -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -127,7 +127,7 @@ class AppellantNameForDisplayFormatterTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
+                when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
                 boolean canHandle = appellantNameForDisplayFormatter.canHandle(callbackStage, callback);
 
@@ -146,7 +146,7 @@ class AppellantNameForDisplayFormatterTest {
     void cannot_handle_Aip_start_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
         boolean canHandle =
@@ -159,7 +159,7 @@ class AppellantNameForDisplayFormatterTest {
     void cannot_handle_Aip_edit_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
 
         boolean canHandle =
@@ -172,7 +172,7 @@ class AppellantNameForDisplayFormatterTest {
     void can_handle_Aip_other_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
         boolean canHandle =
@@ -185,7 +185,7 @@ class AppellantNameForDisplayFormatterTest {
     void can_handle_Rep_start_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
         boolean canHandle =
@@ -198,7 +198,7 @@ class AppellantNameForDisplayFormatterTest {
     void can_handle_JourneyType_not_set_start_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
         boolean canHandle =

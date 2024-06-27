@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,6 +35,14 @@ public interface TimedEventServiceApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @RequestBody TimedEvent content
     );
+
+    @DeleteMapping(value = "/timed-event/{id}", produces = "application/json", consumes = "application/json")
+    void deleteTimedEvent(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("id") String jobKey
+    );
+
 
     class Configuration {
 

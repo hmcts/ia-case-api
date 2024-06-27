@@ -11,7 +11,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -77,6 +76,9 @@ class HomeOfficeCaseValidateHandlerTest {
 
         homeOfficeCaseValidateHandler =
             new HomeOfficeCaseValidateHandler(featureToggler, isHomeOfficeIntegrationEnabled, homeOfficeApi);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
@@ -88,8 +90,6 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(() -> homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
@@ -106,8 +106,6 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
@@ -146,6 +144,95 @@ class HomeOfficeCaseValidateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
+    void should_not_call_home_office_api_for_detained_appeals(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(event);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(
+            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+        verify(asylumCase, times(0)).read(CONTACT_PREFERENCE);
+        verify(asylumCase, times(0)).write(
+            CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
+        verify(asylumCase, times(0)).write(
+            APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
+        verify(asylumCase, times(0)).write(
+            APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+        verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
+        verify(asylumCase, times(0)).write(
+            HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
+        verify(applicationStatus, times(0)).modifyListDataForCcd();
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void should_not_call_home_office_api_for_ejp_appeals(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(event);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void should_not_call_home_office_api_for_aaa_appeals(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AG));
+        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).write(
+            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+        verify(asylumCase, times(0)).read(CONTACT_PREFERENCE);
+        verify(asylumCase, times(0)).write(
+            CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
+        verify(asylumCase, times(0)).write(
+            APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+        verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
+        verify(asylumCase, times(0)).write(
+            HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
+        verify(applicationStatus, times(0)).modifyListDataForCcd();
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_pa_rp_appeal_types(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
@@ -153,8 +240,6 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
@@ -220,8 +305,6 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
@@ -283,8 +366,6 @@ class HomeOfficeCaseValidateHandlerTest {
     void should_not_call_home_office_api_when_ooc_and_human_rights_decision_is_chosen(Event event, AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -306,11 +387,6 @@ class HomeOfficeCaseValidateHandlerTest {
                 Arguments.of(SUBMIT_APPEAL, DC),
                 Arguments.of(SUBMIT_APPEAL, EA),
                 Arguments.of(SUBMIT_APPEAL, HU),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, PA),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, RP),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, DC),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, EA),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, HU),
                 Arguments.of(MARK_APPEAL_PAID, PA),
                 Arguments.of(MARK_APPEAL_PAID, RP),
                 Arguments.of(MARK_APPEAL_PAID, DC),
@@ -330,6 +406,8 @@ class HomeOfficeCaseValidateHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -337,7 +415,6 @@ class HomeOfficeCaseValidateHandlerTest {
 
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == SUBMIT_APPEAL
-                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
                     || callback.getEvent() == MARK_APPEAL_PAID
                     || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {

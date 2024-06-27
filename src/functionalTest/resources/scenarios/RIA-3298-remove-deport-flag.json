@@ -1,5 +1,6 @@
 {
   "description": "RIA-3298 Remove deport flag from case",
+  "disabled" : "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,19 +11,19 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseFlags": [
+          "legacyCaseFlags": [
             {
               "id": "1",
               "value": {
-                "caseFlagType": "deport",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "deport",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             },
             {
               "id": "2",
               "value": {
-                "caseFlagType": "anonymity",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "anonymity",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             }
           ],
@@ -54,12 +55,12 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseFlags": [
+        "legacyCaseFlags": [
           {
             "id": "2",
             "value": {
-              "caseFlagType": "anonymity",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "anonymity",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ]

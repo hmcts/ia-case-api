@@ -1,0 +1,140 @@
+{
+  "description": "RIA-7716: Judge decides a costs application",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 7716,
+      "eventId": "decideCostsApplication",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "journeyType": "rep",
+          "appealType": "revocationOfProtection",
+          "appealGroundsRevocation": {
+            "values": [
+              "revocationRefugeeConvention",
+              "revocationHumanitarianProtection"
+            ]
+          },
+          "applyForCostsDecision": "Order made",
+          "costsDecisionType": "With an oral hearing",
+          "costsOralHearingDate": "{$TODAY}",
+          "costsDecisionDate": "{$TODAY}",
+          "uploadCostsOrder": [
+            {
+              "value": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              }
+            }
+          ],
+          "decideCostsApplicationList": {
+            "value": {
+              "code": "1",
+              "label": "Costs 1, Wasted costs, 13 Nov 2023"
+            },
+            "list_items": [
+              {
+                "code": "1",
+                "label": "Costs 1, Wasted costs, 13 Nov 2023"
+              }
+            ]
+          },
+          "appliesForCosts": [
+            {
+              "id": "1",
+              "value": {
+                "appliedCostsType": "Unreasonable costs",
+                "respondentToCostsOrder": "Home office",
+                "applyForCostsHearingType": "No",
+                "applyForCostsDecision": "Pending",
+                "scheduleOfCostsDocuments": [],
+                "applyForCostsCreationDate": "2023-11-13",
+                "applyForCostsApplicantType": "Legal representative",
+                "applyForCostsRespondentRole": "Respondent",
+                "argumentsAndEvidenceDetails": "",
+                "applyForCostsOotExplanation": "",
+                "ootUploadEvidenceDocuments": [],
+                "isApplyForCostsOot": "No",
+                "argumentsAndEvidenceDocuments": [
+                  {
+                    "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                    "value": {
+                      "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                      "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                      "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                    }
+                  }
+                ],
+                "applyForCostsHearingTypeExplanation": ""
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "revocationOfProtection",
+        "appealGroundsRevocation": {
+          "values": [
+            "revocationRefugeeConvention",
+            "revocationHumanitarianProtection"
+          ]
+        },
+        "appliesForCosts": [
+          {
+            "id": "1",
+            "value": {
+              "appliedCostsType": "Unreasonable costs",
+              "respondentToCostsOrder": "Home office",
+              "applyForCostsHearingType": "No",
+              "scheduleOfCostsDocuments": [],
+              "applyForCostsCreationDate": "2023-11-13",
+              "applyForCostsApplicantType": "Legal representative",
+              "argumentsAndEvidenceDetails": "",
+              "applyForCostsRespondentRole": "Respondent",
+              "applyForCostsOotExplanation": "",
+              "ootUploadEvidenceDocuments": [],
+              "isApplyForCostsOot": "No",
+              "argumentsAndEvidenceDocuments": [
+                {
+                  "id": "2f352b16-0ed9-4c2e-88c2-4bc091485504",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
+                }
+              ],
+              "applyForCostsHearingTypeExplanation": "",
+              "applyForCostsDecision": "Order made",
+              "costsDecisionType": "With an oral hearing",
+              "costsOralHearingDate": "{$TODAY_FULL_DATE_2}",
+              "uploadCostsOrder": [
+                {
+                  "id": "",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
+                }
+              ],
+              "dateOfDecision": "{$TODAY_FULL_DATE_2}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+

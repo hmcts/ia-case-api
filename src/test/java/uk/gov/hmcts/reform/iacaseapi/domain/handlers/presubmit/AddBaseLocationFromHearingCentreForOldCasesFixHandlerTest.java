@@ -63,7 +63,6 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         List<Event> blackListEvents = Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.PAY_AND_SUBMIT_APPEAL,
             Event.CHANGE_HEARING_CENTRE,
             Event.START_APPEAL);
 
@@ -142,11 +141,11 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
     }
 
     private static Stream<HandleScenario> handleScenarioProvider() {
-        final HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse =
+        final HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToNewport =
             HandleScenario.builder()
                 .asylumCase(new AsylumCase())
-                .expectedBaseLocation(BaseLocation.TAYLOR_HOUSE)
-                .expectedStaffLocation("Taylor House")
+                .expectedBaseLocation(BaseLocation.NEWPORT)
+                .expectedStaffLocation("Newport")
                 .build();
 
         AsylumCase asylumCaseWithHearingCentreOnly = new AsylumCase();
@@ -182,7 +181,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
                 .build();
 
         return Stream.of(
-            givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse,
+            givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToNewport,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre,
             givenCcdCaseHasHearingCentreGlasgowAndDoesHaveCompleteCaseBaseLocationButItIsDeprecated

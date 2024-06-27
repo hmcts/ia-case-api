@@ -19,11 +19,13 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -96,7 +98,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -105,7 +107,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -117,12 +119,12 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_for_pay_offline_by_card() {
+    void should_return_confirmation_for_pay_EA() {
 
         long caseId = 1234;
 
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -141,7 +143,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -150,7 +152,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -162,12 +164,57 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_for_pay_now_hu() {
+    void should_return_confirmation_for_EA_with_Remission() {
 
         long caseId = 1234;
 
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# The appeal has been saved");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("### Do this next");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "[submit the appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+            );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Not ready to submit yet?");
+
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_return_confirmation_for_pay_hu() {
+
+        long caseId = 1234;
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -186,7 +233,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -195,8 +242,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                "[submit the appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -212,6 +259,7 @@ class AppealSavedConfirmationTest {
         long caseId = 1234;
 
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -232,7 +280,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -241,8 +289,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                "[submit the appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -258,6 +306,7 @@ class AppealSavedConfirmationTest {
         long caseId = 1234;
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -277,7 +326,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal details have been saved");
+            .contains("# The appeal has been saved");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -286,7 +335,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -298,11 +347,12 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_for_PA_pay_for() {
+    void should_return_confirmation_for_PA_pay() {
 
         long caseId = 1234;
 
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -324,8 +374,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                "[submit the appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -357,7 +407,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -374,7 +424,7 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
         when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
@@ -389,7 +439,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
+                "[submit the appeal]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
@@ -459,6 +509,50 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_return_confirmation_for_internal_cases_admin() {
+
+        long caseId = 1234;
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# The appeal has been saved");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("### Do this next");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "[submit the appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+            );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Not ready to submit yet?");
+
     }
 
     @Test

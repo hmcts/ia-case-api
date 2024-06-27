@@ -87,7 +87,7 @@ class UploadDecisionLetterHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
     void should_append_home_office_decision_letter_to_legal_rep_documents_if_not_present(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -126,7 +126,7 @@ class UploadDecisionLetterHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
     void should_not_append_home_office_decision_letter_to_legal_rep_documents_if_already_present(Event event) {
 
         when(callback.getEvent()).thenReturn(event);

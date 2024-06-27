@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -21,6 +22,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+
+import java.util.Map;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -114,7 +117,6 @@ class CcdCaseAssignmentTest {
         when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.NO_CONTENT.value());
 
         ccdCaseAssignment.revokeAccessToCase(callback, "some-org-identifier");
-
         verify(restTemplate)
             .exchange(
                 anyString(),
@@ -277,4 +279,11 @@ class CcdCaseAssignmentTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void payloads_not_empty() {
+        Map<String, Object> buildRevokeAccessPayload = ccdCaseAssignment.buildRevokeAccessPayload("some-org-identifier", 123L, IDAM_ID_OF_USER_CREATING_CASE);
+        Map<String, Object> buildAssignAccessCaseUserMap = ccdCaseAssignment.buildAssignAccessCaseUserMap(123L, IDAM_ID_OF_USER_CREATING_CASE);
+        assertThat(buildRevokeAccessPayload).isNotEmpty();
+        assertThat(buildAssignAccessCaseUserMap).isNotEmpty();
+    }
 }

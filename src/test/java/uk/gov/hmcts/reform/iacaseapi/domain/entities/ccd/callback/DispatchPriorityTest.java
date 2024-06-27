@@ -12,10 +12,11 @@ class DispatchPriorityTest {
         assertEquals("early", DispatchPriority.EARLY.toString());
         assertEquals("late", DispatchPriority.LATE.toString());
         assertEquals("latest", DispatchPriority.LATEST.toString());
+        assertEquals("last", DispatchPriority.LAST.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(4, DispatchPriority.values().length);
+        assertEquals(5, DispatchPriority.values().length);
     }
 }

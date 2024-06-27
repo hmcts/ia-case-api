@@ -46,6 +46,10 @@ public class AsylumFieldCaseCategoryFixer implements DataFixer {
 
         switch (caseAppealType) {
 
+            case EU:
+                asylumCase.write(hmctsCaseCategory, ("EU Settlement Scheme"));
+                break;
+
             case RP:
                 asylumCase.write(hmctsCaseCategory, ("Revocation"));
                 break;

@@ -29,7 +29,7 @@
             "value": {
               "caseNoteSubject": "some case note subject",
               "caseNoteDescription": "some case note description",
-              "user": "{$IA_USER_PREFIX}Admin Officer",
+              "user": "{$IA_USER_PREFIX}Admin4 Officer",
               "dateAdded": "{$TODAY}"
             }
           }

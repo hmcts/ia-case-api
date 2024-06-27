@@ -46,6 +46,7 @@ class CaseWorkerServiceTest {
     private ArgumentCaptor<QueryRequest> captor;
 
     private static final String ACTOR_ID = "some actor id";
+    private static final String AUTHORISATION = "some auth code";
 
     @ParameterizedTest
     @MethodSource("scenarioProvider")
@@ -63,6 +64,7 @@ class CaseWorkerServiceTest {
 
         QueryRequest actualQueryRequest = captor.getValue();
         QueryRequest expectedQueryRequest = QueryRequest.builder()
+            .actorId(List.of(ACTOR_ID))
             .roleType(List.of(RoleType.ORGANISATION))
             .roleName(List.of(RoleName.TRIBUNAL_CASEWORKER, RoleName.SENIOR_TRIBUNAL_CASEWORKER))
             .grantType(List.of(GrantType.STANDARD))
@@ -71,8 +73,19 @@ class CaseWorkerServiceTest {
                 Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
                 Attributes.PRIMARY_LOCATION, List.of("some location")
             ))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .authorisations(List.of(AUTHORISATION))
             .build();
-        assertThat(actualQueryRequest).usingRecursiveComparison().ignoringFields("validAt").isEqualTo(expectedQueryRequest);
+        assertThat(expectedQueryRequest.getActorId()).isNotEmpty();
+        assertThat(actualQueryRequest.getRoleType()).isNotEmpty();
+        assertThat(actualQueryRequest.getRoleName()).isNotEmpty();
+        assertThat(actualQueryRequest.getClassification()).isNotEmpty();
+        assertThat(actualQueryRequest.getGrantType()).isNotEmpty();
+        assertThat(actualQueryRequest.getValidAt()).isNotNull();
+        assertThat(expectedQueryRequest.getRoleCategory()).isNotEmpty();
+        assertThat(actualQueryRequest.getAttributes()).isNotEmpty();
+        assertThat(expectedQueryRequest.getAuthorisations()).isNotEmpty();
+        assertThat(actualQueryRequest).usingRecursiveComparison().ignoringFields("validAt", "actorId", "roleCategory", "authorisations").isEqualTo(expectedQueryRequest);
     }
 
     private static Stream<Scenario> scenarioProvider() {
@@ -106,7 +119,7 @@ class CaseWorkerServiceTest {
     void getCaseWorkerNameForActorId(CaseWorkerNameScenario scenario) {
 
         String userBearerToken = "some user bearer token";
-        when(idamService.getUserToken()).thenReturn(userBearerToken);
+        when(idamService.getServiceUserToken()).thenReturn(userBearerToken);
 
         String serviceBearerToken = "some service bearer token";
         when(authTokenGenerator.generate()).thenReturn(serviceBearerToken);

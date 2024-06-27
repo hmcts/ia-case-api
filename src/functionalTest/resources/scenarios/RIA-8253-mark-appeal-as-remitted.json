@@ -1,0 +1,111 @@
+{
+  "description": "RIA-8253 Mark Appeal as Remitted",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8253,
+      "eventId": "markAppealAsRemitted",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "judgesNamesToExclude": "Judge John Doe",
+          "remittedAdditionalInstructions": "Listing instruction example",
+          "courtReferenceNumber": "UI-2023-000001",
+          "sourceOfRemittal": "Upper Tribunal",
+          "uploadRemittalDecisionDoc": {
+            "document_url": "http://document-store/BBB",
+            "document_binary_url": "http://document-store/BBB/binary",
+            "document_filename": "Rule32-Decision-and-reasons-JSmith.pdf"
+          },
+          "uploadOtherRemittalDocs": [
+            {
+              "id": "009c73da-ac39-4d8f-a24d-b24a6581912a",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_filename": "otherRemittalDoc.pdf",
+                  "document_binary_url": "http://document-store/BBB/binary"
+                },
+                "description": "test"
+              }
+            }]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "judgesNamesToExclude": "Judge John Doe",
+        "remittedAdditionalInstructions": "Listing instruction example",
+        "courtReferenceNumber": "UI-2023-000001",
+        "uploadRemittalDecisionDoc": {
+          "document_url": "http://document-store/BBB",
+          "document_binary_url": "http://document-store/BBB/binary",
+          "document_filename": "UI-2023-000001-Decision-to-remit.pdf"
+        },
+        "uploadOtherRemittalDocs": [
+          {
+            "id": "009c73da-ac39-4d8f-a24d-b24a6581912a",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_filename": "otherRemittalDoc.pdf",
+                "document_binary_url": "http://document-store/BBB/binary"
+              },
+              "description": "test"
+            }
+          }],
+        "sendDirectionActionAvailable": "No",
+        "remittalDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "decisionDocument": {
+                "tag": "remittalDecision",
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_filename": "UI-2023-000001-Decision-to-remit.pdf",
+                  "document_binary_url": "http://document-store/BBB/binary"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY}"
+              },
+              "otherRemittalDocs": [
+                {
+                  "id": "11",
+                  "value": {
+                    "tag": "remittalDecision",
+                    "document": {
+                      "document_url": "http://document-store/BBB",
+                      "document_filename": "otherRemittalDoc.pdf",
+                      "document_binary_url": "http://document-store/BBB/binary"
+                    },
+                    "description": "test",
+                    "dateUploaded": "{$TODAY}"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "user": "Admin",
+              "dateAdded": "{$TODAY}",
+              "caseNoteSubject": "Appeal marked as remitted",
+              "caseNoteDescription": "Reason for rehearing: Remitted\nRemitted from: Upper Tribunal\nUpper Tribunal reference: UI-2023-000001\nExcluded judges: Judge John Doe\nListing instructions: Listing instruction example\n"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

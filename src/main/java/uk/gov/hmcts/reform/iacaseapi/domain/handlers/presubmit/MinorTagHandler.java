@@ -31,7 +31,7 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT, Event.PAY_AND_SUBMIT_APPEAL);
+        List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
         return ABOUT_TO_SUBMIT.equals(callbackStage) && validEvents.contains(callback.getEvent());
     }
 
@@ -56,28 +56,16 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
     }
 
-    private boolean isAppellantDobValid(AsylumCase asylumCase) {
-        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
-        if (appellantDobAsString != null) {
-            return isAppellantDobAValidDate(appellantDobAsString);
-        }
-        return false;
-    }
-
-    private boolean isAppellantDobAValidDate(String appellantDobAsString) {
-        try {
-            appellantDob = LocalDate.parse(appellantDobAsString);
-        } catch (Exception e) {
-            log.warn("Error when parsing Appellant dob: ", e);
-            return false;
-        }
-        return true;
-    }
-
     private boolean isAppellantMinor(AsylumCase asylumCase) {
         YesOrNo result = YesOrNo.NO;
-        if (isAppellantDobValid(asylumCase)) {
-            result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
+        if (appellantDobAsString != null) {
+            try {
+                appellantDob = LocalDate.parse(appellantDobAsString);
+                result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+            } catch (Exception e) {
+                log.warn("Error when parsing Appellant dob: ", e);
+            }
         }
         return result.equals(YesOrNo.YES);
     }

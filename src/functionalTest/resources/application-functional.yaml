@@ -11,3 +11,5 @@ idam:
 feign:
   hystrix:
     enabled: false
+
+citizenEmail: ${TEST_CITIZEN_USERNAME:ia-citizen@fake.hmcts.net}

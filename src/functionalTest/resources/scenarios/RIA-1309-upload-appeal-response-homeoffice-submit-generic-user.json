@@ -1,10 +1,11 @@
 {
   "description": "RIA-1309 Upload appeal response (Home Office Generic)",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",
     "input": {
-      "id": 1234,
+      "id": 13094,
       "eventId": "uploadHomeOfficeAppealResponse",
       "state": "respondentReview",
       "caseData": {

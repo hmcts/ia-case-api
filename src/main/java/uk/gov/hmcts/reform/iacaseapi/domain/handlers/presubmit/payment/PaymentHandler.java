@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -40,10 +40,7 @@ public class PaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-                   || callback.getEvent() == Event.PAY_FOR_APPEAL
-                   || callback.getEvent() == Event.PAYMENT_APPEAL
-               )
+               && callback.getEvent() == Event.PAYMENT_APPEAL
                && isfeePaymentEnabled;
     }
 
@@ -57,12 +54,8 @@ public class PaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        boolean isRepJourney = asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-                .map(j -> j == JourneyType.REP)
-                .orElse(true);
-
         // we have to set payment success first before do the payment because later we don't have possibility to change that
-        if (isRepJourney) {
+        if (HandlerUtils.isRepJourney(asylumCase)) {
             asylumCase.write(PAYMENT_STATUS, PAID);
         }
 

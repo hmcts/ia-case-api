@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReviewOutcome.DECISION_MAINTAINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_APPEAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -20,7 +23,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
@@ -89,7 +93,9 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
         }
 
-        if (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isEligibleForAutomaticDirection(callback)) {
+        if (!isExAdaCaseWithHearingRequirementsSubmitted(asylumCase)
+            && (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isEligibleForAutomaticDirection(callback))) {
+
             TimedEvent timedEvent = scheduler.schedule(
                 new TimedEvent(
                     "",
@@ -108,16 +114,12 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
 
 
     private boolean isEligibleForAutomaticDirection(Callback<AsylumCase> callback) {
-        final JourneyType journeyType = callback.getCaseDetails().getCaseData()
-            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-            .orElse(JourneyType.REP);
-
         final Optional<AppealReviewOutcome> reviewOutcome = callback.getCaseDetails().getCaseData()
             .read(AsylumCaseFieldDefinition.APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class);
 
         //Support the in-flight cases, where the homeoffice decision is not available
         if (!reviewOutcome.isPresent()) {
-            if (journeyType == JourneyType.REP) {
+            if (HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData())) {
                 return true;
             } else {
                 throw new IllegalStateException("Appeal Review Outcome is mandatory");
@@ -125,5 +127,15 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
         }
         return callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW
             && reviewOutcome.get() == DECISION_MAINTAINED;
+    }
+
+    private boolean isExAdaCaseWithHearingRequirementsSubmitted(AsylumCase asylumCase) {
+        return asylumCase
+                   .read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES)
+               && asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+                   .orElse(NO)
+                   .equals(YES);
     }
 }

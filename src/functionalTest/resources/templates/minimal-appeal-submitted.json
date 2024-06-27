@@ -18,6 +18,7 @@
   "wantsSms": "Text message",
   "mobileNumber": "07977111111",
   "appealType": "protection",
+  "appealTypeForDisplay": "protection",
   "appealGroundsProtection": {
     "values": [
       "refugeeConvention"
@@ -27,10 +28,11 @@
   "hasOtherAppeals": "No",
   "appellantNameForDisplay": "Talha Awan",
   "appealReferenceNumber": "PA/12345/2018",
-  "legalRepresentativeName": "{$IA_USER_PREFIX}A Legal Rep",
+  "legalRepresentativeName": "{$IA_USER_PREFIX}A Test Legal Rep",
   "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
   "sendDirectionActionAvailable": "Yes",
-  "hearingCentre": "taylorHouse",
+  "hearingCentre": "newport",
   "submissionOutOfTime": "No",
-  "uploadAdditionalEvidenceActionAvailable": "No"
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "appellantInUk": "Yes"
 }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Slf4j
@@ -29,16 +30,9 @@ public class AppealReferenceNumberCcdHandler implements PreSubmitCallbackHandler
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        Optional<JourneyType> journeyTypeOptional =
-            callback.getCaseDetails().getCaseData().read(JOURNEY_TYPE);
-
-        boolean isAipJourney =
-            journeyTypeOptional.map(journeyType -> journeyType == JourneyType.AIP)
-                .orElse(false);
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.SUBMIT_APPEAL
-               && isAipJourney;
+               && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override

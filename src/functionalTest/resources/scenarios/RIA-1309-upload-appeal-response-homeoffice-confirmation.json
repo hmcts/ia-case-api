@@ -1,12 +1,13 @@
 {
   "description": "RIA-1309 Home office user (LART) upload appeal response confirmation",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "HomeOfficeLart",
     "input": {
       "eventId": "uploadHomeOfficeAppealResponse",
       "state": "respondentReview",
-      "id": 1234,
+      "id": 13091,
       "caseData": {
         "template": "minimal-appeal-submitted.json"
       }

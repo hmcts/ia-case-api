@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.AG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -52,19 +55,21 @@ public class RollbackPaymentPreparer implements PreSubmitCallbackHandler<AsylumC
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElseThrow(() -> new IllegalStateException("appealType is not set"));
 
-        if (AppealType.EA != appealType && AppealType.HU != appealType) {
+        boolean isEaHuEu = List.of(EA, HU, EU, AG).contains(appealType);
+
+        if (!isEaHuEu) {
             asylumCasePreSubmitCallbackResponse.addError("You cannot mark this type of appeal as unpaid.");
         }
 
         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         Optional<RemissionDecision> optionalRemissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
         // remisssion is present and remissionDecision is not rejected
-        if ((appealType == EA || appealType == HU) && (eaHuPaymentType.isEmpty()
+        if (isEaHuEu && (eaHuPaymentType.isEmpty()
                 && optionalRemissionDecision.isPresent() && optionalRemissionDecision.get() != RemissionDecision.REJECTED)) {
             asylumCasePreSubmitCallbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 
-        if ((appealType == EA || appealType == HU) && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payOffline")) {
+        if (isEaHuEu && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payOffline")) {
             asylumCasePreSubmitCallbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 

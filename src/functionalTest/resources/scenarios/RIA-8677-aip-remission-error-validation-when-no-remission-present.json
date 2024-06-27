@@ -1,0 +1,32 @@
+{
+  "description": "RIA-8677 AIP Remissions - Error validation when no remission present",
+  "launchDarklyKey": "remissions-feature:true",
+  "launchDarklyKey": "dlrm-fee-remission-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8677,
+      "eventId": "recordRemissionDecision",
+      "state": "paymentPending",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "appealType": "refusalOfHumanRights"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You cannot record a remission decision because a remission has not been requested for this appeal"
+    ],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfHumanRights"
+      }
+    }
+  }
+}

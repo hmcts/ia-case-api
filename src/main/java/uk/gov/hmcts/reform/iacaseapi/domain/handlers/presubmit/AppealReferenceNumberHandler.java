@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
@@ -48,8 +51,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
                 Event.START_APPEAL,
-                Event.SUBMIT_APPEAL,
-                Event.PAY_AND_SUBMIT_APPEAL)
+                Event.SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 
@@ -85,15 +87,22 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                     .read(APPEAL_TYPE, AppealType.class)
                     .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
+            boolean isDetainedAppeal = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO) == YES;
+
             String appealReferenceNumber =
                 appealReferenceNumberGenerator.generate(
                     callback.getCaseDetails().getId(),
-                    appealType
+                    appealType,
+                    isDetainedAppeal
                 );
 
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
-
             asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
+
+            YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
+            if (isAdmin.equals(YesOrNo.YES)) {
+                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, dateProvider.now().toString());
+            }
         }
 
         return callbackResponse;

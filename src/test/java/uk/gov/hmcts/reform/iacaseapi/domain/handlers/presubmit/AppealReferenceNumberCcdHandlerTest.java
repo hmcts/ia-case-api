@@ -47,7 +47,7 @@ class AppealReferenceNumberCcdHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
     }
 
     @Test
@@ -55,7 +55,7 @@ class AppealReferenceNumberCcdHandlerTest {
 
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(IS_APPEAL_REFERENCE_NUMBER_AVAILABLE)).thenReturn(Optional.empty());
 
         appealReferenceNumberCcdHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -68,7 +68,7 @@ class AppealReferenceNumberCcdHandlerTest {
 
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(IS_APPEAL_REFERENCE_NUMBER_AVAILABLE)).thenReturn(Optional.empty());
 
         appealReferenceNumberCcdHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -103,7 +103,7 @@ class AppealReferenceNumberCcdHandlerTest {
 
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+                when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
                 boolean canHandle = appealReferenceNumberCcdHandler.canHandle(callbackStage, callback);
 

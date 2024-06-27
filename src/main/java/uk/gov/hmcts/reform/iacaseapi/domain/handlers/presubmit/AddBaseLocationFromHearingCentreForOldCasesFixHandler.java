@@ -38,7 +38,6 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
         return !Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.PAY_AND_SUBMIT_APPEAL,
             Event.CHANGE_HEARING_CENTRE,
             Event.START_APPEAL
         ).contains(callback.getEvent());
@@ -77,7 +76,7 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
 
     private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase) {
         HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
-            .orElse(HearingCentre.TAYLOR_HOUSE);
+            .orElse(HearingCentre.NEWPORT);
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,

@@ -10,17 +10,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
-public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
@@ -44,8 +44,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    void should_get_users_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -88,8 +87,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data_no_org_id(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
 
         String prdResponseJsonNoOrgId =
             new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
@@ -132,8 +130,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_organisation_identifier_from_professional_ref_data(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -164,4 +161,20 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     }
 
+    @BeforeEach
+    @SneakyThrows
+    @SuppressWarnings("java:S2925")
+    void makeAPause() {
+        /*
+            We are not using Wiremock the way it's intended to be used. It should be used by
+            starting a webserver at the beginning of all tests and taking it down at the end, but
+            what we do is spinning up and down the server all the time and change its mappings
+            all the time.
+            The result is that its behaviour is somewhat flaky.
+
+            The following pause is meant to allow Wiremock time to conclude some operations that
+            we invoke.
+         */
+        Thread.sleep(1000);
+    }
 }

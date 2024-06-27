@@ -1,6 +1,5 @@
 {
   "description": "RIA-3851 Derive default hearing centre when no Sponsor selected and no Company address",
-  "launchDarklyKey": "out-of-country-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -37,11 +36,12 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "hearingCentre": "taylorHouse",
-        "staffLocation": "Taylor House",
+        "appellantInUk": "No",
+        "hearingCentre": "newport",
+        "staffLocation": "Newport",
         "caseManagementLocation": {
           "region": "1",
-          "baseLocation": "765324"
+          "baseLocation": "227101"
         }
       }
     }

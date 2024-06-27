@@ -57,8 +57,9 @@ public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<Asy
             .filter(application -> application.getCode().equals(code))
             .findFirst()
             .ifPresent(idValue -> {
-                DynamicList dynamicList = new DynamicList(new Value(code, idValue.getLabel()), allMakeAnApplicationsListElements);
-                asylumCase.write(MAKE_AN_APPLICATIONS_LIST, dynamicList);
+                List<Value> applicationsPending = getMakeAnApplicationsListElementsPending(asylumCase);
+                DynamicList dynamicListPending = new DynamicList(maybeMakeAnApplicationsList.getValue(), applicationsPending);
+                asylumCase.write(MAKE_AN_APPLICATIONS_LIST, dynamicListPending);
             });
 
         setSelectedApplicationFields(asylumCase, code);
@@ -78,6 +79,25 @@ public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<Asy
                 idValue.getId(),
                 idValue.getValue().getApplicant() + " : Application " + counter.getAndIncrement()))
             .collect(Collectors.toList());
+    }
+
+    private List<Value> getMakeAnApplicationsListElementsPending(AsylumCase asylumCase) {
+
+        Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
+        AtomicInteger counter = new AtomicInteger(1);
+
+        return mayBeMakeAnApplications
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(idValue -> new Value(
+                        idValue.getId(),
+                        idValue.getValue().getApplicant() + idValue.getValue().getDecision() + " : Application " + counter.getAndIncrement()))
+                .filter(val -> val.getLabel().contains("Pending"))
+                .map(val -> new Value(
+                        val.getCode(),
+                            val.getLabel().replace("Pending","")))
+                .collect(Collectors.toList());
+
     }
 
     private void setSelectedApplicationFields(AsylumCase asylumCase, String code) {

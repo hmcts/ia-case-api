@@ -79,7 +79,7 @@ public class CaseWorkerService {
     public List<CaseWorkerName> getCaseWorkerNameForActorIds(List<String> actorIds) {
         return refDataCaseWorkerApi
             .fetchUsersById(
-                idamService.getUserToken(),
+                idamService.getServiceUserToken(),
                 serviceAuthTokenGenerator.generate(),
                 new UserIds(actorIds)
             )

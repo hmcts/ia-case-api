@@ -51,6 +51,7 @@ services:
       IA_EM_STITCHING_ENABLED:
       IA_DOCMOSIS_ENABLED:
       IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:
+      CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api:4455
     external_links:
       - idam-api
       - dm-store

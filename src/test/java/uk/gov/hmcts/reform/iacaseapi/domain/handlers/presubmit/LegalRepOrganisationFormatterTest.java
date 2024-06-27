@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
@@ -57,6 +59,9 @@ class LegalRepOrganisationFormatterTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
+    @Mock
+    private org.slf4j.Logger log
+            = org.slf4j.LoggerFactory.getLogger(LegalRepOrganisationFormatter.class);
 
 
     @BeforeEach
@@ -95,6 +100,8 @@ class LegalRepOrganisationFormatterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
@@ -107,8 +114,9 @@ class LegalRepOrganisationFormatterTest {
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
             );
-
+        verify(log, times(0)).warn("Data fetched from Professional Ref data is empty, case ID: {}", ccdCaseId);
         verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY_NAME, companyName);
+        assertThat(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS).equals(legRepAddressUk));
 
         AddressUk addressUk = new AddressUk(
             addressLine1,
@@ -148,6 +156,8 @@ class LegalRepOrganisationFormatterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
@@ -171,6 +181,8 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(null);
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -190,6 +202,8 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
@@ -212,6 +226,8 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(null);
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
 
@@ -233,10 +249,8 @@ class LegalRepOrganisationFormatterTest {
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(event);
 
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = legalRepOrganisationFormatter.canHandle(callbackStage, callback);
@@ -254,28 +268,59 @@ class LegalRepOrganisationFormatterTest {
     }
 
     @Test
-    void it_can_not_handle_callback_for_aip_journey() {
+    void should_write_skeleton_local_authority_policy_for_aip_journey() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-        for (Event event : Event.values()) {
+        PreSubmitCallbackResponse<AsylumCase> response =
+                legalRepOrganisationFormatter.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                        callback
+                );
 
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(callback.getEvent()).thenReturn(event);
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = legalRepOrganisationFormatter.canHandle(callbackStage, callback);
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
 
-                if ((event == Event.START_APPEAL)
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+        OrganisationPolicy skeletonPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                        .organisationID(null)
+                        .build()
+                )
+                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
+                .build();
 
-                    assertFalse(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
+        verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, skeletonPolicy);
+    }
 
-            reset(callback);
-        }
+    @Test
+    void should_write_skeleton_local_authority_policy_for_internal_case_journey() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                legalRepOrganisationFormatter.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                        callback
+                );
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        OrganisationPolicy skeletonPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                        .organisationID(null)
+                        .build()
+                )
+                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
+                .build();
+
+        verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, skeletonPolicy);
     }
 
     @Test
@@ -288,5 +333,33 @@ class LegalRepOrganisationFormatterTest {
         assertThatThrownBy(() -> legalRepOrganisationFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_get_empty_address_from_nulls() {
+        List<LegRepAddressUk> addresses = new ArrayList<>();
+        LegRepAddressUk legRepAddressUk = new LegRepAddressUk(
+                null,null,null,null,null,null,null
+        );
+        addresses.add(legRepAddressUk);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
+        when(organisationEntityResponse.getName()).thenReturn(companyName);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+        AddressUk emptyAddressUk = new AddressUk(
+                "","","","","","",""
+        );
+        legalRepOrganisationFormatter.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+        );
+        assertThat(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS).equals(emptyAddressUk));
     }
 }

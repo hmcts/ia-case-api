@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 @SuppressWarnings("unchecked")
 class HearingCentreFinderTest {
 
-    private final HearingCentre defaultHearingCentre = HearingCentre.TAYLOR_HOUSE;
+    private final HearingCentre defaultHearingCentre = HearingCentre.NEWPORT;
 
     private final Map<HearingCentre, List<String>> hearingCentreCatchmentAreas =
         ImmutableMap
@@ -93,11 +93,60 @@ class HearingCentreFinderTest {
             .put(HearingCentre.GLASGOW, "2019-01-01")
             .build();
 
+    private final Map<HearingCentre, List<String>> hearingCentreMappings = ImmutableMap.<HearingCentre,
+                    List<String>>builder()
+            .put(HearingCentre.BIRMINGHAM, Arrays.asList(
+                    "Ashwell",
+                    "Aylesbury",
+                    "Bedford",
+                    "Birmingham",
+                    "Blakenhurst"
+            )).put(HearingCentre.BRADFORD, Arrays.asList(
+                    "Acklington",
+                    "Askham Grange",
+                    "Castington",
+                    "Deerbolt",
+                    "Derwentside"
+            )).put(HearingCentre.GLASGOW, Arrays.asList(
+                    "Addiewell",
+                    "Barlinnie",
+                    "Castle Huntly",
+                    "Cornton Vale"
+            )).put(HearingCentre.HATTON_CROSS, Arrays.asList(
+                    "Albany",
+                    "Brixton",
+                    "Bronzefield",
+                    "Camp Hill",
+                    "Colnbrook"
+            )).put(HearingCentre.MANCHESTER, Arrays.asList(
+                    "Altcourse",
+                    "Buckley Hall",
+                    "Dovegate",
+                    "Drake Hall",
+                    "Forest Bank"
+            )).put(HearingCentre.NEWPORT, Arrays.asList(
+                    "Ashfield",
+                    "Bristol",
+                    "Cardiff",
+                    "Channings Wood",
+                    "Dartmoor"
+            )).put(HearingCentre.TAYLOR_HOUSE, Arrays.asList(
+                    "Belmarsh",
+                    "Blantyre House",
+                    "Blundeston",
+                    "Brookhouse",
+                    "Bullwood Hall"
+            )).put(HearingCentre.YARLSWOOD, List.of(
+                    "Yarlswood"
+            ))
+            .build();
+
     private final HearingCentreFinder hearingCentreFinder =
         new HearingCentreFinder(
             defaultHearingCentre,
             hearingCentreCatchmentAreas,
-            hearingCentreActivationDates
+            hearingCentreActivationDates,
+            hearingCentreMappings
         );
 
     @Test
@@ -433,7 +482,8 @@ class HearingCentreFinderTest {
             new HearingCentreFinder(
                 defaultHearingCentre,
                 hearingCentreCatchmentAreas,
-                hearingCentreActivationDates
+                hearingCentreActivationDates,
+                hearingCentreMappings
             );
 
         Map<String, HearingCentre> exampleInputOutputs =
@@ -521,7 +571,8 @@ class HearingCentreFinderTest {
             new HearingCentreFinder(
                 defaultHearingCentre,
                 hearingCentreCatchmentAreas,
-                hearingCentreActivationDates
+                hearingCentreActivationDates,
+                hearingCentreMappings
             );
 
         Map<HearingCentre, Boolean> exampleHearingCentreInputOutputs =
@@ -586,7 +637,8 @@ class HearingCentreFinderTest {
             new HearingCentreFinder(
                 defaultHearingCentre,
                 hearingCentreCatchmentAreas,
-                hearingCentreActivationDates
+                hearingCentreActivationDates,
+                hearingCentreMappings
             );
 
         Map<HearingCentre, Boolean> exampleHearingCentreInputOutputs =
@@ -636,5 +688,110 @@ class HearingCentreFinderTest {
     void should_return_default_hearing_centre() {
 
         assertEquals(defaultHearingCentre, hearingCentreFinder.getDefaultHearingCentre());
+    }
+
+    @Test
+    void should_find_birmingham_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList("Ashwell", "Aylesbury", "Bedford", "Birmingham", "Blakenhurst");
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.BIRMINGHAM, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_bradford_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList(
+                "Acklington", "Askham Grange", "Castington", "Deerbolt", "Derwentside"
+        );
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.BRADFORD, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_glasgow_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList(
+                "Addiewell", "Barlinnie", "Castle Huntly", "Cornton Vale"
+        );
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.GLASGOW, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_hatton_cross_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList("Albany", "Brixton", "Bronzefield", "Camp Hill", "Colnbrook");
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.HATTON_CROSS, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_manchester_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList("Altcourse", "Buckley Hall", "Dovegate", "Drake Hall", "Forest Bank");
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.MANCHESTER, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_newport_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList("Ashfield", "Bristol", "Cardiff", "Channings Wood", "Dartmoor");
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.NEWPORT, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_taylor_house_hearing_centre_with_valid_prison_or_irc() {
+
+        List<String> validInputs = Arrays.asList(
+                "Belmarsh", "Blantyre House", "Blundeston", "Brookhouse", "Bullwood Hall"
+        );
+
+        for (String valid : validInputs) {
+            HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(valid);
+            assertEquals(HearingCentre.TAYLOR_HOUSE, actualHearingCentre);
+        }
+    }
+
+    @Test
+    void should_find_yarlswood_hearing_centre_with_valid_prison_or_irc() {
+
+        String validInput = "Yarlswood";
+
+        HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(validInput);
+        assertEquals(HearingCentre.YARLSWOOD, actualHearingCentre);
+    }
+
+    @Test
+    void should_throw_for_invalid_prison_or_irc() {
+
+        List<String> invalidInputs = Arrays.asList("Invalid", "", "Standford Hill");
+
+        for (String invalid : invalidInputs) {
+            assertThatThrownBy(() -> hearingCentreFinder.findByDetentionFacility(invalid))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Prison or Immigration Removal Centre is not mapped to a Hearing Centre");
+
+        }
     }
 }

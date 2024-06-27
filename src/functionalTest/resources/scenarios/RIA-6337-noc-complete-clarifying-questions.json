@@ -1,0 +1,99 @@
+{
+  "description": "RIA-6337: Complete clarifying questions and return to previous state when legal rep takes over case",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 6337,
+      "eventId": "nocRequest",
+      "state": "awaitingClarifyingQuestionsAnswers",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "preClarifyingState": "appealSubmitted",
+          "journeyType": "aip",
+          "subscriptions": [
+            {
+              "value": {
+                "subscriber":"appellant",
+                "email":"citizen@example.com",
+                "wantsEmail":"Yes",
+                "mobileNumber":"01234123123",
+                "wantsSms":"No"
+              }
+            }
+          ],
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "You need to answer some questions about your appeal.",
+                "parties": "appellant",
+                "dateDue": "{$TODAY+14}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestClarifyingQuestions",
+                "previousDates": [],
+                "clarifyingQuestions": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "question": "Question 1"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "state": "appealSubmitted",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You need to answer some questions about your appeal.",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestClarifyingQuestions",
+              "previousDates": [],
+              "clarifyingQuestions": [
+                {
+                  "id": "1",
+                  "value": {
+                    "question": "Question 1"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "clarifyingQuestionsAnswers": [
+          {
+            "id": "1",
+            "value": {
+              "answer": "No answer submitted because the question was marked as complete due to change in representation",
+              "dueDate": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "question": "Question 1"
+            }
+          }
+        ],
+        "journeyType": null,
+        "prevJourneyType": "aip",
+        "email": "citizen@example.com",
+        "mobileNumber": "01234123123",
+        "contactPreference": "wantsEmail",
+        "contactPreferenceDescription": "Email"
+      }
+    }
+  }
+}

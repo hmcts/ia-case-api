@@ -1,0 +1,48 @@
+{
+  "description": "RIA-6509-change-non-detained-aaa-to-detained-aaa-edit-appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-age-assessment-appeal-started.json",
+        "replacements": {
+          "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "No",
+          "detentionFacility": "other",
+          "appellantHasFixedAddress": "Yes",
+          "searchPostcode": "BT38 8BT",
+          "appellantAddress": {
+            "County": "Belfast",
+            "Country": "Northern Ireland",
+            "PostCode": "BT38 8BT",
+            "PostTown": "Carrickfergus",
+            "AddressLine1": "75",
+            "AddressLine2": "Belfast Rd"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-age-assessment-appeal-started.json",
+      "replacements": {
+        "appellantInDetention": "Yes",
+        "isAcceleratedDetainedAppeal": "No",
+        "appealType": "ageAssessment",
+        "appellantHasFixedAddress": null,
+        "searchPostcode": null,
+        "appellantAddress": null,
+        "contactPreference": null,
+        "wantsSms": null,
+        "mobileNumber": null
+      }
+    }
+  }
+}

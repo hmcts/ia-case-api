@@ -103,17 +103,20 @@ class CaseManagementCategoryAppenderTest {
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-                boolean canHandle = caseManagementCategoryAppender.canHandle(callbackStage, callback);
-                if (callbackStage == ABOUT_TO_SUBMIT
-                    && (callback.getEvent() == START_APPEAL
+                if (callbackStage == ABOUT_TO_SUBMIT) {
+                    when(callback.getCaseDetails()).thenReturn(caseDetails);
+                    when(caseDetails.getCaseData()).thenReturn(asylumCase);
+                    Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+
+                    boolean canHandle = caseManagementCategoryAppender.canHandle(callbackStage, callback);
+
+                    if (callback.getEvent() == START_APPEAL
                         || callback.getEvent() == Event.EDIT_APPEAL
-                        || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
+                        || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT) {
+                        assertTrue(canHandle);
+                    } else {
+                        assertFalse(canHandle);
+                    }
                 }
             }
         }

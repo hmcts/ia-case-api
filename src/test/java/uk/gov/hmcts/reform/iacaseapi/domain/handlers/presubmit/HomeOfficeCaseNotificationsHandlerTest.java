@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
@@ -301,6 +300,11 @@ class HomeOfficeCaseNotificationsHandlerTest {
                 Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, DC),
                 Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, EA),
                 Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, HU),
+                Arguments.of(DECIDE_FTPA_APPLICATION, PA),
+                Arguments.of(DECIDE_FTPA_APPLICATION, RP),
+                Arguments.of(DECIDE_FTPA_APPLICATION, DC),
+                Arguments.of(DECIDE_FTPA_APPLICATION, EA),
+                Arguments.of(DECIDE_FTPA_APPLICATION, HU),
                 Arguments.of(END_APPEAL, PA),
                 Arguments.of(END_APPEAL, RP),
                 Arguments.of(END_APPEAL, DC),
@@ -551,6 +555,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         APPLY_FOR_FTPA_RESPONDENT,
                         LEADERSHIP_JUDGE_FTPA_DECISION,
                         RESIDENT_JUDGE_FTPA_DECISION,
+                        DECIDE_FTPA_APPLICATION,
                         END_APPEAL,
                         SEND_DIRECTION,
                         REQUEST_RESPONSE_AMEND
@@ -622,6 +627,5 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-
     }
 }

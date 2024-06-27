@@ -58,7 +58,7 @@ class LegalRepresentativeDetailsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL" })
     void should_set_legal_representative_details_into_the_case_for_submit_appeal(Event event) {
 
         final String expectedLegalRepresentativeName = "John Doe";
@@ -89,7 +89,7 @@ class LegalRepresentativeDetailsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL" })
     void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal(Event event) {
 
         final String expectedLegalRepresentativeName = "John Doe";
@@ -122,7 +122,7 @@ class LegalRepresentativeDetailsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL" })
     void should_not_overwrite_existing_legal_representative_details_for_submit_appeal(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -142,7 +142,7 @@ class LegalRepresentativeDetailsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL" })
     void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -192,9 +192,7 @@ class LegalRepresentativeDetailsHandlerTest {
                 boolean canHandle = legalRepresentativeDetailsHandler.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                    SUBMIT_APPEAL,
-                    EDIT_PAYMENT_METHOD,
-                    PAY_AND_SUBMIT_APPEAL)
+                    SUBMIT_APPEAL)
                     .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 

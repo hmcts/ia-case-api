@@ -13,11 +13,14 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,7 +37,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
@@ -44,6 +46,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class FeesAndStatusCheckPreparerTest {
+
+    private static final String PAYMENT_OPTION_NOT_AVAILABLE_LABEL = "The Make a payment option is not available.";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -55,15 +59,62 @@ class FeesAndStatusCheckPreparerTest {
     private FeePayment<AsylumCase> feePayment;
     @Mock
     private FeatureToggler featureToggler;
-
     private FeesAndStatusCheckPreparer feesAndStatusCheckPreparer;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
         feesAndStatusCheckPreparer =
-                new FeesAndStatusCheckPreparer(true, featureToggler, feePayment);
+            new FeesAndStatusCheckPreparer(true, featureToggler, feePayment);
+    }
+
+    private static Stream<Arguments> paymentOptionNotAvailableError() {
+        return Stream.of(
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, AppealType.EA),
+
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, AppealType.EU),
+
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, AppealType.HU),
+
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.EA),
+
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.PARTIALLY_APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.PARTIALLY_APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.PARTIALLY_APPROVED, AppealType.EU),
+
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.HU)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("paymentOptionNotAvailableError")
+    void it_should_add_error_if_there_is_a_remission(RemissionType remissionType, RemissionDecision remissionDecision, AppealType appealType) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(remissionDecision));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertEquals(1, callbackResponse.getErrors().size());
+        assertTrue(callbackResponse.getErrors().contains(PAYMENT_OPTION_NOT_AVAILABLE_LABEL));
     }
 
     @Test
@@ -94,8 +145,7 @@ class FeesAndStatusCheckPreparerTest {
                 boolean canHandle = feesAndStatusCheckPreparer.canHandle(callbackStage, callback);
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL
-                    || event == Event.PAYMENT_APPEAL || event == Event.PAY_AND_SUBMIT_APPEAL
-                     || event == Event.PAY_FOR_APPEAL)
+                    || event == Event.PAYMENT_APPEAL)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
@@ -110,7 +160,7 @@ class FeesAndStatusCheckPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "START_APPEAL", "EDIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
+        "START_APPEAL", "EDIT_APPEAL", "PAYMENT_APPEAL"
     })
     void should_write_feePaymentEnabled(Event event) {
 
@@ -132,7 +182,7 @@ class FeesAndStatusCheckPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
+        "PAYMENT_APPEAL"
     })
     void should_return_not_available_error_for_old_pa_appeals(Event event) {
 
@@ -152,97 +202,6 @@ class FeesAndStatusCheckPreparerTest {
 
         assertEquals(1, callbackResponse.getErrors().size());
         assertTrue(callbackResponse.getErrors().contains("You cannot make a payment for this appeal using Payment by Account"));
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
-    })
-    void should_return_not_available_error_for_old_ea_appeals(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, AppealType.class)).thenReturn(Optional.empty());
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-
-        assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("You cannot make a payment for this appeal using Payment by Account"));
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
-    })
-    void should_return_not_available_error_for_ea_remission_appeals_remission_is_not_rejected(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, AppealType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.PARTIALLY_APPROVED));
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-
-        assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("You cannot make a payment for this appeal using Payment by Account"));
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
-    })
-    void should_not_return_not_available_error_for_ea_remission_appeals_remission_is_rejected(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, AppealType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.REJECTED));
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void should_throw_for_remission_invalid_event_pay_and_submit_event() {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors())
-            .contains("The Pay and submit option is not available. Select Submit your appeal to submit the appeal.");
     }
 
     @Test
@@ -275,52 +234,7 @@ class FeesAndStatusCheckPreparerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
-    void should_error_on_pay_and_submit_for_pay_offline(String type) {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors())
-            .contains("The Pay and submit your appeal option is not available. "
-                + "Select Submit your appeal if you want to submit the appeal now.");
-    }
-
-
-    @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
-    void should_error_on_duplicate_payment_for_pay_and_submit(String type) {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors())
-            .contains("The Pay and submit your appeal option is not available. "
-                + "Select Submit your appeal if you want to submit the appeal now.");
-    }
-
-
-    @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection", "euSettlementScheme"})
     void should_error_on_duplicate_payment_for_make_a_payment(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
@@ -328,7 +242,6 @@ class FeesAndStatusCheckPreparerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -338,48 +251,6 @@ class FeesAndStatusCheckPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .contains("The Make a payment option is not available.");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
-    void should_not_check_on_duplicate_payment_for_aip(String type) {
-
-        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).isEmpty();
-        verify(asylumCase, times(0)).write(IS_REMISSIONS_ENABLED, YesOrNo.YES);
-    }
-
-    @Test
-    void should_error_on_pay_later_in_appeal_started_state_pay_and_submit() {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_STARTED);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors())
-            .containsAnyOf("The Pay and submit your appeal option is not available. "
-                + "Select Submit your appeal if you want to submit the appeal now.");
     }
 
     @Test
@@ -401,26 +272,6 @@ class FeesAndStatusCheckPreparerTest {
             .containsAnyOf("The Make a payment option is not available.");
     }
 
-
-    @ParameterizedTest
-    @ValueSource(strings = {"deprivation", "revocationOfProtection"})
-    void should_error_on_pay_and_submit_for_non_payment_appeal(String type) {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors())
-            .contains("The Pay and submit your appeal option is not available. "
-                + "Select Submit your appeal if you want to submit the appeal now.");
-    }
-
     @ParameterizedTest
     @ValueSource(strings = {"deprivation", "revocationOfProtection"})
     void should_error_on_make_a_payment_for_non_payment_appeal(String type) {
@@ -439,16 +290,28 @@ class FeesAndStatusCheckPreparerTest {
             .contains("You do not have to pay for this type of appeal.");
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
-    public void should_error_on_pay_and_submit_in_remissions(String type) {
+    private static Stream<Arguments> paymentOptionNotAvailable() {
+        return Stream.of(
+            Arguments.of(Optional.of(PaymentStatus.PAID), Optional.empty()),
+            Arguments.of(Optional.of(PaymentStatus.PAID), Optional.of(RemissionDecision.APPROVED)),
+            Arguments.of(Optional.of(PaymentStatus.PAID), Optional.of(RemissionDecision.PARTIALLY_APPROVED)),
+            Arguments.of(Optional.of(PaymentStatus.PAYMENT_PENDING), Optional.of(RemissionDecision.APPROVED)),
+            Arguments.of(Optional.of(PaymentStatus.PAYMENT_PENDING), Optional.of(RemissionDecision.PARTIALLY_APPROVED))
+        );
+    }
 
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+    @ParameterizedTest
+    @MethodSource("paymentOptionNotAvailable")
+    void should_error_when_payment_option_should_be_unavailable(
+        Optional<PaymentStatus> paymentStatus,
+        Optional<RemissionDecision> remissionDecision) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.valueOf(type)));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(paymentStatus);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(remissionDecision);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -456,8 +319,26 @@ class FeesAndStatusCheckPreparerTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
-            .contains("The Pay and submit option is not available. Select Submit your appeal to submit the appeal.");
+            .contains("The Make a payment option is not available.");
+    }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection", "euSettlementScheme"})
+    void should_error_when_remission_approved_or_partially_approved(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Make a payment option is not available.");
     }
 
 }

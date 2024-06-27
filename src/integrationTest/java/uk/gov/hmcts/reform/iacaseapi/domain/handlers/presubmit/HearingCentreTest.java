@@ -9,12 +9,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
 
-public class HearingCentreTest extends SpringBootIntegrationTest {
+class HearingCentreTest extends SpringBootIntegrationTest {
 
     @Autowired private HearingCentreFinder hearingCentreFinder;
 
     @Test
-    public void should_derive_hearing_centres() {
+    void should_derive_hearing_centres() {
 
         assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.find("BD1 1AA"));
         assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.find("DN1 1AA"));
@@ -122,6 +122,6 @@ public class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.find("TD1 1AA"));
         assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.find("ZE1 1AA"));
 
-        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("XX"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("XX"));
     }
 }

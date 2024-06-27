@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -18,6 +21,8 @@ public class CaseDetails<T extends CaseData> {
     private T caseData;
     private LocalDateTime createdDate;
     private String securityClassification;
+    @JsonProperty("supplementary_data")
+    private Map<String, JsonNode> supplementaryData;
 
     private CaseDetails() {
         // noop -- for deserializer
@@ -29,7 +34,8 @@ public class CaseDetails<T extends CaseData> {
         State state,
         T caseData,
         LocalDateTime createdDate,
-        String securityClassification
+        String securityClassification,
+        Map<String, JsonNode> supplementaryData
     ) {
         this.id = id;
         this.jurisdiction = jurisdiction;
@@ -37,6 +43,7 @@ public class CaseDetails<T extends CaseData> {
         this.caseData = caseData;
         this.createdDate = createdDate;
         this.securityClassification = securityClassification;
+        this.supplementaryData = supplementaryData;
     }
 
     public long getId() {
@@ -64,6 +71,11 @@ public class CaseDetails<T extends CaseData> {
         }
 
         return caseData;
+    }
+
+    public Map<String, JsonNode> getSupplementaryData() {
+
+        return supplementaryData;
     }
 
     public LocalDateTime getCreatedDate() {

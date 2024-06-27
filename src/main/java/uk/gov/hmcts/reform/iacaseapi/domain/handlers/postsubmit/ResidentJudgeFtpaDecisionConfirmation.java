@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
@@ -21,13 +22,25 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
     private static final String REHEARD_RULE_32 = "reheardRule32";
     private static final String REHEARD_RULE_35 = "reheardRule35";
     private static final String REMADE_RULE_32 = "remadeRule32";
+    private static final String REMADE_RULE_31 = "remadeRule31";
+    private static final String NOT_ADMITTED = "notAdmitted";
+
+    public static final String DLRM_SETASIDE_FEATURE_FLAG = "dlrm-setaside-feature-flag";
+    private final FeatureToggler featureToggler;
+
+    ResidentJudgeFtpaDecisionConfirmation(
+        FeatureToggler featureToggler
+    ) {
+        this.featureToggler = featureToggler;
+
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION;
+        return callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION || callback.getEvent() == Event.DECIDE_FTPA_APPLICATION;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -56,36 +69,58 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
         String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") == true ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
+        boolean isDlrmSetAside
+                = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
+
         switch (ftpaOutcomeType) {
 
             case GRANTED:
             case PARTIALLY_GRANTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
-                    + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
+                        + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
             case REFUSED:
+            case NOT_ADMITTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
-                    + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
+                        + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
             case REHEARD_RULE_32:
             case REHEARD_RULE_35:
-                postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
-                );
+                if (isDlrmSetAside) {
+                    postSubmitResponse.setConfirmationBody(
+                            "#### What happens next\n\n"
+                                    + "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>"
+                    );
+                } else {
+                    postSubmitResponse.setConfirmationBody(
+                            "#### What happens next\n\n"
+                                    + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
+                    );
+                }
                 break;
 
+            case REMADE_RULE_31:
             case REMADE_RULE_32:
-                postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "Both parties have been notified of the decision.<br>"
-                );
+
+                if (isDlrmSetAside) {
+                    postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
+                    postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\n"
+                            + "A Judge will update the decision.<br>"
+                    );
+                } else {
+                    postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\n"
+                            + "Both parties have been notified of the decision.<br>"
+                    );
+                }
+
                 break;
 
             default:

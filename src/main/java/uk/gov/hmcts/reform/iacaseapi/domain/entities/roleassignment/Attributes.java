@@ -6,7 +6,8 @@ public enum Attributes {
     CASE_ID("caseId"),
     PRIMARY_LOCATION("primaryLocation"),
     JURISDICTION("jurisdiction"),
-    REGION("region");
+    REGION("region"),
+    CASE_TYPE("caseType");
 
     @JsonValue
     private final String value;

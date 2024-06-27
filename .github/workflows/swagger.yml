@@ -16,12 +16,12 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: Run Swagger Publisher
-        run: ./gradlew integration --tests uk.gov.hmcts.reform.iacaseapi.config.SwaggerPublisher
+        run: ./gradlew integration --tests uk.gov.hmcts.reform.iacaseapi.config.OpenApiPublisher
       - name: Commit to repository
         run: |
           mkdir swagger-staging

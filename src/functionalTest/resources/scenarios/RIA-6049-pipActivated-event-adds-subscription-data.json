@@ -1,0 +1,56 @@
+{
+  "description": "RIA-6049 transform case from legally represented format to appellant in person format",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 6049,
+      "eventId": "pipActivation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "email": "appellant@example.com",
+          "mobileNumber": "01234123123",
+          "contactPreference": "wantsEmail",
+          "paAppealTypePaymentOption": "payOffline"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "subscriptions": [
+          {
+            "value": {
+              "subscriber":"appellant",
+              "email":"{$citizenEmail}",
+              "wantsEmail":"Yes",
+              "mobileNumber":"01234123123",
+              "wantsSms":"No"
+            }
+          }
+        ],
+        "legalRepName": null,
+        "legalRepresentativeName": null,
+        "legalRepCompany": null,
+        "legalRepCompanyName": null,
+        "legalRepCompanyAddress": null,
+        "legalRepresentativeEmailAddress": null,
+        "legalRepReferenceNumber": null,
+        "email": null,
+        "mobileNumber": null,
+        "contactPreference": null,
+        "contactPreferenceDescription": null,
+        "paAppealTypePaymentOption": null,
+        "paAppealTypeAipPaymentOption": "payLater",
+        "journeyType": "aip",
+        "prevJourneyType": "rep"
+      }
+    }
+  }
+}

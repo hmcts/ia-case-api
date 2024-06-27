@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -44,13 +45,14 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.END_APPEAL;
+               && (callback.getEvent() == Event.END_APPEAL || callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -59,6 +61,21 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
+            .orElse(PaymentStatus.PAYMENT_PENDING);
+        if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus == PaymentStatus.PAID) {
+            throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
+        }
+
+        State previousState = callback
+                .getCaseDetailsBefore()
+                .map(CaseDetails::getState)
+                .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
+
+        if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && previousState == State.ENDED) {
+            throw new IllegalStateException("Appeal has already been ended!");
+        }
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
@@ -72,12 +89,11 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         changeWithdrawApplicationsToCompleted(asylumCase);
 
-        State previousState = callback
-            .getCaseDetailsBefore()
-            .map(CaseDetails::getState)
-            .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
-
         asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
+
+        // Prevents data populated in MarkAsReadyForUtTransferHandler being displayed on UI
+        asylumCase.clear(APPEAL_READY_FOR_UT_TRANSFER);
+        asylumCase.clear(UT_APPEAL_REFERENCE_NUMBER);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
