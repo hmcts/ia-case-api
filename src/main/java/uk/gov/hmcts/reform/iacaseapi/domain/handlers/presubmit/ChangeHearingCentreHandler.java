@@ -7,7 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPOR
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
 import java.util.List;
- import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
