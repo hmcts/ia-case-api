@@ -109,6 +109,7 @@ requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
+legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 
@@ -350,6 +351,7 @@ security:
       - "updateDetentionLocation"
       - "turnOnNotifications"
       - "generateServiceRequest"
+      - "recordRemissionReminder"
       - "markAppealAsRemitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -406,6 +408,7 @@ security:
       - "uploadAddendumEvidenceLegalRep"
       - "pipActivation"
       - "applyForFTPAAppellant"
+      - "requestFeeRemission"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -447,6 +450,7 @@ security:
       - "endAppealAutomatically"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "recordRemissionReminder"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"

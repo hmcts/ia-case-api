@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REFUND_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
@@ -159,6 +160,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECIDE_COSTS_APPLICATION,
             Event.DECIDE_FTPA_APPLICATION,
             Event.UPDATE_TRIBUNAL_DECISION,
+            Event.RECORD_REMISSION_REMINDER,
             Event.MARK_APPEAL_AS_REMITTED
         );
         if (!isSaveAndContinueEnabled) {
@@ -262,6 +264,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         setDlrmSetAsideFeatureFlag(callback.getEvent(), asylumCase);
         setDlrmFeeRemissionFeatureFlag(callback.getEvent(), asylumCase);
+        setDlrmFeeRefundFeatureFlag(callback.getEvent(), asylumCase);
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
@@ -304,6 +307,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (Event.SUBMIT_APPEAL.equals(event)) {
             asylumCase.write(IS_DLRM_FEE_REMISSION_ENABLED,
                 featureToggler.getValue("dlrm-fee-remission-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
+        }
+    }
+
+    private void setDlrmFeeRefundFeatureFlag(Event event, AsylumCase asylumCase) {
+        if (Event.SUBMIT_APPEAL.equals(event)) {
+            asylumCase.write(IS_DLRM_FEE_REFUND_ENABLED,
+                featureToggler.getValue("dlrm-refund-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
         }
     }
 }

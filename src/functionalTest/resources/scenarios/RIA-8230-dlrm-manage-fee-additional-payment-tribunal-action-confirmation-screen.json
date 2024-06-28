@@ -1,0 +1,26 @@
+{
+  "description": "RIA-8230 DLRM Manage fee update - Additional payment tribunal action - confirmation screen",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "manageFeeUpdate",
+      "state": "appealSubmitted",
+      "id": 8230,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isDlrmFeeRefundEnabled": "Yes",
+          "feeUpdateTribunalAction": "additionalPayment"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have recorded a fee update",
+      "body": "#### What happens next\n\nA payment request will be sent to the appellant."
+    }
+  }
+}
