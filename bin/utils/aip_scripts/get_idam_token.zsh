@@ -7,8 +7,6 @@ environment=$1
 # Construct the Key Vault name dynamically
 vault_name="ia-$environment"
 
-az login
-
 secret_json=$(az keyvault secret show --vault-name $vault_name --name idam-secret)
 secret_value=$(echo "$secret_json" | jq -r '.value')
 my_secret_variable=$secret_value

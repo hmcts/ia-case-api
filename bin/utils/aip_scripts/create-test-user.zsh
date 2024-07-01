@@ -45,5 +45,6 @@ response=$(curl -L -X POST "https://idam-testing-support-api.$environment.platfo
 email=$(echo "$response" | jq -r '.email')
 
 # Print the email value
+echo "$response"
 echo "Email: $email"
 echo "Password: Apassword123"
