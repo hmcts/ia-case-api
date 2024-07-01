@@ -1767,6 +1767,7 @@ public enum AsylumCaseFieldDefinition {
 
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
+
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
 
@@ -2104,7 +2105,7 @@ public enum AsylumCaseFieldDefinition {
 
     REHEARD_HEARING_DOCUMENTS_COLLECTION(
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
-  
+
     OOC_APPEAL_ADMIN_J(
     "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
 

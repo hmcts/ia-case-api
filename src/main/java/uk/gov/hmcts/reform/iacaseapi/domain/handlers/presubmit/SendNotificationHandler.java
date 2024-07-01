@@ -50,7 +50,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     @Override
     public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LATEST;
+        return DispatchPriority.LAST;
     }
 
     public boolean canHandle(
@@ -233,7 +233,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_APPEAL_FROM_ONLINE,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.MANAGE_FEE_UPDATE,
-            Event.MARK_APPEAL_AS_REMITTED
+            Event.MARK_APPEAL_AS_REMITTED,
+            Event.DECIDE_FTPA_APPLICATION
         );
 
         if (!isSaveAndContinueEnabled) {
