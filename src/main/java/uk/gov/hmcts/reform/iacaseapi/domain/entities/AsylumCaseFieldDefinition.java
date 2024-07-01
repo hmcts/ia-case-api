@@ -59,6 +59,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
+    APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
+        "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
@@ -1482,6 +1485,9 @@ public enum AsylumCaseFieldDefinition {
     DATE_CLIENT_LEAVE_UK(
         "dateClientLeaveUk", new TypeReference<String>(){}),
 
+    DATE_CLIENT_LEAVE_UK_ADMIN_J(
+        "dateClientLeaveUkAdminJ", new TypeReference<String>(){}),
+
     OUT_OF_COUNTRY_MOBILE_NUMBER(
         "outOfCountryMobileNumber", new TypeReference<String>(){}),
 
@@ -1702,6 +1708,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
 
+    IS_ADMIN(
+        "isAdmin", new TypeReference<YesOrNo>() {}),
+
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
     // This is not actually a real case field. It is used to determine
@@ -1758,9 +1767,6 @@ public enum AsylumCaseFieldDefinition {
 
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
-
-    IS_ADMIN(
-            "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
@@ -2099,6 +2105,15 @@ public enum AsylumCaseFieldDefinition {
 
     REHEARD_HEARING_DOCUMENTS_COLLECTION(
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
+
+    OOC_APPEAL_ADMIN_J(
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
+
+    IS_DECISION_RULE31_CHANGED(
+            "isDecisionRule31Changed", new TypeReference<YesOrNo>(){}),
+
+    APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS(
+        "appealNotSubmittedReasonDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     ;
 

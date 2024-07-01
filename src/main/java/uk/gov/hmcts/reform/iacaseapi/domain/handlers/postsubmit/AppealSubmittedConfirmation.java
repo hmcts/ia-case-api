@@ -51,7 +51,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String OUT_OF_TIME_PNG =
         "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_ADMIN_PNG =
-            "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeAdminConfirmation.png)\n\n";
+            "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL = OUT_OF_TIME_ADMIN_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String OUT_OF_TIME_DO_THIS_NEXT_LABEL = OUT_OF_TIME_PNG + DO_THIS_NEXT_LABEL;
