@@ -120,14 +120,8 @@ withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
     env.CASE_TYPE_ASYLUM_ID = "Asylum"
     env.CASE_TYPE_BAIL_ID = "Bail"
-    env.CORE_CASE_DATA_API_URL = "https://ccd-data-store-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.CCD_GW_API = "https://gateway-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_hearings") ) {
         env.PREVIEW_CCD_ENABLED = false
-        env.CASE_TYPE_ASYLUM_ID = "Asylum-${CHANGE_ID}"
-        env.CASE_TYPE_BAIL_ID = "Bail-${CHANGE_ID}"
-        env.CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
-        env.CCD_GW_API = "https://gateway-ccd.aat.platform.hmcts.net"
     }
 
     loadVaultSecrets(secrets)
@@ -166,6 +160,14 @@ withPipeline(type, product, component) {
             env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
             env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+            env.CORE_CASE_DATA_API_URL = "https://ccd-data-store-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.CCD_GW_API = "https://gateway-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_hearings") ) {
+                env.CASE_TYPE_ASYLUM_ID = "Asylum-${CHANGE_ID}"
+                env.CASE_TYPE_BAIL_ID = "Bail-${CHANGE_ID}"
+                env.CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+                env.CCD_GW_API = "https://gateway-ccd.aat.platform.hmcts.net"
+            }
             sh """
     ./bin/pull-latest-dmn-files.sh ${dmnBranch}
     ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
