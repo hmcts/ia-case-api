@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -27,7 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class AdditionalInstructionsMidEventHandlerTest {
+class AdditionalInstructionsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,11 +52,11 @@ class AdditionalInstructionsMidEventHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private AdditionalInstructionsMidEventHandler additionalInstructionsMidEventHandler;
+    private AdditionalInstructionsHandler additionalInstructionsHandler;
 
     @BeforeEach
     void setUp() {
-        additionalInstructionsMidEventHandler = new AdditionalInstructionsMidEventHandler();
+        additionalInstructionsHandler = new AdditionalInstructionsHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
@@ -64,29 +64,27 @@ class AdditionalInstructionsMidEventHandlerTest {
     @Test
     void should_clear_additional_instructions_description() {
         when(callback.getEvent()).thenReturn(LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
-        when(callback.getPageId()).thenReturn("additionalInstructions");
         when(asylumCase.read(ADDITIONAL_INSTRUCTIONS, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            additionalInstructionsMidEventHandler.handle(MID_EVENT, callback);
+            additionalInstructionsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         verify(asylumCase, times(1)).clear(ADDITIONAL_INSTRUCTIONS_DESCRIPTION);
     }
 
     @ParameterizedTest
-    @CsvSource({
-        "REVIEW_HEARING_REQUIREMENTS, adjustAdditionalInstructionsRequirements",
-        "UPDATE_HEARING_REQUIREMENTS, additionalInstructions",
-        "UPDATE_HEARING_ADJUSTMENTS, additionalInstructions"
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
-    void should_clear_additional_instructions_tribunal_response(Event event, String pageId) {
+    void should_clear_additional_instructions_tribunal_response(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(callback.getPageId()).thenReturn(pageId);
         when(asylumCase.read(IS_ADDITIONAL_INSTRUCTION_ALLOWED, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            additionalInstructionsMidEventHandler.handle(MID_EVENT, callback);
+            additionalInstructionsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         verify(asylumCase, times(1)).clear(ADDITIONAL_INSTRUCTIONS_TRIBUNAL_RESPONSE);
@@ -95,29 +93,27 @@ class AdditionalInstructionsMidEventHandlerTest {
     @Test
     void should_not_clear_additional_instructions_description() {
         when(callback.getEvent()).thenReturn(LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
-        when(callback.getPageId()).thenReturn("additionalInstructions");
         when(asylumCase.read(ADDITIONAL_INSTRUCTIONS, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            additionalInstructionsMidEventHandler.handle(MID_EVENT, callback);
+            additionalInstructionsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         verify(asylumCase, never()).clear(ADDITIONAL_INSTRUCTIONS_DESCRIPTION);
     }
 
     @ParameterizedTest
-    @CsvSource({
-        "REVIEW_HEARING_REQUIREMENTS, adjustAdditionalInstructionsRequirements",
-        "UPDATE_HEARING_REQUIREMENTS, additionalInstructions",
-        "UPDATE_HEARING_ADJUSTMENTS, additionalInstructions"
+    @EnumSource(value = Event.class, names = {
+        "REVIEW_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_REQUIREMENTS",
+        "UPDATE_HEARING_ADJUSTMENTS"
     })
-    void should_not_clear_additional_instructions_tribunal_response(Event event, String pageId) {
+    void should_not_clear_additional_instructions_tribunal_response(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(callback.getPageId()).thenReturn(pageId);
         when(asylumCase.read(IS_ADDITIONAL_INSTRUCTION_ALLOWED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            additionalInstructionsMidEventHandler.handle(MID_EVENT, callback);
+            additionalInstructionsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
         verify(asylumCase, never()).clear(ADDITIONAL_INSTRUCTIONS_TRIBUNAL_RESPONSE);
@@ -136,10 +132,9 @@ class AdditionalInstructionsMidEventHandlerTest {
 
         for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getPageId()).thenReturn("additionalInstructions");
-            boolean canHandle = additionalInstructionsMidEventHandler.canHandle(stage, callback);
+            boolean canHandle = additionalInstructionsHandler.canHandle(stage, callback);
 
-            if (stage == MID_EVENT && targetEvents.contains(event)) {
+            if (stage == ABOUT_TO_SUBMIT && targetEvents.contains(event)) {
                 assertTrue(canHandle);
             } else {
                 assertFalse(canHandle);
@@ -157,19 +152,19 @@ class AdditionalInstructionsMidEventHandlerTest {
     void should_not_allow_null_arguments(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
-        assertThatThrownBy(() -> additionalInstructionsMidEventHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> additionalInstructionsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> additionalInstructionsMidEventHandler.canHandle(MID_EVENT, null))
+        assertThatThrownBy(() -> additionalInstructionsHandler.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> additionalInstructionsMidEventHandler.handle(null, callback))
+        assertThatThrownBy(() -> additionalInstructionsHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> additionalInstructionsMidEventHandler.handle(PreSubmitCallbackStage.MID_EVENT, null))
+        assertThatThrownBy(() -> additionalInstructionsHandler.handle(PreSubmitCallbackStage.MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -184,12 +179,12 @@ class AdditionalInstructionsMidEventHandlerTest {
     void handling_should_throw_if_cannot_actually_handle(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
-        assertThatThrownBy(() -> additionalInstructionsMidEventHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> additionalInstructionsHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> additionalInstructionsMidEventHandler.handle(MID_EVENT, callback))
+        assertThatThrownBy(() -> additionalInstructionsHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }

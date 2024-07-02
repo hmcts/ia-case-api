@@ -2632,7 +2632,7 @@ public enum AsylumCaseFieldDefinition {
 
     ADDITIONAL_INSTRUCTIONS_TRIBUNAL_RESPONSE("additionalInstructionsTribunalResponse", new TypeReference<String>(){}),
 
-    ADDITIONAL_INSTRUCTIONS("additionalInstructions", new TypeReference<String>(){}),
+    ADDITIONAL_INSTRUCTIONS("additionalInstructions", new TypeReference<YesOrNo>(){}),
 
     ADDITIONAL_INSTRUCTIONS_DESCRIPTION("additionalInstructionsDescription", new TypeReference<String>(){});
 
