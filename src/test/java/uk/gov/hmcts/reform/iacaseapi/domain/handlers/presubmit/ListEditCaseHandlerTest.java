@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -62,7 +63,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -91,6 +94,8 @@ class ListEditCaseHandlerTest {
     private DirectionAppender directionAppender;
     @Mock
     private List<IdValue<Direction>> listOfDirections;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
     private int dueDaysSinceSubmission = 15;
 
     private String directionExplanation = "You have a direction for this case.\n"
@@ -113,11 +118,13 @@ class ListEditCaseHandlerTest {
             caseManagementLocationService,
             dueDaysSinceSubmission,
             directionAppender,
-            locationRefDataService);
+            locationRefDataService,
+            iaHearingsApiService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
     }
 
     @Test
@@ -529,6 +536,34 @@ class ListEditCaseHandlerTest {
         assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("No Hearing Centre found for Listing location with Epimms ID: 386417777")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    public void should_delegate_to_hearings_api_to_set_next_hearing_date(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    public void should_return_error_if_set_next_hearing_date_fails(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(iaHearingsApiService.aboutToSubmit(callback))
+            .thenThrow(new AsylumCaseServiceResponseException("error message", null));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
+        assertTrue(callbackResponse.getErrors().contains("Failed to add next hearing date"));
     }
 
     @Test

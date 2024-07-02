@@ -48,30 +48,37 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 
 @Component
 public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final static String SET_NEXT_HEARING_DATE_FAILURE_MESSAGE = "Failed to add next hearing date";
+
     private final HearingCentreFinder hearingCentreFinder;
     private final CaseManagementLocationService caseManagementLocationService;
     private final LocationRefDataService locationRefDataService;
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
+    private final IaHearingsApiService iaHearingsApiService;
 
 
     public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
                                CaseManagementLocationService caseManagementLocationService,
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
-                               LocationRefDataService locationRefDataService) {
+                               LocationRefDataService locationRefDataService,
+                               IaHearingsApiService iaHearingsApiService) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
+        this.iaHearingsApiService = iaHearingsApiService;
     }
 
     public boolean canHandle(
@@ -179,6 +186,14 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             if (callback.getEvent() == Event.LIST_CASE) {
                 addDirection(asylumCase);
             }
+        }
+
+        try {
+            asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+        } catch (AsylumCaseServiceResponseException e) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError(SET_NEXT_HEARING_DATE_FAILURE_MESSAGE);
+            return response;
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
