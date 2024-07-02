@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -44,13 +46,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
-
+@Slf4j
 @Component
 public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -59,18 +65,24 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final LocationRefDataService locationRefDataService;
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
+    private final IaHearingsApiService iaHearingsApiService;
+    private final FeatureToggler featureToggler;
 
 
     public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
                                CaseManagementLocationService caseManagementLocationService,
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
-                               LocationRefDataService locationRefDataService) {
+                               LocationRefDataService locationRefDataService,
+                               IaHearingsApiService iaHearingsApiService,
+                               FeatureToggler featureToggler) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
+        this.iaHearingsApiService = iaHearingsApiService;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -180,6 +192,15 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
+        if (featureToggler.getValue("nextHearingDateEnabled", false)) {
+            log.debug("Next hearing date feature enabled");
+            if (HandlerUtils.isIntegrated(asylumCase)) {
+                asylumCase.write(NEXT_HEARING_DETAILS, calculateNextHearingDateFromHearings(callback));
+            }
+        } else {
+            log.debug("Next hearing date feature not enabled");
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -245,5 +266,43 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             return Parties.APPELLANT;
         }
         return Parties.LEGAL_REPRESENTATIVE;
+    }
+
+    private boolean nextHearingDateSet(NextHearingDetails nextHearingDetails) {
+
+        return nextHearingDetails != null
+               && nextHearingDetails.getHearingId() != null
+               && nextHearingDetails.getHearingDateTime() != null;
+    }
+
+    private NextHearingDetails calculateNextHearingDateFromHearings(Callback<AsylumCase> callback) {
+        NextHearingDetails nextHearingDetails = null;
+
+        try {
+            AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
+                .orElse(NextHearingDetails.builder().build());
+        } catch (AsylumCaseServiceResponseException e) {
+            log.error("Setting next hearing date from hearings failed: ", e);
+        }
+
+        long caseId = callback.getCaseDetails().getId();
+        if (nextHearingDateSet(nextHearingDetails)) {
+            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
+            return nextHearingDetails;
+        } else {
+            log.error("Failed to calculate Next hearing date from hearings for case ID {}", caseId);
+            return calculateNextHearingDateFromCaseData(callback);
+        }
+    }
+
+    private NextHearingDetails calculateNextHearingDateFromCaseData(Callback<AsylumCase> callback) {
+        log.info("Getting next hearing date from case data for case ID {}", callback.getCaseDetails().getId());
+
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        String listCaseHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class).orElse("");
+
+        return NextHearingDetails.builder()
+            .hearingId("999").hearingDateTime(listCaseHearingDate).build();
     }
 }
