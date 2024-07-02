@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties.APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties.LEGAL_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
@@ -174,5 +179,24 @@ class DirectionPartiesResolverTest {
             Arguments.of(YES, NO, NO, Parties.APPELLANT),
             Arguments.of(NO, NO, NO, Parties.LEGAL_REPRESENTATIVE)
         );
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = JourneyType.class)
+    void should_return_appellant_for_aip_send_direction_events(JourneyType journeyType) {
+
+        final Parties expectedParties = journeyType == AIP ? APPELLANT : LEGAL_REPRESENTATIVE;
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
+
+        Parties actualDirectionParties = directionPartiesResolver.resolve(callback);
+
+        assertEquals(expectedParties, actualDirectionParties);
+
+        reset(callback);
     }
 }

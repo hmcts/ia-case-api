@@ -57,7 +57,7 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
         boolean isInternalDetainedNonAda = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase));
         boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
 
-        if (isInternalDetainedNonAda || isEjpUnrepNonDetained) {
+        if (isInternalDetainedNonAda || isEjpUnrepNonDetained || isAipJourney(asylumCase)) {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
         } else {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
