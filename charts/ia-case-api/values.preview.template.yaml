@@ -101,8 +101,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-609
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-868 or relevant PR number to change DLRM
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -151,8 +150,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-907
-    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest #pr-1069 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -404,26 +402,13 @@ ia-timed-event-service:
     #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
-    devcpuRequests: 500m
-    devmemoryRequests: 1Gi
-    devcpuLimits: 1
-    devmemoryLimits: 4Gi
     environment:
-      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
-      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      POSTGRES_HOST: ia-preview.postgres.database.azure.com
-      POSTGRES_NAME: "pr-${CHANGE_ID}-ia_timed_event_service"
-      POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
-      POSTGRES_CONNECTION_OPTIONS: ""
-    postgresql:
-      auth:
-        username: ia_tes
-        password: ia_tes
-        database: ia_tes
-      service:
-        port: 5432
+      IDAM_URL: https://idam-web-public.{{ .Values.global.environment
+        }}.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment
+        }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
+        }}.service.core-compute-{{ .Values.global.environment }}.internal
     keyVaults:
       ia:
         resourceGroup: ia
@@ -442,7 +427,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest #pr-375 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -491,8 +476,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1139
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -724,9 +709,7 @@ ccd:
       disableKeyVaults: true
       environment:
         DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
-        DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"        
-        DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
+        DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -1312,5 +1295,4 @@ postgresql:
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
-      - name: "pr-${CHANGE_ID}-ia_timed_event_service"
 
