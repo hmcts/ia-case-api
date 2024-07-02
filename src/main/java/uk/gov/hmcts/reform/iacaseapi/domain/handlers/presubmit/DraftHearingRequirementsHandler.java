@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,8 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase);
 
         final Optional<List<IdValue<WitnessDetails>>> mayBeWitnessDetails = asylumCase.read(WITNESS_DETAILS);
 
