@@ -107,6 +107,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 feePayment.aboutToSubmit(callback);
 
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+                asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
 
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
