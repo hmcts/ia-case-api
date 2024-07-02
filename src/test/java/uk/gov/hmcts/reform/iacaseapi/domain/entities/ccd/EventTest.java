@@ -37,6 +37,7 @@ class EventTest {
         assertEquals("generateHearingBundle", Event.GENERATE_HEARING_BUNDLE.toString());
         assertEquals("asyncStitchingComplete", Event.ASYNC_STITCHING_COMPLETE.toString());
         assertEquals("customiseHearingBundle", Event.CUSTOMISE_HEARING_BUNDLE.toString());
+        assertEquals("generateAmendedHearingBundle", Event.GENERATE_AMENDED_HEARING_BUNDLE.toString());
         assertEquals("decisionAndReasonsStarted", Event.DECISION_AND_REASONS_STARTED.toString());
         assertEquals("generateDecisionAndReasons", Event.GENERATE_DECISION_AND_REASONS.toString());
         assertEquals("sendDecisionAndReasons", Event.SEND_DECISION_AND_REASONS.toString());
@@ -143,6 +144,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(135, Event.values().length);
+        assertEquals(136, Event.values().length);
     }
 }
