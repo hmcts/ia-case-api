@@ -72,15 +72,13 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
                 .orElse("");
         }
 
-        String submitAppealUrl = "/trigger/submitAppeal";
-
-        postSubmitResponse.setConfirmationHeader("# The appeal has been saved\n# You still need to submit it");
+        postSubmitResponse.setConfirmationHeader("# You have saved your appeal\n# You still need to submit it");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-            + "If you're ready to proceed [submit the appeal](/case/IA/Asylum/"
-            + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
-            + "#### Not ready to submit yet?\n"
-            + "You can return to the case details to make changes."
+            + "If you're ready to submit your appeal, select 'Submit your appeal' in " +
+                "the 'Next step' dropdown list from your case details page.\n\n"
+            + "#### Not ready to submit your appeal yet?\n"
+            + "You can return to the case details page to make changes from the ‘Next step’ dropdown list."
         );
 
         if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class).isPresent()
