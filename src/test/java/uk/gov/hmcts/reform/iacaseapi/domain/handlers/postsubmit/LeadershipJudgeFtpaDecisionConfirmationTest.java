@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,8 +39,12 @@ class LeadershipJudgeFtpaDecisionConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private LeadershipJudgeFtpaDecisionConfirmation leadershipJudgeFtpaDecisionConfirmation =
-        new LeadershipJudgeFtpaDecisionConfirmation();
+    private LeadershipJudgeFtpaDecisionConfirmation leadershipJudgeFtpaDecisionConfirmation;
+
+    @BeforeEach
+    void setup() {
+        leadershipJudgeFtpaDecisionConfirmation = new LeadershipJudgeFtpaDecisionConfirmation();
+    }
 
     @Test
     void should_return_grant_confirmation() {

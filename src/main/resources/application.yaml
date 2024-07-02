@@ -444,6 +444,7 @@ security:
       - "rollbackPaymentTimeout"
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
+      - "manageCaseTTL"
       - "endAppealAutomatically"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"

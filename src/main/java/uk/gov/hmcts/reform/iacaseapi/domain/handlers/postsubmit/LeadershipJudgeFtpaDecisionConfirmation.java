@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_OUTCOME_TYPE;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -12,6 +14,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
 public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private static final String GRANTED = "granted";
+    private static final String PARTIALLY_GRANTED = "partiallyGranted";
+    private static final String REFUSED = "refused";
+    private static final String NOT_ADMITTED = "notAdmitted";
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -49,22 +56,21 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
 
         switch (ftpaOutcomeType) {
 
-            case "granted":
-            case "partiallyGranted":
+            case GRANTED, PARTIALLY_GRANTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
-            case "refused":
+            case REFUSED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
-            case "notAdmitted":
+            case NOT_ADMITTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>"
@@ -74,7 +80,6 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
             default:
                 throw new IllegalStateException("FtpaDecisionOutcome is not present");
         }
-
 
         return postSubmitResponse;
     }

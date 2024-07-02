@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -13,6 +15,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private static final String GRANTED = "granted";
+    private static final String PARTIALLY_GRANTED = "partiallyGranted";
+    private static final String REFUSED = "refused";
+    private static final String REHEARD_RULE_32 = "reheardRule32";
+    private static final String REHEARD_RULE_35 = "reheardRule35";
+    private static final String REMADE_RULE_32 = "remadeRule32";
+    private static final String REMADE_RULE_31 = "remadeRule31";
+    private static final String NOT_ADMITTED = "notAdmitted";
 
     public static final String DLRM_SETASIDE_FEATURE_FLAG = "dlrm-setaside-feature-flag";
     private final FeatureToggler featureToggler;
@@ -55,7 +66,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
         postSubmitResponse.setConfirmationHeader("# You've recorded the First-tier permission to appeal decision");
 
-        String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") == true ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
+        String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
         boolean isDlrmSetAside
@@ -63,24 +74,21 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
         switch (ftpaOutcomeType) {
 
-            case "granted":
-            case "partiallyGranted":
+            case GRANTED, PARTIALLY_GRANTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                         + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
-            case "refused":
-            case "notAdmitted":
+            case REFUSED, NOT_ADMITTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                         + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
-            case "reheardRule32":
-            case "reheardRule35":
+            case REHEARD_RULE_32, REHEARD_RULE_35:
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationBody(
                             "#### What happens next\n\n"
@@ -94,8 +102,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 }
                 break;
 
-            case "remadeRule31":
-            case "remadeRule32":
+            case REMADE_RULE_31, REMADE_RULE_32:
 
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationHeader("# You've disposed of the application");

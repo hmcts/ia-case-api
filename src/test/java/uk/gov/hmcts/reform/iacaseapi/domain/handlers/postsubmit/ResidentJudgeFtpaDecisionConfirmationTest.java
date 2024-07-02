@@ -85,6 +85,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
     }
 
     @Test
@@ -116,6 +117,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
     }
 
     @Test
@@ -146,6 +148,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
     }
 
     @Test
@@ -208,6 +211,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
     }
 
     @ParameterizedTest
@@ -280,6 +284,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
     }
 
     @Test
@@ -343,6 +348,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
     }
 
     @Test

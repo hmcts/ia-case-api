@@ -8,11 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -24,8 +26,15 @@ class ReinstateAppealConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
 
-    private ReinstateAppealConfirmation reinstateAppealConfirmation = new ReinstateAppealConfirmation();
+    private ReinstateAppealConfirmation reinstateAppealConfirmation;
+
+    @BeforeEach
+    void setup() {
+        reinstateAppealConfirmation = new ReinstateAppealConfirmation();
+    }
 
     @Test
     void should_return_confirmation() {
@@ -47,6 +56,7 @@ class ReinstateAppealConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("The legal representative and the Home Office "
                 + "will be notified that the case has been reinstated.");
+
     }
 
     @Test

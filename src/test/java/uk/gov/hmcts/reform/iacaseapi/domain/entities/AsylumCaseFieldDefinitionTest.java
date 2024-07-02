@@ -15,7 +15,8 @@ class AsylumCaseFieldDefinitionTest {
         ATTENDING_TCW,
         PRISON_NOMS,
         PRISON_NOMS_AO,
-        CASE_LEVEL_FLAGS
+        CASE_LEVEL_FLAGS,
+        TTL
     });
 
     @Test

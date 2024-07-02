@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,8 +26,12 @@ class RemoveAppealFromOnlineConfirmationTest {
     @Mock
     private Callback<AsylumCase> callback;
 
-    private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation =
-        new RemoveAppealFromOnlineConfirmation();
+    private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation;
+
+    @BeforeEach
+    void setup() {
+        removeAppealFromOnlineConfirmation = new RemoveAppealFromOnlineConfirmation();
+    }
 
     @Test
     void should_return_confirmation() {
@@ -55,7 +60,6 @@ class RemoveAppealFromOnlineConfirmationTest {
                     +
                     "3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"
             );
-
     }
 
     @Test

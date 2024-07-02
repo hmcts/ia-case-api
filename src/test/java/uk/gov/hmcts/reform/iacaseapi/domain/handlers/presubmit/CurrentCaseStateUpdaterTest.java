@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_JUDGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_SYSTEM;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
 
 import java.util.Optional;
@@ -74,6 +75,7 @@ class CurrentCaseStateUpdaterTest {
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_SYSTEM, state);
             reset(asylumCase);
         }
     }

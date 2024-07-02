@@ -511,6 +511,9 @@ public enum AsylumCaseFieldDefinition {
     CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER(
         "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
 
+    CURRENT_CASE_STATE_VISIBLE_TO_SYSTEM(
+        "currentCaseStateVisibleToSystem", new TypeReference<State>(){}),
+
     CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC(
         "currentCaseStateVisibleToHomeOfficeApc", new TypeReference<State>(){}),
 
@@ -2100,7 +2103,8 @@ public enum AsylumCaseFieldDefinition {
     REHEARD_HEARING_DOCUMENTS_COLLECTION(
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
-    ;
+    TTL(
+        "TTL", new TypeReference<TTL>(){});
 
     private final String value;
     private final TypeReference typeReference;

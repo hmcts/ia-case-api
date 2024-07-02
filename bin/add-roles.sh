@@ -74,3 +74,5 @@
 ./bin/utils/ccd-add-role.sh "caseworker-ia-bails" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-ia-homeofficebail" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "ia_bail_caseflags_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
+
+./bin/utils/ccd-add-role.sh "TTL_profile" "$USER_TOKEN" "$SERVICE_TOKEN"

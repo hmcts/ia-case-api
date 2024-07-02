@@ -53,6 +53,7 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<AsylumC
 
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, currentCaseState);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, currentCaseState);
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_SYSTEM, currentCaseState);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC, currentCaseState);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART, currentCaseState);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU, currentCaseState);

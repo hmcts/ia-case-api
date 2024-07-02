@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,7 +30,12 @@ class EndAppealConfirmationTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private EndAppealConfirmation endAppealConfirmation = new EndAppealConfirmation();
+    private EndAppealConfirmation endAppealConfirmation;
+
+    @BeforeEach
+    void setup() {
+        endAppealConfirmation = new EndAppealConfirmation();
+    }
 
     @Test
     void should_return_confirmation() {
@@ -37,6 +43,8 @@ class EndAppealConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
+            .thenReturn(Optional.of(""));
 
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);

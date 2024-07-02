@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -25,9 +27,14 @@ class SendDecisionAndReasonsConfirmationTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private TTL ttl;
 
-    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation =
-        new SendDecisionAndReasonsConfirmation();
+    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation;
+
+    @BeforeEach
+    void setup() {
+        sendDecisionAndReasonsConfirmation = new SendDecisionAndReasonsConfirmation();
+    }
 
     @Test
     void should_return_confirmation() {
@@ -53,6 +60,7 @@ class SendDecisionAndReasonsConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab.");
+
     }
 
     @Test
