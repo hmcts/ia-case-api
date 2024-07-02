@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.46
+version: 0.0.47
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -94,3 +94,7 @@ dependencies:
     version: 1.6.18
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: hmc-cft-hearing-service.enabled
+  - name: ccd-def-cleanup
+    version: ~9.0.3
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ccd-def-cleanup.enabled

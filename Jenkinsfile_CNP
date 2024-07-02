@@ -116,7 +116,20 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
+    def githubApi = new GithubAPI(this)
+    env.CASE_TYPE_ASYLUM_ID = "Asylum"
+    env.CASE_TYPE_BAIL_ID = "Bail"
+    env.CORE_CASE_DATA_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-ccd-data-store-api"
+    env.CCD_GW_API = "http://ia-case-api-pr-${CHANGE_ID}-ccd-api-gw"
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_hearings") ) {
+        env.PREVIEW_CCD_ENABLED = false
+        env.CASE_TYPE_ASYLUM_ID = "Asylum-${CHANGE_ID}"
+        env.CASE_TYPE_BAIL_ID = "Bail-${CHANGE_ID}"
+        env.CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+        env.CCD_GW_API = "https://gateway-ccd.aat.platform.hmcts.net"
+    }
 
+    loadVaultSecrets(secrets)
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
@@ -137,7 +150,6 @@ withPipeline(type, product, component) {
 
     enableAksStagingDeployment()
     disableLegacyDeployment()
-    loadVaultSecrets(secrets)
 
     before('smoketest:preview') {
         sh """

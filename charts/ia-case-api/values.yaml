@@ -120,3 +120,5 @@ am-org-role-mapping-service:
   enabled: false
 redis:
   enabled: false
+ccd-def-cleanup:
+  enabled: false

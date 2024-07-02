@@ -19,7 +19,7 @@ java:
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+    CCD_URL: ${CORE_CASE_DATA_API_URL}
     CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
@@ -86,7 +86,7 @@ ia-case-payments-api:
       PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       PAY_CALLBACK_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: ${CORE_CASE_DATA_API_URL}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -115,7 +115,7 @@ ia-case-documents-api:
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: ${CORE_CASE_DATA_API_URL}
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -168,7 +168,7 @@ ia-case-notifications-api:
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: ${CORE_CASE_DATA_API_URL}
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -357,7 +357,7 @@ ia-bail-case-api:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      CCD_URL: ${CORE_CASE_DATA_API_URL}
       AAC_URL: https://aac-${SERVICE_FQDN}
       CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
       DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
@@ -408,7 +408,7 @@ ia-hearings-api:
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     environment:
       HEARINGS_API_URL: "https://{{ .Release.Name }}-hearings-api.preview.platform.hmcts.net"
-      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      CCD_URL: ${CORE_CASE_DATA_API_URL}
       AAC_URL: https://aac-${SERVICE_FQDN}
       CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
       DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
@@ -483,7 +483,7 @@ hmc-cft-hearing-service:
       HTTP_CLIENT_SECONDS_IDLE_CONNECTION: '120'
       HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '20'
       HTTP_CLIENT_VALIDATE_AFTER_INACTIVITY: '2000'
-      CCD_DATA_STORE_API_BASE_URL: "http://ccd-data-store-api-ia-case-api-pr-2154.preview.platform.hmcts.net"
+      CCD_DATA_STORE_API_BASE_URL: ${CORE_CASE_DATA_API_URL}
       ROLE_ASSIGNMENT_URL: http://am-role-assignment-ia-case-api-pr-2154.preview.platform.hmcts.net
       HMI_BASE_URL: https://hmi-apim.test.platform.hmcts.net/hmi
       HMI_SOURCE_SYSTEM: CFT
@@ -546,8 +546,7 @@ ia-timed-event-service:
         }}.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment
         }}.service.core-compute-{{ .Values.global.environment }}.internal
-      CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment
-        }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CCD_URL: ${CORE_CASE_DATA_API_URL}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -628,7 +627,7 @@ ia-aip-frontend:
       NODE_ENV: development
       S2S_MICROSERVICE_NAME: iac
       MICROSERVICE: iac
-      CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_API_URL: ${CORE_CASE_DATA_API_URL}
       DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
       #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
@@ -697,7 +696,7 @@ ccd-case-document-am-api:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
     environment:
-      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: ${CORE_CASE_DATA_API_URL}
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
@@ -721,12 +720,12 @@ xui-webapp:
     devmemoryLimits: 8Gi
     devcpuLimits: 4500m
     environment:
-      HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
-      HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
+      HEALTH_CCD_COMPONENT_API: ${CCD_GW_API}
+      HEALTH_CCD_DATA_API: ${CORE_CASE_DATA_API_URL}/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
+      SERVICES_EM_ANNO_API: ${CCD_GW_API}
+      SERVICES_CCD_COMPONENT_API: ${CCD_GW_API}
+      SERVICES_CCD_DATA_STORE_API: ${CORE_CASE_DATA_API_URL}
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -772,10 +771,10 @@ xui-webapp:
           - system-user-password
 
 ccd:
-  enabled: true
+  enabled: ${PREVIEW_CCD_ENABLED}
   ccd:
     adminWeb:
-      enabled: true
+      enabled: ${PREVIEW_CCD_ENABLED}
     managementWeb:
       enabled: false
     definitionImporter:
@@ -783,19 +782,19 @@ ccd:
     userProfileImporter:
       enabled: false
     apiGatewayWeb:
-      enabled: true
+      enabled: ${PREVIEW_CCD_ENABLED}
     postgresql:
       enabled: false
     s2s:
       enabled: false
     elastic:
-      enabled: true
+      enabled: ${PREVIEW_CCD_ENABLED}
     ras:
-      enabled: true
+      enabled: ${PREVIEW_CCD_ENABLED}
   global:
-    ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
+    ccdApiGatewayIngress: ${CCD_GW_API}
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
-    ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
+    ccdDataStoreUrl: ${CORE_CASE_DATA_API_URL}
     ccdDefinitionStoreUrl: http://{{ .Release.Name }}-ccd-definition-store
     ccdUserProfileUrl: https://ccd-user-profile-api-${SERVICE_FQDN}
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
@@ -885,7 +884,7 @@ ccd:
       devcpuLimits: 1
       devmemoryLimits: 4Gi
       environment:
-        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        CCD_DATA_STORE_URL: ${CORE_CASE_DATA_API_URL}
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
         RUN_LD_ON_STARTUP: false
         ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
@@ -1143,7 +1142,7 @@ em-ccdorc:
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+      CCD_DATA_API_URL: ${CORE_CASE_DATA_API_URL}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
 
@@ -1198,7 +1197,7 @@ aac-manage-case-assignment:
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MCA_CONDITIONAL_APIS_CASE_ASSIGNMENTS_ENABLED: "true"
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,ccd_gw,iac
-      CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+      CCD_DATA_STORE_API_BASE_URL: ${CORE_CASE_DATA_API_URL}
       CCD_DEFINITION_STORE_API_BASE_URL: https://ccd-definition-store-${SERVICE_FQDN}
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_DEFINITION_STORE_ALLOWED_SERVICE: xui_webapp
@@ -1286,8 +1285,8 @@ wa:
       devmemoryLimits: 4Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
-        CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+        CCD_URL: ${CORE_CASE_DATA_API_URL}
+        CCD_SEARCH_URL: ${CORE_CASE_DATA_API_URL}
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
@@ -1446,5 +1445,10 @@ postgresql:
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
-      - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
 
+ccd-def-cleanup:
+  enabled: true
+  change_id: ${CHANGE_ID}
+  case_type_ids:
+    - Asylum
+    - Bail
