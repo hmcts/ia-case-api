@@ -120,8 +120,8 @@ withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
     env.CASE_TYPE_ASYLUM_ID = "Asylum"
     env.CASE_TYPE_BAIL_ID = "Bail"
-    env.CORE_CASE_DATA_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-ccd-data-store-api"
-    env.CCD_GW_API = "http://ia-case-api-pr-${CHANGE_ID}-ccd-api-gw"
+    env.CORE_CASE_DATA_API_URL = "https://ccd-data-store-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.CCD_GW_API = "https://gateway-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_hearings") ) {
         env.PREVIEW_CCD_ENABLED = false
         env.CASE_TYPE_ASYLUM_ID = "Asylum-${CHANGE_ID}"
