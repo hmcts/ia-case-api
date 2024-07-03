@@ -161,11 +161,6 @@ public class HandlerUtils {
         Optional<YesOrNo> isInterpreterServicesNeededOptional =
             asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class);
 
-        asylumCase
-            .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
-            .map(yesOrNo -> Objects.equals(yesOrNo, YesOrNo.YES))
-            .orElse(false);
-
         if (!interpreterLanguageOptional.isPresent()
             || interpreterLanguageOptional.get().isEmpty()
             || (isInterpreterServicesNeededOptional.isPresent() && isInterpreterServicesNeededOptional.get().equals(NO))) {
