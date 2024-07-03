@@ -196,6 +196,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             log.debug("Next hearing date feature enabled");
             if (HandlerUtils.isIntegrated(asylumCase)) {
                 asylumCase.write(NEXT_HEARING_DETAILS, calculateNextHearingDateFromHearings(callback));
+            } else {
+                asylumCase.write(NEXT_HEARING_DETAILS, calculateNextHearingDateFromCaseData(callback));
             }
         } else {
             log.debug("Next hearing date feature not enabled");
@@ -268,31 +270,24 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         return Parties.LEGAL_REPRESENTATIVE;
     }
 
-    private boolean nextHearingDateSet(NextHearingDetails nextHearingDetails) {
-
-        return nextHearingDetails != null
-               && nextHearingDetails.getHearingId() != null
-               && nextHearingDetails.getHearingDateTime() != null;
-    }
-
     private NextHearingDetails calculateNextHearingDateFromHearings(Callback<AsylumCase> callback) {
         NextHearingDetails nextHearingDetails = null;
 
         try {
             AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
             nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
-                .orElse(NextHearingDetails.builder().build());
+                .orElse(null);
         } catch (AsylumCaseServiceResponseException e) {
             log.error("Setting next hearing date from hearings failed: ", e);
         }
 
         long caseId = callback.getCaseDetails().getId();
-        if (nextHearingDateSet(nextHearingDetails)) {
-            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
-            return nextHearingDetails;
-        } else {
+        if (nextHearingDetails == null) {
             log.error("Failed to calculate Next hearing date from hearings for case ID {}", caseId);
             return calculateNextHearingDateFromCaseData(callback);
+        } else {
+            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
+            return nextHearingDetails;
         }
     }
 
