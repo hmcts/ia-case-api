@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +23,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
@@ -32,6 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class HandlerUtilsTest {
 
@@ -232,5 +236,15 @@ class HandlerUtilsTest {
         assertNull(capturedLanguages.get(1).getLanguageRefData());
         assertEquals(LIST_YES, capturedLanguages.get(1).getLanguageManualEntry());
         assertEquals("Sign language - Aaa Zzz", capturedLanguages.get(1).getLanguageManualEntryDescription());
+    }
+
+    @Test
+    void populateAppellantInterpreterLanguageFieldsIfRequired_interpreterServicesNotNeeded() {
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED)).thenReturn(Optional.of(YesOrNo.NO));
+
+        HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase);
+
+        verify(asylumCase,
+            never()).write(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.YES);
     }
 }

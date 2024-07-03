@@ -20,12 +20,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -77,21 +79,21 @@ public class HandlerUtils {
     }
 
     public static boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
     public static boolean isAppellantInDetention(AsylumCase asylumCase) {
-        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
     public static boolean isInternalCase(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
     // This method uses the field isNotificationTurnedOff to check if
     // notification need to be sent, in scope of EJP transfer down cases.
     public static boolean isNotificationTurnedOff(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
     public static String getAdaSuffix() {
@@ -107,7 +109,7 @@ public class HandlerUtils {
     }
 
     public static boolean isNabaEnabled(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
     //Updated method to check if it is a LegalRep journey
@@ -123,12 +125,12 @@ public class HandlerUtils {
 
     // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
     public static boolean isEjpCase(AsylumCase asylumCase) {
-        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
     }
 
     // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
     public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
-        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(YesOrNo.NO) == YesOrNo.YES;
+        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
@@ -156,7 +158,17 @@ public class HandlerUtils {
         Optional<List<IdValue<InterpreterLanguage>>> interpreterLanguageOptional =
             asylumCase.read(INTERPRETER_LANGUAGE);
 
-        if (!interpreterLanguageOptional.isPresent() || interpreterLanguageOptional.get().isEmpty()) {
+        Optional<YesOrNo> isInterpreterServicesNeededOptional =
+            asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class);
+
+        asylumCase
+            .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+            .map(yesOrNo -> Objects.equals(yesOrNo, YesOrNo.YES))
+            .orElse(false);
+
+        if (!interpreterLanguageOptional.isPresent()
+            || interpreterLanguageOptional.get().isEmpty()
+            || (isInterpreterServicesNeededOptional.isPresent() && isInterpreterServicesNeededOptional.get().equals(NO))) {
             return;
         }
 
@@ -169,12 +181,10 @@ public class HandlerUtils {
 
         interpreterLanguageList.forEach(language -> {
             if (language.getValue().getLanguage().startsWith(SIGN_LANGUAGE)) {
-
                 appellantInterpreterLanguageCategory.add(SIGN_LANGUAGE_INTERPRETER.toString());
                 signLanguages.append(newLanguageManualEntry(language)).append("; ");
 
             } else {
-
                 appellantInterpreterLanguageCategory.add(SPOKEN_LANGUAGE_INTERPRETER.toString());
                 spokenLanguages.append(newLanguageManualEntry(language)).append("; ");
 
