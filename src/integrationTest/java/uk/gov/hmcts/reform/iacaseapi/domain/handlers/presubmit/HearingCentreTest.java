@@ -14,7 +14,7 @@ class HearingCentreTest extends SpringBootIntegrationTest {
     @Autowired private HearingCentreFinder hearingCentreFinder;
 
     @Test
-    void should_derive_hearing_centres() {
+    void should_derive_hearing_centres_from_postcode() {
 
         assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.find("BD1 1AA"));
         assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.find("DN1 1AA"));
@@ -123,5 +123,187 @@ class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.find("ZE1 1AA"));
 
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("XX"));
+    }
+
+    @Test
+    void should_derive_hearing_centres_from_detention_centre_name() {
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Ashwell"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Aylesbury"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Bedford"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Birmingham"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Blakenhurst"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Brinsford"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Brockhill"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Bullingdon"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Eastwood Park"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Featherstone"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Five Wells"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Fosse Way"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Foston Hall"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Gartree"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Glen Parva"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Gloucester"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Grendon/Spring Hill"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Hewell Grange"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Leicester"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Leyhill"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Lincoln"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Littlehey"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Long Lartin"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Lowdham Grange"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Morton Hall"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("North Sea Camp"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Nottingham"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Onley"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Peterborough"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Reading"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Rye Hill"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Shrewsbury"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Spring Hill"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Stafford"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Stocken"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Stoke Heath"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Sudbury"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Swinfen Hall"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Wellingborough"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Whatton"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Whitemoor"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Woodhill"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Five Wells"));
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.findByDetentionFacility("Fosse Way"));
+
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Acklington"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Askham Grange"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Castington"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Deerbolt"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Derwentside"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Doncaster"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Durham"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Everthorpe"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Frankland"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Full Sutton"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Holme House"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Hull"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Kirklevington Grange"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Leeds"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Lindholme"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Low Newton"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Moorland Closed"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Moorland Open"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("New Hall"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Northallerton"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Ranby"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Wakefield"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Wealstun"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Wetherby"));
+        assertEquals(HearingCentre.BRADFORD, hearingCentreFinder.findByDetentionFacility("Wolds"));
+
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Addiewell"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Barlinnie"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Castle Huntly"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Cornton Vale"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Dumfries"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Dungavel"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Edinburgh, Saughton"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Glenochil"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Grampian"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Greenock"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Hydebank Wood"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Inverness"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Kilmarnock"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Low Moss"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Magilligan"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Maghaberry"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Perth"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Polmont"));
+        assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.findByDetentionFacility("Shotts"));
+
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Albany"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Brixton"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Bronzefield"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Camp Hill"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Coldingley"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Colnbrook"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Downview"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Feltham"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Harmondsworth"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("High Down"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Holloway"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Huntercombe"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Kingston"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Latchmere House"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Lewes"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Parkhurst"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Send"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("The Mount"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Wandsworth"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Winchester"));
+        assertEquals(HearingCentre.HATTON_CROSS, hearingCentreFinder.findByDetentionFacility("Wormwood Scrubs"));
+
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Altcourse"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Buckley Hall"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Dovegate"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Drake Hall"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Forest Bank"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Garth"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Haverigg"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Hindley"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Kennet"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Kirkham"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Lancaster"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Lancaster Farms"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Liverpool"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Manchester"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Preston"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Risley"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Styal"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Thorn Cross"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Werrington"));
+        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.findByDetentionFacility("Wymott"));
+
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Ashfield"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Bristol"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Cardiff"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Channings Wood"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Dartmoor"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Dorchester"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Erlestoke"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Exeter"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Guys Marsh"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Parc"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Portland"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Prescoed"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Shepton Mallet"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Swansea"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("The Weare"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.findByDetentionFacility("Usk"));
+
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Belmarsh"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Blantyre House"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Blundeston"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Brookhouse"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Bullwood Hall"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Canterbury"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Chelmsford"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Cookham Wood"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("East Sutton Park"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Edmunds Hill"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Elmley"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Ford"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Highpoint"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Hollesley Bay/Hmyoi Warren Hill"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Isis"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Maidstone"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Norwich"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Pentonville"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Rochester"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Standford Hill"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Swaleside"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Thameside"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Tinsley House"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Warren Hill"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.findByDetentionFacility("Wayland"));
+
+        assertEquals(HearingCentre.YARLSWOOD, hearingCentreFinder.findByDetentionFacility("Yarlswood"));
     }
 }
