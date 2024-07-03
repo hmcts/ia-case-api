@@ -12,7 +12,8 @@ s2sSecret=${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}
 #fi
 
 serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh iac \
-  $(docker run --rm toolbelt/oathtool --totp -b ${s2sSecret}))
+  $(docker pull hmctspublic.azurecr.io/imported/toolbelt/oathtool) \
+  $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret}))
 
 dmnFilepath="$(realpath $workspace)/resources"
 
