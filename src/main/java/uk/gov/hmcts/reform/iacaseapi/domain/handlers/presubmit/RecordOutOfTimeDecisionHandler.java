@@ -131,13 +131,13 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    static boolean isOutOfTimeDecisionRejected(AsylumCase asylumCase) {
+    private boolean isOutOfTimeDecisionRejected(AsylumCase asylumCase) {
         return asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class)
             .map(OutOfTimeDecisionType -> OutOfTimeDecisionType.equals(OutOfTimeDecisionType.REJECTED))
             .orElse(false);
     }
 
-    public static boolean isInternalNonDetainedCase(AsylumCase asylumCase) {
+    private boolean isInternalNonDetainedCase(AsylumCase asylumCase) {
         return isInternalCase(asylumCase) && !isAppellantInDetention(asylumCase);
     }
 }
