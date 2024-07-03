@@ -17,13 +17,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class AdditionalInstructionsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AdditionalInstructionsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -38,13 +44,10 @@ public class AdditionalInstructionsMidEventHandler implements PreSubmitCallbackH
             UPDATE_HEARING_ADJUSTMENTS,
             LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
         );
-        List<String> pageIds = List.of("additionalInstructions", "adjustAdditionalInstructionsRequirements");
         Event event = callback.getEvent();
-        String currentPageId = callback.getPageId();
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && targetEvents.contains(event)
-               && pageIds.contains(currentPageId);
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && targetEvents.contains(event);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
