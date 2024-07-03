@@ -2115,6 +2115,9 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS(
         "appealNotSubmittedReasonDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    // Used to store generated letter notification docs which will be stitched together
+    LETTER_NOTIFICATION_DOCUMENTS(
+        "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     ;
 
     private final String value;
