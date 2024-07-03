@@ -153,6 +153,10 @@ withPipeline(type, product, component) {
             env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
             env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+            sh """
+    ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+    ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+    """
         }
     }
 
