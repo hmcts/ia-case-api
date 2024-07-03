@@ -100,6 +100,12 @@ withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.Rules = params.SecurityRules
 
+    env.CASE_TYPE_ASYLUM_ID = "Asylum"
+    env.CASE_TYPE_BAIL_ID = "Bail"
+    env.PREVIEW_CCD_ENABLED = true
+    env.CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+    env.CCD_GW_API = "https://gateway-ccd.aat.platform.hmcts.net"
+
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
