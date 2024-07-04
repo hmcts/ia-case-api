@@ -205,7 +205,7 @@ class SendNotificationHandlerTest {
 
     @Test
     void should_be_handled_at_latest_point() {
-        assertEquals(DispatchPriority.LATEST, sendNotificationHandler.getDispatchPriority());
+        assertEquals(DispatchPriority.LAST, sendNotificationHandler.getDispatchPriority());
     }
 
     @Test

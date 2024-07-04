@@ -12,6 +12,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -674,6 +676,7 @@ class DeriveHearingCentreHandlerTest {
         deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HARMONDSWORTH);
     }
+
 
     @Test
     void should_set_hearing_centre_dynamic_list_for_detained_appeals_ada_or_aaa() {

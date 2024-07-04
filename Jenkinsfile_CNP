@@ -1,7 +1,7 @@
 #!groovy
 properties([
-    [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
-    pipelineTriggers([[$class: 'GitHubPushTrigger']])
+        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
+        pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
 @Library('Infrastructure')
@@ -20,36 +20,37 @@ def secrets = [
     ],
     'ia-${env}': [
 
-        secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
-        secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
-        secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
-        secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
-        secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
-        secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+                secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+                secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+                secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
+                secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+                secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+                secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
 
-        secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
-        secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
-        secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
-        secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
-        secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
-        secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
-        secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
-        secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
-        secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
-        secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
-        secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
-        secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
-        secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
-        secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
+                secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
+                secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
+                secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
+                secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
+                secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
+                secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
+                secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
+                secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
+                secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+                secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+                secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
+                secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
+                secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
+                secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
 
-        secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
-        secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+                secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+                secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
-        secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
-        secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+                secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+                secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
-        secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
-        secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+                secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
+                secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+
 
         secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
         secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
@@ -146,8 +147,8 @@ withPipeline(type, product, component) {
 
     before('smoketest:preview') {
         sh """
-      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      ./bin/add-roles.sh
+    eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+    ./bin/add-roles.sh
     """
     }
 
@@ -171,6 +172,7 @@ withPipeline(type, product, component) {
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         sh """
       ./bin/add-org-roles-to-users.sh
+
     """
     }
 

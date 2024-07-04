@@ -195,7 +195,7 @@ public class HandlerUtils {
             .map(adjournedDay -> ON_HEARING_DATE == adjournedDay)
             .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
     }
-  
+
     public static boolean isAgeAssessmentAppeal(AsylumCase asylumCase) {
         return (asylumCase.read(APPEAL_TYPE, AppealType.class)).orElse(null) == AppealType.AG;
     }

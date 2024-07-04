@@ -177,6 +177,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .findFirst().ifPresent(hearingCentreDynamicList::setValue);
 
             asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
+
         }
 
         asylumCase.write(HEARING_CENTRE, hearingCentre);

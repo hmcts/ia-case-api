@@ -81,7 +81,6 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
 
         if (appealTransferredOutOfAda) {
             asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
