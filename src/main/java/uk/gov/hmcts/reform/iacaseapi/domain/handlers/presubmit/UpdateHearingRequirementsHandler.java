@@ -147,6 +147,8 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
             asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
             asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            asylumCase.clear(INTERPRETER_LANGUAGE);
+            asylumCase.clear(INTERPRETER_LANGUAGE_READONLY);
         } else {
             Optional<List<String>> languageCategoriesOptional = asylumCase
                 .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
