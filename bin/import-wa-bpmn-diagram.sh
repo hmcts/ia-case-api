@@ -4,7 +4,6 @@ set -eu
 workspace=${1}
 
 serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh iac \
-  $(docker pull hmctspublic.azurecr.io/imported/toolbelt/oathtool) \
   $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}))
 
 filepath="$(realpath $workspace)/resources"
