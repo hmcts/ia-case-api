@@ -169,23 +169,23 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
     }
 
     private void setHearingCentre(AsylumCase asylumCase, HearingCentre hearingCentre) {
-
-        if (isCaseUsingLocationRefData(asylumCase)) {
-            DynamicList hearingCentreDynamicList = locationRefDataService.getHearingCentreDynamicList();
-            hearingCentreDynamicList.getListItems().stream()
-                .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
-                .findFirst().ifPresent(hearingCentreDynamicList::setValue);
-
-            asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
-
-        }
-
         asylumCase.write(HEARING_CENTRE, hearingCentre);
         asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            DynamicList hearingCentreDynamicList = locationRefDataService.getHearingLocationsDynamicList();
+            hearingCentreDynamicList.getListItems().stream()
+                .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
+                .findFirst().ifPresent(hearingCentreDynamicList::setValue);
+
+            asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
+            asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
+                caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
+        }
     }
 
     private boolean hearingCentreNotSet(AsylumCase asylumCase) {

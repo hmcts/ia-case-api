@@ -2,9 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
 
 import java.util.ArrayList;
@@ -34,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -130,10 +135,15 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> actual = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         AsylumCase actualAsylum = actual.getData();
-        Optional<CaseManagementLocation> actualCaseManagementLocation = actualAsylum.read(CASE_MANAGEMENT_LOCATION,
-            CaseManagementLocation.class);
-        assertThat(actualCaseManagementLocation.isPresent()).isTrue();
-        assertThat(actualCaseManagementLocation.get().getBaseLocation()).isEqualTo(scenario.getExpectedBaseLocation());
+
+        if (scenario.getAsylumCase().read(IS_CASE_USING_LOCATION_REF_DATA).isPresent()) {
+            verify(caseManagementLocationService, times(1)).getRefDataCaseManagementLocation(any());
+        } else {
+            Optional<CaseManagementLocation> actualCaseManagementLocation = actualAsylum.read(CASE_MANAGEMENT_LOCATION,
+                CaseManagementLocation.class);
+            assertThat(actualCaseManagementLocation.isPresent()).isTrue();
+            assertThat(actualCaseManagementLocation.get().getBaseLocation()).isEqualTo(scenario.getExpectedBaseLocation());
+        }
 
         Optional<String> actualStaffLocation = actualAsylum.read(STAFF_LOCATION, String.class);
         assertThat(actualStaffLocation.isPresent()).isTrue();
@@ -180,11 +190,27 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
                 .expectedStaffLocation("Glasgow")
                 .build();
 
+        AsylumCase asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation = new AsylumCase();
+        asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation
+            .write(HEARING_CENTRE, HearingCentre.BRADFORD);
+        asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation
+            .write(CASE_MANAGEMENT_LOCATION, new CaseManagementLocation(Region.NATIONAL, null));
+        asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation
+            .write(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.YES);
+        final HandleScenario
+            givenRefDataEnabledAndCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre =
+            HandleScenario.builder()
+                .asylumCase(asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation)
+                .expectedBaseLocation(BaseLocation.BRADFORD)
+                .expectedStaffLocation("Bradford")
+                .build();
+
         return Stream.of(
             givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToNewport,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre,
-            givenCcdCaseHasHearingCentreGlasgowAndDoesHaveCompleteCaseBaseLocationButItIsDeprecated
+            givenCcdCaseHasHearingCentreGlasgowAndDoesHaveCompleteCaseBaseLocationButItIsDeprecated,
+            givenRefDataEnabledAndCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre
         );
     }
 

@@ -47,8 +47,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
@@ -380,7 +382,7 @@ class ListEditCaseHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    void should_set_hearing_centre_dynamic_list_and_hearing_centre(Event event) {
+    void should_set_hearing_centre_dynamic_list_and_hearing_centre_and_cml(Event event) {
 
         final DynamicList listingLocation = new DynamicList(
             new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
@@ -395,6 +397,10 @@ class ListEditCaseHandlerTest {
         when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
             .thenReturn(Optional.of(listingLocation));
 
+        CaseManagementLocationRefData expectedCml = new CaseManagementLocationRefData(Region.NATIONAL, listingLocation);
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
+            .thenReturn(expectedCml);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -403,6 +409,7 @@ class ListEditCaseHandlerTest {
 
         verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
+        verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
     }
 
     @ParameterizedTest
