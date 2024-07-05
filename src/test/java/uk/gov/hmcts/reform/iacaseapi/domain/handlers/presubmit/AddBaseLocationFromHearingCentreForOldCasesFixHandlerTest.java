@@ -194,8 +194,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation
             .write(HEARING_CENTRE, HearingCentre.BRADFORD);
         asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation
-            .write(CASE_MANAGEMENT_LOCATION,
-            new CaseManagementLocation(Region.NATIONAL, null));
+            .write(CASE_MANAGEMENT_LOCATION, new CaseManagementLocation(Region.NATIONAL, null));
         asylumCaseWithRefDataEnabledAndHearingCentreAndNotCompleteCaseBaseLocation
             .write(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.YES);
         final HandleScenario
