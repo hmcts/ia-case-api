@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -44,13 +45,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
-
+@Slf4j
 @Component
 public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -59,18 +62,20 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final LocationRefDataService locationRefDataService;
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
-
+    private final NextHearingDateService nextHearingDateService;
 
     public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
                                CaseManagementLocationService caseManagementLocationService,
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
-                               LocationRefDataService locationRefDataService) {
+                               LocationRefDataService locationRefDataService,
+                               NextHearingDateService nextHearingDateService) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
+        this.nextHearingDateService = nextHearingDateService;
     }
 
     public boolean canHandle(
@@ -178,6 +183,19 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             if (callback.getEvent() == Event.LIST_CASE) {
                 addDirection(asylumCase);
             }
+        }
+
+        if (nextHearingDateService.enabled()) {
+            log.debug("Next hearing date feature enabled");
+            if (HandlerUtils.isIntegrated(asylumCase)) {
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromHearings(callback));
+            } else {
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromCaseData(callback));
+            }
+        } else {
+            log.debug("Next hearing date feature not enabled");
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
