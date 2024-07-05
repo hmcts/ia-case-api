@@ -4,7 +4,6 @@ import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
@@ -183,10 +182,6 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                     .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
 
             case LEAVE_UK:
-                Optional<String> dateClientLeaveUk = asylumCase.read(DATE_CLIENT_LEAVE_UK_ADMIN_J);
-                return parse(dateClientLeaveUk
-                    .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
-
             case NONE:
                 Optional<String> homeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
                 return parse(homeOfficeDecisionLetterDate
