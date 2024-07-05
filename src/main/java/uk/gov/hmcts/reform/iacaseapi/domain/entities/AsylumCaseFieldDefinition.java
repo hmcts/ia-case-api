@@ -2628,7 +2628,9 @@ public enum AsylumCaseFieldDefinition {
 
     ADDITIONAL_INSTRUCTIONS_DESCRIPTION("additionalInstructionsDescription", new TypeReference<String>(){}),
 
-    CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){});
+    CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
+
+    NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){});
 
     private final String value;
     private final TypeReference typeReference;
