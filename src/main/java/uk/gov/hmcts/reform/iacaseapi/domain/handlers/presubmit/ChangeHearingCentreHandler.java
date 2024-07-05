@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,9 +52,24 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        HearingCentre maybeHearingCentre =
-            asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
-                .orElse(HearingCentre.NEWPORT);
+        HearingCentre maybeHearingCentre;
+
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            Value designatedHearingCentreRefData =
+                asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE_REF_DATA, DynamicList.class)
+                    .map(h -> h.getValue())
+                    .orElseThrow(() -> new IllegalStateException("applicationChangeDesignatedHearingCentreRefData"
+                        + " is not present"));
+
+            maybeHearingCentre = HearingCentre.fromEpimsId(designatedHearingCentreRefData.getCode(), true)
+                .orElse(NEWPORT);
+
+        } else {
+            maybeHearingCentre =
+                asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
+                    .orElse(NEWPORT);
+        }
+
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
 

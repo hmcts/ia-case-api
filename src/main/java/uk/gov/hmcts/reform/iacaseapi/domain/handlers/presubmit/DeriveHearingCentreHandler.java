@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
@@ -183,8 +184,12 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .findFirst().ifPresent(hearingCentreDynamicList::setValue);
 
             asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
-            asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
-                caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
+
+            CaseManagementLocationRefData cmlRefData =
+                caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName);
+
+            asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA, cmlRefData);
+            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE_REF_DATA, cmlRefData.getBaseLocation());
         }
     }
 
