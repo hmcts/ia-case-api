@@ -126,16 +126,6 @@ public enum Event {
     MAINTAIN_CASE_LINKS("maintainCaseLinks"),
     PIP_ACTIVATION("pipActivation"),
     UPDATE_S94B_STATUS("updateS94bStatus"),
-
-    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
-    UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
-    UPDATE_HEARING_REQUEST("updateHearingRequest"),
-    HANDLE_HEARING_EXCEPTION("handleHearingException"),
-    TRIGGER_CMR_UPDATED("triggerCmrUpdated"),
-    RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
-    LIST_ASSIST_INTEGRATION("listAssistIntegration"),
-    TRIGGER_CMR_LISTED("triggerCmrListed"),
-    DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
     REMOVE_DETAINED_STATUS("removeDetainedStatus"),
     MARK_APPEAL_AS_DETAINED("markAppealAsDetained"),
@@ -149,6 +139,16 @@ public enum Event {
     CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
+
+    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
+    UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
+    UPDATE_HEARING_REQUEST("updateHearingRequest"),
+    HANDLE_HEARING_EXCEPTION("handleHearingException"),
+    TRIGGER_CMR_UPDATED("triggerCmrUpdated"),
+    RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
+    LIST_ASSIST_INTEGRATION("listAssistIntegration"),
+    TRIGGER_CMR_LISTED("triggerCmrListed"),
+    DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

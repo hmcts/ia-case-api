@@ -57,6 +57,10 @@
               "label": "Judge's review of Legal Officer decision"
             },
             {
+              "code": "TIME_EXTENSION",
+              "label": "Time extension"
+            },
+            {
               "code": "WITHDRAW",
               "label": "Withdraw"
             },
