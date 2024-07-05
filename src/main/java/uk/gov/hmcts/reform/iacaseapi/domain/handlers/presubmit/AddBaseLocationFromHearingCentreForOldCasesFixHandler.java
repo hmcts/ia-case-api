@@ -97,8 +97,12 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
-            isRefDataEnabled ? caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName)
-                : caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+
+        if (isRefDataEnabled) {
+            asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
+                caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
+        }
     }
 
 }

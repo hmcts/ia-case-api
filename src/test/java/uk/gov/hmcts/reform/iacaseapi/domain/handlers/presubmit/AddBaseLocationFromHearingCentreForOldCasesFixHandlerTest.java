@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
@@ -30,6 +31,8 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -136,8 +139,18 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
 
         AsylumCase actualAsylum = actual.getData();
 
+        uk.gov.hmcts.reform.iacaseapi.domain.entities.Value
+            courtVenue = new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value("1", "Bradford");
+        DynamicList cmlDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(scenario.getExpectedStaffLocation()))
+            .thenReturn(new CaseManagementLocationRefData(Region.NATIONAL, cmlDynamicList));
+
         if (scenario.getAsylumCase().read(IS_CASE_USING_LOCATION_REF_DATA).isPresent()) {
             verify(caseManagementLocationService, times(1)).getRefDataCaseManagementLocation(any());
+            Optional<CaseManagementLocationRefData> actualRefDataCml = actualAsylum.read(CASE_MANAGEMENT_LOCATION_REF_DATA,
+                CaseManagementLocationRefData.class);
+            assertThat(actualRefDataCml.isPresent()).isTrue();
+            assertThat(actualRefDataCml.get().getBaseLocation()).isEqualTo(cmlDynamicList);
         } else {
             Optional<CaseManagementLocation> actualCaseManagementLocation = actualAsylum.read(CASE_MANAGEMENT_LOCATION,
                 CaseManagementLocation.class);
