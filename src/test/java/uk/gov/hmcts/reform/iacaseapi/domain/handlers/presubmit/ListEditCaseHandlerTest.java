@@ -71,11 +71,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -105,9 +103,7 @@ class ListEditCaseHandlerTest {
     @Mock
     private List<IdValue<Direction>> listOfDirections;
     @Mock
-    private IaHearingsApiService iaHearingsApiService;
-    @Mock
-    private FeatureToggler featureToggler;
+    private NextHearingDateService nextHearingDateSerice;
     @Captor
     private ArgumentCaptor<NextHearingDetails> nextHearingDetailsArgumentCaptor;
     private int dueDaysSinceSubmission = 15;
@@ -124,18 +120,8 @@ class ListEditCaseHandlerTest {
                                           + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.";
 
     private ListEditCaseHandler listEditCaseHandler;
-
-    private final NextHearingDetails nextHearingDetailsFromHearings = NextHearingDetails
-        .builder()
-        .hearingId("hearingId")
-        .hearingDateTime(LocalDateTime.now().toString())
-        .build();
     private final String listCaseHearingDate = LocalDateTime.now().plusDays(1).toString();
-    private final NextHearingDetails nextHearingDetailsFromCaseData = NextHearingDetails
-        .builder()
-        .hearingId("999")
-        .hearingDateTime(listCaseHearingDate)
-        .build();
+
 
     @BeforeEach
     public void setUp() {
@@ -145,13 +131,11 @@ class ListEditCaseHandlerTest {
             dueDaysSinceSubmission,
             directionAppender,
             locationRefDataService,
-            iaHearingsApiService,
-            featureToggler);
+            nextHearingDateSerice);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
     }
 
     @Test
@@ -574,13 +558,13 @@ class ListEditCaseHandlerTest {
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
     public void should_not_set_next_hearing_date_if_feature_not_enabled(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(featureToggler.getValue("nextHearingDateEnabled", false)).thenReturn(false);
+        when(nextHearingDateSerice.enabled()).thenReturn(false);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+        listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
     }
 
@@ -588,68 +572,28 @@ class ListEditCaseHandlerTest {
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
     public void should_set_next_hearing_date_from_hearings(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(featureToggler.getValue("nextHearingDateEnabled", false)).thenReturn(true);
+        when(nextHearingDateSerice.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
+            .hearingId("hearingId").hearingDateTime("hearingDateTime").build();
         when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
-            .thenReturn(Optional.of(nextHearingDetailsFromHearings));
+            .thenReturn(Optional.of(nextHearingDetails));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), nextHearingDetailsArgumentCaptor.capture());
-
-        assertEquals(nextHearingDetailsFromHearings, nextHearingDetailsArgumentCaptor.getValue());
+        verify(nextHearingDateSerice, times(1)).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    public void should_set_next_hearing_date_from_case_data_when_calculating_from_hearings_fails(Event event) {
+    public void should_set_next_hearing_date_from_case_data(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(featureToggler.getValue("nextHearingDateEnabled", false)).thenReturn(true);
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
-            .thenReturn(Optional.empty());
-        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), nextHearingDetailsArgumentCaptor.capture());
-
-        assertEquals(nextHearingDetailsFromCaseData, nextHearingDetailsArgumentCaptor.getValue());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    public void should_set_next_hearing_date_from_case_data_when_calculating_from_hearings_throws_exception(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(featureToggler.getValue("nextHearingDateEnabled", false)).thenReturn(true);
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
-            .thenReturn(Optional.of(NextHearingDetails.builder().hearingId(null).hearingDateTime(null).build()));
-        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
-        when(iaHearingsApiService.aboutToSubmit(callback))
-            .thenThrow(new AsylumCaseServiceResponseException("error message", null));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
-        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), nextHearingDetailsArgumentCaptor.capture());
-
-        assertEquals(nextHearingDetailsFromCaseData, nextHearingDetailsArgumentCaptor.getValue());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    public void should_set_next_hearing_date_from_case_data_for_non_integrated_cases(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(featureToggler.getValue("nextHearingDateEnabled", false)).thenReturn(true);
+        when(nextHearingDateSerice.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
 
@@ -657,10 +601,9 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
-        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), nextHearingDetailsArgumentCaptor.capture());
-
-        assertEquals(nextHearingDetailsFromCaseData, nextHearingDetailsArgumentCaptor.getValue());
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice).calculateNextHearingDateFromCaseData(callback);
+        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
 
     @Test

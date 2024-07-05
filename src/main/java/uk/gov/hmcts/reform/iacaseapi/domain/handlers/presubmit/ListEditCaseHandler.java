@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -49,11 +48,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @Slf4j
@@ -65,24 +62,20 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final LocationRefDataService locationRefDataService;
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
-    private final IaHearingsApiService iaHearingsApiService;
-    private final FeatureToggler featureToggler;
-
+    private final NextHearingDateService nextHearingDateService;
 
     public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
                                CaseManagementLocationService caseManagementLocationService,
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
                                LocationRefDataService locationRefDataService,
-                               IaHearingsApiService iaHearingsApiService,
-                               FeatureToggler featureToggler) {
+                               NextHearingDateService nextHearingDateService) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
-        this.iaHearingsApiService = iaHearingsApiService;
-        this.featureToggler = featureToggler;
+        this.nextHearingDateService = nextHearingDateService;
     }
 
     public boolean canHandle(
@@ -192,12 +185,14 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
-        if (featureToggler.getValue("nextHearingDateEnabled", false)) {
+        if (nextHearingDateService.enabled()) {
             log.debug("Next hearing date feature enabled");
             if (HandlerUtils.isIntegrated(asylumCase)) {
-                asylumCase.write(NEXT_HEARING_DETAILS, calculateNextHearingDateFromHearings(callback));
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromHearings(callback));
             } else {
-                asylumCase.write(NEXT_HEARING_DETAILS, calculateNextHearingDateFromCaseData(callback));
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromCaseData(callback));
             }
         } else {
             log.debug("Next hearing date feature not enabled");
@@ -268,36 +263,5 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             return Parties.APPELLANT;
         }
         return Parties.LEGAL_REPRESENTATIVE;
-    }
-
-    private NextHearingDetails calculateNextHearingDateFromHearings(Callback<AsylumCase> callback) {
-        NextHearingDetails nextHearingDetails = null;
-
-        try {
-            AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
-            nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
-                .orElse(null);
-        } catch (AsylumCaseServiceResponseException e) {
-            log.error("Setting next hearing date from hearings failed: ", e);
-        }
-
-        long caseId = callback.getCaseDetails().getId();
-        if (nextHearingDetails == null) {
-            log.error("Failed to calculate Next hearing date from hearings for case ID {}", caseId);
-            return calculateNextHearingDateFromCaseData(callback);
-        } else {
-            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
-            return nextHearingDetails;
-        }
-    }
-
-    private NextHearingDetails calculateNextHearingDateFromCaseData(Callback<AsylumCase> callback) {
-        log.info("Getting next hearing date from case data for case ID {}", callback.getCaseDetails().getId());
-
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        String listCaseHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class).orElse("");
-
-        return NextHearingDetails.builder()
-            .hearingId("999").hearingDateTime(listCaseHearingDate).build();
     }
 }
