@@ -124,8 +124,8 @@ withPipeline(type, product, component) {
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_hearings") ) {
         env.PREVIEW_CCD_ENABLED = false
     }
-    env.CORE_CASE_DATA_API_URL = "ccd-data-store-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.CCD_GW_API = "gateway-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.CORE_CASE_DATA_API_URL = "ccd-data-store-api-aat.service.core-compute-aat.internal"
+    env.CCD_GW_API = "gateway-ccd.aat.platform.hmcts.net"
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
@@ -172,6 +172,8 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        env.CORE_CASE_DATA_API_URL = "ccd-data-store-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        env.CCD_GW_API = "gateway-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_hearings") ) {
             env.CASE_TYPE_ASYLUM_ID = "Asylum-${CHANGE_ID}"
             env.CASE_TYPE_BAIL_ID = "Bail-${CHANGE_ID}"
