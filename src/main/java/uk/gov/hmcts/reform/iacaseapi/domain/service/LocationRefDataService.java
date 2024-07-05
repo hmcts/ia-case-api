@@ -38,12 +38,9 @@ public class LocationRefDataService {
             .toList());
     }
 
-    public DynamicList getHearingCentreDynamicList() {
-
+    public DynamicList getCaseManagementLocationDynamicList() {
         return new DynamicList(new Value("", ""), getCourtVenues().stream()
-            .filter(courtVenue -> isOpenLocation(courtVenue)
-                                  && isHearingLocation(courtVenue)
-                                  && isCaseManagementLocation(courtVenue))
+            .filter(courtVenue -> isOpenLocation(courtVenue) && isCaseManagementLocation(courtVenue))
             .map(courtVenue -> new Value(courtVenue.getEpimmsId(), courtVenue.getCourtName()))
             .toList());
     }

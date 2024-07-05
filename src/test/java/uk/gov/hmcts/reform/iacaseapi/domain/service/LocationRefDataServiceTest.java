@@ -48,11 +48,11 @@ public class LocationRefDataServiceTest {
         "The Court House, Minshull Street",
         "M1 3FS");
 
-    private CourtVenue openHearingCourtVenueAndCaseManagementLocation = new CourtVenue(
+    private CourtVenue openCaseManagementLocation = new CourtVenue(
         "Newcastle Civil & Family Courts and Tribunals Centre",
         "Newcastle Civil And Family Courts And Tribunals Centre",
         "366796",
-        "Y",
+        "N",
         "Y",
         "Open",
         "Barras Bridge, Newcastle-Upon-Tyne",
@@ -116,7 +116,7 @@ public class LocationRefDataServiceTest {
             openNonHearingCourtVenue,
             closedHearingCourtVenue,
             closedNonHearingCourtVenue,
-            openHearingCourtVenueAndCaseManagementLocation)
+            openCaseManagementLocation)
         );
     }
 
@@ -126,27 +126,27 @@ public class LocationRefDataServiceTest {
         dynamicList = new DynamicList(new Value("", ""),
             List.of(new Value(openHearingCourtVenue.getEpimmsId(),
                 openHearingCourtVenue.getCourtName()),
-                new Value(openHearingCourtVenueAndCaseManagementLocation.getEpimmsId(),
-                    openHearingCourtVenueAndCaseManagementLocation.getCourtName())));
+                new Value(openCaseManagementLocation.getEpimmsId(),
+                    openCaseManagementLocation.getCourtName())));
 
         assertEquals(dynamicList, locationRefDataService.getHearingLocationsDynamicList());
     }
 
     @Test
-    void should_return_dynamicList_when_getHearingCentreDynamicList() {
+    void should_return_dynamicList_when_getCaseManagementLocationDynamicList() {
 
         dynamicList = new DynamicList(new Value("", ""),
-            List.of(new Value(openHearingCourtVenueAndCaseManagementLocation.getEpimmsId(),
-                openHearingCourtVenueAndCaseManagementLocation.getCourtName())));
+            List.of(new Value(openCaseManagementLocation.getEpimmsId(),
+                openCaseManagementLocation.getCourtName())));
 
-        assertEquals(dynamicList, locationRefDataService.getHearingCentreDynamicList());
+        assertEquals(dynamicList, locationRefDataService.getCaseManagementLocationDynamicList());
     }
 
     @Test
     void isCaseManagementLocation_should_return_true() {
 
         assertTrue(locationRefDataService
-            .isCaseManagementLocation(openHearingCourtVenueAndCaseManagementLocation.getEpimmsId()));
+            .isCaseManagementLocation(openCaseManagementLocation.getEpimmsId()));
     }
 
     @Test

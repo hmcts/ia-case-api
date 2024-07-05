@@ -112,6 +112,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                         String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
                 asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
                 asylumCase.write(HEARING_CENTRE, hearingCentre);
+                addBaseLocationAndStaffLocation(asylumCase, hearingCentre);
             }
 
             asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
@@ -119,7 +120,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
 
             asylumCase.clear(IS_DECISION_WITHOUT_HEARING);
 
-            addBaseLocationAndStaffLocation(asylumCase, listingLocation);
 
         } else {
             HearingCentre listCaseHearingCentre =
@@ -194,12 +194,12 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 
-    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, DynamicList listingLocation) {
+    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, HearingCentre hearingCentre) {
 
-        String staffLocationName = StaffLocation.getLocation(listingLocation.getValue().getCode()).getName();
+        String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
-        asylumCase.write(CASE_MANAGEMENT_LOCATION,
-            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+        asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
+            caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
     }
 
     private AsylumCase addDirection(AsylumCase asylumCase) {
