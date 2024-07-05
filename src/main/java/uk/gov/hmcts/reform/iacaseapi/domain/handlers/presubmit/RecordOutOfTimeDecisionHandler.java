@@ -5,6 +5,8 @@ import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +30,6 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
 
     private DocumentReceiver documentReceiver;
     private DocumentsAppender documentsAppender;
-
     private UserDetails userDetails;
     private UserDetailsHelper userDetailsHelper;
     private OutOfTimeDecisionDetailsAppender outOfTimeDecisionDetailsAppender;
@@ -70,6 +71,7 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
 
         YesOrNo recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class).orElse(NO);
 
+
         final Document outOfTimeDecisionDocument = asylumCase.read(OUT_OF_TIME_DECISION_DOCUMENT, Document.class)
             .orElseThrow(() -> new IllegalStateException("Out of time decision document is not present"));
 
@@ -92,6 +94,25 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
                 singletonList(tribunalDocumentWithMetadata)
             );
 
+        if (isInternalNonDetainedCase(asylumCase) && !isOutOfTimeDecisionRejected(asylumCase)) {
+
+            DocumentWithMetadata newLetterGenerationAttachmentForBundlingWithMetadata =
+                documentReceiver.receive(
+                    outOfTimeDecisionDocument,
+                    "",
+                    DocumentTag.INTERNAL_OUT_OF_TIME_DECISION_LETTER
+                );
+
+            List<IdValue<DocumentWithMetadata>> newLetterGenerationAttachmentForBundling =
+                documentsAppender.append(
+                    tribunalDocuments,
+                    singletonList(newLetterGenerationAttachmentForBundlingWithMetadata)
+                );
+
+            asylumCase.write(LETTER_NOTIFICATION_DOCUMENTS, newLetterGenerationAttachmentForBundling);
+
+        }
+
         asylumCase.write(TRIBUNAL_DOCUMENTS, allTribunalDocuments);
 
         if (recordedOutOfTimeDecision == YES) {
@@ -108,5 +129,15 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
             userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isOutOfTimeDecisionRejected(AsylumCase asylumCase) {
+        return asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class)
+            .map(OutOfTimeDecisionType -> OutOfTimeDecisionType.equals(OutOfTimeDecisionType.REJECTED))
+            .orElse(false);
+    }
+
+    private boolean isInternalNonDetainedCase(AsylumCase asylumCase) {
+        return isInternalCase(asylumCase) && !isAppellantInDetention(asylumCase);
     }
 }

@@ -44,6 +44,7 @@ public enum DocumentTag {
     IAUT_2_FORM("iAUT2Form"),
     REMITTAL_DECISION("remittalDecision"),
     APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
+    INTERNAL_OUT_OF_TIME_DECISION_LETTER("internalOutOfTimeDecisionLetter"),
 
     @JsonEnumDefaultValue
     NONE("");
