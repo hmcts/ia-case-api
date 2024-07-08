@@ -12,8 +12,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IRC_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
@@ -36,6 +38,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IR
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +56,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
@@ -173,7 +177,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -274,7 +278,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -390,7 +394,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -485,7 +489,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -578,7 +582,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -675,6 +679,7 @@ class DeriveHearingCentreHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HARMONDSWORTH);
     }
 
+
     @Test
     void should_set_hearing_centre_dynamic_list_for_detained_appeals_ada_or_aaa() {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
@@ -689,7 +694,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -759,7 +764,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -837,7 +842,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingCentreDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -931,5 +936,29 @@ class DeriveHearingCentreHandlerTest {
         assertThatThrownBy(() -> deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_set_ref_data_cml_if_ref_data_enabled() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
+        DynamicList cmlDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(cmlDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(cmlDynamicList);
+
+        CaseManagementLocationRefData expectedCml = new CaseManagementLocationRefData(Region.NATIONAL, cmlDynamicList);
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
+            .thenReturn(expectedCml);
+
+        deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
     }
 }

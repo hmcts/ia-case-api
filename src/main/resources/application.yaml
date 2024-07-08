@@ -535,9 +535,7 @@ commonData:
   api:
     url: ${COMMON_DATA_API:http://localhost:8991}
 
-caseIdListJsonLocation: caseIdForRetrigger.json
-
 govUkHolidays:
   url: https://www.gov.uk/
 
-
+caseIdListJsonLocation: caseIdForRetrigger.json

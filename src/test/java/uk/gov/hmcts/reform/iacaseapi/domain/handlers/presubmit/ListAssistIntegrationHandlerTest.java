@@ -101,7 +101,7 @@ class ListAssistIntegrationHandlerTest {
 
         verify(asylumFieldLegalRepDataFixer, times(1)).fix(asylumCase);
 
-        verify(asylumCase).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
+        verify(asylumCase, times(2)).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
         verify(asylumCase).write(eq(APPELLANT_PARTY_ID), appellantPartyIdCaptor.capture());
         verify(asylumCase).write(eq(LEGAL_REP_INDIVIDUAL_PARTY_ID), legalRepIndividualPartyIdCaptor.capture());
         verify(asylumCase).write(eq(LEGAL_REP_ORGANISATION_PARTY_ID), legalRepOrgPartyIdCaptor.capture());
@@ -113,6 +113,30 @@ class ListAssistIntegrationHandlerTest {
         assertTrue(partyIdRegexPattern.matcher(legalRepIndividualPartyIdCaptor.getValue()).matches());
         assertTrue(partyIdRegexPattern.matcher(legalRepOrgPartyIdCaptor.getValue()).matches());
         assertTrue(partyIdRegexPattern.matcher(sponsorPartyIdCaptor.getValue()).matches());
+    }
+
+    @Test
+    void should_set_witness_family_name() {
+        WitnessDetails witnessDetails1 = new WitnessDetails();
+        witnessDetails1.setWitnessPartyId(WITNESS_1_PARTY_ID);
+        witnessDetails1.setWitnessName("firstName1 familyName1");
+        WitnessDetails witnessDetails2 = new WitnessDetails();
+        witnessDetails2.setWitnessPartyId(WITNESS_2_PARTY_ID);
+        witnessDetails2.setWitnessName("firstName2 familyName2");
+        witnessDetails = Arrays.asList(
+            new IdValue<>("1", witnessDetails1),
+            new IdValue<>("2", witnessDetails2)
+        );
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
+
+        handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(2)).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
+
+        assertEquals("firstName1", witnessDetailsCaptor.getValue().get(0).getValue().getWitnessName());
+        assertEquals("familyName1", witnessDetailsCaptor.getValue().get(0).getValue().getWitnessFamilyName());
+        assertEquals("firstName2", witnessDetailsCaptor.getValue().get(1).getValue().getWitnessName());
+        assertEquals("familyName2", witnessDetailsCaptor.getValue().get(1).getValue().getWitnessFamilyName());
     }
 
     @Test

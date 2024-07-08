@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -83,27 +85,18 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             || (remissionType.isPresent());
 
         boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-        if (isDlrmFeeRemission) {
-            boolean isAipJourney = callback.getCaseDetails().getCaseData()
-                .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.AIP)
-                .orElse(false);
-            if (isAipJourney) {
-                Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-                Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-                String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
 
-                if (paAppealTypePaymentOption.equals(PAY_LATER)) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-                } else if (isRemissionExistsAip(remissionOption, helpWithFeesOption)) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
-                } else {
-                    return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-                }
-            } else {
-                return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
-            }
-
+        boolean isAipJourney = asylumCase
+            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+            .map(journeyType -> journeyType == JourneyType.AIP)
+            .orElse(false);
+        State currentState = callback.getCaseDetails().getState();
+        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
+        boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
+        if (isDlrmFeeRemission && isAipJourney) {
+            return handleDlrmFeeRemission(callback, currentState, isPayLaterAppeal);
+        } else if (isAipJourney && isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
             return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
@@ -131,4 +124,24 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             && isDlrmFeeRemission;
     }
+
+    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(Callback<AsylumCase> callback, State currentState, boolean isPayLaterAppeal) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
+        State state = isRemissionExistsAip(remissionOption, helpWithFeesOption)
+            && !isPayLaterAppeal ? PENDING_PAYMENT : APPEAL_SUBMITTED;
+        if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
+            state = currentState;
+        }
+        return new PreSubmitCallbackResponse<>(asylumCase, state);
+    }
+
+    private boolean isValidPayLaterPaymentEvent(Callback<AsylumCase> callback, State currentState, boolean isPayLaterAppeal) {
+        List<State> invalidStates = List.of(APPEAL_STARTED, APPEAL_STARTED_BY_ADMIN, PENDING_PAYMENT);
+        boolean isPaymentEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
+        boolean isValidState = !invalidStates.contains(currentState);
+        return isPayLaterAppeal && isPaymentEvent && isValidState;
+    }
+
 }

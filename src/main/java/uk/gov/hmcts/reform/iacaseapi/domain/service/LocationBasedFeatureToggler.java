@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @Slf4j
@@ -47,6 +50,14 @@ public class LocationBasedFeatureToggler {
             .toJsonString();
 
         Set<Long> epimsIds = extractEpimsIds(flagValueJsonString);
+
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            return asylumCase
+                .read(CASE_MANAGEMENT_LOCATION_REF_DATA, CaseManagementLocationRefData.class)
+                .map(location -> epimsIds.contains(
+                    Long.parseLong(location.getBaseLocation().getValue().getCode())) ? YES : NO)
+                .orElse(NO);
+        }
 
         return asylumCase
             .read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class)

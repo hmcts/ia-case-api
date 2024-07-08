@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumFieldLegalRepNameFixer;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WitnessNamesUpdateService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 @Slf4j
@@ -43,6 +44,8 @@ public class ListAssistIntegrationHandler implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         asylumFieldLegalRepNameFixer.fix(asylumCase);
+
+        WitnessNamesUpdateService.update(asylumCase);
 
         PartyIdService.setAppellantPartyId(asylumCase);
         PartyIdService.setLegalRepPartyId(asylumCase);

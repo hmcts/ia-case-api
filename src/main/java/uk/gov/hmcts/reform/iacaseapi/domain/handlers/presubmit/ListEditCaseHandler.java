@@ -27,10 +27,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -45,13 +45,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
-
+@Slf4j
 @Component
 public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -60,18 +62,20 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final LocationRefDataService locationRefDataService;
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
-
+    private final NextHearingDateService nextHearingDateService;
 
     public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
                                CaseManagementLocationService caseManagementLocationService,
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
-                               LocationRefDataService locationRefDataService) {
+                               LocationRefDataService locationRefDataService,
+                               NextHearingDateService nextHearingDateService) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
+        this.nextHearingDateService = nextHearingDateService;
     }
 
     public boolean canHandle(
@@ -112,6 +116,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                         String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
                 asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
                 asylumCase.write(HEARING_CENTRE, hearingCentre);
+                addBaseLocationAndStaffLocation(asylumCase, hearingCentre);
             }
 
             asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
@@ -119,7 +124,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
 
             asylumCase.clear(IS_DECISION_WITHOUT_HEARING);
 
-            addBaseLocationAndStaffLocation(asylumCase, listingLocation);
 
         } else {
             HearingCentre listCaseHearingCentre =
@@ -181,6 +185,19 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
+        if (nextHearingDateService.enabled()) {
+            log.debug("Next hearing date feature enabled");
+            if (HandlerUtils.isIntegrated(asylumCase)) {
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromHearings(callback));
+            } else {
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromCaseData(callback));
+            }
+        } else {
+            log.debug("Next hearing date feature not enabled");
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -194,12 +211,12 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 
-    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, DynamicList listingLocation) {
+    private void addBaseLocationAndStaffLocation(AsylumCase asylumCase, HearingCentre hearingCentre) {
 
-        String staffLocationName = StaffLocation.getLocation(listingLocation.getValue().getCode()).getName();
+        String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
-        asylumCase.write(CASE_MANAGEMENT_LOCATION,
-            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+        asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
+            caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
     }
 
     private AsylumCase addDirection(AsylumCase asylumCase) {

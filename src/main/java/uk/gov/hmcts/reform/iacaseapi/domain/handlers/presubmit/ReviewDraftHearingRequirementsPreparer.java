@@ -185,5 +185,4 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
         return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.JUDGE) && !isAcceleratedDetainedAppeal;
     }
 
-
 }

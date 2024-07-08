@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -18,6 +20,10 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -37,8 +43,13 @@ public class LocationBasedFeatureTogglerTest {
     @Mock
     private CaseManagementLocation caseManagementLocation;
     @Mock
+    private CaseManagementLocationRefData caseManagementLocationRefData;
+    @Mock
     private BaseLocation baseLocation;
-
+    @Mock
+    private DynamicList refDataBaseLocationList;
+    @Mock
+    private Value refDataBaseLocation;
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     @BeforeEach
@@ -50,6 +61,11 @@ public class LocationBasedFeatureTogglerTest {
         when(asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class))
             .thenReturn(Optional.of(caseManagementLocation));
         when(caseManagementLocation.getBaseLocation()).thenReturn(baseLocation);
+        when(asylumCase.read(CASE_MANAGEMENT_LOCATION_REF_DATA, CaseManagementLocationRefData.class))
+            .thenReturn(Optional.of(caseManagementLocationRefData));
+        when(caseManagementLocationRefData.getBaseLocation()).thenReturn(refDataBaseLocationList);
+        when(refDataBaseLocationList.getValue()).thenReturn(refDataBaseLocation);
+
     }
 
     @Test
@@ -79,6 +95,24 @@ public class LocationBasedFeatureTogglerTest {
     @Test
     void isAutoHearingRequestEnabled_should_return_no() {
         when(baseLocation.getId()).thenReturn(DISABLED_LOCATION);
+
+        assertEquals(NO, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
+
+    }
+
+    @Test
+    void isAutoHearingRequestEnabled_should_return_yes_when_ref_data_enabled() {
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(refDataBaseLocation.getCode()).thenReturn(ENABLED_LOCATION);
+
+        assertEquals(YES, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
+
+    }
+
+    @Test
+    void isAutoHearingRequestEnabled_should_return_no_when_ref_data_enabled() {
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(refDataBaseLocation.getCode()).thenReturn(DISABLED_LOCATION);
 
         assertEquals(NO, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
 
