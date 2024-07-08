@@ -177,7 +177,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -278,7 +278,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -394,7 +394,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -489,7 +489,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -582,7 +582,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(hearingCentre.getEpimsId(), courtName);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -694,7 +694,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -764,7 +764,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -842,7 +842,7 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingCentreDynamicList);
+        when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);
@@ -950,7 +950,6 @@ class DeriveHearingCentreHandlerTest {
 
         Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
         DynamicList cmlDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(cmlDynamicList);
         when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(cmlDynamicList);
 
         CaseManagementLocationRefData expectedCml = new CaseManagementLocationRefData(Region.NATIONAL, cmlDynamicList);
