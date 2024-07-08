@@ -182,6 +182,8 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
                 .findFirst().ifPresent(hearingCentreDynamicList::setValue);
 
+            //the value of this field is used for searching cases from hearing centre
+            asylumCase.write(SELECTED_HEARING_CENTRE_REF_DATA, hearingCentreDynamicList.getValue().getLabel());
             asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
             asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
                 caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
