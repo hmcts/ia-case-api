@@ -62,16 +62,13 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
             maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), true)
                 .orElse(NEWPORT);
-
-            asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
-
         } else {
             maybeHearingCentre =
                 asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
                     .orElse(NEWPORT);
-
-            asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
         }
+
+        asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
 
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
