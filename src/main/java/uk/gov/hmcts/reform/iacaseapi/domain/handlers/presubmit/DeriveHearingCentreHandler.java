@@ -177,7 +177,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
 
         if (isCaseUsingLocationRefData(asylumCase)) {
-            DynamicList hearingCentreDynamicList = locationRefDataService.getHearingLocationsDynamicList();
+            DynamicList hearingCentreDynamicList = locationRefDataService.getCaseManagementLocationDynamicList();
             hearingCentreDynamicList.getListItems().stream()
                 .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
                 .findFirst().ifPresent(hearingCentreDynamicList::setValue);
