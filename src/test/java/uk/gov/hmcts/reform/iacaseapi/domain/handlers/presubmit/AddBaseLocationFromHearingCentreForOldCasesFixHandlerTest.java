@@ -135,15 +135,15 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         when(caseManagementLocationService.getCaseManagementLocation(scenario.getExpectedStaffLocation()))
             .thenReturn(new CaseManagementLocation(Region.NATIONAL, scenario.getExpectedBaseLocation()));
 
-        PreSubmitCallbackResponse<AsylumCase> actual = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        AsylumCase actualAsylum = actual.getData();
-
         uk.gov.hmcts.reform.iacaseapi.domain.entities.Value
             courtVenue = new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value("1", "Bradford");
         DynamicList cmlDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
-        when(caseManagementLocationService.getRefDataCaseManagementLocation(scenario.getExpectedStaffLocation()))
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
             .thenReturn(new CaseManagementLocationRefData(Region.NATIONAL, cmlDynamicList));
+
+        PreSubmitCallbackResponse<AsylumCase> actual = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        AsylumCase actualAsylum = actual.getData();
 
         if (scenario.getAsylumCase().read(IS_CASE_USING_LOCATION_REF_DATA).isPresent()) {
             verify(caseManagementLocationService, times(1)).getRefDataCaseManagementLocation(any());
