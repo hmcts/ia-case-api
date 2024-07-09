@@ -1,10 +1,10 @@
 {
-  "description": "RIA-2957 RIA-2959 RIA-3712 Adjourn without a date",
+  "description": "RIA-9041 Adjourn without a date (Clear list case hearing date and time, and next hearing date and time)",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "AdminOfficer",
     "input": {
-      "id": 1234,
+      "id": 9041,
       "eventId": "adjournHearingWithoutDate",
       "state": "listing",
       "caseData": {
@@ -18,7 +18,11 @@
           "doesTheCaseNeedToBeRelisted": "No",
           "ariaListingReference": "LP/12345/2019",
           "currentCaseStateVisibleToCaseOfficer": "listing",
-          "notificationsSent": []
+          "notificationsSent": [],
+          "nextHearingDetails": {
+            "hearingID": "id123",
+            "hearingDateTime": "2019-02-20T12:34:56"
+          }
         }
       },
       "caseDataBefore": {
@@ -58,7 +62,11 @@
         "ariaListingReference": "LP/12345/2019",
         "stateBeforeAdjournWithoutDate": "listing",
         "dateBeforeAdjournWithoutDate": "2018-12-31T12:34:56",
-        "notificationsSent": []
+        "notificationsSent": [],
+        "nextHearingDetails": {
+          "hearingID": null,
+          "hearingDateTime": null
+        }
       }
     }
   }
