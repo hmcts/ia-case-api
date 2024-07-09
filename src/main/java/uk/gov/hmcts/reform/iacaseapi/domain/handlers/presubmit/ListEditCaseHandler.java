@@ -115,6 +115,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                     .orElseThrow(() -> new IllegalStateException(
                         String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
                 asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
+                HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, listingLocation.getValue().getLabel());
                 asylumCase.write(HEARING_CENTRE, hearingCentre);
                 addBaseLocationAndStaffLocation(asylumCase, hearingCentre);
             }

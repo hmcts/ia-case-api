@@ -426,6 +426,8 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
         verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
+        verify(asylumCase, times(1)).write(SELECTED_HEARING_CENTRE_REF_DATA,
+            listingLocation.getValue().getLabel());
     }
 
     @ParameterizedTest

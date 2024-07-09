@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
@@ -182,8 +183,9 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
                 .findFirst().ifPresent(hearingCentreDynamicList::setValue);
 
-            //the value of this field is used for searching cases from hearing centre
-            asylumCase.write(SELECTED_HEARING_CENTRE_REF_DATA, hearingCentreDynamicList.getValue().getLabel());
+            HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase,
+                hearingCentreDynamicList.getValue().getLabel());
+
             asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
             asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
                 caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));

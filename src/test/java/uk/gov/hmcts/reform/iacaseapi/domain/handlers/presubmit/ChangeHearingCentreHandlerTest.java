@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SELECTED_HEARING_CENTRE_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.HATTON_CROSS;
 
 import java.util.Collections;
@@ -197,5 +198,7 @@ class ChangeHearingCentreHandlerTest {
 
         verify(asylumCase).read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
         verify(asylumCase).write(HEARING_CENTRE, HATTON_CROSS);
+        verify(asylumCase).write(SELECTED_HEARING_CENTRE_REF_DATA,
+            hearingCentreList.getValue().getLabel());
     }
 }
