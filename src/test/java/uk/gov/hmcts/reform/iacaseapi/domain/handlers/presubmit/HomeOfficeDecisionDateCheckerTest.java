@@ -462,11 +462,12 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    void handles_out_of_country_if_internal_case_and_leave_uk() {
+    void handles_out_of_country_if_internal_case_and_leave_uk_in_time() {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(OutOfCountryCircumstances.LEAVE_UK));
         when(asylumCase.read(DATE_CLIENT_LEAVE_UK_ADMIN_J)).thenReturn(Optional.of("2019-01-01"));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2019-01-12"));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -474,6 +475,31 @@ class HomeOfficeDecisionDateCheckerTest {
 
         assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
         assertThat(outOfTime.getValue()).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_out_of_country_if_internal_case_and_leave_uk_out_of_time() {
+        final String decisionLetterDate = "2022-10-01";
+        final String dueDate = "2022-11-24";
+        final String nowDate = "2022-11-25";
+        final ZonedDateTime zonedDateTime = LocalDate.parse(decisionLetterDate).atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(decisionLetterDate));
+        when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_DAYS_UK)).thenReturn(zonedDueDateTime);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(OutOfCountryCircumstances.LEAVE_UK));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
     }
 
     @Test
@@ -502,7 +528,7 @@ class HomeOfficeDecisionDateCheckerTest {
 
         when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(OutOfCountryCircumstances.LEAVE_UK));
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("dateClientLeaveUk is not present")
+            .hasMessage("decisionLetterReceivedDate is not present")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
 
         when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(OutOfCountryCircumstances.NONE));
