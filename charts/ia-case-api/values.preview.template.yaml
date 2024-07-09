@@ -27,7 +27,7 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: ${AM_ROLE_ASSIGNMENT_URL:https://am-role-assignment-${SERVICE_FQDN}}
-    CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
+    CASE_DOCUMENT_AM_URL: ${CASE_DOC_AM_URL:https://${SERVICE_NAME}-ccd-case-document-am-api}
     AAC_URL: ${AAC_PR_URL:https://aac-${SERVICE_FQDN}}
     DUMMY: true
   keyVaults:
@@ -116,7 +116,7 @@ ia-case-documents-api:
       EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
-      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      CASE_DOCUMENT_AM_URL: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -361,7 +361,7 @@ ia-bail-case-api:
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      CASE_DOCUMENT_AM_URL: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -500,7 +500,7 @@ ia-aip-frontend:
       PCQ_URL: https://pcq.aat.platform.hmcts.net
       # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
       PCQ_RETURN_URL: https://${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net/about-appeal
-      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      CASE_DOCUMENT_AM_URL: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
@@ -593,7 +593,7 @@ xui-webapp:
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: ${AAC_PR_URL:https://aac-${SERVICE_FQDN}}
-      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
+      SERVICES_DOCUMENTS_API_V2: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
       SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
       SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
@@ -715,7 +715,7 @@ ccd:
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
-        CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+        CASE_DOCUMENT_AM_URL: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
         ROLE_ASSIGNMENT_URL: ${AM_ROLE_ASSIGNMENT_URL:https://am-role-assignment-${SERVICE_FQDN}}
         USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
         DEFINITION_STORE_HOST: https://ccd-definition-store-${SERVICE_FQDN}
@@ -1025,7 +1025,7 @@ em-stitching:
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      CDAM_URL: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
     secrets:
       SPRING_DATASOURCE_PASSWORD:
