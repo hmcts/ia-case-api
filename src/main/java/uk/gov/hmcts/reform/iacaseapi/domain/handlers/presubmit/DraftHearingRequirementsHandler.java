@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
@@ -134,6 +135,8 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
             asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
             asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+        } else {
+            InterpreterLanguagesUtils.sanitizeAppellantLanguageComplexType(asylumCase);
         }
 
         if (witnessDetails.isEmpty()) {
@@ -144,6 +147,7 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(asylumCase::clear);
         } else {
             persistWitnessInterpreterCategoryField(asylumCase);
+            InterpreterLanguagesUtils.sanitizeWitnessLanguageComplexType(asylumCase);
         }
 
         // WitnessListElement(s) are only needed for the AIP screens, they do not need to be written
