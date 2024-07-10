@@ -22,6 +22,8 @@ replace data
 replace_mapping_keys = [x.lower() for x in list(settings.replace_mapping_dict.keys())]
 replace_csv_mapping_keys = [x.lower() for x in list(settings.csv_rows_to_redact.keys())]
 
+lowercase_dict = {key.lower(): value for key, value in settings.replace_mapping_dict.items()}
+
 
 def redact_values_from_json(file_path, keys_to_redact):
     with open(file_path, 'r') as file:
@@ -88,8 +90,8 @@ def get_redacted_file_path(original_file_path):
 
 
 def get_replace_term(key):
-    key = key.lower()
-    return settings.replace_mapping_dict.get(key, 'redacted')
+    lower_key = key.lower()
+    return lowercase_dict.get(lower_key, 'redacted')
 
 
 def replace_specific_field_in_json_file(
