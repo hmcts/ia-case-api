@@ -38,6 +38,10 @@ public class StaffLocation {
                 return new Location("", "Harmondsworth");
             case "yarlsWood":
                 return new Location("", "Yarls Wood");
+            case "arnhemHouse":
+                return new Location("", "Arnhem House");
+            case "crownHouse":
+                return new Location("", "Crown House");
             case "remoteHearing":
                 return new Location("", "Remote hearing");
             case "decisionWithoutHearing":
