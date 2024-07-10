@@ -106,6 +106,20 @@ class StaffLocationTest {
     }
 
     @Test
+    void should_get_correct_location_of_arnhemHouse() {
+        HearingCentre hearingCentre = HearingCentre.ARNHEM_HOUSE;
+        Location result = StaffLocation.getLocation(hearingCentre);
+        assertEquals("Arnhem House", result.getName());
+    }
+
+    @Test
+    void should_get_correct_location_of_crownHouse() {
+        HearingCentre hearingCentre = HearingCentre.CROWN_HOUSE;
+        Location result = StaffLocation.getLocation(hearingCentre);
+        assertEquals("Crown House", result.getName());
+    }
+
+    @Test
     public void should_get_correct_location_of_North_Shields() {
         HearingCentre hearingCentre = HearingCentre.NORTH_SHIELDS;
         Location result = StaffLocation.getLocation(hearingCentre);
