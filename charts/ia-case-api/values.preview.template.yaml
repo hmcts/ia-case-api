@@ -59,7 +59,6 @@ global:
   postgresSecret: postgres
   databaseNamePrefix: "pr-${CHANGE_ID}-"
 
-
 ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
@@ -391,6 +390,69 @@ ia-bail-case-api:
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    # image: hmctspublic.azurecr.io/ia/hearings-api:latest
+    image: hmctspublic.azurecr.io/ia/hearings-api:pr-416
+    applicationPort: 8100
+    readinessPath: '/health/readiness'
+    releaseNameOverride: ${SERVICE_NAME}-hearings-api
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+    environment:
+      HEARINGS_API_URL: "https://ia-hearings-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      CCD_URL: ${CORE_CASE_DATA_API_URL:http://{{ .Release.Name }}-ccd-data-store-api}
+      AAC_URL: ${AAC_PR_URL:https://aac-${SERVICE_FQDN}}
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: "http://rd-professional-api-aat.service.core-compute-aat.internal"
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      XUI_URL: "http://{{ .Release.Name }}-xui-webapp"
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "hmc-ia-subs-to-cft-pr-${CHANGE_ID}"
+      HMC_HEARINGS_LISTENING_ENABLED: true
+      HMC_HEARINGS_TOPIC_POLICY_NAME: SendAndListenSharedAccessKey
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+      CASE_TYPE_ASYLUM_ID: Asylum
+      CASE_TYPE_BAIL_ID: Bail
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: IA_S2S_SECRET
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+        - name: hmc-servicebus-connection-string
+          alias: HEARINGS_TOPIC_CONNECTION_STRING
+        - name: hmc-servicebus-shared-access-key-tf
+          alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
 ia-timed-event-service:
   enabled: true
   java:
