@@ -183,10 +183,13 @@ withPipeline(type, product, component) {
             env.CASE_DOC_AM_URL = "https://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
             env.SERVICES_WORK_ALLOCATION_TASK_API = "http://wa-task-management-api-aat.service.core-compute-aat.internal"
             env.SERVICES_WA_WORKFLOW_API_URL = "http://wa-workflow-api-aat.service.core-compute-aat.internal"
+            env.IS_HEARINGS_ENABLED = true
         }
+        if (env.IS_HEARINGS_ENABLED != true) {
         sh """
-    ./bin/add-org-roles-to-users.sh
-    """
+            ./bin/add-org-roles-to-users.sh
+        """
+        }
     }
 
     afterAlways('functionalTest:aat') {
