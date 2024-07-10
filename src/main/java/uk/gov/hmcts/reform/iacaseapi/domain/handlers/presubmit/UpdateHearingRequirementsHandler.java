@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
