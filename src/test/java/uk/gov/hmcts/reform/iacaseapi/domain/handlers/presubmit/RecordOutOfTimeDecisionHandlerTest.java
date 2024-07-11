@@ -220,6 +220,7 @@ class RecordOutOfTimeDecisionHandlerTest {
         when(callback.getEvent()).thenReturn(Event.RECORD_OUT_OF_TIME_DECISION);
         when(asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class)).thenReturn(Optional.of(OutOfTimeDecisionType.IN_TIME));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
 
         when(asylumCase.read(OUT_OF_TIME_DECISION_DOCUMENT, Document.class)).thenReturn(Optional.of(outOfTimeDecisionDocument));

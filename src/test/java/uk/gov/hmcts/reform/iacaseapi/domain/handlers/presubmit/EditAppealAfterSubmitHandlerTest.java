@@ -138,8 +138,8 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
-        when(asylumCase.read(APPELLANT_IN_UK)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(IS_ADMIN)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
