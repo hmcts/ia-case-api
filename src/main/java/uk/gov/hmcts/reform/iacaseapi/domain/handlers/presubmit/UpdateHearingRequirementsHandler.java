@@ -44,6 +44,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
     private static final String LIST_YES = "Yes";
     private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final FeatureToggler featureToggler;
+    private static final String LIST_YES = "Yes";
 
     public UpdateHearingRequirementsHandler(
         PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender,

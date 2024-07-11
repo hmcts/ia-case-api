@@ -2632,6 +2632,7 @@ public enum AsylumCaseFieldDefinition {
 
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){});
 
+
     private final String value;
     private final TypeReference typeReference;
 
