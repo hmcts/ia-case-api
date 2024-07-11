@@ -36,7 +36,7 @@ class StateTest {
         assertEquals("cmaAdjustmentsAgreed", State.CMA_ADJUSTMENTS_AGREED.toString());
         assertEquals("cmaListed", State.CMA_LISTED.toString());
         assertEquals("remitted", State.REMITTED.toString());
-        assertEquals("remitted", State.MIGRATED.toString());
+        assertEquals("migrated", State.MIGRATED.toString());
         assertEquals("unknown", State.UNKNOWN.toString());
     }
 
