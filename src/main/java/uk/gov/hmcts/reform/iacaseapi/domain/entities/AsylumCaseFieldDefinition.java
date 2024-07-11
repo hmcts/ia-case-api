@@ -2118,6 +2118,12 @@ public enum AsylumCaseFieldDefinition {
     // Used to store generated letter notification docs which will be stitched together
     LETTER_NOTIFICATION_DOCUMENTS(
         "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    IS_ARIA_MIGRATED(
+        "isAriaMigrated", new TypeReference<YesOrNo>(){}),
+
+    ARIA_DESIRED_STATE(
+        "ariaDesiredState", new TypeReference<State>(){}),
     ;
 
     private final String value;
