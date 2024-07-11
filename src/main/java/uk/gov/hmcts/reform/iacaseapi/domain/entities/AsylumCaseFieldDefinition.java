@@ -2109,6 +2109,18 @@ public enum AsylumCaseFieldDefinition {
     REHEARD_HEARING_DOCUMENTS_COLLECTION(
             "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
+    IS_INTERPRETER_SERVICES_NEEDED(
+        "isInterpreterServicesNeeded", new TypeReference<YesOrNo>(){}),
+
+    APPELLANT_INTERPRETER_SPOKEN_LANGUAGE(
+        "appellantInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPELLANT_INTERPRETER_SIGN_LANGUAGE(
+        "appellantInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPELLANT_INTERPRETER_LANGUAGE_CATEGORY(
+        "appellantInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
     ;
 
     private final String value;
