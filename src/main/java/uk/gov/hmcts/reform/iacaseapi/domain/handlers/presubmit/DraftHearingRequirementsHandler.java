@@ -64,8 +64,6 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
-        populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase);
-
         final Optional<List<IdValue<WitnessDetails>>> mayBeWitnessDetails = asylumCase.read(WITNESS_DETAILS);
 
         final List<WitnessDetails> witnessDetails = mayBeWitnessDetails.orElse(Collections.emptyList()).stream().map(IdValue::getValue).collect(Collectors.toList());

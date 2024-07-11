@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistC
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -54,9 +52,7 @@ class HandlerUtilsTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
-
 
     @Test
     void given_journey_type_aip_returns_true() {

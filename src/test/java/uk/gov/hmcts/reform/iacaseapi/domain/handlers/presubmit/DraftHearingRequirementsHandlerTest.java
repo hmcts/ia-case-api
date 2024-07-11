@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,7 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -38,7 +36,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -310,17 +307,5 @@ class DraftHearingRequirementsHandlerTest {
         assertThatThrownBy(() -> draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void should_populate_appellant_interpreter_language_fields() {
-        try (MockedStatic<HandlerUtils> mockedStatic = mockStatic(HandlerUtils.class)) {
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-            mockedStatic.verify(() -> HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase));
-        }
     }
 }

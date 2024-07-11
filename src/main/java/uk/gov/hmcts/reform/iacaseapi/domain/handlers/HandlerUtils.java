@@ -14,7 +14,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
