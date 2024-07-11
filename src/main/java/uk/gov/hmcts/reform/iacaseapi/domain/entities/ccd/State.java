@@ -35,6 +35,7 @@ public enum State {
     CMA_LISTED("cmaListed"),
     ADJOURNED("adjourned"),
     REMITTED("remitted"),
+    MIGRATED("migrated"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
