@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
@@ -11,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageC
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -133,5 +135,55 @@ public class InterpreterLanguagesUtilsTest {
             .clear(WITNESS_9_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
             .clear(WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY);
+    }
+
+    @Test
+    void sanitizeAppellantLanguageComplexType() {
+        InterpreterLanguageRefData spokenInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("scl", "Shina"), Collections.emptyList()),
+            List.of("Yes"), "language");
+        InterpreterLanguageRefData signInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("jpn", "Japanese"), Collections.emptyList()),
+            Collections.emptyList(), "language");
+
+        when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(spokenInterpreterLanguage));
+        when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(signInterpreterLanguage));
+
+        InterpreterLanguagesUtils.sanitizeAppellantLanguageComplexType(asylumCase);
+
+        assertNull(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
+            .get().getLanguageRefData());
+        assertNull(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
+            .get().getLanguageManualEntryDescription());
+    }
+
+    @Test
+    void sanitizeWitnessLanguageComplexType() {
+        InterpreterLanguageRefData spokenInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("scl", "Shina"), Collections.emptyList()),
+            List.of("Yes"), "language");
+        InterpreterLanguageRefData signInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("jpn", "Japanese"), Collections.emptyList()),
+            Collections.emptyList(), "language");
+
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(
+            field -> when(asylumCase.read(field, InterpreterLanguageRefData.class))
+                .thenReturn(Optional.of(spokenInterpreterLanguage)));
+
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(
+            field -> when(asylumCase.read(field, InterpreterLanguageRefData.class))
+                .thenReturn(Optional.of(signInterpreterLanguage)));
+
+        InterpreterLanguagesUtils.sanitizeWitnessLanguageComplexType(asylumCase);
+
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(
+            field -> assertNull(asylumCase.read(field, InterpreterLanguageRefData.class)
+                .get().getLanguageRefData()));
+
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(
+            field -> assertNull(asylumCase.read(field, InterpreterLanguageRefData.class)
+                .get().getLanguageManualEntryDescription()));
     }
 }

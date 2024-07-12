@@ -237,4 +237,60 @@ public final class InterpreterLanguagesUtils {
         return dynamicListValueSelected || manualLanguageSelected;
     }
 
+    private static void sanitizeInterpreterLanguageRefDataComplexType(AsylumCase asylumCase, AsylumCaseFieldDefinition asylumCaseFieldDefinition) {
+        InterpreterLanguageRefData sanitizedComplexType;
+        Optional<InterpreterLanguageRefData> spoken =
+            asylumCase.read(asylumCaseFieldDefinition, InterpreterLanguageRefData.class);
+
+        if (spoken.isPresent()) {
+            InterpreterLanguageRefData spokenComplexType = spoken.get();
+
+            sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+            asylumCase.write(asylumCaseFieldDefinition, sanitizedComplexType);
+        }
+    }
+
+    private static InterpreterLanguageRefData clearComplexTypeField(InterpreterLanguageRefData languageComplexType) {
+        if (languageComplexType.getLanguageManualEntry().isEmpty()
+            && languageComplexType.getLanguageManualEntryDescription() != null) {
+
+            languageComplexType.setLanguageManualEntryDescription(null);
+
+        } else if (languageComplexType.getLanguageManualEntry().contains("Yes")
+            && languageComplexType.getLanguageRefData() != null) {
+
+            languageComplexType.setLanguageRefData(null);
+        }
+        return languageComplexType;
+    }
+
+    /*
+    If the user entered the language manually, the complex type will look like this:
+    DYNAMIC LIST: null
+    MANUAL LANGUAGE CHECKBOX: Yes
+    MANUAL LANGUAGE DESC: An arbitrary language
+
+    When the user changes the language to non-manual, the complex type ends up looking like this:
+    DYNAMIC LIST: Selected Ref Data Language
+    MANUAL LANGUAGE CHECKBOX: Yes
+    MANUAL LANGUAGE DESC: An arbitrary language
+
+    Before saving submitting the event, the field gets sorted by this method so it'll look like this:
+    DYNAMIC LIST: Selected Ref Data Language
+    MANUAL LANGUAGE CHECKBOX: null
+    MANUAL LANGUAGE DESC: null
+     */
+    public static void sanitizeWitnessLanguageComplexType(AsylumCase asylumCase) {
+        int i = 0;
+        while (i < 10) {
+            sanitizeInterpreterLanguageRefDataComplexType(asylumCase, WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(i));
+            sanitizeInterpreterLanguageRefDataComplexType(asylumCase, WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i));
+            i++;
+        }
+    }
+
+    public static void sanitizeAppellantLanguageComplexType(AsylumCase asylumCase) {
+        sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
 }
