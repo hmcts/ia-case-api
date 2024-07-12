@@ -386,6 +386,7 @@ dependencies {
     }
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
+    implementation 'joda-time:joda-time:2.12.7'
 
     compileOnly 'org.projectlombok:lombok'
 
