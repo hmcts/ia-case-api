@@ -351,7 +351,6 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "markAppealAsRemitted"
-      - "ariaCreateCase"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -448,6 +447,7 @@ security:
       - "endAppealAutomatically"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "ariaCreateCase"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"

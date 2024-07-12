@@ -2,7 +2,7 @@
   "description": "RIA-9152 Aria Create Case should set relevant data (isAriaMigrated, appealReferenceNumber)",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "AdminOfficer",
+    "credentials": "SystemUser",
     "input": {
       "eventId": "ariaCreateCase",
       "state": "migrated",
