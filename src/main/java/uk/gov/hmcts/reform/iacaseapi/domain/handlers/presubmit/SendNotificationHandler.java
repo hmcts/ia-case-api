@@ -51,7 +51,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     @Override
     public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LATEST;
+        return DispatchPriority.LAST;
     }
 
     public boolean canHandle(

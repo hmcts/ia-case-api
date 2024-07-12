@@ -71,7 +71,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
-    version: 1.0.4
+    version: 1.0.6
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: servicebus.enabled
   - name: ccd-message-publisher
