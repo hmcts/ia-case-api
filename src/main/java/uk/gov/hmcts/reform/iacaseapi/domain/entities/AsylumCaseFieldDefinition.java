@@ -2124,6 +2124,9 @@ public enum AsylumCaseFieldDefinition {
 
     ARIA_DESIRED_STATE(
         "ariaDesiredState", new TypeReference<State>(){}),
+
+    ARIA_DESIRED_STATE_SELECTED_VALUE(
+        "ariaDesiredStateSelectedValue", new TypeReference<String>(){}),
     ;
 
     private final String value;
