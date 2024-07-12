@@ -385,7 +385,7 @@ dependencies {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
-    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.2-RELEASE'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
     compileOnly 'org.projectlombok:lombok'
 
