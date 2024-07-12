@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.LocationRefD
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class LocationRefDataServiceTest {
 
+    private static final String COURT = "COURT";
+
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
@@ -46,7 +48,8 @@ public class LocationRefDataServiceTest {
         "N",
         "Open",
         "The Court House, Minshull Street",
-        "M1 3FS");
+        "M1 3FS",
+        COURT);
 
     private CourtVenue openCaseManagementLocation = new CourtVenue(
         "Newcastle Civil & Family Courts and Tribunals Centre",
@@ -56,7 +59,19 @@ public class LocationRefDataServiceTest {
         "Y",
         "Open",
         "Barras Bridge, Newcastle-Upon-Tyne",
-        "NE1 8QF");
+        "NE1 8QF",
+        COURT);
+
+    private CourtVenue nonCourtLocation = new CourtVenue(
+        "Newcastle Civil & Family Courts and Tribunals Centre",
+        "Newcastle Civil And Family Courts And Tribunals Centre",
+        "366796",
+        "N",
+        "Y",
+        "Open",
+        "Barras Bridge, Newcastle-Upon-Tyne",
+        "NE1 8QF",
+        "non court");
 
     private CourtVenue closedHearingCourtVenue = new CourtVenue("Manchester Magistrates",
         "Manchester Magistrates Court",
@@ -65,7 +80,8 @@ public class LocationRefDataServiceTest {
         "N",
         "Closed",
         "The Court House, Minshull Street",
-        "M1 3FS");
+        "M1 3FS",
+        COURT);
 
     private CourtVenue openNonHearingCourtVenue = new CourtVenue("Birmingham Civil and Family Justice Centre",
         "Birmingham Civil and Family Justice Centre",
@@ -74,7 +90,8 @@ public class LocationRefDataServiceTest {
         "N",
         "Open",
         "Priory Courts, 33 Bull Street",
-        "B4 6DS");
+        "B4 6DS",
+        COURT);
 
     private CourtVenue closedNonHearingCourtVenue = new CourtVenue("Birmingham Civil and Family Justice Centre",
         "Birmingham Civil and Family Justice Centre",
@@ -83,7 +100,8 @@ public class LocationRefDataServiceTest {
         "N",
         "Closed",
         "Priory Courts, 33 Bull Street",
-        "B4 6DS");
+        "B4 6DS",
+        COURT);
 
     @Mock
     DynamicList dynamicList;
@@ -132,6 +150,9 @@ public class LocationRefDataServiceTest {
 
     @Test
     void should_return_dynamicList_when_getCaseManagementLocationDynamicList() {
+        when(locationCategory.getCourtVenues()).thenReturn(List.of(
+            openCaseManagementLocation,
+            nonCourtLocation));
 
         dynamicList = new DynamicList(new Value("", ""),
             List.of(new Value(openCaseManagementLocation.getEpimmsId(),
