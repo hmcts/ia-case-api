@@ -437,6 +437,12 @@ public class CcdScenarioRunnerTest {
                 .getCitizenAuthorization();
         }
 
+        if ("SystemUser".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                    .getSystemUserAuthorization();
+        }
+
         return new Headers();
     }
 }

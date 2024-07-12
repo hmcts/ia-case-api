@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
+// @TODO Temporary class/handler for migration work, to be removed
 @Component
 public class CreateMigratedCasePreparer implements PreSubmitCallbackStateHandler<AsylumCase> {
 
