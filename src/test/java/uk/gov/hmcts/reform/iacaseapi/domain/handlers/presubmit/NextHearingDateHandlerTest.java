@@ -1,0 +1,168 @@
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SET_NEXT_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
+
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
+class NextHearingDateHandlerTest {
+
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private NextHearingDateService nextHearingDateSerice;
+
+    private NextHearingDateHandler handler;
+    private final String listCaseHearingDate = LocalDateTime.now().plusDays(1).toString();
+
+
+    @BeforeEach
+    public void setUp() {
+
+        handler = new NextHearingDateHandler(nextHearingDateSerice);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    public void should_not_set_next_hearing_date_if_feature_not_enabled(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(nextHearingDateSerice.enabled()).thenReturn(false);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+        verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    public void should_set_next_hearing_date_from_hearings(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(nextHearingDateSerice.enabled()).thenReturn(true);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
+            .hearingId("hearingId").hearingDateTime("hearingDateTime").build();
+        when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
+            .thenReturn(Optional.of(nextHearingDetails));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(nextHearingDateSerice, times(1)).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    public void should_set_next_hearing_date_from_case_data(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(nextHearingDateSerice.enabled()).thenReturn(true);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice).calculateNextHearingDateFromCaseData(callback);
+        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
+    }
+
+    @Test
+    void it_can_handle_callback() {
+
+        for (Event event : Event.values()) {
+
+            when(callback.getEvent()).thenReturn(event);
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                boolean canHandle = handler.canHandle(callbackStage, callback);
+
+                if (List.of(LIST_CASE, EDIT_CASE_LISTING, SET_NEXT_HEARING_DATE).contains(event)
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+
+                    assertTrue(canHandle);
+                } else {
+                    assertFalse(canHandle);
+                }
+            }
+
+            reset(callback);
+        }
+    }
+
+    @Test
+    void should_not_allow_null_arguments() {
+
+        assertThatThrownBy(() -> handler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> handler.handle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+    }
+}
