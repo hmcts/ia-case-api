@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -48,13 +49,15 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
 
         if (nextHearingDateService.enabled()) {
             log.debug("Next hearing date feature enabled");
+            NextHearingDetails nextHearingDetails;
             if (HandlerUtils.isIntegrated(asylumCase)) {
-                asylumCase.write(NEXT_HEARING_DETAILS,
-                    nextHearingDateService.calculateNextHearingDateFromHearings(callback));
+                nextHearingDetails = nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            } else if (callback.getEvent() == UPDATE_NEXT_HEARING_INFO) {
+                nextHearingDetails = NextHearingDetails.builder().hearingId(null).hearingDateTime(null).build();
             } else {
-                asylumCase.write(NEXT_HEARING_DETAILS,
-                    nextHearingDateService.calculateNextHearingDateFromCaseData(callback));
+                nextHearingDetails = nextHearingDateService.calculateNextHearingDateFromCaseData(callback);
             }
+            asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
         } else {
             log.debug("Next hearing date feature not enabled");
         }
