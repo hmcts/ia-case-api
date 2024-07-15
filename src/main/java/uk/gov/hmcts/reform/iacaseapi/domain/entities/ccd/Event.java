@@ -139,6 +139,7 @@ public enum Event {
     CONSIDER_MAKING_COSTS_ORDER("considerMakingCostsOrder"),
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
+    ARIA_CREATE_CASE("ariaCreateCase"),
     PROGRESS_MIGRATED_CASE("progressMigratedCase"),
 
     @JsonEnumDefaultValue
