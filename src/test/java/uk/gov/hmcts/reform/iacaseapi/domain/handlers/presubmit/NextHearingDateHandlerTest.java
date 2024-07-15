@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -56,6 +59,8 @@ class NextHearingDateHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private NextHearingDateService nextHearingDateSerice;
+    @Captor
+    private ArgumentCaptor<NextHearingDetails> captor;
 
     private NextHearingDateHandler handler;
     private final String listCaseHearingDate = LocalDateTime.now().plusDays(1).toString();
@@ -106,7 +111,7 @@ class NextHearingDateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
     public void should_set_next_hearing_date_from_case_data(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(nextHearingDateSerice.enabled()).thenReturn(true);
@@ -120,6 +125,25 @@ class NextHearingDateHandlerTest {
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
         verify(nextHearingDateSerice).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
+    }
+
+    @Test
+    public void should_reset_next_hearing_date() {
+        when(callback.getEvent()).thenReturn(SET_NEXT_HEARING_DATE);
+        when(nextHearingDateSerice.enabled()).thenReturn(true);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), captor.capture());
+
+        NextHearingDetails expected = NextHearingDetails.builder()
+            .hearingId(null).hearingDateTime(null).build();
+        assertEquals(expected, captor.getValue());
     }
 
     @Test
