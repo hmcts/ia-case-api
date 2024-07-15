@@ -48,7 +48,7 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && Event.ARIA_CREATE_CASE == callback.getEvent();
+            && (Event.ARIA_CREATE_CASE == callback.getEvent() || Event.START_APPEAL == callback.getEvent());
     }
 
     @Override

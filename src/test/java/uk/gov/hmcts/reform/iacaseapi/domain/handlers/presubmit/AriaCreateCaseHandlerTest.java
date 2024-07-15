@@ -137,7 +137,7 @@ class AriaCreateCaseHandlerTest {
 
                 boolean canHandle = ariaCreateCaseHandler.canHandle(callbackStage, callback);
 
-                if (callback.getEvent() == Event.ARIA_CREATE_CASE
+                if ((callback.getEvent() == Event.ARIA_CREATE_CASE || callback.getEvent() == Event.START_APPEAL)
                         && callbackStage == ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {

@@ -41,7 +41,6 @@ public class ProgressMigratedCaseHandler implements PreSubmitCallbackHandler<Asy
             State newDesiredState = asylumCase.read(ARIA_DESIRED_STATE, State.class)
                 .orElseThrow(() -> new IllegalStateException("ariaDesiredState is not present"));
 
-            asylumCase.write(ARIA_DESIRED_STATE, newDesiredState);
             asylumCase.write(ARIA_DESIRED_STATE_SELECTED_VALUE, newDesiredState.getDescription());
         }
 
