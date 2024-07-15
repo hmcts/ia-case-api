@@ -16,7 +16,7 @@ public enum State {
     RESPONDENT_REVIEW("respondentReview", "Respondent review"),
     SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements", "Submit hearing requirements"),
     LISTING("listing", "Listing"),
-    PREPARE_FOR_HEARING("prepareForHearing", "Prepare For Hearing"),
+    PREPARE_FOR_HEARING("prepareForHearing", "Prepare for hearing"),
     FINAL_BUNDLING("finalBundling", "Final bundling"),
     PRE_HEARING("preHearing", "Pre hearing"),
     DECISION("decision", "Decision"),
