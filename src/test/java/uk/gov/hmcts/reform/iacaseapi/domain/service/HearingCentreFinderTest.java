@@ -9,12 +9,12 @@ import com.google.common.collect.ImmutableMap;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 
@@ -597,10 +597,11 @@ class HearingCentreFinderTest {
     }
 
 
-    @Test
-    void should_return_true_or_false_when_checking_for_listing_only_hearing_centres() {
-
-        Set<HearingCentre> allHearingCentres = EnumSet.allOf(HearingCentre.class);
+    @ParameterizedTest
+    @EnumSource(HearingCentre.class)
+    void should_return_true_or_false_when_checking_for_listing_only_hearing_centres(
+            HearingCentre hearingCentre
+    ) {
 
         List<HearingCentre> listingOnlyHearingCentres = Arrays.asList(
             HearingCentre.COVENTRY,
@@ -609,15 +610,11 @@ class HearingCentreFinderTest {
             HearingCentre.BELFAST,
             HearingCentre.NOTTINGHAM);
 
-        allHearingCentres.forEach(
-            hearingCentre -> {
-                if (listingOnlyHearingCentres.contains(hearingCentre)) {
-                    assertTrue(hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre));
-                } else {
-                    assertFalse(hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre));
-                }
-            }
-        );
+        if (listingOnlyHearingCentres.contains(hearingCentre)) {
+            assertTrue(hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre));
+        } else {
+            assertFalse(hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre));
+        }
     }
 
 

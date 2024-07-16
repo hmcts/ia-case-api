@@ -19,6 +19,14 @@ public class HearingCentreFinder {
     private final Map<HearingCentre, String> hearingCentreActivationDates;
     private final Map<HearingCentre, List<String>> hearingCentreMappings;
 
+    private final List<HearingCentre> listingOnlyHearingCentres = Arrays.asList(
+            HearingCentre.COVENTRY,
+            HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
+            HearingCentre.NEWCASTLE,
+            HearingCentre.BELFAST,
+            HearingCentre.NOTTINGHAM
+    );
+
     public HearingCentreFinder(
             HearingCentre defaultHearingCentre,
             Map<HearingCentre, List<String>> hearingCentreCatchmentAreas,
@@ -80,10 +88,7 @@ public class HearingCentreFinder {
     }
 
     public boolean hearingCentreIsActive(String hearingCentreActivationDate) {
-        if (LocalDate.parse(hearingCentreActivationDate).isAfter(LocalDate.now())) {
-            return false;
-        }
-        return true;
+        return !LocalDate.parse(hearingCentreActivationDate).isAfter(LocalDate.now());
     }
 
     public boolean hearingCentreIsActive(HearingCentre hearingCentre) {
@@ -91,11 +96,6 @@ public class HearingCentreFinder {
     }
 
     public boolean isListingOnlyHearingCentre(HearingCentre hearingCentre) {
-        return Arrays.asList(
-                HearingCentre.COVENTRY,
-                HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
-                HearingCentre.NEWCASTLE,
-                HearingCentre.BELFAST,
-                HearingCentre.NOTTINGHAM).contains(hearingCentre);
+        return listingOnlyHearingCentres.contains(hearingCentre);
     }
 }

@@ -15,6 +15,7 @@ class HearingCentreTest {
         assertEquals("glasgowTribunalsCentre", HearingCentre.GLASGOW_TRIBUNALS_CENTRE.toString());
         assertEquals("hattonCross", HearingCentre.HATTON_CROSS.toString());
         assertEquals("manchester", HearingCentre.MANCHESTER.toString());
+        assertEquals("newcastle", HearingCentre.NEWCASTLE.toString());
         assertEquals("newport", HearingCentre.NEWPORT.toString());
         assertEquals("northShields", HearingCentre.NORTH_SHIELDS.toString());
         assertEquals("nottingham", HearingCentre.NOTTINGHAM.toString());
@@ -37,6 +38,7 @@ class HearingCentreTest {
         assertEquals(HearingCentre.HATTON_CROSS, HearingCentre.from("hattonCross").get());
         assertEquals(HearingCentre.MANCHESTER, HearingCentre.from("manchester").get());
         assertEquals(HearingCentre.NORTH_SHIELDS, HearingCentre.from("northShields").get());
+        assertEquals(HearingCentre.NEWCASTLE, HearingCentre.from("newcastle").get());
         assertEquals(HearingCentre.NEWPORT, HearingCentre.from("newport").get());
         assertEquals(HearingCentre.NOTTINGHAM, HearingCentre.from("nottingham").get());
         assertEquals(HearingCentre.TAYLOR_HOUSE, HearingCentre.from("taylorHouse").get());
