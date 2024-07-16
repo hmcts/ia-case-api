@@ -208,7 +208,7 @@ public class AipToLegalRepJourneyHandlerTest {
             PaymentStatus paymentStatus,
             RemissionType remissionType,
             RemissionDecision remissionDecision,
-            boolean updateServiceRequestFields) {
+            boolean updateServiceRequestData) {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_STATUS)).thenReturn(Optional.of(paymentStatus));
         when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_TYPE, RemissionType.class))
@@ -222,7 +222,7 @@ public class AipToLegalRepJourneyHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
-        if (updateServiceRequestFields) {
+        if (updateServiceRequestData) {
             verify(asylumCase, times(1))
                     .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
             verify(asylumCase, times(1)).write(
