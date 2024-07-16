@@ -93,7 +93,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         return optRemissionType.isEmpty()
                 || optRemissionType.get() == RemissionType.NO_REMISSION
                 || (optionalRemissionDecision.isPresent()
-                && optionalRemissionDecision.get() == RemissionDecision.REJECTED);
+                && optionalRemissionDecision.get() != RemissionDecision.APPROVED);
     }
 
     private void updateAppellantContactDetails(AsylumCase asylumCase) {

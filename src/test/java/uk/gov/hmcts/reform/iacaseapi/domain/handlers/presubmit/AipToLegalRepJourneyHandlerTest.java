@@ -211,9 +211,9 @@ public class AipToLegalRepJourneyHandlerTest {
             boolean updateServiceRequestFields) {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_STATUS)).thenReturn(Optional.of(paymentStatus));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_TYPE))
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_TYPE, RemissionType.class))
                 .thenReturn(Optional.ofNullable(remissionType));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_DECISION))
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_DECISION, RemissionDecision.class))
                 .thenReturn(Optional.ofNullable(remissionDecision));
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
@@ -240,8 +240,10 @@ public class AipToLegalRepJourneyHandlerTest {
                 Arguments.of(PaymentStatus.PAYMENT_PENDING, RemissionType.NO_REMISSION, null, true),
                 Arguments.of(PaymentStatus.PAYMENT_PENDING, null, null, true),
                 Arguments.of(PaymentStatus.PAYMENT_PENDING, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
-                Arguments.of(PaymentStatus.NOT_PAID, null, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, null, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
                 Arguments.of(PaymentStatus.PAID, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, false),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, RemissionType.HELP_WITH_FEES, null, false),
                 Arguments.of(PaymentStatus.PAID, RemissionType.NO_REMISSION, null, false)
         );
     }
