@@ -1,0 +1,32 @@
+{
+  "description": "RIA-8969 Progress migrated case when desired state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "progressMigratedCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "ariaDesiredState": "preHearing",
+          "isAriaMigrated": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "preHearing",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAriaMigrated": "Yes",
+        "isAdmin": "Yes",
+        "ariaDesiredState": "preHearing"
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.migratedcase;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PROGRESS_MIGRATED_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -21,7 +21,7 @@ public class ProgressMigratedCaseHandler implements PreSubmitCallbackStateHandle
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == ABOUT_TO_START && callback.getEvent() == PROGRESS_MIGRATED_CASE;
+        return callbackStage == ABOUT_TO_SUBMIT && callback.getEvent() == PROGRESS_MIGRATED_CASE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
