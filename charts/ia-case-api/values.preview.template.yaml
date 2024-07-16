@@ -10,6 +10,9 @@ java:
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
+
+    PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+    REF_DATA_CASE_WORKER_URL: "http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal"
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
@@ -357,7 +360,7 @@ ia-bail-case-api:
       IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      PROF_REF_DATA_URL: "http://rd-professional-api-aat.service.core-compute-aat.internal"
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: ${CASE_DOC_AM_URL:http://${SERVICE_NAME}-ccd-case-document-am-api}
@@ -602,7 +605,7 @@ ia-aip-frontend:
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
-  enabled: true
+  enabled: false
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
@@ -612,7 +615,7 @@ idam-pr:
       - ${CORE_CASE_DATA_API_URL:https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect}
 
 ccd-case-document-am-api:
-  enabled: true
+  enabled: false
   java:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
@@ -689,7 +692,7 @@ xui-webapp:
           - system-user-password
 
 ccd:
-  enabled: true
+  enabled: false
   ccd:
     adminWeb:
       enabled: true
@@ -1096,7 +1099,7 @@ em-stitching:
         disabled: false
 
 aac-manage-case-assignment:
-  enabled: true
+  enabled: false
   java:
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
@@ -1145,7 +1148,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: true
+  enabled: false
   global:
     postgresUsername: hmcts
     postgresSecret: postgres
@@ -1276,7 +1279,7 @@ ccd-message-publisher:
         disabled: false
 
 am-org-role-mapping-service:
-  enabled: true
+  enabled: false
   java:
     image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
