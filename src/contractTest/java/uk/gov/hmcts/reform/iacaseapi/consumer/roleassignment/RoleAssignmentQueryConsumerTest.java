@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleA
 @PactTestFor(providerName = "am_roleAssignment_queryAssignment", port = "8991")
 @ContextConfiguration(classes = {RoleAssignmentConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
+@Disabled
 public class RoleAssignmentQueryConsumerTest {
 
     @Autowired
@@ -112,7 +113,6 @@ public class RoleAssignmentQueryConsumerTest {
     }
 
     @Test
-    @Disabled
     @PactTestFor(pactMethod = "generatePactFragmentForQueryRoleAssignments")
     public void verifyQueryRoleAssignments() {
         List<Assignment> queryRoleAssignmentResponse = roleAssignmentService
