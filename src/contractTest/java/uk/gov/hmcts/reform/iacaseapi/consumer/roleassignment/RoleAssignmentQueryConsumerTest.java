@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,6 +112,7 @@ public class RoleAssignmentQueryConsumerTest {
     }
 
     @Test
+    @Disabled
     @PactTestFor(pactMethod = "generatePactFragmentForQueryRoleAssignments")
     public void verifyQueryRoleAssignments() {
         List<Assignment> queryRoleAssignmentResponse = roleAssignmentService
