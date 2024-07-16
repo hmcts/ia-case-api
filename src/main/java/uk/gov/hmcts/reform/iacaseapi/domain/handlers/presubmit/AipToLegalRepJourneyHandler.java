@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
@@ -13,7 +15,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -23,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
@@ -65,13 +67,33 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         if (currentState == State.REASONS_FOR_APPEAL_SUBMITTED) {
             currentState = State.CASE_UNDER_REVIEW;
         }
+
+        updatePaymentFields(asylumCase);
+
+        return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+    }
+
+    private void updatePaymentFields(AsylumCase asylumCase) {
         Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_STATUS);
-        if (paymentStatusOptional.isPresent() && !PaymentStatus.PAID.equals(paymentStatusOptional.get())) {
+
+        if (paymentStatusOptional.isPresent()
+            && !PaymentStatus.PAID.equals(paymentStatusOptional.get())
+            && hasNoRemission(asylumCase)) {
+
             asylumCase.write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YES);
             asylumCase.write(AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YES);
         }
+    }
 
-        return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+    private boolean hasNoRemission(AsylumCase asylumCase) {
+        Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        Optional<RemissionDecision> optionalRemissionDecision =
+                asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+
+        return optRemissionType.isEmpty()
+                || optRemissionType.get() == RemissionType.NO_REMISSION
+                || (optionalRemissionDecision.isPresent()
+                && optionalRemissionDecision.get() == RemissionDecision.REJECTED);
     }
 
     private void updateAppellantContactDetails(AsylumCase asylumCase) {
