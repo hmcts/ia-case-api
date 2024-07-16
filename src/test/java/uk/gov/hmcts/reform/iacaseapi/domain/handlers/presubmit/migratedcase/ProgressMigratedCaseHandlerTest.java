@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PROGRESS_MIGRATED_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +62,7 @@ class ProgressMigratedCaseHandlerTest {
 
                 boolean canHandle = progressMigratedCaseHandler.canHandle(callbackStage, callback);
 
-                if (callback.getEvent() == Event.PROGRESS_MIGRATED_CASE && callbackStage == ABOUT_TO_START) {
+                if (callback.getEvent() == Event.PROGRESS_MIGRATED_CASE && callbackStage == ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -79,7 +79,7 @@ class ProgressMigratedCaseHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> progressMigratedCaseHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> progressMigratedCaseHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -96,7 +96,7 @@ class ProgressMigratedCaseHandlerTest {
     void should_throw_if_aria_desired_state_is_not_present() {
         when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> progressMigratedCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
+        assertThatThrownBy(() -> progressMigratedCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .hasMessage("ariaDesiredState is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -106,7 +106,7 @@ class ProgressMigratedCaseHandlerTest {
         when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(PRE_HEARING));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            progressMigratedCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse);
+            progressMigratedCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertEquals(State.PRE_HEARING, response.getState());
     }
