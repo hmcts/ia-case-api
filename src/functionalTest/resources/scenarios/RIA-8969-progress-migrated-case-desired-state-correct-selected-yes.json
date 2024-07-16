@@ -10,7 +10,6 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "isAdmin": "Yes",
-          "desiredStateCorrect": "Yes",
           "ariaDesiredState": "preHearing",
           "isAriaMigrated": "Yes"
         }
@@ -25,7 +24,6 @@
       "replacements": {
         "isAriaMigrated": "Yes",
         "isAdmin": "Yes",
-        "desiredStateCorrect": "Yes",
         "ariaDesiredState": "preHearing"
       }
     }
