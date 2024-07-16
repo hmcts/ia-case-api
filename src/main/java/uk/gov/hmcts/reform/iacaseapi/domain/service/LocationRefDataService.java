@@ -23,6 +23,7 @@ public class LocationRefDataService {
 
     private static final String OPEN = "Open";
     private static final String Y = "Y";
+    private static final String COURT = "COURT";
 
     private final AuthTokenGenerator authTokenGenerator;
     private final UserDetails userDetails;
@@ -40,7 +41,9 @@ public class LocationRefDataService {
 
     public DynamicList getCaseManagementLocationDynamicList() {
         return new DynamicList(new Value("", ""), getCourtVenues().stream()
-            .filter(courtVenue -> isOpenLocation(courtVenue) && isCaseManagementLocation(courtVenue))
+            .filter(courtVenue -> isOpenLocation(courtVenue)
+                && isCaseManagementLocation(courtVenue)
+                && isCourtLocation(courtVenue))
             .map(courtVenue -> new Value(courtVenue.getEpimmsId(), courtVenue.getCourtName()))
             .toList());
     }
@@ -69,6 +72,10 @@ public class LocationRefDataService {
 
     private boolean isCaseManagementLocation(CourtVenue courtVenue) {
         return Objects.equals(courtVenue.getIsCaseManagementLocation(), Y);
+    }
+
+    private boolean isCourtLocation(CourtVenue courtVenue) {
+        return COURT.equals(courtVenue.getLocationType());
     }
 
     private boolean isOpenLocation(CourtVenue courtVenue) {
