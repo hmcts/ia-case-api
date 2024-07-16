@@ -2119,11 +2119,20 @@ public enum AsylumCaseFieldDefinition {
     LETTER_NOTIFICATION_DOCUMENTS(
         "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    // Temporary value to set the case state as 'Migrated'
     IS_ARIA_MIGRATED(
         "isAriaMigrated", new TypeReference<YesOrNo>(){}),
 
+    // Temporary value to set the case desired state
     ARIA_DESIRED_STATE(
         "ariaDesiredState", new TypeReference<State>(){}),
+
+    // Temporary value to show the selected desired state value
+    ARIA_DESIRED_STATE_SELECTED_VALUE(
+        "ariaDesiredStateSelectedValue", new TypeReference<String>(){}),
+
+    DESIRED_STATE_CORRECT(
+        "desiredStateCorrect", new TypeReference<YesOrNo>(){}),
     ;
 
     private final String value;

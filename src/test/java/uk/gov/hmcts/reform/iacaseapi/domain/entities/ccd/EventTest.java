@@ -140,10 +140,11 @@ class EventTest {
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
         assertEquals("ariaCreateCase", Event.ARIA_CREATE_CASE.toString());
+        assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(136, Event.values().length);
+        assertEquals(137, Event.values().length);
     }
 }

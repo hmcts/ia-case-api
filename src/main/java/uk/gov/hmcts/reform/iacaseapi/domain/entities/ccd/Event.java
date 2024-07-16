@@ -140,6 +140,7 @@ public enum Event {
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
     ARIA_CREATE_CASE("ariaCreateCase"),
+    PROGRESS_MIGRATED_CASE("progressMigratedCase"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -132,13 +132,15 @@ class AriaCreateCaseHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(IS_ARIA_MIGRATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = ariaCreateCaseHandler.canHandle(callbackStage, callback);
 
-                if (callback.getEvent() == Event.ARIA_CREATE_CASE
-                        && callbackStage == ABOUT_TO_SUBMIT) {
+                if ((callbackStage == ABOUT_TO_SUBMIT && event == Event.ARIA_CREATE_CASE)
+                    || (event == Event.START_APPEAL && asylumCase.read(IS_ARIA_MIGRATED, YesOrNo.class).equals(Optional.of(YesOrNo.YES)))) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

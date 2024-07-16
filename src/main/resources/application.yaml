@@ -351,6 +351,7 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "markAppealAsRemitted"
+      - "progressMigratedCase"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -46,9 +47,12 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && Event.ARIA_CREATE_CASE == callback.getEvent();
+        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+            && Event.ARIA_CREATE_CASE == callback.getEvent())
+            || (Event.START_APPEAL == callback.getEvent()
+            && asylumCase.read(IS_ARIA_MIGRATED, YesOrNo.class).equals(Optional.of(YesOrNo.YES)));
     }
 
     @Override
@@ -61,18 +65,18 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         AppealType appealType =
-                asylumCase
-                        .read(APPEAL_TYPE, AppealType.class)
-                        .orElseThrow(() -> new IllegalStateException("appealType is not present"));
+            asylumCase
+                .read(APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
         boolean isDetainedAppeal = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO) == YES;
 
         String appealReferenceNumber =
-                appealReferenceNumberGenerator.generate(
-                        callback.getCaseDetails().getId(),
-                        appealType,
-                        isDetainedAppeal
-                );
+            appealReferenceNumberGenerator.generate(
+                callback.getCaseDetails().getId(),
+                appealType,
+                isDetainedAppeal
+            );
 
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
         asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
