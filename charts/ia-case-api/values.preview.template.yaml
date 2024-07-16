@@ -605,7 +605,7 @@ ia-aip-frontend:
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
-  enabled: false
+  enabled: true
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
@@ -615,7 +615,7 @@ idam-pr:
       - ${CORE_CASE_DATA_API_URL:https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect}
 
 ccd-case-document-am-api:
-  enabled: false
+  enabled: true
   java:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
@@ -692,7 +692,7 @@ xui-webapp:
           - system-user-password
 
 ccd:
-  enabled: false
+  enabled: true
   ccd:
     adminWeb:
       enabled: true
@@ -1099,7 +1099,7 @@ em-stitching:
         disabled: false
 
 aac-manage-case-assignment:
-  enabled: false
+  enabled: true
   java:
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
@@ -1148,7 +1148,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: false
+  enabled: true
   global:
     postgresUsername: hmcts
     postgresSecret: postgres
@@ -1279,7 +1279,7 @@ ccd-message-publisher:
         disabled: false
 
 am-org-role-mapping-service:
-  enabled: false
+  enabled: true
   java:
     image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
