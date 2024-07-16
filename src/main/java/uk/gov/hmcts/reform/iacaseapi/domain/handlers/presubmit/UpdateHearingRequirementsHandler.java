@@ -3,9 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -26,6 +31,7 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
 
     private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final FeatureToggler featureToggler;
+    private static final String LIST_YES = "Yes";
 
     public UpdateHearingRequirementsHandler(
         PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender,
@@ -58,6 +64,10 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase);
+
+        ensureOnlySelectedLanguageCategoryIsSet(asylumCase);
 
         List<WitnessDetails> witnessDetails = asylumCase.<List<IdValue<WitnessDetails>>>read(WITNESS_DETAILS)
             .orElse(Collections.emptyList())
@@ -125,6 +135,73 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             })
             .collect(Collectors.toList())
         );
+    }
+
+    private void ensureOnlySelectedLanguageCategoryIsSet(AsylumCase asylumCase) {
+        boolean isInterpreterServicesNeeded = asylumCase
+            .read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)
+            .map(yesOrNo -> Objects.equals(yesOrNo, YesOrNo.YES))
+            .orElse(false);
+
+        if (!isInterpreterServicesNeeded) {
+            asylumCase.clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+            asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+            asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+            asylumCase.clear(INTERPRETER_LANGUAGE);
+            asylumCase.clear(INTERPRETER_LANGUAGE_READONLY);
+        } else {
+            Optional<List<String>> languageCategoriesOptional = asylumCase
+                .read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+            if (languageCategoriesOptional.isPresent()) {
+                List<String> languageCategories = languageCategoriesOptional.get();
+                Optional<InterpreterLanguageRefData> appellantInterpreterSpokenLanguage = asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+                Optional<InterpreterLanguageRefData> appellantInterpreterSignLanguage = asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+
+                if (appellantInterpreterSpokenLanguage.isPresent()
+                    && !languageCategories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
+                    asylumCase.clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+                }
+
+                if (appellantInterpreterSignLanguage.isPresent()
+                    && !languageCategories.contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
+                    asylumCase.clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+                }
+            }
+
+            sanitizeAppellantLanguageComplexType(asylumCase);
+        }
+    }
+
+    private void sanitizeAppellantLanguageComplexType(AsylumCase asylumCase) {
+        sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    private void sanitizeInterpreterLanguageRefDataComplexType(AsylumCase asylumCase, AsylumCaseFieldDefinition asylumCaseFieldDefinition) {
+        InterpreterLanguageRefData sanitizedComplexType;
+        Optional<InterpreterLanguageRefData> spoken =
+            asylumCase.read(asylumCaseFieldDefinition, InterpreterLanguageRefData.class);
+
+        if (spoken.isPresent()) {
+            InterpreterLanguageRefData spokenComplexType = spoken.get();
+
+            sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+            asylumCase.write(asylumCaseFieldDefinition, sanitizedComplexType);
+        }
+    }
+
+    private InterpreterLanguageRefData clearComplexTypeField(InterpreterLanguageRefData languageComplexType) {
+        if (languageComplexType.getLanguageManualEntry().isEmpty()
+            && languageComplexType.getLanguageManualEntryDescription() != null) {
+
+            languageComplexType.setLanguageManualEntryDescription(null);
+
+        } else if (languageComplexType.getLanguageManualEntry().contains(LIST_YES)
+            && languageComplexType.getLanguageRefData() != null) {
+
+            languageComplexType.setLanguageRefData(null);
+        }
+        return languageComplexType;
     }
 }
 
