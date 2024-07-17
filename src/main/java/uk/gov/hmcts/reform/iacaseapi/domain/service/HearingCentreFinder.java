@@ -15,6 +15,7 @@ public class HearingCentreFinder {
     private static final Pattern POSTCODE_AREA_PATTERN = Pattern.compile("([A-Za-z]+).*");
 
     private final HearingCentre defaultHearingCentre;
+
     private final Map<HearingCentre, List<String>> hearingCentreCatchmentAreas;
     private final Map<HearingCentre, String> hearingCentreActivationDates;
     private final Map<HearingCentre, List<String>> hearingCentreMappings;
