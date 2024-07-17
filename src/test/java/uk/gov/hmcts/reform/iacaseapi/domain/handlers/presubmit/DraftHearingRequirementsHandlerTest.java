@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -23,6 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -36,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -307,5 +311,38 @@ class DraftHearingRequirementsHandlerTest {
         assertThatThrownBy(() -> draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_call_sanitizeAppellantLanguageComplexType_if_interpreter_services_is_required() {
+
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
+
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeAppellantLanguageComplexType(any()),
+                times(1));
+        }
+    }
+
+    @Test
+    void should_call_sanitizeWitnessLanguageComplexType_if_there_are_witnesses_in_collection() {
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
+            .asList(new IdValue("1", new WitnessDetails("cap", "cap")),
+                new IdValue("2", new WitnessDetails("Pan", "Pan")))));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
+
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeWitnessLanguageComplexType(any()),
+                times(1));
+        }
     }
 }

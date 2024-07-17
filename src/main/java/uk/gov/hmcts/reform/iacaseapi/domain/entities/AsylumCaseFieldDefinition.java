@@ -2634,6 +2634,7 @@ public enum AsylumCaseFieldDefinition {
 
     SELECTED_HEARING_CENTRE_REF_DATA("selectedHearingCentreRefData", new TypeReference<String>(){});
 
+
     private final String value;
     private final TypeReference typeReference;
 

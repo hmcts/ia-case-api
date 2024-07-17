@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.List;
 import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
