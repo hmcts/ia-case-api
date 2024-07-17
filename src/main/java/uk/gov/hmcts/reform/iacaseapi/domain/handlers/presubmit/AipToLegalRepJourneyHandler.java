@@ -69,12 +69,12 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
             currentState = State.CASE_UNDER_REVIEW;
         }
 
-        updatePaymentFields(asylumCase);
+        updatePaymentServiceRequestDetails(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }
 
-    private void updatePaymentFields(AsylumCase asylumCase) {
+    private void updatePaymentServiceRequestDetails(AsylumCase asylumCase) {
         Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(
                 AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class);
 

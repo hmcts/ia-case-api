@@ -93,7 +93,7 @@ class AppealSubmitHandlerTest {
     }
 
     @Test
-    void should_make_service_request_tab_visible_if_remission_type_does_not_exist() {
+    void should_make_service_request_tab_visible_when_remission_type_does_not_exist() {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
