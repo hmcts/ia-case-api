@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
@@ -74,14 +75,20 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
     }
 
     private void updatePaymentFields(AsylumCase asylumCase) {
-        Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_STATUS);
+        Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(
+                AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class);
 
         if (paymentStatusOptional.isPresent()
             && !PaymentStatus.PAID.equals(paymentStatusOptional.get())
             && hasNoRemission(asylumCase)) {
 
-            asylumCase.write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YES);
             asylumCase.write(AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YES);
+
+            Optional<String> paymentReferenceOpt = asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_REFERENCE);
+
+            if (paymentReferenceOpt.isPresent() && isNotEmpty(paymentReferenceOpt.get())) {
+                asylumCase.write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YES);
+            }
         }
     }
 
