@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -174,6 +175,7 @@ public class RoleAssignmentQueryConsumerTest {
         responseHeaders.put("Content-Type",
             "application/vnd.uk.gov.hmcts.role-assignment-service.post-assignment-query-request+json;"
                 + "charset=UTF-8;version=1.0");
+        responseHeaders.put(HttpHeaders.CONNECTION, "close");
         return responseHeaders;
     }
 
