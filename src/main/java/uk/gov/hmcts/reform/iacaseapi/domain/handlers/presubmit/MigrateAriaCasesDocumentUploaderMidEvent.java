@@ -42,8 +42,8 @@ public class MigrateAriaCasesDocumentUploaderMidEvent implements PreSubmitCallba
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.PROGRESS_MIGRATED_CASE
-               && callback.getPageId().equals("migrateAriaCasesDocumentUploaderMidEvent");
+            && callback.getEvent() == Event.PROGRESS_MIGRATED_CASE
+            && callback.getPageId().equals("migrateAriaCasesDocumentUploaderMidEvent");
     }
 
     @Override
@@ -62,7 +62,9 @@ public class MigrateAriaCasesDocumentUploaderMidEvent implements PreSubmitCallba
         Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence = asylumCase.read(RESPONDENT_EVIDENCE);
 
 
-        if (ariaDesiredState.equals(APPEAL_SUBMITTED) || (ariaDesiredState.equals(AWAITING_RESPONDENT_EVIDENCE) && maybeRespondentEvidence.isPresent())|| ariaDesiredState.equals(CASE_UNDER_REVIEW) || ariaDesiredState.equals(REASONS_FOR_APPEAL_SUBMITTED) || ariaDesiredState.equals(LISTING) || ariaDesiredState.equals(DECISION) || ariaDesiredState.equals(FTPA_SUBMITTED)) {
+        if (ariaDesiredState.equals(APPEAL_SUBMITTED) || (ariaDesiredState.equals(AWAITING_RESPONDENT_EVIDENCE) && maybeRespondentEvidence.isPresent())
+            || ariaDesiredState.equals(CASE_UNDER_REVIEW) || ariaDesiredState.equals(REASONS_FOR_APPEAL_SUBMITTED) || ariaDesiredState.equals(LISTING) ||
+            ariaDesiredState.equals(DECISION) || ariaDesiredState.equals(FTPA_SUBMITTED)) {
             asylumCase.write(MIGRATION_MAIN_TEXT_VISIBLE, "VHH");
         } else if (ariaDesiredState.equals(PREPARE_FOR_HEARING) || (ariaDesiredState.equals(DECIDED) && updateTribunalDecisionRules.isPresent())) {
             asylumCase.write(MIGRATION_MAIN_TEXT_VISIBLE, "HMC");

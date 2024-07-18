@@ -45,7 +45,7 @@ public class MigrateAriaCasesDocumentUploaderConfirmation implements PostSubmitC
                 + "dropdown list in your case details, using 'Edit documents'.\n\n"
                 + "#### If this case was listed for a hearing\n\n"
                 + "Listings have not been migrated. If this case was listed for a hearing,     \n"
-                + "you must transfer the listing over to the hearing management \n"
+                + "you must transfer the listing over to the hearing management     \n"
                 + "component (HMC) as part of the migration process."
         );
 
