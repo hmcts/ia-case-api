@@ -87,6 +87,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         YesOrNo isHearingBundleAmended = asylumCase
             .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO);
+        asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
         Optional<List<IdValue<Bundle>>> maybeCaseBundles = asylumCase.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
 
         final List<Bundle> caseBundles = maybeCaseBundles
@@ -125,7 +126,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         AsylumCase asylumCaseWithNotificationMarker = isNotificationTurnedOff(asylumCase)
                 ? asylumCase : notificationSender.send(callback);
-
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 
@@ -194,7 +194,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 AsylumCaseFieldDefinition.AMENDED_REHEARD_BUNDLE_COUNT : AsylumCaseFieldDefinition.AMENDED_BUNDLE_COUNT;
             Integer amendedCount = asylumCase.read(amendedCountDefinition, Integer.class).orElse(0);
             asylumCase.write(amendedCountDefinition, amendedCount + 1);
-            asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
         } else {
             allHearingDocuments =
                 documentsAppender.append(

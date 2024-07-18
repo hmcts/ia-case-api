@@ -121,6 +121,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
+        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_AMENDED);
     }
 
     @ParameterizedTest
@@ -317,6 +318,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         //verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
         verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
         verify(notificationSender, times(1)).send(callback);
+        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_AMENDED);
     }
 
     @ParameterizedTest
