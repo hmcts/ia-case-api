@@ -371,6 +371,7 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "markAppealAsRemitted"
+      - "hearingCancelled"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
