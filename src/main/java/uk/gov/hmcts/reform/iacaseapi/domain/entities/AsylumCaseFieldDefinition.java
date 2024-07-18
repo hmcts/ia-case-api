@@ -2138,7 +2138,7 @@ public enum AsylumCaseFieldDefinition {
     MIGRATION_MAIN_TEXT_VISIBLE(
         "migrationMainTextVisible", new TypeReference<String>(){}),
     MIGRATION_HMC_SECOND_PART_VISIBLE(
-        "migrationHMCSecondPartVisible", new TypeReference<String>(){}),
+        "migrationHmcSecondPartVisible", new TypeReference<String>(){}),
     ;
 
     private final String value;
