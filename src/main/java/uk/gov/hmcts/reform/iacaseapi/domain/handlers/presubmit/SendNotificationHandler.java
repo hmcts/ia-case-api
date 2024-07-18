@@ -234,7 +234,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.MANAGE_FEE_UPDATE,
             Event.MARK_APPEAL_AS_REMITTED,
-            Event.DECIDE_FTPA_APPLICATION
+            Event.DECIDE_FTPA_APPLICATION,
+            Event.UPDATE_TRIBUNAL_DECISION
         );
 
         if (!isSaveAndContinueEnabled) {
