@@ -50,6 +50,7 @@ java:
       port: 5432
   keyVaults:
     ia:
+      resourceGroup: ia
       secrets:
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
