@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
+import org.springframework.http.HttpHeaders;
+import com.google.common.collect.ImmutableMap;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -87,6 +89,7 @@ public class RoleAssignmentApiConsumerTest {
             .body(new ObjectMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()
+            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(201)
             .toPact();
     }
