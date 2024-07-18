@@ -57,7 +57,6 @@ public class IdamApiConsumerTest {
             .willRespondWith()
             .status(200)
             .body(createUserDetailsResponse())
-            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .toPact();
     }
 
@@ -66,7 +65,6 @@ public class IdamApiConsumerTest {
 
         Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
             .put("Content-Type", "application/json")
-            .put(HttpHeaders.CONNECTION, "close")
             .build();
 
         return builder
