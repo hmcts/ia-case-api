@@ -245,8 +245,10 @@ public final class InterpreterLanguagesUtils {
         if (spoken.isPresent()) {
             InterpreterLanguageRefData spokenComplexType = spoken.get();
 
-            sanitizedComplexType = clearComplexTypeField(spokenComplexType);
-            asylumCase.write(asylumCaseFieldDefinition, sanitizedComplexType);
+            if (spokenComplexType.getLanguageManualEntry() != null) {
+                sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+                asylumCase.write(asylumCaseFieldDefinition, sanitizedComplexType);
+            }
         }
     }
 
