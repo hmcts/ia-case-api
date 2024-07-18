@@ -406,7 +406,8 @@ class SendNotificationHandlerTest {
                     Event.DECIDE_FTPA_APPLICATION,
                     Event.UPDATE_TRIBUNAL_DECISION,
                     Event.END_APPEAL_AUTOMATICALLY,
-                    Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE
+                    Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                    Event.SEND_PAYMENT_REMINDER_NOTIFICATION
                 ).contains(event)) {
                 assertTrue(canHandle);
             } else {
