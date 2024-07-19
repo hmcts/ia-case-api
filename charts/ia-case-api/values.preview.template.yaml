@@ -30,6 +30,24 @@ java:
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
     AAC_URL: https://aac-${SERVICE_FQDN}
     DUMMY: true
+  keyVaults:
+    ia:
+      secrets:
+        - docmosis-enabled
+        - em-stitching-enabled
+        - submit-hearing-requirements-enabled
+        - system-username
+        - system-password
+        - idam-client-id
+        - idam-secret
+        - s2s-secret
+        - s2s-microservice
+        - prof-ref-data-url
+        - docmosis-enabled
+        - em-stitching-enabled
+        - launch-darkly-sdk-key
+        - app-insights-connection-string
+        - ia-config-validator-secret
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
