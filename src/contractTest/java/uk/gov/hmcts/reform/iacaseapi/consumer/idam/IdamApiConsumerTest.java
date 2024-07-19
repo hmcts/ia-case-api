@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
+import org.apache.http.client.fluent.Executor;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
@@ -15,6 +16,8 @@ import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.json.JSONException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +46,16 @@ public class IdamApiConsumerTest {
     @Autowired
     IdamApi idamApi;
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
+
+    @BeforeEach
+    public void prepareTest() throws Exception {
+        Thread.sleep(2000);
+    }
+
+    @AfterEach
+    void teardown() {
+        Executor.closeIdleConnections();
+    }
 
     @Pact(provider = "idamApi_oidc", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
