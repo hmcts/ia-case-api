@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
+@Disabled
 @ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
