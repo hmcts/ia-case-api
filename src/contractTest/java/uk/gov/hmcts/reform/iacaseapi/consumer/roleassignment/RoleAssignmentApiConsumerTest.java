@@ -89,7 +89,7 @@ public class RoleAssignmentApiConsumerTest {
             .body(new ObjectMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()
-                .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
+            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(201)
             .toPact();
     }
