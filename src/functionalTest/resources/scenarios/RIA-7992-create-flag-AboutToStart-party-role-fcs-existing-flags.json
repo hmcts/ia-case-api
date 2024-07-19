@@ -21,6 +21,7 @@
           "supporter3FamilyNames" : "Fcs3LastName",
           "supporter1PartyId": "fcs1-12345",
           "supporter2PartyId": "fcs2-67890",
+          "hasFinancialCondSupporter": "Yes",
           "hasFinancialCondSupporter2": "Yes",
           "fcsLevelFlags": [{
             "id": "fcs1-12345",
@@ -49,6 +50,8 @@
     "caseData": {
       "template": "minimal-application-started.json",
       "replacements": {
+        "hasFinancialCondSupporter": "Yes",
+        "hasFinancialCondSupporter2": "Yes",
         "fcsLevelFlags": [{
           "id": "fcs1-12345",
           "value": {

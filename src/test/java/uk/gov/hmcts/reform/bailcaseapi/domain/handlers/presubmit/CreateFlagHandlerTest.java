@@ -1,5 +1,19 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_APPLICANT;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_FCS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit.CreateFlagHandler.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -16,21 +30,8 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_APPLICANT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_FCS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit.CreateFlagHandler.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -43,8 +44,6 @@ class CreateFlagHandlerTest {
     private CaseDetails<BailCase> caseDetails;
     @Mock
     private BailCase bailCase;
-    @Mock
-    YesOrNo hasFcs;
     private CreateFlagHandler createFlagHandler;
     private final String partyId = "party-id";
     private final String appellantNameForDisplay = "some-name";
@@ -75,8 +74,7 @@ class CreateFlagHandlerTest {
     @Test
     void should_write_to_case_flag_fields() {
 
-        PreSubmitCallbackResponse<BailCase> callbackResponse =
-            createFlagHandler.handle(ABOUT_TO_START, callback);
+        createFlagHandler.handle(ABOUT_TO_START, callback);
 
         verify(bailCase, times(1))
             .write(APPELLANT_LEVEL_FLAGS, strategicCaseFlag);
@@ -86,26 +84,46 @@ class CreateFlagHandlerTest {
     }
 
     @Test
-    void should_write_to_fcs_case_flag_fields_if_has_fcs_field_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0))).thenReturn(Optional.of(hasFcs));
+    void should_write_to_fcs_case_flag_fields_if_has_fcs_field_yes() {
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
         when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
 
-        PreSubmitCallbackResponse<BailCase> callbackResponse =
-            createFlagHandler.handle(ABOUT_TO_START, callback);
+        createFlagHandler.handle(ABOUT_TO_START, callback);
 
         verify(bailCase, times(1)).write(FCS_LEVEL_FLAGS, fcsLevelFlags);
     }
 
     @Test
+    void should_write_empty_list_to_fcs_case_flag_fields_if_has_fcs_field_is_no() {
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
+
+        createFlagHandler.handle(ABOUT_TO_START, callback);
+
+        verify(bailCase, times(1)).write(FCS_LEVEL_FLAGS, Collections.emptyList());
+    }
+
+    @Test
+    void should_write_empty_list_to_fcs_case_flag_fields_if_has_fcs_field_is_not_set() {
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.empty());
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
+
+        createFlagHandler.handle(ABOUT_TO_START, callback);
+
+        verify(bailCase, times(1)).write(FCS_LEVEL_FLAGS, Collections.emptyList());
+    }
+
+    @Test
     void should_write_empty_list_to_fcs_case_flag_fields_if_party_id_is_not_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0))).thenReturn(Optional.of(hasFcs));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
         when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
         when(bailCase.read(FCS_N_PARTY_ID_FIELD.get(0), String.class)).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<BailCase> callbackResponse =
-            createFlagHandler.handle(ABOUT_TO_START, callback);
+        createFlagHandler.handle(ABOUT_TO_START, callback);
 
         verify(bailCase, times(1)).write(FCS_LEVEL_FLAGS, Collections.emptyList());
     }
@@ -116,13 +134,12 @@ class CreateFlagHandlerTest {
             new PartyFlagIdValue("party-id-existing", fcsCaseFlag));
 
         when(bailCase.read(FCS_LEVEL_FLAGS)).thenReturn(Optional.of(existLevelFlags));
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0))).thenReturn(Optional.of(hasFcs));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
         when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
         when(bailCase.read(FCS_N_PARTY_ID_FIELD.get(0), String.class)).thenReturn(Optional.of("party-id-existing"));
 
-        PreSubmitCallbackResponse<BailCase> callbackResponse =
-            createFlagHandler.handle(ABOUT_TO_START, callback);
+        createFlagHandler.handle(ABOUT_TO_START, callback);
 
         verify(bailCase, times(1)).write(FCS_LEVEL_FLAGS, existLevelFlags);
     }
@@ -178,7 +195,7 @@ class CreateFlagHandlerTest {
 
     @Test
     void should_throw_when_fcs_given_name_is_not_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0))).thenReturn(Optional.of(hasFcs));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(
@@ -189,7 +206,7 @@ class CreateFlagHandlerTest {
 
     @Test
     void should_throw_when_fcs_family_name_is_not_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0))).thenReturn(Optional.of(hasFcs));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
         when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.empty());
 

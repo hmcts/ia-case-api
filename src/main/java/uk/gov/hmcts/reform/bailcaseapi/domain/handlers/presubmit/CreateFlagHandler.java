@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_APPLICANT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_FCS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,8 +114,9 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<BailCase> {
 
         int i = 0;
         while (i < 4) {
-            Optional<YesOrNo> hasFcsOptional = bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(i));
-            if (hasFcsOptional.isPresent()) {
+            boolean hasFcs = bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(i), YesOrNo.class)
+                .map(yesOrNo -> YES == yesOrNo).orElse(false);
+            if (hasFcs) {
                 int finalI = i;
                 String partyId = bailCase.read(FCS_N_PARTY_ID_FIELD.get(i), String.class).orElse(null);
 
