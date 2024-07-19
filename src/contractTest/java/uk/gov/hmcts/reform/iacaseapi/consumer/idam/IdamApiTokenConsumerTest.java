@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
@@ -11,14 +10,12 @@ import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.iacaseapi.consumer.SpringBootContractBaseTest;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 
@@ -26,15 +23,11 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@ExtendWith(PactConsumerTestExt.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "ia_caseApi", port = "8892")
 @ContextConfiguration(classes = {IdamConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"}, properties = {"idam.baseUrl=http://localhost:8892"})
-
-public class IdamApiTokenConsumerTest {
+public class IdamApiTokenConsumerTest extends SpringBootContractBaseTest {
 
     @Autowired
     IdamApi idamApi;
