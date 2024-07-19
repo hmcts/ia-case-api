@@ -8,7 +8,9 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -63,7 +65,8 @@ public class RoleAssignmentApiConsumerTest {
     private final long caseId = 1212121212121213L;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        Thread.sleep(2000);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);
@@ -72,6 +75,11 @@ public class RoleAssignmentApiConsumerTest {
         when(caseDetails.getId()).thenReturn(caseId);
 
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails, idamService);
+    }
+
+    @AfterEach
+    void teardown() {
+        Executor.closeIdleConnections();
     }
 
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
