@@ -53,6 +53,7 @@ java:
       port: 5432
   keyVaults:
     ia:
+      resourceGroup: ia
       secrets:
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
@@ -82,6 +83,24 @@ java:
           alias: app-insights-connection-string
         - name: postgres-auth-values-password
           alias: PG_AUTH_VALUES_YAML_PASS
+        - name: hearing-centre-activation-date-bradford
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD
+        - name: hearing-centre-activation-date-manchester
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER
+        - name: hearing-centre-activation-date-newport
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT
+        - name: hearing-centre-activation-date-taylor-house
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE
+        - name: hearing-centre-activation-date-north-shields
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS
+        - name: hearing-centre-activation-date-birmingham
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM
+        - name: hearing-centre-activation-date-hatton-cross
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS
+        - name: hearing-centre-activation-date-glasgow
+          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
 
 ia-case-payments-api:
   enabled: false
