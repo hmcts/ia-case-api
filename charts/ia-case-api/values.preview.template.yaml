@@ -6,9 +6,10 @@ java:
   devcpuLimits: 2
   devmemoryLimits: 4Gi
   environment:
-    POSTGRES_HOST: ia-preview.postgres.database.azure.com
-    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
+    POSTGRES_HOST: ${SERVICE_NAME}-postgresql
+    POSTGRES_NAME: ia-case-api
     POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api.aat.service.core-compute-aat.internal
@@ -88,21 +89,21 @@ java:
           alias: azure.application-insights.instrumentation-key
         - name: app-insights-connection-string
           alias: app-insights-connection-string
-  secrets:
-    POSTGRES_PASSWORD:
-      secretRef: postgres
-      key: PASSWORD
-      disabled: false
-
-global:
-  postgresHostname: "ia-preview.postgres.database.azure.com"
-  postgresSecret: postgres
-  databaseNamePrefix: "pr-${CHANGE_ID}-"
-
-postgresql:
-  enabled: true
-  flexibleserver: ia-preview
-  setup:
-    databases:
-      - name: "pr-${CHANGE_ID}-ia-case-api"
+  postgresql:
+    enabled: true
+    image:
+      tag: '11.6.0'
+    primary:
+      persistence:
+        enabled: false
+      resources:
+        requests:
+          cpu: 25m
+      initdb:
+        scripts:
+          init.sql: |
+            CREATE DATABASE "ia-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+    auth:
+      username: hmcts
+      password: hmcts
 
