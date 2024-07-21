@@ -73,6 +73,10 @@ java:
           alias: idam.s2s-auth.totp_secret
         - name: s2s-microservice
           alias: IA_S2S_MICROSERVICE
+        - name: idam-url
+          alias: IDAM_URL
+        - name: s2s-url
+          alias: S2S_URL
         - name: prof-ref-data-url
           alias: PROF_REF_DATA_URL
         - name: launch-darkly-sdk-key
@@ -101,6 +105,8 @@ java:
           alias: IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
 
 ia-case-payments-api:
   enabled: false
