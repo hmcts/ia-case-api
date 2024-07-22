@@ -80,6 +80,8 @@ java:
           alias: app-insights-connection-string
         - name: postgres-auth-values-password
           alias: PG_AUTH_VALUES_YAML_PASS
+        - name: docmosis-access-key
+          alias: DOCMOSIS_ACCESS_KEY
 
 ia-case-payments-api:
   enabled: false
