@@ -1,0 +1,33 @@
+{
+  "description": "RIA-9193 Progress migrated case HMC mid Event",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=migrateAriaCasesDocumentUploaderMidEvent",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "progressMigratedCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "ariaDesiredState": "prepareForHearing",
+          "isAriaMigrated": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "prepareForHearing",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAriaMigrated": "Yes",
+        "isAdmin": "Yes",
+        "ariaDesiredState": "prepareForHearing",
+        "migrationMainTextVisible": "HMC"
+      }
+    }
+  }
+}

@@ -2136,6 +2136,12 @@ public enum AsylumCaseFieldDefinition {
 
     DESIRED_STATE_CORRECT(
         "desiredStateCorrect", new TypeReference<YesOrNo>(){}),
+    MIGRATION_MAIN_TEXT(
+        "migrationMainText", new TypeReference<String>(){}),
+    MIGRATION_MAIN_TEXT_VISIBLE(
+        "migrationMainTextVisible", new TypeReference<String>(){}),
+    MIGRATION_HMC_SECOND_PART_VISIBLE(
+        "migrationHmcSecondPartVisible", new TypeReference<String>(){}),
     ;
 
     private final String value;
