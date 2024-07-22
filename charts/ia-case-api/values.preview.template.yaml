@@ -55,36 +55,10 @@ java:
           alias: idam.s2s-auth.totp_secret
         - name: s2s-microservice
           alias: IA_S2S_MICROSERVICE
-        - name: idam-url
-          alias: IDAM_URL
-        - name: s2s-url
-          alias: S2S_URL
         - name: prof-ref-data-url
           alias: PROF_REF_DATA_URL
         - name: launch-darkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
-        - name: case-api-POSTGRES-PASS-15
-          alias: spring.datasource.password
-        - name: app-insights-connection-string
-          alias: app-insights-connection-string
-        - name: postgres-auth-values-password
-          alias: PG_AUTH_VALUES_YAML_PASS
-        - name: hearing-centre-activation-date-bradford
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD
-        - name: hearing-centre-activation-date-manchester
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER
-        - name: hearing-centre-activation-date-newport
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT
-        - name: hearing-centre-activation-date-taylor-house
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE
-        - name: hearing-centre-activation-date-north-shields
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS
-        - name: hearing-centre-activation-date-birmingham
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM
-        - name: hearing-centre-activation-date-hatton-cross
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS
-        - name: hearing-centre-activation-date-glasgow
-          alias: IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
         - name: app-insights-connection-string
