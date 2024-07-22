@@ -7,9 +7,9 @@ java:
   devmemoryLimits: 4Gi
   environment:
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_NAME: ia-case-api
-    POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: hmcts
+    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api.aat.service.core-compute-aat.internal
@@ -91,6 +91,4 @@ java:
           alias: app-insights-connection-string
   postgresql:
     enabled: true
-    auth:
-      username: hmcts
-      password: hmcts
+
