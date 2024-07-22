@@ -59,10 +59,10 @@ java:
           alias: PROF_REF_DATA_URL
         - name: launch-darkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
-        - name: AppInsightsInstrumentationKey
-          alias: azure.application-insights.instrumentation-key
         - name: app-insights-connection-string
           alias: app-insights-connection-string
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"

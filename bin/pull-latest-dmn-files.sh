@@ -14,4 +14,4 @@ cd ..
 cp -r ./ia-task-configuration/src/main/resources .
 rm -rf ./ia-task-configuration
 
-./bin/import-dmn-diagram.sh . ia ia
+#./bin/import-dmn-diagram.sh . ia ia
