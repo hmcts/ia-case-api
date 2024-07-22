@@ -1,6 +1,6 @@
 {
   "description": "RIA-7657 review interpreter language requirements for witness with legal rep",
-  "enabled": "false",
+  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isIntegrated": "Yes",
           "listCaseHearingCentre": "taylorHouse",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
@@ -43,7 +44,10 @@
             "witnessFamilyName": "AFamilyName2"
           },
           "isAnyWitnessInterpreterRequired": "Yes",
-          "isInterpreterServicesNeeded": "No",
+          "isInterpreterServicesNeeded": "Yes",
+          "witness1InterpreterLanguageCategory": [
+            "spokenLanguageInterpreter"
+          ],
           "witness1InterpreterSpokenLanguage": {
             "languageRefData": {
               "value": {
@@ -57,8 +61,7 @@
                 }
               ]
             },
-            "languageManualEntry": [],
-            "languageManualEntryDescription": ""
+            "languageManualEntry": []
           },
           "isHearingRoomNeeded": "No",
           "isHearingLoopNeeded": "No",
@@ -97,6 +100,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "isIntegrated": "Yes",
         "listCaseHearingCentre": "taylorHouse",
         "isAppellantAttendTheHearing": "Yes",
         "isAppellantGivingOralEvidence": "Yes",
@@ -130,7 +134,7 @@
           "witnessFamilyName": "AFamilyName2"
         },
         "isAnyWitnessInterpreterRequired": "Yes",
-        "isInterpreterServicesNeeded": "No",
+        "isInterpreterServicesNeeded": "Yes",
         "witness1InterpreterSpokenLanguage": {
           "languageRefData": {
             "value": {
@@ -144,8 +148,7 @@
               }
             ]
           },
-          "languageManualEntry": [],
-          "languageManualEntryDescription": ""
+          "languageManualEntry": []
         },
         "isHearingRoomNeeded": "No",
         "isHearingLoopNeeded": "No",

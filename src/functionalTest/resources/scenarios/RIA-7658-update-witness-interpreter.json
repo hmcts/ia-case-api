@@ -1,6 +1,6 @@
 {
   "description": "RIA-7658 update sign language requirements for witness with legal rep",
-  "enabled": "false",
+  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,6 +10,68 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isIntegrated": "Yes",
+          "listCaseHearingCentre": "taylorHouse",
+          "isAppellantAttendTheHearing": "Yes",
+          "isAppellantGivingOralEvidence": "Yes",
+          "isWitnessesAttending": "Yes",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessPartyId": "partyId1",
+                "witnessName": "AWitness1",
+                "witnessFamilyName": "AFamilyName1"
+              }
+            }
+          ],
+          "witness1": {
+            "witnessPartyId": "partyId1",
+            "witnessName": "AWitness1",
+            "witnessFamilyName": "AFamilyName1"
+          },
+          "isAnyWitnessInterpreterRequired": "Yes",
+          "isInterpreterServicesNeeded": "Yes",
+          "witness1InterpreterLanguageCategory": [
+            "signLanguageInterpreter"
+          ],
+          "witness1InterpreterSignLanguage": {
+            "languageManualEntry": ["Yes"],
+            "languageManualEntryDescription": "manual sign language"
+          },
+          "isHearingRoomNeeded": "No",
+          "isHearingLoopNeeded": "No",
+          "physicalOrMentalHealthIssues": "Yes",
+          "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+          "pastExperiences": "Yes",
+          "pastExperiencesDescription": "Past experiences",
+          "multimediaEvidence": "Yes",
+          "multimediaEvidenceDescription": "Multimedia evidence",
+          "singleSexCourt": "Yes",
+          "singleSexCourtType": "All female",
+          "singleSexCourtTypeDescription": "Requirement for single sex court",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
+          "inCameraCourtDescription": "In camera court description",
+          "additionalRequests": "Yes",
+          "additionalRequestsDescription": "Additional requests description",
+          "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "uploadAdditionalEvidenceActionAvailable": "No",
+          "datesToAvoid": [
+            {
+              "id": "1",
+              "value": {
+                "dateToAvoid": "2019-12-25",
+                "dateToAvoidReason": "Xmas"
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isIntegrated": "Yes",
           "listCaseHearingCentre": "taylorHouse",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
@@ -72,6 +134,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "isIntegrated": "Yes",
         "listCaseHearingCentre": "taylorHouse",
         "isAppellantAttendTheHearing": "Yes",
         "isAppellantGivingOralEvidence": "Yes",
@@ -92,7 +155,7 @@
           "witnessFamilyName": "AFamilyName1"
         },
         "isAnyWitnessInterpreterRequired": "Yes",
-        "isInterpreterServicesNeeded": "No",
+        "isInterpreterServicesNeeded": "Yes",
         "witness1InterpreterSignLanguage": {
           "languageManualEntry": ["Yes"],
           "languageManualEntryDescription": "manual sign language"

@@ -8,11 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 import java.util.Collections;
@@ -63,6 +66,7 @@ class RemoveWitnessCaseFlagsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         String witnessName1 = "witnessName1";
         String witnessFamilyName1 = "witnessFamilyName1";
@@ -130,6 +134,21 @@ class RemoveWitnessCaseFlagsHandlerTest {
                 } else {
                     assertFalse(canHandle);
                 }
+            }
+        }
+    }
+
+    @Test
+    void cannot_handle_callback() {
+
+        for (Event event : Event.values()) {
+            when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                assertFalse(removeWitnessCaseFlagsHandler.canHandle(callbackStage, callback),
+                    "Cannot handle event " + event);
             }
         }
     }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ANY_WITNESS_INTERPRETER_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
@@ -86,6 +88,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(systemDateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
         witnessDetails = Arrays.asList(
@@ -367,6 +370,20 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
                 }
+            }
+        }
+    }
+
+    @Test
+    void cannot_handle_callback() {
+
+        for (Event event : Event.values()) {
+            when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                assertFalse(handler.canHandle(callbackStage, callback), "Cannot handle event " + event);
             }
         }
     }

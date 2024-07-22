@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
 
@@ -40,7 +41,11 @@ public class WitnessInterpreterLanguageFlagsHandler extends WitnessCaseFlagsHand
         requireNonNull(callback, "callback must not be null");
 
         List<Event> targetEvents = List.of(REVIEW_HEARING_REQUIREMENTS, UPDATE_HEARING_REQUIREMENTS);
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && targetEvents.contains(callback.getEvent());
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && targetEvents.contains(callback.getEvent())
+               && HandlerUtils.isIntegrated(asylumCase);
     }
 
     @Override

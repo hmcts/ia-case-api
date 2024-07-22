@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Slf4j
@@ -28,8 +29,11 @@ public class RemoveWitnessCaseFlagsHandler extends WitnessCaseFlagsHandler
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && UPDATE_HEARING_REQUIREMENTS.equals(callback.getEvent());
+               && UPDATE_HEARING_REQUIREMENTS.equals(callback.getEvent())
+               && HandlerUtils.isIntegrated(asylumCase);
     }
 
     @Override
