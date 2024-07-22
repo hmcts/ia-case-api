@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE_SELECTED_VALUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_TEMPORARY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -53,9 +54,10 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && Event.ARIA_CREATE_CASE == callback.getEvent())
-            || (Event.START_APPEAL == callback.getEvent()
-            && asylumCase.read(IS_ARIA_MIGRATED, YesOrNo.class).equals(Optional.of(YesOrNo.YES)));
+            && (Event.ARIA_CREATE_CASE == callback.getEvent()
+                // @TODO Temporary event START_APPEAL for migration work, to be removed
+                || (Event.START_APPEAL == callback.getEvent()
+                && asylumCase.read(IS_ARIA_MIGRATED_TEMPORARY, YesOrNo.class).equals(Optional.of(YesOrNo.YES)))));
     }
 
     @Override
