@@ -9,6 +9,7 @@ java:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
     POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api.aat.service.core-compute-aat.internal
@@ -88,11 +89,6 @@ java:
           alias: azure.application-insights.instrumentation-key
         - name: app-insights-connection-string
           alias: app-insights-connection-string
-  secrets:
-    POSTGRES_PASSWORD:
-      secretRef: postgres
-      key: PASSWORD
-      disabled: false
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
