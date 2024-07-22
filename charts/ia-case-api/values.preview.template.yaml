@@ -15,7 +15,7 @@ java:
     IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api.aat.service.core-compute-aat.internal
     IA_CASE_NOTIFICATIONS_API_URL: https://ia-case-notifications-api.aat.service.core-compute-aat.internal
     IA_CASE_PAYMENTS_API_URL: https://ia-case-payments-api.aat.service.core-compute-aat.internal
-    IA_HOME_OFFICE_INTEGRATION_API_URL: https://ia--home-office-integration-api.aat.service.core-compute-aat.internal
+    IA_HOME_OFFICE_INTEGRATION_API_URL: https://ia-home-office-integration-api.aat.service.core-compute-aat.internal
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
