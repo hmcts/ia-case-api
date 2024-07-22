@@ -36,6 +36,8 @@ management:
       response: '"status":"UP"'
 
 spring:
+  config:
+    import: "optional:configtree:/mnt/secrets/ia/"
   application:
     name: Immigration & Asylum case API
   main:
