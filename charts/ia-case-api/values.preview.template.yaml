@@ -6,6 +6,7 @@ java:
   devcpuLimits: 2
   devmemoryLimits: 4Gi
   environment:
+    POSTGRES_SSL_MODE: disable
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
     POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
     POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
