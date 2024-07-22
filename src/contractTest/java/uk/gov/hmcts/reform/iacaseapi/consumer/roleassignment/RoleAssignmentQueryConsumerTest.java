@@ -18,7 +18,10 @@ import com.google.common.collect.Maps;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,7 +80,9 @@ public class RoleAssignmentQueryConsumerTest {
     private final LocalDateTime validAtDate = LocalDateTime.parse("2021-12-04T00:00:00");
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        Thread.sleep(2000);
+
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);
@@ -88,6 +93,10 @@ public class RoleAssignmentQueryConsumerTest {
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails, idamService);
     }
 
+    @AfterEach
+    void teardown() {
+        Executor.closeIdleConnections();
+    }
 
     @Pact(provider = "am_roleAssignment_queryAssignment", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
