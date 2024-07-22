@@ -145,38 +145,12 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
 
-    before('smoketest:preview') {
-        sh """
-    eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-    ./bin/add-roles.sh
-    """
-    }
 
-    afterSuccess('akschartsinstall') {
-        onPR {
-            githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
-            githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
-            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-            env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-            sh """
-            ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-            ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-        """
-        }
-    }
-
-    afterAlways('functionalTest:preview') {
+    afterSuccess('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-        env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        sh """
-      ./bin/add-org-roles-to-users.sh
-
-    """
     }
 
-    afterAlways('functionalTest:aat') {
+    afterSuccess('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
