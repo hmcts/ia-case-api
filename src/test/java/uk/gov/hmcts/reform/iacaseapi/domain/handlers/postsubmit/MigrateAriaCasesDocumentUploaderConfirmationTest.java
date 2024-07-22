@@ -111,4 +111,14 @@ class MigrateAriaCasesDocumentUploaderConfirmationTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    void should_throw_if_aria_desired_not_present() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> migrateAriaCasesDocumentUploaderConfirmation.handle(callback))
+            .hasMessage("ariaDesiredState is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+    }
 }

@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -7,11 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-
-import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 
 @Component
 public class MigrateAriaCasesDocumentUploaderConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
@@ -35,8 +33,8 @@ public class MigrateAriaCasesDocumentUploaderConfirmation implements PostSubmitC
             new PostSubmitCallbackResponse();
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        final Optional<State> maybeAriaDesiredState = asylumCase.read(ARIA_DESIRED_STATE, State.class);
-        final State ariaDesiredState = maybeAriaDesiredState.get();
+        final State ariaDesiredState = asylumCase.read(ARIA_DESIRED_STATE, State.class)
+            .orElseThrow(() -> new IllegalStateException("ariaDesiredState is not present"));
 
         postSubmitResponse.setConfirmationHeader(String.format("# You have progressed this case \n## New state: \n## '%s'", ariaDesiredState.getDescription()));
         postSubmitResponse.setConfirmationBody(
