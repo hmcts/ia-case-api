@@ -124,27 +124,50 @@ ia-case-documents-api:
       ia:
         resourceGroup: ia
         secrets:
-          - system-username
-          - system-password
-          - idam-client-id
-          - idam-secret
-          - s2s-secret
-          - s2s-microservice
-          - em-stitching-enabled
-          - docmosis-access-key
-          - launch-darkly-sdk-key
-          - AppInsightsInstrumentationKey
-          - customer-services-telephone
-          - customer-services-email
-          - hearing-centre-bradford-email
-          - hearing-centre-manchester-email
-          - hearing-centre-newport-email
-          - hearing-centre-taylor-house-email
-          - hearing-centre-north-shields-email
-          - hearing-centre-birmingham-email
-          - hearing-centre-hatton-cross-email
-          - hearing-centre-glasgow-email
-          - ia-config-validator-secret
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: docmosis-access-key
+            alias: DOCMOSIS_ACCESS_KEY
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: customer-services-telephone
+            alias: IA_CUSTOMER_SERVICES_TELEPHONE
+          - name: customer-services-email
+            alias: IA_CUSTOMER_SERVICES_EMAIL
+          - name: hearing-centre-bradford-email
+            alias: IA_HEARING_CENTRE_BRADFORD_EMAIL
+          - name: hearing-centre-manchester-email
+            alias: IA_HEARING_CENTRE_MANCHESTER_EMAIL
+          - name: hearing-centre-newport-email
+            alias: IA_HEARING_CENTRE_NEWPORT_EMAIL
+          - name: hearing-centre-taylor-house-email
+            alias: IA_HEARING_CENTRE_TAYLOR_HOUSE_EMAIL
+          - name: hearing-centre-north-shields-email
+            alias: IA_HEARING_CENTRE_NORTH_SHIELDS_EMAIL
+          - name: hearing-centre-birmingham-email
+            alias: IA_HEARING_CENTRE_BIRMINGHAM_EMAIL
+          - name: hearing-centre-hatton-cross-email
+            alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
+          - name: hearing-centre-glasgow-email
+            alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string                  
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
