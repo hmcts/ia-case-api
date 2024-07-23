@@ -12,6 +12,7 @@
         "replacements": {
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "listCaseHearingCentre": "coventry",
+          "listCaseHearingCentreAddress": "Coventry Magistrates Court, Little Park Street, CV1 2SQ",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
@@ -31,6 +32,7 @@
         "replacements": {
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "listCaseHearingCentre": "manchester",
+          "listCaseHearingCentreAddress": "Manchester Crown Court (Crown Square), Courts of Justice, Crown Square, M3 3FL",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
@@ -69,6 +71,7 @@
       "replacements": {
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "listCaseHearingCentre": "coventry",
+        "listCaseHearingCentreAddress": "Coventry Magistrates Court, Little Park Street, CV1 2SQ",
         "listCaseHearingLength": "60",
         "listCaseHearingDate": "2018-12-31T12:34:56",
         "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",

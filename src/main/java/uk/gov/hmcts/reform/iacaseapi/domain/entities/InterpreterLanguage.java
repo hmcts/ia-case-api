@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InterpreterLanguage {
 
+    //legacy object (superseded by InterpreterLanguageRefData)
     private String language;
     private String languageDialect;
 
