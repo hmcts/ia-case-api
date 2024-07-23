@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -183,5 +184,15 @@ class MigrateAriaCasesDocumentUploaderMidEventTest {
         assertNotNull(callback);
         AsylumCase asylumCaseResponse = callbackResponse.getData();
         verify(asylumCaseResponse).write(MIGRATION_MAIN_TEXT_VISIBLE, "VHHToCCD");
+    }
+
+    @Test
+    void should_throw_if_aria_desired_not_present() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> migrateAriaCasesDocumentUploaderMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback))
+            .hasMessage("ariaDesiredState is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
     }
 }

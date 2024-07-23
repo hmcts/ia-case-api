@@ -1,20 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-
-import java.util.List;
-import java.util.Optional;
-
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MIGRATION_HMC_SECOND_PART_VISIBLE;
@@ -32,6 +17,20 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FTPA_SUBMI
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PREPARE_FOR_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.REASONS_FOR_APPEAL_SUBMITTED;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class MigrateAriaCasesDocumentUploaderMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
@@ -54,8 +53,8 @@ public class MigrateAriaCasesDocumentUploaderMidEvent implements PreSubmitCallba
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        final Optional<State> maybeAriaDesiredState = asylumCase.read(ARIA_DESIRED_STATE, State.class);
-        final State ariaDesiredState = maybeAriaDesiredState.get();
+        final State ariaDesiredState = asylumCase.read(ARIA_DESIRED_STATE, State.class)
+            .orElseThrow(() -> new IllegalStateException("ariaDesiredState is not present"));
 
         final Optional<UpdateTribunalRules> updateTribunalDecisionRules = asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class);
         hideMigrationText(asylumCase);
