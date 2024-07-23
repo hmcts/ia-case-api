@@ -581,6 +581,7 @@ ia-aip-frontend:
       TIMELINE_ENABLED: true
     keyVaults:
       ia:
+        resourceGroup: ia
         secrets:
           - name: idam-secret
             alias: IA_IDAM_SECRET
@@ -718,10 +719,14 @@ xui-webapp:
       rpx:
         resourceGroup: rpx
         secrets:
-          - mc-s2s-client-secret
-          - mc-idam-client-secret
-          - system-user-name
-          - system-user-password
+          - name: mc-s2s-client-secret
+            alias: IDAM_CLIENT_SECRET
+          - name: mc-idam-client-secret
+            alias: S2S_CLIENT_SECRET
+          - name: system-user-name
+            alias: RPX_SYSTEM_USERNAME
+          - name: system-user-password
+            alias: RPX_SYSTEM_PASSWORD
 
 ccd:
   enabled: true
@@ -845,6 +850,7 @@ ccd:
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
       keyVaults:
         am:
+          resourceGroup: am
           secrets:
             - name: am-role-assignment-service-s2s-secret
               alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
@@ -1160,6 +1166,7 @@ aac-manage-case-assignment:
       enabled: false
     keyVaults:
       aac:
+        resourceGroup: aac
         secrets:
           - name: aac-manage-case-s2s-secret
             alias: MANAGE_CASE_S2S_KEY
@@ -1288,6 +1295,7 @@ ccd-message-publisher:
     releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
     keyVaults:
       ccd:
+        resourceGroup: ccd
         secrets:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
@@ -1329,6 +1337,7 @@ am-org-role-mapping-service:
         disabled: false
     keyVaults:
       am:
+        resourceGroup: am
         secrets:
           - name: app-insights-connection-string
             alias: app-insights-connection-string
