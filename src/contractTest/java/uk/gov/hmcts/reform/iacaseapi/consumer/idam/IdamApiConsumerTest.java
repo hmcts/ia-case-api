@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
@@ -13,13 +10,14 @@ import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
+import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +27,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
+
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 
 @ExtendWith(SpringExtension.class)
@@ -44,6 +47,16 @@ public class IdamApiConsumerTest {
     IdamApi idamApi;
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
 
+    @BeforeEach
+    public void prepareTest() throws Exception {
+        Thread.sleep(2000);
+    }
+
+    @AfterEach
+    void teardown() {
+        Executor.closeIdleConnections();
+    }
+
     @Pact(provider = "idamApi_oidc", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
 
@@ -57,7 +70,6 @@ public class IdamApiConsumerTest {
             .willRespondWith()
             .status(200)
             .body(createUserDetailsResponse())
-            .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .toPact();
     }
 
@@ -66,7 +78,6 @@ public class IdamApiConsumerTest {
 
         Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
             .put("Content-Type", "application/json")
-            .put(HttpHeaders.CONNECTION, "close")
             .build();
 
         return builder
