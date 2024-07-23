@@ -15,10 +15,13 @@ def dmnBranch = "master"
 def bpmnBranch = "master"
 
 def secrets = [
-    'rpx-${env}': [
-        secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
-    ],
-    'ia-${env}': [
+        'rpx-${env}': [
+                secret('mc-s2s-client-secret', 'IDAM_CLIENT_SECRET'),
+                secret('mc-idam-client-secret', 'S2S_CLIENT_SECRET'),
+                secret('system-user-name', 'RPX_SYSTEM_USERNAME'),
+                secret('system-user-password', 'RPX_SYSTEM_PASSWORD'),
+        ],
+        'ia-${env}' : [
 
                 secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
                 secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
@@ -95,19 +98,19 @@ def secrets = [
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
         ],
-        's2s-${env}'      : [
+        's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
                 secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
                 secret('microservicekey-iac', 'IAC_S2S_KEY')
         ],
-        'ccd-${env}'      : [
+        'ccd-${env}': [
                 secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
                 secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
-                secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
-                secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
-                secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+                secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+                secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+                secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
                 secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
         ]
 ]
