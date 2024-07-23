@@ -582,28 +582,50 @@ ia-aip-frontend:
     keyVaults:
       ia:
         secrets:
-          - idam-secret
-          - addressLookupToken
-          - s2s-secret
-          - ia-redis-access-key
-          - ia-redis-connection-string
-          - launch-darkly-sdk-key
-          - AppInsightsInstrumentationKey
-          - hearing-centre-bradford-email
-          - hearing-centre-manchester-email
-          - hearing-centre-newport-email
-          - hearing-centre-taylor-house-email
-          - hearing-centre-north-shields-email
-          - hearing-centre-birmingham-email
-          - hearing-centre-hatton-cross-email
-          - hearing-centre-glasgow-email
-          - pcq-token-key
-          - system-username
-          - system-password
-          - docmosis-access-key
-          - customer-services-telephone
-          - customer-services-email
-          - ia-config-validator-secret
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: addressLookupToken
+            alias: ADDRESS_LOOKUP_TOKEN
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: hearing-centre-bradford-email
+            alias: IA_HEARING_CENTRE_BRADFORD_EMAIL
+          - name: hearing-centre-manchester-email
+            alias: IA_HEARING_CENTRE_MANCHESTER_EMAIL
+          - name: hearing-centre-newport-email
+            alias: IA_HEARING_CENTRE_NEWPORT_EMAIL
+          - name: hearing-centre-taylor-house-email
+            alias: IA_HEARING_CENTRE_TAYLOR_HOUSE_EMAIL
+          - name: hearing-centre-north-shields-email
+            alias: IA_HEARING_CENTRE_NORTH_SHIELDS_EMAIL
+          - name: hearing-centre-birmingham-email
+            alias: IA_HEARING_CENTRE_BIRMINGHAM_EMAIL
+          - name: hearing-centre-hatton-cross-email
+            alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
+          - name: hearing-centre-glasgow-email
+            alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: pcq-token-key
+            alias: PCQ_TOKEN_KEY
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: docmosis-access-key
+            alias: DOCMOSIS_ACCESS_KEY
+          - name: customer-services-telephone
+            alias: IA_CUSTOMER_SERVICES_TELEPHONE
+          - name: customer-services-email
+            alias: IA_CUSTOMER_SERVICES_EMAIL
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
   redis:
     enabled: false
     architecture: standalone
