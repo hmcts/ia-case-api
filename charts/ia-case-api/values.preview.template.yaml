@@ -730,9 +730,9 @@ xui-webapp:
         resourceGroup: rpx
         secrets:
           - name: mc-s2s-client-secret
-            alias: IDAM_CLIENT_SECRET
-          - name: mc-idam-client-secret
             alias: S2S_CLIENT_SECRET
+          - name: mc-idam-client-secret
+            alias: IDAM_CLIENT_SECRET
           - name: system-user-name
             alias: RPX_SYSTEM_USERNAME
           - name: system-user-password
