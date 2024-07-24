@@ -122,7 +122,13 @@ class Settings:
         'legalRepEmail': 'email@email.com',
         'legalRepPhone': '01111111111',
         'legalRepFamilyName': 'redacted - legalRepFamilyName',
-        'aipSponsorEmailForDisplay': 'aipSponsorEmail@ForDisplay.com'
+        'aipSponsorEmailForDisplay': 'aipSponsorEmail@ForDisplay.com',
+        'EmailAddress': 'email@email.com',
+        'interpreterEmail': 'email@interpreter.com',
+        'interpreterFamilyName': 'redacted - interpreterFamilyName',
+        'interpreterGivenNames': 'redacted - interpreterGivenNames',
+        'interpreterPhoneNumber': '12345678999',
+        'flagComment': 'redacted - flagComment'
     }
 
     csv_rows_to_redact = {
