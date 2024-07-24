@@ -301,6 +301,7 @@ security:
       - "recordAttendeesAndDuration"
       - "uploadHearingRecording"
       - "turnOnNotifications"
+      - "updateTribunalDecision"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
