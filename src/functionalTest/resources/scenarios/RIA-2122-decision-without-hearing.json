@@ -1,6 +1,6 @@
 {
   "description": "RIA-2122 Make decision without hearing",
-  "disabled": true,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -22,6 +22,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "listCaseHearingCentre": "decisionWithoutHearing",
+        "ariaListingReference": "XX/00000/0000",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
         "listCaseHearingLength": "90"
       }

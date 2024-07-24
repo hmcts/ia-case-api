@@ -136,7 +136,7 @@ class HearingCentreFinderTest {
                     "Blundeston",
                     "Brookhouse",
                     "Bullwood Hall"
-            )).put(HearingCentre.YARLSWOOD, List.of(
+            )).put(HearingCentre.YARLS_WOOD, List.of(
                     "Yarlswood"
             ))
             .build();
@@ -607,7 +607,17 @@ class HearingCentreFinderTest {
             HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
             HearingCentre.NEWCASTLE,
             HearingCentre.BELFAST,
-            HearingCentre.NOTTINGHAM);
+            HearingCentre.NOTTINGHAM,
+            HearingCentre.HARMONDSWORTH,
+            HearingCentre.HENDON,
+            HearingCentre.YARLS_WOOD,
+            HearingCentre.BRADFORD_KEIGHLEY,
+            HearingCentre.MCC_MINSHULL,
+            HearingCentre.MCC_CROWN_SQUARE,
+            HearingCentre.MANCHESTER_MAGS,
+            HearingCentre.NTH_TYNE_MAGS,
+            HearingCentre.LEEDS_MAGS,
+            HearingCentre.ALLOA_SHERRIF);
 
         allHearingCentres.forEach(
             hearingCentre -> {
@@ -779,7 +789,7 @@ class HearingCentreFinderTest {
         String validInput = "Yarlswood";
 
         HearingCentre actualHearingCentre = hearingCentreFinder.findByDetentionFacility(validInput);
-        assertEquals(HearingCentre.YARLSWOOD, actualHearingCentre);
+        assertEquals(HearingCentre.YARLS_WOOD, actualHearingCentre);
     }
 
     @Test
