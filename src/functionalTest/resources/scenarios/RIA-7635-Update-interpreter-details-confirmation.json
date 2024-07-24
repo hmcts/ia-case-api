@@ -1,0 +1,51 @@
+{
+  "description": "RIA-7635 Submitted Manage interpreter details",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 7635,
+      "eventId": "updateInterpreterDetails",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "interpreterDetails": [
+            {
+              "id": "1",
+              "value": {
+                "interpreterId": "testId",
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "interpreterId": "testId2",
+                "interpreterBookingRef": "ref",
+                "interpreterGivenNames": "john",
+                "interpreterFamilyName": "smith",
+                "interpreterPhoneNumber": "123",
+                "interpreterEmail": "test@test.com",
+                "interpreterNote": "note"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Interpreter details have been updated",
+      "body": "#### What happens next\n\nYou now need to update the hearing in the [Hearings tab](/case/IA/Asylum/7635#Hearing%20and%20appointment) to ensure the new interpreter information is displayed in List Assist.\n\nIf updates need to be made to the interpreter booking status this should be completed before updating the hearing."
+    }
+  }
+}

@@ -72,12 +72,15 @@ class ReviewUpdateHearingRequirementsPreparerTest {
         when(asylumCase.read(UPDATE_HEARING_REQUIREMENTS_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         witnessDetails = Arrays.asList(
-            new IdValue<>("1", new WitnessDetails("Witness1")),
-            new IdValue<>("2", new WitnessDetails("Witness2"))
+            new IdValue<>("1", new WitnessDetails("Witness1Given", "Witness1Family")),
+            new IdValue<>("2", new WitnessDetails("Witness2Given"))
         );
 
+        InterpreterLanguage interpreterLanguageObject = new InterpreterLanguage();
+        interpreterLanguageObject.setLanguage("Irish");
+        interpreterLanguageObject.setLanguageDialect("N/A");
         interpreterLanguage = Arrays.asList(
-            new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
+            new IdValue<>("1", interpreterLanguageObject)
         );
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
@@ -94,7 +97,7 @@ class ReviewUpdateHearingRequirementsPreparerTest {
 
         verify(asylumCase, times(1)).write(
             WITNESS_DETAILS_READONLY,
-            "Name\t\tWitness1\nName\t\tWitness2");
+            "Name\t\tWitness1Given Witness1Family\nName\t\tWitness2Given");
         verify(asylumCase, times(1)).write(
             INTERPRETER_LANGUAGE_READONLY,
             "Language\t\tIrish\nDialect\t\t\tN/A\n");

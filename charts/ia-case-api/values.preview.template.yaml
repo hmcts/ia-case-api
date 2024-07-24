@@ -29,6 +29,8 @@ java:
     ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
     AAC_URL: https://aac-${SERVICE_FQDN}
+    CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
+    LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     DUMMY: true
   keyVaults:
     ia:
@@ -98,7 +100,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-868 or relevant PR number to change DLRM
+    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-609
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -121,33 +124,57 @@ ia-case-documents-api:
       ia:
         resourceGroup: ia
         secrets:
-          - system-username
-          - system-password
-          - idam-client-id
-          - idam-secret
-          - s2s-secret
-          - s2s-microservice
-          - em-stitching-enabled
-          - docmosis-access-key
-          - launch-darkly-sdk-key
-          - AppInsightsInstrumentationKey
-          - customer-services-telephone
-          - customer-services-email
-          - hearing-centre-bradford-email
-          - hearing-centre-manchester-email
-          - hearing-centre-newport-email
-          - hearing-centre-taylor-house-email
-          - hearing-centre-north-shields-email
-          - hearing-centre-birmingham-email
-          - hearing-centre-hatton-cross-email
-          - hearing-centre-glasgow-email
-          - ia-config-validator-secret
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: docmosis-access-key
+            alias: DOCMOSIS_ACCESS_KEY
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: customer-services-telephone
+            alias: IA_CUSTOMER_SERVICES_TELEPHONE
+          - name: customer-services-email
+            alias: IA_CUSTOMER_SERVICES_EMAIL
+          - name: hearing-centre-bradford-email
+            alias: IA_HEARING_CENTRE_BRADFORD_EMAIL
+          - name: hearing-centre-manchester-email
+            alias: IA_HEARING_CENTRE_MANCHESTER_EMAIL
+          - name: hearing-centre-newport-email
+            alias: IA_HEARING_CENTRE_NEWPORT_EMAIL
+          - name: hearing-centre-taylor-house-email
+            alias: IA_HEARING_CENTRE_TAYLOR_HOUSE_EMAIL
+          - name: hearing-centre-north-shields-email
+            alias: IA_HEARING_CENTRE_NORTH_SHIELDS_EMAIL
+          - name: hearing-centre-birmingham-email
+            alias: IA_HEARING_CENTRE_BIRMINGHAM_EMAIL
+          - name: hearing-centre-hatton-cross-email
+            alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
+          - name: hearing-centre-glasgow-email
+            alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string                  
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest #pr-1069 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-907
+    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -399,6 +426,10 @@ ia-timed-event-service:
     #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: https://idam-web-public.{{ .Values.global.environment
         }}.platform.hmcts.net
@@ -424,7 +455,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest #pr-375 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -473,8 +504,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1139
+    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m

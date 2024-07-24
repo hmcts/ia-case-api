@@ -1,0 +1,44 @@
+{
+  "description": "RIA-7303 update hearing adjustments for retrieving hearing channel type mid event",
+  "disabled": true,
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingAdjustments",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingChannel": {
+          "value": {
+            "code": "",
+            "label": ""
+          },
+          "list_items": [{
+              "code": "INTER",
+              "label": "In Person"
+            }, {
+              "code": "NA",
+              "label": "Not in Attendance"
+            }, {
+              "code": "TEL",
+              "label": "Telephone"
+            }, {
+              "code": "VID",
+              "label": "Video"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

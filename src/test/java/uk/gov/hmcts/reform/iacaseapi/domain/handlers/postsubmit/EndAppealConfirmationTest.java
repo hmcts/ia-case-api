@@ -51,7 +51,34 @@ class EndAppealConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("A notification has been sent to all parties.");
+            .contains("Any hearings requested or listed in List Assist have been automatically cancelled.");
+    }
+
+    @Test
+    void should_return_manual_hearing_confirmation_required() {
+
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
+            .thenReturn(Optional.of(""));
+        when(asylumCase.read(AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED))
+            .thenReturn(Optional.of("Yes"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            endAppealConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have ended the appeal");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("[Cancel the hearing on the Hearings tab](/cases/case-details/0/hearings)");
     }
 
     @Test
