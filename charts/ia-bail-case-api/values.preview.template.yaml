@@ -14,18 +14,3 @@ java:
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     CASE_DOCUMENT_AM_URL: "http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-  keyVaults:
-    ia:
-      secrets:
-        - docmosis-enabled
-        - em-stitching-enabled
-        - system-username
-        - system-password
-        - idam-client-id
-        - idam-secret
-        - s2s-secret
-        - s2s-microservice
-        - prof-ref-data-url
-        - launch-darkly-sdk-key
-        - app-insights-connection-string
-        - ia-config-validator-secret

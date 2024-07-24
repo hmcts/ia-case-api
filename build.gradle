@@ -313,8 +313,6 @@ dependencies {
 
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.14'
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
-
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
