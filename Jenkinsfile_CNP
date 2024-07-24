@@ -16,8 +16,8 @@ def bpmnBranch = "master"
 
 def secrets = [
         'rpx-${env}': [
-                secret('mc-s2s-client-secret', 'IDAM_CLIENT_SECRET'),
-                secret('mc-idam-client-secret', 'S2S_CLIENT_SECRET'),
+                secret('mc-s2s-client-secret', 'S2S_CLIENT_SECRET'),
+                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
                 secret('system-user-name', 'RPX_SYSTEM_USERNAME'),
                 secret('system-user-password', 'RPX_SYSTEM_PASSWORD'),
         ],
