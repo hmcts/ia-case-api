@@ -46,7 +46,7 @@
         "homeOfficeNotificationsEligible": "Yes",
         "listCaseHearingCentre": "coventry",
         "listCaseHearingLength": "60",
-        "listCaseHearingDate": "2018-12-31T12:34:56",
+        "listCaseHearingDate": null,
         "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
         "listCaseRequirementsMultimedia": "something around Multimedia",
         "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",

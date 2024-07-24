@@ -1,0 +1,161 @@
+{
+  "description": "RIA-7338 update sign language choice - legal rep",
+  "enabled": "false",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingRequirements",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "isAppellantAttendTheHearing": "Yes",
+          "isAppellantGivingOralEvidence": "Yes",
+          "isWitnessesAttending": "Yes",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "witnessName": "TestWitness"
+              }
+            }
+          ],
+          "isInterpreterServicesNeeded": "Yes",
+          "appellantInterpreterLanguageCategory": [
+            "signLanguageInterpreter"
+          ],
+          "isSignServicesNeeded": "Yes",
+          "appellantInterpreterSignLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "sign",
+                "label": "International sign language"
+              },
+              "list_items": [
+                {
+                  "code": "sign",
+                  "label": "International sign language"
+                }
+              ]
+            },
+            "languageManualEntry": [],
+            "languageManualEntryDescription": ""
+          },
+          "isHearingRoomNeeded": "No",
+          "isHearingLoopNeeded": "No",
+          "physicalOrMentalHealthIssues": "Yes",
+          "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+          "pastExperiences": "Yes",
+          "pastExperiencesDescription": "Past experiences",
+          "multimediaEvidence": "Yes",
+          "multimediaEvidenceDescription": "Multimedia evidence",
+          "singleSexCourt": "Yes",
+          "singleSexCourtType": "All female",
+          "singleSexCourtTypeDescription": "Requirement for single sex court",
+          "inCameraCourt": "Yes",
+          "isInCameraCourtAllowed": "Granted",
+          "inCameraCourtDescription": "In camera court description",
+          "additionalRequests": "Yes",
+          "additionalRequestsDescription": "Additional requests description",
+          "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "datesToAvoid": [
+            {
+              "id": "1",
+              "value": {
+                "dateToAvoid": "2019-12-25",
+                "dateToAvoidReason": "Xmas"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
+        "isAppellantAttendTheHearing": "Yes",
+        "isAppellantGivingOralEvidence": "Yes",
+        "isWitnessesAttending": "Yes",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "witnessName": "TestWitness"
+            }
+          }
+        ],
+        "isInterpreterServicesNeeded": "Yes",
+        "appellantInterpreterLanguageCategory": [
+          "signLanguageInterpreter"
+        ],
+        "isSignServicesNeeded": "Yes",
+        "appellantInterpreterSignLanguage": {
+          "languageRefData": {
+            "value": {
+              "code": "sign",
+              "label": "International sign language"
+            },
+            "list_items": [
+              {
+                "code": "sign",
+                "label": "International sign language"
+              }
+            ]
+          },
+          "languageManualEntry": [],
+          "languageManualEntryDescription": ""
+        },
+        "isHearingRoomNeeded": "No",
+        "isHearingLoopNeeded": "No",
+        "physicalOrMentalHealthIssues": "Yes",
+        "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+        "pastExperiences": "Yes",
+        "pastExperiencesDescription": "Past experiences",
+        "multimediaEvidence": "Yes",
+        "multimediaEvidenceDescription": "Multimedia evidence",
+        "singleSexCourt": "Yes",
+        "singleSexCourtType": "All female",
+        "singleSexCourtTypeDescription": "Requirement for single sex court",
+        "inCameraCourt": "Yes",
+        "isInCameraCourtAllowed": "Granted",
+        "inCameraCourtDescription": "In camera court description",
+        "additionalRequests": "Yes",
+        "additionalRequestsDescription": "Additional requests description",
+        "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+        "datesToAvoid": [
+          {
+            "id": "1",
+            "value": {
+              "dateToAvoid": "2019-12-25",
+              "dateToAvoidReason": "Xmas"
+            }
+          }
+        ],
+        "appellantLevelFlags": {
+          "partyName": "Talha Awan",
+          "roleOnCase": "Appellant",
+          "details": [
+            {
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "value": {
+                "name": "Sign Language Interpreter",
+                "subTypeKey": "sign",
+                "subTypeValue": "International sign language",
+                "status": "Active",
+                "flagCode": "RA0042",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

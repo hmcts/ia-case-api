@@ -1,0 +1,73 @@
+{
+  "description": "RIA-9041 Adjourn without a date (Clear list case hearing date and time, and next hearing date and time)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 9041,
+      "eventId": "adjournHearingWithoutDate",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingDocuments": [],
+          "listCaseHearingCentre": "manchester",
+          "listCaseHearingLength": "60",
+          "listCaseHearingDate": "2018-12-31T12:34:56",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "doesTheCaseNeedToBeRelisted": "No",
+          "ariaListingReference": "LP/12345/2019",
+          "currentCaseStateVisibleToCaseOfficer": "listing",
+          "notificationsSent": [],
+          "nextHearingDetails": {
+            "hearingID": "id123",
+            "hearingDateTime": "2019-02-20T12:34:56"
+          }
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "state": "pre-hearing"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA 12345 2018-Awan-hearing-notice.PDF"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "hearingNotice"
+            }
+          }
+        ],
+        "listCaseHearingDateAdjourned": "Adjourned",
+        "listCaseHearingCentre": "manchester",
+        "listCaseHearingLength": "60",
+        "listCaseHearingDate": null,
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "ariaListingReference": "LP/12345/2019",
+        "stateBeforeAdjournWithoutDate": "listing",
+        "dateBeforeAdjournWithoutDate": "2018-12-31T12:34:56",
+        "notificationsSent": [],
+        "nextHearingDetails": {
+          "hearingID": null,
+          "hearingDateTime": null
+        }
+      }
+    }
+  }
+}

@@ -145,6 +145,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         asylumCase.clear(SPONSOR_AUTHORISATION);
         asylumCase.clear(SPONSOR_NAME_FOR_DISPLAY);
         asylumCase.clear(SPONSOR_ADDRESS_FOR_DISPLAY);
+        asylumCase.clear(SPONSOR_PARTY_ID);
     }
 
     private void clearOutOfCountryDecision(AsylumCase asylumCase) {

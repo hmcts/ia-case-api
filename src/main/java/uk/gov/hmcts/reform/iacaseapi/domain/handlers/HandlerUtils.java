@@ -1,52 +1,48 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_LEGALLY_REPRESENTED_EJP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.PRESIDENTIAL_PANEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
 
 public class HandlerUtils {
 
-    private static final String SIGN_LANGUAGE = "Sign language - ";
-    private static final String YES = "Yes";
+    public static final String ON_THE_PAPERS = "ONPPRS";
 
     private HandlerUtils() {
     }
@@ -71,6 +67,133 @@ public class HandlerUtils {
     public static boolean isAipToRepJourney(AsylumCase asylumCase) {
         return (asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class).orElse(null) == JourneyType.AIP)
             && isRepJourney(asylumCase);
+    }
+
+    public static void formatHearingAdjustmentResponses(AsylumCase asylumCase) {
+        formatHearingAdjustmentResponse(asylumCase, VULNERABILITIES_TRIBUNAL_RESPONSE, IS_VULNERABILITIES_ALLOWED)
+                .ifPresent(response -> asylumCase.write(VULNERABILITIES_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE, IS_REMOTE_HEARING_ALLOWED)
+                .ifPresent(response -> asylumCase.write(REMOTE_HEARING_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, MULTIMEDIA_TRIBUNAL_RESPONSE, IS_MULTIMEDIA_ALLOWED)
+                .ifPresent(response -> asylumCase.write(MULTIMEDIA_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, SINGLE_SEX_COURT_TRIBUNAL_RESPONSE, IS_SINGLE_SEX_COURT_ALLOWED)
+                .ifPresent(response -> asylumCase.write(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, IN_CAMERA_COURT_TRIBUNAL_RESPONSE, IS_IN_CAMERA_COURT_ALLOWED)
+                .ifPresent(response -> asylumCase.write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, response));
+        formatHearingAdjustmentResponse(asylumCase, ADDITIONAL_TRIBUNAL_RESPONSE, IS_ADDITIONAL_ADJUSTMENTS_ALLOWED)
+                .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
+    }
+
+    public static String getAppellantFullName(AsylumCase asylumCase) {
+        return asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElseGet(() -> {
+            final String appellantGivenNames = asylumCase
+                    .read(APPELLANT_GIVEN_NAMES, String.class)
+                    .orElseThrow(() -> new IllegalStateException("Appellant given names required"));
+            final String appellantFamilyName = asylumCase
+                    .read(APPELLANT_FAMILY_NAME, String.class)
+                    .orElseThrow(() -> new IllegalStateException("Appellant family name required"));
+            return appellantGivenNames + " " + appellantFamilyName;
+        });
+    }
+
+    private static Optional<String> formatHearingAdjustmentResponse(
+            AsylumCase asylumCase,
+            AsylumCaseFieldDefinition responseDefinition,
+            AsylumCaseFieldDefinition decisionDefinition) {
+        String response = asylumCase.read(responseDefinition, String.class).orElse(null);
+        String decision = asylumCase.read(decisionDefinition, String.class).orElse(null);
+
+        return !(response == null || decision == null) ? Optional.of(decision + " - " + response) : Optional.empty();
+    }
+
+    public static void checkAndUpdateAutoHearingRequestEnabled(LocationBasedFeatureToggler locationBasedFeatureToggler, AsylumCase asylumCase) {
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, YES);
+        } else {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, NO);
+        }
+    }
+
+    public static void setDefaultAutoListHearingValue(AsylumCase asylumCase) {
+        boolean isHearingOnThePaper = asylumCase.read(HEARING_CHANNEL, DynamicList.class)
+            .map(hearingChannels -> hearingChannels.getListItems().stream()
+                .anyMatch(c -> c.getCode().equals(ON_THE_PAPERS)))
+            .orElse(false);
+
+        if (isHearingOnThePaper || hasActiveFlags(asylumCase)) {
+            asylumCase.write(AUTO_LIST_HEARING, NO);
+        } else {
+            asylumCase.write(AUTO_LIST_HEARING, YES);
+        }
+    }
+
+    private static boolean hasActiveFlags(AsylumCase asylumCase) {
+        List<StrategicCaseFlag> appellantLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .map(List::of).orElse(Collections.emptyList());
+
+        List<StrategicCaseFlag> caseLevelFlag = asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .map(List::of).orElse(Collections.emptyList());
+
+        boolean hasActiveFlags = false;
+
+        List<String> flagTypesToCheck = List.of(
+            SIGN_LANGUAGE_INTERPRETER.getFlagCode(), FOREIGN_NATIONAL_OFFENDER.getFlagCode(),
+            AUDIO_VIDEO_EVIDENCE.getFlagCode(), LITIGATION_FRIEND.getFlagCode(), LACKING_CAPACITY.getFlagCode()
+        );
+
+        if (!appellantLevelFlags.isEmpty()) {
+            hasActiveFlags = generateFlagDetailsList(appellantLevelFlags)
+                .stream().anyMatch(detail -> flagTypesToCheck.contains(detail.getValue().getFlagCode())
+                    && ACTIVE_STATUS.equals(detail.getValue().getStatus()));
+        }
+
+        if (!caseLevelFlag.isEmpty()) {
+            hasActiveFlags |= generateFlagDetailsList(caseLevelFlag)
+                .stream().anyMatch(detail -> PRESIDENTIAL_PANEL.getFlagCode().equals(detail.getValue().getFlagCode())
+                    && ACTIVE_STATUS.equals(detail.getValue().getStatus()));
+        }
+
+        return hasActiveFlags;
+    }
+
+    private static List<CaseFlagDetail> generateFlagDetailsList(List<StrategicCaseFlag> allCaseFlags) {
+        return allCaseFlags.stream()
+            .filter(flag -> !isEmpty(flag.getDetails()))
+            .flatMap(flag -> flag.getDetails().stream())
+            .collect(Collectors.toList());
+    }
+
+    public static boolean isPanelRequired(AsylumCase asylumCase) {
+        return asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)
+            .map(yesOrNo -> YES == yesOrNo).orElse(false);
+    }
+
+    public static boolean isIntegrated(AsylumCase asylumCase) {
+        return asylumCase.read(IS_INTEGRATED, YesOrNo.class)
+            .map(integrated -> YES == integrated).orElse(false);
+    }
+
+    public static boolean relistCaseImmediately(AsylumCase asylumCase, boolean required) {
+        Optional<YesOrNo> relistOptional = asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class);
+        if (relistOptional.isPresent() || !required) {
+            return relistOptional.map(relist -> YES == relist).orElse(false);
+        } else {
+            throw new IllegalStateException("Response to relist case immediately is not present");
+        }
+    }
+
+    public static boolean adjournedBeforeHearingDay(AsylumCase asylumCase) {
+        return asylumCase
+            .read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+            .map(adjournedDay -> BEFORE_HEARING_DATE == adjournedDay)
+            .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
+    }
+
+    public static boolean adjournedOnHearingDay(AsylumCase asylumCase) {
+        return asylumCase
+            .read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class)
+            .map(adjournedDay -> ON_HEARING_DATE == adjournedDay)
+            .orElseThrow(() -> new IllegalStateException("'Hearing adjournment when' is not present"));
     }
 
     public static boolean isAgeAssessmentAppeal(AsylumCase asylumCase) {
@@ -153,69 +276,9 @@ public class HandlerUtils {
         return valueList;
     }
 
-    public static void populateAppellantInterpreterLanguageFieldsIfRequired(AsylumCase asylumCase) {
-        Optional<List<IdValue<InterpreterLanguage>>> interpreterLanguageOptional =
-            asylumCase.read(INTERPRETER_LANGUAGE);
-
-        Optional<YesOrNo> isInterpreterServicesNeededOptional =
-            asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class);
-
-        if (!interpreterLanguageOptional.isPresent()
-            || interpreterLanguageOptional.get().isEmpty()
-            || (isInterpreterServicesNeededOptional.isPresent() && isInterpreterServicesNeededOptional.get().equals(NO))) {
-            return;
-        }
-
-        asylumCase.write(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.YES);
-
-        List<String> appellantInterpreterLanguageCategory = new ArrayList<>();
-        List<IdValue<InterpreterLanguage>> interpreterLanguageList = interpreterLanguageOptional.get();
-        StringBuilder signLanguages = new StringBuilder();
-        StringBuilder spokenLanguages = new StringBuilder();
-
-        interpreterLanguageList.forEach(language -> {
-            if (language.getValue().getLanguage().startsWith(SIGN_LANGUAGE)) {
-                appellantInterpreterLanguageCategory.add(SIGN_LANGUAGE_INTERPRETER.toString());
-                signLanguages.append(newLanguageManualEntry(language)).append("; ");
-
-            } else {
-                appellantInterpreterLanguageCategory.add(SPOKEN_LANGUAGE_INTERPRETER.toString());
-                spokenLanguages.append(newLanguageManualEntry(language)).append("; ");
-
-            }
-        });
-
-        if (interpreterLanguageList.removeIf(l -> l.getValue().getLanguage().equals("yo")
-            || l.getValue().getLanguage().equals("za"))) {
-            asylumCase.write(INTERPRETER_LANGUAGE, interpreterLanguageList);
-        }
-
-        asylumCase.write(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY, appellantInterpreterLanguageCategory
-            .stream().distinct().collect(Collectors.toList()));
-
-        if (!signLanguages.isEmpty()) {
-            asylumCase.write(APPELLANT_INTERPRETER_SIGN_LANGUAGE, new InterpreterLanguageRefData(
-                null,
-                List.of(YES),
-                signLanguages.substring(0, signLanguages.length() - 2))
-            );
-        }
-        if (!spokenLanguages.isEmpty()) {
-            asylumCase.write(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, new InterpreterLanguageRefData(
-                null,
-                List.of(YES),
-                spokenLanguages.substring(0, spokenLanguages.length() - 2))
-            );
-        }
-    }
-
-    private static String dialectAddendum(String dialect) {
-        return StringUtils.equals(dialect.toUpperCase(), "N/A") ? ("") : (" " + dialect);
-    }
-
-    private static String newLanguageManualEntry(IdValue<InterpreterLanguage> language) {
-        String mainLanguage = language.getValue().getLanguage();
-        String dialect = language.getValue().getLanguageDialect();
-        return dialect != null ? mainLanguage + dialectAddendum(dialect) : mainLanguage;
+    public static boolean isCaseUsingLocationRefData(AsylumCase asylumCase) {
+        return asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
     }
 }

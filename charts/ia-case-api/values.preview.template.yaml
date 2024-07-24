@@ -29,6 +29,8 @@ java:
     ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
     AAC_URL: https://aac-${SERVICE_FQDN}
+    CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
+    LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     DUMMY: true
   keyVaults:
     ia:
@@ -123,7 +125,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-925 #pr-868 or relevant PR number to change DLRM
+    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-925
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -164,6 +167,8 @@ ia-case-documents-api:
             alias: DOCMOSIS_ACCESS_KEY
           - name: launch-darkly-sdk-key
             alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
           - name: customer-services-telephone
@@ -186,13 +191,14 @@ ia-case-documents-api:
             alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
           - name: hearing-centre-glasgow-email
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
-          - name: ia-config-validator-secret
-            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
+    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1271 #pr-1069 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
@@ -445,6 +451,10 @@ ia-timed-event-service:
     #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: https://idam-web-public.{{ .Values.global.environment
         }}.platform.hmcts.net
@@ -479,7 +489,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest #pr-375 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -548,8 +558,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1139
+    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
