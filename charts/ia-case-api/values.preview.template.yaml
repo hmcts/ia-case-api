@@ -34,22 +34,34 @@ java:
     DUMMY: true
   keyVaults:
     ia:
+      resourceGroup: ia
       secrets:
-        - docmosis-enabled
-        - em-stitching-enabled
-        - submit-hearing-requirements-enabled
-        - system-username
-        - system-password
-        - idam-client-id
-        - idam-secret
-        - s2s-secret
-        - s2s-microservice
-        - prof-ref-data-url
-        - docmosis-enabled
-        - em-stitching-enabled
-        - launch-darkly-sdk-key
-        - app-insights-connection-string
-        - ia-config-validator-secret
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: submit-hearing-requirements-enabled
+          alias: IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+        - name: postgres-auth-values-password
+          alias: PG_AUTH_VALUES_YAML_PASS
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
@@ -86,22 +98,35 @@ ia-case-payments-api:
       ia:
         resourceGroup: ia
         secrets:
-          - idam-client-id
-          - idam-secret
-          - idam-redirect-uri
-          - s2s-secret
-          - s2s-microservice
-          - AppInsightsInstrumentationKey
-          - system-username
-          - system-password
-          - ia-config-validator-secret
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-609
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-925
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -167,14 +192,14 @@ ia-case-documents-api:
           - name: hearing-centre-glasgow-email
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
           - name: app-insights-connection-string
-            alias: app-insights-connection-string                  
+            alias: app-insights-connection-string
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-907
-    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1271 #pr-1069 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -441,15 +466,24 @@ ia-timed-event-service:
       ia:
         resourceGroup: ia
         secrets:
-          - idam-client-id
-          - idam-secret
-          - idam-redirect-uri
-          - system-username
-          - system-password
-          - s2s-secret
-          - s2s-microservice
-          - app-insights-connection-string
-          - ia-config-validator-secret
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
@@ -470,15 +504,24 @@ ia-home-office-integration-api:
       ia:
         resourceGroup: ia
         secrets:
-          - idam-client-id
-          - idam-secret
-          - s2s-secret
-          - s2s-microservice
-          - homeoffice-client-id
-          - homeoffice-secret
-          - AppInsightsInstrumentationKey
-          - launch-darkly-sdk-key
-          - ia-config-validator-secret
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: homeoffice-client-id
+            alias: IA_HOMEOFFICE_CLIENT_ID
+          - name: homeoffice-secret
+            alias: IA_HOMEOFFICE_SECRET
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-case-access-api:
   enabled: true
@@ -490,22 +533,33 @@ ia-case-access-api:
       ia:
         resourceGroup: ia
         secrets:
-          - idam-client-id
-          - idam-secret
-          - idam-redirect-uri
-          - ia-system-access-username
-          - ia-system-access-password
-          - s2s-secret
-          - s2s-microservice
-          - AppInsightsInstrumentationKey
-          - ia-config-validator-secret
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: ia-system-access-username
+            alias: IA_SYSTEM_ACCESS_USERNAME
+          - name: ia-system-access-password
+            alias: IA_SYSTEM_ACCESS_PASSWORD
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
 
 ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -537,29 +591,50 @@ ia-aip-frontend:
       TIMELINE_ENABLED: true
     keyVaults:
       ia:
+        resourceGroup: ia
         secrets:
-          - idam-secret
-          - addressLookupToken
-          - s2s-secret
-          - ia-redis-access-key
-          - ia-redis-connection-string
-          - launch-darkly-sdk-key
-          - AppInsightsInstrumentationKey
-          - hearing-centre-bradford-email
-          - hearing-centre-manchester-email
-          - hearing-centre-newport-email
-          - hearing-centre-taylor-house-email
-          - hearing-centre-north-shields-email
-          - hearing-centre-birmingham-email
-          - hearing-centre-hatton-cross-email
-          - hearing-centre-glasgow-email
-          - pcq-token-key
-          - system-username
-          - system-password
-          - docmosis-access-key
-          - customer-services-telephone
-          - customer-services-email
-          - ia-config-validator-secret
+          - name: idam-secret
+            alias: idam-secret
+          - name: addressLookupToken
+            alias: addressLookupToken
+          - name: s2s-secret
+            alias: s2s-secret
+          - name: ia-redis-access-key
+            alias: ia-redis-access-key
+          - name: ia-redis-connection-string
+            alias: ia-redis-connection-string
+          - name: launch-darkly-sdk-key
+            alias: launch-darkly-sdk-key
+          - name: AppInsightsInstrumentationKey
+            alias: AppInsightsInstrumentationKey
+          - name: hearing-centre-bradford-email
+            alias: hearing-centre-bradford-email
+          - name: hearing-centre-manchester-email
+            alias: hearing-centre-manchester-email
+          - name: hearing-centre-newport-email
+            alias: hearing-centre-newport-email
+          - name: hearing-centre-taylor-house-email
+            alias: hearing-centre-taylor-house-email
+          - name: hearing-centre-north-shields-email
+            alias: hearing-centre-north-shields-email
+          - name: hearing-centre-birmingham-email
+            alias: hearing-centre-birmingham-email
+          - name: hearing-centre-hatton-cross-email
+            alias: hearing-centre-hatton-cross-email
+          - name: hearing-centre-glasgow-email
+            alias: hearing-centre-glasgow-email
+          - name: pcq-token-key
+            alias: pcq-token-key
+          - name: system-username
+            alias: system-username
+          - name: system-password
+            alias: system-password
+          - name: docmosis-access-key
+            alias: docmosis-access-key
+          - name: customer-services-telephone
+            alias: customer-services-telephone
+          - name: customer-services-email
+            alias: customer-services-email
   redis:
     enabled: false
     architecture: standalone
@@ -652,10 +727,14 @@ xui-webapp:
       rpx:
         resourceGroup: rpx
         secrets:
-          - mc-s2s-client-secret
-          - mc-idam-client-secret
-          - system-user-name
-          - system-user-password
+          - name: mc-s2s-client-secret
+            alias: mc-s2s-client-secret
+          - name: mc-idam-client-secret
+            alias: mc-idam-client-secret
+          - name: system-user-name
+            alias: system-user-name
+          - name: system-user-password
+            alias: system-user-password
 
 ccd:
   enabled: true
@@ -779,6 +858,7 @@ ccd:
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
       keyVaults:
         am:
+          resourceGroup: am
           secrets:
             - name: am-role-assignment-service-s2s-secret
               alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
@@ -1094,6 +1174,7 @@ aac-manage-case-assignment:
       enabled: false
     keyVaults:
       aac:
+        resourceGroup: aac
         secrets:
           - name: aac-manage-case-s2s-secret
             alias: MANAGE_CASE_S2S_KEY
@@ -1222,6 +1303,7 @@ ccd-message-publisher:
     releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
     keyVaults:
       ccd:
+        resourceGroup: ccd
         secrets:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
@@ -1263,6 +1345,7 @@ am-org-role-mapping-service:
         disabled: false
     keyVaults:
       am:
+        resourceGroup: am
         secrets:
           - name: app-insights-connection-string
             alias: app-insights-connection-string
