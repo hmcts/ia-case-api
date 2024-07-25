@@ -125,8 +125,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-609
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-925
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -198,8 +198,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-907
-    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1271 #pr-1069 or relevant PR number to change
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -567,8 +567,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    #image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
