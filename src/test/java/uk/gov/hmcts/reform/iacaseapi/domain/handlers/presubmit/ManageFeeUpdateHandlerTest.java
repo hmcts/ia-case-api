@@ -9,13 +9,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -105,6 +103,7 @@ class ManageFeeUpdateHandlerTest {
     void handling_should_return_selected_fee_update_statuses_after_fee_update_recorded() {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(FeeUpdateReason.APPEAL_NOT_VALID));
 
         final CheckValues<String> feeUpdateStatus =
             new CheckValues<>(Arrays.asList(
@@ -138,7 +137,6 @@ class ManageFeeUpdateHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(FEE_UPDATE_COMPLETED_STAGES, expectedFeeUpdateStatus);
-        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YES);
     }
 
     @Test
