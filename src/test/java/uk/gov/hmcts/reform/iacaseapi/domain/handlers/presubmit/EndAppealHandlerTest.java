@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_READY_FOR_UT_TRANSFER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
 
 import java.time.LocalDate;
@@ -43,12 +45,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class EndAppealHandlerTest {
-
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -59,6 +62,8 @@ class EndAppealHandlerTest {
     private DateProvider dateProvider;
     @Mock
     private CaseDetails<AsylumCase> previousCaseDetails;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
 
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
@@ -80,10 +85,11 @@ class EndAppealHandlerTest {
     public void setup() {
 
         when(dateProvider.now()).thenReturn(date);
-        endAppealHandler = new EndAppealHandler(dateProvider);
+        endAppealHandler = new EndAppealHandler(dateProvider, iaHearingsApiService);
         when(previousCaseDetails.getState()).thenReturn(previousState);
         when(callback
             .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
+        when(iaHearingsApiService.aboutToSubmit(any())).thenReturn(asylumCase);
 
     }
 
@@ -107,6 +113,7 @@ class EndAppealHandlerTest {
 
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        verify(iaHearingsApiService).aboutToSubmit(callback);
     }
 
 
@@ -127,6 +134,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
+        verify(asylumCase).clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
     }
 
     @Test
@@ -187,6 +195,7 @@ class EndAppealHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+        verify(iaHearingsApiService, never()).aboutToSubmit(callback);
     }
 
     @Test
@@ -264,6 +273,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
+        verify(asylumCase).clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }
@@ -282,5 +292,62 @@ class EndAppealHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase).clear(APPEAL_READY_FOR_UT_TRANSFER);
         verify(asylumCase).clear(UT_APPEAL_REFERENCE_NUMBER);
+    }
+
+    @Test
+    void should_successfully_delete_hearings() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(END_APPEAL);
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(asylumCase, never()).write(eq(MANUAL_CANCEL_HEARINGS_REQUIRED), any());
+    }
+
+    @Test
+    void should_fail_to_delete_hearings() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(END_APPEAL);
+        when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(asylumCase, times(1))
+            .write(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.YES);
+    }
+
+    @Test
+    void should_fail_to_delete_hearings_when_hearings_service_is_down() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(END_APPEAL);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToSubmit(callback))
+            .thenThrow(new AsylumCaseServiceResponseException("Error message", null));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(asylumCase, times(1))
+            .write(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.YES);
     }
 }

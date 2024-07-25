@@ -39,4 +39,3 @@ public class InterpreterLanguageRefData {
         return Objects.hash(languageRefData, languageManualEntry, languageManualEntryDescription);
     }
 }
-

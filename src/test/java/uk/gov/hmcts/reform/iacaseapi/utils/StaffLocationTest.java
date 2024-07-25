@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Location;
@@ -98,7 +100,7 @@ class StaffLocationTest {
 
     @Test
     void should_get_correct_location_of_Yarlswood() {
-        HearingCentre hearingCentre = HearingCentre.YARLSWOOD;
+        HearingCentre hearingCentre = HearingCentre.YARLS_WOOD;
         Location result = StaffLocation.getLocation(hearingCentre);
         assertEquals("Yarls Wood", result.getName());
     }
@@ -122,5 +124,24 @@ class StaffLocationTest {
         HearingCentre hearingCentre = HearingCentre.DECISION_WITHOUT_HEARING;
         Location result = StaffLocation.getLocation(hearingCentre);
         assertEquals("Decision Without Hearing", result.getName());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "Birmingham, 231596",
+        "Birmingham, 618632",
+        "Birmingham, 787030",
+        "Glasgow, 366559",
+        "Glasgow, 999973",
+        "Bradford, 698118",
+        "Hatton Cross, 386417",
+        "Manchester, 512401",
+        "Newcastle, 366796",
+        "Newport, 227101",
+        "Taylor House, 765324"
+    })
+    void should_get_correct_location_of_staff(String locationName, String epimsId) {
+        Location result = StaffLocation.getLocation(epimsId);
+        assertEquals(locationName, result.getName());
     }
 }

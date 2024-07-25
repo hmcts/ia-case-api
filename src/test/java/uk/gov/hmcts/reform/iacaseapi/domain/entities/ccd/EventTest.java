@@ -126,6 +126,15 @@ class EventTest {
         assertEquals("markAsReadyForUtTransfer", Event.MARK_AS_READY_FOR_UT_TRANSFER.toString());
         assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
         assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
+        assertEquals("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString());
+        assertEquals("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString());
+        assertEquals("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString());
+        assertEquals("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString());
+        assertEquals("triggerCmrUpdated", Event.TRIGGER_CMR_UPDATED.toString());
+        assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
+        assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
+        assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
+        assertEquals("decisionWithoutHearingListed", Event.DECISION_WITHOUT_HEARING_LISTED.toString());
         assertEquals("updateDetentionLocation", Event.UPDATE_DETENTION_LOCATION.toString());
         assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
         assertEquals("turnOnNotifications", Event.TURN_ON_NOTIFICATIONS.toString());
@@ -144,6 +153,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(136, Event.values().length);
+        assertEquals(145, Event.values().length);
     }
 }

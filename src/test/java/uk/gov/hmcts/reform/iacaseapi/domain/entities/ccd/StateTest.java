@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 class StateTest {
@@ -42,5 +43,12 @@ class StateTest {
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(31, State.values().length);
+    }
+
+    @Test
+    void should_get_state_from_string() {
+        Arrays.stream(State.values()).forEach(state ->
+            assertEquals(state, State.getStateFrom(state.toString()).orElse(null))
+        );
     }
 }
