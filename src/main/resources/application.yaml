@@ -473,6 +473,7 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
+      - "hearingCancelled"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
