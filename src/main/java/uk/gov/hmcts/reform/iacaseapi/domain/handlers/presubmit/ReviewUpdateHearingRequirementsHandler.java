@@ -37,6 +37,8 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
                 .getCaseDetails()
                 .getCaseData();
 
+        HandlerUtils.formatHearingAdjustmentResponses(asylumCase);
+
         asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS, YesOrNo.YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, callback.getCaseDetails().getState());
         asylumCase.clear(DISABLE_OVERVIEW_PAGE);

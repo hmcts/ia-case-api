@@ -1,0 +1,18 @@
+{
+  "homeOfficeReferenceNumber": "012345678",
+  "homeOfficeDecisionDate": "2021-10-04",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "1978-11-11",
+  "appellantHasFixedAddress": "No",
+  "appealType": "protection",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "journeyType": "aip"
+}

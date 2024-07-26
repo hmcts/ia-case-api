@@ -1,0 +1,104 @@
+{
+  "description": "RIA-7983 Review hearing requirements (auto hearing request enabled)",
+  "enabled": "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reviewHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseManagementLocation": {
+            "region": "1",
+            "baseLocation": "366559"
+          },
+          "hearingLocation": {
+            "value": {
+              "code": "366559",
+              "label": "Glasgow"
+            },
+            "list_items": [
+              {
+                "code": "366559",
+                "label": "Glasgow"
+              }
+            ]
+          },
+          "autoHearingRequestEnabled": "Yes",
+          "isPanelRequired": "No",
+          "listCaseHearingCentre": "glasgow",
+          "reviewedHearingRequirements": "No",
+          "listCaseHearingLength": "300",
+          "remoteVideoCallTribunalResponse": "remote call reason",
+          "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+          "multimediaTribunalResponse": "multimedia reason",
+          "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourtTribunalResponse": "inCameraCourt reason",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
+          "additionalTribunalResponse": "additional reason",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "isRemoteHearingAllowed": "Granted",
+          "isVulnerabilitiesAllowed": "Granted",
+          "isMultimediaAllowed": "Granted",
+          "isSingleSexCourtAllowed": "Refused",
+          "isInCameraCourtAllowed": "Refused",
+          "isAdditionalAdjustmentsAllowed": "Granted",
+          "currentCaseStateVisibleToCaseOfficer": "unknown"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "366559"
+        },
+        "hearingLocation": {
+          "value": {
+            "code": "366559",
+            "label": "Glasgow"
+          },
+          "list_items": [
+            {
+              "code": "366559",
+              "label": "Glasgow"
+            }
+          ]
+        },
+        "autoHearingRequestEnabled": "Yes",
+        "listCaseHearingLength": "300",
+        "remoteVideoCallTribunalResponse": "remote call reason",
+        "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+        "multimediaTribunalResponse": "multimedia reason",
+        "singleSexCourtTribunalResponse": "singleSexCourt reason",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
+        "inCameraCourtTribunalResponse": "inCameraCourt reason",
+        "additionalTribunalResponse": "additional reason",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "reviewedHearingRequirements": "Yes",
+        "isRemoteHearingAllowed": "Granted",
+        "isVulnerabilitiesAllowed": "Granted",
+        "isMultimediaAllowed": "Granted",
+        "isSingleSexCourtAllowed": "Refused",
+        "isInCameraCourtAllowed": "Refused",
+        "isAdditionalAdjustmentsAllowed": "Granted",
+        "remoteHearingDecisionForDisplay": "Granted - remote call reason",
+        "vulnerabilitiesDecisionForDisplay": "Granted - vulnerabilities reason",
+        "multimediaDecisionForDisplay": "Granted - multimedia reason",
+        "singleSexCourtDecisionForDisplay": "Refused - singleSexCourt reason",
+        "inCameraCourtDecisionForDisplay": "Refused - inCameraCourt reason",
+        "otherDecisionForDisplay": "Granted - additional reason",
+        "currentCaseStateVisibleToCaseOfficer": "submitHearingRequirements"
+      }
+    }
+  }
+}

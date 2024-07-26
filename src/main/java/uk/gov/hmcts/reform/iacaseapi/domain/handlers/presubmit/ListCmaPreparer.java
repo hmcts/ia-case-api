@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
@@ -13,9 +14,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
+@RequiredArgsConstructor
 public class ListCmaPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final LocationRefDataService locationRefDataService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -58,7 +63,10 @@ public class ListCmaPreparer implements PreSubmitCallbackHandler<AsylumCase> {
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. You cannot list the case management appointment until the hearing requirements have been reviewed.");
             return asylumCasePreSubmitCallbackResponse;
         }
-        maybeHearingCentre.ifPresent(hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
+        maybeHearingCentre.ifPresent(hearingCentre -> {
+            asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre);
+            asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService.getHearingCentreAddress(hearingCentre));
+        });
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

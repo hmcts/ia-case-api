@@ -5,13 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_LIST_ELEMENT_N;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -20,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -33,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -76,6 +82,7 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.WITNESS_COUNT), eq(0));
         verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
+        WITNESS_LIST_ELEMENT_N.forEach(witnessListElement -> verify(asylumCase, times(1)).clear(witnessListElement));
     }
 
     @Test
@@ -132,10 +139,37 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
+    void should_clear_appellant_language_fields_if_interpreter_services_not_required() {
+
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, times(1)).clear(APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_all_witness_related_fields_if_no_witnesses_in_collection() {
+
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.empty());
+        draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        WITNESS_N_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_CATEGORY_FIELD.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_LIST_ELEMENT_N.forEach(field -> verify(asylumCase, times(1)).clear(field));
+        WITNESS_LIST_ELEMENT_N.forEach(witnessListElement -> verify(asylumCase, times(1)).clear(witnessListElement));
+    }
+
+    @Test
     void should_set_witness_count_and_available_fields() {
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
-            .asList(new IdValue("1", new WitnessDetails("cap")), new IdValue("2", new WitnessDetails("Pan")))));
+            .asList(new IdValue("1", new WitnessDetails("cap", "cap")), new IdValue("2", new WitnessDetails("Pan", "Pan")))));
         when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -149,6 +183,7 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
         verify(asylumCase, times(0)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        WITNESS_LIST_ELEMENT_N.forEach(witnessListElement -> verify(asylumCase, times(1)).clear(witnessListElement));
     }
 
     @Test
@@ -279,14 +314,35 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    void should_populate_appellant_interpreter_language_fields() {
-        try (MockedStatic<HandlerUtils> mockedStatic = mockStatic(HandlerUtils.class)) {
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    void should_call_sanitizeAppellantLanguageComplexType_if_interpreter_services_is_required() {
+
+        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
 
             draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            mockedStatic.verify(() -> HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase));
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeAppellantLanguageComplexType(any()),
+                times(1));
+        }
+    }
+
+    @Test
+    void should_call_sanitizeWitnessLanguageComplexType_if_there_are_witnesses_in_collection() {
+        when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
+            .asList(new IdValue("1", new WitnessDetails("cap", "cap")),
+                new IdValue("2", new WitnessDetails("Pan", "Pan")))));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
+
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeWitnessLanguageComplexType(any()),
+                times(1));
         }
     }
 }
