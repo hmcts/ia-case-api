@@ -19,12 +19,12 @@ plugins {
     id "info.solidsoft.pitest" version '1.9.0'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.flywaydb.flyway' version '5.2.4'
-    id 'org.owasp.dependencycheck' version '9.0.5'
+    id 'org.owasp.dependencycheck' version '10.0.3'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.7.18'
     id 'uk.gov.hmcts.java' version '0.12.43'
     id 'au.com.dius.pact' version '4.2.14'
-    id "io.freefair.lombok" version "6.2.0"
+    id "io.freefair.lombok" version "6.3.0"
 }
 
 apply plugin: 'java'
@@ -126,12 +126,6 @@ processIntegrationTestResources {
 
 processFunctionalTestResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-lombok {
-    config['config.stopbubbling'] = 'true'
-    config['lombok.addLombokGeneratedAnnotation'] = 'true'
-    config['lombok.anyConstructor.addConstructorProperties'] = 'true'
 }
 
 idea {
@@ -358,7 +352,7 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.3'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.4'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
@@ -385,8 +379,9 @@ dependencies {
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
-    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.2-RELEASE'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
+    //implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.2-RELEASE'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
     compileOnly 'org.projectlombok:lombok'
 
@@ -397,7 +392,9 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.0.0'
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.0.0'){
+        exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    }
 
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 
@@ -410,7 +407,7 @@ dependencies {
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    
+
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.3.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
 
