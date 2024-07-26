@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
@@ -92,6 +93,7 @@ class ManageFeeUpdateHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(FEE_UPDATE_COMPLETED_STAGES, expectedFeeUpdateStatus);
+        verify(asylumCase, times(1)).write(DISPLAY_FEE_UPDATE_STATUS, YesOrNo.YES);
         if (feeUpdateReason.equals(DECISION_TYPE_CHANGED)) {
             verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
         } else {
@@ -182,5 +184,18 @@ class ManageFeeUpdateHandlerTest {
         assertThatThrownBy(() -> manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_throw_if_fee_reason_is_not_exists() {
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Fee update reason is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 }
