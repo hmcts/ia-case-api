@@ -79,7 +79,7 @@
             "value": {
               "appliedCostsType": "Unreasonable costs",
               "applyForCostsDecision": "Pending",
-              "respondentToCostsOrder": "Fake Org Ltd",
+              "respondentToCostsOrder": "Fake",
               "applyForCostsHearingType": "No",
               "scheduleOfCostsDocuments": [],
               "applyForCostsCreationDate": "{$TODAY}",
@@ -101,7 +101,7 @@
             }
           }
         ],
-      "legalRepName": "Fake Org Ltd"
+      "legalRepName": "Fake"
       }
     }
   }

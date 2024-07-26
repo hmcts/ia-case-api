@@ -43,6 +43,7 @@ public enum DocumentTag {
     UPPER_TRIBUNAL_TRANSFER_ORDER_DOCUMENT("upperTribunalTransferOrderDocument"),
     IAUT_2_FORM("iAUT2Form"),
     REMITTAL_DECISION("remittalDecision"),
+    NOTICE_OF_ADJOURNED_HEARING("noticeOfAdjournedHearing"),
     APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
     INTERNAL_OUT_OF_TIME_DECISION_LETTER("internalOutOfTimeDecisionLetter"),
 
