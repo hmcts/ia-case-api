@@ -12,7 +12,6 @@ import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +48,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Class
 @PactTestFor(providerName = "am_roleAssignment_queryAssignment", port = "8991")
 @ContextConfiguration(classes = {RoleAssignmentConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
-@Disabled
 public class RoleAssignmentQueryConsumerTest {
 
     @Autowired
