@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -465,6 +466,26 @@ class EditAppealAfterSubmitHandlerTest {
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
+    void should_set_homeOfficeReferenceNumber_as_GWFReferenceNumber_when_out_of_country_is_refusal_of_human_rights_or_refuse_permit(OutOfCountryDecisionType outOfCountryDecisionType) {
+        String gwfRefNumber = "GWF_REF_001";
+        String decisionDate = "2020-04-08";
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(decisionDate));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(outOfCountryDecisionType));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(decisionDate));
+        when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of(decisionDate));
+        when(asylumCase.read(GWF_REFERENCE_NUMBER)).thenReturn(Optional.of(gwfRefNumber));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(HOME_OFFICE_REFERENCE_NUMBER, gwfRefNumber);
     }
 
     @Test

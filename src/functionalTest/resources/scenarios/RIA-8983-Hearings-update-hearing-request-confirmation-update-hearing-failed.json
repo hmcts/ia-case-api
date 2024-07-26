@@ -1,0 +1,25 @@
+{
+  "description": "RIA-8983 Hearings update hearing request confirmation when update hearing failed",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 89832,
+      "eventId": "updateHearingRequest",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "manualUpdHearingRequired": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "body": "![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)\n\n#### What happens next\n\nThe hearing could not be automatically updated. You must manually update the hearing in the [Hearings tab](/cases/case-details/89832/hearings)\n\nIf required, parties will be informed of the changes to the hearing."
+    }
+  }
+}

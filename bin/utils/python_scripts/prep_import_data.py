@@ -61,5 +61,4 @@ def replace_case_data_id(new_id: str, file_path: str):
         writer.writerows(data_list)
     return file_path
 
-
 prep_import_data(events_to_get_individual_json=range(1, 100))

@@ -37,6 +37,8 @@ def secrets = [
 
                 secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
                 secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
+                secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
+                secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
                 secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
                 secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
                 secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
@@ -118,6 +120,7 @@ withNightlyPipeline(type, product, component) {
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
+    env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
 
     loadVaultSecrets(secrets)
     if (!params.skipFortifyScan) {

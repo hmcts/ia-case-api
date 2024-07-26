@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,9 @@ class LaunchDarklyFeatureTogglerTest {
 
     @Mock
     private UserDetails userDetails;
+
+    @Mock
+    private LDValue expectedJsonValue;
 
     @InjectMocks
     private LaunchDarklyFeatureToggler launchDarklyFeatureToggler;
@@ -66,6 +71,26 @@ class LaunchDarklyFeatureTogglerTest {
         ).thenReturn(true);
 
         assertTrue(launchDarklyFeatureToggler.getValue(existingKey, false));
+    }
+
+    @Test
+    void should_return_json_value_when_key_exists() {
+        String existingKey = "existing-key";
+        when(userDetails.getId()).thenReturn("id");
+        when(userDetails.getForename()).thenReturn("forname");
+        when(userDetails.getSurname()).thenReturn("surname");
+        when(userDetails.getEmailAddress()).thenReturn("emailAddress");
+        when(ldClient.jsonValueVariation(
+            existingKey,
+            new LDUser.Builder(userDetails.getId())
+                .firstName(userDetails.getForename())
+                .lastName(userDetails.getSurname())
+                .email(userDetails.getEmailAddress())
+                .build(),
+            LDValue.ofNull())
+        ).thenReturn(expectedJsonValue);
+
+        assertEquals(expectedJsonValue, launchDarklyFeatureToggler.getJsonValue(existingKey, LDValue.ofNull()));
     }
 
     @Test
