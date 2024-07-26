@@ -16,6 +16,8 @@ public class CaseNoteMigration {
     @Getter
     private Document caseNoteDocument;
 
+    public CaseNoteMigration() {
+    }
     public CaseNoteMigration(
         String caseNoteSubject,
         String caseNoteDescription,
