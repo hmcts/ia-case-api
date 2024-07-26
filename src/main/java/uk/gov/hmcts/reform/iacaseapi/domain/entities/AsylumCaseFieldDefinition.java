@@ -3,10 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
@@ -451,6 +452,15 @@ public enum AsylumCaseFieldDefinition {
     LIST_CASE_HEARING_CENTRE(
         "listCaseHearingCentre", new TypeReference<HearingCentre>(){}),
 
+    LIST_CASE_HEARING_CENTRE_ADDRESS(
+        "listCaseHearingCentreAddress",  new TypeReference<String>(){}),
+
+    LISTING_LOCATION(
+        "listingLocation", new TypeReference<DynamicList>(){}),
+
+    IS_CASE_USING_LOCATION_REF_DATA(
+        "isCaseUsingLocationRefData", new TypeReference<YesOrNo>(){}),
+
     LIST_CASE_HEARING_DATE(
         "listCaseHearingDate", new TypeReference<String>(){}),
 
@@ -472,6 +482,9 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_REP_NAME(
         "legalRepName", new TypeReference<String>(){}),
 
+    LEGAL_REP_FAMILY_NAME(
+            "legalRepFamilyName", new TypeReference<String>(){}),
+
     LEGAL_REP_COMPANY_NAME(
             "legalRepCompanyName", new TypeReference<String>(){}),
 
@@ -480,6 +493,9 @@ public enum AsylumCaseFieldDefinition {
 
     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS(
         "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
+
+    LEGAL_REP_MOBILE_PHONE_NUMBER(
+            "legalRepMobilePhoneNumber", new TypeReference<String>(){}),
 
     CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE(
         "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
@@ -791,14 +807,200 @@ public enum AsylumCaseFieldDefinition {
     WITNESS_COUNT(
         "witnessCount", new TypeReference<String>() {}),
 
+    IS_WITNESSES_ATTENDING(
+        "isWitnessesAttending", new TypeReference<YesOrNo>() {}),
+
+    IS_INTERPRETER_SERVICES_NEEDED(
+        "isInterpreterServicesNeeded", new TypeReference<YesOrNo>(){}),
+
+    IS_SIGN_SERVICES_NEEDED(
+            "isSignServicesNeeded", new TypeReference<YesOrNo>(){}),
+
+    LANGUAGE_MANUAL_ENTER(
+            "languageManualEnter", new TypeReference<String>(){}),
+
+    IS_ANY_WITNESS_INTERPRETER_REQUIRED(
+        "isAnyWitnessInterpreterRequired", new TypeReference<YesOrNo>(){}),
+
     WITNESS_DETAILS(
         "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
+
+    INCLUSIVE_WITNESS_DETAILS(
+        "inclusiveWitnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
+
+    WHICH_WITNESSES_NEED_INTERPRETER(
+        "whichWitnessesNeedInterpreter", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_1(
+        "witness1", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_2(
+        "witness2", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_3(
+        "witness3", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_4(
+        "witness4", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_5(
+        "witness5", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_6(
+        "witness6", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_7(
+        "witness7", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_8(
+        "witness8", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_9(
+        "witness9", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_10(
+        "witness10", new TypeReference<WitnessDetails>() {}),
+
+    WITNESS_LIST_ELEMENT_1(
+        "witnessListElement1", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_2(
+        "witnessListElement2", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_3(
+        "witnessListElement3", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_4(
+        "witnessListElement4", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_5(
+        "witnessListElement5", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_6(
+        "witnessListElement6", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_7(
+        "witnessListElement7", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_8(
+        "witnessListElement8", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_9(
+        "witnessListElement9", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_LIST_ELEMENT_10(
+        "witnessListElement10", new TypeReference<DynamicMultiSelectList>() {}),
+
+    WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness1InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_2_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness2InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_3_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness3InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_4_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness4InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_5_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness5InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_6_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness6InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_7_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness7InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_8_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness8InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_9_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness9InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY(
+        "witness10InterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness1InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_1_INTERPRETER_SIGN_LANGUAGE(
+        "witness1InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_2_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness2InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_2_INTERPRETER_SIGN_LANGUAGE(
+        "witness2InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_3_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness3InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_3_INTERPRETER_SIGN_LANGUAGE(
+        "witness3InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_4_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness4InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_4_INTERPRETER_SIGN_LANGUAGE(
+        "witness4InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_5_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness5InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_5_INTERPRETER_SIGN_LANGUAGE(
+        "witness5InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_6_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness6InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_6_INTERPRETER_SIGN_LANGUAGE(
+        "witness6InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_7_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness7InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_7_INTERPRETER_SIGN_LANGUAGE(
+        "witness7InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_8_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness8InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_8_INTERPRETER_SIGN_LANGUAGE(
+        "witness8InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_9_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness9InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_9_INTERPRETER_SIGN_LANGUAGE(
+        "witness9InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE(
+        "witness10InterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    WITNESS_10_INTERPRETER_SIGN_LANGUAGE(
+        "witness10InterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    IS_WITNESS_1_INTERPRETER_NEEDED(
+        "isWitness1InterpreterNeeded", new TypeReference<String>() {}),
 
     WITNESS_DETAILS_READONLY(
         "witnessDetailsReadonly", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
 
+    HEARING_CHANNEL(
+            "hearingChannel", new TypeReference<DynamicList>(){}),
+
     INTERPRETER_LANGUAGE(
         "interpreterLanguage", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
+
+    APPELLANT_INTERPRETER_SPOKEN_LANGUAGE(
+        "appellantInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPELLANT_INTERPRETER_SIGN_LANGUAGE(
+        "appellantInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    APPELLANT_INTERPRETER_LANGUAGE_CATEGORY(
+        "appellantInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
 
     INTERPRETER_LANGUAGE_READONLY(
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
@@ -820,6 +1022,42 @@ public enum AsylumCaseFieldDefinition {
 
     ADDITIONAL_TRIBUNAL_RESPONSE(
         "additionalTribunalResponse", new TypeReference<String>() {}),
+
+    IS_REMOTE_HEARING_ALLOWED(
+            "isRemoteHearingAllowed", new TypeReference<String>() {}),
+
+    IS_VULNERABILITIES_ALLOWED(
+            "isVulnerabilitiesAllowed", new TypeReference<String>() {}),
+
+    IS_MULTIMEDIA_ALLOWED(
+            "isMultimediaAllowed", new TypeReference<String>() {}),
+
+    IS_SINGLE_SEX_COURT_ALLOWED(
+            "isSingleSexCourtAllowed", new TypeReference<String>() {}),
+
+    IS_IN_CAMERA_COURT_ALLOWED(
+            "isInCameraCourtAllowed", new TypeReference<String>() {}),
+
+    IS_ADDITIONAL_ADJUSTMENTS_ALLOWED(
+            "isAdditionalAdjustmentsAllowed", new TypeReference<String>() {}),
+
+    REMOTE_HEARING_DECISION_FOR_DISPLAY(
+            "remoteHearingDecisionForDisplay", new TypeReference<String>() {}),
+
+    MULTIMEDIA_DECISION_FOR_DISPLAY(
+            "multimediaDecisionForDisplay", new TypeReference<String>() {}),
+
+    SINGLE_SEX_COURT_DECISION_FOR_DISPLAY(
+            "singleSexCourtDecisionForDisplay", new TypeReference<String>() {}),
+
+    IN_CAMERA_COURT_DECISION_FOR_DISPLAY(
+            "inCameraCourtDecisionForDisplay", new TypeReference<String>() {}),
+
+    VULNERABILITIES_DECISION_FOR_DISPLAY(
+            "vulnerabilitiesDecisionForDisplay", new TypeReference<String>() {}),
+
+    OTHER_DECISION_FOR_DISPLAY(
+            "otherDecisionForDisplay", new TypeReference<String>() {}),
 
     REASON_TO_FORCE_REQUEST_CASE_BUILDING(
         "reasonToForceRequestCaseBuilding", new TypeReference<String>(){}),
@@ -988,8 +1226,14 @@ public enum AsylumCaseFieldDefinition {
     UPDATE_LEGAL_REP_NAME(
         "updateLegalRepName", new TypeReference<String>() {}),
 
+    UPDATE_LEGAL_REP_FAMILY_NAME(
+            "updateLegalRepFamilyName", new TypeReference<String>() {}),
+
     UPDATE_LEGAL_REP_EMAIL_ADDRESS(
         "updateLegalRepEmailAddress", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER(
+            "updateLegalRepMobilePhoneNumber", new TypeReference<String>() {}),
 
     UPDATE_LEGAL_REP_REFERENCE_NUMBER(
         "updateLegalRepReferenceNumber", new TypeReference<String>() {}),
@@ -1280,6 +1524,9 @@ public enum AsylumCaseFieldDefinition {
 
     LIST_CASE_HEARING_LENGTH(
         "listCaseHearingLength", new TypeReference<String>() {}),
+
+    LISTING_LENGTH(
+        "listingLength", new TypeReference<HoursMinutes>() {}),
 
     HEARING_REQUIREMENTS(
         "hearingRequirements", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
@@ -1699,17 +1946,280 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
 
+    S94B_STATUS(
+        "s94bStatus", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
 
+    WITNESS_LEVEL_FLAGS(
+        "witnessLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
+
+    INTERPRETER_LEVEL_FLAGS(
+            "interpreterLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
+
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
-    // This is not actually a real case field. It is used to determine
-    // the case flag id for the purpose of functional test
-    CASE_FLAG_ID("caseFlagId", new TypeReference<String>(){}),
 
-    S94B_STATUS(
-        "s94bStatus", new TypeReference<YesOrNo>(){}),
+    IS_HEARING_ROOM_NEEDED(
+            "isHearingRoomNeeded", new TypeReference<YesOrNo>(){}),
+
+    IS_HEARING_LOOP_NEEDED(
+            "isHearingLoopNeeded", new TypeReference<YesOrNo>(){}),
+
+    IN_CAMERA_COURT("inCameraCourt", new TypeReference<YesOrNo>(){}),
+
+    MULTIMEDIA_EVIDENCE("multimediaEvidence", new TypeReference<YesOrNo>(){}),
+
+    APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
+        "appellantInterpreterSpokenLanguageBooking", new TypeReference<String>() {}),
+
+    APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS(
+        "appellantInterpreterSpokenLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING(
+        "appellantInterpreterSignLanguageBooking", new TypeReference<String>() {}),
+
+    APPELLANT_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS(
+        "appellantInterpreterSignLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1(
+        "witnessInterpreterSpokenLanguageBooking1", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2(
+        "witnessInterpreterSpokenLanguageBooking2", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3(
+        "witnessInterpreterSpokenLanguageBooking3", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4(
+        "witnessInterpreterSpokenLanguageBooking4", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_5(
+        "witnessInterpreterSpokenLanguageBooking5", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_6(
+        "witnessInterpreterSpokenLanguageBooking6", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_7(
+        "witnessInterpreterSpokenLanguageBooking7", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_8(
+        "witnessInterpreterSpokenLanguageBooking8", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_9(
+        "witnessInterpreterSpokenLanguageBooking9", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_10(
+        "witnessInterpreterSpokenLanguageBooking10", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1(
+        "witnessInterpreterSpokenLanguageBookingStatus1", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2(
+        "witnessInterpreterSpokenLanguageBookingStatus2", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3(
+        "witnessInterpreterSpokenLanguageBookingStatus3", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4(
+        "witnessInterpreterSpokenLanguageBookingStatus4", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_5(
+        "witnessInterpreterSpokenLanguageBookingStatus5", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_6(
+        "witnessInterpreterSpokenLanguageBookingStatus6", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_7(
+        "witnessInterpreterSpokenLanguageBookingStatus7", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_8(
+        "witnessInterpreterSpokenLanguageBookingStatus8", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_9(
+        "witnessInterpreterSpokenLanguageBookingStatus9", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_10(
+        "witnessInterpreterSpokenLanguageBookingStatus10", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1(
+        "witnessInterpreterSignLanguageBooking1", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2(
+        "witnessInterpreterSignLanguageBooking2", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3(
+        "witnessInterpreterSignLanguageBooking3", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4(
+        "witnessInterpreterSignLanguageBooking4", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_5(
+        "witnessInterpreterSignLanguageBooking5", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_6(
+        "witnessInterpreterSignLanguageBooking6", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_7(
+        "witnessInterpreterSignLanguageBooking7", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_8(
+        "witnessInterpreterSignLanguageBooking8", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_9(
+        "witnessInterpreterSignLanguageBooking9", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_10(
+        "witnessInterpreterSignLanguageBooking10", new TypeReference<String>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1(
+        "witnessInterpreterSignLanguageBookingStatus1", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2(
+        "witnessInterpreterSignLanguageBookingStatus2", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3(
+        "witnessInterpreterSignLanguageBookingStatus3", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4(
+        "witnessInterpreterSignLanguageBookingStatus4", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_5(
+        "witnessInterpreterSignLanguageBookingStatus5", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_6(
+        "witnessInterpreterSignLanguageBookingStatus6", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_7(
+        "witnessInterpreterSignLanguageBookingStatus7", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_8(
+        "witnessInterpreterSignLanguageBookingStatus8", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_9(
+        "witnessInterpreterSignLanguageBookingStatus9", new TypeReference<InterpreterBookingStatus>() {}),
+
+    WITNESS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_10(
+        "witnessInterpreterSignLanguageBookingStatus10", new TypeReference<InterpreterBookingStatus>() {}),
+
+    INTERPRETER_DETAILS(
+        "interpreterDetails", new TypeReference<List<IdValue<InterpreterDetails>>>() {}),
+
+    APPELLANT_PARTY_ID(
+            "appellantPartyId", new TypeReference<String>() {}),
+
+    LEGAL_REP_INDIVIDUAL_PARTY_ID(
+            "legalRepIndividualPartyId", new TypeReference<String>() {}),
+
+    LEGAL_REP_ORGANISATION_PARTY_ID(
+            "legalRepOrganisationPartyId", new TypeReference<String>() {}),
+
+    SPONSOR_PARTY_ID(
+            "sponsorPartyId", new TypeReference<String>() {}),
+
+    CHANGE_HEARINGS(
+            "changeHearings", new TypeReference<DynamicList>(){}),
+
+    CHANGE_HEARING_VENUE(
+            "changeHearingVenue", new TypeReference<String>(){}),
+    IS_INTEGRATED(
+            "isIntegrated", new TypeReference<YesOrNo>(){}),
+
+    MANUAL_CANCEL_HEARINGS_REQUIRED(
+        "manualCanHearingRequired", new TypeReference<YesOrNo>(){}),
+
+    MANUAL_UPDATE_HEARING_REQUIRED(
+        "manualUpdHearingRequired", new TypeReference<YesOrNo>(){}),
+
+    MANUAL_CREATE_HEARING_REQUIRED(
+        "manualCreHearingRequired", new TypeReference<YesOrNo>(){}),
+
+    UPDATE_HMC_REQUEST_SUCCESS(
+            "updateHmcRequestSuccess", new TypeReference<YesOrNo>() {}),
+    NEXT_HEARING_FORMAT(
+        "nextHearingFormat", new TypeReference<DynamicList>(){}),
+
+    HEARING_ADJOURNMENT_WHEN(
+        "hearingAdjournmentWhen", new TypeReference<HearingAdjournmentDay>(){}),
+
+    RELIST_CASE_IMMEDIATELY(
+        "relistCaseImmediately", new TypeReference<YesOrNo>(){}),
+
+    NEXT_HEARING_VENUE(
+        "nextHearingVenue", new TypeReference<DynamicList>(){}),
+
+    NEXT_HEARING_DURATION(
+        "nextHearingDuration", new TypeReference<String>(){}),
+
+    HEARING_ADJOURNMENT_DECISION_PARTY(
+        "hearingAdjournmentDecisionParty", new TypeReference<String>(){}),
+
+    HEARING_ADJOURNMENT_DECISION_PARTY_NAME(
+        "hearingAdjournmentDecisionPartyName", new TypeReference<String>(){}),
+
+    HEARING_ADJOURNMENT_REQUESTING_PARTY(
+        "hearingAdjournmentRequestingParty", new TypeReference<String>(){}),
+
+    ANY_ADDITIONAL_ADJOURNMENT_INFO(
+        "anyAdditionalAdjournmentInfo", new TypeReference<YesOrNo>(){}),
+
+    ADDITIONAL_ADJOURNMENT_INFO(
+        "additionalAdjournmentInfo", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE(
+        "nextHearingDate", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE_FIXED(
+        "nextHearingDateFixed", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE_RANGE_EARLIEST(
+        "nextHearingDateRangeEarliest", new TypeReference<String>(){}),
+
+    NEXT_HEARING_DATE_RANGE_LATEST(
+        "nextHearingDateRangeLatest", new TypeReference<String>(){}),
+
+    SHOULD_RESERVE_OR_EXCLUDE_JUDGE(
+        "shouldReserveOrExcludeJudge", new TypeReference<YesOrNo>(){}),
+
+    RESERVE_OR_EXCLUDE_JUDGE(
+        "reserveOrExcludeJudge", new TypeReference<String>(){}),
+
+    ADJOURNMENT_DETAILS_HEARING(
+        "adjournmentDetailsHearing", new TypeReference<DynamicList>(){}),
+
+    CURRENT_ADJOURNMENT_DETAIL(
+            "currentAdjournmentDetail", new TypeReference<AdjournmentDetail>(){}),
+
+    PREVIOUS_ADJOURNMENT_DETAILS(
+        "previousAdjournmentDetails", new TypeReference<List<IdValue<AdjournmentDetail>>>(){}),
+
+    HEARING_REASON_TO_CANCEL(
+        "hearingReasonToCancel", new TypeReference<DynamicList>(){}),
+
+    HEARING_REASON_TO_UPDATE(
+        "hearingReasonToUpdate", new TypeReference<DynamicList>(){}),
+
+    IS_APPEAL_SUITABLE_TO_FLOAT(
+            "isAppealSuitableToFloat", new TypeReference<YesOrNo>(){}),
+
+    AUTO_HEARING_REQUEST_ENABLED("autoHearingRequestEnabled", new TypeReference<YesOrNo>(){}),
+
+    HEARING_LOCATION("hearingLocation", new TypeReference<DynamicList>(){}),
+
+    AUTO_REQUEST_HEARING("autoRequestHearing", new TypeReference<YesOrNo>(){}),
+
+    AUTO_LIST_HEARING("autoListHearing", new TypeReference<YesOrNo>(){}),
+
+    IS_PANEL_REQUIRED("isPanelRequired", new TypeReference<YesOrNo>(){}),
+
+    CHANGE_HEARING_DATE_YES_NO("changeHearingDateYesNo", new TypeReference<String>(){}),
+
+    CHANGE_HEARING_DATE_TYPE("changeHearingDateType", new TypeReference<String>(){}),
+
+    CHANGE_HEARING_DATE_RANGE_EARLIEST("changeHearingDateRangeEarliest", new TypeReference<String>(){}),
+
+    CHANGE_HEARING_DATE_RANGE_LATEST("changeHearingDateRangeLatest", new TypeReference<String>(){}),
 
     LISTING_AVAILABLE_FOR_ADA(
         "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
@@ -1776,21 +2286,28 @@ public enum AsylumCaseFieldDefinition {
 
     DATE_MARKED_AS_ADA(
             "dateMarkedAsAda", new TypeReference<String>(){}),
+
     MARK_APPEAL_AS_ADA_EXPLANATION(
         "markAppealAsAdaExplanation", new TypeReference<String>(){}),
+
     REASON_APPEAL_MARKED_AS_ADA(
         "reasonAppealMarkedAsAda", new TypeReference<String>(){}),
 
     ADA_HEARING_REQUIREMENTS_SUBMITTED(
             "adaHearingRequirementsSubmitted", new TypeReference<YesOrNo>(){}),
+
     UT_APPEAL_REFERENCE_NUMBER(
             "utAppealReferenceNumber", new TypeReference<String>() {}),
+
     UT_INSTRUCTION_DATE(
             "utInstructionDate", new TypeReference<String>(){}),
+
     NOTICE_OF_DECISION_UT_TRANSFER_DOCUMENT(
         "noticeOfDecisionUtTransferDocument", new TypeReference<Document>(){}),
+
     APPEAL_READY_FOR_UT_TRANSFER(
             "appealReadyForUtTransfer", new TypeReference<YesOrNo>(){}),
+
     APPEAL_READY_FOR_UT_TRANSFER_OUTCOME(
             "appealReadyForUtTransferOutcome", new TypeReference<String>(){}),
 
@@ -2127,20 +2644,23 @@ public enum AsylumCaseFieldDefinition {
     REHEARING_REASON(
         "rehearingReason", new TypeReference<String>() {}),
 
-    REHEARD_HEARING_DOCUMENTS_COLLECTION(
-        "reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
+    REHEARD_HEARING_DOCUMENTS_COLLECTION("reheardHearingDocumentsCollection", new TypeReference<List<IdValue<ReheardHearingDocuments>>>(){}),
 
-    IS_INTERPRETER_SERVICES_NEEDED(
-        "isInterpreterServicesNeeded", new TypeReference<YesOrNo>(){}),
+    HEARING_CENTRE_DYNAMIC_LIST("hearingCentreDynamicList", new TypeReference<DynamicList>(){}),
 
-    APPELLANT_INTERPRETER_SPOKEN_LANGUAGE(
-        "appellantInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+    IS_DECISION_WITHOUT_HEARING("isDecisionWithoutHearing", new TypeReference<YesOrNo>(){}),
 
-    APPELLANT_INTERPRETER_SIGN_LANGUAGE(
-        "appellantInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+    IS_ADDITIONAL_INSTRUCTION_ALLOWED("isAdditionalInstructionAllowed", new TypeReference<YesOrNo>(){}),
 
-    APPELLANT_INTERPRETER_LANGUAGE_CATEGORY(
-        "appellantInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+    ADDITIONAL_INSTRUCTIONS_TRIBUNAL_RESPONSE("additionalInstructionsTribunalResponse", new TypeReference<String>(){}),
+
+    ADDITIONAL_INSTRUCTIONS("additionalInstructions", new TypeReference<YesOrNo>(){}),
+
+    ADDITIONAL_INSTRUCTIONS_DESCRIPTION("additionalInstructionsDescription", new TypeReference<String>(){}),
+
+    CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
+
+    NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
     REQUEST_FEE_REMISSION_DATE(
         "requestFeeRemissionDate", new TypeReference<String>(){}),

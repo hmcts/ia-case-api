@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED_BY_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
@@ -96,6 +93,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
 
         boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+
         boolean isAipJourney = asylumCase
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
             .map(journeyType -> journeyType == JourneyType.AIP)
@@ -153,4 +151,5 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         boolean isValidState = !invalidStates.contains(currentState);
         return isPayLaterAppeal && isPaymentEvent && isValidState;
     }
+
 }

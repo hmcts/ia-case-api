@@ -1,59 +1,58 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class HandlerUtilsTest {
+    private static final String ON_THE_PAPERS = "ONPPRS";
 
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private InterpreterLanguage interpreterLanguage1;
-    @Mock
-    private InterpreterLanguage interpreterLanguage2;
-    @Mock
-    private InterpreterLanguage interpreterLanguage3;
-
-    private static final String signLanguage1 = "Sign language - Aaa";
-    private static final String signLanguage2 = "Sign language - Bbb";
-    private static final String dialect1 = "Zzz";
-    private static final String spokenLanguage1 = "Ccc";
-    private static final String spokenLanguage2 = "Ddd";
-    private static final List<String> LIST_YES = List.of("Yes");
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
     @Test
     void given_journey_type_aip_returns_true() {
@@ -173,6 +172,155 @@ class HandlerUtilsTest {
     }
 
     @Test
+    void get_appellant_full_name_should_return_appellant_display_name() {
+        String appellantDisplayName = "FirstName FamilyName";
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantDisplayName));
+
+        assertEquals(appellantDisplayName, HandlerUtils.getAppellantFullName(asylumCase));
+    }
+
+    @Test
+    void get_appellant_full_name_should_return_appellant_given_names_and_family_name() {
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("FirstName SecondName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("FamilyName"));
+
+        assertEquals("FirstName SecondName FamilyName", HandlerUtils.getAppellantFullName(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"NO", "YES"})
+    void should_check_set_value_in_auto_hearing_enabled_field(YesOrNo value) {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(value);
+
+        HandlerUtils.checkAndUpdateAutoHearingRequestEnabled(locationBasedFeatureToggler, asylumCase);
+
+        verify(asylumCase, times(1)).write(
+                AUTO_HEARING_REQUEST_ENABLED,
+                value);
+    }
+
+    @Test
+    void get_appellant_full_name_should_throw_exception() {
+        assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
+            .hasMessage("Appellant given names required")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("FirstName SecondName"));
+
+        assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
+            .hasMessage("Appellant family name required")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("FamilyName"));
+
+        assertThatThrownBy(() -> HandlerUtils.getAppellantFullName(asylumCase))
+            .hasMessage("Appellant given names required")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "true, false, true, Active, RA0042, NO", // Only appellantLevelFlag RA0042 present
+        "true, false, true, Active, PF0012, NO", // Only appellantLevelFlag PF0012 present
+        "true, false, true, Active, PF0014, NO", // Only appellantLevelFlags PF0014 present
+        "true, false, true, Active, PF0017, NO", // Only appellantLevelFlags PF0017 present
+        "true, false, true, Active, PF0018, NO", // Only appellantLevelFlags PF0018 present
+        "false, true, true, Active, CF0011, NO", // Only caseLevelFlags CF0011 present
+        "true, true, true, Active, CF0011, NO", // All flags active and present
+        "false, false, false, Inactive, PF0018, YES", // Only inactive flags present
+        "false, false, false, Inactive, CF0011, YES", // No flags present
+        "false, false, true, Active, CF0011, NO", // No flags present and Hearing is on the papers
+    })
+    void setDefaultAutoListHearingValue_ActiveFlagPresent(boolean hasAppellantFlags, boolean hasCaseFlags,
+                                                          boolean isHearingOnThePaper, String active,
+                                                          String flagCode, String expected) {
+        when(asylumCase.read(HEARING_CHANNEL, DynamicList.class)).thenReturn(
+            isHearingOnThePaper ?
+                Optional.of(new DynamicList(new Value(ON_THE_PAPERS, "On the Papers"),
+                    List.of(new Value(ON_THE_PAPERS, "On the Papers"))))
+                : Optional.empty());
+
+        List<CaseFlagDetail> existingFlags = List.of(
+            new CaseFlagDetail("1",
+                CaseFlagValue
+                    .builder()
+                    .flagCode(flagCode)
+                    .name("flagName")
+                    .status(active)
+                    .build())
+        );
+
+        when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(
+            hasAppellantFlags ? Optional.of(new StrategicCaseFlag("name", "role", existingFlags))
+                : Optional.empty());
+
+        when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(
+            hasCaseFlags ? Optional.of(new StrategicCaseFlag("name", "role", existingFlags))
+                : Optional.empty());
+
+        HandlerUtils.setDefaultAutoListHearingValue(asylumCase);
+
+        verify(asylumCase, times(1)).write(AUTO_LIST_HEARING, YesOrNo.valueOf(expected));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void should_return_whether_panel_is_required(YesOrNo yesOrNo) {
+        when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+        assertEquals(yesOrNo == YES, isPanelRequired(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void isIntegrated_should_work_as_expected(YesOrNo integrated) {
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(integrated));
+
+        assertEquals(integrated == YES, isIntegrated(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void relistCaseImmediately_should_work_as_expected(YesOrNo relist) {
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
+            .thenReturn(Optional.of(relist));
+
+        assertEquals(relist == YES, relistCaseImmediately(asylumCase, false));
+    }
+
+    @Test
+    void relistCaseImmediately_should_throw_exception() {
+
+        assertThatThrownBy(() -> relistCaseImmediately(asylumCase, true))
+            .hasMessage("Response to relist case immediately is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE","BEFORE_HEARING_DATE"})
+    void adjournBeforeHearingDay_should_work_as_expected(HearingAdjournmentDay adjournmentDay) {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(adjournmentDay));
+
+        assertEquals(adjournmentDay == BEFORE_HEARING_DATE, adjournedBeforeHearingDay(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE","BEFORE_HEARING_DATE"})
+    void adjournOnHearingDay_should_work_as_expected(HearingAdjournmentDay adjournmentDay) {
+        when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
+            .thenReturn(Optional.of(adjournmentDay));
+
+        assertEquals(adjournmentDay == ON_HEARING_DATE, adjournedOnHearingDay(asylumCase));
+    }
+
+    @Test
     public void read_json_file_list_valid_returns_list() throws IOException {
         String filePath = "/readJsonList.json";
         List<String> expectedCaseIdList = List.of("1234", "5678", "9012");
@@ -202,49 +350,11 @@ class HandlerUtilsTest {
         assertEquals(new ArrayList<>(), result);
     }
 
-    @Test
-    void populateAppellantInterpreterLanguageFieldsIfRequired() {
-        when(asylumCase.read(INTERPRETER_LANGUAGE))
-            .thenReturn(Optional.of(Arrays.asList(
-                new IdValue<>("1", interpreterLanguage1),
-                new IdValue<>("2", interpreterLanguage2),
-                new IdValue<>("3", interpreterLanguage3)))
-            );
-        when(interpreterLanguage1.getLanguage()).thenReturn(spokenLanguage1);
-        when(interpreterLanguage1.getLanguageDialect()).thenReturn(dialect1);
-        when(interpreterLanguage2.getLanguage()).thenReturn(spokenLanguage2);
-        when(interpreterLanguage2.getLanguageDialect()).thenReturn(dialect1);
-        when(interpreterLanguage3.getLanguage()).thenReturn(signLanguage1);
-        when(interpreterLanguage3.getLanguageDialect()).thenReturn(dialect1);
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    void should_return_whether_case_uses_location_ref_data(YesOrNo yesOrNo) {
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
-        HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase);
-
-        verify(asylumCase, times(1)).write(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY,
-            List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(),
-                SIGN_LANGUAGE_INTERPRETER.getValue()));
-
-        ArgumentCaptor<InterpreterLanguageRefData> languageCaptor =
-            ArgumentCaptor.forClass(InterpreterLanguageRefData.class);
-        verify(asylumCase, times(1)).write(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE), languageCaptor.capture());
-        verify(asylumCase, times(1)).write(eq(APPELLANT_INTERPRETER_SIGN_LANGUAGE), languageCaptor.capture());
-
-        List<InterpreterLanguageRefData> capturedLanguages = languageCaptor.getAllValues();
-        assertNull(capturedLanguages.get(0).getLanguageRefData());
-        assertEquals(LIST_YES, capturedLanguages.get(0).getLanguageManualEntry());
-        assertEquals("Ccc Zzz; Ddd Zzz", capturedLanguages.get(0).getLanguageManualEntryDescription());
-        assertNull(capturedLanguages.get(1).getLanguageRefData());
-        assertEquals(LIST_YES, capturedLanguages.get(1).getLanguageManualEntry());
-        assertEquals("Sign language - Aaa Zzz", capturedLanguages.get(1).getLanguageManualEntryDescription());
-    }
-
-    @Test
-    void populateAppellantInterpreterLanguageFieldsIfRequired_interpreterServicesNotNeeded() {
-        when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED)).thenReturn(Optional.of(YesOrNo.NO));
-
-        HandlerUtils.populateAppellantInterpreterLanguageFieldsIfRequired(asylumCase);
-
-        verify(asylumCase,
-            never()).write(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.YES);
+        assertEquals(yesOrNo == YES, isCaseUsingLocationRefData(asylumCase));
     }
 }

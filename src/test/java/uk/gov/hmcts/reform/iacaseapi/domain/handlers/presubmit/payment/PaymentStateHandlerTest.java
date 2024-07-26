@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;

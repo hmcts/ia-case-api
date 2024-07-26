@@ -15,10 +15,13 @@ def dmnBranch = "ia-task-configuration-refund"
 def bpmnBranch = "master"
 
 def secrets = [
-    'rpx-${env}': [
-        secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
-    ],
-    'ia-${env}': [
+        'rpx-${env}': [
+                secret('mc-s2s-client-secret', 'S2S_SECRET'),
+                secret('mc-idam-client-secret', 'IDAM_SECRET'),
+                secret('system-user-name', 'SYSTEM_USER_NAME'),
+                secret('system-user-password', 'SYSTEM_USER_PASSWORD'),
+        ],
+        'ia-${env}' : [
 
                 secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
                 secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
@@ -42,27 +45,37 @@ def secrets = [
                 secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
                 secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
 
+                secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+                secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+
                 secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
                 secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
                 secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
                 secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 
-                secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
-                secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
-                secret('wa-test-caseofficer-a-username', 'IA_WA_CASEOFFICER_USERNAME'),
-                secret('wa-test-caseofficer-a-password', 'IA_WA_CASEOFFICER_PASSWORD'),
-                secret('wa-test-ctsc-admin-username', 'IA_WA_CTSC_ADMIN_USERNAME'),
-                secret('wa-test-ctsc-admin-password', 'IA_WA_CTSC_ADMIN_PASSWORD'),
-                secret('wa-test-adminofficer-username-1', 'IA_WA_ADMINOFFICER_USERNAME_1'),
-                secret('wa-test-adminofficer-password-1', 'IA_WA_ADMINOFFICER_PASSWORD_1'),
-                secret('wa-test-caseofficer-stcw-username', 'IA_WA_CASEOFFICER_USERNAME_STCW'),
-                secret('wa-test-caseofficer-stcw-password', 'IA_WA_CASEOFFICER_PASSWORD_STCW'),
-                secret('wa-test-judge-username', 'IA_WA_JUDGE_USERNAME'),
-                secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
-                secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
-                secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
 
+        secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
+        secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
+        secret('wa-test-caseofficer-a-username', 'IA_WA_CASEOFFICER_USERNAME'),
+        secret('wa-test-caseofficer-a-password', 'IA_WA_CASEOFFICER_PASSWORD'),
+        secret('wa-test-ctsc-admin-username', 'IA_WA_CTSC_ADMIN_USERNAME'),
+        secret('wa-test-ctsc-admin-password', 'IA_WA_CTSC_ADMIN_PASSWORD'),
+        secret('wa-test-adminofficer-username-1', 'IA_WA_ADMINOFFICER_USERNAME_1'),
+        secret('wa-test-adminofficer-password-1', 'IA_WA_ADMINOFFICER_PASSWORD_1'),
+        secret('wa-test-caseofficer-stcw-username', 'IA_WA_CASEOFFICER_USERNAME_STCW'),
+        secret('wa-test-caseofficer-stcw-password', 'IA_WA_CASEOFFICER_PASSWORD_STCW'),
+        secret('wa-test-judge-username', 'IA_WA_JUDGE_USERNAME'),
+        secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
+        secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
+        secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
+
+                secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
+                secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
+                secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
+                secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
+                secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
+                secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
                 secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
                 secret('idam-secret', 'IA_IDAM_SECRET'),
                 secret('s2s-secret', 'IA_S2S_SECRET'),
@@ -89,19 +102,19 @@ def secrets = [
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
         ],
-        's2s-${env}'      : [
+        's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
                 secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
                 secret('microservicekey-iac', 'IAC_S2S_KEY')
         ],
-        'ccd-${env}'      : [
+        'ccd-${env}': [
                 secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
                 secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
-                secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
-                secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
-                secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+                secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+                secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+                secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
                 secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
         ]
 ]
@@ -134,6 +147,8 @@ withPipeline(type, product, component) {
     env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
     env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
     env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
+    env.CASE_API_URL = "http://ia-case-api-demo.service.core-compute-demo.internal"
+    env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
 
     enableAksStagingDeployment()
     disableLegacyDeployment()
@@ -154,9 +169,9 @@ withPipeline(type, product, component) {
             env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
             sh """
-    ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-    ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-    """
+            ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+            ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+        """
         }
     }
 
@@ -165,7 +180,8 @@ withPipeline(type, product, component) {
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         sh """
-    ./bin/add-org-roles-to-users.sh
+      ./bin/add-org-roles-to-users.sh
+
     """
     }
 

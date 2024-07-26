@@ -309,6 +309,10 @@ public class CcdScenarioRunnerTest {
 
         Map<String, Object> callback = new HashMap<>();
         callback.put("event_id", MapValueExtractor.extractOrThrow(input, "eventId"));
+        String eventPageId = MapValueExtractor.extract(input, "pageId");
+        if (eventPageId != null) {
+            callback.put("page_id", eventPageId);
+        }
         callback.put("case_details", caseDetails);
 
         if (input.containsKey("caseDataBefore")) {

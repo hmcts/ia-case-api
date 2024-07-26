@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -15,17 +20,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
-
-    public ReviewDraftHearingRequirementsHandler(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
-    }
+    private final AutoRequestHearingService autoRequestHearingService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -50,9 +54,16 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
 
         asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
 
+        HandlerUtils.formatHearingAdjustmentResponses(asylumCase);
+
         if (featureToggler.getValue("reheard-feature", false)
             && asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
             asylumCase.write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
+        }
+
+        if (autoRequestHearingService.shouldAutoRequestHearing(asylumCase, canAutoRequest(asylumCase))) {
+            return new PreSubmitCallbackResponse<>(
+                autoRequestHearingService.autoCreateHearing(callback));
         }
 
         boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
@@ -73,5 +84,13 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean canAutoRequest(AsylumCase asylumCase) {
+
+        boolean autoRequestHearing = asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)
+            .map(autoRequest -> YES == autoRequest).orElse(true);
+
+        return autoRequestHearing && !isPanelRequired(asylumCase);
     }
 }

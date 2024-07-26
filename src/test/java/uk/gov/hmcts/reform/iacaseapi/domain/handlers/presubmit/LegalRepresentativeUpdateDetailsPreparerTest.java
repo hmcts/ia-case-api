@@ -36,8 +36,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
 class LegalRepresentativeUpdateDetailsPreparerTest {
 
     private final String legalRepCompany = "Amazing Law Firm";
-    private final String legalRepName = "John Doe";
+    private final String legalRepName = "John";
+    private final String legalRepFamilyName = "Doe";
     private final String legalRepEmailAddress = "john.doe@example.com";
+    private final String legalRepMobilePhoneNumber = "01234123123";
     private final String legalRepReferenceNumber = "ABC-123";
 
     @Mock
@@ -63,8 +65,11 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
 
         when(asylumCase.read(LEGAL_REP_COMPANY, String.class)).thenReturn(Optional.of(legalRepCompany));
         when(asylumCase.read(LEGAL_REP_NAME, String.class)).thenReturn(Optional.of(legalRepName));
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME, String.class)).thenReturn(Optional.of(legalRepFamilyName));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class))
             .thenReturn(Optional.of(legalRepEmailAddress));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class))
+            .thenReturn(Optional.of(legalRepMobilePhoneNumber));
         when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(legalRepReferenceNumber));
     }
@@ -78,17 +83,23 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(0)).clear(eq(LEGAL_REP_NAME));
+        verify(asylumCase, times(0)).clear(eq(LEGAL_REP_FAMILY_NAME));
         verify(asylumCase, times(0)).clear(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS));
+        verify(asylumCase, times(0)).clear(eq(LEGAL_REP_MOBILE_PHONE_NUMBER));
         verify(asylumCase, times(0)).clear(eq(LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase).read(LEGAL_REP_COMPANY, String.class);
         verify(asylumCase).read(LEGAL_REP_NAME, String.class);
+        verify(asylumCase).read(LEGAL_REP_FAMILY_NAME, String.class);
         verify(asylumCase).read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class);
+        verify(asylumCase).read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class);
         verify(asylumCase).read(LEGAL_REP_REFERENCE_NUMBER, String.class);
 
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_COMPANY), eq(legalRepCompany));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_NAME), eq(legalRepName));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_FAMILY_NAME), eq(legalRepFamilyName));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER), eq(legalRepMobilePhoneNumber));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
 
         verify(companyNameProvider, times(1)).prepareCompanyName(callback);
@@ -107,17 +118,23 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).clear(eq(LEGAL_REP_NAME));
+        verify(asylumCase, times(1)).clear(eq(LEGAL_REP_FAMILY_NAME));
         verify(asylumCase, times(1)).clear(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS));
+        verify(asylumCase, times(1)).clear(eq(LEGAL_REP_MOBILE_PHONE_NUMBER));
         verify(asylumCase, times(1)).clear(eq(LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase).read(LEGAL_REP_COMPANY, String.class);
         verify(asylumCase).read(LEGAL_REP_NAME, String.class);
+        verify(asylumCase).read(LEGAL_REP_FAMILY_NAME, String.class);
         verify(asylumCase).read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class);
+        verify(asylumCase).read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class);
         verify(asylumCase).read(LEGAL_REP_REFERENCE_NUMBER, String.class);
 
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_COMPANY), eq(legalRepCompany));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_NAME), eq(legalRepName));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_FAMILY_NAME), eq(legalRepFamilyName));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER), eq(legalRepMobilePhoneNumber));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
 
         verify(companyNameProvider, times(1)).prepareCompanyName(callback);

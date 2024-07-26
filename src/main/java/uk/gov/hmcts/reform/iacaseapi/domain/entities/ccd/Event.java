@@ -141,6 +141,16 @@ public enum Event {
     RECORD_REMISSION_REMINDER("recordRemissionReminder"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
 
+    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
+    UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
+    UPDATE_HEARING_REQUEST("updateHearingRequest"),
+    HANDLE_HEARING_EXCEPTION("handleHearingException"),
+    TRIGGER_CMR_UPDATED("triggerCmrUpdated"),
+    RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
+    LIST_ASSIST_INTEGRATION("listAssistIntegration"),
+    TRIGGER_CMR_LISTED("triggerCmrListed"),
+    DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
