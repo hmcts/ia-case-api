@@ -399,10 +399,12 @@ dependencies {
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+    implementation 'joda-time:joda-time:2.12.7'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
+
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
