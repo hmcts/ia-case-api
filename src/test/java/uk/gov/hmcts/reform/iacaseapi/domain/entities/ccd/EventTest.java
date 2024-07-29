@@ -149,10 +149,12 @@ class EventTest {
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
         assertEquals("setNextHearingDate", Event.SET_NEXT_HEARING_DATE.toString());
+        assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
+     
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(145, Event.values().length);
+        assertEquals(146, Event.values().length);
     }
 }

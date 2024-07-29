@@ -373,6 +373,7 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "markAppealAsRemitted"
+      - "hearingCancelled"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -475,6 +476,7 @@ security:
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
       - "setNextHearingDate"
+      - "hearingCancelled"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"

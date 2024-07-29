@@ -1,0 +1,113 @@
+{
+  "description": "RIA-8970 Substantive hearings can be manually marked as cancelled",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8970,
+      "eventId": "hearingCancelled",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isCaseUsingLocationRefData": "Yes",
+          "ariaListingReference": "LP/12345/2019",
+          "isRemoteHearing": "No",
+          "isIntegrated": "No",
+          "hearingCentre": "manchester",
+          "listingLocation": {
+            "value": {
+              "code": "512401",
+              "label": "Manchester Tribunal Hearing Centre - Piccadilly Exchange"
+            }
+          },
+          "listCaseHearingCentreAddress": "Manchester Tribunal Hearing Centre - Piccadilly Exchange, Piccadilly Plaza, M1 4AH",
+          "listCaseHearingLength": "300",
+          "listCaseHearingDate": "2020-10-28T10:30:00.000",
+          "listCaseRequirementsVulnerabilities": "some vulnerabilities",
+          "listCaseRequirementsMultimedia": "some multimedia",
+          "listCaseRequirementsSingleSexCourt": "some single-sex court",
+          "listCaseRequirementsInCameraCourt": "some in-camera court",
+          "listCaseRequirementsOther": "some other requirements",
+          "reviewedUpdatedHearingRequirements": "Yes",
+          "doesTheCaseNeedToBeRelisted": "Yes",
+          "haveHearingAttendeesAndDurationBeenRecorded": "Yes",
+          "attendingTcw": "some TCW",
+          "attendingJudge": "some Judge",
+          "attendingAppellant": "some Appellant",
+          "attendingHomeOfficeLegalRepresentative": "some HO",
+          "attendingAppellantsLegalRepresentative": "some legal rep",
+          "actualCaseHearingLength": {
+            "hours": "2",
+            "minutes": "30"
+          },
+          "hearingRecordingDocuments": [
+            {
+              "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+                  "document_filename": "HearingRecording.mp3",
+                  "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
+                },
+                "description": "some description"
+              }
+            }
+          ],
+          "nextHearingDetails": {
+            "hearingID": "999",
+            "hearingDateTime": "2020-10-28T10:30:00.000"
+          }
+
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isCaseUsingLocationRefData": "Yes",
+        "currentHearingDetailsVisible": null,
+        "isRemoteHearing": "No",
+        "ariaListingReference": "LP/12345/2019",
+        "hearingCentre": "manchester",
+        "listCaseHearingCentre": null,
+        "listingLocation": {
+          "value": {
+            "code": "512401",
+            "label": "Manchester Tribunal Hearing Centre - Piccadilly Exchange"
+          }
+        },
+        "listCaseHearingCentreAddress": "Manchester Tribunal Hearing Centre - Piccadilly Exchange, Piccadilly Plaza, M1 4AH",
+        "listCaseHearingLength": "300",
+        "listCaseHearingDate": null,
+        "listCaseRequirementsVulnerabilities": "some vulnerabilities",
+        "listCaseRequirementsMultimedia": "some multimedia",
+        "listCaseRequirementsSingleSexCourt": "some single-sex court",
+        "listCaseRequirementsInCameraCourt": "some in-camera court",
+        "listCaseRequirementsOther": "some other requirements",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "reheardCaseListedWithoutHearingRequirements": null,
+        "reviewedUpdatedHearingRequirements": null,
+        "doesTheCaseNeedToBeRelisted": null,
+        "haveHearingAttendeesAndDurationBeenRecorded": null,
+        "attendingTcw": null,
+        "attendingJudge": null,
+        "attendingAppellant": null,
+        "attendingHomeOfficeLegalRepresentative": null,
+        "attendingAppellantsLegalRepresentative": null,
+        "actualCaseHearingLength": null,
+        "hearingConductionOptions": null,
+        "hearingRecordingDocuments": null,
+        "notificationsSent": null,
+        "nextHearingDetails": {
+          "hearingID": null,
+          "hearingDateTime": null
+        }
+      }
+    }
+  }
+}
