@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SET_NEXT_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_NEXT_HEARING_INFO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -71,7 +71,7 @@ class NextHearingDateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "UPDATE_NEXT_HEARING_INFO"})
     public void should_not_set_next_hearing_date_if_feature_not_enabled(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(nextHearingDateSerice.enabled()).thenReturn(false);
@@ -85,7 +85,7 @@ class NextHearingDateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "UPDATE_NEXT_HEARING_INFO"})
     public void should_set_next_hearing_date_from_hearings(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(nextHearingDateSerice.enabled()).thenReturn(true);
@@ -106,7 +106,7 @@ class NextHearingDateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "SET_NEXT_HEARING_DATE"})
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "UPDATE_NEXT_HEARING_INFO"})
     public void should_set_next_hearing_date_from_case_data(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(nextHearingDateSerice.enabled()).thenReturn(true);
@@ -133,7 +133,7 @@ class NextHearingDateHandlerTest {
 
                 boolean canHandle = handler.canHandle(callbackStage, callback);
 
-                if (List.of(LIST_CASE, EDIT_CASE_LISTING, SET_NEXT_HEARING_DATE).contains(event)
+                if (List.of(LIST_CASE, EDIT_CASE_LISTING, UPDATE_NEXT_HEARING_INFO).contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

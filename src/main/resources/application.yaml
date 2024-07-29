@@ -475,7 +475,7 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
-      - "setNextHearingDate"
+      - "updateNextHearingInfo"
       - "hearingCancelled"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"

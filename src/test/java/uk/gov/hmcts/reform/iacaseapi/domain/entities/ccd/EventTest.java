@@ -148,7 +148,7 @@ class EventTest {
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
-        assertEquals("setNextHearingDate", Event.SET_NEXT_HEARING_DATE.toString());
+        assertEquals("updateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
         assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
      
     }

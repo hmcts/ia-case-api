@@ -150,7 +150,7 @@ public enum Event {
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     TRIGGER_CMR_LISTED("triggerCmrListed"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
-    SET_NEXT_HEARING_DATE("setNextHearingDate"),
+    UPDATE_NEXT_HEARING_INFO("updateNextHearingInfo"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
