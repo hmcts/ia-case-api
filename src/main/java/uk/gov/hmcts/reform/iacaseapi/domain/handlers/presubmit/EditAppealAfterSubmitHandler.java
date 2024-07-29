@@ -222,6 +222,10 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 decisionDate = null;
         }
 
+        if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS || decisionType == OutOfCountryDecisionType.REFUSE_PERMIT) {
+            asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER, asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER).orElse(asylumCase.read(GWF_REFERENCE_NUMBER).orElse(null)));
+        }
+
         if (decisionDate != null
             && decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysOoc))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);

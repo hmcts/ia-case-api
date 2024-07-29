@@ -1,0 +1,38 @@
+{
+  "description": "RIA-7879 case-listing Harmondsworth as Hearing Venue",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "listCase",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ariaListingReference": "LP/12345/2019",
+          "hearingCentre": "taylorHouse",
+          "listCaseHearingCentre": "harmondsworth",
+          "listCaseHearingLength": "180",
+          "listCaseHearingDate": "2023-09-25T10:00:00.000"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "currentHearingDetailsVisible": "Yes",
+        "ariaListingReference": "LP/12345/2019",
+        "hearingCentre": "taylorHouse",
+        "listCaseHearingCentre": "harmondsworth",
+        "listCaseHearingCentreAddress": "Harmondsworth Tribunal Hearing Centre, Colnbrook Bypass, UB7 0HB",
+        "listCaseHearingLength": "180",
+        "listCaseHearingDate": "2023-09-25T10:00:00.000",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}

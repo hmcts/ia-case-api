@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -37,29 +39,53 @@ class DecisionAndReasonsStartedSubStateProgressionTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AutoRequestHearingService autoRequestHearingService;
 
     private DecisionAndReasonsStartedSubStateProgression decisionAndReasonsStartSubStateProgression;
 
     @BeforeEach
     public void setUp() {
         decisionAndReasonsStartSubStateProgression =
-            new DecisionAndReasonsStartedSubStateProgression();
+            new DecisionAndReasonsStartedSubStateProgression(autoRequestHearingService);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
-    void should_set_flag_decision_and_reasons_available_flag_to_no() {
+    void should_handle() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(true);
+        when(autoRequestHearingService.autoCreateHearing(callback))
+            .thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(autoRequestHearingService, times(1)).autoCreateHearing(callback);
         verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
+    }
+
+    @Test
+    void should_not_auto_request_hearing() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, callbackResponse.getData());
+        verify(autoRequestHearingService, never()).autoCreateHearing(callback);
+        verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.NO);
     }
 
     @Test
