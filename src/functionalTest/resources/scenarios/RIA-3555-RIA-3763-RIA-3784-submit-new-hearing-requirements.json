@@ -1,6 +1,6 @@
 {
   "description": "RIA-3555-RIA-3763-RIA-3784 Submit new hearing requirements (FTPA reheard decision)",
-  "disabled": "true",  
+  "disabled": true,
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -21,7 +21,8 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness"
+                "witnessName": "AWitness",
+                "witnessFamilyName": "Family"
               }
             }
           ],
@@ -47,6 +48,7 @@
           "singleSexCourtType": "All female",
           "singleSexCourtTypeDescription": "Requirement for single sex court",
           "inCameraCourt": "Yes",
+          "isInCameraCourtAllowed": "Granted",
           "inCameraCourtDescription": "In camera court description",
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
@@ -144,7 +146,8 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness"
+              "witnessName": "AWitness",
+              "witnessFamilyName": "Family"
             }
           }
         ],
@@ -170,6 +173,7 @@
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
         "inCameraCourt": "Yes",
+        "isInCameraCourtAllowed": "Granted",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",

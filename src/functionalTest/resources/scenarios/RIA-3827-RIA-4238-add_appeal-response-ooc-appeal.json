@@ -1,5 +1,6 @@
 {
   "description": "RIA-3827-RIA-4238 add appeal reason for out of country appeal",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

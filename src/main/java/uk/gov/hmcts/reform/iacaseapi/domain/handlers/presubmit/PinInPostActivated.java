@@ -92,6 +92,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
         asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
         asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
         asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID);
     }
 
     private void updateSubscription(AsylumCase asylumCase) {

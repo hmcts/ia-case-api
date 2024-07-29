@@ -52,6 +52,7 @@ services:
       IA_DOCMOSIS_ENABLED:
       IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:
       CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api:4455
+      IA_HEARINGS_API_URL: http://ia-hearings-api:8100
     external_links:
       - idam-api
       - dm-store

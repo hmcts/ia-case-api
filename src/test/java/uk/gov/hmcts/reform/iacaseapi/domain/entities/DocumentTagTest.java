@@ -44,6 +44,7 @@ class DocumentTagTest {
         assertEquals("updatedFinalDecisionAndReasonsPdf", DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF.toString());
         assertEquals("updatedDecisionAndReasonsCoverLetter", DocumentTag.UPDATED_DECISION_AND_REASONS_COVER_LETTER.toString());
         assertEquals("remittalDecision", DocumentTag.REMITTAL_DECISION.toString());
+        assertEquals("noticeOfAdjournedHearing", DocumentTag.NOTICE_OF_ADJOURNED_HEARING.toString());
         assertEquals("", DocumentTag.NONE.toString());
         assertEquals("appealWasNotSubmittedSupportingDocument", DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT.toString());
         assertEquals("internalOutOfTimeDecisionLetter", DocumentTag.INTERNAL_OUT_OF_TIME_DECISION_LETTER.toString());
@@ -52,6 +53,6 @@ class DocumentTagTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(41, DocumentTag.values().length);
+        assertEquals(42, DocumentTag.values().length);
     }
 }

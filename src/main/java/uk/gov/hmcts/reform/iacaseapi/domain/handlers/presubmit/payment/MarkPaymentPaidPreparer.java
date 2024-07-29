@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -31,8 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -49,20 +46,14 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
     private static final String NOT_AVAILABLE_LABEL = "You cannot mark this appeal as paid";
 
     private final boolean isFeePaymentEnabled;
-    private final UserDetails userDetails;
-    private final UserDetailsHelper userDetailsHelper;
     private final FeatureToggler featureToggler;
 
 
     public MarkPaymentPaidPreparer(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled,
-        UserDetails userDetails,
-        UserDetailsHelper userDetailsHelper,
         FeatureToggler featureToggler
     ) {
         this.isFeePaymentEnabled = isFeePaymentEnabled;
-        this.userDetails = userDetails;
-        this.userDetailsHelper = userDetailsHelper;
         this.featureToggler = featureToggler;
     }
 
@@ -88,11 +79,6 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-
-        if (isTribunalCaseworker() && !internalDetainedCase(asylumCase)) {
-            callbackResponse.addError("You don't have required access to perform this task");
-            return callbackResponse;
-        }
 
         if (HandlerUtils.isAppealPaid(asylumCase)) {
             callbackResponse.addError("The fee for this appeal has already been paid.");
@@ -213,7 +199,4 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         return HandlerUtils.isInternalCase(asylumCase) && HandlerUtils.isAppellantInDetention(asylumCase);
     }
 
-    private boolean isTribunalCaseworker() {
-        return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.TRIBUNAL_CASEWORKER);
-    }
 }
