@@ -61,9 +61,9 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                     .map(h -> h.getValue())
                     .orElseThrow(() -> new IllegalStateException("hearingCentreDynamicList is not present"));
 
-            HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, refDataHearingCentre.getLabel());
 
-            maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), true)
+            HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, refDataHearingCentre.getLabel());
+            maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), false)
                 .orElse(NEWPORT);
         } else {
             maybeHearingCentre =
