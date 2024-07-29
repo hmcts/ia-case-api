@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
@@ -60,6 +61,8 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                     .map(h -> h.getValue())
                     .orElseThrow(() -> new IllegalStateException("hearingCentreDynamicList is not present"));
 
+
+            HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, refDataHearingCentre.getLabel());
             maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), false)
                 .orElse(NEWPORT);
         } else {
