@@ -72,8 +72,8 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-
                 values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case ENDED:
@@ -96,7 +96,7 @@ public class MakeAnApplicationTypesProvider {
             case REASONS_FOR_APPEAL_SUBMITTED:
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
-
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 if (hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
@@ -150,10 +150,12 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
@@ -230,6 +232,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -278,6 +281,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case ADJOURNED:
@@ -325,6 +329,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case DECIDED:

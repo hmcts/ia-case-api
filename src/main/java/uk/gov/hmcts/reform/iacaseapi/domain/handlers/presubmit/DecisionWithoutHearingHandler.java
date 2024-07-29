@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_LISTING_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_WITHOUT_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -35,11 +39,14 @@ public class DecisionWithoutHearingHandler implements PreSubmitCallbackHandler<A
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-        asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.DECISION_WITHOUT_HEARING);
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            asylumCase.write(IS_DECISION_WITHOUT_HEARING, YES);
+        } else {
+            asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.DECISION_WITHOUT_HEARING);
+        }
+
         asylumCase.write(ARIA_LISTING_REFERENCE, "XX/00000/0000");
 
         return new PreSubmitCallbackResponse<>(asylumCase);

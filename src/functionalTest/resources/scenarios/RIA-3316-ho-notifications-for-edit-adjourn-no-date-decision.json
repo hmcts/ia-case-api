@@ -45,6 +45,7 @@
         "homeOfficeSearchStatus": "SUCCESS",
         "homeOfficeNotificationsEligible": "Yes",
         "listCaseHearingCentre": "coventry",
+        "listCaseHearingDate": null,
         "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
         "listCaseRequirementsMultimedia": "something around Multimedia",
         "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",

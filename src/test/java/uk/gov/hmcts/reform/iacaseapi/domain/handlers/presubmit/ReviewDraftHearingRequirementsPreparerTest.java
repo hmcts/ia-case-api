@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,21 +16,38 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -47,17 +67,33 @@ class ReviewDraftHearingRequirementsPreparerTest {
     private List<IdValue<WitnessDetails>> witnessDetails;
     @Mock
     private List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock
+    private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private LocationRefDataService locationRefDataService;
+    @Captor
+    private ArgumentCaptor<YesOrNo> autoHearingRequestEnabledCaptor;
+
+    @Captor
+    private ArgumentCaptor<DynamicList> hearingLocationsCaptor;
+
+    private final MockedStatic<HandlerUtils> handlerUtilsMock = Mockito.mockStatic(HandlerUtils.class);
 
     private ReviewDraftHearingRequirementsPreparer reviewDraftHearingRequirementsPreparer;
 
     @BeforeEach
     public void setUp() {
         reviewDraftHearingRequirementsPreparer =
-            new ReviewDraftHearingRequirementsPreparer(userDetails, userDetailsHelper);
+            new ReviewDraftHearingRequirementsPreparer(userDetails, userDetailsHelper, locationBasedFeatureToggler, locationRefDataService);
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    }
+
+    @AfterEach
+    void tearDown() {
+        handlerUtilsMock.close();
     }
 
     @Test
@@ -66,12 +102,15 @@ class ReviewDraftHearingRequirementsPreparerTest {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
 
         witnessDetails = Arrays.asList(
-            new IdValue<>("1", new WitnessDetails("Witness1")),
-            new IdValue<>("2", new WitnessDetails("Witness2"))
+            new IdValue<>("1", new WitnessDetails("Witness1Given", "Witness1Family")),
+            new IdValue<>("2", new WitnessDetails("Witness2Given"))
         );
 
+        InterpreterLanguage interpreterLanguageObject = new InterpreterLanguage();
+        interpreterLanguageObject.setLanguage("Irish");
+        interpreterLanguageObject.setLanguageDialect("N/A");
         interpreterLanguage = Arrays.asList(
-            new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
+            new IdValue<>("1", interpreterLanguageObject)
         );
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
@@ -88,10 +127,15 @@ class ReviewDraftHearingRequirementsPreparerTest {
 
         verify(asylumCase, times(1)).write(
             WITNESS_DETAILS_READONLY,
-            "Name\t\tWitness1\nName\t\tWitness2");
+            "Name\t\tWitness1Given Witness1Family\nName\t\tWitness2Given");
         verify(asylumCase, times(1)).write(
             INTERPRETER_LANGUAGE_READONLY,
             "Language\t\tIrish\nDialect\t\t\tN/A\n");
+
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.setDefaultAutoListHearingValue(asylumCase),
+            times(1)
+        );
     }
 
     @Test
@@ -130,6 +174,58 @@ class ReviewDraftHearingRequirementsPreparerTest {
             YesOrNo.NO);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "HU, 120",
+        "EA, 120",
+        "EU, 120",
+        "DC, 180",
+        "PA, 180",
+        "RP, 180",
+    })
+    void should_set_default_length_hearing_for_appeal_type(AppealType appealType, String expectedResult) {
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(
+                LIST_CASE_HEARING_LENGTH,
+                expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "HU, 120",
+        "EA, 120",
+        "EU, 120",
+        "DC, 180",
+        "PA, 180",
+        "RP, 180",
+    })
+    void should_set_default_length_hearing_for_integrated_appeal_type(AppealType appealType, String expectedResult) {
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        ArgumentCaptor<HoursMinutes> hoursMinutesCaptor = ArgumentCaptor.forClass(HoursMinutes.class);
+
+        verify(asylumCase, times(1)).write(eq(LISTING_LENGTH), hoursMinutesCaptor.capture());
+        assertEquals(expectedResult, String.valueOf(hoursMinutesCaptor.getValue().convertToIntegerMinutes()));
+    }
+
     @Test
     void should_return_error_on_review_flag_is_missing() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.empty());
@@ -145,6 +241,77 @@ class ReviewDraftHearingRequirementsPreparerTest {
 
         verify(asylumCase, times(0)).read(WITNESS_DETAILS);
         verify(asylumCase, times(0)).read(INTERPRETER_LANGUAGE);
+    }
+
+    @Test
+    void should_set_auto_hearing_request_enabled_to_yes() {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
+        assertEquals(YesOrNo.YES, autoHearingRequestEnabledCaptor.getValue());
+    }
+
+    @Test
+    void should_not_set_auto_hearing_request_enabled() {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase,  times(1))
+            .write(eq(AUTO_HEARING_REQUEST_ENABLED), autoHearingRequestEnabledCaptor.capture());
+    }
+
+    @Test
+    void should_set_hearing_location_dynamic_list() {
+        DynamicList hearingLocations =
+            new DynamicList(new Value("", ""), List.of(new Value("key1", "value1")));
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.YES);
+        when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(hearingLocations);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(eq(HEARING_LOCATION), hearingLocationsCaptor.capture());
+        DynamicList actual = hearingLocationsCaptor.getValue();
+        assertEquals("key1", actual.getListItems().get(0).getCode());
+        assertEquals("value1", actual.getListItems().get(0).getLabel());
+    }
+
+    @Test
+    void should_not_set_hearing_location_dynamic_list() {
+        when(locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase)).thenReturn(YesOrNo.NO);
+        when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never())
+            .write(eq(HEARING_LOCATION), any());
     }
 
     @Test
@@ -234,14 +401,19 @@ class ReviewDraftHearingRequirementsPreparerTest {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        handlerUtilsMock.when(
+            () -> HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)).thenReturn(true);
 
         witnessDetails = Arrays.asList(
-            new IdValue<>("1", new WitnessDetails("Witness1")),
-            new IdValue<>("2", new WitnessDetails("Witness2"))
+            new IdValue<>("1", new WitnessDetails("Witness1Given", "Witness1Family")),
+            new IdValue<>("2", new WitnessDetails("Witness2Given"))
         );
 
+        InterpreterLanguage interpreterLanguageObject = new InterpreterLanguage();
+        interpreterLanguageObject.setLanguage("Irish");
+        interpreterLanguageObject.setLanguageDialect("N/A");
         interpreterLanguage = Arrays.asList(
-            new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
+            new IdValue<>("1", interpreterLanguageObject)
         );
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(witnessDetails));
@@ -252,13 +424,14 @@ class ReviewDraftHearingRequirementsPreparerTest {
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
-
+        verify(asylumCase, times(1)).read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
+        verify(asylumCase, times(1)).read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class);
         verify(asylumCase, times(1)).read(WITNESS_DETAILS);
         verify(asylumCase, times(1)).read(INTERPRETER_LANGUAGE);
 
         verify(asylumCase, times(1)).write(
             WITNESS_DETAILS_READONLY,
-            "Name\t\tWitness1\nName\t\tWitness2");
+            "Name\t\tWitness1Given Witness1Family\nName\t\tWitness2Given");
         verify(asylumCase, times(1)).write(
             INTERPRETER_LANGUAGE_READONLY,
             "Language\t\tIrish\nDialect\t\t\tN/A\n");

@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.roleassignment;
 
-import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PRIVATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PUBLIC;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.RESTRICTED;
-
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
@@ -17,10 +8,9 @@ import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.Maps;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,16 +25,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.*;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
@@ -81,7 +76,9 @@ public class RoleAssignmentQueryConsumerTest {
     private final LocalDateTime validAtDate = LocalDateTime.parse("2021-12-04T00:00:00");
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        Thread.sleep(2000);
+
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);
@@ -92,6 +89,10 @@ public class RoleAssignmentQueryConsumerTest {
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails, idamService);
     }
 
+    @AfterEach
+    void teardown() {
+        Executor.closeIdleConnections();
+    }
 
     @Pact(provider = "am_roleAssignment_queryAssignment", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
