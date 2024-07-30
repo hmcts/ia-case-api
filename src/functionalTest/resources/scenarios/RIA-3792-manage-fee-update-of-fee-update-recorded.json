@@ -14,7 +14,8 @@
             "values": [
               "feeUpdateRecorded"
             ]
-          }
+          },
+          "feeUpdateReason": "decisionTypeChanged"
         }
       }
     }
@@ -33,7 +34,9 @@
         },
         "feeUpdateCompletedStages": [
           "feeUpdateRecorded"
-        ]
+        ],
+        "feeUpdateReason": "decisionTypeChanged",
+        "caseArgumentAvailable": "Yes"
       }
     }
   }
