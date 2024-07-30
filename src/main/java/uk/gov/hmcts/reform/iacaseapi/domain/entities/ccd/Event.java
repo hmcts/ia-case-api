@@ -140,6 +140,7 @@ public enum Event {
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     RECORD_REMISSION_REMINDER("recordRemissionReminder"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
+    REFUND_CONFIRMATION("refundConfirmation"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
