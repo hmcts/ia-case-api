@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,14 +52,28 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        HearingCentre maybeHearingCentre =
-            asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
-                .orElse(HearingCentre.NEWPORT);
+        HearingCentre maybeHearingCentre;
+
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            Value refDataHearingCentre =
+                asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class)
+                    .map(h -> h.getValue())
+                    .orElseThrow(() -> new IllegalStateException("hearingCentreDynamicList is not present"));
+
+            maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), true)
+                .orElse(NEWPORT);
+        } else {
+            maybeHearingCentre =
+                asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
+                    .orElse(NEWPORT);
+        }
+
+        asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
+
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
 
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
-        asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
 
         String staffLocationName = StaffLocation.getLocation(maybeHearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);

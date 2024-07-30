@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
+import java.util.Optional;
 
 public enum State {
 
@@ -49,6 +51,12 @@ public enum State {
     @Override
     public String toString() {
         return id;
+    }
+
+    public static Optional<State> getStateFrom(String s) {
+        return Arrays.stream(State.values())
+            .filter(v -> v.id.equals(s))
+            .findFirst();
     }
 }
 

@@ -217,6 +217,13 @@ additional information where necessary.
 
    `git config --local --unset core.hooksPath`
 
-   Still, you shouldn't be doing it so make sure you get in touch with a Technical Lead soon afterwards.
+   Still, you shouldn't be doing it so make sure you get in touch with a Technical Lead soon afterward.
 
+## Creating AiP users using the scripts
+To create AiP citizen users, run `az login` and navigate to `/bin/utils/aip_scripts` and run `export IDAM_TESTING_ACCESS_TOKEN=$(zsh ./get_idam_token.zsh <environment>)`
+
+Then run `zsh ./create-test-user.zsh <environment> <email (optional)>` where `<environment>` is either `aat`, `demo`, `perftest`, `ithc` and `<email (optional)>` is an optional email address, if not entered then it will generate one automatically in the format of `citizen-SOME_UUID@mailnesia.com`.
+
+NB. The token will expire every 8 hours, so if the create-test-user doesn't return an email address, it's likely that the first step will need to be re-run.
+NB2. Use aat env variable for preview environment user creation as it uses aat's IDAM instance.
 
