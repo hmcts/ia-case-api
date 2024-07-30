@@ -6,7 +6,7 @@
     "credentials": "SystemUser",
     "input": {
       "id": 8919,
-      "eventId": "setNextHearingDate",
+      "eventId": "updateNextHearingInfo",
       "state": "listing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
