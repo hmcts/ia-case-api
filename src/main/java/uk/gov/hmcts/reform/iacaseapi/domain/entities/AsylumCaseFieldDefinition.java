@@ -2674,6 +2674,9 @@ public enum AsylumCaseFieldDefinition {
         "migrationMainTextVisible", new TypeReference<String>(){}),
     MIGRATION_HMC_SECOND_PART_VISIBLE(
         "migrationHmcSecondPartVisible", new TypeReference<String>(){}),
+    ADD_CASE_NOTES_MIGRATION(
+        "addCaseNotesMigration", new TypeReference<List<IdValue<CaseNoteMigration>>>(){}),
+
     ;
 
     private final String value;
