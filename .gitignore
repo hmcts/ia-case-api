@@ -4,6 +4,12 @@
 !gradle/wrapper/gradle-wrapper.jar
 /node_modules
 /infrastructure/.terraform/
+bin/contractTest/
+bin/functionalTest/
+bin/integrationTest/
+bin/main/
+bin/smokeTest/
+bin/test/
 
 ### STS ###
 .apt_generated

@@ -1,6 +1,7 @@
 {
   "description": "RIA-3582-RIA-3763-RIA-3784 Current hearing adjustments visible for standard appeal - feature flag enabled",
   "launchDarklyKey": "reheard-feature:true",
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -18,7 +19,8 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "AWitness"
+                "witnessName": "AWitness",
+                "witnessFamilyName": "Family"
               }
             }
           ],
@@ -44,6 +46,7 @@
           "singleSexCourtType": "All female",
           "singleSexCourtTypeDescription": "Requirement for single sex court",
           "inCameraCourt": "Yes",
+          "isInCameraCourtAllowed": "Granted",
           "inCameraCourtDescription": "In camera court description",
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
@@ -144,7 +147,8 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "AWitness"
+              "witnessName": "AWitness",
+              "witnessFamilyName": "Family"
             }
           }
         ],
@@ -170,6 +174,7 @@
         "singleSexCourtType": "All female",
         "singleSexCourtTypeDescription": "Requirement for single sex court",
         "inCameraCourt": "Yes",
+        "isInCameraCourtAllowed": "Granted",
         "inCameraCourtDescription": "In camera court description",
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",

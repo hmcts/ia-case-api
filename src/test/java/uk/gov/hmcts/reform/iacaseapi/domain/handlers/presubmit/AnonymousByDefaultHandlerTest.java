@@ -16,8 +16,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.INACTIVE_STATUS;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,13 +100,13 @@ public class AnonymousByDefaultHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-            .builder()
-            .flagCode(ANONYMITY.getFlagCode())
-            .name(ANONYMITY.getName())
-            .status("Inactive")
-            .build()));
+                .builder()
+                .flagCode(ANONYMITY.getFlagCode())
+                .name(ANONYMITY.getName())
+                .status(INACTIVE_STATUS)
+                .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
-            .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
+                .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -120,7 +123,7 @@ public class AnonymousByDefaultHandlerTest {
     void should_set_anonymity_flag_when_an_empty_class_level_flag_exists() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
-            .thenReturn(Optional.of(new StrategicCaseFlag()));
+             .thenReturn(Optional.of(new StrategicCaseFlag(null, null, Collections.emptyList())));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -152,16 +155,16 @@ public class AnonymousByDefaultHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
         List<CaseFlagDetail> existingFlags = List.of(new CaseFlagDetail("123", CaseFlagValue
-            .builder()
-            .flagCode(ANONYMITY.getFlagCode())
-            .name(ANONYMITY.getName())
-            .status("Active")
-            .build()));
+                .builder()
+                .flagCode(ANONYMITY.getFlagCode())
+                .name(ANONYMITY.getName())
+                .status(ACTIVE_STATUS)
+                .build()));
         when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class))
-            .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
+                .thenReturn(Optional.of(new StrategicCaseFlag(null, null, existingFlags)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());

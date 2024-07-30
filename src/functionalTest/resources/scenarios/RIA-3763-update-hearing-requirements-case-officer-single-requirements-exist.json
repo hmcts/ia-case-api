@@ -1,5 +1,6 @@
 {
   "description": "RIA-3763 Update hearing requirements - single hearing requirements copied to previous hearing requirements - FTPA Reheard",
+  "enabled": false,
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -23,6 +24,8 @@
           "listCaseHearingCentre": "taylorHouse",
           "listCaseHearingLength": "360",
           "attendingJudge": "Judge Fudge",
+          "inCameraCourt": "No",
+          "isInCameraCourtAllowed": "Refused",
           "attendingAppellant": "José González",
           "attendingHomeOfficeLegalRepresentative": "Perry Mason",
           "actualCaseHearingLength": {
@@ -59,6 +62,8 @@
         "isReheardAppealEnabled": "Yes",
         "attendingJudge": "Judge Fudge",
         "attendingAppellant": "José González",
+        "inCameraCourt": "No",
+        "isInCameraCourtAllowed": "Refused",
         "attendingHomeOfficeLegalRepresentative": "Perry Mason",
         "hearingRequirements": [
           {

@@ -1,0 +1,98 @@
+{
+  "description": "RIA-7481 update hearing adjustments when LO approves multimedia evidence request",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingAdjustments",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "isAppellantAttendTheHearing": "Yes",
+          "isAppellantGivingOralEvidence": "Yes",
+          "isWitnessesAttending": "No",
+          "isInterpreterServicesNeeded": "No",
+          "isHearingRoomNeeded": "Yes",
+          "isHearingLoopNeeded": "Yes",
+          "physicalOrMentalHealthIssues": "Yes",
+          "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+          "pastExperiences": "Yes",
+          "pastExperiencesDescription": "Past experiences",
+          "multimediaEvidence": "Yes",
+          "multimediaEvidenceDescription": "Multimedia evidence",
+          "isMultimediaAllowed": "Granted",
+          "singleSexCourt": "Yes",
+          "singleSexCourtType": "All female",
+          "singleSexCourtTypeDescription": "Requirement for single sex court",
+          "additionalRequests": "Yes",
+          "additionalRequestsDescription": "Additional requests description",
+          "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "datesToAvoid": [
+            {
+              "id": "1",
+              "value": {
+                "dateToAvoid": "2019-12-25",
+                "dateToAvoidReason": "Xmas"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
+        "isAppellantAttendTheHearing": "Yes",
+        "isAppellantGivingOralEvidence": "Yes",
+        "isWitnessesAttending": "No",
+        "isInterpreterServicesNeeded": "No",
+        "isHearingRoomNeeded": "Yes",
+        "isHearingLoopNeeded": "Yes",
+        "physicalOrMentalHealthIssues": "Yes",
+        "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+        "pastExperiences": "Yes",
+        "pastExperiencesDescription": "Past experiences",
+        "multimediaEvidence": "Yes",
+        "multimediaEvidenceDescription": "Multimedia evidence",
+        "isMultimediaAllowed": "Granted",
+        "singleSexCourt": "Yes",
+        "singleSexCourtType": "All female",
+        "singleSexCourtTypeDescription": "Requirement for single sex court",
+        "additionalRequests": "Yes",
+        "additionalRequestsDescription": "Additional requests description",
+        "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+        "datesToAvoid": [
+          {
+            "id": "1",
+            "value": {
+              "dateToAvoid": "2019-12-25",
+              "dateToAvoidReason": "Xmas"
+            }
+          }
+        ],
+        "appellantLevelFlags": {
+          "partyName": "Talha Awan",
+          "roleOnCase": "Appellant",
+          "details": [
+            {
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "value": {
+                "name": "Audio / Video Evidence",
+                "status": "Active",
+                "flagCode": "PF0014",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

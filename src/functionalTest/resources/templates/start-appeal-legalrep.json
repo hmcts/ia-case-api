@@ -1,0 +1,28 @@
+{
+  "homeOfficeReferenceNumber": "012345678",
+  "homeOfficeDecisionDate": "2021-10-04",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "1978-11-11",
+  "appellantHasFixedAddress": "No",
+  "appealType": "protection",
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No",
+  "appealGroundsProtection": {
+    "values": [
+      "protectionRefugeeConvention"
+    ]
+  },
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "legalRepReferenceNumber": "CASE001",
+  "legalRepresentativeEmailAddress": "ia-law-firm-org-sc@fake.hmcts.net",
+  "paymentReference": "RC-1627-5070-9329-7815"
+}

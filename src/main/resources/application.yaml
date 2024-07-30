@@ -34,8 +34,13 @@ management:
     timedEvent:
       uri: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}/health
       response: '"status":"UP"'
+    hearingsApi:
+      uri: ${IA_HEARINGS_API_URL:http://127.0.0.1:8100}/health
+      response: '"status":"UP"'
 
 spring:
+  config:
+    import: "optional:configtree:/mnt/secrets/ia/"
   application:
     name: Immigration & Asylum case API
   main:
@@ -168,6 +173,13 @@ paymentApi:
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   ccdSubmittedPath: "/asylum/ccdSubmitted"
 
+hearingsApi:
+  endpoint: ${IA_HEARINGS_API_URL:http://127.0.0.1:8100}
+  aboutToStartPath: "/asylum/ccdAboutToStart"
+  midEventPath: "/asylum/ccdMidEvent"
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  ccdSubmittedPath: "/asylum/ccdSubmitted"
+
 role-assignment-service:
   url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
 
@@ -294,6 +306,11 @@ security:
       - "maintainCaseLinks"
       - "createFlag"
       - "updateS94bStatus"
+      - "updateInterpreterBookingStatus"
+      - "updateInterpreterDetails"
+      - "updateHearingRequest"
+      - "recordAdjournmentDetails"
+      - "listAssistIntegration"
       - "updateDetentionLocation"
       - "buildCase"
       - "listCase"
@@ -348,6 +365,11 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "createFlag"
+      - "updateInterpreterBookingStatus"
+      - "updateInterpreterDetails"
+      - "updateHearingRequest"
+      - "recordAdjournmentDetails"
+      - "listAssistIntegration"
       - "updateDetentionLocation"
       - "turnOnNotifications"
       - "generateServiceRequest"
@@ -447,6 +469,13 @@ security:
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
       - "endAppealAutomatically"
+      - "listCase"
+      - "editCaseListing"
+      - "handleHearingException"
+      - "triggerCmrUpdated"
+      - "recordAdjournmentDetails"
+      - "triggerCmrListed"
+      - "decisionWithoutHearingListed"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
       - "ariaCreateCase"
@@ -499,6 +528,8 @@ prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
 prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refdata/external/v1/organisations}
 
+location.ref.data.url: ${LOCATION_REF_DATA_URL:http://localhost:8991}
+
 launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
@@ -506,6 +537,10 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+commonData:
+  api:
+    url: ${COMMON_DATA_API:http://localhost:8991}
 
 govUkHolidays:
   url: https://www.gov.uk/

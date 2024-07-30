@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE_ADDRESS;
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -32,11 +35,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class ListCmaPreparerTest {
+
+    private static final String MANCHESTER_ADDRESS = "Manchester Crown Court (Crown Square), "
+                                                     + "Courts of Justice, Crown Square, M3 3FL";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -44,6 +51,8 @@ class ListCmaPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private LocationRefDataService locationRefDataService;
 
     private ListCmaPreparer listCmaPreparer;
 
@@ -51,7 +60,7 @@ class ListCmaPreparerTest {
     public void setUp() {
 
         listCmaPreparer =
-            new ListCmaPreparer();
+            new ListCmaPreparer(locationRefDataService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CMA);
@@ -63,6 +72,8 @@ class ListCmaPreparerTest {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.MANCHESTER))
+            .thenReturn(MANCHESTER_ADDRESS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCmaPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -71,6 +82,7 @@ class ListCmaPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, MANCHESTER_ADDRESS);
     }
 
     @Test
@@ -110,6 +122,7 @@ class ListCmaPreparerTest {
             .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, never()).write(eq(LIST_CASE_HEARING_CENTRE_ADDRESS), anyString());
     }
 
     @Test
@@ -135,6 +148,7 @@ class ListCmaPreparerTest {
             .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, never()).write(eq(LIST_CASE_HEARING_CENTRE_ADDRESS), anyString());
     }
 
     @Test
@@ -146,6 +160,8 @@ class ListCmaPreparerTest {
             .thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.MANCHESTER))
+            .thenReturn(MANCHESTER_ADDRESS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCmaPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -158,6 +174,7 @@ class ListCmaPreparerTest {
             .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, MANCHESTER_ADDRESS);
     }
 
     @Test
@@ -167,6 +184,8 @@ class ListCmaPreparerTest {
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
             .thenReturn(Optional.empty());
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.MANCHESTER))
+            .thenReturn(MANCHESTER_ADDRESS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCmaPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -179,6 +198,7 @@ class ListCmaPreparerTest {
             .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, MANCHESTER_ADDRESS);
     }
 
     @Test

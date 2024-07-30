@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCS;
@@ -316,6 +317,7 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         asylumCase.clear(SPONSOR_AUTHORISATION);
         asylumCase.clear(SPONSOR_NAME_FOR_DISPLAY);
         asylumCase.clear(SPONSOR_ADDRESS_FOR_DISPLAY);
+        asylumCase.clear(SPONSOR_PARTY_ID);
     }
 
     private void clearAipDecisionType(AsylumCase asylumCase) {
