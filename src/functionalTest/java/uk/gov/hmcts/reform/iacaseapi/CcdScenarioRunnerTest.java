@@ -227,6 +227,7 @@ public class CcdScenarioRunnerTest {
                             actualResponse
                         )
                     );
+                    log.info((char) 27 + "[33m" + "SCENARIO PASSED: " + description);
                     break;
                 } catch (Error | RetryableException e) {
                     log.error("Scenario failed with error " + e.getMessage());
