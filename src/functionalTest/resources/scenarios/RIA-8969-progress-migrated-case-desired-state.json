@@ -9,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "isAdmin": "Yes",
           "ariaDesiredState": "preHearing",
           "isAriaMigrated": "Yes"
         }
@@ -24,7 +23,6 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "isAriaMigrated": "Yes",
-        "isAdmin": "Yes",
         "ariaDesiredState": "preHearing"
       }
     }
