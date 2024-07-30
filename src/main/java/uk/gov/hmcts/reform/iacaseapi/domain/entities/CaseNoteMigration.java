@@ -18,6 +18,7 @@ public class CaseNoteMigration {
 
     public CaseNoteMigration() {
     }
+
     public CaseNoteMigration(
         String caseNoteSubject,
         String caseNoteDescription,
