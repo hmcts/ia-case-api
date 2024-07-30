@@ -15,13 +15,10 @@ def dmnBranch = "master"
 def bpmnBranch = "master"
 
 def secrets = [
-        'rpx-${env}': [
-                secret('mc-s2s-client-secret', 'S2S_SECRET'),
-                secret('mc-idam-client-secret', 'IDAM_SECRET'),
-                secret('system-user-name', 'SYSTEM_USER_NAME'),
-                secret('system-user-password', 'SYSTEM_USER_PASSWORD'),
-        ],
-        'ia-${env}' : [
+    'rpx-${env}': [
+        secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+    ],
+    'ia-${env}': [
 
                 secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
                 secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
