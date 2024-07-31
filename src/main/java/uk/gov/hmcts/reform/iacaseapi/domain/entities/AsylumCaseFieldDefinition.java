@@ -1092,6 +1092,9 @@ public enum AsylumCaseFieldDefinition {
     AUTOMATIC_END_APPEAL_TIMED_EVENT_ID(
             "automaticEndAppealTimedEventId", new TypeReference<String>(){}),
 
+    AUTOMATIC_SEND_PAYMENT_REMINDER_TIMED_EVENT_ID(
+        "automaticSendPaymentReminderTimedEventId", new TypeReference<String>(){}),
+
     APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
 
