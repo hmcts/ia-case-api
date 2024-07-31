@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.HearingCentre;
 
+import static java.util.Collections.singletonList;
+
 @ExtendWith(MockitoExtension.class)
 class HearingCentreFinderTest {
 
@@ -23,43 +25,53 @@ class HearingCentreFinderTest {
             "Aylesbury",
             "Bedford",
             "Birmingham",
-            "Blakenhurst"
+            "Blakenhurst",
+            "Oakwood"
         )).put(HearingCentre.BRADFORD, Arrays.asList(
             "Acklington",
             "Askham Grange",
             "Castington",
             "Deerbolt",
-            "Derwentside"
+            "Derwentside",
+            "Hatfield",
+            "Humber"
         )).put(HearingCentre.GLASGOW, Arrays.asList(
             "Addiewell",
             "Barlinnie",
             "Castle Huntly",
             "Cornton Vale",
-            "Larne House"
+            "Larne House",
+            "Stirling"
         )).put(HearingCentre.HATTON_CROSS, Arrays.asList(
             "Albany",
             "Brixton",
             "Bronzefield",
             "Camp Hill",
-            "Colnbrook"
+            "Colnbrook",
+            "Isle of Wight"
         )).put(HearingCentre.MANCHESTER, Arrays.asList(
             "Altcourse",
             "Buckley Hall",
+            "Berwyn",
             "Dovegate",
             "Drake Hall",
             "Forest Bank"
+        )).put(HearingCentre.NEWCASTLE, singletonList(
+            "Northumberland"
         )).put(HearingCentre.NEWPORT, Arrays.asList(
             "Ashfield",
             "Bristol",
             "Cardiff",
             "Channings Wood",
-            "Dartmoor"
+            "Dartmoor",
+            "The Verne"
         )).put(HearingCentre.TAYLOR_HOUSE, Arrays.asList(
             "Belmarsh",
             "Blantyre House",
             "Blundeston",
             "Brookhouse",
-            "Bullwood Hall"
+            "Bullwood Hall",
+            "Bure"
         )).put(HearingCentre.YARLSWOOD, List.of(
             "Yarlswood"
         ))

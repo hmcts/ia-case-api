@@ -12,6 +12,7 @@ public enum HearingCentre {
     GLASGOW("glasgow"),
     HATTON_CROSS("hattonCross"),
     MANCHESTER("manchester"),
+    NEWCASTLE("newcastle"),
     NEWPORT("newport"),
     TAYLOR_HOUSE("taylorHouse"),
     YARLSWOOD("yarlsWood");
