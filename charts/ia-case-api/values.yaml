@@ -50,6 +50,7 @@ java:
       port: 5432
   keyVaults:
     ia:
+      resourceGroup: ia
       secrets:
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
@@ -87,6 +88,8 @@ ia-case-documents-api:
 ia-case-notifications-api:
   enabled: false
 ia-home-office-integration-api:
+  enabled: false
+ia-bail-case-api:
   enabled: false
 idam-pr:
   enabled: false
