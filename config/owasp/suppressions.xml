@@ -1,28 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2024-06-01">
-        <!-- 2022-09: Not applicable to us. We don't use HTTP Invoker nor do we communicate through native java bean serialization.
-        We use JSON instead. Suppressed for a year to allow re-assessing in the unlikely event we decide to introduce it. -->
-        <notes><![CDATA[ springframework spring-* packages:
-            https://github.com/spring-projects/spring-framework/issues/24434#issuecomment-1132113566]]></notes>
-        <cve>CVE-2016-1000027</cve>
-    </suppress>
-    <suppress until="2024-12-01">
-        <notes>![CDATA[
-            False positive - https://github.com/jeremylong/DependencyCheck/issues/5502
-
-            We don't use the libraries affected by this vulnerability. This is a false positive in dependencycheck that is still current in version 8.2.1.
-            Try to remove it when a dependencycheck upgrade becomes available.
-            If it still happens, check that we don't use hutool-json and json-java. If we don't, extend the suppression date by another year.
-            ]]</notes>
-        <cve>CVE-2022-45688</cve>
-        <cve>CVE-2023-5072</cve>
-    </suppress>
-    <suppress until="2024-08-26">
-        <cve>CVE-2024-1597</cve>
-    </suppress>
-    <suppress until="2024-12-01">
-        <cve>CVE-2023-1370</cve>
-        <cve>CVE-2023-33202</cve>
-    </suppress>
 </suppressions>
