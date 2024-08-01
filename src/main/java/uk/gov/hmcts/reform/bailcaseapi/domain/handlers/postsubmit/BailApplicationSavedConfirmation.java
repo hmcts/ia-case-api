@@ -34,16 +34,14 @@ public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandl
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
+        postSubmitResponse.setConfirmationHeader("# You have saved this application");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-                    + "Review and [edit the application](/case/IA/Bail/"
-                    + callback.getCaseDetails().getId()
-                    + "/trigger/editBailApplication) if necessary. [Submit the application](/case/IA/Bail/"
-                    + callback.getCaseDetails().getId()
-                    + "/trigger/submitApplication) when you’re ready."
-        );
-
-        postSubmitResponse.setConfirmationHeader("# You have saved this application");
+                + "If you're ready to submit your application, select 'Submit your application' in "
+                + "the 'Next step' dropdown list from your case details page.\n\n"
+                + "#### Not ready to submit your application yet?\n"
+                + "You can return to the case details page to make changes from the ‘Next step’ dropdown list."
+    );
 
         return postSubmitResponse;
     }

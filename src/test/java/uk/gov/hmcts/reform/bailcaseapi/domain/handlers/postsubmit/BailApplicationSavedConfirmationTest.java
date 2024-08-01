@@ -45,9 +45,21 @@ public class BailApplicationSavedConfirmationTest {
     void should_invoke_supplementary_updater() {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
 
-        bailApplicationSavedConfirmation.handle(callback);
+        PostSubmitCallbackResponse response = bailApplicationSavedConfirmation.handle(callback);
 
         verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+        if (response.getConfirmationBody().isEmpty()) {
+            throw new IllegalStateException("Response body is not present");
+        }
+        String responseBody = response.getConfirmationBody().get();
+        assertThat(responseBody).contains("### Do this next");
+        assertThat(responseBody).contains("If you're ready to submit your application, " +
+                                              "select 'Submit your application' in the 'Next step' dropdown " +
+                                              "list from your case details page.");
+        assertThat(responseBody).contains("#### Not ready to submit your application yet?");
+        assertThat(responseBody).contains("You can return to the case details page to make changes " +
+                                              "from the ‘Next step’ dropdown list.");
+
     }
 
     @Test
