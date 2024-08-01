@@ -65,6 +65,10 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, refDataHearingCentre.getLabel());
             maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), false)
                 .orElse(NEWPORT);
+
+            asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
+                caseManagementLocationService.getRefDataCaseManagementLocation(
+                    StaffLocation.getLocation(maybeHearingCentre).getName()));
         } else {
             maybeHearingCentre =
                 asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
