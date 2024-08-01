@@ -16,7 +16,7 @@
     "status": 200,
     "confirmation": {
       "header": "# Refund request completed",
-      "body": "#### What happens next?\n\nParties will be notified with the next steps"
+      "body": "#### What happens next\n\nParties will be notified with the next steps"
     }
   }
 }
