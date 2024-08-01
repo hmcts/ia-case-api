@@ -102,10 +102,10 @@
         <notes>Suppress until org.springframework.cloud and uk.gov.hmcts.reform/service-auth-provider-client upgrade their org.bouncycastle dependents</notes>
         <cve>CVE-2023-33202</cve>
     </suppress>
-    <suppress until="2024-06-30">
+    <suppress until="2024-09-30">
         <cve>CVE-2023-35116</cve>
     </suppress>
-    <suppress until="2024-06-30">
+    <suppress until="2024-09-30">
         <cve>CVE-2024-1597</cve>
         <cve>CVE-2023-1370</cve>
     </suppress>
