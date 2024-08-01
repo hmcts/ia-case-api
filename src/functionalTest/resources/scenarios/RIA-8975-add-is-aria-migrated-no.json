@@ -17,7 +17,8 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "isAriaMigrated": "No"
+        "isAriaMigrated": "No",
+        "isAriaMigratedFilter": "No"
       }
     }
   }

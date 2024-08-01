@@ -2676,6 +2676,8 @@ public enum AsylumCaseFieldDefinition {
         "migrationHmcSecondPartVisible", new TypeReference<String>(){}),
     ADD_CASE_NOTES_MIGRATION(
         "addCaseNotesMigration", new TypeReference<List<IdValue<CaseNoteMigration>>>(){}),
+    IS_ARIA_MIGRATED_FILTER(
+            "isAriaMigratedFilter", new TypeReference<YesOrNo>(){}),
 
     ;
 

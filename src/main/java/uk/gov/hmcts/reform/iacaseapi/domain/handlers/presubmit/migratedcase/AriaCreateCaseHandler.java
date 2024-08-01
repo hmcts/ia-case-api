@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE_SELECTED_VALUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_TEMPORARY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -86,6 +87,8 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
         asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
         asylumCase.write(IS_ARIA_MIGRATED, YesOrNo.YES);
+        //isAriaMigratedFilter is used separately for case list filtering on ExUI
+        asylumCase.write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
         asylumCase.read(ARIA_DESIRED_STATE, State.class).ifPresent(value -> asylumCase.write(ARIA_DESIRED_STATE_SELECTED_VALUE, value.getDescription()));
 
         return new PreSubmitCallbackResponse<>(asylumCase);

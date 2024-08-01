@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.migratedcase;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
@@ -39,6 +40,8 @@ public class StartAppealCreateCaseHandler implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         asylumCase.write(IS_ARIA_MIGRATED, NO);
+        //isAriaMigratedFilter is used separately for case list filtering on ExUI
+        asylumCase.write(IS_ARIA_MIGRATED_FILTER, NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
