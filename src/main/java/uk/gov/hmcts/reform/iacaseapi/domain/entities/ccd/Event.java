@@ -140,6 +140,7 @@ public enum Event {
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     RECORD_REMISSION_REMINDER("recordRemissionReminder"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
+    REFUND_CONFIRMATION("refundConfirmation"),
 
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
     UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),

@@ -375,6 +375,7 @@ security:
       - "generateServiceRequest"
       - "recordRemissionReminder"
       - "markAppealAsRemitted"
+      - "refundConfirmation"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
