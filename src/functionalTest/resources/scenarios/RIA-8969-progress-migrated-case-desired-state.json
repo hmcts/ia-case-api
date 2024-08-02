@@ -9,9 +9,23 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
           "isAdmin": "Yes",
+          "isAriaMigrated": "Yes",
           "ariaDesiredState": "preHearing",
-          "isAriaMigrated": "Yes"
+          "appellantInUk": "Yes",
+          "appellantInDetention": "No",
+          "submissionOutOfTime": "No",
+          "paymentStatus": "Payment pending",
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "NE21JX",
+            "PostTown": "Example Town",
+            "AddressLine1": "5",
+            "AddressLine2": "Example Street"
+          }
         }
       }
     }
@@ -23,9 +37,23 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "isAriaMigrated": "Yes",
+        "listCaseHearingCentre": "taylorHouse",
         "isAdmin": "Yes",
-        "ariaDesiredState": "preHearing"
+        "isAriaMigrated": "Yes",
+        "ariaDesiredState": "preHearing",
+        "appellantInUk": "Yes",
+        "appellantInDetention": "No",
+        "submissionOutOfTime": "No",
+        "paymentStatus": "Payment pending",
+        "appellantHasFixedAddress": "Yes",
+        "appellantAddress": {
+          "County": "",
+          "Country": "United Kingdom",
+          "PostCode": "NE21JX",
+          "PostTown": "Example Town",
+          "AddressLine1": "5",
+          "AddressLine2": "Example Street"
+        }
       }
     }
   }
