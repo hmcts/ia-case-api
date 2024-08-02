@@ -55,19 +55,19 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
             return response;
         }
 
+        if (Integer.parseInt(asylumCase.read(SERVICE_REQUEST_GENERATED_COUNT, String.class).orElse("0")) >= MAXIMUM_SERVICE_REQUEST_NUMBER_ALLOWED) {
+            response.addError(
+                "A second service request has already been created for this case."
+            );
+            return response;
+        }
+
         if (!refundConfirmationCompleted(asylumCase)
             && (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
             || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
         ) {
             response.addError(
                 "A service request has already been created for this case. Pay via the 'Service Request' tab."
-            );
-            return response;
-        }
-
-        if (Integer.parseInt(asylumCase.read(SERVICE_REQUEST_GENERATED_COUNT, String.class).orElse("0")) >= MAXIMUM_SERVICE_REQUEST_NUMBER_ALLOWED) {
-            response.addError(
-                "A second service request has already been created for this case."
             );
             return response;
         }
