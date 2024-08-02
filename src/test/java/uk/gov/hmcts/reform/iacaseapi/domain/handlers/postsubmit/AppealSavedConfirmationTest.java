@@ -98,7 +98,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -107,13 +107,17 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                "If you're ready to submit your appeal, select 'Submit your appeal' in " +
+                    "the 'Next step' dropdown list from your case details page."
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -143,7 +147,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -152,13 +156,16 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -188,7 +195,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -197,13 +204,16 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -233,7 +243,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -242,13 +252,16 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -280,7 +293,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -289,13 +302,16 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -326,7 +342,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -335,13 +351,16 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -374,8 +393,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -407,8 +425,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -439,8 +456,7 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                ""
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -536,7 +552,7 @@ class AppealSavedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been saved");
+            .contains("# You have saved your appeal");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -545,13 +561,17 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit the appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                "If you're ready to submit your appeal, select 'Submit your appeal' in " +
+                    "the 'Next step' dropdown list from your case details page."
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit yet?");
+            .contains("Not ready to submit your appeal yet?");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
 
     }
 
