@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
@@ -92,17 +91,14 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
             new ArrayList<>(feeUpdateCompleteStages)
         );
 
-        FeeUpdateReason feeUpdateReason = asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)
-            .orElseThrow(() -> new IllegalStateException("Fee update reason is not present"));
+        Optional<FeeUpdateReason> feeUpdateReason = asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class);
 
-        FeeTribunalAction feeTribunalAction = asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)
-            .orElseThrow(() -> new IllegalStateException("Fee tribunal action is not present"));
+        Optional<FeeTribunalAction> feeTribunalAction = asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
 
-        if (feeUpdateReason.equals(DECISION_TYPE_CHANGED) && feeTribunalAction.equals(REFUND)) {
+        if (feeUpdateReason.isPresent() && feeUpdateReason.get().equals(DECISION_TYPE_CHANGED)
+            && feeTribunalAction.isPresent() && feeTribunalAction.get().equals(REFUND)) {
             asylumCase.write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
         }
-
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
