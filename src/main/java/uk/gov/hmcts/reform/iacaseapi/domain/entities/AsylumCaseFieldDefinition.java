@@ -2674,8 +2674,8 @@ public enum AsylumCaseFieldDefinition {
     REFUND_CONFIRMATION_APPLIED(
         "refundConfirmationApplied", new TypeReference<YesOrNo>(){}),
 
-    SERVICE_REQUEST_GENERATED_COUNT(
-        "serviceRequestGeneratedCount", new TypeReference<String>(){}),
+    DECISION_TYPE_CHANGED_WITH_REFUND_FLAG(
+        "decisionTypeChangedWithRefundFlag", new TypeReference<YesOrNo>(){}),
     ;
 
     private final String value;

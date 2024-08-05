@@ -1,5 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REFUND_CONFIRMATION_APPLIED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SERVICE_REQUEST_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppealPaid;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -10,15 +16,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppealPaid;
-
 @Component
 public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isFeePaymentEnabled;
-    private final int MAXIMUM_SERVICE_REQUEST_NUMBER_ALLOWED = 2;
 
     public GenerateServiceRequestPreparer(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled) {
@@ -48,21 +49,14 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (isAppealPaid(asylumCase) && !refundConfirmationCompleted(asylumCase)) {
+        if (isAppealPaid(asylumCase) && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
             response.addError(
-                "A service request has already been paid."
+                "Refund confirmation should be done first to make another service request."
             );
             return response;
         }
 
-        if (Integer.parseInt(asylumCase.read(SERVICE_REQUEST_GENERATED_COUNT, String.class).orElse("0")) >= MAXIMUM_SERVICE_REQUEST_NUMBER_ALLOWED) {
-            response.addError(
-                "A second service request has already been created for this case."
-            );
-            return response;
-        }
-
-        if (!refundConfirmationCompleted(asylumCase)
+        if (!asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
             && (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
             || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
         ) {
@@ -74,12 +68,4 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-
-    private boolean refundConfirmationCompleted(AsylumCase asylumCase) {
-        int serviceReqCount = Integer.parseInt(asylumCase.read(SERVICE_REQUEST_GENERATED_COUNT, String.class).orElse("0"));
-
-        return asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
-            && serviceReqCount < MAXIMUM_SERVICE_REQUEST_NUMBER_ALLOWED;
-    }
-
 }
