@@ -1,4 +1,4 @@
-
+ 
 # ia-case-api
 
 Immigration &amp; Asylum case API
@@ -220,7 +220,7 @@ additional information where necessary.
    Still, you shouldn't be doing it so make sure you get in touch with a Technical Lead soon afterward.
 
 ## Creating AiP users using the scripts
-To create AiP citizen users, run `az login` and navigate to `/bin/utils/aip_scripts` and run `export IDAM_TESTING_ACCESS_TOKEN=\$(zsh ./get_idam_token.zsh <environment>)`
+To create AiP citizen users, run `az login` and navigate to `/bin/utils/aip_scripts` and run `export IDAM_TESTING_ACCESS_TOKEN=$(zsh ./get_idam_token.zsh <environment>)`
 
 Then run `zsh ./create-test-user.zsh <environment> <email (optional)>` where `<environment>` is either `aat`, `demo`, `perftest`, `ithc` and `<email (optional)>` is an optional email address, if not entered then it will generate one automatically in the format of `citizen-SOME_UUID@mailnesia.com`.
 

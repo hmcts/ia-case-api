@@ -445,6 +445,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
         verify(asylumCase, times(1)).clear(SPONSOR_NAME_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS_FOR_DISPLAY);
+        verify(asylumCase, times(1)).clear(SPONSOR_PARTY_ID);
     }
 
     private void clearAdaSuitabilityFields(AsylumCase asylumCase) {

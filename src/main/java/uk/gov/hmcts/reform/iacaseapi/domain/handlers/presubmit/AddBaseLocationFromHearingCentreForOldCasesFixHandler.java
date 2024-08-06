@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -64,23 +67,42 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
     }
 
     private void fixCaseManagementLocationDataIfNecessary(AsylumCase asylumCase) {
-        Optional<CaseManagementLocation> caseManagementLocation =
-            asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class);
 
-        if (caseManagementLocation.isEmpty()
-            || caseManagementLocation.get().getBaseLocation() == null
-            || BaseLocation.GLASGOW_DEPRECATED.equals(caseManagementLocation.get().getBaseLocation())) {
-            addBaseLocationAndStaffLocationFromHearingCentre(asylumCase);
+        if (isCaseUsingLocationRefData(asylumCase)) {
+            Optional<CaseManagementLocationRefData> refDataCaseManagementLocation =
+                asylumCase.read(CASE_MANAGEMENT_LOCATION_REF_DATA, CaseManagementLocationRefData.class);
+
+            if (refDataCaseManagementLocation.isEmpty()
+                || refDataCaseManagementLocation.get().getBaseLocation() == null
+                || BaseLocation.GLASGOW_DEPRECATED.getId().equals(
+                    refDataCaseManagementLocation.get().getBaseLocation().getValue().getCode())) {
+                addBaseLocationAndStaffLocationFromHearingCentre(asylumCase, true);
+            }
+
+        } else {
+            Optional<CaseManagementLocation> caseManagementLocation =
+                asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class);
+
+            if (caseManagementLocation.isEmpty()
+                || caseManagementLocation.get().getBaseLocation() == null
+                || BaseLocation.GLASGOW_DEPRECATED.equals(caseManagementLocation.get().getBaseLocation())) {
+                addBaseLocationAndStaffLocationFromHearingCentre(asylumCase, false);
+            }
         }
     }
 
-    private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase) {
+    private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase, boolean isRefDataEnabled) {
         HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
             .orElse(HearingCentre.NEWPORT);
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+
+        if (isRefDataEnabled) {
+            asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
+                caseManagementLocationService.getRefDataCaseManagementLocation(staffLocationName));
+        }
     }
 
 }

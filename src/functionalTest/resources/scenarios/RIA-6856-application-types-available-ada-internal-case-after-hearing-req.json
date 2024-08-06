@@ -4,7 +4,7 @@
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",
     "input": {
-      "id": 68562,
+      "id": 68563,
       "eventId": "makeAnApplication",
       "state": "caseBuilding",
       "caseData": {
@@ -29,11 +29,15 @@
         "isAcceleratedDetainedAppeal": "Yes",
         "adaHearingRequirementsToReview": "Yes",
         "makeAnApplicationTypes": {
-          "value": {
-            "code": "ADJOURN",
-            "label": "Adjourn"
+          "value":             {
+            "code": "TIME_EXTENSION",
+            "label": "Time extension"
           },
           "list_items": [
+            {
+              "code": "TIME_EXTENSION",
+              "label": "Time extension"
+            },
             {
               "code": "ADJOURN",
               "label": "Adjourn"

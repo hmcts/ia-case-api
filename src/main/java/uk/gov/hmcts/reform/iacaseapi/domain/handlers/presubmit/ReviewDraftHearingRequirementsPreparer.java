@@ -2,14 +2,23 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -17,19 +26,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
+@RequiredArgsConstructor
 public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
-
-    public ReviewDraftHearingRequirementsPreparer(
-        UserDetails userDetails, UserDetailsHelper userDetailsHelper
-    ) {
-        this.userDetails = userDetails;
-        this.userDetailsHelper = userDetailsHelper;
-    }
+    private final LocationBasedFeatureToggler locationBasedFeatureToggler;
+    private final LocationRefDataService locationRefDataService;
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -85,12 +92,24 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             return asylumCasePreSubmitCallbackResponse;
         }
 
+        if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, YES);
+            asylumCase.write(HEARING_LOCATION, locationRefDataService.getHearingLocationsDynamicList());
+        } else {
+            asylumCase.write(AUTO_HEARING_REQUEST_ENABLED, NO);
+        }
+
         decorateWitnessAndInterpreterDetails(asylumCase);
 
         decorateOutsideEvidenceDefaultsForOldCases(asylumCase);
 
+        setDefaultHearingLengthForAppealType(asylumCase);
+
+        HandlerUtils.setDefaultAutoListHearingValue(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
 
     static void decorateWitnessAndInterpreterDetails(AsylumCase asylumCase) {
 
@@ -99,8 +118,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         witnessDetails.ifPresent(idValues -> asylumCase.write(WITNESS_DETAILS_READONLY, idValues
             .stream()
-            .map(w ->
-                "Name\t\t" + w.getValue().getWitnessName())
+            .map(w -> String.format("Name\t\t%s", w.getValue().buildWitnessFullName()))
             .collect(Collectors.joining("\n"))));
 
         interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
@@ -132,6 +150,31 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         if (!isEvidenceFromOutsideUkInCountry.isPresent()) {
             asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.NO);
+        }
+    }
+
+    static void setDefaultHearingLengthForAppealType(AsylumCase asylumCase) {
+        final Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+
+        if (optionalAppealType.isPresent()) {
+            AppealType appealType = optionalAppealType.get();
+
+            switch (appealType) {
+                case HU:
+                case EA:
+                case EU:
+                    asylumCase.write(LIST_CASE_HEARING_LENGTH, "120");
+                    asylumCase.write(LISTING_LENGTH, new HoursMinutes(2, 0));
+                    break;
+                case DC:
+                case PA:
+                case RP:
+                    asylumCase.write(LIST_CASE_HEARING_LENGTH, "180");
+                    asylumCase.write(LISTING_LENGTH, new HoursMinutes(3, 0));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
