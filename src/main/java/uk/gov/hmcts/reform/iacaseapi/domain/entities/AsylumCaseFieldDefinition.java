@@ -2669,7 +2669,13 @@ public enum AsylumCaseFieldDefinition {
         "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
 
     AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
-        "automaticRemissionReminderLegalRep", new TypeReference<String>(){})
+        "automaticRemissionReminderLegalRep", new TypeReference<String>(){}),
+
+    REFUND_CONFIRMATION_APPLIED(
+        "refundConfirmationApplied", new TypeReference<YesOrNo>(){}),
+
+    DECISION_TYPE_CHANGED_WITH_REFUND_FLAG(
+        "decisionTypeChangedWithRefundFlag", new TypeReference<YesOrNo>(){}),
     ;
 
     private final String value;
