@@ -541,3 +541,9 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 caseIdListJsonLocation: caseIdForRetrigger.json
+
+govnotify:
+  baseUrl: "https://api.notifications.service.gov.uk"
+  key: ${IA_GOV_NOTIFY_KEY}
+  bail:
+    key: ${IA_BAIL_GOV_NOTIFY_KEY}

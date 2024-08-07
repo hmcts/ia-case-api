@@ -2630,7 +2630,10 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
 
-    NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){});
+    NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
+
+    LAST_NOTIFICATION_IDS("lastNotificationIds", new TypeReference<List<String>>(){}),
+    TEST_NOTIFICATION_ID("testNotificationId", new TypeReference<String>(){});
 
 
     private final String value;
