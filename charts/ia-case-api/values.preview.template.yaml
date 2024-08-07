@@ -36,8 +36,6 @@ java:
     ia:
       resourceGroup: ia
       secrets:
-        - name: ia-gov-notify-key
-          alias: IA_GOV_NOTIFY_KEY
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
         - name: em-stitching-enabled
