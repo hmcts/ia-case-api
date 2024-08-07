@@ -128,12 +128,6 @@ processFunctionalTestResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-//lombok {
-//    config.stopbubbling = 'true'
-//    config['lombok.addLombokGeneratedAnnotation'] = 'true'
-//    config['lombok.anyConstructor.addConstructorProperties'] = 'true'
-//}
-
 idea {
     module {
         testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
@@ -385,13 +379,6 @@ dependencies {
     }
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
-
-//    compileOnly 'org.projectlombok:lombok'
-//
-//    annotationProcessor 'org.projectlombok:lombok'
-//
-//    compileOnly 'org.projectlombok:lombok:1.18.34'
-//    annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
