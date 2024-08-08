@@ -74,7 +74,7 @@ public class AppealSubmitHandler implements PreSubmitCallbackHandler<AsylumCase>
         Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         Optional<RemissionDecision> optRemissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-        if (optRemissionType.isPresent() && optRemissionType.get().equals(RemissionType.NO_REMISSION)) {
+        if (optRemissionType.isEmpty() || optRemissionType.get().equals(RemissionType.NO_REMISSION)) {
             asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         } else {
             asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
