@@ -89,7 +89,7 @@ class SaveNotificationsToDataHandlerTest {
         String dateString = "01-01-2024";
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate localDate = LocalDate.parse(dateString, dateFormatter);
-        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault());
+        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.of("Europe/London"));
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getSubject()).thenReturn(Optional.empty());
         when(notification.getStatus()).thenReturn("someStatus");
