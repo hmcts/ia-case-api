@@ -8,23 +8,40 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_TYPE_CHANGED_WITH_REFUND_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.ADDITIONAL_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.NO_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPEAL_NOT_VALID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPEAL_WITHDRAWN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.FEE_REMISSION_CHANGED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -77,6 +94,8 @@ class ManageFeeUpdateHandlerTest {
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
 
         when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(feeUpdateStatus));
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
+        when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(REFUND));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -90,7 +109,8 @@ class ManageFeeUpdateHandlerTest {
 
     @Test
     void handling_should_return_selected_fee_update_statuses_after_fee_update_recorded() {
-
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
+        when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(REFUND));
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
@@ -151,7 +171,6 @@ class ManageFeeUpdateHandlerTest {
 
                 if ((event == Event.MANAGE_FEE_UPDATE)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -160,15 +179,41 @@ class ManageFeeUpdateHandlerTest {
         }
     }
 
-    @Test
-    void should_not_allow_null_arguments() {
+    @ParameterizedTest
+    @MethodSource("provideParameterValues")
+    void should_write_flag_value_if_decision_type_changed_with_refund(FeeUpdateReason feeUpdateReason,
+                                                                      FeeTribunalAction feeTribunalAction) {
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
 
-        assertThatThrownBy(() -> manageFeeUpdateHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(feeUpdateReason));
+        when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(feeTribunalAction));
 
-        assertThatThrownBy(() -> manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+        manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        if (feeUpdateReason.equals(DECISION_TYPE_CHANGED) && feeTribunalAction.equals(REFUND)) {
+            verify(asylumCase, times(1)).write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
+        } else {
+            verify(asylumCase, times(0)).write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
+        }
+    }
+
+    private static Stream<Arguments> provideParameterValues() {
+        return Stream.of(
+            Arguments.of(DECISION_TYPE_CHANGED, REFUND),
+            Arguments.of(DECISION_TYPE_CHANGED, ADDITIONAL_PAYMENT),
+            Arguments.of(DECISION_TYPE_CHANGED, NO_ACTION),
+            Arguments.of(APPEAL_NOT_VALID, REFUND),
+            Arguments.of(APPEAL_NOT_VALID, ADDITIONAL_PAYMENT),
+            Arguments.of(APPEAL_NOT_VALID, NO_ACTION),
+            Arguments.of(FEE_REMISSION_CHANGED, REFUND),
+            Arguments.of(FEE_REMISSION_CHANGED, ADDITIONAL_PAYMENT),
+            Arguments.of(FEE_REMISSION_CHANGED, NO_ACTION),
+            Arguments.of(APPEAL_WITHDRAWN, REFUND),
+            Arguments.of(APPEAL_WITHDRAWN, ADDITIONAL_PAYMENT),
+            Arguments.of(APPEAL_WITHDRAWN, NO_ACTION)
+        );
     }
 }

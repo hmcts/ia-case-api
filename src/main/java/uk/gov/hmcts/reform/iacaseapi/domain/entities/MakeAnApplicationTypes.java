@@ -21,6 +21,7 @@ public enum MakeAnApplicationTypes {
     CHANGE_HEARING_TYPE("Change hearing type"),
     TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS("Transfer out of accelerated detained appeals process"),
     SET_ASIDE_A_DECISION("Set aside a decision"),
+    APPLICATION_UNDER_RULE_31_OR_RULE_32("Application under rule 31 or rule 32"),
     OTHER("Other");
 
     @JsonValue

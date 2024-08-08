@@ -13,19 +13,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_LISTING_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_WITHDRAW_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -229,7 +217,8 @@ class GenerateDocumentHandlerTest {
             SUBMIT_CLARIFYING_QUESTION_ANSWERS,
             RECORD_ADJOURNMENT_DETAILS,
             REQUEST_CASE_BUILDING,
-            ASYNC_STITCHING_COMPLETE
+            ASYNC_STITCHING_COMPLETE,
+            UPDATE_TRIBUNAL_DECISION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -277,6 +266,7 @@ class GenerateDocumentHandlerTest {
                 verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
                 verify(expectedUpdatedCase).write(APPEAL_DATE, FAKE_APPEAL_DATE.toString());
                 verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,EXPECTED_FTPA_DEADLINE_UK.toString());
+                verify(expectedUpdatedCase).clear(UPDATED_APPEAL_DECISION);
             }
 
             reset(callback);

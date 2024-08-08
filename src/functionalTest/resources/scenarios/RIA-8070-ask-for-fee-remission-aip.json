@@ -1,0 +1,62 @@
+{
+  "description": "RIA-8070 AiP journey citizen apply for a late remission when previous remission decided",
+  "launchDarklyKey": "dlrm-refund-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 8070,
+      "eventId": "requestFeeRemission",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "refusalOfHumanRights",
+          "remissionOption": "feeWaiverFromHo",
+          "lateRemissionOption": "asylumSupportFromHo",
+          "lateAsylumSupportRefNumber": "12345",
+          "remissionDecision": "approved",
+          "amountRemitted": "140.00",
+          "amountLeftToPay": "00.00",
+          "feeAmountGbp": "14000",
+          "previousRemissionDetails": [],
+          "journeyType": "aip",
+          "caseDataBefore": {
+            "template": "minimal-appeal-submitted.json"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "appealType": "refusalOfHumanRights",
+        "remissionOption": "asylumSupportFromHo",
+        "asylumSupportRefNumber": "12345",
+        "lateRemissionOption": null,
+        "lateAsylumSupportRefNumber": null,
+        "remissionDecision": null,
+        "amountRemitted": null,
+        "amountLeftToPay": null,
+        "previousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeAmount": "14000",
+              "amountRemitted": "140.00",
+              "amountLeftToPay": "00.00",
+              "feeRemissionType": "feeWaiverFromHo",
+              "remissionDecision": "Approved"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_TYPE_CHANGED_WITH_REFUND_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
@@ -14,6 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -84,6 +91,14 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
             new ArrayList<>(feeUpdateCompleteStages)
         );
 
+        Optional<FeeUpdateReason> feeUpdateReason = asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class);
+
+        Optional<FeeTribunalAction> feeTribunalAction = asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
+
+        if (feeUpdateReason.isPresent() && feeUpdateReason.get().equals(DECISION_TYPE_CHANGED)
+            && feeTribunalAction.isPresent() && feeTribunalAction.get().equals(REFUND)) {
+            asylumCase.write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
+        }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

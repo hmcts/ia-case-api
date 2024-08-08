@@ -127,6 +127,10 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Explain why the decision should be set aside.");
                 break;
+            case APPLICATION_UNDER_RULE_31_OR_RULE_32:
+                asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                    "Explain why the decision should be set aside or changed.");
+                break;
             default:
                 break;
         }

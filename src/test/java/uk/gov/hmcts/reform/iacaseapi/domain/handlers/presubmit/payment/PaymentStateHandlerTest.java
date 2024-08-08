@@ -372,6 +372,9 @@ class PaymentStateHandlerTest {
 
         if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        } else if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(AppealType.valueOf(type))) {
+            asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAID));
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
         }

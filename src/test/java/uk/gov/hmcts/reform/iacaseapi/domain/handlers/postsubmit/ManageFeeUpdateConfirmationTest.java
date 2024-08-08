@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,13 +15,17 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -129,6 +133,38 @@ class ManageFeeUpdateConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next\n\n"
                 + "The legal representative will be notified that the refund has been instructed.\n\n");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = FeeTribunalAction.class, names = {"REFUND", "ADDITIONAL_PAYMENT", "NO_ACTION"})
+    void should_return_confirmation_for_dlrm_fee_update_tribunal_action_all_scenarios(FeeTribunalAction tribunalAction) {
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_DLRM_FEE_REFUND_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(tribunalAction));
+
+        PostSubmitCallbackResponse callbackResponse =
+            manageFeeUpdateConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have recorded a fee update");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                switch (tribunalAction) {
+                    case REFUND -> "The appropriate team will be notified to review the fee update and process a refund.";
+                    case ADDITIONAL_PAYMENT -> "A payment request will be sent to the appellant.";
+                    case NO_ACTION -> "The appeal fee has been updated. No further action is required.";
+                }
+            );
     }
 
 

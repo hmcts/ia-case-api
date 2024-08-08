@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 public class RemissionDetails {
@@ -27,6 +29,8 @@ public class RemissionDetails {
     private String amountRemitted;
     private String amountLeftToPay;
     private String remissionDecisionReason;
+    private List<IdValue<DocumentWithMetadata>> localAuthorityLetters;
+    private String helpWithFeesOption;
 
     private RemissionDetails() {
 
@@ -74,23 +78,17 @@ public class RemissionDetails {
         this.remissionEcEvidenceDocuments = remissionEcEvidenceDocuments;
     }
 
-    public void setRemissionDecision(String remissionDecision) {
-        this.remissionDecision = remissionDecision;
+    public RemissionDetails(String feeRemissionType, String asylumSupportReference) {
+        this.feeRemissionType = feeRemissionType;
+        this.asylumSupportReference = asylumSupportReference;
     }
 
-    public void setFeeAmount(String feeAmount) {
-        this.feeAmount = feeAmount;
+    public RemissionDetails(String feeRemissionType) {
+        this.feeRemissionType = feeRemissionType;
     }
 
-    public void setAmountRemitted(String amountRemitted) {
-        this.amountRemitted = amountRemitted;
-    }
-
-    public void setAmountLeftToPay(String amountLeftToPay) {
-        this.amountLeftToPay = amountLeftToPay;
-    }
-
-    public void setRemissionDecisionReason(String remissionDecisionReason) {
-        this.remissionDecisionReason = remissionDecisionReason;
+    public RemissionDetails(String feeRemissionType, List<IdValue<DocumentWithMetadata>> localAuthorityLetters) {
+        this.feeRemissionType = feeRemissionType;
+        this.localAuthorityLetters = localAuthorityLetters;
     }
 }

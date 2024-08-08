@@ -109,6 +109,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(SET_ASIDE_A_DECISION.name(), SET_ASIDE_A_DECISION.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+            new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
