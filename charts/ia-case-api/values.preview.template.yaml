@@ -32,10 +32,16 @@ java:
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     DUMMY: true
+    IA_GOV_NOTIFY_KEY: ${IA_GOV_NOTIFY_KEY}
+    IA_BAIL_GOV_NOTIFY_KEY: ${IA_BAIL_GOV_NOTIFY_KEY}
   keyVaults:
     ia:
       resourceGroup: ia
       secrets:
+        - name: ia-gov-notify-key
+          alias: IA_GOV_NOTIFY_KEY
+        - name: ia-bail-gov-notify-key
+          alias: IA_BAIL_GOV_NOTIFY_KEY
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
         - name: em-stitching-enabled
