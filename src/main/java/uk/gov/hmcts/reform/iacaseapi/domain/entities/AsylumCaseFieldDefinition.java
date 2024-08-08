@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -2633,7 +2632,8 @@ public enum AsylumCaseFieldDefinition {
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
     LAST_NOTIFICATION_IDS("lastNotificationIds", new TypeReference<List<String>>(){}),
-    TEST_NOTIFICATION_ID("testNotificationId", new TypeReference<String>(){});
+    TEST_NOTIFICATION_ID("testNotificationId", new TypeReference<String>(){}),
+    NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){});
 
 
     private final String value;
