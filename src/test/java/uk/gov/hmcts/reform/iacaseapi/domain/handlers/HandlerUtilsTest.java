@@ -357,4 +357,13 @@ class HandlerUtilsTest {
 
         assertEquals(yesOrNo == YES, isCaseUsingLocationRefData(asylumCase));
     }
+
+    @Test
+    void setSelectedHearingCentreRefDataField() {
+        HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, "hearingCentreLabel");
+
+        verify(asylumCase, times(1)).write(
+            SELECTED_HEARING_CENTRE_REF_DATA,
+            "hearingCentreLabel");
+    }
 }

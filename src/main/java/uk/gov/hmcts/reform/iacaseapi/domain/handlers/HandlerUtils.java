@@ -281,4 +281,9 @@ public class HandlerUtils {
             .map(yesOrNo -> yesOrNo.equals(YES))
             .orElse(false);
     }
+
+    // Assigns value to the field that is used for searching cases from hearing centre
+    public static void setSelectedHearingCentreRefDataField(AsylumCase asylumCase, String hearingCentreLabel) {
+        asylumCase.write(SELECTED_HEARING_CENTRE_REF_DATA, hearingCentreLabel);
+    }
 }

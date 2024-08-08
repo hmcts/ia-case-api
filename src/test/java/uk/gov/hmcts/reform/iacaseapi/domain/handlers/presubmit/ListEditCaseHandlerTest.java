@@ -417,15 +417,34 @@ class ListEditCaseHandlerTest {
         when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
             .thenReturn(expectedCml);
 
+        final DynamicList hearingCentreDynamicList = new DynamicList(
+            new Value("698118", "Bradford Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"))
+        );
+
+        when(asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class))
+            .thenReturn(Optional.of(hearingCentreDynamicList));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
+        final DynamicList expectedHearingCentre = new DynamicList(
+            new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"))
+        );
+
+        verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, expectedHearingCentre);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
         verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
+        verify(asylumCase, times(1)).write(SELECTED_HEARING_CENTRE_REF_DATA,
+            listingLocation.getValue().getLabel());
     }
 
     @ParameterizedTest
