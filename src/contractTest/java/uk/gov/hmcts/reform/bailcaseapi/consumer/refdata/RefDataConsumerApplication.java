@@ -7,10 +7,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.refdata.CommonDataRefApi;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.refdata.LocationRefDataApi;
 
 @SpringBootApplication
 @EnableFeignClients(clients = {
-    CommonDataRefApi.class
+    CommonDataRefApi.class,
+    LocationRefDataApi.class
 })
 @PropertySource("classpath:application.properties")
 public class RefDataConsumerApplication {

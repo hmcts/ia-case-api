@@ -72,7 +72,7 @@ class HearingCentreFinderTest {
             "Brookhouse",
             "Bullwood Hall",
             "Bure"
-        )).put(HearingCentre.YARLSWOOD, List.of(
+        )).put(HearingCentre.YARLS_WOOD, List.of(
             "Yarlswood"
         ))
         .build();
@@ -168,7 +168,7 @@ class HearingCentreFinderTest {
         String validInput = "Yarlswood";
 
         HearingCentre actualHearingCentre = hearingCentreFinder.find(validInput);
-        assertEquals(HearingCentre.YARLSWOOD, actualHearingCentre);
+        assertEquals(HearingCentre.YARLS_WOOD, actualHearingCentre);
     }
 
     @Test

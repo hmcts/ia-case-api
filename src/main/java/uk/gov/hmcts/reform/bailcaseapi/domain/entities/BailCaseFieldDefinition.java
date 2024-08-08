@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.refdata.CourtVenue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -272,6 +273,10 @@ public enum BailCaseFieldDefinition {
         "hasLegalRep", new TypeReference<YesOrNo>(){}),
     HEARING_CENTRE(
         "hearingCentre", new TypeReference<HearingCentre>(){}),
+    HEARING_CENTRE_REF_DATA(
+        "hearingCentreRefData", new TypeReference<DynamicList>(){}),
+    SELECTED_HEARING_CENTRE_REF_DATA(
+        "selectedHearingCentreRefData", new TypeReference<String>(){}),
     DETENTION_FACILITY(
         "detentionFacility", new TypeReference<String>(){}),
     UPLOAD_BAIL_SUMMARY_DOCS(
@@ -634,7 +639,15 @@ public enum BailCaseFieldDefinition {
     HO_SELECT_IMA_STATUS(
         "hoSelectImaStatus", new TypeReference<YesOrNo>() {}),
     IS_IMA_ENABLED(
-        "isImaEnabled", new TypeReference<YesOrNo>() {}),;
+        "isImaEnabled", new TypeReference<YesOrNo>() {}),
+    IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED(
+        "isBailsLocationReferenceDataEnabled", new TypeReference<YesOrNo>() {}),
+    REF_DATA_LISTING_LOCATION(
+        "refDataListingLocation", new TypeReference<DynamicList>() {}),
+    REF_DATA_LISTING_LOCATION_DETAIL(
+        "refDataListingLocationDetail", new TypeReference<CourtVenue>() {}),
+    IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED_FT(
+        "isBailsLocationReferenceDataEnabledFt", new TypeReference<YesOrNo>() {});
 
     private final String value;
     private final TypeReference typeReference;

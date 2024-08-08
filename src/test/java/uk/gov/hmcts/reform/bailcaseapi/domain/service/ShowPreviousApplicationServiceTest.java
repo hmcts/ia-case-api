@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REASONS_JUDGE_IS_MINDED_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_REFUSAL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_ADDRESS_DETAILS;
@@ -469,6 +470,18 @@ public class ShowPreviousApplicationServiceTest {
         assertTrue(label.contains(
             "|Location|Birmingham|\n"
                 + "|Date and time|04 Apr 2024, 08:00|\n"), "Label mismatch, expected label: " + label);
+    }
+
+    @Test
+    void check_hearing_details_labels_when_hearing_locations_are_from_ref_data() {
+        Value value = new Value("231596", "Birmingham Civil And Family Justice Centre");
+        when(bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(new DynamicList(value, List.of(value))));
+
+        String label = showPreviousApplicationService.getHearingDetails(bailCase);
+        assertTrue(label.contains(
+            "|Location|Birmingham Civil And Family Justice Centre|\n"
+            + "|Date and time|04 Apr 2024, 08:00|\n"), "Label mismatch, expected label: " + label);
     }
 
     @Test

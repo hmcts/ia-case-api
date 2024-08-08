@@ -1,0 +1,33 @@
+{
+  "description": "Start the application by admin - store selectedHearingCentreRefData from reference data",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 88011,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "Cardiff",
+          "isBailsLocationReferenceDataEnabledFt": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "ircName": "Cardiff",
+        "detentionFacility": "Cardiff",
+        "hearingCentre": "newport",
+        "isBailsLocationReferenceDataEnabled": "Yes",
+        "selectedHearingCentreRefData": "Newport Tribunal Centre - Columbus House"
+      }
+    }
+  }
+}

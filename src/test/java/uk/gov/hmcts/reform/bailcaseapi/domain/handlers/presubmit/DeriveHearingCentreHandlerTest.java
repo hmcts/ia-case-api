@@ -2,37 +2,53 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_CENTRE_REF_DATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IRC_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SELECTED_HEARING_CENTRE_REF_DATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority.LATEST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -44,18 +60,33 @@ class DeriveHearingCentreHandlerTest {
     private CaseDetails<BailCase> caseDetails;
     @Mock
     private BailCase bailCase;
-
     @Mock
     private HearingCentreFinder hearingCentreFinder;
+    @Mock
+    private LocationRefDataService locationRefDataService;
+    @Mock
+    private FeatureToggleService featureToggleService;
+    @Captor
+    private ArgumentCaptor<DynamicList> dynamicListArgumentCaptor;
 
+    private Value hattonCross = new Value("386417", "Hatton Cross Tribunal Hearing Centre");
+    private Value newCastle = new Value("366796", "Newcastle");
     private DeriveHearingCentreHandler deriveHearingCentreHandler;
 
     @BeforeEach
     public void setUp() {
-        deriveHearingCentreHandler = new DeriveHearingCentreHandler(hearingCentreFinder);
+        deriveHearingCentreHandler = new DeriveHearingCentreHandler(
+            hearingCentreFinder, locationRefDataService, featureToggleService);
+
+        DynamicList locationRefDataDynamicList = new DynamicList(
+            new Value("", ""), List.of(hattonCross, newCastle));
+
+        when(locationRefDataService.getCaseManagementLocationsDynamicList())
+            .thenReturn(locationRefDataDynamicList);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(featureToggleService.locationRefDataEnabled()).thenReturn(false);
     }
 
     @Test
@@ -113,8 +144,80 @@ class DeriveHearingCentreHandlerTest {
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getData()).isNotEmpty();
-        assertThat(callbackResponse.getData()).isEqualTo(bailCase);
         verify(bailCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
+    }
+
+    @Test
+    void should_set_hearing_centre_ref_data() {
+
+        when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
+        when(hearingCentreFinder.find("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
+        when(featureToggleService.locationRefDataEnabled()).thenReturn(true);
+
+        PreSubmitCallbackResponse<BailCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(bailCase, times(1)).write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YES);
+        verify(bailCase, times(1))
+            .write(eq(HEARING_CENTRE_REF_DATA), dynamicListArgumentCaptor.capture());
+        verify(bailCase, times(1)).write(SELECTED_HEARING_CENTRE_REF_DATA, hattonCross.getLabel());
+
+        assertEquals(hattonCross, dynamicListArgumentCaptor.getValue().getValue());
+    }
+
+    @Test
+    void should_not_set_hearing_centre_ref_data_when_location_ref_data_not_enabled() {
+
+        when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
+        when(hearingCentreFinder.find("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
+
+        PreSubmitCallbackResponse<BailCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(bailCase, never())
+            .write(eq(HEARING_CENTRE_REF_DATA), any());
+        verify(bailCase, never())
+            .write(eq(SELECTED_HEARING_CENTRE_REF_DATA), any());
+    }
+
+    @Test
+    void should_not_set_hearing_centre_ref_data_when_selected_hearing_centre_not_in_location_reference_data() {
+
+        when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
+        when(hearingCentreFinder.find("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
+        DynamicList locationRefDataDynamicList = new DynamicList(
+            new Value("", ""), List.of(newCastle));
+
+        PreSubmitCallbackResponse<BailCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(bailCase, never())
+            .write(eq(HEARING_CENTRE_REF_DATA), any());
+    }
+
+    @Test
+    void should_set_location_reference_data_flag_to_no() {
+
+        when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
+        when(hearingCentreFinder.find("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
+        when(featureToggleService.locationRefDataEnabled()).thenReturn(false);
+
+        PreSubmitCallbackResponse<BailCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(bailCase, times(1)).write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, NO);
     }
 
     @Test

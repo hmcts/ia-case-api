@@ -61,6 +61,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST_IMA;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_REFUSAL_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION;
@@ -90,6 +91,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
@@ -180,13 +182,18 @@ public class ShowPreviousApplicationService {
     }
 
     public String getHearingDetails(BailCase previousBailCase) {
-        Optional<ListingHearingCentre> maybeHearingCentre = previousBailCase.read(LISTING_LOCATION, ListingHearingCentre.class);
+        Optional<DynamicList> listingLocationDynamicList = previousBailCase
+            .read(REF_DATA_LISTING_LOCATION, DynamicList.class);
+        String listingLocation = listingLocationDynamicList.isPresent()
+            ? listingLocationDynamicList.map(location -> location.getValue().getLabel()).orElse("")
+            : previousBailCase.read(LISTING_LOCATION, ListingHearingCentre.class)
+                .map(ListingHearingCentre::getLabel).orElse("");
         StringBuilder stringBuilder = new StringBuilder();
-        if (maybeHearingCentre.isPresent()) {
+        if (!listingLocation.isBlank()) {
             final String listingHearingDate = previousBailCase.read(LIST_CASE_HEARING_DATE, String.class).orElse("");
             stringBuilder.append("|Hearing details||\n|--------|--------|\n");
             stringBuilder.append("|Location|")
-                .append(maybeHearingCentre.get().getLabel())
+                .append(listingLocation)
                 .append("|\n")
                 .append("|Date and time|")
                 .append(formatDateForRendering(listingHearingDate))
