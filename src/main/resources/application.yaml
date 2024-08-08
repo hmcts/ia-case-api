@@ -38,6 +38,25 @@ management:
       uri: ${IA_HEARINGS_API_URL:http://127.0.0.1:8100}/health
       response: '"status":"UP"'
 
+fees-register:
+  api:
+    url: ${FEES_REGISTER_API_URL:http://localhost:8991}
+  fees:
+    feeWithHearing:
+      channel: default
+      event: issue
+      jurisdiction1: tribunal
+      jurisdiction2: immigration and asylum chamber
+      keyword: HearingOral
+      service: other
+    feeWithoutHearing:
+      channel: default
+      event: issue
+      jurisdiction1: tribunal
+      jurisdiction2: immigration and asylum chamber
+      keyword: HearingPaper
+      service: other
+
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/ia/"

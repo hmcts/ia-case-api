@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -104,7 +105,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                     case HU:
                     case EU:
                     case AG:
-                        if (paymentStatus.equals(PAID)
+                        if ((isPaid && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
                             || remissionPartiallyApproved
                             || remissionApproved) {
                             asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
@@ -125,7 +126,10 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
 
                         boolean paAppealStartedPayLater = (paPaymentType.equals("payLater") || paAipPaymentType.equals("payLater")) && currentState == APPEAL_STARTED;
 
-                        if ((isPaid || remissionPartiallyApproved || remissionApproved || paAppealStartedPayLater)
+                        if (((isPaid && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
+                            || remissionPartiallyApproved
+                            || remissionApproved
+                            || paAppealStartedPayLater)
                             && paymentAppealEvent) {
                             asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
                         }
