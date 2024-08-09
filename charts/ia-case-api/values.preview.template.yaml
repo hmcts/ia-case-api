@@ -568,6 +568,7 @@ ia-aip-frontend:
     devmemoryLimits: 4Gi
     environment:
       HTTP_PROTOCOL: http
+      NODE_ENV: preview
       S2S_MICROSERVICE_NAME: iac
       MICROSERVICE: iac
       CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
