@@ -40,7 +40,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "sendDirectionActionAvailable": "No",
-        "updatedAppealDecision": "Dismissed"
+        "updatedAppealDecision": "Dismissed",
+        "isDecisionRule31Changed": "Yes"
       }
     }
   }

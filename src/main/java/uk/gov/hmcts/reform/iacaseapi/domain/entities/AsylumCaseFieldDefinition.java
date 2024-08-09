@@ -60,6 +60,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
+    APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
+        "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
@@ -1729,6 +1732,9 @@ public enum AsylumCaseFieldDefinition {
     DATE_CLIENT_LEAVE_UK(
         "dateClientLeaveUk", new TypeReference<String>(){}),
 
+    DATE_CLIENT_LEAVE_UK_ADMIN_J(
+        "dateClientLeaveUkAdminJ", new TypeReference<String>(){}),
+
     OUT_OF_COUNTRY_MOBILE_NUMBER(
         "outOfCountryMobileNumber", new TypeReference<String>(){}),
 
@@ -1951,6 +1957,9 @@ public enum AsylumCaseFieldDefinition {
 
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
+
+    IS_ADMIN(
+        "isAdmin", new TypeReference<YesOrNo>() {}),
 
     WITNESS_LEVEL_FLAGS(
         "witnessLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
@@ -2268,9 +2277,6 @@ public enum AsylumCaseFieldDefinition {
 
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
-
-    IS_ADMIN(
-            "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
@@ -2630,8 +2636,50 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
 
-    NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){});
+    NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
+    OOC_APPEAL_ADMIN_J(
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
+
+    IS_DECISION_RULE31_CHANGED(
+            "isDecisionRule31Changed", new TypeReference<YesOrNo>(){}),
+
+    APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS(
+        "appealNotSubmittedReasonDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    // Used to store generated letter notification docs which will be stitched together
+    LETTER_NOTIFICATION_DOCUMENTS(
+        "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    IS_ARIA_MIGRATED(
+        "isAriaMigrated", new TypeReference<YesOrNo>(){}),
+
+    // Temporary value to set the case state as 'Migrated'
+    IS_ARIA_MIGRATED_TEMPORARY(
+            "isAriaMigratedTemporary", new TypeReference<YesOrNo>(){}),
+
+    // Temporary value to set the case desired state
+    ARIA_DESIRED_STATE(
+        "ariaDesiredState", new TypeReference<State>(){}),
+
+    // Temporary value to show the selected desired state value
+    ARIA_DESIRED_STATE_SELECTED_VALUE(
+        "ariaDesiredStateSelectedValue", new TypeReference<String>(){}),
+
+    DESIRED_STATE_CORRECT(
+        "desiredStateCorrect", new TypeReference<YesOrNo>(){}),
+    MIGRATION_MAIN_TEXT(
+        "migrationMainText", new TypeReference<String>(){}),
+    MIGRATION_MAIN_TEXT_VISIBLE(
+        "migrationMainTextVisible", new TypeReference<String>(){}),
+    MIGRATION_HMC_SECOND_PART_VISIBLE(
+        "migrationHmcSecondPartVisible", new TypeReference<String>(){}),
+    ADD_CASE_NOTES_MIGRATION(
+        "addCaseNotesMigration", new TypeReference<List<IdValue<CaseNoteMigration>>>(){}),
+    IS_ARIA_MIGRATED_FILTER(
+            "isAriaMigratedFilter", new TypeReference<YesOrNo>(){}),
+
+    ;
 
     private final String value;
     private final TypeReference typeReference;

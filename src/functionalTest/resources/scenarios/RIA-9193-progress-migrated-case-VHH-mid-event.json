@@ -1,0 +1,33 @@
+{
+  "description": "RIA-9193 Progress migrated case VHH mid Event",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=migrateAriaCasesDocumentUploaderMidEvent",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "progressMigratedCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "ariaDesiredState": "appealSubmitted",
+          "isAriaMigrated": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "appealSubmitted",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAriaMigrated": "Yes",
+        "isAdmin": "Yes",
+        "ariaDesiredState": "appealSubmitted",
+        "migrationMainTextVisible": "VHH"
+      }
+    }
+  }
+}

@@ -40,8 +40,7 @@ public class MakeAnApplicationTypesProvider {
 
         boolean hasHomeOfficeRole = userDetails.getRoles()
             .stream().anyMatch(HO_ROLES::contains);
-        boolean isInternalAdaAndAdminRole = hasRole(ROLE_ADMIN)
-            && isInternalCase(asylumCase) && isAcceleratedDetainedAppeal(asylumCase);
+        boolean isInternalAndAdminRole = hasRole(ROLE_ADMIN) && isInternalCase(asylumCase);
 
         DynamicList dynamicList;
         final List<Value> values = new ArrayList<>();
@@ -78,7 +77,7 @@ public class MakeAnApplicationTypesProvider {
                 break;
 
             case ENDED:
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -117,7 +116,7 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -157,7 +156,7 @@ public class MakeAnApplicationTypesProvider {
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -185,7 +184,7 @@ public class MakeAnApplicationTypesProvider {
                 break;
 
             case FINAL_BUNDLING:
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -238,7 +237,7 @@ public class MakeAnApplicationTypesProvider {
                 break;
 
             case LISTING:
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -289,7 +288,7 @@ public class MakeAnApplicationTypesProvider {
             case PREPARE_FOR_HEARING:
             case PRE_HEARING:
             case DECISION:
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
@@ -334,7 +333,7 @@ public class MakeAnApplicationTypesProvider {
                 break;
 
             case DECIDED:
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAdaAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
                     values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));

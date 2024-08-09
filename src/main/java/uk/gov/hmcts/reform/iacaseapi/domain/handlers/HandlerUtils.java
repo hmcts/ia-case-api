@@ -4,6 +4,9 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
@@ -36,6 +39,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
@@ -279,6 +284,17 @@ public class HandlerUtils {
     public static boolean isCaseUsingLocationRefData(AsylumCase asylumCase) {
         return asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)
             .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+    }
+
+    public static boolean outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(AsylumCase asylumCase) {
+        return asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
+            value -> (List.of(REFUSAL_OF_HUMAN_RIGHTS, REFUSE_PERMIT).contains(value))).orElse(false);
+    }
+
+    public static boolean isEntryClearanceDecision(AsylumCase asylumCase) {
+        return asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)
+            .map(ENTRY_CLEARANCE_DECISION::equals)
             .orElse(false);
     }
 }

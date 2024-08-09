@@ -96,6 +96,8 @@ ia-home-office-integration-api:
   enabled: false
 ia-bail-case-api:
   enabled: false
+ia-timed-event-service:
+  enabled: false
 idam-pr:
   enabled: false
 xui-webapp:
