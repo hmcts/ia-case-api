@@ -68,7 +68,7 @@ class FeesHelperTest {
         Fee feeMock = new Fee(feeCode, feeDesc, VERSION, feeAmount);
         when(feeService.getFee(any())).thenReturn(feeMock);
 
-        String amount = String.valueOf(new BigDecimal(feeMock.getAmountAsString()).multiply(new BigDecimal("100")));
+        final String amount = String.valueOf(new BigDecimal(feeMock.getAmountAsString()).multiply(new BigDecimal("100")));
 
         findFeeByHearingType(feeService, asylumCase);
 
