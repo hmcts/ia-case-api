@@ -29,7 +29,18 @@ public class AsylumCasePostNotificationApiSender implements PostNotificationSend
     @Override
     public PostSubmitCallbackResponse send(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
-
+        //        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider
+        //            .nowWithTime(), ZoneId.systemDefault()).plusMinutes(1L);
+        //        scheduler.schedule(
+        //            new TimedEvent(
+        //                "",
+        //                Event.SAVE_NOTIFICATION_TO_DATA,
+        //                scheduledDate,
+        //                "IA",
+        //                "Asylum",
+        //                callback.getCaseDetails().getId()
+        //            )
+        //        );
         return asylumCaseCallbackApiDelegator.delegatePostSubmit(
             callback,
             notificationsApiEndpoint + ccdSubmittedPath
