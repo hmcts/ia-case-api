@@ -18,6 +18,8 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,56 +66,35 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        String notificationId = asylumCase.read(AsylumCaseFieldDefinition.TEST_NOTIFICATION_ID, String.class)
-            .orElse("");
-
-        if (!notificationId.isEmpty()) {
+        // notificationIds = notificationIds in NOTIFICATIONS_SENT(stored before) but not in NOTIFICATIONS(stored by this)
+        List<String> notificationIds = List.of("f09f3d6b-2011-420d-9f2a-f3ee528c21c3",
+            "bd4d807e-bd2c-48d1-bef3-fac37785c05b");
+        Optional<List<IdValue<StoredNotification>>> maybeExistingNotifications =
+            asylumCase.read(NOTIFICATIONS);
+        List<IdValue<StoredNotification>> allNotifications = maybeExistingNotifications.orElse(emptyList());
+        for (String notificationId: notificationIds) {
             try {
                 Notification notification = notificationClient.getNotificationById(notificationId);
-                log.info("Here is the notification stuff");
-                String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).format(formatter);
+
                 String sentTo = notification.getEmailAddress()
                     .orElse(notification.getPhoneNumber()
                         .orElse("N/A"));
-                // String notificationBody = "<div>" + notification.getBody().split("First-tier")[0]
-                //     .split("---")[0].replaceAll("\r\n", "<br>") + "</div>";
-                Document document = new Document("", "",
-                    notification.getReference().orElse("notification_file_name") + ".pdf");
+                String notificationBody = "<div>" + notification.getBody().split("First-tier")[0]
+                    .split("---")[0].replaceAll("\r\n", "<br>") + "</div>";
+
                 String method = notification.getNotificationType();
                 String status = notification.getStatus();
                 StoredNotification storedNotification =
-                    new StoredNotification(sentAt, sentTo, document, method, status);
-                Optional<List<IdValue<StoredNotification>>> maybeExistingNotifications =
-                    asylumCase.read(NOTIFICATIONS);
-                List<IdValue<StoredNotification>> allNotifications =
-                    notificationAppender.append(storedNotification, maybeExistingNotifications
-                        .orElse(emptyList()));
-                asylumCase.write(NOTIFICATIONS, allNotifications);
-                log.info("notification.getBody(): {}", notification.getBody());
-                log.info("notification.getId(): {}", notification.getId());
-                log.info("notification.getNotificationType(): {}", notification.getNotificationType());
-                log.info("notification.getCompletedAt(): {}", notification.getCompletedAt());
-                log.info("notification.getCreatedByName(): {}", notification.getCreatedByName());
-                log.info("notification.getEmailAddress(): {}", notification.getEmailAddress());
-                log.info("notification.getEstimatedDelivery(): {}", notification.getEstimatedDelivery());
-                log.info("notification.getLine1(): {}", notification.getLine1());
-                log.info("notification.getLine2(): {}", notification.getLine2());
-                log.info("notification.getLine3(): {}", notification.getLine3());
-                log.info("notification.getLine4(): {}", notification.getLine4());
-                log.info("notification.getLine5(): {}", notification.getLine5());
-                log.info("notification.getLine6(): {}", notification.getLine6());
-                log.info("notification.getPhoneNumber(): {}", notification.getPhoneNumber());
-                log.info("notification.getPostage(): {}", notification.getPostage());
-                log.info("notification.getPostcode(): {}", notification.getPostcode());
-                log.info("notification.getReference(): {}", notification.getReference());
-                log.info("notification.getSentAt(): {}", notification.getSentAt());
-                log.info("notification.getStatus(): {}", notification.getStatus());
-                log.info("notification.getSubject(): {}", notification.getSubject());
+                    new StoredNotification(notificationId, sentAt, sentTo, notificationBody,
+                        null, method, status);
+                allNotifications = notificationAppender.append(storedNotification, allNotifications);
             } catch (NotificationClientException exception) {
                 log.warn("Notification client error: ", exception);
             }
         }
+        asylumCase.write(NOTIFICATIONS, allNotifications);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

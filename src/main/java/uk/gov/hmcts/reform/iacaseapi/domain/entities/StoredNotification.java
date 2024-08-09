@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
@@ -12,8 +13,11 @@ import static java.util.Objects.requireNonNull;
 @Getter
 public class StoredNotification {
 
+    private String notificationId;
     private String notificationDateSent;
     private String notificationSentTo;
+    private String notificationBody;
+    @Setter
     private Document notificationDocument;
     private String notificationMethod;
     private String notificationStatus;
@@ -22,20 +26,21 @@ public class StoredNotification {
     }
 
     public StoredNotification(
+        String notificationId,
         String notificationDateSent,
         String notificationSentTo,
+        String notificationBody,
         Document notificationDocument,
         String notificationMethod,
         String notificationStatus
     ) {
+        this.notificationId = requireNonNull(notificationId);
         this.notificationDateSent = requireNonNull(notificationDateSent);
         this.notificationSentTo = requireNonNull(notificationSentTo);
-        this.notificationDocument = requireNonNull(notificationDocument);
+        this.notificationBody = requireNonNull(notificationBody);
+        this.notificationDocument = notificationDocument;
         this.notificationMethod = requireNonNull(notificationMethod);
         this.notificationStatus = requireNonNull(notificationStatus);
     }
 
-    public void setCaseNoteDocument(Document document) {
-        notificationDocument = document;
-    }
 }

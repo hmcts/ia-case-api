@@ -214,6 +214,8 @@ ia-case-notifications-api:
     devmemoryLimits: 4Gi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
+      IA_GOV_NOTIFY_KEY: ${IA_GOV_NOTIFY_KEY}
+      IA_BAIL_GOV_NOTIFY_KEY: ${IA_BAIL_GOV_NOTIFY_KEY}
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
