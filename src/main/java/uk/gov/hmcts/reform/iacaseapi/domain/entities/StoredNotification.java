@@ -42,5 +42,4 @@ public class StoredNotification {
         this.notificationMethod = requireNonNull(notificationMethod);
         this.notificationStatus = requireNonNull(notificationStatus);
     }
-
 }

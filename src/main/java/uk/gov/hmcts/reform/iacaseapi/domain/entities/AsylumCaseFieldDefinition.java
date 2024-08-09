@@ -2632,7 +2632,8 @@ public enum AsylumCaseFieldDefinition {
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
     LAST_NOTIFICATION_IDS("lastNotificationIds", new TypeReference<List<String>>(){}),
-    NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){});
+    NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){}),
+    NOTIFICATIONS_SENT("notificationsSent", new TypeReference<List<IdValue<String>>>(){});
 
 
     private final String value;

@@ -19,10 +19,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS_SENT;
 
 @Slf4j
 @Component
@@ -64,11 +66,14 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                 .getCaseDetails()
                 .getCaseData();
         // notificationIds = notificationIds in NOTIFICATIONS_SENT(stored before) but not in NOTIFICATIONS(stored by this)
-        List<String> notificationIds = List.of("f09f3d6b-2011-420d-9f2a-f3ee528c21c3",
-            "bd4d807e-bd2c-48d1-bef3-fac37785c05b");
         Optional<List<IdValue<StoredNotification>>> maybeExistingNotifications =
             asylumCase.read(NOTIFICATIONS);
+
+        Optional<List<IdValue<String>>> notificationsSent =
+            asylumCase.read(NOTIFICATIONS_SENT);
+
         List<IdValue<StoredNotification>> allNotifications = maybeExistingNotifications.orElse(emptyList());
+        List<String> notificationIds = getUnstoredNotificationIds(allNotifications, notificationsSent.orElse(emptyList()));
         for (String notificationId: notificationIds) {
             try {
                 Notification notification = notificationClient.getNotificationById(notificationId);
@@ -94,5 +99,15 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         asylumCase.write(NOTIFICATIONS, allNotifications);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications, List<IdValue<String>> sentNotificationIds) {
+        List<String> storedNotificationIds = storedNotifications.stream()
+            .map(idValue -> idValue.getValue().getNotificationId())
+            .toList();
+        return sentNotificationIds.stream()
+            .filter(idValue -> !storedNotificationIds.contains(idValue.getValue()))
+            .map(IdValue::getValue)
+            .collect(Collectors.toList());
     }
 }
