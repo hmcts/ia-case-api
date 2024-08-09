@@ -10,7 +10,10 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.fluent.Executor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,32 +25,39 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.FeeResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.FeesRegisterApi;
 
+@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(SpringExtension.class)
-@PactTestFor(providerName = "feeRegister_lookUp", port = "8991")
-@ContextConfiguration(
-    classes = {FeeApiConsumerApplication.class}
-)
-@TestPropertySource(
-    properties = {"fees-register.api.url=localhost:8991"}
-)
 @PactFolder("pacts")
+@PactTestFor(providerName = "feeRegister_lookUp", port = "8991")
+@ContextConfiguration(classes = {FeeApiConsumerApplication.class})
+@TestPropertySource(locations = {"classpath:application.properties"})
 public class FeeApiConsumerTest {
+
     @Autowired
     FeesRegisterApi feesRegisterApi;
 
-    @Pact(provider = "feeRegister_lookUp", consumer = "ia_casePaymentsApi")
+    @BeforeEach
+    public void prepareTest() throws Exception {
+        Thread.sleep(2000);
+    }
+
+    @AfterEach
+    void teardown() {
+        Executor.closeIdleConnections();
+    }
+
+    @Pact(provider = "feeRegister_lookUp", consumer = "ia_caseApi")
     private RequestResponsePact generateFeeWithHearingPact(PactDslWithProvider builder) {
         return getRequestResponsePact(builder, "HearingOral", "FEE0238",
-                                      "Appeal determined with a hearing", BigDecimal.valueOf(140.00)
+            "Appeal determined with a hearing", BigDecimal.valueOf(140.00)
         );
     }
 
-    @Pact(provider = "feeRegister_lookUp", consumer = "ia_casePaymentsApi")
+    @Pact(provider = "feeRegister_lookUp", consumer = "ia_caseApi")
     private RequestResponsePact generateFeeWithoutHearingPact(PactDslWithProvider builder) {
         return getRequestResponsePact(builder, "HearingPaper", "FEE0372",
-                                      "Appeal determined without a hearing", BigDecimal.valueOf(80.00)
+            "Appeal determined without a hearing", BigDecimal.valueOf(80.00)
         );
     }
 
@@ -83,8 +93,8 @@ public class FeeApiConsumerTest {
     @PactTestFor(pactMethod = "generateFeeWithHearingPact")
     public void verifyFeesWithHearingPact() {
         FeeResponse feeResponse = feesRegisterApi.findFee("default", "issue", "tribunal",
-                                                          "immigration and asylum chamber", "HearingOral",
-                                                          "other");
+            "immigration and asylum chamber", "HearingOral",
+            "other");
         Assertions.assertEquals("FEE0238", feeResponse.getCode());
     }
 
@@ -92,8 +102,8 @@ public class FeeApiConsumerTest {
     @PactTestFor(pactMethod = "generateFeeWithoutHearingPact")
     public void verifyFeesWithoutHearingPact() {
         FeeResponse feeResponse = feesRegisterApi.findFee("default", "issue", "tribunal",
-                                                          "immigration and asylum chamber", "HearingPaper",
-                                                          "other");
+            "immigration and asylum chamber", "HearingPaper",
+            "other");
         Assertions.assertEquals("FEE0372", feeResponse.getCode());
     }
 }
