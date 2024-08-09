@@ -11,7 +11,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "paymentStatus": "Paid"
+          "paymentStatus": "Paid",
+          "refundConfirmationApplied": "No"
         }
       }
     }

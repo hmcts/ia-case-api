@@ -1,10 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REFUND_CONFIRMATION_APPLIED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAYMENT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import java.util.Arrays;
@@ -104,7 +111,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                     case HU:
                     case EU:
                     case AG:
-                        if (paymentStatus.equals(PAID)
+                        if ((isPaid && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
                             || remissionPartiallyApproved
                             || remissionApproved) {
                             asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
@@ -125,7 +132,10 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
 
                         boolean paAppealStartedPayLater = (paPaymentType.equals("payLater") || paAipPaymentType.equals("payLater")) && currentState == APPEAL_STARTED;
 
-                        if ((isPaid || remissionPartiallyApproved || remissionApproved || paAppealStartedPayLater)
+                        if (((isPaid && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
+                            || remissionPartiallyApproved
+                            || remissionApproved
+                            || paAppealStartedPayLater)
                             && paymentAppealEvent) {
                             asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
                         }

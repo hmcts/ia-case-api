@@ -27,15 +27,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 @Component
 public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
+    private final FeeService feeService;
 
-    public ManageFeeUpdateHandler(FeatureToggler featureToggler) {
+    public ManageFeeUpdateHandler(FeatureToggler featureToggler, FeeService feeService) {
         this.featureToggler = featureToggler;
+        this.feeService = feeService;
     }
 
     public boolean canHandle(
@@ -98,6 +102,7 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
         if (feeUpdateReason.isPresent() && feeUpdateReason.get().equals(DECISION_TYPE_CHANGED)
             && feeTribunalAction.isPresent() && feeTribunalAction.get().equals(REFUND)) {
             asylumCase.write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
+            FeesHelper.findFeeByHearingType(feeService, asylumCase);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
