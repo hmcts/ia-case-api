@@ -13,17 +13,15 @@ import static java.util.Objects.requireNonNull;
 @Getter
 public class StoredNotification {
 
-    private String notificationId;
-    private String notificationDateSent;
-    private String notificationSentTo;
-    private String notificationBody;
+    private final String notificationId;
+    private final String notificationDateSent;
+    private final String notificationSentTo;
+    private final String notificationBody;
     @Setter
     private Document notificationDocument;
-    private String notificationMethod;
-    private String notificationStatus;
-
-    private StoredNotification() {
-    }
+    private final String notificationMethod;
+    private final String notificationStatus;
+    private final String notificationReference;
 
     public StoredNotification(
         String notificationId,
@@ -32,7 +30,8 @@ public class StoredNotification {
         String notificationBody,
         Document notificationDocument,
         String notificationMethod,
-        String notificationStatus
+        String notificationStatus,
+        String notificationReference
     ) {
         this.notificationId = requireNonNull(notificationId);
         this.notificationDateSent = requireNonNull(notificationDateSent);
@@ -41,5 +40,6 @@ public class StoredNotification {
         this.notificationDocument = notificationDocument;
         this.notificationMethod = requireNonNull(notificationMethod);
         this.notificationStatus = requireNonNull(notificationStatus);
+        this.notificationReference = requireNonNull(notificationReference);
     }
 }

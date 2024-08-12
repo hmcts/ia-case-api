@@ -90,7 +90,7 @@ class SaveNotificationsToDataHandlerTest {
         verify(notificationClient, times(1)).getNotificationById(anyString());
         StoredNotification storedNotification =
             new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", null, notificationType, status);
+                "<div>" + body + "</div>", null, notificationType, status, reference);
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
@@ -101,7 +101,7 @@ class SaveNotificationsToDataHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         StoredNotification storedNotification =
             new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", null, notificationType, status);
+                "<div>" + body + "</div>", null, notificationType, status, reference);
         List<IdValue<StoredNotification>> storedNotifications =
             List.of(new IdValue<>(reference, storedNotification));
         when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
@@ -120,7 +120,7 @@ class SaveNotificationsToDataHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         StoredNotification storedNotification =
             new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", null, notificationType, status);
+                "<div>" + body + "</div>", null, notificationType, status, reference);
         List<IdValue<StoredNotification>> storedNotifications =
             List.of(new IdValue<>(reference, storedNotification));
         List<IdValue<String>> notificationsSent =

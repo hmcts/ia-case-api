@@ -77,20 +77,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         for (String notificationId: notificationIds) {
             try {
                 Notification notification = notificationClient.getNotificationById(notificationId);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).format(formatter);
-
-                String sentTo = notification.getEmailAddress()
-                    .orElse(notification.getPhoneNumber()
-                        .orElse("N/A"));
-                String notificationBody = "<div>" + notification.getBody().split("First-tier")[0]
-                    .split("---")[0].replaceAll("\r\n", "<br>") + "</div>";
-
-                String method = notification.getNotificationType();
-                String status = notification.getStatus();
                 StoredNotification storedNotification =
-                    new StoredNotification(notificationId, sentAt, sentTo, notificationBody,
-                        null, method, status);
+                    getStoredNotification(notificationId, notification);
                 allNotifications = notificationAppender.append(storedNotification, allNotifications);
             } catch (NotificationClientException exception) {
                 log.warn("Notification client error on case "
@@ -100,6 +88,22 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         asylumCase.write(NOTIFICATIONS, allNotifications);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private static StoredNotification getStoredNotification(String notificationId, Notification notification) {
+        String reference = notification.getReference().orElse(notificationId);
+        String sentTo = notification.getEmailAddress()
+            .orElse(notification.getPhoneNumber()
+                .orElse("N/A"));
+        String notificationBody = "<div>" + notification.getBody().split("First-tier")[0]
+            .split("---")[0].replaceAll("\r\n", "<br>") + "</div>";
+
+        String method = notification.getNotificationType();
+        String status = notification.getStatus();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).format(formatter);
+        return new StoredNotification(notificationId, sentAt, sentTo, notificationBody,
+                null, method, status, reference);
     }
 
     private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications, List<IdValue<String>> sentNotificationIds) {
