@@ -13,16 +13,19 @@ import static java.util.Objects.requireNonNull;
 @Getter
 public class StoredNotification {
 
-    private final String notificationId;
-    private final String notificationDateSent;
-    private final String notificationSentTo;
-    private final String notificationBody;
+    private String notificationId;
+    private String notificationDateSent;
+    private String notificationSentTo;
+    private String notificationBody;
     @Setter
     private Document notificationDocument;
-    private final String notificationMethod;
-    private final String notificationStatus;
-    private final String notificationReference;
+    private String notificationMethod;
+    private String notificationStatus;
+    private String notificationReference;
 
+    private StoredNotification() {
+        // noop
+    }
     public StoredNotification(
         String notificationId,
         String notificationDateSent,
