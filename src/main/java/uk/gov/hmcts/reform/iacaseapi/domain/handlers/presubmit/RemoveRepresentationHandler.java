@@ -46,6 +46,7 @@ public class RemoveRepresentationHandler implements PreSubmitCallbackHandler<Asy
         asylumCase.clear(LEGAL_REP_COMPANY);
         asylumCase.clear(LEGAL_REP_COMPANY_ADDRESS);
         asylumCase.clear(LEGAL_REP_NAME);
+        asylumCase.clear(LEGAL_REP_FAMILY_NAME);
         asylumCase.clear(LEGAL_REPRESENTATIVE_NAME);
         asylumCase.clear(LEGAL_REP_REFERENCE_NUMBER);
         asylumCase.clear(LEGAL_REP_MOBILE_PHONE_NUMBER);
