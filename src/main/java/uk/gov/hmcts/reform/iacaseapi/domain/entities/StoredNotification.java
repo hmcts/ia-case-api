@@ -26,6 +26,7 @@ public class StoredNotification {
     private StoredNotification() {
         // noop
     }
+
     public StoredNotification(
         String notificationId,
         String notificationDateSent,
