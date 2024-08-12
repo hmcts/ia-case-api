@@ -27,7 +27,6 @@ class StoredNotificationTest {
             notificationDateSent,
             notificationSentTo,
             notificationBody,
-            null,
             notificationMethod,
             notificationStatus,
             notificationReference);
@@ -42,7 +41,7 @@ class StoredNotificationTest {
         assertThat(storedNotification.getNotificationBody()).isEqualTo(notificationBody);
         assertThat(storedNotification.getNotificationDateSent()).isEqualTo(notificationDateSent);
         assertThat(storedNotification.getNotificationReference()).isEqualTo(notificationReference);
-        assertThat(storedNotification.getNotificationDocument()).isEqualTo(null);
+        assertThat(storedNotification.getNotificationDocument()).isNull();
         storedNotification.setNotificationDocument(document);
         assertThat(storedNotification.getNotificationDocument()).isEqualTo(document);
     }
@@ -50,28 +49,25 @@ class StoredNotificationTest {
     @Test
     void should_not_allow_null_arguments_other_than_document() {
 
-        assertThatThrownBy(() -> new StoredNotification(null, "", "", "", document, "", "", ""))
+        assertThatThrownBy(() -> new StoredNotification(null, "", "", "", "", "", ""))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new StoredNotification("", null, "", "", document, "", "", ""))
+        assertThatThrownBy(() -> new StoredNotification("", null, "", "", "", "", ""))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new StoredNotification("", "", null, "", document, "", "", ""))
+        assertThatThrownBy(() -> new StoredNotification("", "", null, "", "", "", ""))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new StoredNotification("", "", "", null, document, "", "", ""))
+        assertThatThrownBy(() -> new StoredNotification("", "", "", null, "", "", ""))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatCode(() -> new StoredNotification("", "", "", "", null, "", "", ""))
-            .doesNotThrowAnyException();
-
-        assertThatThrownBy(() -> new StoredNotification("", "", "", "", document, null, "", ""))
+        assertThatThrownBy(() -> new StoredNotification("", "", "", "", null, "", ""))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new StoredNotification("", "", "", "", document, "", null, ""))
+        assertThatThrownBy(() -> new StoredNotification("", "", "", "", "", null, ""))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new StoredNotification("", "", "", "", document, "", "", null))
+        assertThatThrownBy(() -> new StoredNotification("", "", "", "", "", "", null))
             .isExactlyInstanceOf(NullPointerException.class);
     }
 

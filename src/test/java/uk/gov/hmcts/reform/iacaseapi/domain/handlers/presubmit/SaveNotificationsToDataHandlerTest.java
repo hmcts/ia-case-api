@@ -80,6 +80,7 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getBody()).thenReturn(body);
         when(notification.getNotificationType()).thenReturn(notificationType);
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
+        when(notification.getReference()).thenReturn(Optional.of(reference));
         String dateString = "01-01-2024";
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate localDate = LocalDate.parse(dateString, dateFormatter);
@@ -90,7 +91,34 @@ class SaveNotificationsToDataHandlerTest {
         verify(notificationClient, times(1)).getNotificationById(anyString());
         StoredNotification storedNotification =
             new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", null, notificationType, status, reference);
+                "<div>" + body + "</div>", notificationType, status, reference);
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_set_reference_to_id_if_no_reference() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationType);
+        when(notification.getEmailAddress()).thenReturn(Optional.of(email));
+        String dateString = "01-01-2024";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate localDate = LocalDate.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            new StoredNotification(notificationId, "2024-01-01", email,
+                "<div>" + body + "</div>", notificationType, status, notificationId);
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
@@ -101,7 +129,7 @@ class SaveNotificationsToDataHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         StoredNotification storedNotification =
             new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", null, notificationType, status, reference);
+                "<div>" + body + "</div>", notificationType, status, reference);
         List<IdValue<StoredNotification>> storedNotifications =
             List.of(new IdValue<>(reference, storedNotification));
         when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
@@ -120,7 +148,7 @@ class SaveNotificationsToDataHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         StoredNotification storedNotification =
             new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", null, notificationType, status, reference);
+                "<div>" + body + "</div>", notificationType, status, reference);
         List<IdValue<StoredNotification>> storedNotifications =
             List.of(new IdValue<>(reference, storedNotification));
         List<IdValue<String>> notificationsSent =

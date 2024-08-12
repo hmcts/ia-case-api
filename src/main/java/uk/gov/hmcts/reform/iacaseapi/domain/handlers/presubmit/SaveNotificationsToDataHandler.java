@@ -102,11 +102,11 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         String status = notification.getStatus();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).format(formatter);
-        return new StoredNotification(notificationId, sentAt, sentTo, notificationBody,
-                null, method, status, reference);
+        return new StoredNotification(notificationId, sentAt, sentTo, notificationBody, method, status, reference);
     }
 
-    private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications, List<IdValue<String>> sentNotificationIds) {
+    private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications,
+                                                    List<IdValue<String>> sentNotificationIds) {
         List<String> storedNotificationIds = storedNotifications.stream()
             .map(idValue -> idValue.getValue().getNotificationId())
             .toList();

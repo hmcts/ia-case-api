@@ -28,7 +28,6 @@ public class StoredNotification {
         String notificationDateSent,
         String notificationSentTo,
         String notificationBody,
-        Document notificationDocument,
         String notificationMethod,
         String notificationStatus,
         String notificationReference
@@ -37,7 +36,7 @@ public class StoredNotification {
         this.notificationDateSent = requireNonNull(notificationDateSent);
         this.notificationSentTo = requireNonNull(notificationSentTo);
         this.notificationBody = requireNonNull(notificationBody);
-        this.notificationDocument = notificationDocument;
+        this.notificationDocument = null;
         this.notificationMethod = requireNonNull(notificationMethod);
         this.notificationStatus = requireNonNull(notificationStatus);
         this.notificationReference = requireNonNull(notificationReference);
