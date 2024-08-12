@@ -11,13 +11,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Slf4j
 @Component
-public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RemoveRepresentationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -45,22 +43,15 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
-        boolean isAdmin = HandlerUtils.isInternalCase(asylumCase);
-
-        if (isInCountryDetainedAppeal(asylumCase) && !isAdmin) {
-            asylumCase.write(IS_ADMIN, YesOrNo.YES);
-            asylumCase.clear(LEGAL_REP_COMPANY);
-            asylumCase.clear(LEGAL_REP_COMPANY_ADDRESS);
-            asylumCase.clear(LEGAL_REP_NAME);
-            asylumCase.clear(LEGAL_REPRESENTATIVE_NAME);
-            asylumCase.clear(LEGAL_REP_REFERENCE_NUMBER);
-        }
+        asylumCase.clear(LEGAL_REP_COMPANY);
+        asylumCase.clear(LEGAL_REP_COMPANY_ADDRESS);
+        asylumCase.clear(LEGAL_REP_NAME);
+        asylumCase.clear(LEGAL_REPRESENTATIVE_NAME);
+        asylumCase.clear(LEGAL_REP_REFERENCE_NUMBER);
+        asylumCase.clear(LEGAL_REP_MOBILE_PHONE_NUMBER);
+        asylumCase.clear(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean isInCountryDetainedAppeal(AsylumCase asylumCase) {
-        return (HandlerUtils.isAppellantInDetention(asylumCase)
-            && asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).map(value -> value.equals(YesOrNo.YES)).orElse(true));
-    }
 }
