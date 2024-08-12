@@ -243,6 +243,7 @@ class FeesAndStatusCheckPreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
