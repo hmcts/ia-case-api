@@ -61,7 +61,7 @@ class SaveNotificationsToDataHandlerTest {
     private SaveNotificationsToDataHandler saveNotificationsToDataHandler;
 
     @BeforeEach
-    void setUp() throws NotificationClientException {
+    void setUp() {
         when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
             notificationClient,

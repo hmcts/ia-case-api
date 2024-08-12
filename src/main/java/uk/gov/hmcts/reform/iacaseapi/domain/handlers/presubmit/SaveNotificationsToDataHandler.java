@@ -96,7 +96,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .orElse(notification.getPhoneNumber()
                 .orElse("N/A"));
         String notificationBody = "<div>" + notification.getBody().split("First-tier")[0]
-            .split("---")[0].replaceAll("\r\n", "<br>") + "</div>";
+            .split("---")[0].replace("\r\n", "<br>") + "</div>";
 
         String method = notification.getNotificationType();
         String status = notification.getStatus();
@@ -113,6 +113,6 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return sentNotificationIds.stream()
             .filter(idValue -> !storedNotificationIds.contains(idValue.getValue()))
             .map(IdValue::getValue)
-            .collect(Collectors.toList());
+            .toList();
     }
 }
