@@ -65,7 +65,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             callback
                 .getCaseDetails()
                 .getCaseData();
-        // notificationIds = notificationIds in NOTIFICATIONS_SENT(stored before) but not in NOTIFICATIONS(stored by this)
+
         Optional<List<IdValue<StoredNotification>>> maybeExistingNotifications =
             asylumCase.read(NOTIFICATIONS);
 
@@ -93,7 +93,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                         null, method, status);
                 allNotifications = notificationAppender.append(storedNotification, allNotifications);
             } catch (NotificationClientException exception) {
-                log.warn("Notification client error: ", exception);
+                log.warn("Notification client error on case "
+                    + callback.getCaseDetails().getId() + ": ", exception);
             }
         }
         asylumCase.write(NOTIFICATIONS, allNotifications);
