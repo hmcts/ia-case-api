@@ -34,7 +34,7 @@ def versions = [
   junitPlatform      : '1.7.2',
   pitest             : '1.9.0',
   gradlePitest       : '1.9.0',
-  reformLogging      : '5.1.7',
+  reformLogging      : '6.0.1',
   reformHealthStarter: '0.0.5',
   restAssured        : '5.3.1',
   serenity           : '3.6.22',
@@ -234,7 +234,6 @@ project.tasks['sonarqube'].group = "Verification"
 
 repositories {
   mavenLocal()
-  jcenter()
   mavenCentral()
   maven { url 'https://jitpack.io' }
 }
@@ -307,13 +306,13 @@ dependencies {
 
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.14'
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 
-  implementation(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0') {
+  implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2') {
     exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
   }
   implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
@@ -343,7 +342,7 @@ dependencies {
 
   implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
 
-  testImplementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+  testImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
 
   testImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
