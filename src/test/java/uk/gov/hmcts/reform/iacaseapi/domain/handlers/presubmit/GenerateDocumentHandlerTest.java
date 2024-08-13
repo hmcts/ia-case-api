@@ -26,59 +26,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADA_SUITABILITY_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_RESPONDENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ASYNC_STITCHING_COMPLETE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_DIRECTION_DUE_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CREATE_CASE_LINK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CUSTOMISE_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECIDE_AN_APPLICATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL_AUTOMATICALLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_UPPER_TRIBUNAL_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CMA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAINTAIN_CASE_LINKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_OUT_OF_TIME_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REINSTATE_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_DETAINED_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_CASE_BUILDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_AMEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESIDENT_JUDGE_FTPA_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CMA_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_REASONS_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRANSFER_OUT_OF_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_TRIBUNAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDENDUM_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDITIONAL_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -350,93 +300,90 @@ class GenerateDocumentHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        for (Event event : Event.values()) {
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
+            boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                &&
+                Arrays.asList(
+                    SUBMIT_APPEAL,
+                    SUBMIT_CASE,
+                    DRAFT_HEARING_REQUIREMENTS,
+                    UPDATE_HEARING_REQUIREMENTS,
+                    UPDATE_HEARING_ADJUSTMENTS,
+                    ADA_SUITABILITY_REVIEW,
+                    LIST_CASE,
+                    EDIT_CASE_LISTING,
+                    GENERATE_DECISION_AND_REASONS,
+                    GENERATE_HEARING_BUNDLE,
+                    CUSTOMISE_HEARING_BUNDLE,
+                    SEND_DECISION_AND_REASONS,
+                    ADJOURN_HEARING_WITHOUT_DATE,
+                    END_APPEAL,
+                    SUBMIT_CMA_REQUIREMENTS,
+                    LIST_CMA,
+                    END_APPEAL,
+                    END_APPEAL_AUTOMATICALLY,
+                    EDIT_APPEAL_AFTER_SUBMIT,
+                    GENERATE_UPPER_TRIBUNAL_BUNDLE,
+                    SUBMIT_REASONS_FOR_APPEAL,
+                    SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                    REQUEST_CASE_BUILDING,
+                    REQUEST_RESPONDENT_REVIEW,
+                    UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                    ASYNC_STITCHING_COMPLETE,
+                    RECORD_OUT_OF_TIME_DECISION,
+                    REQUEST_RESPONDENT_EVIDENCE,
+                    RECORD_REMISSION_DECISION,
+                    MARK_APPEAL_PAID,
+                    REQUEST_RESPONSE_REVIEW,
+                    REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                    MARK_APPEAL_AS_ADA,
+                    DECIDE_AN_APPLICATION,
+                    APPLY_FOR_FTPA_RESPONDENT,
+                    TRANSFER_OUT_OF_ADA,
+                    RESIDENT_JUDGE_FTPA_DECISION,
+                    APPLY_FOR_FTPA_APPELLANT,
+                    MAINTAIN_CASE_LINKS,
+                    UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                    UPLOAD_ADDITIONAL_EVIDENCE,
+                    CHANGE_HEARING_CENTRE,
+                    CREATE_CASE_LINK,
+                    REQUEST_RESPONSE_AMEND,
+                    SEND_DIRECTION,
+                    EDIT_APPEAL_AFTER_SUBMIT,
+                    CHANGE_HEARING_CENTRE,
+                    CHANGE_DIRECTION_DUE_DATE,
+                    UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                    UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                    UPLOAD_ADDENDUM_EVIDENCE,
+                    CHANGE_DIRECTION_DUE_DATE,
+                    EDIT_APPEAL_AFTER_SUBMIT,
+                    REINSTATE_APPEAL,
+                    SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                    UPDATE_TRIBUNAL_DECISION,
+                    SAVE_NOTIFICATIONS_TO_DATA
+                ).contains(event)) {
 
-                boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
-
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    &&
-                    Arrays.asList(
-                        SUBMIT_APPEAL,
-                        SUBMIT_CASE,
-                        DRAFT_HEARING_REQUIREMENTS,
-                        UPDATE_HEARING_REQUIREMENTS,
-                        UPDATE_HEARING_ADJUSTMENTS,
-                        ADA_SUITABILITY_REVIEW,
-                        LIST_CASE,
-                        EDIT_CASE_LISTING,
-                        GENERATE_DECISION_AND_REASONS,
-                        GENERATE_HEARING_BUNDLE,
-                        CUSTOMISE_HEARING_BUNDLE,
-                        SEND_DECISION_AND_REASONS,
-                        ADJOURN_HEARING_WITHOUT_DATE,
-                        END_APPEAL,
-                        SUBMIT_CMA_REQUIREMENTS,
-                        LIST_CMA,
-                        END_APPEAL,
-                        END_APPEAL_AUTOMATICALLY,
-                        EDIT_APPEAL_AFTER_SUBMIT,
-                        GENERATE_UPPER_TRIBUNAL_BUNDLE,
-                        SUBMIT_REASONS_FOR_APPEAL,
-                        SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        REQUEST_CASE_BUILDING,
-                        REQUEST_RESPONDENT_REVIEW,
-                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                        ASYNC_STITCHING_COMPLETE,
-                        RECORD_OUT_OF_TIME_DECISION,
-                        REQUEST_RESPONDENT_EVIDENCE,
-                        RECORD_REMISSION_DECISION,
-                        MARK_APPEAL_PAID,
-                        REQUEST_RESPONSE_REVIEW,
-                        REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                        MARK_APPEAL_AS_ADA,
-                        DECIDE_AN_APPLICATION,
-                        APPLY_FOR_FTPA_RESPONDENT,
-                        TRANSFER_OUT_OF_ADA,
-                        RESIDENT_JUDGE_FTPA_DECISION,
-                        APPLY_FOR_FTPA_APPELLANT,
-                        MAINTAIN_CASE_LINKS,
-                        UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                        UPLOAD_ADDITIONAL_EVIDENCE,
-                        CHANGE_HEARING_CENTRE,
-                        CREATE_CASE_LINK,
-                        REQUEST_RESPONSE_AMEND,
-                        SEND_DIRECTION,
-                        EDIT_APPEAL_AFTER_SUBMIT,
-                        CHANGE_HEARING_CENTRE,
-                        CHANGE_DIRECTION_DUE_DATE,
-                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                        UPLOAD_ADDENDUM_EVIDENCE,
-                        CHANGE_DIRECTION_DUE_DATE,
-                        EDIT_APPEAL_AFTER_SUBMIT,
-                        REINSTATE_APPEAL,
-                        SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        UPDATE_TRIBUNAL_DECISION
-                    ).contains(event)) {
-
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle, "failed callback: " + callbackStage + ", failed event " + event);
-                }
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle, "failed callback: " + callbackStage + ", failed event " + event);
             }
-
-            reset(callback);
         }
     }
 
-    @Test
-    void it_cannot_handle_callback_if_docmosis_not_enabled() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_cannot_handle_callback_if_docmosis_not_enabled(Event event) {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -452,27 +399,20 @@ class GenerateDocumentHandlerTest {
                 FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
                 FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
             );
-
-        for (Event event : Event.values()) {
-
             when(callback.getEvent()).thenReturn(event);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
                 boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
-
                 assertFalse(canHandle);
             }
-
-            reset(callback);
-        }
     }
 
-    @Test
-    void it_cannot_handle_generate_if_em_stitching_not_enabled() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_cannot_handle_generate_if_em_stitching_not_enabled(Event event) {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -489,89 +429,83 @@ class GenerateDocumentHandlerTest {
                 FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
             );
 
-        for (Event event : Event.values()) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
 
-                boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
+            ImmutableSet<Event> eventsThatDontRequireStitching =
+                immutableEnumSet(
+                    SUBMIT_APPEAL,
+                    DRAFT_HEARING_REQUIREMENTS,
+                    UPDATE_HEARING_REQUIREMENTS,
+                    UPDATE_HEARING_ADJUSTMENTS,
+                    ADA_SUITABILITY_REVIEW,
+                    LIST_CASE,
+                    GENERATE_DECISION_AND_REASONS,
+                    GENERATE_HEARING_BUNDLE,
+                    CUSTOMISE_HEARING_BUNDLE,
+                    EDIT_CASE_LISTING,
+                    SEND_DECISION_AND_REASONS,
+                    ADJOURN_HEARING_WITHOUT_DATE,
+                    END_APPEAL,
+                    SUBMIT_CMA_REQUIREMENTS,
+                    LIST_CMA,
+                    END_APPEAL,
+                    END_APPEAL_AUTOMATICALLY,
+                    EDIT_APPEAL_AFTER_SUBMIT,
+                    GENERATE_UPPER_TRIBUNAL_BUNDLE,
+                    SUBMIT_REASONS_FOR_APPEAL,
+                    SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                    REQUEST_CASE_BUILDING,
+                    REQUEST_RESPONDENT_REVIEW,
+                    UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                    ASYNC_STITCHING_COMPLETE,
+                    RECORD_OUT_OF_TIME_DECISION,
+                    REQUEST_RESPONDENT_EVIDENCE,
+                    RECORD_REMISSION_DECISION,
+                    MARK_APPEAL_PAID,
+                    REQUEST_RESPONSE_REVIEW,
+                    REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                    MARK_APPEAL_AS_ADA,
+                    DECIDE_AN_APPLICATION,
+                    APPLY_FOR_FTPA_RESPONDENT,
+                    TRANSFER_OUT_OF_ADA,
+                    RESIDENT_JUDGE_FTPA_DECISION,
+                    APPLY_FOR_FTPA_APPELLANT,
+                    MAINTAIN_CASE_LINKS,
+                    UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                    UPLOAD_ADDITIONAL_EVIDENCE,
+                    CHANGE_HEARING_CENTRE,
+                    CREATE_CASE_LINK,
+                    REQUEST_RESPONSE_AMEND,
+                    SEND_DIRECTION,
+                    CHANGE_HEARING_CENTRE,
+                    CHANGE_DIRECTION_DUE_DATE,
+                    UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                    UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                    UPLOAD_ADDENDUM_EVIDENCE,
+                    CHANGE_DIRECTION_DUE_DATE,
+                    REINSTATE_APPEAL,
+                    SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                    UPDATE_TRIBUNAL_DECISION,
+                    SAVE_NOTIFICATIONS_TO_DATA
+                );
 
-                ImmutableSet<Event> eventsThatDontRequireStitching =
-                    immutableEnumSet(
-                        SUBMIT_APPEAL,
-                        DRAFT_HEARING_REQUIREMENTS,
-                        UPDATE_HEARING_REQUIREMENTS,
-                        UPDATE_HEARING_ADJUSTMENTS,
-                        ADA_SUITABILITY_REVIEW,
-                        LIST_CASE,
-                        GENERATE_DECISION_AND_REASONS,
-                        GENERATE_HEARING_BUNDLE,
-                        CUSTOMISE_HEARING_BUNDLE,
-                        EDIT_CASE_LISTING,
-                        SEND_DECISION_AND_REASONS,
-                        ADJOURN_HEARING_WITHOUT_DATE,
-                        END_APPEAL,
-                        SUBMIT_CMA_REQUIREMENTS,
-                        LIST_CMA,
-                        END_APPEAL,
-                        END_APPEAL_AUTOMATICALLY,
-                        EDIT_APPEAL_AFTER_SUBMIT,
-                        GENERATE_UPPER_TRIBUNAL_BUNDLE,
-                        SUBMIT_REASONS_FOR_APPEAL,
-                        SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        REQUEST_CASE_BUILDING,
-                        REQUEST_RESPONDENT_REVIEW,
-                        UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                        ASYNC_STITCHING_COMPLETE,
-                        RECORD_OUT_OF_TIME_DECISION,
-                        REQUEST_RESPONDENT_EVIDENCE,
-                        RECORD_REMISSION_DECISION,
-                        MARK_APPEAL_PAID,
-                        REQUEST_RESPONSE_REVIEW,
-                        REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                        MARK_APPEAL_AS_ADA,
-                        DECIDE_AN_APPLICATION,
-                        APPLY_FOR_FTPA_RESPONDENT,
-                        TRANSFER_OUT_OF_ADA,
-                        RESIDENT_JUDGE_FTPA_DECISION,
-                        APPLY_FOR_FTPA_APPELLANT,
-                        MAINTAIN_CASE_LINKS,
-                        UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                        UPLOAD_ADDITIONAL_EVIDENCE,
-                        CHANGE_HEARING_CENTRE,
-                        CREATE_CASE_LINK,
-                        REQUEST_RESPONSE_AMEND,
-                        SEND_DIRECTION,
-                        CHANGE_HEARING_CENTRE,
-                        CHANGE_DIRECTION_DUE_DATE,
-                        UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                        UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                        UPLOAD_ADDENDUM_EVIDENCE,
-                        CHANGE_DIRECTION_DUE_DATE,
-                        REINSTATE_APPEAL,
-                        SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        UPDATE_TRIBUNAL_DECISION
-                    );
-
-                if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-                    && (eventsThatDontRequireStitching.contains(event))) {
-                    assertTrue(canHandle);
-                } else if (event.equals(GENERATE_HEARING_BUNDLE)
-                    || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
-                    assertFalse(canHandle);
-                } else {
-                    assertFalse(canHandle, "event: " + event + ", stage: " + callbackStage);
-                }
-
+            if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
+                && (eventsThatDontRequireStitching.contains(event))) {
+                assertTrue(canHandle);
+            } else if (event.equals(GENERATE_HEARING_BUNDLE)
+                || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
+                assertFalse(canHandle);
+            } else {
+                assertFalse(canHandle, "event: " + event + ", stage: " + callbackStage);
             }
-
-            reset(callback);
         }
-
     }
 
     @Test
