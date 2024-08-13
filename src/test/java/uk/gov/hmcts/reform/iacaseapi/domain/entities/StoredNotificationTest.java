@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 import static org.assertj.core.api.Assertions.*;
@@ -53,29 +51,17 @@ class StoredNotificationTest {
         assertThat(storedNotification.getNotificationDocument()).isEqualTo(document);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-        "null,,,,,,,",
-        ",null,,,,,,",
-        ",,null,,,,,",
-        ",,,null,,,,",
-        ",,,,null,,,",
-        ",,,,,null,,",
-        ",,,,,,null,",
-        ",,,,,,,null",
-    })
-    void should_not_allow_null_arguments_other_than_document(String id, String date, String sentTo, String body,
-                                                             String method, String status, String reference, String subject) {
-        assertThatThrownBy(() -> StoredNotification.builder()
-            .notificationId(id)
-            .notificationDateSent(date)
-            .notificationSentTo(sentTo)
-            .notificationBody(body)
-            .notificationMethod(method)
-            .notificationStatus(status)
-            .notificationReference(reference)
-            .notificationSubject(subject)
-            .build())
-            .isExactlyInstanceOf(NullPointerException.class);
+    @Test
+    void should_not_allow_null_arguments_other_than_document() {
+
+        StoredNotification.StoredNotificationBuilder builder = StoredNotification.builder();
+        assertThatThrownBy(() -> builder.notificationId(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationDateSent(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationSentTo(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationBody(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationMethod(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationStatus(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationReference(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> builder.notificationSubject(null)).isExactlyInstanceOf(NullPointerException.class);
     }
 }
