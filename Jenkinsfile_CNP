@@ -11,13 +11,13 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "ia-task-configuration-internal"
+def dmnBranch = "RIA-9144-create-migrated-case"
 def bpmnBranch = "master"
 
 def secrets = [
         'rpx-${env}': [
                 secret('mc-s2s-client-secret', 'S2S_SECRET'),
-                secret('mc-idam-client-secret', 'IDAM_SECRET'),
+                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
                 secret('system-user-name', 'SYSTEM_USER_NAME'),
                 secret('system-user-password', 'SYSTEM_USER_PASSWORD'),
         ],
