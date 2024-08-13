@@ -26,7 +26,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADA_SUITABILITY_REVIEW;
@@ -88,6 +87,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -179,7 +179,7 @@ class GenerateDocumentHandlerTest {
                 true,
                 documentGenerator,
                 dateProvider,
-                    true,
+                true,
                 dueDateService,
                 FTPA_DUE_IN_DAYS_UK,
                 FTPA_DUE_IN_DAYS_OOC,
@@ -196,92 +196,86 @@ class GenerateDocumentHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
-                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+            .thenReturn(Optional.of(AppealDecision.ALLOWED));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.NO));
+            .thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
     }
 
-    @Test
-    void should_generate_document_and_update_the_case() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SUBMIT_APPEAL",
+        "SUBMIT_CASE",
+        "LIST_CASE",
+        "EDIT_CASE_LISTING",
+        "GENERATE_DECISION_AND_REASONS",
+        "GENERATE_HEARING_BUNDLE",
+        "CUSTOMISE_HEARING_BUNDLE",
+        "SEND_DECISION_AND_REASONS",
+        "ADJOURN_HEARING_WITHOUT_DATE",
+        "END_APPEAL",
+        "SUBMIT_CMA_REQUIREMENTS",
+        "LIST_CMA",
+        "END_APPEAL_AUTOMATICALLY",
+        "EDIT_APPEAL_AFTER_SUBMIT",
+        "GENERATE_UPPER_TRIBUNAL_BUNDLE",
+        "SUBMIT_REASONS_FOR_APPEAL",
+        "SUBMIT_CLARIFYING_QUESTION_ANSWERS",
+        "RECORD_ADJOURNMENT_DETAILS",
+        "REQUEST_CASE_BUILDING",
+        "ASYNC_STITCHING_COMPLETE",
+        "SAVE_NOTIFICATIONS_TO_DATA"
+    })
+    void should_generate_document_and_update_the_case(Event event) {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
 
-        Arrays.asList(
-            SUBMIT_APPEAL,
-            SUBMIT_CASE,
-            LIST_CASE,
-            EDIT_CASE_LISTING,
-            GENERATE_DECISION_AND_REASONS,
-            GENERATE_HEARING_BUNDLE,
-            CUSTOMISE_HEARING_BUNDLE,
-            SEND_DECISION_AND_REASONS,
-            ADJOURN_HEARING_WITHOUT_DATE,
-            END_APPEAL,
-            SUBMIT_CMA_REQUIREMENTS,
-            LIST_CMA,
-            END_APPEAL,
-            END_APPEAL_AUTOMATICALLY,
-            EDIT_APPEAL_AFTER_SUBMIT,
-            GENERATE_UPPER_TRIBUNAL_BUNDLE,
-            SUBMIT_REASONS_FOR_APPEAL,
-            SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-            RECORD_ADJOURNMENT_DETAILS,
-            REQUEST_CASE_BUILDING,
-            ASYNC_STITCHING_COMPLETE
-        ).forEach(event -> {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(NO));
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
-            when(callback.getEvent()).thenReturn(event);
+        if (event.equals(EDIT_CASE_LISTING)) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(NO));
+            when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.empty());
+            when(caseDetails.getState()).thenReturn(state);
+            when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class))
+                .thenReturn(Optional.of("Yes"));
+            when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
+        }
 
-            if (event.equals(EDIT_CASE_LISTING)) {
-                when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.empty());
-                when(caseDetails.getState()).thenReturn(state);
-                when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class))
-                    .thenReturn(Optional.of("Yes"));
-                when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
-            }
+        if (event.equals(SEND_DECISION_AND_REASONS)) {
+            when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+            when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
+        }
 
-            if (event.equals(SEND_DECISION_AND_REASONS)) {
-                when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
-                    .thenReturn(Optional.of(AppealDecision.ALLOWED));
-                when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
-            }
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
-            when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
 
-            assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
 
-            verify(documentGenerator, times(1)).generate(callback);
+        if (event.equals(EDIT_CASE_LISTING)) {
+            verify(expectedUpdatedCase).clear(DISABLE_OVERVIEW_PAGE);
+            verify(expectedUpdatedCase).clear(APPLICATION_EDIT_LISTING_EXISTS);
+            verify(expectedUpdatedCase).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
+            verify(expectedUpdatedCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+            assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        }
 
-            if (event.equals(EDIT_CASE_LISTING)) {
-                verify(expectedUpdatedCase).clear(DISABLE_OVERVIEW_PAGE);
-                verify(expectedUpdatedCase).clear(APPLICATION_EDIT_LISTING_EXISTS);
-                verify(expectedUpdatedCase).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
-                verify(expectedUpdatedCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-                assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
-            }
-
-            if (event.equals(SEND_DECISION_AND_REASONS)) {
-                verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
-                verify(expectedUpdatedCase).write(APPEAL_DATE, FAKE_APPEAL_DATE.toString());
-                verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,EXPECTED_FTPA_DEADLINE_UK.toString());
-            }
-
-            reset(callback);
-            reset(documentGenerator);
-        });
+        if (event.equals(SEND_DECISION_AND_REASONS)) {
+            verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
+            verify(expectedUpdatedCase).write(APPEAL_DATE, FAKE_APPEAL_DATE.toString());
+            verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, EXPECTED_FTPA_DEADLINE_UK.toString());
+        }
     }
 
     @Test
@@ -446,17 +440,17 @@ class GenerateDocumentHandlerTest {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
-                    false,
-                    true,
-                    documentGenerator,
-                    dateProvider,
-                    true,
-                    dueDateService,
-                    FTPA_DUE_IN_DAYS_UK,
-                    FTPA_DUE_IN_DAYS_OOC,
-                    FTPA_DUE_IN_WORKING_DAYS_ADA,
-                    FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
-                    FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
+                false,
+                true,
+                documentGenerator,
+                dateProvider,
+                true,
+                dueDateService,
+                FTPA_DUE_IN_DAYS_UK,
+                FTPA_DUE_IN_DAYS_OOC,
+                FTPA_DUE_IN_WORKING_DAYS_ADA,
+                FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
+                FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
             );
 
         for (Event event : Event.values()) {
@@ -606,16 +600,16 @@ class GenerateDocumentHandlerTest {
         setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
 
         when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+            .thenReturn(Optional.of(YesOrNo.YES));
 
         final ZonedDateTime fakeAppealDateTime = FAKE_APPEAL_DATE.atStartOfDay(ZoneOffset.UTC);
         when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA))
-                .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
+            .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
 
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
@@ -630,12 +624,12 @@ class GenerateDocumentHandlerTest {
         setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
 
         when(expectedUpdatedCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+            .thenReturn(Optional.of(YesOrNo.YES));
 
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
@@ -652,7 +646,7 @@ class GenerateDocumentHandlerTest {
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
@@ -668,17 +662,17 @@ class GenerateDocumentHandlerTest {
         setUpSendDecisionsAndReasonsData(expectedUpdatedCase);
 
         when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(yesOrNo));
+            .thenReturn(Optional.of(yesOrNo));
         when(expectedUpdatedCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         final ZonedDateTime fakeAppealDateTime = FAKE_APPEAL_DATE.atStartOfDay(ZoneOffset.UTC);
         when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL))
-                .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
+            .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
 
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
