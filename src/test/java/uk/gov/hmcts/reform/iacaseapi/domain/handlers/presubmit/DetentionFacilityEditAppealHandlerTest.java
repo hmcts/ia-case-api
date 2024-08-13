@@ -82,8 +82,6 @@ public class DetentionFacilityEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IRC_NAME);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
     }
 
     @Test

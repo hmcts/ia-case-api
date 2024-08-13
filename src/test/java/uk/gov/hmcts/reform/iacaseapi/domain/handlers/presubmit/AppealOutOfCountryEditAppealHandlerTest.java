@@ -80,6 +80,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAppellantOOCAdminJ(asylumCase);
         clearSponsor(asylumCase);
     }
 
@@ -111,6 +112,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAppellantOOCAdminJ(asylumCase);
         clearSponsor(asylumCase);
     }
 
@@ -142,6 +144,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAppellantOOCAdminJ(asylumCase);
         clearSponsor(asylumCase);
     }
 
@@ -446,6 +449,17 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_NAME_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_PARTY_ID);
+    }
+
+    private void clearAppellantOOCAdminJ(AsylumCase asylumCase) {
+        verify(asylumCase, times(1)).clear(OOC_APPEAL_ADMIN_J);
+        verify(asylumCase, times(1)).clear(DATE_CLIENT_LEAVE_UK_ADMIN_J);
+        verify(asylumCase, times(1)).clear(APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_1_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_2_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_3_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_4_ADMIN_J);
+        verify(asylumCase, times(1)).clear(COUNTRY_OOC_ADMIN_J);
     }
 
     private void clearAdaSuitabilityFields(AsylumCase asylumCase) {
