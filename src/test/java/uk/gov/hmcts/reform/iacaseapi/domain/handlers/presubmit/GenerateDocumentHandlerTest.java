@@ -399,15 +399,15 @@ class GenerateDocumentHandlerTest {
                 FTPA_DUE_IN_WORKING_DAYS_ADA_INTERNAL,
                 FTPA_DUE_IN_DAYS_NON_ADA_INTERNAL
             );
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
-                assertFalse(canHandle);
-            }
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
+            assertFalse(canHandle);
+        }
     }
 
     @ParameterizedTest
