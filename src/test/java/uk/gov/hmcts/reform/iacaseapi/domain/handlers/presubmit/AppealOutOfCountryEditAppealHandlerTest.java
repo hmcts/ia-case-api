@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -161,6 +162,8 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(
+            Optional.of(OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -177,7 +180,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearRefusalOfProtection(asylumCase);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
-        verify(asylumCase, times(1)).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase, times(2)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
 
@@ -204,6 +207,8 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(
+            Optional.of(OutOfCountryCircumstances.LEAVE_UK));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -220,6 +225,9 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearHumanRightsDecision(asylumCase);
         clearAdaSuitabilityFields(asylumCase);
+
+        verify(asylumCase, times(0)).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase, times(0)).clear(HOME_OFFICE_DECISION_DATE);
 
         verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -127,7 +128,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 );
 
                 clearOutOfCountryDecision(asylumCase);
-                asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+                clearHomeOffice(asylumCase);
                 clearAdaSuitabilityFields(asylumCase);
             }
 
@@ -162,6 +163,19 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         asylumCase.clear(ADDRESS_LINE_3_ADMIN_J);
         asylumCase.clear(ADDRESS_LINE_4_ADMIN_J);
         asylumCase.clear(COUNTRY_OOC_ADMIN_J);
+    }
+
+    private void clearHomeOffice(AsylumCase asylumCase) {
+        Optional<OutOfCountryCircumstances> outOfCountryCircumstancesOptional =
+            asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
+
+        if (outOfCountryCircumstancesOptional.isPresent()) {
+            OutOfCountryCircumstances outOfCountryDecisionType = outOfCountryCircumstancesOptional.get();
+            if (OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION.equals(outOfCountryDecisionType)) {
+                asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+                asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+            }
+        }
     }
 
     private void clearOutOfCountryDecision(AsylumCase asylumCase) {
