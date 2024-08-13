@@ -16,6 +16,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.ADDITIONAL_PAYMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.NO_ACTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
@@ -25,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECI
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.FEE_REMISSION_CHANGED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -202,6 +205,33 @@ class ManageFeeUpdateHandlerTest {
         } else {
             verify(asylumCase, times(0)).write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
         }
+    }
+
+    @Test
+    void should_write_previous_and_updated_hearing_fee_options() {
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(new ArrayList<>()));
+        when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(new CheckValues<>(Collections.emptyList())));
+        when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION)).thenReturn(Optional.empty());
+
+        manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).read(FEE_UPDATE_COMPLETED_STAGES);
+        verify(asylumCase, times(1)).read(FEE_UPDATE_STATUS);
+        verify(asylumCase, times(1)).write(FEE_UPDATE_COMPLETED_STAGES, Collections.emptyList());
+        verify(asylumCase, times(1)).read(FEE_UPDATE_REASON, FeeUpdateReason.class);
+        verify(asylumCase, times(1)).read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
+        verify(asylumCase, times(1)).read(DECISION_HEARING_FEE_OPTION, String.class);
+        verify(asylumCase, times(1)).read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
+        verify(asylumCase, times(1)).write(PREVIOUS_DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
+        verify(asylumCase, times(1)).write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
     }
 
     private static Stream<Arguments> provideParameterValues() {
