@@ -8,19 +8,20 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,8 +36,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
@@ -50,7 +54,15 @@ class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
 
     @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCaseBefore;
     @Mock
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
 
@@ -365,5 +377,57 @@ class HandlerUtilsTest {
         verify(asylumCase, times(1)).write(
             SELECTED_HEARING_CENTRE_REF_DATA,
             "hearingCentreLabel");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "GLASGOW, GLASGOW, 01/02/2024, 01/02/2024, YES, YES, true",
+        "GLASGOW, BIRMINGHAM, 01/02/2024, 03/02/2024, YES, YES, false",
+        "GLASGOW, BIRMINGHAM, 01/02/2024, 01/02/2024, YES, YES, false",
+        "GLASGOW, GLASGOW, 01/02/2024, 03/02/2024, YES, YES, false",
+        "GLASGOW, GLASGOW, 01/02/2024, 01/02/2024, YES, NO, false",
+        "GLASGOW, GLASGOW, 01/02/2024, 01/02/2024, NO, YES, false"
+    })
+    void test_isOnlyRemoteToRemoteHearingChannelUpdate(
+        HearingCentre hearingCentreBefore,
+        HearingCentre hearingCentre,
+        String hearingDateBefore,
+        String hearingDate,
+        YesOrNo isRemoteBefore,
+        YesOrNo isRemote,
+        boolean expected) {
+
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(hearingCentreBefore));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(hearingCentre));
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of(hearingDateBefore));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of(hearingDate));
+        when(asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class))
+            .thenReturn(Optional.of(isRemoteBefore));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(isRemote));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        assertEquals(expected, isOnlyRemoteToRemoteHearingChannelUpdate(callback));
+    }
+
+    @Test
+    void isOnlyRemoteToRemoteHearingChannelUpdate_should_return_false_when_no_previous_case_data() {
+
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.empty());
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(isOnlyRemoteToRemoteHearingChannelUpdate(callback));
     }
 }
