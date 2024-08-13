@@ -106,7 +106,7 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
             }
         }
 
-        if (optionalTransferBailManagementObjection.isPresent()){
+        if (optionalTransferBailManagementObjection.isPresent()) {
             YesOrNo transferBailManagementObjectionValue = optionalTransferBailManagementObjection.get();
             if (transferBailManagementObjectionValue.equals(YesOrNo.NO)) {
                 bailCase.remove(OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS);

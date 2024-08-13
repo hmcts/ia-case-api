@@ -42,7 +42,7 @@ class StartApplicationSubmitHandlerTest {
     private FeatureToggleService featureToggleService;
     @Mock
     private InterpreterLanguagesUtils interpreterLanguagesUtils;
-  
+
     private StartApplicationSubmitHandler startApplicationSubmitHandler;
 
     @BeforeEach
@@ -78,7 +78,7 @@ class StartApplicationSubmitHandlerTest {
 
         startApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
     }
-    
+
     @ParameterizedTest
     @CsvSource({"true", "false"})
     void should_set_bails_location_ref_data_field(boolean featureFlag) {

@@ -56,7 +56,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<BailCas
             Event.CREATE_BAIL_CASE_LINK,
             Event.MAINTAIN_BAIL_CASE_LINKS,
             Event.CASE_LISTING,
-            Event.RECORD_THE_DECISION
+            Event.RECORD_THE_DECISION,
+            Event.FORCE_CASE_TO_HEARING
         );
     }
 
