@@ -2676,6 +2676,12 @@ public enum AsylumCaseFieldDefinition {
 
     DECISION_TYPE_CHANGED_WITH_REFUND_FLAG(
         "decisionTypeChangedWithRefundFlag", new TypeReference<YesOrNo>(){}),
+
+    PREVIOUS_DECISION_HEARING_FEE_OPTION(
+        "previousDecisionHearingFeeOption", new TypeReference<String>(){}),
+
+    UPDATED_DECISION_HEARING_FEE_OPTION(
+        "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
     ;
 
     private final String value;
