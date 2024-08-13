@@ -18,6 +18,7 @@ public class StoredNotification {
     @NonNull private String notificationStatus;
     @NonNull private String notificationReference;
     @NonNull private String notificationSubject;
+
     private StoredNotification() {
         // noop
     }
