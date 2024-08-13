@@ -16,7 +16,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,14 +93,23 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         String sentTo = notification.getEmailAddress()
             .orElse(notification.getPhoneNumber()
                 .orElse("N/A"));
-        String notificationBody = "<div>" + notification.getBody().split("First-tier")[0]
-            .split("---")[0].replace("\r\n", "<br>") + "</div>";
+        String notificationBody = "<div>" + notification.getBody()
+            .replace("\r\n", "<br>") + "</div>";
 
         String method = notification.getNotificationType();
         String status = notification.getStatus();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).format(formatter);
-        return new StoredNotification(notificationId, sentAt, sentTo, notificationBody, method, status, reference);
+        String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).toLocalDateTime().toString();
+        String subject = notification.getSubject().orElse("No Subject");
+        return StoredNotification.builder()
+            .notificationId(notificationId)
+            .notificationDateSent(sentAt)
+            .notificationSentTo(sentTo)
+            .notificationBody(notificationBody)
+            .notificationMethod(method)
+            .notificationStatus(status)
+            .notificationReference(reference)
+            .notificationSubject(subject)
+            .build();
     }
 
     private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications,

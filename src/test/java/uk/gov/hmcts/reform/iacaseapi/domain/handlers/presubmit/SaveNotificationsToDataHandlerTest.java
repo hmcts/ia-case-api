@@ -19,7 +19,7 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +58,7 @@ class SaveNotificationsToDataHandlerTest {
     private final String notificationType = "someNotificationType";
     private final String status = "someStatus";
     private final String email = "some-email@test.com";
+    private final String subject = "someSubject";
     private SaveNotificationsToDataHandler saveNotificationsToDataHandler;
 
     @BeforeEach
@@ -81,17 +82,26 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getNotificationType()).thenReturn(notificationType);
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
         when(notification.getReference()).thenReturn(Optional.of(reference));
-        String dateString = "01-01-2024";
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate localDate = LocalDate.parse(dateString, dateFormatter);
-        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.of("Europe/London"));
+        when(notification.getSubject()).thenReturn(Optional.of(subject));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
         StoredNotification storedNotification =
-            new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", notificationType, status, reference);
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationType)
+                .notificationStatus(status)
+                .notificationReference(reference)
+                .notificationSubject(subject)
+                .build();
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
@@ -108,17 +118,62 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getBody()).thenReturn(body);
         when(notification.getNotificationType()).thenReturn(notificationType);
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
-        String dateString = "01-01-2024";
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate localDate = LocalDate.parse(dateString, dateFormatter);
-        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.of("Europe/London"));
+        when(notification.getSubject()).thenReturn(Optional.of(subject));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
         StoredNotification storedNotification =
-            new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", notificationType, status, notificationId);
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationType)
+                .notificationStatus(status)
+                .notificationReference(notificationId)
+                .notificationSubject(subject)
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_default_subject_if_none_found() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationType);
+        when(notification.getEmailAddress()).thenReturn(Optional.of(email));
+        when(notification.getSubject()).thenReturn(Optional.empty());
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationType)
+                .notificationStatus(status)
+                .notificationReference(notificationId)
+                .notificationSubject("No Subject")
+                .build();
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
@@ -128,8 +183,16 @@ class SaveNotificationsToDataHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         StoredNotification storedNotification =
-            new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", notificationType, status, reference);
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationType)
+                .notificationStatus(status)
+                .notificationReference(reference)
+                .notificationSubject(subject)
+                .build();
         List<IdValue<StoredNotification>> storedNotifications =
             List.of(new IdValue<>(reference, storedNotification));
         when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
@@ -147,8 +210,16 @@ class SaveNotificationsToDataHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         StoredNotification storedNotification =
-            new StoredNotification(notificationId, "2024-01-01", email,
-                "<div>" + body + "</div>", notificationType, status, reference);
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationType)
+                .notificationStatus(status)
+                .notificationReference(reference)
+                .notificationSubject(subject)
+                .build();
         List<IdValue<StoredNotification>> storedNotifications =
             List.of(new IdValue<>(reference, storedNotification));
         List<IdValue<String>> notificationsSent =
