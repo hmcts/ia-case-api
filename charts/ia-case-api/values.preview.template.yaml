@@ -455,7 +455,7 @@ ia-timed-event-service:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:pr-182
-    #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
+    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
