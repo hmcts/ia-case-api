@@ -318,7 +318,6 @@ security:
       - "recordAttendeesAndDuration"
       - "uploadHearingRecording"
       - "turnOnNotifications"
-      - "saveNotificationsToData"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -475,6 +474,7 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
+      - "saveNotificationsToData"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
