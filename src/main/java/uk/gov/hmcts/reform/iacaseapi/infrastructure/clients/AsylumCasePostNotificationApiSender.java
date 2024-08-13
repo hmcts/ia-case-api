@@ -45,7 +45,7 @@ public class AsylumCasePostNotificationApiSender implements PostNotificationSend
     @Override
     public PostSubmitCallbackResponse send(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
-        if (timedEventServiceEnabled ) {
+        if (timedEventServiceEnabled) {
             ZonedDateTime scheduledTime = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault())
                 .plusSeconds(15);
             scheduler.schedule(
