@@ -90,8 +90,6 @@ public class UpperTribunalStitchingCallbackHandler implements PreSubmitCallbackH
             saveUpperTribunalBundleDocument(asylumCase, stitchedDocument, UPPER_TRIBUNAL_DOCUMENTS);
         }
 
-        final String stitchStatus = upperTribunalBundle.getStitchStatus().orElse("");
-
         asylumCase.write(STITCHING_STATUS_UPPER_TRIBUNAL,"FAILED");
         //asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
 
