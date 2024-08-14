@@ -162,7 +162,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECIDE_FTPA_APPLICATION,
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.RECORD_REMISSION_REMINDER,
-            Event.MARK_APPEAL_AS_REMITTED
+            Event.MARK_APPEAL_AS_REMITTED,
+            Event.REFUND_CONFIRMATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -234,8 +235,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECISION_WITHOUT_HEARING,
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
             Event.REMOVE_APPEAL_FROM_ONLINE,
-            Event.ADJOURN_HEARING_WITHOUT_DATE,
-            Event.REFUND_CONFIRMATION
+            Event.ADJOURN_HEARING_WITHOUT_DATE
         );
 
         if (!isSaveAndContinueEnabled) {
