@@ -128,6 +128,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 );
 
                 clearOutOfCountryDecision(asylumCase);
+                asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
                 clearHomeOffice(asylumCase);
                 clearAdaSuitabilityFields(asylumCase);
             }
@@ -188,7 +189,6 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                     clearRefusalOfProtection(asylumCase);
                     asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
                     asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
-                    asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
                     break;
                 case REFUSAL_OF_PROTECTION:
                     clearHumanRightsDecision(asylumCase);
