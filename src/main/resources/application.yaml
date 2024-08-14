@@ -117,6 +117,7 @@ security:
       - "caseListing"
       - "imaStatus"
       - "forceCaseToHearing"
+      - "changeTribunalCentre"
     caseworker-ia-homeofficebail:
       - "startApplication"
       - "uploadBailSummary"

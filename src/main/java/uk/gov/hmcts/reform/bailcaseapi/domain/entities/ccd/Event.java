@@ -33,6 +33,7 @@ public enum Event {
     UPDATE_BAIL_LEGAL_REP_DETAILS("updateBailLegalRepDetails"),
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
     UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
+    CHANGE_TRIBUNAL_CENTRE("changeTribunalCentre"),
     UPLOAD_BAIL_SUMMARY("uploadBailSummary"),
     UPLOAD_DOCUMENTS("uploadDocuments"),
     UPLOAD_SIGNED_DECISION_NOTICE("uploadSignedDecisionNotice"),

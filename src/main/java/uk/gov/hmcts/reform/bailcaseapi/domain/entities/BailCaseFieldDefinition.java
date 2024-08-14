@@ -273,6 +273,8 @@ public enum BailCaseFieldDefinition {
         "hasLegalRep", new TypeReference<YesOrNo>(){}),
     HEARING_CENTRE(
         "hearingCentre", new TypeReference<HearingCentre>(){}),
+    DESIGNATED_TRIBUNAL_CENTRE(
+        "designatedTribunalCentre", new TypeReference<HearingCentre>(){}),
     HEARING_CENTRE_REF_DATA(
         "hearingCentreRefData", new TypeReference<DynamicList>(){}),
     SELECTED_HEARING_CENTRE_REF_DATA(
