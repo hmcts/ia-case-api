@@ -324,7 +324,8 @@ class SendNotificationHandlerTest {
                         Event.UPDATE_TRIBUNAL_DECISION,
                         Event.REQUEST_RESPONSE_REVIEW,
                         Event.RECORD_REMISSION_REMINDER,
-                        Event.MARK_APPEAL_AS_REMITTED
+                        Event.MARK_APPEAL_AS_REMITTED,
+                        Event.REFUND_CONFIRMATION
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
