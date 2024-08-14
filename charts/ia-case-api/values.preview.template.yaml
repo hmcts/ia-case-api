@@ -134,6 +134,7 @@ ia-case-documents-api:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
+      DUMMY_VALUE: true
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
