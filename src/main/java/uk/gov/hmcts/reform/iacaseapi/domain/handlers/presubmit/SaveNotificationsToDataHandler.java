@@ -15,6 +15,7 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +99,9 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
         String method = notification.getNotificationType();
         String status = notification.getStatus();
-        String sentAt = notification.getSentAt().orElse(ZonedDateTime.now()).toLocalDateTime().toString();
+        ZonedDateTime zonedSentAt = notification.getSentAt().orElse(ZonedDateTime.now())
+            .withZoneSameInstant(ZoneId.of("Europe/London"));
+        String sentAt = zonedSentAt.toLocalDateTime().toString();
         String subject = notification.getSubject().orElse("No Subject");
         return StoredNotification.builder()
             .notificationId(notificationId)
