@@ -70,6 +70,9 @@
             }
           ]
         }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },
@@ -110,7 +113,7 @@
             ]
           },
           "languageManualEntry": [],
-          "languageManualEntryDescription": ""
+          "languageManualEntryDescription": null
         },
         "isHearingRoomNeeded": "No",
         "isHearingLoopNeeded": "No",
