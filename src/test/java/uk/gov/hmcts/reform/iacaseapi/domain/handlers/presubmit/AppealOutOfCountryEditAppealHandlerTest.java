@@ -17,12 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -80,6 +80,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAppellantOOCAdminJ(asylumCase);
         clearSponsor(asylumCase);
     }
 
@@ -111,6 +112,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAppellantOOCAdminJ(asylumCase);
         clearSponsor(asylumCase);
     }
 
@@ -142,6 +144,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
+        clearAppellantOOCAdminJ(asylumCase);
         clearSponsor(asylumCase);
     }
 
@@ -158,6 +161,8 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(
+            Optional.of(OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -174,17 +179,17 @@ class AppealOutOfCountryEditAppealHandlerTest {
             OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearRefusalOfProtection(asylumCase);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
-        verify(asylumCase, times(1)).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase, times(2)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
 
-        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
-        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
-        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
-        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(IRC_NAME);
+        verify(asylumCase, times(1)).clear(PRISON_NAME);
         clearAdaSuitabilityFields(asylumCase);
     }
 
@@ -201,6 +206,8 @@ class AppealOutOfCountryEditAppealHandlerTest {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(
+            Optional.of(OutOfCountryCircumstances.LEAVE_UK));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -218,13 +225,17 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearHumanRightsDecision(asylumCase);
         clearAdaSuitabilityFields(asylumCase);
 
-        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
-        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
-        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
-        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(0)).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase, times(0)).clear(HOME_OFFICE_DECISION_DATE);
+
+        verify(asylumCase, times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(IRC_NAME);
+        verify(asylumCase, times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
 
     }
 
@@ -259,13 +270,14 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
         clearAdaSuitabilityFields(asylumCase);
 
-        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
-        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
-        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
-        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(IRC_NAME);
+        verify(asylumCase, times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
 
     }
 
@@ -303,13 +315,14 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
         clearAdaSuitabilityFields(asylumCase);
 
-        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
-        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
-        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
-        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(IRC_NAME);
+        verify(asylumCase, times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
     }
 
     @ParameterizedTest
@@ -346,13 +359,14 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
         clearAdaSuitabilityFields(asylumCase);
 
-        verify(asylumCase, Mockito.times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-        verify(asylumCase, Mockito.times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_FACILITY);
-        verify(asylumCase, Mockito.times(1)).clear(DETENTION_STATUS);
-        verify(asylumCase, Mockito.times(1)).clear(CUSTODIAL_SENTENCE);
-        verify(asylumCase, Mockito.times(1)).clear(IRC_NAME);
-        verify(asylumCase, Mockito.times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, times(1)).clear(DETENTION_FACILITY);
+        verify(asylumCase, times(1)).clear(DETENTION_STATUS);
+        verify(asylumCase, times(1)).clear(CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(IRC_NAME);
+        verify(asylumCase, times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).clear(DEPORTATION_ORDER_OPTIONS);
     }
 
     @Test
@@ -446,6 +460,17 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SPONSOR_NAME_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_ADDRESS_FOR_DISPLAY);
         verify(asylumCase, times(1)).clear(SPONSOR_PARTY_ID);
+    }
+
+    private void clearAppellantOOCAdminJ(AsylumCase asylumCase) {
+        verify(asylumCase, times(1)).clear(OOC_APPEAL_ADMIN_J);
+        verify(asylumCase, times(1)).clear(DATE_CLIENT_LEAVE_UK_ADMIN_J);
+        verify(asylumCase, times(1)).clear(APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_1_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_2_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_3_ADMIN_J);
+        verify(asylumCase, times(1)).clear(ADDRESS_LINE_4_ADMIN_J);
+        verify(asylumCase, times(1)).clear(COUNTRY_OOC_ADMIN_J);
     }
 
     private void clearAdaSuitabilityFields(AsylumCase asylumCase) {

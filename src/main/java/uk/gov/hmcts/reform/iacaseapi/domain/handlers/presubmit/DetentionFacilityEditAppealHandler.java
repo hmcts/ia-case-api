@@ -2,10 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -15,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -63,31 +60,31 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
             String facility = asylumCase.read(DETENTION_FACILITY, String.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("Detention Facility missing"));
 
-            //Clear all 'prison' & 'other' fields
-            if (facility.equals(IRC.getValue())) {
-                log.info("Clearing Prison details for an IRC Detention centre.");
-                asylumCase.clear(PRISON_NAME);
-                asylumCase.clear(PRISON_NOMS);
-                asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
-                asylumCase.clear(CUSTODIAL_SENTENCE);
-            }
-
-            //Clear all 'irc' & 'other' fields
-            if (facility.equals(PRISON.getValue())) {
-                log.info("Clearing IRC details for a Prison Detention Centre");
-                asylumCase.clear(IRC_NAME);
-                asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
-            }
-
-            //Clear all 'irc' & 'prison' fields
-            if (facility.equals(OTHER.getValue())) {
-                log.info("Clearing IRC and Prison details for Other Detention Centre");
-                asylumCase.clear(IRC_NAME);
-                asylumCase.clear(PRISON_NAME);
-                asylumCase.clear(PRISON_NOMS);
-                asylumCase.clear(CUSTODIAL_SENTENCE);
-                asylumCase.clear(HAS_PENDING_BAIL_APPLICATIONS);
-                asylumCase.clear(BAIL_APPLICATION_NUMBER);
+            switch (DetentionFacility.from(facility)) {
+                case IRC:
+                    //Clear all 'prison' & 'other' fields
+                    log.info("Clearing Prison details for an IRC Detention centre.");
+                    asylumCase.clear(PRISON_NAME);
+                    asylumCase.clear(PRISON_NOMS);
+                    asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
+                    asylumCase.clear(CUSTODIAL_SENTENCE);
+                    break;
+                case PRISON:
+                    //Clear all 'irc' & 'other' fields
+                    log.info("Clearing IRC details for a Prison Detention Centre");
+                    asylumCase.clear(IRC_NAME);
+                    asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
+                    break;
+                case OTHER:
+                    //Clear all 'irc' & 'prison' fields
+                    log.info("Clearing IRC and Prison details for Other Detention Centre");
+                    asylumCase.clear(IRC_NAME);
+                    asylumCase.clear(PRISON_NAME);
+                    asylumCase.clear(PRISON_NOMS);
+                    asylumCase.clear(CUSTODIAL_SENTENCE);
+                    break;
+                default:
+                    // should never execute, DetentionFacility.from() throws error
             }
 
             //Clear custodial sentence date
@@ -98,7 +95,6 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
         }
 
         if (appellantInDetention.equals(YES)) {
-
             if (asylumCase.read(REMOVAL_ORDER_OPTIONS, YesOrNo.class).orElse(NO).equals(NO)) {
                 log.info("Clearing Removal Order date");
                 asylumCase.clear(REMOVAL_ORDER_DATE);
