@@ -63,6 +63,8 @@ class EditAppealAfterSubmitHandlerTest {
     private DueDateService dueDateService;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock
+    private DocumentWithDescription appealWasNotSubmitted;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -290,6 +292,35 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(NEW_MATTERS);
 
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
+    void should_clear_legal_rep_flags_when_internal_case_and_appellant_representation_is_yes() {
+        List<IdValue<DocumentWithDescription>> notSubmittedDocument =
+            List.of(
+                new IdValue<>("1", appealWasNotSubmitted)
+            );
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2020-03-08"));
+
+        when(asylumCase.read(IS_ADMIN)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELANTS_REPRESENTATION)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_WAS_NOT_SUBMITTED_REASON)).thenReturn(Optional.of("reason"));
+        when(asylumCase.read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS)).thenReturn(Optional.of(notSubmittedDocument));
+        when(asylumCase.read(LEGAL_REP_COMPANY_PAPER_J)).thenReturn(Optional.of("company"));
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME_PAPER_J)).thenReturn(Optional.of("name"));
+        when(asylumCase.read(LEGAL_REP_EMAIL)).thenReturn(Optional.of("email"));
+        when(asylumCase.read(LEGAL_REP_REF_NUMBER_PAPER_J)).thenReturn(Optional.of("refNumber"));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
     }
 
     @Test

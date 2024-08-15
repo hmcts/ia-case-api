@@ -114,6 +114,9 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
+            if (isInternalCase(asylumCase)) {
+                clearLegalRepFields(asylumCase);
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -145,6 +148,19 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                         }
                     }
             );
+        }
+    }
+
+    private void clearLegalRepFields(AsylumCase asylumCase) {
+        YesOrNo appellantsRepresentation = asylumCase.read(APPELANTS_REPRESENTATION, YesOrNo.class).orElse(NO);
+        if (YES.equals(appellantsRepresentation)) {
+            asylumCase.clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+            asylumCase.clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+            asylumCase.clear(LEGAL_REP_COMPANY_PAPER_J);
+            asylumCase.clear(LEGAL_REP_GIVEN_NAME);
+            asylumCase.clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+            asylumCase.clear(LEGAL_REP_EMAIL);
+            asylumCase.clear(LEGAL_REP_REF_NUMBER_PAPER_J);
         }
     }
 
