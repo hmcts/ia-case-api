@@ -55,9 +55,11 @@ class SaveNotificationsToDataHandlerTest {
     private final String reference = "someReference";
     private final String notificationId = "someNotificationId";
     private final String body = "someBody";
-    private final String notificationType = "someNotificationType";
+    private final String notificationTypeEmail = "email";
+    private final String notificationTypeSms = "sms";
     private final String status = "someStatus";
     private final String email = "some-email@test.com";
+    private final String phoneNumber = "07827000000";
     private final String subject = "someSubject";
     private SaveNotificationsToDataHandler saveNotificationsToDataHandler;
 
@@ -70,7 +72,7 @@ class SaveNotificationsToDataHandlerTest {
     }
 
     @Test
-    void should_access_notify_client_if_missing_notifications() throws NotificationClientException {
+    void should_access_notify_client_if_missing_email_notification() throws NotificationClientException {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         List<IdValue<String>> notificationsSent =
@@ -79,7 +81,7 @@ class SaveNotificationsToDataHandlerTest {
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
         when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
         when(notification.getBody()).thenReturn(body);
-        when(notification.getNotificationType()).thenReturn(notificationType);
+        when(notification.getNotificationType()).thenReturn(notificationTypeEmail);
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
         when(notification.getReference()).thenReturn(Optional.of(reference));
         when(notification.getSubject()).thenReturn(Optional.of(subject));
@@ -97,10 +99,46 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationDateSent("2024-01-01T10:57")
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(notificationType)
+                .notificationMethod(notificationTypeEmail)
                 .notificationStatus(status)
                 .notificationReference(reference)
                 .notificationSubject(subject)
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_notify_client_if_missing_sms_notification() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeSms);
+        when(notification.getPhoneNumber()).thenReturn(Optional.of(phoneNumber));
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(phoneNumber)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationTypeSms)
+                .notificationStatus(status)
+                .notificationReference(reference)
+                .notificationSubject("N/A")
                 .build();
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
@@ -116,7 +154,7 @@ class SaveNotificationsToDataHandlerTest {
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
         when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
         when(notification.getBody()).thenReturn(body);
-        when(notification.getNotificationType()).thenReturn(notificationType);
+        when(notification.getNotificationType()).thenReturn(notificationTypeEmail);
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
         when(notification.getSubject()).thenReturn(Optional.of(subject));
         String dateString = "01-01-2024 10:57";
@@ -133,7 +171,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationDateSent("2024-01-01T10:57")
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(notificationType)
+                .notificationMethod(notificationTypeEmail)
                 .notificationStatus(status)
                 .notificationReference(notificationId)
                 .notificationSubject(subject)
@@ -152,7 +190,7 @@ class SaveNotificationsToDataHandlerTest {
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
         when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
         when(notification.getBody()).thenReturn(body);
-        when(notification.getNotificationType()).thenReturn(notificationType);
+        when(notification.getNotificationType()).thenReturn(notificationTypeEmail);
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
         when(notification.getSubject()).thenReturn(Optional.empty());
         String dateString = "01-01-2024 10:57";
@@ -169,10 +207,46 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationDateSent("2024-01-01T10:57")
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(notificationType)
+                .notificationMethod(notificationTypeEmail)
                 .notificationStatus(status)
                 .notificationReference(notificationId)
-                .notificationSubject("No Subject")
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+
+    @Test
+    void should_access_default_sent_to_if_method_not_email_or_sms() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn("unknownType");
+        when(notification.getSubject()).thenReturn(Optional.empty());
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod("unknownType")
+                .notificationStatus(status)
+                .notificationReference(notificationId)
+                .notificationSubject("N/A")
                 .build();
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
@@ -188,7 +262,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationDateSent("2024-01-01T10:57")
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(notificationType)
+                .notificationMethod(notificationTypeEmail)
                 .notificationStatus(status)
                 .notificationReference(reference)
                 .notificationSubject(subject)
@@ -215,7 +289,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationDateSent("2024-01-01T10:57")
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(notificationType)
+                .notificationMethod(notificationTypeEmail)
                 .notificationStatus(status)
                 .notificationReference(reference)
                 .notificationSubject(subject)

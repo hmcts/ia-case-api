@@ -91,18 +91,20 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
     private static StoredNotification getStoredNotification(String notificationId, Notification notification) {
         String reference = notification.getReference().orElse(notificationId);
-        String sentTo = notification.getEmailAddress()
-            .orElse(notification.getPhoneNumber()
-                .orElse("N/A"));
         String notificationBody = "<div>" + notification.getBody()
             .replace("\r\n", "<br>") + "</div>";
 
         String method = notification.getNotificationType();
+        String sentTo = switch (method) {
+            case "email" -> notification.getEmailAddress().orElse("N/A");
+            case "sms" -> notification.getPhoneNumber().orElse("N/A");
+            default -> "N/A";
+        };
         String status = notification.getStatus();
         ZonedDateTime zonedSentAt = notification.getSentAt().orElse(ZonedDateTime.now())
             .withZoneSameInstant(ZoneId.of("Europe/London"));
         String sentAt = zonedSentAt.toLocalDateTime().toString();
-        String subject = notification.getSubject().orElse("No Subject");
+        String subject = notification.getSubject().orElse("N/A");
         return StoredNotification.builder()
             .notificationId(notificationId)
             .notificationDateSent(sentAt)
