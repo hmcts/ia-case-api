@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
@@ -127,5 +129,25 @@ class NextHearingDateServiceTest {
         assertNotNull(nextHearingDetails);
 
         assertEquals(nextHearingDetailsFromCaseData, nextHearingDetails);
+    }
+
+    @Test
+    public void test_clearHearingDateInformation() {
+        AsylumCase asylumCase = new AsylumCase();
+        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
+            .hearingDateTime("01/12/2024")
+            .hearingId("1234")
+            .build();
+        asylumCase.write(LIST_CASE_HEARING_DATE, LocalDateTime.now().toString());
+        asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
+
+        nextHearingDateService.clearHearingDateInformation(asylumCase);
+
+        NextHearingDetails cleared = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class).orElse(null);
+
+        assertNotNull(cleared);
+        assertNull(cleared.getHearingDateTime());
+        assertNull(cleared.getHearingId());
+        assertTrue(asylumCase.read(LIST_CASE_HEARING_DATE).isEmpty());
     }
 }

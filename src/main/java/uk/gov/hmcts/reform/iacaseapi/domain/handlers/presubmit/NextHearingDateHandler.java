@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CMR_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CMR_RE_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_NEXT_HEARING_INFO;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -33,8 +36,15 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        List<Event> targetEvents = List.of(
+            UPDATE_NEXT_HEARING_INFO,
+            LIST_CASE,
+            EDIT_CASE_LISTING,
+            CMR_LISTING,
+            CMR_RE_LISTING);
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && List.of(UPDATE_NEXT_HEARING_INFO, LIST_CASE, EDIT_CASE_LISTING).contains(callback.getEvent());
+               && targetEvents.contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

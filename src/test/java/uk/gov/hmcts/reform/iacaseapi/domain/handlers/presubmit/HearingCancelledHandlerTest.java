@@ -1,5 +1,21 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.HEARING_CANCELLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,29 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -57,7 +56,7 @@ class HearingCancelledHandlerTest {
     @ParameterizedTest
     @MethodSource("generateTestScenarios")
     void it_can_handle_callback(HearingCancelledHandlerTest.TestScenario scenario) {
-        given(callback.getEvent()).willReturn(scenario.getEvent());
+        when(callback.getEvent()).thenReturn(scenario.getEvent());
 
         boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
 
@@ -95,7 +94,7 @@ class HearingCancelledHandlerTest {
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
@@ -103,24 +102,30 @@ class HearingCancelledHandlerTest {
 
     @Test
     void should_clear_next_hearing_date_and_list_case_hearing_date() {
-        given(callback.getEvent()).willReturn(Event.HEARING_CANCELLED);
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetails));
-        given(caseDetails.getState()).willReturn(State.PREPARE_FOR_HEARING);
-        given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
-        given(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).willReturn(Optional.of(NO));
-        given(nextHearingDateService.enabled()).willReturn(true);
+        when(callback.getEvent()).thenReturn(HEARING_CANCELLED);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
+        when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
+        when(nextHearingDateService.enabled()).thenReturn(true);
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
-        then(asylumCase).should(times(1))
-                .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
-        then(asylumCase).should(times(1))
-                .write(eq(AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS),
-                        eq(NextHearingDetails.builder().hearingId(null).hearingDateTime(null).build()));
+        verify(nextHearingDateService, times(1)).clearHearingDateInformation(asylumCase);
     }
 
+    @Test
+    void should_not_clear_next_hearing_date_and_list_case_hearing_date() {
+        when(callback.getEvent()).thenReturn(HEARING_CANCELLED);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(nextHearingDateService.enabled()).thenReturn(false);
+
+        handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(nextHearingDateService, never()).clearHearingDateInformation(asylumCase);
+    }
 
     @Value
     private static class TestScenario {
@@ -131,7 +136,7 @@ class HearingCancelledHandlerTest {
         public static List<HearingCancelledHandlerTest.TestScenario> testScenarioBuilder() {
             List<HearingCancelledHandlerTest.TestScenario> testScenarioList = new ArrayList<>();
             for (Event e : Event.values()) {
-                if (e.equals(Event.HEARING_CANCELLED)) {
+                if (e.equals(HEARING_CANCELLED)) {
                     testScenarioList.add(new HearingCancelledHandlerTest.TestScenario(e, ABOUT_TO_START, false));
                     testScenarioList.add(new HearingCancelledHandlerTest.TestScenario(e, MID_EVENT, false));
                     testScenarioList.add(new HearingCancelledHandlerTest.TestScenario(e, ABOUT_TO_SUBMIT, true));

@@ -129,10 +129,10 @@ class EventTest {
         assertEquals("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString());
         assertEquals("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString());
         assertEquals("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString());
-        assertEquals("triggerCmrUpdated", Event.TRIGGER_CMR_UPDATED.toString());
+        assertEquals("cmrReListing", Event.CMR_RE_LISTING.toString());
         assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
-        assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
+        assertEquals("cmrListing", Event.CMR_LISTING.toString());
         assertEquals("decisionWithoutHearingListed", Event.DECISION_WITHOUT_HEARING_LISTED.toString());
         assertEquals("updateDetentionLocation", Event.UPDATE_DETENTION_LOCATION.toString());
         assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
