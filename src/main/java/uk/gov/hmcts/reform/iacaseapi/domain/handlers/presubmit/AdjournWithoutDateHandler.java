@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 
-import java.util.Optional;
-
 
 @Component
 @RequiredArgsConstructor
@@ -45,20 +43,23 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
 
         State currentState = callback.getCaseDetailsBefore().orElseThrow(() -> new IllegalStateException("cannot find previous state")).getState();
 
+        String currentHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
+            .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
+
         asylumCase.write(LIST_CASE_HEARING_DATE_ADJOURNED, "Adjourned");
         asylumCase.write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, currentState.toString());
-        asylumCase.write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, "05/10/2024");
+        asylumCase.write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, currentHearingDate);
 
         asylumCase.write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YesOrNo.NO);
 
-/*        if (nextHearingDateService.enabled()) {
-            if (!HandlerUtils.isIntegrated(asylumCase)) {*/
+        if (nextHearingDateService.enabled()) {
+            if (!HandlerUtils.isIntegrated(asylumCase)) {
                 asylumCase.clear(LIST_CASE_HEARING_DATE);
                 NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
                     .hearingId(null).hearingDateTime(null).build();
                 asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
-/*            }
-        }*/
+            }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
