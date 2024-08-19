@@ -2662,6 +2662,10 @@ public enum AsylumCaseFieldDefinition {
 
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
+    SELECTED_HEARING_CENTRE_REF_DATA("selectedHearingCentreRefData", new TypeReference<String>(){}),
+
+    IS_REMOTE_HEARING("isRemoteHearing", new TypeReference<YesOrNo>(){}),
+
     REQUEST_FEE_REMISSION_DATE(
         "requestFeeRemissionDate", new TypeReference<String>(){}),
 
