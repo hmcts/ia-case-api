@@ -1,6 +1,6 @@
 {
   "description": "RIA-4540 Last modified direction publish - Direction to legal rep to submit hearing requirements (AIP)",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

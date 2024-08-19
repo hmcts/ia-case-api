@@ -1,6 +1,6 @@
 {
   "description": "RIA-365 Send appeal submitted notification to hearing centre",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

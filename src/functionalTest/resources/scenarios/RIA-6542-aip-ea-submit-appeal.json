@@ -1,6 +1,6 @@
 {
   "description": "RIA-6542: Submit AIP EA appeal",
-  "disabled": false,
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Citizen",

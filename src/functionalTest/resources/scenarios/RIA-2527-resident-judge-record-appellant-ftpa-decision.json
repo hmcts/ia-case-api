@@ -1,6 +1,6 @@
 {
   "description": "RIA-2527 Resident judge record appellant FTPA decision",
-  "disabled": false,
+  "disabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
