@@ -428,7 +428,8 @@ class GenerateDocumentHandlerTest {
                         EDIT_APPEAL_AFTER_SUBMIT,
                         REINSTATE_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        UPDATE_TRIBUNAL_DECISION
+                        UPDATE_TRIBUNAL_DECISION,
+                        MANAGE_FEE_UPDATE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -560,7 +561,8 @@ class GenerateDocumentHandlerTest {
                         CHANGE_DIRECTION_DUE_DATE,
                         REINSTATE_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        UPDATE_TRIBUNAL_DECISION
+                        UPDATE_TRIBUNAL_DECISION,
+                        MANAGE_FEE_UPDATE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
