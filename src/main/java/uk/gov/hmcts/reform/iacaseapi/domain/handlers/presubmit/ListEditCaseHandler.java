@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
@@ -109,7 +111,20 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 HearingCentre hearingCentre = HearingCentre.fromEpimsId(listingLocationId, false)
                     .orElseThrow(() -> new IllegalStateException(
                         String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
-                asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, listingLocation);
+
+                Optional<DynamicList> optionalHearingCentreDynamicList =
+                    asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
+
+                if (optionalHearingCentreDynamicList.isPresent()) {
+                    DynamicList hearingCentreDynamicList = optionalHearingCentreDynamicList.get();
+                    optionalHearingCentreDynamicList.get().getListItems().stream()
+                        .filter(value -> Objects.equals(value.getCode(), hearingCentre.getEpimsId()))
+                        .findFirst().ifPresent(hearingCentreDynamicList::setValue);
+
+                    asylumCase.write(HEARING_CENTRE_DYNAMIC_LIST, hearingCentreDynamicList);
+                }
+
+                HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, listingLocation.getValue().getLabel());
                 asylumCase.write(HEARING_CENTRE, hearingCentre);
                 addBaseLocationAndStaffLocation(asylumCase, hearingCentre);
             }
