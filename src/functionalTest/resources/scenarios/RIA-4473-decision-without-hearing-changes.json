@@ -1,6 +1,6 @@
 {
   "description": "RIA-4473 Make decision without hearing",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

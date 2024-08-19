@@ -1,6 +1,6 @@
 {
   "description": "RIA-3390 Display error if Request Home Office data call is made when Home Office data is already displayed",
-  "enabled": false,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

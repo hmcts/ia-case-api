@@ -1,6 +1,6 @@
 {
   "description": "RIA-7979 Appeal set as non integrated if location is not among integrated location",
-  "enabled": false,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

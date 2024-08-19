@@ -1,6 +1,6 @@
 {
   "description": "RIA-7769 prepopulate data for record adjournment details",
-  "enabled": false,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",

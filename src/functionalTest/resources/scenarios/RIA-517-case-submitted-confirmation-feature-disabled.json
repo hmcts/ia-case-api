@@ -1,6 +1,6 @@
 {
   "description": "RIA-517 Submit case confirmation (feature disabled)",
-  "enabled": false,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",

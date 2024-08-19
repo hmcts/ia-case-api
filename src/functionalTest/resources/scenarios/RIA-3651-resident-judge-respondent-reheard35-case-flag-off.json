@@ -1,6 +1,6 @@
 {
   "description": "RIA-3651 Resident judge record respondent FTPA decision (Reheard Rule 35) - feature flag off",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",

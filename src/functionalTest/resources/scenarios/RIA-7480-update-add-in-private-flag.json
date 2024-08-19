@@ -1,6 +1,6 @@
 {
   "description": "RIA-7480 update hearing adjustments when LO approves in camera hearing request",
-  "enabled": "false",
+  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -1,6 +1,6 @@
 {
   "description": "RIA-3763 Update hearing requirements - single hearing requirements copied to previous hearing requirements - FTPA Reheard",
-  "enabled": false,
+  "enabled": true,
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
