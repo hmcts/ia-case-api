@@ -31,7 +31,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
@@ -285,6 +288,49 @@ public class HandlerUtils {
         return asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)
             .map(yesOrNo -> yesOrNo.equals(YES))
             .orElse(false);
+    }
+
+    // Assigns value to the field that is used for searching cases from hearing centre
+    public static void setSelectedHearingCentreRefDataField(AsylumCase asylumCase, String hearingCentreLabel) {
+        asylumCase.write(SELECTED_HEARING_CENTRE_REF_DATA, hearingCentreLabel);
+    }
+
+    public static boolean isOnlyRemoteToRemoteHearingChannelUpdate(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean currentHearingIsRemote = asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)
+            .map(remote -> YES == remote).orElse(false);
+        Optional<CaseDetails<AsylumCase>> caseDetailsBefore = callback.getCaseDetailsBefore();
+
+        if (caseDetailsBefore.isPresent()) {
+            AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
+            boolean prevHearingIsRemote = asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class)
+                .map(remote -> YES == remote).orElse(false);
+
+            return hearingCenterUnchanged(asylumCase, asylumCaseBefore)
+                   && hearingDateUnchanged(asylumCase, asylumCaseBefore)
+                   && prevHearingIsRemote && currentHearingIsRemote;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean hearingCenterUnchanged(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+
+        HearingCentre prevHearingCentre = asylumCaseBefore
+            .read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(null);
+        HearingCentre currentHearingCentre = asylumCase
+            .read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(null);
+
+        return prevHearingCentre == currentHearingCentre;
+    }
+
+    private static boolean hearingDateUnchanged(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+
+        String prevHearingDate = asylumCaseBefore
+            .read(LIST_CASE_HEARING_DATE, String.class).orElse("");
+        String currentHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class).orElse("");
+
+        return prevHearingDate.equalsIgnoreCase(currentHearingDate);
     }
 
     public static boolean outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(AsylumCase asylumCase) {
