@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -60,11 +59,26 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
+    APPELLANT_ADDRESS(
+        "appellantAddress", new TypeReference<AddressUk>(){}),
+
     APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
         "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
 
-    APPELLANT_ADDRESS(
-        "appellantAddress", new TypeReference<AddressUk>(){}),
+    ADDRESS_LINE_1_ADMIN_J(
+        "addressLine1AdminJ", new TypeReference<String>(){}),
+
+    ADDRESS_LINE_2_ADMIN_J(
+        "addressLine2AdminJ", new TypeReference<String>(){}),
+
+    ADDRESS_LINE_3_ADMIN_J(
+        "addressLine3AdminJ", new TypeReference<String>(){}),
+
+    ADDRESS_LINE_4_ADMIN_J(
+        "addressLine4AdminJ", new TypeReference<String>(){}),
+
+    COUNTRY_OOC_ADMIN_J(
+        "countryOocAdminJ", new TypeReference<NationalityFieldValue>(){}),
 
     SEARCH_POSTCODE(
         "searchPostcode", new TypeReference<String>(){}),
@@ -2653,6 +2667,21 @@ public enum AsylumCaseFieldDefinition {
     // Used to store generated letter notification docs which will be stitched together
     LETTER_NOTIFICATION_DOCUMENTS(
         "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    APPELANTS_REPRESENTATION(
+        "appelantsRepresentation", new TypeReference<YesOrNo>(){}),
+    APPEAL_WAS_NOT_SUBMITTED_REASON(
+        "appealWasNotSubmittedReason", new TypeReference<String>(){}),
+    LEGAL_REP_COMPANY_PAPER_J(
+        "legalRepCompanyPaperJ", new TypeReference<String>(){}),
+
+    LEGAL_REP_GIVEN_NAME(
+        "legalRepGivenName", new TypeReference<String>(){}),
+    LEGAL_REP_FAMILY_NAME_PAPER_J(
+        "legalRepFamilyNamePaperJ", new TypeReference<String>(){}),
+    LEGAL_REP_EMAIL(
+        "legalRepEmail", new TypeReference<String>(){}),
+    LEGAL_REP_REF_NUMBER_PAPER_J(
+        "legalRepRefNumberPaperJ", new TypeReference<String>(){}),
     ;
 
     private final String value;
