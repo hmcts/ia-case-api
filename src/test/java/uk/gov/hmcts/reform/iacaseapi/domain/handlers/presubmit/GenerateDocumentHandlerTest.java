@@ -14,9 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADA_SUITABILITY_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_APPELLANT;
@@ -40,6 +38,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CMA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAINTAIN_CASE_LINKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_OUT_OF_TIME_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REINSTATE_APPEAL;
@@ -68,6 +67,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADD
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -93,6 +94,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -126,7 +128,11 @@ class GenerateDocumentHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCaseBefore;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -464,6 +470,33 @@ class GenerateDocumentHandlerTest {
             }
 
             reset(callback);
+        }
+    }
+
+    @Test
+    void it_cannot_handle_if_edit_case_listing_for_remote_to_remote_hearing_channel_update() {
+
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            assertFalse(generateDocumentHandler.canHandle(callbackStage, callback));
         }
     }
 
