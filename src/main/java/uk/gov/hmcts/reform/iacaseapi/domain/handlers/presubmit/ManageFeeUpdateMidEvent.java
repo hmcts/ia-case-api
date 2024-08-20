@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -217,12 +218,6 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
         return remissionDecision.isPresent()
             && Arrays.asList(APPROVED, PARTIALLY_APPROVED)
             .contains(remissionDecision.get());
-    }
-
-    private boolean isRemissionExists(Optional<RemissionType> remissionType) {
-
-        return remissionType.isPresent()
-            && remissionType.get() != RemissionType.NO_REMISSION;
     }
 
     private boolean completedStagesHasFeeUpdateStatus(

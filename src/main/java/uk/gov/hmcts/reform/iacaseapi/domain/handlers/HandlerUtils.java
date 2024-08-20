@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -326,5 +327,10 @@ public class HandlerUtils {
         String currentHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class).orElse("");
 
         return prevHearingDate.equalsIgnoreCase(currentHearingDate);
+    }
+
+    public static boolean isRemissionExists(Optional<RemissionType> remissionType) {
+        return remissionType.isPresent()
+            && remissionType.get() != RemissionType.NO_REMISSION;
     }
 }

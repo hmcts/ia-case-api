@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
 
 import java.util.List;
 import java.util.Optional;
@@ -137,12 +138,14 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
         // old cases
-        if ((appealType == PA && remissionType.isEmpty() && paPaymentType.isEmpty())
-            || (isEaHuEuAg && remissionType.isEmpty()
-            && eaHuPaymentType.isEmpty())) {
+        if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType)
+                && ((appealType == PA && paPaymentType.isEmpty()) || (isEaHuEuAg && eaHuPaymentType.isEmpty()))
+        ) {
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
-        if (isEaHuEuAg && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
+        if (!isRemissionExists(remissionType)
+            && !isRemissionExists(lateRemissionType)
+            && isEaHuEuAg
             && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payNow")
             && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
