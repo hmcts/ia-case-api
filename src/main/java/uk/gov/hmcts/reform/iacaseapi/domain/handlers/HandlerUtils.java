@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -280,5 +281,10 @@ public class HandlerUtils {
         return asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)
             .map(yesOrNo -> yesOrNo.equals(YES))
             .orElse(false);
+    }
+
+    public static boolean isRemissionExists(Optional<RemissionType> remissionType) {
+        return remissionType.isPresent()
+            && remissionType.get() != RemissionType.NO_REMISSION;
     }
 }

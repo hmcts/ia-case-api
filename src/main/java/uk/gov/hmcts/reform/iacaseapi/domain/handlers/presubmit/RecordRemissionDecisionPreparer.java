@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -110,11 +111,6 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         }
 
         return callbackResponse;
-    }
-
-    private boolean isRemissionExists(Optional<RemissionType> remissionType) {
-
-        return remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION;
     }
 
     private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
