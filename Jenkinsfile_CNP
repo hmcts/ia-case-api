@@ -185,59 +185,93 @@ withPipeline(type, product, component) {
     """
     }
 
-    afterAlways('functionalTest:aat') {
+        afterAlways('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-afterAlways('test') {
-    publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "build/reports/tests/test",
-            reportFiles          : "index.html",
-            reportName           : "Unit Test Report"
-    ]
-    publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "build/reports/tests/integration",
-            reportFiles          : "index.html",
-            reportName           : "Integration Test Report"
-    ]
-    publishHTML([
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "build/reports",
-            reportFiles          : 'dependency-check-report.html',
-            reportName           : 'Dependency Check Report'
-    ])
-}
+    afterAlways('test') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/test",
+                reportFiles          : "index.html",
+                reportName           : "Unit Test Report"
+        ]
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/integration",
+                reportFiles          : "index.html",
+                reportName           : "Integration Test Report"
+        ]
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/smoke",
+                reportFiles          : "index.html",
+                reportName           : "Smoke Test Report"
+        ]
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports",
+                reportFiles          : 'dependency-check-report.html',
+                reportName           : 'Dependency Check Report'
+        ])
+    }
 
-afterAlways('fortify-scan') {
-    publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "Fortify Scan",
-            reportFiles          : "FortifyScanReport.html",
-            reportName           : "Fortify Scan Report"
-    ]
-}
+    afterAlways('fortify-scan') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "Fortify Scan",
+                reportFiles          : "FortifyScanReport.html",
+                reportName           : "Fortify Scan Report"
+        ]
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+    }
 
-afterAlways('securityScan') {
-    publishHTML([
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "functional-output",
-            reportFiles          : 'api-report.html',
-            reportName           : 'Security Scan Report'
-    ])
-}
+    afterAlways('securityScan') {
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "functional-output",
+                reportFiles          : 'api-report.html',
+                reportName           : 'Security Scan Report'
+        ])
+    }
 
+    afterAlways('mutationTest') {
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/pitest",
+                reportFiles          : 'index.html',
+                reportName           : 'Mutation Test Report'
+        ])
+    }
+
+    afterAlways('fullFunctionalTest') {
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/functional",
+                reportFiles          : 'index.html',
+                reportName           : 'Functional Test Report'
+        ])
+
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
+    }
     enableSlackNotifications('#ia-tech')
 
     onMaster() {
