@@ -16,8 +16,12 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +89,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                     + callback.getCaseDetails().getId() + ": ", exception);
             }
         }
+        allNotifications = sortNotificationsByDate(allNotifications);
         asylumCase.write(NOTIFICATIONS, allNotifications);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -130,4 +135,14 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .map(IdValue::getValue)
             .toList();
     }
+
+    private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
+        List<IdValue<StoredNotification>> mutableNotifications = new ArrayList<>(allNotifications);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        mutableNotifications.sort(Comparator.comparing(notification ->
+            LocalDateTime.parse(notification.getValue().getNotificationDateSent(), formatter)
+        ));
+        return mutableNotifications;
+    }
+
 }
