@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE_SELECTED_VALUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_MIGRATION_TASK_DUE_DAYS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_TEMPORARY;
@@ -63,6 +64,7 @@ class AriaCreateCaseHandlerTest {
     private AriaCreateCaseHandler ariaCreateCaseHandler;
 
     private final String nextAppealReferenceNumber = "EXAMPLE/10000/2024";
+    private final String ariaTaskDueDays = "10";
     private final LocalDate now = LocalDate.now();
 
     @BeforeEach
@@ -70,11 +72,12 @@ class AriaCreateCaseHandlerTest {
 
         ariaCreateCaseHandler =
             new AriaCreateCaseHandler(dateProvider, appealReferenceNumberGenerator);
-
+        when(callback.getEvent()).thenReturn(Event.ARIA_CREATE_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(now);
+        when(asylumCase.read(ARIA_MIGRATION_TASK_DUE_DAYS, String.class)).thenReturn(Optional.of(ariaTaskDueDays));
     }
 
     @Test
@@ -84,11 +87,6 @@ class AriaCreateCaseHandlerTest {
 
     @Test
     void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
-
-        when(callback.getEvent()).thenReturn(Event.ARIA_CREATE_CASE);
-
-        when(dateProvider.now()).thenReturn(now);
-
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA, false))
             .thenReturn(nextAppealReferenceNumber);
 
@@ -111,11 +109,6 @@ class AriaCreateCaseHandlerTest {
 
     @Test
     void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal_detained() {
-
-        when(callback.getEvent()).thenReturn(Event.ARIA_CREATE_CASE);
-
-        when(dateProvider.now()).thenReturn(now);
-
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA, true))
             .thenReturn(nextAppealReferenceNumber);
@@ -157,6 +150,23 @@ class AriaCreateCaseHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void should_return_error_when_aria_migration_task_due_day_missing() {
+        when(asylumCase.read(ARIA_MIGRATION_TASK_DUE_DAYS, String.class)).thenReturn(Optional.empty());
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+        assertThat(callbackResponse.getErrors())
+                .containsExactly(
+                        "You must provide ariaMigrationTaskDueDays as part of the case creation.");
+
+        when(asylumCase.read(ARIA_MIGRATION_TASK_DUE_DAYS, String.class)).thenReturn(Optional.of(" "));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse2 =
+                ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+        assertThat(callbackResponse2.getErrors())
+                .containsExactly(
+                        "You must provide ariaMigrationTaskDueDays as part of the case creation.");
     }
 
     @Test

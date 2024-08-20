@@ -7,8 +7,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE_SELECTED_VALUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_MIGRATION_TASK_DUE_DAYS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_TEMPORARY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -69,6 +70,17 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        String ariaTaskDueDays = asylumCase.read(ARIA_MIGRATION_TASK_DUE_DAYS, String.class).orElse(null);
+
+        if (ariaTaskDueDays == null || ariaTaskDueDays.isBlank()) {
+
+            PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse =
+                    new PreSubmitCallbackResponse<>(asylumCase);
+
+            asylumCasePreSubmitCallbackResponse
+                    .addError("You must provide ariaMigrationTaskDueDays as part of the case creation.");
+            return asylumCasePreSubmitCallbackResponse;
+        }
 
         AppealType appealType =
             asylumCase
