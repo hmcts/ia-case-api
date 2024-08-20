@@ -1,6 +1,6 @@
 {
   "description": "RIA-7699 Update interpreter booking status confirmation",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

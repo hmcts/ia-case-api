@@ -1,6 +1,6 @@
 {
   "description": "RIA-8449 restore state from adjourn auto request hearing (Succeeded request)",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
