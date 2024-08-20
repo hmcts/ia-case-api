@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,7 +101,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(notificationTypeEmail)
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(reference)
                 .notificationSubject(subject)
                 .build();
@@ -136,7 +137,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(phoneNumber)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(notificationTypeSms)
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
@@ -172,7 +173,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(notificationTypeEmail)
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(notificationId)
                 .notificationSubject(subject)
                 .build();
@@ -208,7 +209,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(notificationTypeEmail)
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(notificationId)
                 .notificationSubject("N/A")
                 .build();
@@ -244,7 +245,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo("N/A")
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod("unknownType")
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(notificationId)
                 .notificationSubject("N/A")
                 .build();
@@ -263,7 +264,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(notificationTypeEmail)
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(reference)
                 .notificationSubject(subject)
                 .build();
@@ -290,7 +291,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(email)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(notificationTypeEmail)
-                .notificationStatus(status)
+                .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(reference)
                 .notificationSubject(subject)
                 .build();

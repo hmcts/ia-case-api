@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StoredNotification;
@@ -101,6 +102,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             default -> "N/A";
         };
         String status = notification.getStatus();
+        List<String> failedStatus = List.of("permanent-failure", "temporary-failure", "technical-failure");
+        status = failedStatus.contains(status) ? "Failed" : StringUtils.capitalize(status);
         ZonedDateTime zonedSentAt = notification.getSentAt().orElse(ZonedDateTime.now())
             .withZoneSameInstant(ZoneId.of("Europe/London"));
         String sentAt = zonedSentAt.toLocalDateTime().toString();
