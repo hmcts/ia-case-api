@@ -6,10 +6,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -96,7 +98,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
             .orElseThrow(() -> new IllegalStateException("caseBundle is not present"))
             .stream()
             .map(IdValue::getValue)
-            .collect(Collectors.toList());
+            .toList();
 
         if (caseBundles.size() != 1) {
             throw new IllegalStateException("case bundles size is not 1 and is : " + caseBundles.size());
@@ -183,7 +185,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 isHearingBundleUpdated == YesOrNo.YES ?
                     DocumentTag.UPDATED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
             );
-        hearingBundle.setTimeUploaded(LocalDateTime.now().toLocalTime().toString());
+        String currentDateTime = ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime().toString();
+        hearingBundle.setDateTimeUploaded(currentDateTime);
         hearingBundleDocuments.add(hearingBundle);
         List<IdValue<DocumentWithMetadata>> allHearingDocuments;
         if (isHearingBundleUpdated == YesOrNo.YES) {

@@ -24,7 +24,7 @@ public class DocumentWithMetadata implements HasDocument {
     private String uploadedBy;
     @Setter
     @Getter
-    private String timeUploaded;
+    private String dateTimeUploaded;
 
     private DocumentWithMetadata() {
         // noop -- for deserializer
@@ -67,7 +67,7 @@ public class DocumentWithMetadata implements HasDocument {
             DocumentTag tag,
             String suppliedBy,
             String uploadedBy,
-            String timeUploaded
+            String dateTimeUploaded
     ) {
         this.document = document;
         this.description = description;
@@ -75,7 +75,7 @@ public class DocumentWithMetadata implements HasDocument {
         this.tag = tag;
         this.suppliedBy = suppliedBy;
         this.uploadedBy = uploadedBy;
-        this.timeUploaded = timeUploaded;
+        this.dateTimeUploaded = dateTimeUploaded;
     }
 
     @Override

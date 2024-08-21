@@ -40,7 +40,7 @@ class DocumentWithMetadataTest {
         assertEquals(tag, documentWithMetadata.getTag());
         assertEquals(suppliedBy, documentWithMetadata.getSuppliedBy());
         assertEquals(uploadedBy, documentWithMetadata.getUploadedBy());
-        assertEquals(timeUploaded, documentWithMetadata.getTimeUploaded());
+        assertEquals(timeUploaded, documentWithMetadata.getDateTimeUploaded());
     }
 
     @Test
@@ -55,7 +55,7 @@ class DocumentWithMetadataTest {
         assertEquals(tag, documentWithMetadata.getTag());
         assertNull(documentWithMetadata.getSuppliedBy());
         assertNull(documentWithMetadata.getUploadedBy());
-        assertNull(documentWithMetadata.getTimeUploaded());
+        assertNull(documentWithMetadata.getDateTimeUploaded());
     }
 
     @Test
@@ -88,7 +88,7 @@ class DocumentWithMetadataTest {
         assertEquals(tag, documentWithMetadata.getTag());
         assertEquals(suppliedBy, documentWithMetadata.getSuppliedBy());
         assertEquals(uploadedBy, documentWithMetadata.getUploadedBy());
-        assertEquals(timeUploaded, documentWithMetadata.getTimeUploaded());
+        assertEquals(timeUploaded, documentWithMetadata.getDateTimeUploaded());
     }
 
     @Test
@@ -99,7 +99,7 @@ class DocumentWithMetadataTest {
 
         assertNull(documentWithMetadata.getSuppliedBy());
         assertNull(documentWithMetadata.getUploadedBy());
-        assertNull(documentWithMetadata.getTimeUploaded());
+        assertNull(documentWithMetadata.getDateTimeUploaded());
     }
 
     @Test
