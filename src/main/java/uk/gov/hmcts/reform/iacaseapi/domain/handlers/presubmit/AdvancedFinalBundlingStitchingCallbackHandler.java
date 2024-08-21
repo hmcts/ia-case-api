@@ -180,7 +180,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 .receive(
                     stitchedDocument.orElse(null),
                     "",
-                    DocumentTag.HEARING_BUNDLE
+                    isHearingBundleUpdated == YesOrNo.YES ?
+                        DocumentTag.UPDATED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
                 )
         );
         List<IdValue<DocumentWithMetadata>> allHearingDocuments;
@@ -188,12 +189,9 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
             allHearingDocuments =
                 documentsAppender.append(
                     hearingDocuments,
-                    hearingBundleDocuments
+                    hearingBundleDocuments,
+                    DocumentTag.UPDATED_HEARING_BUNDLE
                 );
-            AsylumCaseFieldDefinition updatedCountDefinition = isReheardCase ?
-                AsylumCaseFieldDefinition.UPDATED_REHEARD_BUNDLE_COUNT : AsylumCaseFieldDefinition.UPDATED_BUNDLE_COUNT;
-            Integer updatedCount = asylumCase.read(updatedCountDefinition, Integer.class).orElse(0);
-            asylumCase.write(updatedCountDefinition, updatedCount + 1);
         } else {
             allHearingDocuments =
                 documentsAppender.append(

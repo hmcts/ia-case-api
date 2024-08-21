@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -1376,12 +1375,6 @@ public enum AsylumCaseFieldDefinition {
 
     IS_HEARING_BUNDLE_UPDATED(
         "isHearingBundleUpdated", new TypeReference<YesOrNo>() {}),
-
-    UPDATED_BUNDLE_COUNT(
-        "updatedBundleCount", new TypeReference<Integer>() {}),
-
-    UPDATED_REHEARD_BUNDLE_COUNT(
-        "updatedReheardBundleCount", new TypeReference<Integer>() {}),
 
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),

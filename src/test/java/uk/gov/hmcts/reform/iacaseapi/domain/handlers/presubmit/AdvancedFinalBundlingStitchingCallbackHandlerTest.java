@@ -160,11 +160,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList());
         verify(asylumCase).clear(IS_HEARING_BUNDLE_UPDATED);
-        verify(asylumCase).write(UPDATED_BUNDLE_COUNT, 1);
-        when(asylumCase.read(UPDATED_BUNDLE_COUNT, Integer.class))
-            .thenReturn(Optional.of(1));
         advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase).write(UPDATED_BUNDLE_COUNT, 2);
     }
 
     @ParameterizedTest
@@ -262,11 +258,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(notificationSender, times(1)).send(callback);
         verify(documentsAppender).append(anyList(), anyList());
         verify(asylumCase).clear(IS_HEARING_BUNDLE_UPDATED);
-        verify(asylumCase).write(UPDATED_REHEARD_BUNDLE_COUNT, 1);
-        when(asylumCase.read(UPDATED_REHEARD_BUNDLE_COUNT, Integer.class))
-            .thenReturn(Optional.of(1));
         advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase).write(UPDATED_REHEARD_BUNDLE_COUNT, 2);
     }
 
     @ParameterizedTest
