@@ -138,9 +138,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
     private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
         List<IdValue<StoredNotification>> mutableNotifications = new ArrayList<>(allNotifications);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         mutableNotifications.sort(Comparator.comparing(notification ->
-            LocalDateTime.parse(notification.getValue().getNotificationDateSent(), formatter)
+            LocalDateTime.parse(notification.getValue().getNotificationDateSent())
         ));
         return mutableNotifications;
     }
