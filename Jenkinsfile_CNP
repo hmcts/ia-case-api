@@ -183,6 +183,15 @@ withPipeline(type, product, component) {
       ./bin/add-org-roles-to-users.sh
 
     """
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/functional",
+                reportFiles          : 'index.html',
+                reportName           : 'Functional Test Report'
+        ])
+
     }
 
         afterAlways('functionalTest:aat') {
@@ -200,6 +209,17 @@ withPipeline(type, product, component) {
         ]
     }
 
+   afterAlways('integrationTest:preview') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/integration",
+                reportFiles          : "index.html",
+                reportName           : "Integration Test Report"
+        ]
+    }
+
     afterAlways('test') {
         publishHTML target: [
                 allowMissing         : true,
@@ -208,15 +228,7 @@ withPipeline(type, product, component) {
                 reportDir            : "build/reports/tests/test",
                 reportFiles          : "index.html",
                 reportName           : "Unit Test Report"
-        ]
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/integration",
-                reportFiles          : "index.html",
-                reportName           : "Integration Test Report"
-        ]        
+        ]      
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -227,7 +239,7 @@ withPipeline(type, product, component) {
         ])
     }
 
-    afterAlways('fortify-scan') {
+    afterAlways('fortify-scan:preview') {
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -239,7 +251,7 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
 
-    afterAlways('securityScan') {
+    afterAlways('securityScan:preview') {
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -250,7 +262,7 @@ withPipeline(type, product, component) {
         ])
     }
 
-    afterAlways('mutationTest') {
+    afterAlways('mutationTest:preview') {
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -261,20 +273,7 @@ withPipeline(type, product, component) {
         ])
     }
 
-    afterAlways('fullFunctionalTest') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/functional",
-                reportFiles          : 'index.html',
-                reportName           : 'Functional Test Report'
-        ])
 
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
-    }
     enableSlackNotifications('#ia-tech')
 
     onMaster() {
