@@ -189,6 +189,17 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
+    afterAlways('smoketest:preview') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/smoke",
+                reportFiles          : "index.html",
+                reportName           : "Smoke Test Report"
+        ]
+    }
+
     afterAlways('test') {
         publishHTML target: [
                 allowMissing         : true,
@@ -205,15 +216,7 @@ withPipeline(type, product, component) {
                 reportDir            : "build/reports/tests/integration",
                 reportFiles          : "index.html",
                 reportName           : "Integration Test Report"
-        ]
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/smoke",
-                reportFiles          : "index.html",
-                reportName           : "Smoke Test Report"
-        ]
+        ]        
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
