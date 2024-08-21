@@ -55,23 +55,23 @@ public class AppellantPhoneNumberValidator implements PreSubmitCallbackHandler<A
         Optional<String> phoneNumber = asylumCase.read(MOBILE_NUMBER, String.class);
         if (phoneNumber.isPresent()) {
             try {
-                PhoneNumber phone = phoneNumberUtil.parse(phoneNumber.get(), "GB");
-                if (!phoneNumberUtil.isValidNumber(phone)) {
-                    log.warn("Phone number " + phoneNumber.get() + " is not a valid UK number");
-                    if (phoneNumberUtil.isPossibleNumber(phoneNumber.get(), "GB")) {
-                        throw new NumberParseException(NumberParseException.ErrorType.NOT_A_NUMBER,
-                            "Phone number is UK format but invalid UK number.");
+                if (phoneNumber.get().startsWith("+")) {
+                    PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber.get(),
+                        CountryCodeSource.UNSPECIFIED.name());
+                    if (!phoneNumberUtil.isValidNumber(parsedNumber)) {
+                        response.addError("Phone number is invalid.");
+                        return response;
                     }
-                    phoneNumberUtil.parse(phoneNumber.get(), CountryCodeSource.UNSPECIFIED.name());
+                } else {
+                    PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber.get(), "GB");
+                    if (!phoneNumberUtil.isValidNumber(parsedNumber)) {
+                        response.addError("Phone number is invalid. International numbers must begin with + followed by region code.");
+                        return response;
+                    }
                 }
             } catch (NumberParseException e) {
-                log.warn("Phone number " + phoneNumber.get() + " is invalid: " + e.getMessage());
-                String errorMessage = switch (e.getErrorType()) {
-                    case INVALID_COUNTRY_CODE -> "International number must begin with + followed by region code.";
-                    case NOT_A_NUMBER -> "Phone number is invalid.";
-                    default -> e.getMessage();
-                };
-                response.addError(errorMessage);
+                log.warn("Validation had error: " + e.getMessage());
+                response.addError("Phone number is invalid.");
             }
         }
         return response;
