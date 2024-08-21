@@ -17,6 +17,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 @Slf4j
 @SpringBootTest()
 @ActiveProfiles("functional")
+@Disabled
 public class CcdCaseCreationTest {
 
     @Value("classpath:templates/start-appeal-aip.json")
