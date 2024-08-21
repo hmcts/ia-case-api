@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-86 Amend hearing bundle confirmation decision state",
+  "description": "DIAC-86 Updated hearing bundle confirmation decision state",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

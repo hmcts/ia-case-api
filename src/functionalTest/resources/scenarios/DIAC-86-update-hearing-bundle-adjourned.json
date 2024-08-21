@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-86 Amend hearing bundle adjourned state",
+  "description": "DIAC-86 Updated hearing bundle adjourned state",
   "enabled": "{$featureFlag.isEmStitchingEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

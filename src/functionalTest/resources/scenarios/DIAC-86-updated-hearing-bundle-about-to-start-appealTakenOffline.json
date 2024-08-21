@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-86 Amend hearing bundle preparer appealTakenOffline state",
+  "description": "DIAC-86 Updated hearing bundle preparer appealTakenOffline state",
   "enabled": "{$featureFlag.isEmStitchingEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
