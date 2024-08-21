@@ -189,8 +189,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
             allHearingDocuments =
                 documentsAppender.append(
                     hearingDocuments,
-                    hearingBundleDocuments,
-                    DocumentTag.UPDATED_HEARING_BUNDLE
+                    hearingBundleDocuments
                 );
         } else {
             allHearingDocuments =

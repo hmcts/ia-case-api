@@ -137,7 +137,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
             .receive(
                 stitchedDocument,
                 "",
-                DocumentTag.HEARING_BUNDLE
+                DocumentTag.UPDATED_HEARING_BUNDLE
             )).thenReturn(stitchedDocumentWithMetadata);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
@@ -157,7 +157,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
         verify(asylumCase, times(1)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
-        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
+        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.UPDATED_HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList());
         verify(asylumCase).clear(IS_HEARING_BUNDLE_UPDATED);
         advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -233,7 +233,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
             .receive(
                 stitchedDocument,
                 "",
-                DocumentTag.HEARING_BUNDLE
+                DocumentTag.UPDATED_HEARING_BUNDLE
             )).thenReturn(stitchedDocumentWithMetadata);
 
         when(documentsAppender.append(
@@ -253,7 +253,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
         verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(1)).read(REHEARD_HEARING_DOCUMENTS);
-        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
+        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.UPDATED_HEARING_BUNDLE);
         verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
         verify(notificationSender, times(1)).send(callback);
         verify(documentsAppender).append(anyList(), anyList());
