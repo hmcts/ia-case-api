@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class GenerateAmendedHearingBundleHandlerTest {
+class GenerateUpdatedHearingBundleHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -37,19 +37,19 @@ class GenerateAmendedHearingBundleHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private final GenerateAmendedHearingBundleHandler generateAmendedHearingBundleHandler =
-        new GenerateAmendedHearingBundleHandler();
+    private final GenerateUpdatedHearingBundleHandler generateUpdatedHearingBundleHandler =
+        new GenerateUpdatedHearingBundleHandler();
 
     @Test
-    void should_handle_for_generate_amended_hearing_bundle_event() {
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+    void should_handle_for_generate_updated_hearing_bundle_event() {
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        generateAmendedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        generateUpdatedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1))
-            .write(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.YES);
+            .write(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.YES);
         verify(asylumCase, times(1))
             .read(HEARING_CENTRE, HearingCentre.class);
         verify(asylumCase, times(0))
@@ -58,27 +58,27 @@ class GenerateAmendedHearingBundleHandlerTest {
 
     @Test
     void should_throw_error_if_cannot_handle_callback() {
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        assertThatThrownBy(() -> generateAmendedHearingBundleHandler
+        assertThatThrownBy(() -> generateUpdatedHearingBundleHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         verify(asylumCase, times(0))
-            .write(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.YES);
+            .write(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.YES);
     }
 
     @Test
     void should_throw_error_if_null_callback_or_callback_stage() {
-        assertThatThrownBy(() -> generateAmendedHearingBundleHandler
+        assertThatThrownBy(() -> generateUpdatedHearingBundleHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateAmendedHearingBundleHandler
+        assertThatThrownBy(() -> generateUpdatedHearingBundleHandler
             .handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -86,12 +86,12 @@ class GenerateAmendedHearingBundleHandlerTest {
 
     @Test
     void should_do_nothing_with_hearing_centre_if_listing_hearing_centre_is_present() {
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.of(HearingCentre.BELFAST));
 
-        generateAmendedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        generateUpdatedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(asylumCase, times(0))
             .read(HEARING_CENTRE);
         verify(asylumCase, times(0))
@@ -101,12 +101,12 @@ class GenerateAmendedHearingBundleHandlerTest {
     @ParameterizedTest
     @EnumSource(value = HearingCentre.class, mode = EXCLUDE, names = {"GLASGOW"})
     void should_set_listing_hearing_centre_to_hearing_centre_if_not_present(HearingCentre hearingCentre) {
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.of(hearingCentre));
 
-        generateAmendedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        generateUpdatedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1))
             .write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE, hearingCentre);
@@ -114,12 +114,12 @@ class GenerateAmendedHearingBundleHandlerTest {
 
     @Test
     void should_set_listing_hearing_centre_to_hearing_centre_if_not_present_glasgow() {
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.of(HearingCentre.GLASGOW));
 
-        generateAmendedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        generateUpdatedHearingBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(asylumCase, times(0))
             .write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE, HearingCentre.GLASGOW);
         verify(asylumCase, times(1))

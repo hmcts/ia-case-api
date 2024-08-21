@@ -18,20 +18,20 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class GenerateAmendedHearingBundleConfirmationTest {
+class GenerateUpdatedHearingBundleConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
 
-    private final GenerateAmendedHearingBundleConfirmation generateAmendedHearingBundleConfirmation =
-        new GenerateAmendedHearingBundleConfirmation();
+    private final GenerateUpdatedHearingBundleConfirmation generateUpdatedHearingBundleConfirmation =
+        new GenerateUpdatedHearingBundleConfirmation();
 
     @Test
     void should_return_confirmation() {
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
 
         PostSubmitCallbackResponse callbackResponse =
-            generateAmendedHearingBundleConfirmation.handle(callback);
+            generateUpdatedHearingBundleConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -53,7 +53,7 @@ class GenerateAmendedHearingBundleConfirmationTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> generateAmendedHearingBundleConfirmation.handle(callback))
+        assertThatThrownBy(() -> generateUpdatedHearingBundleConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -63,8 +63,8 @@ class GenerateAmendedHearingBundleConfirmationTest {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = generateAmendedHearingBundleConfirmation.canHandle(callback);
-            if (event == Event.GENERATE_AMENDED_HEARING_BUNDLE) {
+            boolean canHandle = generateUpdatedHearingBundleConfirmation.canHandle(callback);
+            if (event == Event.GENERATE_UPDATED_HEARING_BUNDLE) {
                 assertTrue(canHandle);
             } else {
                 assertFalse(canHandle);
@@ -75,11 +75,11 @@ class GenerateAmendedHearingBundleConfirmationTest {
 
     @Test
     void should_not_allow_null_arguments() {
-        assertThatThrownBy(() -> generateAmendedHearingBundleConfirmation.canHandle(null))
+        assertThatThrownBy(() -> generateUpdatedHearingBundleConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateAmendedHearingBundleConfirmation.handle(null))
+        assertThatThrownBy(() -> generateUpdatedHearingBundleConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

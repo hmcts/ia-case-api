@@ -85,9 +85,9 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 .getCaseDetails()
                 .getCaseData();
 
-        YesOrNo isHearingBundleAmended = asylumCase
-            .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class).orElse(YesOrNo.NO);
-        asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED);
+        YesOrNo isHearingBundleUpdated = asylumCase
+            .read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class).orElse(YesOrNo.NO);
+        asylumCase.clear(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED);
         Optional<List<IdValue<Bundle>>> maybeCaseBundles = asylumCase.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
 
         final List<Bundle> caseBundles = maybeCaseBundles
@@ -106,7 +106,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
         if (stitchedDocument.isPresent()) {
-            saveHearingBundleDocument(asylumCase, stitchedDocument, isHearingBundleAmended);
+            saveHearingBundleDocument(asylumCase, stitchedDocument, isHearingBundleUpdated);
         }
 
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");
@@ -163,7 +163,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
     }
 
     private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument,
-                                           YesOrNo isHearingBundleAmended) {
+                                           YesOrNo isHearingBundleUpdated) {
 
         Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
@@ -184,16 +184,16 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 )
         );
         List<IdValue<DocumentWithMetadata>> allHearingDocuments;
-        if (isHearingBundleAmended == YesOrNo.YES) {
+        if (isHearingBundleUpdated == YesOrNo.YES) {
             allHearingDocuments =
                 documentsAppender.append(
                     hearingDocuments,
                     hearingBundleDocuments
                 );
-            AsylumCaseFieldDefinition amendedCountDefinition = isReheardCase ?
-                AsylumCaseFieldDefinition.AMENDED_REHEARD_BUNDLE_COUNT : AsylumCaseFieldDefinition.AMENDED_BUNDLE_COUNT;
-            Integer amendedCount = asylumCase.read(amendedCountDefinition, Integer.class).orElse(0);
-            asylumCase.write(amendedCountDefinition, amendedCount + 1);
+            AsylumCaseFieldDefinition updatedCountDefinition = isReheardCase ?
+                AsylumCaseFieldDefinition.UPDATED_REHEARD_BUNDLE_COUNT : AsylumCaseFieldDefinition.UPDATED_BUNDLE_COUNT;
+            Integer updatedCount = asylumCase.read(updatedCountDefinition, Integer.class).orElse(0);
+            asylumCase.write(updatedCountDefinition, updatedCount + 1);
         } else {
             allHearingDocuments =
                 documentsAppender.append(

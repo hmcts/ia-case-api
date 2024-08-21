@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @Component
-public class GenerateAmendedHearingBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class GenerateUpdatedHearingBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -27,7 +27,7 @@ public class GenerateAmendedHearingBundleHandler implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-            && callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
+            && callback.getEvent() == Event.GENERATE_UPDATED_HEARING_BUNDLE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -42,7 +42,7 @@ public class GenerateAmendedHearingBundleHandler implements PreSubmitCallbackHan
             callback
                 .getCaseDetails()
                 .getCaseData();
-        asylumCase.write(IS_HEARING_BUNDLE_AMENDED, YesOrNo.YES);
+        asylumCase.write(IS_HEARING_BUNDLE_UPDATED, YesOrNo.YES);
         if (asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).isEmpty()) {
             Optional<HearingCentre> hearingCentreOptional =
                 asylumCase.read(HEARING_CENTRE, HearingCentre.class);

@@ -121,12 +121,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
-        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_AMENDED);
+        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_UPDATED);
     }
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU" })
-    void should_not_remove_existing_bundle_when_amended(AppealType appealType) {
+    void should_not_remove_existing_bundle_when_updated(AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
@@ -140,7 +140,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
                 DocumentTag.HEARING_BUNDLE
             )).thenReturn(stitchedDocumentWithMetadata);
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
 
         when(documentsAppender.append(
@@ -159,12 +159,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList());
-        verify(asylumCase).clear(IS_HEARING_BUNDLE_AMENDED);
-        verify(asylumCase).write(AMENDED_BUNDLE_COUNT, 1);
-        when(asylumCase.read(AMENDED_BUNDLE_COUNT, Integer.class))
+        verify(asylumCase).clear(IS_HEARING_BUNDLE_UPDATED);
+        verify(asylumCase).write(UPDATED_BUNDLE_COUNT, 1);
+        when(asylumCase.read(UPDATED_BUNDLE_COUNT, Integer.class))
             .thenReturn(Optional.of(1));
         advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase).write(AMENDED_BUNDLE_COUNT, 2);
+        verify(asylumCase).write(UPDATED_BUNDLE_COUNT, 2);
     }
 
     @ParameterizedTest
@@ -216,7 +216,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
-    void should_not_remove_existing_reheard_bundle_when_amended(AppealType appealType) {
+    void should_not_remove_existing_reheard_bundle_when_updated(AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -245,7 +245,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
             anyList()
         )).thenReturn(allHearingDocuments);
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
         
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -261,12 +261,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
         verify(notificationSender, times(1)).send(callback);
         verify(documentsAppender).append(anyList(), anyList());
-        verify(asylumCase).clear(IS_HEARING_BUNDLE_AMENDED);
-        verify(asylumCase).write(AMENDED_REHEARD_BUNDLE_COUNT, 1);
-        when(asylumCase.read(AMENDED_REHEARD_BUNDLE_COUNT, Integer.class))
+        verify(asylumCase).clear(IS_HEARING_BUNDLE_UPDATED);
+        verify(asylumCase).write(UPDATED_REHEARD_BUNDLE_COUNT, 1);
+        when(asylumCase.read(UPDATED_REHEARD_BUNDLE_COUNT, Integer.class))
             .thenReturn(Optional.of(1));
         advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase).write(AMENDED_REHEARD_BUNDLE_COUNT, 2);
+        verify(asylumCase).write(UPDATED_REHEARD_BUNDLE_COUNT, 2);
     }
 
     @ParameterizedTest
@@ -318,7 +318,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         //verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
         verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
         verify(notificationSender, times(1)).send(callback);
-        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_AMENDED);
+        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_UPDATED);
     }
 
     @ParameterizedTest

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class GenerateAmendedHearingBundlePreparerTest {
+class GenerateUpdatedHearingBundlePreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -42,26 +42,26 @@ class GenerateAmendedHearingBundlePreparerTest {
     @Mock
     private DocumentGenerator<AsylumCase> documentGenerator;
 
-    private GenerateAmendedHearingBundlePreparer generateAmendedHearingBundlePreparer;
+    private GenerateUpdatedHearingBundlePreparer generateUpdatedHearingBundlePreparer;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        generateAmendedHearingBundlePreparer =
-            new GenerateAmendedHearingBundlePreparer(documentGenerator);
+        generateUpdatedHearingBundlePreparer =
+            new GenerateUpdatedHearingBundlePreparer(documentGenerator);
     }
 
     @Test
     void should_call_document_generator() {
 
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(documentGenerator.aboutToStart(callback)).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
             .thenReturn(Optional.of(State.PRE_HEARING.toString()));
-        generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        generateUpdatedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(documentGenerator).aboutToStart(callback);
     }
@@ -70,7 +70,7 @@ class GenerateAmendedHearingBundlePreparerTest {
     @EnumSource(value = State.class, names = {"PRE_HEARING", "DECISION"})
     void should_call_when_adjourned_from_valid_state(State adjournedFromState) {
 
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.ADJOURNED);
@@ -78,7 +78,7 @@ class GenerateAmendedHearingBundlePreparerTest {
             .thenReturn(Optional.of(adjournedFromState.toString()));
         when(documentGenerator.aboutToStart(callback)).thenReturn(asylumCase);
 
-        generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        generateUpdatedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(documentGenerator).aboutToStart(callback);
     }
@@ -87,7 +87,7 @@ class GenerateAmendedHearingBundlePreparerTest {
     @EnumSource(value = State.class, mode = EXCLUDE, names = {"PRE_HEARING", "DECISION"})
     void should_call_when_adjourned_from_invalid_state(State adjournedFromState) {
 
-        when(callback.getEvent()).thenReturn(Event.GENERATE_AMENDED_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_UPDATED_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.ADJOURNED);
@@ -96,7 +96,7 @@ class GenerateAmendedHearingBundlePreparerTest {
         when(documentGenerator.aboutToStart(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            generateUpdatedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(documentGenerator, times(0)).aboutToStart(callback);
         assertTrue(response.getErrors()
@@ -112,9 +112,9 @@ class GenerateAmendedHearingBundlePreparerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = generateAmendedHearingBundlePreparer.canHandle(callbackStage, callback);
+                boolean canHandle = generateUpdatedHearingBundlePreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.GENERATE_AMENDED_HEARING_BUNDLE
+                if (event == Event.GENERATE_UPDATED_HEARING_BUNDLE
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
@@ -130,7 +130,7 @@ class GenerateAmendedHearingBundlePreparerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> generateUpdatedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -139,19 +139,19 @@ class GenerateAmendedHearingBundlePreparerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> generateAmendedHearingBundlePreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> generateUpdatedHearingBundlePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateAmendedHearingBundlePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> generateUpdatedHearingBundlePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateAmendedHearingBundlePreparer.handle(null, callback))
+        assertThatThrownBy(() -> generateUpdatedHearingBundlePreparer.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateAmendedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> generateUpdatedHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

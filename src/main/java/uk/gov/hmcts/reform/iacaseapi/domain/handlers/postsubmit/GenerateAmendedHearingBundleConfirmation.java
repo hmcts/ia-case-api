@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import static java.util.Objects.requireNonNull;
 
 @Component
-public class GenerateAmendedHearingBundleConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class GenerateUpdatedHearingBundleConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     @Override
     public boolean canHandle(
@@ -18,7 +18,7 @@ public class GenerateAmendedHearingBundleConfirmation implements PostSubmitCallb
     ) {
 
         requireNonNull(callback, "callback must not be null");
-        return callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
+        return callback.getEvent() == Event.GENERATE_UPDATED_HEARING_BUNDLE;
     }
 
     @Override

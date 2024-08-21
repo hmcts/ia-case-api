@@ -87,9 +87,9 @@ class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    void should_successfully_retain_the_current_state_stitching_not_done_amended_hearing_bundle() {
+    void should_successfully_retain_the_current_state_stitching_not_done_updated_hearing_bundle() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
         when(caseDetails.getState()).thenReturn(State.PRE_HEARING);
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
@@ -126,8 +126,8 @@ class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    void should_successfully_retain_the_current_state_stitching_done_amended_hearing_bundle() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_AMENDED, YesOrNo.class))
+    void should_successfully_retain_the_current_state_stitching_done_updated_hearing_bundle() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
         when(caseDetails.getState()).thenReturn(State.DECISION);
         Bundle finishedBundle =

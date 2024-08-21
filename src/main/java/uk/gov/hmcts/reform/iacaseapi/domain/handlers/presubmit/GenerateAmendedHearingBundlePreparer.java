@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 import static java.util.Objects.requireNonNull;
 
 @Component
-public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class GenerateUpdatedHearingBundlePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentGenerator<AsylumCase> documentGenerator;
 
-    public GenerateAmendedHearingBundlePreparer(
+    public GenerateUpdatedHearingBundlePreparer(
         DocumentGenerator<AsylumCase> documentGenerator
     ) {
         this.documentGenerator = documentGenerator;
@@ -32,7 +32,7 @@ public class GenerateAmendedHearingBundlePreparer implements PreSubmitCallbackHa
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
-               && callback.getEvent() == Event.GENERATE_AMENDED_HEARING_BUNDLE;
+               && callback.getEvent() == Event.GENERATE_UPDATED_HEARING_BUNDLE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
