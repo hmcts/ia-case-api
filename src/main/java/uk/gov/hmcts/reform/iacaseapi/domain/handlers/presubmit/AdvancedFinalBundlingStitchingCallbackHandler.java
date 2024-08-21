@@ -5,10 +5,12 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -67,8 +69,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.ASYNC_STITCHING_COMPLETE
-               && callback.getCaseDetails().getState() != State.FTPA_DECIDED;
+            && callback.getEvent() == Event.ASYNC_STITCHING_COMPLETE
+            && callback.getCaseDetails().getState() != State.FTPA_DECIDED;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -114,18 +116,18 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
-                .map(value -> value.equals(YesOrNo.YES))
-                .orElse(true)
-                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+            .map(value -> value.equals(YesOrNo.YES))
+            .orElse(true)
+            && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
             handleHomeOfficeNotification(callback, asylumCase);
         }
 
         AsylumCase asylumCaseWithNotificationMarker = isNotificationTurnedOff(asylumCase)
-                ? asylumCase : notificationSender.send(callback);
+            ? asylumCase : notificationSender.send(callback);
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 
@@ -143,8 +145,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 && homeOfficeNotificationsEligible == YesOrNo.YES) {
 
                 AsylumCase asylumCaseWithHomeOfficeData =
-                        featureToggler.getValue("home-office-uan-feature", false)
-                                ? homeOfficeApi.aboutToSubmit(callback) : homeOfficeApi.call(callback);
+                    featureToggler.getValue("home-office-uan-feature", false)
+                        ? homeOfficeApi.aboutToSubmit(callback) : homeOfficeApi.call(callback);
 
                 asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
                     asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
@@ -153,10 +155,10 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
 
                 log.warn("Home Office notification was not invoked due to unsuccessful validation search - "
-                         + "caseId: {}, "
-                         + "homeOfficeReferenceNumber: {}, "
-                         + "homeOfficeSearchStatus: {}, "
-                         + "homeOfficeNotificationsEligible: {} ",
+                        + "caseId: {}, "
+                        + "homeOfficeReferenceNumber: {}, "
+                        + "homeOfficeSearchStatus: {}, "
+                        + "homeOfficeNotificationsEligible: {} ",
                     caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus, homeOfficeNotificationsEligible);
             }
         }
@@ -168,22 +170,21 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
         boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
-                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
+            && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
         boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
 
         final List<IdValue<DocumentWithMetadata>> hearingDocuments = fetchHearingDocuments(asylumCase, isReheardCase, isRemittedFeature);
 
         List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
-
-        hearingBundleDocuments.add(
-            documentReceiver
-                .receive(
-                    stitchedDocument.orElse(null),
-                    "",
-                    isHearingBundleUpdated == YesOrNo.YES ?
-                        DocumentTag.UPDATED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
-                )
-        );
+        DocumentWithMetadata hearingBundle = documentReceiver
+            .receive(
+                stitchedDocument.orElse(null),
+                "",
+                isHearingBundleUpdated == YesOrNo.YES ?
+                    DocumentTag.UPDATED_HEARING_BUNDLE : DocumentTag.HEARING_BUNDLE
+            );
+        hearingBundle.setTimeUploaded(LocalDateTime.now().toLocalTime().toString());
+        hearingBundleDocuments.add(hearingBundle);
         List<IdValue<DocumentWithMetadata>> allHearingDocuments;
         if (isHearingBundleUpdated == YesOrNo.YES) {
             allHearingDocuments =
@@ -202,7 +203,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         if (isReheardCase) {
             if (isRemittedFeature) {
                 Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
-                        asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+                    asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
                 List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
                 if (!existingReheardDocuments.isEmpty()) {
                     existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
@@ -221,15 +222,15 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                                                                       boolean isRemittedFeature) {
         if (isReheardCase && isRemittedFeature) {
             Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
-                    asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+                asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
             List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
 
             return (!existingReheardDocuments.isEmpty())
-                    ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
-                    : emptyList();
+                ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
+                : emptyList();
         }
         Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-                asylumCase.read(isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+            asylumCase.read(isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
         return maybeHearingDocuments.orElse(emptyList());
     }
 }

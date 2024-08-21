@@ -276,7 +276,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -300,7 +305,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -320,7 +330,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
@@ -346,7 +361,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -364,7 +384,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -386,7 +411,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.NO));
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -442,7 +472,12 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     void handler_should_not_send_notification_when_is_notification_turned_off_() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(RP));
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
         PreSubmitCallbackResponse<AsylumCase> response =
                 advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
