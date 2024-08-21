@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.HEARING_CANCELLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -39,10 +37,7 @@ public class HearingCancelledHandler implements PreSubmitCallbackHandler<AsylumC
 
         if (nextHearingDateService.enabled()) {
 
-            asylumCase.clear(LIST_CASE_HEARING_DATE);
-            NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
-                .hearingId(null).hearingDateTime(null).build();
-            asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
+            nextHearingDateService.clearHearingDateInformation(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

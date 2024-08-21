@@ -53,4 +53,11 @@ public class NextHearingDateService {
         return NextHearingDetails.builder()
             .hearingId("999").hearingDateTime(listCaseHearingDate).build();
     }
+
+    public void clearHearingDateInformation(AsylumCase asylumCase) {
+        asylumCase.clear(LIST_CASE_HEARING_DATE);
+        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
+            .hearingId(null).hearingDateTime(null).build();
+        asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
+    }
 }
