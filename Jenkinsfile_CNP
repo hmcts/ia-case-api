@@ -161,6 +161,10 @@ withPipeline(type, product, component) {
     """
     }
 
+//enableFortifyScan()
+enableSecurityScan()
+//enableMutationTest()
+
     afterSuccess('akschartsinstall') {
         onPR {
             githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
@@ -239,7 +243,7 @@ withPipeline(type, product, component) {
         ])
     }
 
-    afterAlways('fortify-scan:preview') {
+    afterAlways('fortify-scan') {
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -251,7 +255,7 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
 
-    afterAlways('securityScan:preview') {
+    afterAlways('securityScan') {
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -262,7 +266,7 @@ withPipeline(type, product, component) {
         ])
     }
 
-    afterAlways('mutationTest:preview') {
+    afterAlways('mutationTest') {
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
