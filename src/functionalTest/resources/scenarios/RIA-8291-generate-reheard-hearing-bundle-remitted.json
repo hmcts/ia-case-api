@@ -80,7 +80,6 @@
                     },
                     "description": "",
                     "dateUploaded": "{$TODAY}",
-                    "dateTimeUploaded": "{$TODAY}",
                     "tag": "hearingBundle"
                   }
                 },
