@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REINSTATE_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -65,6 +67,7 @@ class ReinstateAppealStateHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
         when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(State.RESPONDENT_REVIEW));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
         when(asylumCase.read(REINSTATE_APPEAL_REASON)).thenReturn(Optional.of("test"));
         when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
 
@@ -79,6 +82,30 @@ class ReinstateAppealStateHandlerTest {
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);
         assertTrue(asylumCase.read(REINSTATE_APPEAL_REASON).isPresent());
         assertEquals(RESPONDENT_REVIEW.toString(), returnedCallbackResponse.getState().toString());
+    }
+
+    @Test
+    void should_set_valid_state_before_end_appeal_when_payment_made() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
+        when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(State.PENDING_PAYMENT));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(REINSTATE_APPEAL_REASON)).thenReturn(Optional.of("fee paid"));
+        when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        verify(asylumCase).write(REINSTATED_DECISION_MAKER, "Legal Officer");
+        verify(asylumCase).write(APPEAL_STATUS, AppealStatus.REINSTATED);
+        verify(asylumCase).write(REINSTATE_APPEAL_DATE, date.toString());
+        verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);
+        assertTrue(asylumCase.read(REINSTATE_APPEAL_REASON).isPresent());
+        assertEquals(APPEAL_SUBMITTED.toString(), returnedCallbackResponse.getState().toString());
     }
 
     @Test

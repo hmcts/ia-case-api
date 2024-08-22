@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
@@ -78,6 +79,15 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);
         asylumCase.write(IS_APPLY_FOR_COSTS_OOT, YesOrNo.NO);
 
+        final Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
+
+        if (stateBeforeEndAppeal.get() == State.PENDING_PAYMENT
+                && paymentStatusOptional.isPresent()
+                && paymentStatusOptional.get() == PaymentStatus.PAID) {
+
+            return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
+        }
+        
         return new PreSubmitCallbackResponse<>(asylumCase, stateBeforeEndAppeal.get());
     }
 }
