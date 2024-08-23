@@ -128,7 +128,7 @@ class Settings:
         'interpreterFamilyName': 'redacted - interpreterFamilyName',
         'interpreterGivenNames': 'redacted - interpreterGivenNames',
         'interpreterPhoneNumber': '12345678999',
-        'flagComment': 'redacted - flagComment'
+        'flagComment': 'redacted - flagComment',
     }
 
     csv_rows_to_redact = {
