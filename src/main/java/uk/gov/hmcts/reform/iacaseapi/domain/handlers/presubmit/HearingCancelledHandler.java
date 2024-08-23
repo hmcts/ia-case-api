@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.HEARING_CANCELLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -8,10 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.HEARING_CANCELLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @Component
 @RequiredArgsConstructor
@@ -37,7 +38,12 @@ public class HearingCancelledHandler implements PreSubmitCallbackHandler<AsylumC
 
         if (nextHearingDateService.enabled()) {
 
+            // Clear hearing date information
             nextHearingDateService.clearHearingDateInformation(asylumCase);
+
+            // Update next hearing date
+            asylumCase.write(NEXT_HEARING_DETAILS,
+                nextHearingDateService.calculateNextHearingDateFromHearings(callback));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
