@@ -306,7 +306,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2020-03-08"));
 
         when(asylumCase.read(IS_ADMIN)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(APPELANTS_REPRESENTATION)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPEAL_WAS_NOT_SUBMITTED_REASON)).thenReturn(Optional.of("reason"));
         when(asylumCase.read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS)).thenReturn(Optional.of(notSubmittedDocument));
         when(asylumCase.read(LEGAL_REP_COMPANY_PAPER_J)).thenReturn(Optional.of("company"));
