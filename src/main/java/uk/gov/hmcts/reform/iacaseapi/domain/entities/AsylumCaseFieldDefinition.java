@@ -59,6 +59,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
+    APPELLANT_ADDRESS(
+        "appellantAddress", new TypeReference<AddressUk>(){}),
+
     APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
         "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
 
@@ -76,9 +79,6 @@ public enum AsylumCaseFieldDefinition {
 
     COUNTRY_OOC_ADMIN_J(
         "countryOocAdminJ", new TypeReference<NationalityFieldValue>(){}),
-
-    APPELLANT_ADDRESS(
-        "appellantAddress", new TypeReference<AddressUk>(){}),
 
     SEARCH_POSTCODE(
         "searchPostcode", new TypeReference<String>(){}),
