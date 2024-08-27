@@ -1,7 +1,12 @@
 #!groovy
 properties([
         [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
-        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+        pipelineTriggers([[$class: 'GitHubPushTrigger']]),
+        parameters([
+                string(name: 'SecurityRules',
+                        defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
+                        description: 'The URL you want to run these tests against'),
+        ])
 ])
 
 @Library('Infrastructure')
@@ -129,6 +134,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
+    env.Rules = params.SecurityRules
 
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
