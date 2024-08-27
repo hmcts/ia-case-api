@@ -117,7 +117,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .notificationDateSent(sentAt)
             .notificationSentTo(sentTo)
             .notificationBody(notificationBody)
-            .notificationMethod(method)
+            .notificationMethod(StringUtils.capitalize(method))
             .notificationStatus(status)
             .notificationReference(reference)
             .notificationSubject(subject)
