@@ -152,7 +152,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     }
 
     private void clearLegalRepFields(AsylumCase asylumCase) {
-        YesOrNo appellantsRepresentation = asylumCase.read(APPELANTS_REPRESENTATION, YesOrNo.class).orElse(NO);
+        YesOrNo appellantsRepresentation = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class).orElse(NO);
         if (YES.equals(appellantsRepresentation)) {
             asylumCase.clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
             asylumCase.clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);

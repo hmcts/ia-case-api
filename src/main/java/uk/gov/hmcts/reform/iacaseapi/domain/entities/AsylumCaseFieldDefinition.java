@@ -2667,8 +2667,8 @@ public enum AsylumCaseFieldDefinition {
     // Used to store generated letter notification docs which will be stitched together
     LETTER_NOTIFICATION_DOCUMENTS(
         "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
-    APPELANTS_REPRESENTATION(
-        "appelantsRepresentation", new TypeReference<YesOrNo>(){}),
+    APPELLANTS_REPRESENTATION(
+        "appellantsRepresentation", new TypeReference<YesOrNo>(){}),
     APPEAL_WAS_NOT_SUBMITTED_REASON(
         "appealWasNotSubmittedReason", new TypeReference<String>(){}),
     LEGAL_REP_COMPANY_PAPER_J(
