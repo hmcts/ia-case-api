@@ -132,12 +132,12 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
     env.ENABLE_WA = false
-    env.ENABLE_TEST = false
+    env.ENABLE_TES = false
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
         if (label == "enable_wa") {
             env.ENABLE_WA = true
         } else if (label == "enable_timed_event_service") {
-            env.ENABLE_TEST = true
+            env.ENABLE_TES = true
         }
     }
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
