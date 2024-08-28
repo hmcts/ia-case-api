@@ -1207,7 +1207,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: ${ENABLE_WA:false}
+  enabled: false
   global:
     postgresUsername: hmcts
     postgresSecret: postgres
