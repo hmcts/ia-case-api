@@ -31,7 +31,7 @@ def remove_first_n_rows(csv_file, n):
 
 def update_case_data_with_latest_event(case_data_file, case_event_file):
     """
-    Used for updating a case_data csv file to a certain event state to import test cases at specific events.
+    Used for updating a case_data csv file to a certain event state to import test cases at specific stages of the journey.
     :param case_data_file:
     :param case_event_file:
     :return:
@@ -62,3 +62,9 @@ def update_case_data_with_latest_event(case_data_file, case_event_file):
         with open(output_file, 'w', newline='') as output_data_file:
             data_writer = csv.writer(output_data_file)
             data_writer.writerows(updated_data_rows)
+
+
+# remove_first_n_rows("/ia-case-api/bin/utils/python_scripts/output_csv_files/case_event_202407221346_redacted.csv", 2)
+
+
+update_case_data_with_latest_event("/ia-case-api/bin/utils/python_scripts/output_csv_files/case_data_202407221421_redacted.csv", "ia-case-api/bin/utils/python_scripts/output_csv_files/case_event_202407221346_redacted_reduced.csv")
