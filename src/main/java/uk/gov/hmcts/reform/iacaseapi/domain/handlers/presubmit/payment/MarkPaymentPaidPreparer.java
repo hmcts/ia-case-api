@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExistsAip;
 
 import java.util.List;
 import java.util.Optional;
@@ -101,7 +101,8 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                     if (isAipJourney) {
                         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
                         Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-                        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption)) {
+                        final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+                        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)) {
                             callbackResponse.addError(NOT_AVAILABLE_LABEL);
                         }
                     } else {
@@ -164,14 +165,6 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         } else if (remissionDecisionApproved(asylumCase)) {
             callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
         }
-    }
-
-    private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
-        boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-
-        return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
-            || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
-            && isDlrmFeeRemission;
     }
 
     private boolean awaitingRemissionDecision(AsylumCase asylumCase) {
