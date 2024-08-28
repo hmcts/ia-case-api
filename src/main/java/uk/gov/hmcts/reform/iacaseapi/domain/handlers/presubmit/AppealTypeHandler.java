@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
-    
+
     public AppealTypeHandler(FeatureToggler featureToggler) {
         this.featureToggler = featureToggler;
     }
@@ -61,6 +61,8 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
 
         Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
 

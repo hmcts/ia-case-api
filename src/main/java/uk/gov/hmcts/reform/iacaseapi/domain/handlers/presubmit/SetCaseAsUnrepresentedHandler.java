@@ -42,6 +42,9 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
+        asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
+
+
         boolean isAdmin = HandlerUtils.isInternalCase(asylumCase);
 
         if (isInCountryDetainedAppeal(asylumCase) && !isAdmin) {

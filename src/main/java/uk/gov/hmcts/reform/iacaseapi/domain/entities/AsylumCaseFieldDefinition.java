@@ -2275,6 +2275,9 @@ public enum AsylumCaseFieldDefinition {
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
 
+    HAS_ADDED_LEGAL_REP_DETAILS(
+        "hasAddedLegalRepDetails", new TypeReference<YesOrNo>(){}),
+
     HEARING_REQ_SUFFIX(
         "hearingReqSuffix", new TypeReference<String>(){}),
 
