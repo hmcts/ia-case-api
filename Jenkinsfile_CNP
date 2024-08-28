@@ -200,6 +200,7 @@ enableSecurityScan()
 
         afterAlways('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 
     afterAlways('smoketest:preview') {
@@ -214,6 +215,7 @@ enableSecurityScan()
     }
 
     afterAlways('test') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -230,6 +232,10 @@ enableSecurityScan()
                 reportFiles          : 'dependency-check-report.html',
                 reportName           : 'Dependency Check Report'
         ])
+    }
+
+    afterSuccess('sonarscan') {
+
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
