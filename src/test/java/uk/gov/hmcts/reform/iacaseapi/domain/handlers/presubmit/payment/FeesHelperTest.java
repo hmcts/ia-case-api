@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper.findFeeByHearingType;
 
 import java.math.BigDecimal;
@@ -64,7 +65,7 @@ class FeesHelperTest {
     @ParameterizedTest
     @MethodSource("provideParameterValues")
     void should_return_correct_fee_and_save_proper_values(String decisionHearingFeeOption, String feeCode, String feeDesc, BigDecimal feeAmount) {
-        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of(decisionHearingFeeOption));
+        when(asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of(decisionHearingFeeOption));
         Fee feeMock = new Fee(feeCode, feeDesc, VERSION, feeAmount);
         when(feeService.getFee(any())).thenReturn(feeMock);
 
@@ -72,7 +73,7 @@ class FeesHelperTest {
 
         findFeeByHearingType(feeService, asylumCase);
 
-        verify(asylumCase, times(1)).read(DECISION_HEARING_FEE_OPTION, String.class);
+        verify(asylumCase, times(1)).read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
         asylumCase.write(FEE_WITH_HEARING, feeMock.getCode());
         verify(asylumCase, times(1)).write(FEE_CODE, feeMock.getCode());
         verify(asylumCase, times(1)).write(FEE_DESCRIPTION, feeMock.getDescription());
