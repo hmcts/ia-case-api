@@ -129,12 +129,12 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
-def checkForEnableWaLabel(branch_name) {
-    return new GithubAPI(this).getLabelsbyPattern(branch_name, "enable_wa").contains("enable_wa")
-}
-
 withPipeline(type, product, component) {
-    env.ENABLE_WA = checkForEnableWaLabel(env.BRANCH_NAME)
+    def githubApi = new GithubAPI(this)
+    env.ENABLE_WA = false
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_wa") ) {
+        env.ENABLE_WA = true
+    }
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
