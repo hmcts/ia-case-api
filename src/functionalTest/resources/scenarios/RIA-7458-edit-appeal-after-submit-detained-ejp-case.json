@@ -1,5 +1,6 @@
 {
   "description": "RIA-7458 Edit appeal after submit - Detained EJP case'",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
