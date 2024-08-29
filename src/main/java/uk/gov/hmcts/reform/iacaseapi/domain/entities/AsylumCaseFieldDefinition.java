@@ -1302,6 +1302,8 @@ public enum AsylumCaseFieldDefinition {
         "feeAmountForDisplay", new TypeReference<String>(){}),
     FEE_AMOUNT_GBP(
         "feeAmountGbp", new TypeReference<String>(){}),
+    PREVIOUS_FEE_AMOUNT_GBP(
+        "previousFeeAmountGbp", new TypeReference<String>(){}),
     PBA_NUMBER(
             "pbaNumber", new TypeReference<String>(){}),
     PAYMENT_DESCRIPTION(

@@ -4,12 +4,14 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_TYPE_CHANGED_WITH_REFUND_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_FEE_AMOUNT_GBP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
@@ -112,8 +114,11 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
         Optional<String> updatedDecisionHearingFeeOption = asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
 
         if (updatedDecisionHearingFeeOption.isPresent()) {
+            String feeAmountGbp = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
             asylumCase.write(PREVIOUS_DECISION_HEARING_FEE_OPTION, decisionHearingFeeOption);
+            asylumCase.write(PREVIOUS_FEE_AMOUNT_GBP, feeAmountGbp);
             asylumCase.write(DECISION_HEARING_FEE_OPTION, updatedDecisionHearingFeeOption.get());
+            FeesHelper.findFeeByHearingType(feeService, asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

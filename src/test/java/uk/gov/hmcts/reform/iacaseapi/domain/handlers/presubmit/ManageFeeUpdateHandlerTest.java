@@ -1,38 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_TYPE_CHANGED_WITH_REFUND_FLAG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.ADDITIONAL_PAYMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.NO_ACTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPEAL_NOT_VALID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPEAL_WITHDRAWN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.FEE_REMISSION_CHANGED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +7,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -53,8 +22,47 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_TYPE_CHANGED_WITH_REFUND_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_FEE_AMOUNT_GBP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.ADDITIONAL_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.NO_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPEAL_NOT_VALID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPEAL_WITHDRAWN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.FEE_REMISSION_CHANGED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -209,29 +217,36 @@ class ManageFeeUpdateHandlerTest {
 
     @Test
     void should_write_previous_and_updated_hearing_fee_options() {
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        try (MockedStatic<FeesHelper> mockedStaticFeesHelper = Mockito.mockStatic(FeesHelper.class)) {
+            Mockito.when(FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
+            when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
 
-        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
-        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
-        when(asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
-        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(new ArrayList<>()));
-        when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(new CheckValues<>(Collections.emptyList())));
-        when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION)).thenReturn(Optional.empty());
+            when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
+            when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+            when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
+            when(asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
+            when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(new ArrayList<>()));
+            when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(new CheckValues<>(Collections.emptyList())));
+            when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION)).thenReturn(Optional.empty());
 
-        manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase, times(1)).read(FEE_UPDATE_COMPLETED_STAGES);
-        verify(asylumCase, times(1)).read(FEE_UPDATE_STATUS);
-        verify(asylumCase, times(1)).write(FEE_UPDATE_COMPLETED_STAGES, Collections.emptyList());
-        verify(asylumCase, times(1)).read(FEE_UPDATE_REASON, FeeUpdateReason.class);
-        verify(asylumCase, times(1)).read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
-        verify(asylumCase, times(1)).read(DECISION_HEARING_FEE_OPTION, String.class);
-        verify(asylumCase, times(1)).read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
-        verify(asylumCase, times(1)).write(PREVIOUS_DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
-        verify(asylumCase, times(1)).write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+            verify(asylumCase, times(1)).read(FEE_UPDATE_COMPLETED_STAGES);
+            verify(asylumCase, times(1)).read(FEE_UPDATE_STATUS);
+            verify(asylumCase, times(1)).write(FEE_UPDATE_COMPLETED_STAGES, Collections.emptyList());
+            verify(asylumCase, times(1)).read(FEE_UPDATE_REASON, FeeUpdateReason.class);
+            verify(asylumCase, times(1)).read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
+            verify(asylumCase, times(1)).read(DECISION_HEARING_FEE_OPTION, String.class);
+            verify(asylumCase, times(1)).read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
+            verify(asylumCase, times(1)).write(PREVIOUS_DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
+            verify(asylumCase, times(1)).write(PREVIOUS_FEE_AMOUNT_GBP, "8000");
+            verify(asylumCase, times(1)).write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+
+            mockedStaticFeesHelper.verify(() -> FeesHelper.findFeeByHearingType(feeService, asylumCase), times(1));
+        }
     }
 
     private static Stream<Arguments> provideParameterValues() {
