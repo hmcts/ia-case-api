@@ -200,6 +200,7 @@ enableSecurityScan()
 
         afterAlways('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 
     afterAlways('smoketest:preview') {
@@ -213,18 +214,8 @@ enableSecurityScan()
         ]
     }
 
-   afterAlways('integrationTest:preview') {
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/integration",
-                reportFiles          : "index.html",
-                reportName           : "Integration Test Report"
-        ]
-    }
-
     afterAlways('test') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -243,40 +234,17 @@ enableSecurityScan()
         ])
     }
 
-    afterAlways('fortify-scan') {
+    afterSuccess('sonarscan') {
+
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
                 keepAll              : true,
-                reportDir            : "Fortify Scan",
-                reportFiles          : "FortifyScanReport.html",
-                reportName           : "Fortify Scan Report"
+                reportDir            : "build/reports/tests/integration",
+                reportFiles          : "index.html",
+                reportName           : "Integration Test Report"
         ]
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
-
-    afterAlways('securityScan') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "functional-output",
-                reportFiles          : 'api-report.html',
-                reportName           : 'Security Scan Report'
-        ])
-    }
-
-    afterAlways('mutationTest') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/pitest",
-                reportFiles          : 'index.html',
-                reportName           : 'Mutation Test Report'
-        ])
-    }
-
 
     enableSlackNotifications('#ia-tech')
 
