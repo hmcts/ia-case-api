@@ -462,7 +462,7 @@ ia-timed-event-service:
       POSTGRES_HOST: ia-preview.postgres.database.azure.com
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia_timed_event_service"
       POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       POSTGRES_CONNECTION_OPTIONS: ""
     postgresql:
       auth:
