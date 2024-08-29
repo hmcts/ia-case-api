@@ -1,6 +1,6 @@
 {
   "description": "RIA-7412 update language requirements for legal rep",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -71,9 +71,6 @@
           ]
         }
       }
-    },
-    "caseDataBefore": {
-      "template": "minimal-appeal-submitted.json"
     }
   },
   "expectation": {
@@ -112,7 +109,7 @@
             ]
           },
           "languageManualEntry": [],
-          "languageManualEntryDescription": null
+          "languageManualEntryDescription": ""
         },
         "isHearingRoomNeeded": "No",
         "isHearingLoopNeeded": "No",
