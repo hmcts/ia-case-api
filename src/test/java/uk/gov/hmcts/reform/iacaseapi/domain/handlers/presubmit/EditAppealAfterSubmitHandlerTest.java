@@ -144,7 +144,6 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -736,5 +735,35 @@ class EditAppealAfterSubmitHandlerTest {
         assertEquals(asylumCase, response.getData());
 
         assertDoesNotThrow(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+
+    @Test
+    void should_clear_LR_when_appellants_representation_is_yes() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+        verify(asylumCase, times(1)).clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_COMPANY_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_GIVEN_NAME);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_EMAIL);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+
+        verify(asylumCase, times(1)).clear(LEGAL_REP_ADDRESS_U_K);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_1);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_2);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_3);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_4);
+        verify(asylumCase, times(1)).clear(OOC_COUNTRY_LINE);
+        verify(asylumCase, times(1)).clear(OOC_LR_COUNTRY_ADMIN_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_HAS_ADDRESS);
     }
 }

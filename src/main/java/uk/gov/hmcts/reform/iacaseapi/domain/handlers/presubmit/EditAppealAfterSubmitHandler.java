@@ -68,7 +68,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return (((callbackStage == PreSubmitCallbackStage.MID_EVENT  && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID))
+        return (((callbackStage == PreSubmitCallbackStage.MID_EVENT && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID))
             || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
             && callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT);
     }
@@ -161,6 +161,15 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
             asylumCase.clear(LEGAL_REP_EMAIL);
             asylumCase.clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+
+            asylumCase.clear(LEGAL_REP_ADDRESS_U_K);
+            asylumCase.clear(OOC_ADDRESS_LINE_1);
+            asylumCase.clear(OOC_ADDRESS_LINE_2);
+            asylumCase.clear(OOC_ADDRESS_LINE_3);
+            asylumCase.clear(OOC_ADDRESS_LINE_4);
+            asylumCase.clear(OOC_COUNTRY_LINE);
+            asylumCase.clear(OOC_LR_COUNTRY_ADMIN_J);
+            asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
         }
     }
 
