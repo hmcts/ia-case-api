@@ -272,7 +272,7 @@ class FtpaAppellantHandlerTest {
         assertThat(capturedFtpa.getFtpaGroundsDocuments()).isEqualTo(groundsOfApplicationDocuments);
         assertThat(capturedFtpa.getFtpaEvidenceDocuments()).isEqualTo(evidenceDocuments);
         assertThat(capturedFtpa.getFtpaOutOfTimeExplanation()).isEqualTo("Some out of time explanation");
-        assertThat(capturedFtpa.getFtpaAppellantGroundsExplanation())
+        assertThat(capturedFtpa.getFtpaAppellantGroundsText())
                 .isEqualTo("Some explanation for FTPA Appellant grounds");
         assertThat(capturedFtpa.getFtpaOutOfTimeDocuments()).isEqualTo(outOfTimeDocuments);
 
