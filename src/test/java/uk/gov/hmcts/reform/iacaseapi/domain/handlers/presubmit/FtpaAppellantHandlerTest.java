@@ -254,6 +254,8 @@ class FtpaAppellantHandlerTest {
         when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_DOCUMENTS)).thenReturn(Optional.of(outOfTimeDocuments));
         when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class))
                 .thenReturn(Optional.of("Some out of time explanation"));
+        when(asylumCase.read(FTPA_APPELLANT_GROUNDS, String.class))
+                .thenReturn(Optional.of("Some explanation for FTPA Appellant grounds"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 ftpaAppellantHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -270,6 +272,8 @@ class FtpaAppellantHandlerTest {
         assertThat(capturedFtpa.getFtpaGroundsDocuments()).isEqualTo(groundsOfApplicationDocuments);
         assertThat(capturedFtpa.getFtpaEvidenceDocuments()).isEqualTo(evidenceDocuments);
         assertThat(capturedFtpa.getFtpaOutOfTimeExplanation()).isEqualTo("Some out of time explanation");
+        assertThat(capturedFtpa.getFtpaAppellantGroundsExplanation())
+                .isEqualTo("Some explanation for FTPA Appellant grounds");
         assertThat(capturedFtpa.getFtpaOutOfTimeDocuments()).isEqualTo(outOfTimeDocuments);
 
         assertThat(existingFtpasCaptor.getValue()).isEqualTo(existingFtpas);

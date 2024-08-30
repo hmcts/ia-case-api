@@ -169,7 +169,7 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
                                List<IdValue<DocumentWithDescription>> ftpaAppellantEvidence,
                                Optional<List<IdValue<DocumentWithDescription>>> maybeOutOfTimeDocuments,
                                String ftpaAppellantOutOfTimeExplanation,
-                               String ftpaAppellantGroundsText) {
+                               String ftpaAppellantGroundsExplanation) {
         boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
 
         if (isDlrmSetAside) {
@@ -177,7 +177,7 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
                     FtpaApplications.builder()
                             .ftpaApplicant(APPELLANT.toString())
                             .ftpaApplicationDate(currentDate)
-                            .ftpaAppellantGrounds(ftpaAppellantGroundsText)
+                            .ftpaAppellantGroundsExplanation(ftpaAppellantGroundsExplanation)
                             .ftpaGroundsDocuments(ftpaAppellantGrounds)
                             .ftpaEvidenceDocuments(ftpaAppellantEvidence)
                             .build();
