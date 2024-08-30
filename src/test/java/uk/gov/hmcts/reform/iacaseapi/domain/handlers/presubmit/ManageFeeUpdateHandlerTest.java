@@ -230,7 +230,7 @@ class ManageFeeUpdateHandlerTest {
             when(asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
             when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(new ArrayList<>()));
             when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(new CheckValues<>(Collections.emptyList())));
-            when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION)).thenReturn(Optional.empty());
+            when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.empty());
 
             manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -244,6 +244,37 @@ class ManageFeeUpdateHandlerTest {
             verify(asylumCase, times(1)).write(PREVIOUS_DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
             verify(asylumCase, times(1)).write(PREVIOUS_FEE_AMOUNT_GBP, "8000");
             verify(asylumCase, times(1)).write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+
+            mockedStaticFeesHelper.verify(() -> FeesHelper.findFeeByHearingType(feeService, asylumCase), times(1));
+        }
+    }
+
+    @Test
+    void should_write_previous_and_updated_hearing_fee_options_when_update_decision_hearing_fee_option_is_not_present() {
+        try (MockedStatic<FeesHelper> mockedStaticFeesHelper = Mockito.mockStatic(FeesHelper.class)) {
+            Mockito.when(FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
+            when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+
+            when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
+            when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+            when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
+            when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(new ArrayList<>()));
+            when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(new CheckValues<>(Collections.emptyList())));
+            when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(ADDITIONAL_PAYMENT));
+
+            manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            verify(asylumCase, times(1)).read(FEE_UPDATE_COMPLETED_STAGES);
+            verify(asylumCase, times(1)).read(FEE_UPDATE_STATUS);
+            verify(asylumCase, times(1)).write(FEE_UPDATE_COMPLETED_STAGES, Collections.emptyList());
+            verify(asylumCase, times(1)).read(FEE_UPDATE_REASON, FeeUpdateReason.class);
+            verify(asylumCase, times(1)).read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
+            verify(asylumCase, times(1)).read(DECISION_HEARING_FEE_OPTION, String.class);
+            verify(asylumCase, times(1)).read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
+            verify(asylumCase, times(1)).write(PREVIOUS_FEE_AMOUNT_GBP, "8000");
 
             mockedStaticFeesHelper.verify(() -> FeesHelper.findFeeByHearingType(feeService, asylumCase), times(1));
         }
