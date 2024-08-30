@@ -113,12 +113,14 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
         String decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class).orElse("");
         Optional<String> updatedDecisionHearingFeeOption = asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
 
-        if (updatedDecisionHearingFeeOption.isPresent()) {
+        if (updatedDecisionHearingFeeOption.isPresent() || feeTribunalAction.isPresent()) {
             String feeAmountGbp = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
-            asylumCase.write(PREVIOUS_DECISION_HEARING_FEE_OPTION, decisionHearingFeeOption);
             asylumCase.write(PREVIOUS_FEE_AMOUNT_GBP, feeAmountGbp);
-            asylumCase.write(DECISION_HEARING_FEE_OPTION, updatedDecisionHearingFeeOption.get());
             FeesHelper.findFeeByHearingType(feeService, asylumCase);
+            if (updatedDecisionHearingFeeOption.isPresent()) {
+                asylumCase.write(PREVIOUS_DECISION_HEARING_FEE_OPTION, decisionHearingFeeOption);
+                asylumCase.write(DECISION_HEARING_FEE_OPTION, updatedDecisionHearingFeeOption.get());
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
