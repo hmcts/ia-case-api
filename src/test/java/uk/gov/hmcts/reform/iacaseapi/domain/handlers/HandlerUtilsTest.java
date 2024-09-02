@@ -465,6 +465,7 @@ class HandlerUtilsTest {
         assertFalse(isOnlyRemoteToRemoteHearingChannelUpdate(callback));
     }
 
+
     @ParameterizedTest
     @EnumSource(value = RemissionType.class, names = {"NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION"})
     void should_return_is_non_aip_remission_exists_proper_value(RemissionType remissionType) {
