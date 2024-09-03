@@ -22,9 +22,6 @@ public class ManageFeeUpdateConfirmation implements PostSubmitCallbackHandler<As
 
     private static final String WHAT_HAPPENS_NEXT = "#### What happens next\n\n";
 
-    public ManageFeeUpdateConfirmation() {
-    }
-
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
