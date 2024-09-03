@@ -91,6 +91,7 @@ def secrets = [
                 secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
                 secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
                 secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+                secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
 
                 secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
                 secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
@@ -132,8 +133,13 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
     env.ENABLE_WA = false
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_wa") ) {
-        env.ENABLE_WA = true
+    env.ENABLE_TES = false
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
+        if (label == "enable_wa") {
+            env.ENABLE_WA = true
+        } else if (label == "enable_timed_event_service") {
+            env.ENABLE_TES = true
+        }
     }
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"

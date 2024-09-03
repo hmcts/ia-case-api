@@ -444,7 +444,7 @@ ia-bail-case-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-timed-event-service:
-  enabled: false
+  enabled: ${ENABLE_TES}
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
@@ -462,12 +462,12 @@ ia-timed-event-service:
       POSTGRES_HOST: ia-preview.postgres.database.azure.com
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia_timed_event_service"
       POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       POSTGRES_CONNECTION_OPTIONS: ""
     postgresql:
       auth:
         username: ia_tes
-        password: ia_tes
+        password: ${POSTGRES_AUTH_VALUES_TES_PASSWORD}
         database: ia_tes
       service:
         port: 5432
