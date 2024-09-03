@@ -467,7 +467,7 @@ ia-timed-event-service:
     postgresql:
       auth:
         username: ia_tes
-        password: ia_tes
+        password: ${POSTGRES_AUTH_VALUES_TES_PASSWORD}
         database: ia_tes
       service:
         port: 5432
