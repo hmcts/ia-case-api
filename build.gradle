@@ -399,6 +399,8 @@ dependencies {
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
     implementation 'joda-time:joda-time:2.12.7'
 
+    implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.43'
+
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
