@@ -1,0 +1,28 @@
+{
+  "description": "RIA-9239 Notice of change request for ARIA migrated case should throw error.",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 9239,
+      "eventId": "nocRequest",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAriaMigrated": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["Can't take over ARIA migrated case."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAriaMigrated": "Yes"
+      }
+    }
+  }
+}
