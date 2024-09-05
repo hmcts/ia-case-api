@@ -709,12 +709,12 @@ xui-webapp:
       SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
-      SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
+      SERVICES_WORK_ALLOCATION_TASK_API: ${SERVICES_WORK_ALLOCATION_TASK_API}
+      SERVICES_WA_WORKFLOW_API_URL: ${SERVICES_WA_WORKFLOW_API_URL}
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      WA_SUPPORTED_JURISDICTIONS: IA
+      WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS}
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
