@@ -4,6 +4,9 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -45,7 +48,9 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isEmpty()) {
             response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
-            return response;
+        } else if (!isValidChangeOrganisationRequest(asylumCase)) {
+
+            response.addError("A request to remove representation is still being processed.\nPlease try again in a few minutes. If the issue persists, please contact the administrator.");
         } else {
 
             Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
@@ -57,9 +62,25 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
                     "1"
                 )
             );
-
-            return response;
         }
+
+        return response;
+    }
+
+    private boolean isValidChangeOrganisationRequest(AsylumCase asylumCase) {
+
+        Optional<ChangeOrganisationRequest> changeOrganisationRequestOptional = asylumCase.read(
+                AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class);
+
+        if (changeOrganisationRequestOptional.isEmpty()) {
+            return true;
+        }
+
+        ChangeOrganisationRequest request = changeOrganisationRequestOptional.get();
+
+        return request.getCaseRoleId() == null
+                && StringUtils.isEmpty(request.getRequestTimestamp())
+                && StringUtils.isEmpty(request.getApprovalStatus());
     }
 }
 
