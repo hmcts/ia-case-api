@@ -122,6 +122,31 @@ class RemoveRepresentationPreparerTest {
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
+    })
+    void should_return_error_when_remove_representation_requested_and_previous_request_still_in_process(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
+        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class)).thenReturn(Optional.of(changeOrganisationRequest));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            removeRepresentationPreparer.handle(
+                PreSubmitCallbackStage.ABOUT_TO_START,
+                callback
+            );
+
+        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
+        assertThat(response.getErrors()).contains("A request to remove representation is still being processed.\nPlease try again in a few minutes. If the issue persists, please contact the administrator.");
+
+        verify(asylumCase, times(1)).read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class);
+        verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
+    }
+
     @Test
     void it_can_handle_callback() {
 
