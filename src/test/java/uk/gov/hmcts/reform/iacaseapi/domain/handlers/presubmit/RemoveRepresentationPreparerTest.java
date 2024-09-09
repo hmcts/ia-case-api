@@ -6,14 +6,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_REPRESENTATION;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -104,7 +109,7 @@ class RemoveRepresentationPreparerTest {
     void should_respond_with_error_for_legal_rep_when_organisation_policy_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(callback.getEvent()).thenReturn(REMOVE_REPRESENTATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.empty());
 
@@ -132,7 +137,8 @@ class RemoveRepresentationPreparerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
-        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class)).thenReturn(Optional.of(changeOrganisationRequest));
+        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class))
+                .thenReturn(Optional.of(changeOrganisationRequest));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             removeRepresentationPreparer.handle(
@@ -147,6 +153,46 @@ class RemoveRepresentationPreparerTest {
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
     }
 
+    @ParameterizedTest
+    @MethodSource({"invalidChangeOrganisationScenarios"})
+    void should_return_error_when_remove_representation_triggered_for_invalid_change_organisation_request(ChangeOrganisationRequest organisationRemovalRequest) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(REMOVE_REPRESENTATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
+        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class))
+                .thenReturn(Optional.of(organisationRemovalRequest));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeRepresentationPreparer.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_START,
+                        callback
+                );
+
+        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
+        assertThat(response.getErrors()).contains("A request to remove representation is still being processed.\nPlease try again in a few minutes. If the issue persists, please contact the administrator.");
+
+        verify(asylumCase, times(1)).read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class);
+        verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
+    }
+
+
+    static Stream<Arguments> invalidChangeOrganisationScenarios() {
+
+        Value caseRoleValue = new Value("roleId", "[LEGALREPRESENTATIVE");
+        DynamicList dynamicList = new DynamicList(caseRoleValue, newArrayList(caseRoleValue));
+        return Stream.of(
+                Arguments.of(new ChangeOrganisationRequest( dynamicList, LocalDateTime.now().toString(), "1")),
+                Arguments.of(new ChangeOrganisationRequest(dynamicList, null, null)),
+                Arguments.of(new ChangeOrganisationRequest( null, LocalDateTime.now().toString(), null)),
+                Arguments.of(new ChangeOrganisationRequest( null, null, "1")),
+                Arguments.of(new ChangeOrganisationRequest( dynamicList, null, "1")),
+                Arguments.of(new ChangeOrganisationRequest( dynamicList, LocalDateTime.now().toString(), null)),
+                Arguments.of(new ChangeOrganisationRequest( null, LocalDateTime.now().toString(), "1"))
+        );
+    }
+
     @Test
     void it_can_handle_callback() {
 
@@ -158,7 +204,7 @@ class RemoveRepresentationPreparerTest {
 
                 boolean canHandle = removeRepresentationPreparer.canHandle(callbackStage, callback);
 
-                if ((event == Event.REMOVE_REPRESENTATION || event == Event.REMOVE_LEGAL_REPRESENTATIVE)
+                if ((event == REMOVE_REPRESENTATION || event == Event.REMOVE_LEGAL_REPRESENTATIVE)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
