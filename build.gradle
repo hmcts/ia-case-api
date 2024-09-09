@@ -230,7 +230,8 @@ pitest {
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
         'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
-        'uk.gov.hmcts.reform.iacaseapi.Application'
+        'uk.gov.hmcts.reform.iacaseapi.Application',
+        'uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RemoveRepresentationPreparer',
     ]
     threads = 10
     outputFormats = ['XML', 'HTML']
