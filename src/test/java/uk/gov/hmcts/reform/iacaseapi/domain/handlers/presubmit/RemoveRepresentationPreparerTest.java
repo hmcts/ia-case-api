@@ -183,13 +183,13 @@ class RemoveRepresentationPreparerTest {
         Value caseRoleValue = new Value("roleId", "[LEGALREPRESENTATIVE");
         DynamicList dynamicList = new DynamicList(caseRoleValue, newArrayList(caseRoleValue));
         return Stream.of(
-                Arguments.of(new ChangeOrganisationRequest( dynamicList, LocalDateTime.now().toString(), "1")),
+                Arguments.of(new ChangeOrganisationRequest(dynamicList, LocalDateTime.now().toString(), "1")),
                 Arguments.of(new ChangeOrganisationRequest(dynamicList, null, null)),
-                Arguments.of(new ChangeOrganisationRequest( null, LocalDateTime.now().toString(), null)),
-                Arguments.of(new ChangeOrganisationRequest( null, null, "1")),
-                Arguments.of(new ChangeOrganisationRequest( dynamicList, null, "1")),
-                Arguments.of(new ChangeOrganisationRequest( dynamicList, LocalDateTime.now().toString(), null)),
-                Arguments.of(new ChangeOrganisationRequest( null, LocalDateTime.now().toString(), "1"))
+                Arguments.of(new ChangeOrganisationRequest(null, LocalDateTime.now().toString(), null)),
+                Arguments.of(new ChangeOrganisationRequest(null, null, "1")),
+                Arguments.of(new ChangeOrganisationRequest(dynamicList, null, "1")),
+                Arguments.of(new ChangeOrganisationRequest(dynamicList, LocalDateTime.now().toString(), null)),
+                Arguments.of(new ChangeOrganisationRequest(null, LocalDateTime.now().toString(), "1"))
         );
     }
 
