@@ -94,6 +94,8 @@ public class UpperTribunalStitchingCallbackHandler implements PreSubmitCallbackH
 
         asylumCase.write(STITCHING_STATUS_UPPER_TRIBUNAL, stitchStatus);
         //asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
+        log.info("The upper tribunal stitching status is " + stitchStatus + " on case id "
+                + callback.getCaseDetails().getId());
 
         AsylumCase asylumCaseWithNotificationMarker = isNotificationTurnedOff(asylumCase)
                 ? asylumCase : notificationSender.send(callback);
