@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 
 import java.util.Map;
 
@@ -42,6 +43,7 @@ class CcdCaseAssignmentTest {
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private CcdDataService ccdDataService;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
 
@@ -56,6 +58,7 @@ class CcdCaseAssignmentTest {
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider,
+            ccdDataService,
             ccdUrl,
             aacUrl,
             ccdAssignmentsApiPath,

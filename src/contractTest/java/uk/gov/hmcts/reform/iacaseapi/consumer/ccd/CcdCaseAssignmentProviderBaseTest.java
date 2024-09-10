@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
 
@@ -35,6 +36,8 @@ public class CcdCaseAssignmentProviderBaseTest {
     AuthTokenGenerator serviceAuthTokenGenerator;
     @MockBean
     UserDetailsProvider userDetailsProvider;
+    @MockBean
+    CcdDataService ccdDataService;
     @Value("${core_case_data_api_assignments_url}")
     String ccdUrl;
     @Value("${assign_case_access_api_url}")
@@ -65,7 +68,7 @@ public class CcdCaseAssignmentProviderBaseTest {
     @BeforeEach
     public void setUpTest() {
         ccdCaseAssignment =
-            new CcdCaseAssignment(new RestTemplate(), serviceAuthTokenGenerator, userDetailsProvider, ccdUrl, aacUrl, ccdAssignmentsApiPath,
+            new CcdCaseAssignment(new RestTemplate(), serviceAuthTokenGenerator, userDetailsProvider, ccdDataService, ccdUrl, aacUrl, ccdAssignmentsApiPath,
                 aacAssignmentsApiPath, applyNocAssignmentsApiPath);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);

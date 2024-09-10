@@ -232,6 +232,7 @@ pitest {
         'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
         'uk.gov.hmcts.reform.iacaseapi.Application',
         'uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RemoveRepresentationPreparer',
+        'uk.gov.hmcts.reform.iacaseapi.domain.*',
     ]
     threads = 10
     outputFormats = ['XML', 'HTML']

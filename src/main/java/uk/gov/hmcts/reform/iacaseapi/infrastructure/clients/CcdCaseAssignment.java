@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 
 
 @Slf4j
@@ -27,6 +28,7 @@ public class CcdCaseAssignment {
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
+    private final CcdDataService ccdDataService;
     private final String ccdUrl;
     private final String aacUrl;
     private final String ccdAssignmentsApiPath;
@@ -36,6 +38,7 @@ public class CcdCaseAssignment {
     public CcdCaseAssignment(RestTemplate restTemplate,
                              AuthTokenGenerator serviceAuthTokenGenerator,
                              UserDetailsProvider userDetailsProvider,
+                             CcdDataService ccdDataService,
                              @Value("${core_case_data_api_assignments_url}") String ccdUrl,
                              @Value("${assign_case_access_api_url}") String aacUrl,
                              @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
@@ -45,6 +48,7 @@ public class CcdCaseAssignment {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
+        this.ccdDataService = ccdDataService;
         this.ccdUrl = ccdUrl;
         this.aacUrl = aacUrl;
         this.ccdAssignmentsApiPath = ccdAssignmentsApiPath;
@@ -84,6 +88,10 @@ public class CcdCaseAssignment {
                 );
 
         } catch (RestClientResponseException e) {
+            log.error("Removing Legal Representative failed for caseId {} Resetting localAuthorityPolicy and ChangeOrganisationRequest",
+                    callback.getCaseDetails().getId());
+            ccdDataService.updateLocalAuthorityPolicy(callback);
+
             throw new CcdDataIntegrationException(
                 "Couldn't revoke CCD case access for case ["
                 + callback.getCaseDetails().getId()
