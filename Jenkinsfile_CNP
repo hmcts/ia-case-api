@@ -7,6 +7,7 @@ properties([
 @Library('Infrastructure')
 
 import uk.gov.hmcts.contino.AppPipelineDsl
+import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
 def product = "ia"
@@ -54,6 +55,7 @@ def secrets = [
                 secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
                 secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 
+
                 secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
                 secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
                 secret('wa-test-caseofficer-a-username', 'IA_WA_CASEOFFICER_USERNAME'),
@@ -91,6 +93,7 @@ def secrets = [
                 secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
                 secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
                 secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+                secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
 
                 secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
                 secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
@@ -130,7 +133,19 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
-
+    def githubApi = new GithubAPI(this)
+    env.ENABLE_WA = false
+    env.ENABLE_TES = false
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
+        if (label == "enable_wa") {
+            env.ENABLE_WA = true
+            env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+            env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+            env.WA_SUPPORTED_JURISDICTIONS = "IA"
+        } else if (label == "enable_timed_event_service") {
+            env.ENABLE_TES = true
+        }
+    }
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
@@ -164,15 +179,17 @@ withPipeline(type, product, component) {
 
     afterSuccess('akschartsinstall') {
         onPR {
-            githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
-            githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
-            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-            env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-            sh """
-            ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-            ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-        """
+            if (env.ENABLE_WA == true) {
+                githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+                githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+                env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+                env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+                env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+                sh """
+                ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+                ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+            """
+            }
         }
     }
 
@@ -182,7 +199,6 @@ withPipeline(type, product, component) {
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         sh """
       ./bin/add-org-roles-to-users.sh
-
     """
     }
 

@@ -451,7 +451,7 @@ ia-bail-case-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-timed-event-service:
-  enabled: true
+  enabled: ${ENABLE_TES}
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:pr-182
@@ -469,12 +469,12 @@ ia-timed-event-service:
       POSTGRES_HOST: ia-preview.postgres.database.azure.com
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia_timed_event_service"
       POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       POSTGRES_CONNECTION_OPTIONS: ""
     postgresql:
       auth:
         username: ia_tes
-        password: ia_tes
+        password: ${POSTGRES_AUTH_VALUES_TES_PASSWORD}
         database: ia_tes
       service:
         port: 5432
@@ -716,12 +716,12 @@ xui-webapp:
       SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
-      SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
+      SERVICES_WORK_ALLOCATION_TASK_API: ${SERVICES_WORK_ALLOCATION_TASK_API}
+      SERVICES_WA_WORKFLOW_API_URL: ${SERVICES_WA_WORKFLOW_API_URL}
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      WA_SUPPORTED_JURISDICTIONS: IA
+      WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS}
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -833,6 +833,8 @@ ccd:
       environment:
         DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
+        DATA_STORE_DB_USERNAME: hmcts
+        DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
@@ -1144,6 +1146,7 @@ em-stitching:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
+      SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
@@ -1211,7 +1214,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: true
+  enabled: ${ENABLE_WA}
   global:
     postgresUsername: hmcts
     postgresSecret: postgres

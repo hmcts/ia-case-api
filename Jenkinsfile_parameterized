@@ -57,6 +57,7 @@ def secrets = [
                 secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
                 secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
                 secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+                secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
 
                 secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
                 secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
