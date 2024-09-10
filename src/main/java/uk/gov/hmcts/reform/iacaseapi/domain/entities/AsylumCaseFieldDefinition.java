@@ -21,11 +21,8 @@ public enum AsylumCaseFieldDefinition {
     CHANGE_ORGANISATION_REQUEST_FIELD(
         "changeOrganisationRequestField", new TypeReference<ChangeOrganisationRequest>(){}),
 
-    ORGANISATION_ID_TO_REMOVE(
-            "organisationIdToRemove", new TypeReference<String>(){}),
-
-    ORGANISATION_ID_TO_ADD(
-            "organisationIdToAdd", new TypeReference<String>(){}),
+    ORGANISATION_POLICY_TO_REMOVE(
+            "organisationPolicyToRemove", new TypeReference<OrganisationPolicy>(){}),
 
     BUNDLE_CONFIGURATION(
         "bundleConfiguration", new TypeReference<String>(){}),

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @Component
 public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -45,7 +46,8 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isEmpty()) {
+        Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        if (localAuthorityPolicy.isEmpty()) {
             response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
         } else if (!isValidChangeOrganisationRequest(asylumCase)) {
@@ -62,6 +64,7 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
                     "1"
                 )
             );
+            asylumCase.write(AsylumCaseFieldDefinition.ORGANISATION_POLICY_TO_REMOVE, localAuthorityPolicy.get());
         }
 
         return response;
