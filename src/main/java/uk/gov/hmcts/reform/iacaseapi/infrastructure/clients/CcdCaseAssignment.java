@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 
@@ -88,10 +89,6 @@ public class CcdCaseAssignment {
                 );
 
         } catch (RestClientResponseException e) {
-            log.error("Removing Legal Representative failed for caseId {} Resetting localAuthorityPolicy and ChangeOrganisationRequest",
-                    callback.getCaseDetails().getId());
-            ccdDataService.updateLocalAuthorityPolicy(callback);
-
             throw new CcdDataIntegrationException(
                 "Couldn't revoke CCD case access for case ["
                 + callback.getCaseDetails().getId()
@@ -174,6 +171,15 @@ public class CcdCaseAssignment {
                 );
             
         } catch (RestClientResponseException e) {
+            if (callback.getEvent() == Event.REMOVE_REPRESENTATION
+                    || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE) {
+
+                log.error("Removing Legal Representative failed for caseId {}. "
+                        + "Resetting ChangeOrganisationRequestField value.",
+                        callback.getCaseDetails().getId());
+                ccdDataService.updateLocalAuthorityPolicy(callback);
+            }
+
             throw new CcdDataIntegrationException(
                 "Couldn't apply noc AAC case assignment for case ["
                 + callback.getCaseDetails().getId()

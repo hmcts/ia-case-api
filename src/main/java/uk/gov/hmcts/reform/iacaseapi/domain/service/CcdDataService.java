@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -75,16 +73,17 @@ public class CcdDataService {
         Optional<OrganisationPolicy> organisationPolicyToRemove = asylumCase.read(
                 AsylumCaseFieldDefinition.ORGANISATION_POLICY_TO_REMOVE, OrganisationPolicy.class);
 
-        if (!isLocalAuthorityPolicyMissing(asylumCase)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Legal representative's local authority policy exists for caseId: " + caseId);
+        boolean isLocalAuthorityPolicyMissing = isLocalAuthorityPolicyMissing(asylumCase);
+        if (!isLocalAuthorityPolicyMissing) {
+            log.info("Legal representative's local authority policy exists for caseId: {} ", caseId);
         }
 
-        if (organisationPolicyToRemove.isEmpty()
-            || isEmpty(organisationPolicyToRemove.get().getOrganisation())
-            || isEmpty(organisationPolicyToRemove.get().getOrganisation().getOrganisationID())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Reset Representation event failed to reset Organisation ID for the caseId: " + caseId);
+        if (isLocalAuthorityPolicyMissing
+                && (organisationPolicyToRemove.isEmpty()
+                || isEmpty(organisationPolicyToRemove.get().getOrganisation())
+                || isEmpty(organisationPolicyToRemove.get().getOrganisation().getOrganisationID()))) {
+
+            log.info("Legal representative's OrganisationPolicy cannot be reset for the caseId: " + caseId);
         }
 
         Map<String, Object> caseData = new HashMap<>();
@@ -98,8 +97,9 @@ public class CcdDataService {
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
                 startEventDetails.getToken());
 
-        log.info("Local authority policy reset for the caseId: {}, Status: {}, Message: {}", caseId,
+        log.info("Change Organisation Request Field reset for the caseId: {}, Status: {}, Message: {}", caseId,
                 submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
+
         return submitEventDetails;
     }
 

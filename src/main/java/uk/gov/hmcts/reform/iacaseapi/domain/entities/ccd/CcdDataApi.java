@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGe
 
 @FeignClient(
     name = "core-case-data-api",
-    url = "${core-case-data.api.url}",
+    url = "${core_case_data_api_url}",
     configuration = FeignConfiguration.class
 )
 public interface CcdDataApi {
