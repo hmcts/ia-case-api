@@ -49,9 +49,12 @@ class SaveNotificationsToDataHandlerTest {
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
-
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private StoredNotification mockedStoredNotification;
+    @Mock
+    private StoredNotification mockedStoredNotification2;
 
     private final String reference = "someReference";
     private final String notificationId = "someNotificationId";
@@ -73,12 +76,18 @@ class SaveNotificationsToDataHandlerTest {
     }
 
     @Test
-    void should_access_notify_client_if_missing_email_notification() throws NotificationClientException {
+    void should_access_notify_client_if_missing_email_notification_and_should_sort_notification_list() throws NotificationClientException {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         List<IdValue<String>> notificationsSent =
             List.of(new IdValue<>(reference, notificationId));
-        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        List<IdValue<StoredNotification>> storedNotifications =
+            List.of(
+                new IdValue<>("1", mockedStoredNotification),
+                new IdValue<>("2", mockedStoredNotification2)
+            );
+
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
         when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
         when(notification.getBody()).thenReturn(body);
@@ -92,8 +101,10 @@ class SaveNotificationsToDataHandlerTest {
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
-        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(notificationClient, times(1)).getNotificationById(anyString());
+        when(mockedStoredNotification.getNotificationId()).thenReturn("1");
+        when(mockedStoredNotification.getNotificationDateSent()).thenReturn("2024-01-01T00:00:00");
+        when(mockedStoredNotification2.getNotificationId()).thenReturn("2");
+        when(mockedStoredNotification2.getNotificationDateSent()).thenReturn("2024-01-01T00:05:00");
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -105,8 +116,23 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject(subject)
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        List<IdValue<StoredNotification>> appendedStoredNotifications =
+            List.of(
+                new IdValue<>("1", mockedStoredNotification),
+                new IdValue<>(notificationId, storedNotification),
+                new IdValue<>("2", mockedStoredNotification2)
+            );
+        when(storedNotificationAppender.append(storedNotification, storedNotifications)).thenReturn(appendedStoredNotifications);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(storedNotificationAppender, times(1)).append(storedNotification, storedNotifications);
+        List<IdValue<StoredNotification>> sortedStoredNotifications =
+            List.of(
+                new IdValue<>(notificationId, storedNotification),
+                new IdValue<>("2", mockedStoredNotification2),
+                new IdValue<>("1", mockedStoredNotification)
+            );
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(sortedStoredNotifications));
     }
 
     @Test
@@ -274,10 +300,9 @@ class SaveNotificationsToDataHandlerTest {
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.empty());
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(notificationClient, times(0)).getNotificationById(anyString());
-        verify(storedNotificationAppender, times(0))
-            .append(any(StoredNotification.class), anyList());
-        verify(asylumCase, times(1)).write(NOTIFICATIONS, storedNotifications);
+        verify(notificationClient, never()).getNotificationById(anyString());
+        verify(storedNotificationAppender, never()).append(any(StoredNotification.class), anyList());
+        verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
     }
 
     @Test
@@ -303,10 +328,10 @@ class SaveNotificationsToDataHandlerTest {
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(notificationClient, times(0)).getNotificationById(anyString());
-        verify(storedNotificationAppender, times(0))
+        verify(notificationClient, never()).getNotificationById(anyString());
+        verify(storedNotificationAppender, never())
             .append(any(StoredNotification.class), anyList());
-        verify(asylumCase, times(1)).write(NOTIFICATIONS, storedNotifications);
+        verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
     }
 
     @Test
@@ -355,5 +380,4 @@ class SaveNotificationsToDataHandlerTest {
             }
         }
     }
-
 }

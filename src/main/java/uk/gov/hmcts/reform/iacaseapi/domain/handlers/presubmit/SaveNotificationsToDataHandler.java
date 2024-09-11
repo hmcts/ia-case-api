@@ -77,19 +77,21 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
         List<IdValue<StoredNotification>> allNotifications = maybeExistingNotifications.orElse(emptyList());
         List<String> notificationIds = getUnstoredNotificationIds(allNotifications, notificationsSent.orElse(emptyList()));
-        for (String notificationId: notificationIds) {
-            try {
-                Notification notification = notificationClient.getNotificationById(notificationId);
-                StoredNotification storedNotification =
-                    getStoredNotification(notificationId, notification);
-                allNotifications = notificationAppender.append(storedNotification, allNotifications);
-            } catch (NotificationClientException exception) {
-                log.warn("Notification client error on case "
-                    + callback.getCaseDetails().getId() + ": ", exception);
+        if (!notificationIds.isEmpty()) {
+            for (String notificationId : notificationIds) {
+                try {
+                    Notification notification = notificationClient.getNotificationById(notificationId);
+                    StoredNotification storedNotification =
+                        getStoredNotification(notificationId, notification);
+                    allNotifications = notificationAppender.append(storedNotification, allNotifications);
+                } catch (NotificationClientException exception) {
+                    log.warn("Notification client error on case "
+                        + callback.getCaseDetails().getId() + ": ", exception);
+                }
             }
+            allNotifications = sortNotificationsByDate(allNotifications);
+            asylumCase.write(NOTIFICATIONS, allNotifications);
         }
-        allNotifications = sortNotificationsByDate(allNotifications);
-        asylumCase.write(NOTIFICATIONS, allNotifications);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -138,7 +140,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
         List<IdValue<StoredNotification>> mutableNotifications = new ArrayList<>(allNotifications);
         mutableNotifications.sort(Comparator.comparing(notification ->
-            LocalDateTime.parse(notification.getValue().getNotificationDateSent())
+            LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
+            Comparator.reverseOrder()
         ));
         return mutableNotifications;
     }
