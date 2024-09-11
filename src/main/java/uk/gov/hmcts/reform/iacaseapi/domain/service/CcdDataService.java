@@ -70,24 +70,8 @@ public class CcdDataService {
         log.info("Case details found for the caseId: {}", caseId);
 
         AsylumCase asylumCase = startEventDetails.getCaseDetails().getCaseData();
-        Optional<OrganisationPolicy> organisationPolicyToRemove = asylumCase.read(
-                AsylumCaseFieldDefinition.ORGANISATION_POLICY_TO_REMOVE, OrganisationPolicy.class);
-
-        boolean isLocalAuthorityPolicyMissing = isLocalAuthorityPolicyMissing(asylumCase);
-        if (!isLocalAuthorityPolicyMissing) {
-            log.info("Legal representative's local authority policy exists for caseId: {} ", caseId);
-        }
-
-        if (isLocalAuthorityPolicyMissing
-                && (organisationPolicyToRemove.isEmpty()
-                || isEmpty(organisationPolicyToRemove.get().getOrganisation())
-                || isEmpty(organisationPolicyToRemove.get().getOrganisation().getOrganisationID()))) {
-
-            log.info("Legal representative's OrganisationPolicy cannot be reset for the caseId: " + caseId);
-        }
-
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put("localAuthorityPolicy", organisationPolicyToRemove.get());
+        setLocalAuthorityPolicy(asylumCase, caseData, caseId);
         caseData.put("organisationPolicyToRemove", null);
         caseData.put("changeOrganisationRequestField", null);
 
@@ -101,6 +85,22 @@ public class CcdDataService {
                 submitEventDetails.getCallbackResponseStatusCode(), submitEventDetails.getCallbackResponseStatus());
 
         return submitEventDetails;
+    }
+
+    private void setLocalAuthorityPolicy(AsylumCase asylumCase, Map<String, Object> caseData, String caseId) {
+        Optional<OrganisationPolicy> organisationPolicyToRemove = asylumCase.read(
+                AsylumCaseFieldDefinition.ORGANISATION_POLICY_TO_REMOVE, OrganisationPolicy.class);
+
+        boolean isLocalAuthorityPolicyMissing = isLocalAuthorityPolicyMissing(asylumCase);
+        if (isLocalAuthorityPolicyMissing
+                && !(organisationPolicyToRemove.isEmpty()
+                || isEmpty(organisationPolicyToRemove.get().getOrganisation())
+                || isEmpty(organisationPolicyToRemove.get().getOrganisation().getOrganisationID()))) {
+
+            caseData.put("localAuthorityPolicy", organisationPolicyToRemove.get());
+        } else {
+            log.info("Skipping resetting Legal representative's OrganisationPolicy for the caseId: " + caseId);
+        }
     }
 
     private StartEventDetails getCase(
