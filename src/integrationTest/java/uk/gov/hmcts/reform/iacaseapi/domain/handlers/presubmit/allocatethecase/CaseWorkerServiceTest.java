@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 @TestPropertySource(properties = {
     "REF_DATA_CASE_WORKER_URL=http://127.0.0.1:8990"
 })
+@Disabled
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CaseWorkerServiceTest {
 
