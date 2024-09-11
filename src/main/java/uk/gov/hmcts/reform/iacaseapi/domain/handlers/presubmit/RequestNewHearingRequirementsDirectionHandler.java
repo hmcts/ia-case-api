@@ -123,12 +123,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
-        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
-            .orElse(HearingCentre.DECISION_WITHOUT_HEARING);
-
-        if (!listCaseHearingCentre.equals(HearingCentre.DECISION_WITHOUT_HEARING)) {
-            writePreviousHearingsToAsylumCase(asylumCase);
-        }
+        writePreviousHearingsToAsylumCase(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
