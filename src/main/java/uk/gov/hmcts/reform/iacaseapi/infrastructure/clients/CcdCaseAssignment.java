@@ -177,7 +177,7 @@ public class CcdCaseAssignment {
                 log.error("Removing Legal Representative failed for caseId {}. "
                         + "Resetting ChangeOrganisationRequestField value.",
                         callback.getCaseDetails().getId());
-                ccdDataService.updateLocalAuthorityPolicy(callback);
+                ccdDataService.clearChangeOrganisationRequestField(callback);
             }
 
             throw new CcdDataIntegrationException(

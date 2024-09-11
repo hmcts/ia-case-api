@@ -38,9 +38,9 @@ public class CcdDataService {
         this.idamService = idamService;
     }
 
-    public SubmitEventDetails updateLocalAuthorityPolicy(Callback<AsylumCase> callback) {
+    public SubmitEventDetails clearChangeOrganisationRequestField(Callback<AsylumCase> callback) {
 
-        String event = Event.RESET_REMOVE_LEGAL_REPRESENTATIVE.toString();
+        String event = Event.RESET_CHANGE_ORGANISATION_REQUEST.toString();
         CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
         String caseId = String.valueOf(caseDetails.getId());
         String jurisdiction = caseDetails.getJurisdiction();
@@ -76,7 +76,7 @@ public class CcdDataService {
         caseData.put("changeOrganisationRequestField", null);
 
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("id", CASE_TYPE);
+        eventData.put("id", event);
 
         SubmitEventDetails submitEventDetails = submitEvent(userToken, s2sToken, caseId, caseData, eventData,
                 startEventDetails.getToken());

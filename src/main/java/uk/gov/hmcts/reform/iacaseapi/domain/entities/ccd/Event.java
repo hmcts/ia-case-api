@@ -84,7 +84,7 @@ public enum Event {
     UPDATE_DETAILS_AFTER_CMA("updateDetailsAfterCma"),
     FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS("forceCaseToSubmitHearingRequirements"),
     UPDATE_LEGAL_REPRESENTATIVES_DETAILS("updateLegalRepDetails"),
-    RESET_REMOVE_LEGAL_REPRESENTATIVE("resetRemoveLegalRepresentative"),
+    RESET_CHANGE_ORGANISATION_REQUEST("resetChangeOrganisationRequest"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
     RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
     DECISION_WITHOUT_HEARING("decisionWithoutHearing"),

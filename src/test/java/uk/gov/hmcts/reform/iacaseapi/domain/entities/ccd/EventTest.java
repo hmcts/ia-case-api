@@ -148,7 +148,7 @@ class EventTest {
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
-        assertEquals("resetRemoveLegalRepresentative", Event.RESET_REMOVE_LEGAL_REPRESENTATIVE.toString());
+        assertEquals("resetRemoveLegalRepresentative", Event.RESET_CHANGE_ORGANISATION_REQUEST.toString());
     }
 
     @Test
