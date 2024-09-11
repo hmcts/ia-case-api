@@ -394,7 +394,7 @@ ia-bail-case-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
+    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-537
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
@@ -415,6 +415,8 @@ ia-bail-case-api:
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      IA_TIMED_EVENT_SERVICE_URL: ${TES_URL}
+      IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     keyVaults:
       ia:
         resourceGroup: ia
