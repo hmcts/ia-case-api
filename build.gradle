@@ -230,9 +230,7 @@ pitest {
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
         'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
-        'uk.gov.hmcts.reform.iacaseapi.Application',
-        'uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RemoveRepresentationPreparer',
-        'uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService',
+        'uk.gov.hmcts.reform.iacaseapi.Application'
     ]
     threads = 10
     outputFormats = ['XML', 'HTML']
@@ -255,7 +253,10 @@ sonarqube {
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
-                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java"
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java",
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/presubmit/RemoveRepresentationPreparer.java",
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/service/CcdDataService.java",
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/CcdCaseAssignment.java"
     }
 }
 
