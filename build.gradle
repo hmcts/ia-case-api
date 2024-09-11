@@ -253,9 +253,9 @@ sonarqube {
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
-                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java",
-                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/presubmit/RemoveRepresentationPreparer.java",
-                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/service/CcdDataService.java",
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/presubmit/RemoveRepresentationPreparer.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/service/CcdDataService.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/CcdCaseAssignment.java"
     }
 }
