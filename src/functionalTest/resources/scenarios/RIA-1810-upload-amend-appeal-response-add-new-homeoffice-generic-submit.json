@@ -1,6 +1,6 @@
 {
   "description": "RIA-1810 Amend appeal response - Add new documents (Home Office GENERIC)",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",

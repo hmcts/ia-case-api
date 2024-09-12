@@ -1,6 +1,6 @@
 {
   "description": "RIA-6644 Admin officer record approved remission decision partially approved for Age Assessment",
-  "disabled": true,
+  "enabled": false,
   "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
