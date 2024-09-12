@@ -2278,9 +2278,6 @@ public enum AsylumCaseFieldDefinition {
     HAS_ADDED_LEGAL_REP_DETAILS(
         "hasAddedLegalRepDetails", new TypeReference<YesOrNo>(){}),
 
-    SHOULD_CHECK_ADDED_LEGAL_REP_DETAILS(
-        "shouldCheckAddedLegalRepDetails", new TypeReference<YesOrNo>(){}),
-
     HEARING_REQ_SUFFIX(
         "hearingReqSuffix", new TypeReference<String>(){}),
 
