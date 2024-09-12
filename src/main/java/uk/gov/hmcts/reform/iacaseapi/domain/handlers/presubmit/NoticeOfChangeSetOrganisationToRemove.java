@@ -1,16 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+
+import java.util.Optional;
 
 @Component
+@Slf4j
 public class NoticeOfChangeSetOrganisationToRemove implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final AsylumCaseCallbackApiDelegator apiDelegator;
@@ -41,6 +47,16 @@ public class NoticeOfChangeSetOrganisationToRemove implements PreSubmitCallbackH
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        Optional<OrganisationPolicy> localAuthorityPolicy = callback.getCaseDetails().getCaseData().read(
+                AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class);
+
+        log.info("{} - localAuthorityPolicy value {} for case Id {} ", callback.getEvent().toString(),
+                localAuthorityPolicy.isPresent() ? localAuthorityPolicy.get().getOrganisation().getOrganisationID() : "empty",
+                callback.getCaseDetails().getId());
+
+        localAuthorityPolicy.ifPresent(organisationPolicy -> callback.getCaseDetails().getCaseData().write(
+                AsylumCaseFieldDefinition.ORGANISATION_POLICY_TO_REMOVE, organisationPolicy));
 
         AsylumCase asylumCase = apiDelegator.delegate(callback, aacUrl + setSetOrganisationToRemoveApiPath);
 
