@@ -99,6 +99,7 @@ class SetCaseAsUnrepresentedHandlerTest {
         verify(asylumCase, times(0)).clear(LEGAL_REP_NAME);
         verify(asylumCase, times(0)).clear(LEGAL_REPRESENTATIVE_NAME);
         verify(asylumCase, times(0)).clear(LEGAL_REP_REFERENCE_NUMBER);
+        verify(asylumCase).write(SHOULD_CHECK_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase).clear(HAS_ADDED_LEGAL_REP_DETAILS);
     }
 

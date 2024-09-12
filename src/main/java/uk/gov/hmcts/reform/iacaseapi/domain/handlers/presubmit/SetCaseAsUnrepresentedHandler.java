@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -42,6 +43,7 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
+        asylumCase.write(SHOULD_CHECK_ADDED_LEGAL_REP_DETAILS, YES);
         asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
 
 

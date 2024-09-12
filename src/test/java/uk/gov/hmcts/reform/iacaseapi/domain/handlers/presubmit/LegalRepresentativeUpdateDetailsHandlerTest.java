@@ -102,7 +102,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_NAME), eq(legalRepName));
-        verify(asylumCase, times(1)).write(eq(HAS_ADDED_LEGAL_REP_DETAILS), eq(YesOrNo.YES));
+        verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_FAMILY_NAME), eq(legalRepFamilyName));
         verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_MOBILE_PHONE_NUMBER), eq(legalRepMobilePhoneNumber));
