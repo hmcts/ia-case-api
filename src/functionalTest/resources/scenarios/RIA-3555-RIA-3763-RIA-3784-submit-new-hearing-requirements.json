@@ -1,6 +1,6 @@
 {
   "description": "RIA-3555-RIA-3763-RIA-3784 Submit new hearing requirements (FTPA reheard decision)",
-  "disabled": true,
+  "disabled": false,
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
