@@ -107,7 +107,7 @@ public class CcdDataService {
         String userToken, String s2sToken, String uid, String jurisdiction, String caseId) {
 
         return ccdDataApi.startEvent(userToken, s2sToken, uid, jurisdiction, CASE_TYPE,
-                                     caseId, Event.UPDATE_PAYMENT_STATUS.toString());
+                                     caseId, Event.RESET_CHANGE_ORGANISATION_REQUEST.toString());
     }
 
     private SubmitEventDetails submitEvent(

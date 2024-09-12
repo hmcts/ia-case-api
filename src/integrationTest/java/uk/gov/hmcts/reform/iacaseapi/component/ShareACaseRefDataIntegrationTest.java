@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
-@Disabled
 class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 

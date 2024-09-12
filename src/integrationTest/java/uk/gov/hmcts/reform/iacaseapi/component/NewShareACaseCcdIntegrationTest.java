@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
 @Slf4j
-@Disabled
 class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithCcdAssignmentsStub, WithAcaAssignmentsStub, WithUserDetailsStub, WithReferenceDataStub {
 
