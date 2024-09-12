@@ -1,6 +1,6 @@
 {
   "description": "RIA-7338 update sign language choice - legal rep",
-  "enabled": "false",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
