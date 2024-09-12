@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.51
+version: 0.0.52
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -46,6 +46,10 @@ dependencies:
     version: 0.0.21
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ia-bail-case-api.enabled
+  - name: ia-timed-event-service
+    version: 0.0.27
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-timed-event-service.enabled
   - name: ccd-case-document-am-api
     version: 1.7.14
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
