@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import com.launchdarkly.sdk.LDValue;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;

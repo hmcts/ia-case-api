@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUB
 
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;

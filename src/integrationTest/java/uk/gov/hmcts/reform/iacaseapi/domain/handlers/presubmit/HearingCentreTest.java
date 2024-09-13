@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTe
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
+
 class HearingCentreTest extends SpringBootIntegrationTest {
 
     @Autowired private HearingCentreFinder hearingCentreFinder;
