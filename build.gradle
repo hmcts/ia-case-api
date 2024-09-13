@@ -253,7 +253,7 @@ sonarqube {
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
-                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/presubmit/ResetRemoveRepresentationPreparer.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/presubmit/ResetRemoveRepresentationHandler.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/postsubmit/ResetRemoveRepresentationConfirmation.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java"
     }
