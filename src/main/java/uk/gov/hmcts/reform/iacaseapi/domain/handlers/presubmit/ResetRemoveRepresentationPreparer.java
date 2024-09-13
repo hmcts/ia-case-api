@@ -26,7 +26,7 @@ public class ResetRemoveRepresentationPreparer implements PreSubmitCallbackHandl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.RESET_REMOVE_REPRESENTATION;
     }
 
@@ -41,7 +41,6 @@ public class ResetRemoveRepresentationPreparer implements PreSubmitCallbackHandl
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<ChangeOrganisationRequest> changeOrganisationPolicyOptional = asylumCase.read(AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD);
         if (isValidChangeOrganisationRequest(asylumCase)) {
 
             response.addError("No changes required to reset Change representation event");
