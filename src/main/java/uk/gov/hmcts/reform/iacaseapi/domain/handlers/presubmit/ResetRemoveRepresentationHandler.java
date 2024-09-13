@@ -17,7 +17,7 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Component
-public class ResetRemoveRepresentationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class ResetRemoveRepresentationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -44,9 +44,11 @@ public class ResetRemoveRepresentationPreparer implements PreSubmitCallbackHandl
         if (isValidChangeOrganisationRequest(asylumCase)) {
 
             response.addError("No changes required to reset Change representation event");
+            return response;
         }
+        asylumCase.write(AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD, null);
 
-        return response;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private boolean isValidChangeOrganisationRequest(AsylumCase asylumCase) {
