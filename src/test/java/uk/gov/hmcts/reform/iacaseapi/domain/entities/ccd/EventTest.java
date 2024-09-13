@@ -148,10 +148,11 @@ class EventTest {
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
+        assertEquals("resetRemoveRepresentation", Event.RESET_REMOVE_REPRESENTATION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(144, Event.values().length);
+        assertEquals(145, Event.values().length);
     }
 }

@@ -1663,6 +1663,9 @@ public enum AsylumCaseFieldDefinition {
     ALLOCATE_THE_CASE_TO(
             "allocateTheCaseTo", new TypeReference<String>() {}),
 
+    RESET_REMOVE_REPRESENTATION_REASON(
+            "resetRemoveRepresentationReason", new TypeReference<String>() {}),
+
     LOCAL_AUTHORITY_POLICY(
         "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
 
