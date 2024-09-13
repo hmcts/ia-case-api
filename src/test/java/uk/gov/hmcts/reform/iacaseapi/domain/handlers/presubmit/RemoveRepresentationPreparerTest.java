@@ -129,7 +129,7 @@ class RemoveRepresentationPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
+        "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
     })
     void should_return_error_when_remove_representation_requested_and_previous_request_still_in_process(Event event) {
 
