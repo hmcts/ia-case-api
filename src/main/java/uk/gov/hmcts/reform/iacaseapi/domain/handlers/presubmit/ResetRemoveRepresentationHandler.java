@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -17,6 +18,7 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Component
+@Slf4j
 public class ResetRemoveRepresentationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
@@ -34,6 +36,8 @@ public class ResetRemoveRepresentationHandler implements PreSubmitCallbackHandle
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        log.info("Reset Organisation request field handler case Id {}, case event {}",
+                callback.getCaseDetails().getId(), callback.getEvent().toString());
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -47,6 +51,8 @@ public class ResetRemoveRepresentationHandler implements PreSubmitCallbackHandle
             return response;
         }
         asylumCase.write(AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD, null);
+        log.info("Reset Organisation request field data is reset for {} and value {} ", callback.getCaseDetails().getId(),
+                asylumCase.read(AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class).orElse(null));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
