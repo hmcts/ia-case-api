@@ -101,6 +101,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         String notificationBody = "<div>" + notification.getBody()
             .replace("\r\n", "<br>")
             .replace("’", "'")
+            .replace("‘", "'")
             + "</div>";
 
         String method = notification.getNotificationType();
