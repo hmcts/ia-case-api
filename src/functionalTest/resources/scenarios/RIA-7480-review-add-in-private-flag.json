@@ -1,6 +1,6 @@
 {
   "description": "RIA-7480 review hearing requirements when LO approves in camera hearing request",
-  "enabled": "false",
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -144,9 +144,9 @@
             {
               "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
               "value": {
-                "name": "Evidence given in private",
+                "name": "Sign Language Interpreter",
                 "status": "Active",
-                "flagCode": "SM0004",
+                "flagCode": "RA0042",
                 "hearingRelevant": "Yes"
               }
             }

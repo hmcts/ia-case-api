@@ -1,6 +1,6 @@
 {
   "description": "RIA-3271 Gets Home Office data for the IA appeal reference",
-  "enabled": false,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

@@ -1,6 +1,6 @@
 {
   "description": "RIA-1309 Upload appeal response (Home Office LART)",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficeLart",
