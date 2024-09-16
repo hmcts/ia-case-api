@@ -318,6 +318,7 @@ security:
       - "recordAttendeesAndDuration"
       - "uploadHearingRecording"
       - "turnOnNotifications"
+      - "resetRemoveRepresentation"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -373,6 +374,7 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "markAppealAsRemitted"
+      - "resetRemoveRepresentation"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -474,6 +476,7 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
+      - "resetRemoveRepresentation"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"

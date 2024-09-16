@@ -48,7 +48,9 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
-        if (localAuthorityPolicy.isEmpty()) {
+        if (localAuthorityPolicy.isEmpty()
+                || localAuthorityPolicy.get().getOrganisation() == null
+                || isEmpty(localAuthorityPolicy.get().getOrganisation().getOrganisationID())) {
 
             response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
