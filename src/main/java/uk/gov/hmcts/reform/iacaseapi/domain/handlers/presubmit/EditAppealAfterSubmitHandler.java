@@ -168,7 +168,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.clear(OOC_ADDRESS_LINE_3);
             asylumCase.clear(OOC_ADDRESS_LINE_4);
             asylumCase.clear(OOC_COUNTRY_LINE);
-            asylumCase.clear(OOC_LR_COUNTRY_ADMIN_J);
+            asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
             asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
         }
     }
