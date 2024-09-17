@@ -5,6 +5,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_CODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_PAYMENT_APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_VERSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_DESCRIPTION;
@@ -28,6 +33,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
@@ -63,9 +69,16 @@ class FeesHelperTest {
         Fee feeMock = new Fee(feeCode, feeDesc, VERSION, feeAmount);
         when(feeService.getFee(any())).thenReturn(feeMock);
 
+        final String amount = String.valueOf(new BigDecimal(feeMock.getAmountAsString()).multiply(new BigDecimal("100")));
         findFeeByHearingType(feeService, asylumCase);
 
         verify(asylumCase, times(1)).read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
+        asylumCase.write(FEE_WITH_HEARING, feeMock.getCode());
+        verify(asylumCase, times(1)).write(FEE_CODE, feeMock.getCode());
+        verify(asylumCase, times(1)).write(FEE_DESCRIPTION, feeMock.getDescription());
+        verify(asylumCase, times(1)).write(FEE_VERSION, feeMock.getVersion());
+        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, amount);
+        verify(asylumCase, times(1)).write(FEE_PAYMENT_APPEAL_TYPE, YesOrNo.YES);
 
         if ("decisionWithHearing".equals(decisionHearingFeeOption)) {
             verify(asylumCase, times(1)).write(FEE_WITH_HEARING, feeMock.getAmountAsString());
