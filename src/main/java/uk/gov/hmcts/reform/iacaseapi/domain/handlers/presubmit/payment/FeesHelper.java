@@ -36,15 +36,6 @@ public class FeesHelper {
             fee = feeService.getFee(feeType);
 
             if (!isNull(fee)) {
-
-                String feeAmountInPence =
-                    String.valueOf(new BigDecimal(fee.getAmountAsString()).multiply(new BigDecimal("100")));
-                asylumCase.write(FEE_CODE, fee.getCode());
-                asylumCase.write(FEE_DESCRIPTION, fee.getDescription());
-                asylumCase.write(FEE_VERSION, fee.getVersion());
-                asylumCase.write(FEE_AMOUNT_GBP, feeAmountInPence);
-                asylumCase.write(FEE_PAYMENT_APPEAL_TYPE, YesOrNo.YES);
-
                 switch (decisionHearingFeeOption.get()) {
                     case "decisionWithHearing":
                         asylumCase.write(FEE_WITH_HEARING, fee.getAmountAsString());
