@@ -1,6 +1,6 @@
 {
   "description": "RIA-2034 Amend respondent evidence when action not available (HO - APC) - return error message",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "HomeOfficeLart",
