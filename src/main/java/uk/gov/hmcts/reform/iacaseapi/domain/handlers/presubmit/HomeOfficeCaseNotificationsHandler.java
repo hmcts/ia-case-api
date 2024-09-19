@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
@@ -55,22 +57,26 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        List<Event> targetEvents = Lists.newArrayList(
+            Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.REQUEST_RESPONDENT_REVIEW,
+            Event.LIST_CASE,
+            Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.SEND_DECISION_AND_REASONS,
+            Event.APPLY_FOR_FTPA_APPELLANT,
+            Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+            Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.END_APPEAL,
+            Event.REQUEST_RESPONSE_AMEND,
+            Event.DECIDE_FTPA_APPLICATION);
+
+        if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
+            targetEvents.add(Event.EDIT_CASE_LISTING);
+        }
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (Arrays.asList(
-                    Event.REQUEST_RESPONDENT_EVIDENCE,
-                    Event.REQUEST_RESPONDENT_REVIEW,
-                    Event.LIST_CASE,
-                    Event.EDIT_CASE_LISTING,
-                    Event.ADJOURN_HEARING_WITHOUT_DATE,
-                    Event.SEND_DECISION_AND_REASONS,
-                    Event.APPLY_FOR_FTPA_APPELLANT,
-                    Event.APPLY_FOR_FTPA_RESPONDENT,
-                    Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                    Event.RESIDENT_JUDGE_FTPA_DECISION,
-                    Event.END_APPEAL,
-                    Event.REQUEST_RESPONSE_AMEND,
-                    Event.DECIDE_FTPA_APPLICATION
-                ).contains(callback.getEvent())
+               && (targetEvents.contains(callback.getEvent())
                || (callback.getEvent() == Event.SEND_DIRECTION
                    && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
                    && getLatestNonStandardRespondentDirection(
@@ -172,5 +178,11 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
         return parties.equals(Parties.RESPONDENT);
 
+    }
+
+    private boolean notifyHomeOfficeOnEditCaseListingEvent(Callback<AsylumCase> callback) {
+        // Home office is not notified if the update is remote to remote hearing channel update
+        // (VID to TEL or TEL to VID)
+        return !HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate(callback);
     }
 }

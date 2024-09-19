@@ -5,13 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.DC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -45,7 +53,9 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock private AsylumCase asylumCase;
+    @Mock private AsylumCase asylumCaseBefore;
     @Mock private FeatureToggler featureToggler;
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
@@ -95,6 +105,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         homeOfficeCaseNotificationsHandler =
             new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
@@ -581,6 +593,33 @@ class HomeOfficeCaseNotificationsHandlerTest {
             }
         }
         reset(callback);
+    }
+
+    @Test
+    void it_cannot_handle_if_edit_case_listing_for_remote_to_remote_hearing_channel_update() {
+
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            assertFalse(homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback));
+        }
     }
 
     @Test

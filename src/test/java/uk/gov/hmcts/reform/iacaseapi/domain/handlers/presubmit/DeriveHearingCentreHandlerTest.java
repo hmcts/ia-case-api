@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_PRACTICE_ADDRESS_EJP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SELECTED_HEARING_CENTRE_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
@@ -78,6 +80,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 @ExtendWith(MockitoExtension.class)
 class DeriveHearingCentreHandlerTest {
 
+    public static final String HARMONDSWORTH_HEARING_CENTRE = "Harmondsworth Tribunal Hearing Centre";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -692,7 +695,7 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
+        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), HARMONDSWORTH_HEARING_CENTRE);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
         when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
@@ -762,7 +765,7 @@ class DeriveHearingCentreHandlerTest {
         when(hearingCentreFinder.findByDetentionFacility(prisonName)).thenReturn(hearingCentre);
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
+        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), HARMONDSWORTH_HEARING_CENTRE);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
         when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
@@ -840,7 +843,7 @@ class DeriveHearingCentreHandlerTest {
         when(hearingCentreFinder.findByDetentionFacility(ircName)).thenReturn(hearingCentre);
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
+        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), HARMONDSWORTH_HEARING_CENTRE);
         DynamicList hearingCentreDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
         when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(hearingCentreDynamicList);
 
@@ -948,7 +951,7 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), "Harmondsworth Tribunal Hearing Centre");
+        Value courtVenue = new Value(HearingCentre.HARMONDSWORTH.getEpimsId(), HARMONDSWORTH_HEARING_CENTRE);
         DynamicList cmlDynamicList = new DynamicList(courtVenue, List.of(courtVenue));
         when(locationRefDataService.getCaseManagementLocationDynamicList()).thenReturn(cmlDynamicList);
 
@@ -959,5 +962,23 @@ class DeriveHearingCentreHandlerTest {
         deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
+        verify(asylumCase, times(1)).write(SELECTED_HEARING_CENTRE_REF_DATA, HARMONDSWORTH_HEARING_CENTRE);
+    }
+
+    @Test
+    void should_not_set_ref_data_fields_if_ref_data_not_enabled() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, never()).write(eq(CASE_MANAGEMENT_LOCATION_REF_DATA), any());
+        verify(asylumCase, never()).write(eq(SELECTED_HEARING_CENTRE_REF_DATA), any());
+        verify(asylumCase, never()).write(eq(HEARING_CENTRE_DYNAMIC_LIST), any());
     }
 }

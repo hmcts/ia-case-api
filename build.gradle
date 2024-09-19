@@ -408,7 +408,7 @@ dependencies {
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    
+
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.3.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
 

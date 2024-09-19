@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
@@ -95,7 +96,6 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.CUSTOMISE_HEARING_BUNDLE,
             Event.GENERATE_DECISION_AND_REASONS,
             Event.SEND_DECISION_AND_REASONS,
-            Event.EDIT_CASE_LISTING,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.END_APPEAL,
             Event.SUBMIT_CMA_REQUIREMENTS,
@@ -146,6 +146,9 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         }
         if (!relistCaseImmediately(asylumCase, false)) {
             allowedEvents.add(Event.RECORD_ADJOURNMENT_DETAILS);
+        }
+        if (generateDocumentsForEditCaseListingEvent(callback)) {
+            allowedEvents.add(Event.EDIT_CASE_LISTING);
         }
 
         return isDocmosisEnabled
@@ -272,6 +275,12 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         return isAda ? dueDateService.calculateDueDate(appealDate.atStartOfDay(ZoneOffset.UTC),
                         ftpaAppealOutOfTimeWorkingDaysInternalAdaCases).toLocalDate() :
                 appealDate.plusDays(ftpaAppealOutOfTimeDaysInternalNonAdaCases);
+    }
+
+    private boolean generateDocumentsForEditCaseListingEvent(Callback<AsylumCase> callback) {
+        // Documents are not generated if the update is remote to remote hearing channel update
+        // (VID to TEL or TEL to VID)
+        return !isOnlyRemoteToRemoteHearingChannelUpdate(callback);
     }
 }
 

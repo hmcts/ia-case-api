@@ -206,6 +206,7 @@ class RecordRemissionDecisionStateHandlerTest {
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, isAdmin.equals("NO") ? YesOrNo.YES : YesOrNo.NO);
 
@@ -240,6 +241,7 @@ class RecordRemissionDecisionStateHandlerTest {
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
         verify(asylumCase, times(1)).write(HAS_SERVICE_REQUEST_ALREADY, isAdmin.equals("NO") ? YesOrNo.YES : YesOrNo.NO);
 

@@ -1,5 +1,5 @@
 {
-  "description": "RIA-8115 Set float suitability on case when adjourning on day of hearing",
+  "description": "RIA-837-RIA-2694 Send Legal Representative review directionRIA-8115 Set float suitability on case when adjourning on day of hearing",
   "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
