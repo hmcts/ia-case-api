@@ -2703,7 +2703,7 @@ public enum AsylumCaseFieldDefinition {
 
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
-
+    
     OOC_ADDRESS_LINE_4(
         "oocAddressLine4", new TypeReference<String>(){}),
 
