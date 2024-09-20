@@ -153,6 +153,31 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         asylumCase.clear(SPONSOR_PARTY_ID);
     }
 
+    private void clearOutOfCountryDecision(AsylumCase asylumCase) {
+        Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(
+            OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+        if (outOfCountryDecisionTypeOptional.isPresent()) {
+            OutOfCountryDecisionType outOfCountryDecisionType = outOfCountryDecisionTypeOptional.get();
+            switch (outOfCountryDecisionType) {
+                case REFUSAL_OF_HUMAN_RIGHTS, REFUSE_PERMIT:
+                    clearRefusalOfProtection(asylumCase);
+                    asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
+                    asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                    break;
+                case REFUSAL_OF_PROTECTION:
+                    clearHumanRightsDecision(asylumCase);
+                    break;
+                case REMOVAL_OF_CLIENT:
+                    clearHumanRightsDecision(asylumCase);
+                    clearRefusalOfProtection(asylumCase);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     private void clearOutOfCountryAdminJ(AsylumCase asylumCase) {
         Optional<OutOfCountryCircumstances> outOfCountryCircumstancesOptional =
             asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
@@ -181,38 +206,13 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         }
     }
 
-    private void clearEntryClearanceDecision(AsylumCase asylumCase) {
-        asylumCase.clear(GWF_REFERENCE_NUMBER);
-        asylumCase.clear(DATE_ENTRY_CLEARANCE_DECISION);
-    }
-
     private void clearLeaveUK(AsylumCase asylumCase) {
         asylumCase.clear(DATE_CLIENT_LEAVE_UK_ADMIN_J);
     }
 
-    private void clearOutOfCountryDecision(AsylumCase asylumCase) {
-        Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(
-            OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        if (outOfCountryDecisionTypeOptional.isPresent()) {
-            OutOfCountryDecisionType outOfCountryDecisionType = outOfCountryDecisionTypeOptional.get();
-            switch (outOfCountryDecisionType) {
-                case REFUSAL_OF_HUMAN_RIGHTS, REFUSE_PERMIT:
-                    clearRefusalOfProtection(asylumCase);
-                    asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
-                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
-                    asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
-                    break;
-                case REFUSAL_OF_PROTECTION:
-                    clearHumanRightsDecision(asylumCase);
-                    break;
-                case REMOVAL_OF_CLIENT:
-                    clearHumanRightsDecision(asylumCase);
-                    clearRefusalOfProtection(asylumCase);
-                    break;
-                default:
-                    break;
-            }
-        }
+    private void clearEntryClearanceDecision(AsylumCase asylumCase) {
+        asylumCase.clear(GWF_REFERENCE_NUMBER);
+        asylumCase.clear(DATE_ENTRY_CLEARANCE_DECISION);
     }
 
     private void clearHumanRightsDecision(AsylumCase asylumCase) {

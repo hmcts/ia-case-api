@@ -151,6 +151,16 @@ public enum Event {
     TRIGGER_CMR_LISTED("triggerCmrListed"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
 
+    UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
+    UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
+    UPDATE_HEARING_REQUEST("updateHearingRequest"),
+    HANDLE_HEARING_EXCEPTION("handleHearingException"),
+    TRIGGER_CMR_UPDATED("triggerCmrUpdated"),
+    RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
+    LIST_ASSIST_INTEGRATION("listAssistIntegration"),
+    TRIGGER_CMR_LISTED("triggerCmrListed"),
+    DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
