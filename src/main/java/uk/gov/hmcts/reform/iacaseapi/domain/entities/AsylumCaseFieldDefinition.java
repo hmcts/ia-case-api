@@ -1976,9 +1976,6 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
 
-    IS_ADMIN(
-        "isAdmin", new TypeReference<YesOrNo>() {}),
-
     WITNESS_LEVEL_FLAGS(
         "witnessLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
 
@@ -2295,6 +2292,9 @@ public enum AsylumCaseFieldDefinition {
 
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
+
+    IS_ADMIN(
+            "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
@@ -2661,26 +2661,31 @@ public enum AsylumCaseFieldDefinition {
 
     IS_DECISION_RULE31_CHANGED(
             "isDecisionRule31Changed", new TypeReference<YesOrNo>(){}),
-
     APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS(
         "appealNotSubmittedReasonDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     // Used to store generated letter notification docs which will be stitched together
     LETTER_NOTIFICATION_DOCUMENTS(
         "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
     APPELLANTS_REPRESENTATION(
         "appellantsRepresentation", new TypeReference<YesOrNo>(){}),
+
     APPEAL_WAS_NOT_SUBMITTED_REASON(
         "appealWasNotSubmittedReason", new TypeReference<String>(){}),
+
     LEGAL_REP_COMPANY_PAPER_J(
         "legalRepCompanyPaperJ", new TypeReference<String>(){}),
 
     LEGAL_REP_GIVEN_NAME(
         "legalRepGivenName", new TypeReference<String>(){}),
+
     LEGAL_REP_FAMILY_NAME_PAPER_J(
         "legalRepFamilyNamePaperJ", new TypeReference<String>(){}),
+
     LEGAL_REP_EMAIL(
         "legalRepEmail", new TypeReference<String>(){}),
+
     LEGAL_REP_REF_NUMBER_PAPER_J(
         "legalRepRefNumberPaperJ", new TypeReference<String>(){}),
 
@@ -2689,7 +2694,6 @@ public enum AsylumCaseFieldDefinition {
 
     OOC_ADDRESS_LINE_1(
         "oocAddressLine1", new TypeReference<String>(){}),
-
     OOC_ADDRESS_LINE_2(
         "oocAddressLine2", new TypeReference<String>(){}),
 
@@ -2699,7 +2703,7 @@ public enum AsylumCaseFieldDefinition {
 
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
-
+    
     OOC_ADDRESS_LINE_4(
         "oocAddressLine4", new TypeReference<String>(){}),
 
