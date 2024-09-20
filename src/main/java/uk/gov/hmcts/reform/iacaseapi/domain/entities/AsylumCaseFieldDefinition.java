@@ -78,8 +78,8 @@ public enum AsylumCaseFieldDefinition {
     ADDRESS_LINE_4_ADMIN_J(
         "addressLine4AdminJ", new TypeReference<String>(){}),
 
-    COUNTRY_OOC_ADMIN_J(
-        "countryOocAdminJ", new TypeReference<NationalityFieldValue>(){}),
+    COUNTRY_GOV_UK_OOC_ADMIN_J(
+        "countryGovUkOocAdminJ", new TypeReference<NationalityFieldValue>(){}),
 
     SEARCH_POSTCODE(
         "searchPostcode", new TypeReference<String>(){}),
@@ -2710,8 +2710,8 @@ public enum AsylumCaseFieldDefinition {
     OOC_COUNTRY_LINE(
         "oocCountryLine", new TypeReference<String>(){}),
 
-    OOC_LR_COUNTRY_ADMIN_J(
-        "oocLrCountryAdminJ", new TypeReference<NationalityFieldValue>(){}),
+    OOC_LR_COUNTRY_GOV_UK_ADMIN_J(
+        "oocLrCountryGovUkAdminJ", new TypeReference<NationalityFieldValue>(){}),
 
     LEGAL_REP_HAS_ADDRESS(
         "legalRepHasAddress", new TypeReference<YesOrNo>(){}),
