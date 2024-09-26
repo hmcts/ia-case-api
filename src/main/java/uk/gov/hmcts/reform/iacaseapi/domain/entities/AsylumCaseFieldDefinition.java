@@ -265,6 +265,9 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_SUBMITTED(
         "ftpaRespondentSubmitted", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_GROUNDS(
+            "ftpaAppellantGrounds", new TypeReference<String>(){}),
+
     FTPA_APPELLANT_APPLICATION_DATE(
         "ftpaAppellantApplicationDate", new TypeReference<String>(){}),
 

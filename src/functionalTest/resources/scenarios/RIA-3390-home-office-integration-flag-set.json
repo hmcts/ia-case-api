@@ -1,6 +1,6 @@
 {
   "description": "RIA-3390 Set Home Office integration enabled flag value for Request Home Office data event",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

@@ -157,8 +157,9 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
 
         asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
 
+        String ftpaAppellantGroundsText = asylumCase.read(FTPA_APPELLANT_GROUNDS, String.class).orElse("");
         addToFtpaList(asylumCase, currentDate, ftpaAppellantGrounds, ftpaAppellantEvidence,
-                maybeOutOfTimeDocuments, ftpaAppellantOutOfTimeExplanation);
+                maybeOutOfTimeDocuments, ftpaAppellantOutOfTimeExplanation, ftpaAppellantGroundsText);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -167,7 +168,8 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
                                List<IdValue<DocumentWithDescription>> ftpaAppellantGrounds,
                                List<IdValue<DocumentWithDescription>> ftpaAppellantEvidence,
                                Optional<List<IdValue<DocumentWithDescription>>> maybeOutOfTimeDocuments,
-                               String ftpaAppellantOutOfTimeExplanation) {
+                               String ftpaAppellantOutOfTimeExplanation,
+                               String ftpaAppellantGroundsText) {
         boolean isDlrmSetAside = featureToggler.getValue("dlrm-setaside-feature-flag", false);
 
         if (isDlrmSetAside) {
@@ -175,6 +177,7 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
                     FtpaApplications.builder()
                             .ftpaApplicant(APPELLANT.toString())
                             .ftpaApplicationDate(currentDate)
+                            .ftpaAppellantGroundsText(ftpaAppellantGroundsText)
                             .ftpaGroundsDocuments(ftpaAppellantGrounds)
                             .ftpaEvidenceDocuments(ftpaAppellantEvidence)
                             .build();
