@@ -6,6 +6,7 @@
   "appellantDateOfBirth": "1978-11-11",
   "appellantHasFixedAddress": "No",
   "appealType": "protection",
+  "appellantInUk": "Yes",
   "appellantNationalities": [
     {
       "id": "1",
