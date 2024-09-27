@@ -1,6 +1,6 @@
 {
   "description": "RIA-4116 Gets Home Office data for the IA appeal reference and sets the eligible field value",
-  "enabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
