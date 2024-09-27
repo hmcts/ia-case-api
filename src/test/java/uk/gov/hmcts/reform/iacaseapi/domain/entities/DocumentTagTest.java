@@ -15,6 +15,8 @@ class DocumentTagTest {
         assertEquals("additionalEvidence", DocumentTag.ADDITIONAL_EVIDENCE.toString());
         assertEquals("reheardHearingNotice", DocumentTag.REHEARD_HEARING_NOTICE.toString());
         assertEquals("hearingNotice", DocumentTag.HEARING_NOTICE.toString());
+        assertEquals("reheardHearingNoticeRelisted", DocumentTag.REHEARD_HEARING_NOTICE_LISTED.toString());
+        assertEquals("hearingNoticeRelisted", DocumentTag.HEARING_NOTICE_LISTED.toString());
         assertEquals("hearingRequirements", DocumentTag.HEARING_REQUIREMENTS.toString());
         assertEquals("caseSummary", DocumentTag.CASE_SUMMARY.toString());
         assertEquals("hearingBundle", DocumentTag.HEARING_BUNDLE.toString());
