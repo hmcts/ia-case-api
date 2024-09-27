@@ -63,6 +63,24 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
+    APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
+        "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
+
+    ADDRESS_LINE_1_ADMIN_J(
+        "addressLine1AdminJ", new TypeReference<String>(){}),
+
+    ADDRESS_LINE_2_ADMIN_J(
+        "addressLine2AdminJ", new TypeReference<String>(){}),
+
+    ADDRESS_LINE_3_ADMIN_J(
+        "addressLine3AdminJ", new TypeReference<String>(){}),
+
+    ADDRESS_LINE_4_ADMIN_J(
+        "addressLine4AdminJ", new TypeReference<String>(){}),
+
+    COUNTRY_GOV_UK_OOC_ADMIN_J(
+        "countryGovUkOocAdminJ", new TypeReference<NationalityFieldValue>(){}),
+
     SEARCH_POSTCODE(
         "searchPostcode", new TypeReference<String>(){}),
 
@@ -1092,6 +1110,9 @@ public enum AsylumCaseFieldDefinition {
     AUTOMATIC_END_APPEAL_TIMED_EVENT_ID(
             "automaticEndAppealTimedEventId", new TypeReference<String>(){}),
 
+    AUTOMATIC_SEND_PAYMENT_REMINDER_TIMED_EVENT_ID(
+        "automaticSendPaymentReminderTimedEventId", new TypeReference<String>(){}),
+
     APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
 
@@ -1731,6 +1752,9 @@ public enum AsylumCaseFieldDefinition {
 
     DATE_CLIENT_LEAVE_UK(
         "dateClientLeaveUk", new TypeReference<String>(){}),
+
+    DATE_CLIENT_LEAVE_UK_ADMIN_J(
+        "dateClientLeaveUkAdminJ", new TypeReference<String>(){}),
 
     OUT_OF_COUNTRY_MOBILE_NUMBER(
         "outOfCountryMobileNumber", new TypeReference<String>(){}),
@@ -2635,10 +2659,66 @@ public enum AsylumCaseFieldDefinition {
 
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
+    OOC_APPEAL_ADMIN_J(
+    "oocAppealAdminJ", new TypeReference<OutOfCountryCircumstances>(){}),
+
+    IS_DECISION_RULE31_CHANGED(
+            "isDecisionRule31Changed", new TypeReference<YesOrNo>(){}),
+    APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS(
+        "appealNotSubmittedReasonDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    // Used to store generated letter notification docs which will be stitched together
+    LETTER_NOTIFICATION_DOCUMENTS(
+        "letterNotificationDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    APPELLANTS_REPRESENTATION(
+        "appellantsRepresentation", new TypeReference<YesOrNo>(){}),
+
+    APPEAL_WAS_NOT_SUBMITTED_REASON(
+        "appealWasNotSubmittedReason", new TypeReference<String>(){}),
+
+    LEGAL_REP_COMPANY_PAPER_J(
+        "legalRepCompanyPaperJ", new TypeReference<String>(){}),
+
+    LEGAL_REP_GIVEN_NAME(
+        "legalRepGivenName", new TypeReference<String>(){}),
+
+    LEGAL_REP_FAMILY_NAME_PAPER_J(
+        "legalRepFamilyNamePaperJ", new TypeReference<String>(){}),
+
+    LEGAL_REP_EMAIL(
+        "legalRepEmail", new TypeReference<String>(){}),
+
+    LEGAL_REP_REF_NUMBER_PAPER_J(
+        "legalRepRefNumberPaperJ", new TypeReference<String>(){}),
+
+    LEGAL_REP_ADDRESS_U_K(
+        "legalRepAddressUK", new TypeReference<AddressUk>(){}),
+
+    OOC_ADDRESS_LINE_1(
+        "oocAddressLine1", new TypeReference<String>(){}),
+    OOC_ADDRESS_LINE_2(
+        "oocAddressLine2", new TypeReference<String>(){}),
+
     SELECTED_HEARING_CENTRE_REF_DATA("selectedHearingCentreRefData", new TypeReference<String>(){}),
 
-    IS_REMOTE_HEARING("isRemoteHearing", new TypeReference<YesOrNo>(){});
+    IS_REMOTE_HEARING("isRemoteHearing", new TypeReference<YesOrNo>(){}),
 
+    OOC_ADDRESS_LINE_3(
+        "oocAddressLine3", new TypeReference<String>(){}),
+    
+    OOC_ADDRESS_LINE_4(
+        "oocAddressLine4", new TypeReference<String>(){}),
+
+    OOC_COUNTRY_LINE(
+        "oocCountryLine", new TypeReference<String>(){}),
+
+    OOC_LR_COUNTRY_GOV_UK_ADMIN_J(
+        "oocLrCountryGovUkAdminJ", new TypeReference<NationalityFieldValue>(){}),
+
+    LEGAL_REP_HAS_ADDRESS(
+        "legalRepHasAddress", new TypeReference<YesOrNo>(){}),
+    ;
 
     private final String value;
     private final TypeReference typeReference;
