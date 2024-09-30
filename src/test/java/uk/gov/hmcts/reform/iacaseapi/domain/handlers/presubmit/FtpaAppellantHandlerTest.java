@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_GROUNDS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_GROUNDS_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_OUT_OF_TIME_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION;
@@ -151,6 +152,8 @@ class FtpaAppellantHandlerTest {
         when(asylumCase.read(FTPA_APPELLANT_DOCUMENTS)).thenReturn(Optional.of(existingAppellantDocuments));
         when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class))
             .thenReturn(Optional.of("Some out of time explanation"));
+        when(asylumCase.read(FTPA_APPELLANT_GROUNDS, String.class))
+            .thenReturn(Optional.of("Some explanation for FTPA Appellant grounds"));
 
         when(documentReceiver.tryReceiveAll(groundsOfApplicationDocuments, DocumentTag.FTPA_APPELLANT))
             .thenReturn(singletonList(groundsOfApplicationWithMetadata));
@@ -173,6 +176,7 @@ class FtpaAppellantHandlerTest {
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_DOCUMENTS);
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class);
+        verify(asylumCase, times(1)).read(FTPA_APPELLANT_GROUNDS, String.class);
 
         verify(documentReceiver, times(1)).tryReceiveAll(groundsOfApplicationDocuments, DocumentTag.FTPA_APPELLANT);
         verify(documentReceiver, times(1)).tryReceiveAll(evidenceDocuments, DocumentTag.FTPA_APPELLANT);
@@ -250,6 +254,8 @@ class FtpaAppellantHandlerTest {
         when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_DOCUMENTS)).thenReturn(Optional.of(outOfTimeDocuments));
         when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class))
                 .thenReturn(Optional.of("Some out of time explanation"));
+        when(asylumCase.read(FTPA_APPELLANT_GROUNDS, String.class))
+                .thenReturn(Optional.of("Some explanation for FTPA Appellant grounds"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 ftpaAppellantHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -266,6 +272,8 @@ class FtpaAppellantHandlerTest {
         assertThat(capturedFtpa.getFtpaGroundsDocuments()).isEqualTo(groundsOfApplicationDocuments);
         assertThat(capturedFtpa.getFtpaEvidenceDocuments()).isEqualTo(evidenceDocuments);
         assertThat(capturedFtpa.getFtpaOutOfTimeExplanation()).isEqualTo("Some out of time explanation");
+        assertThat(capturedFtpa.getFtpaAppellantGroundsText())
+                .isEqualTo("Some explanation for FTPA Appellant grounds");
         assertThat(capturedFtpa.getFtpaOutOfTimeDocuments()).isEqualTo(outOfTimeDocuments);
 
         assertThat(existingFtpasCaptor.getValue()).isEqualTo(existingFtpas);

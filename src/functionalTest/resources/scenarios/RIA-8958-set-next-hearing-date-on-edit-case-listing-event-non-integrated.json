@@ -1,5 +1,6 @@
 {
   "description": "RIA-8922 set next hearing date during edit case listing event",
+  "launchDarklyKey": "nextHearingDateEnabled:true",
   "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
