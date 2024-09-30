@@ -66,9 +66,6 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
-    APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
-        "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
-
     ADDRESS_LINE_1_ADMIN_J(
         "addressLine1AdminJ", new TypeReference<String>(){}),
 
