@@ -46,7 +46,7 @@ public class PreSubmitCallbackController {
     }
 
     @Operation(
-            summary = "Handles 'SubmittedEvent' callbacks from CCD",
+            summary = "Handles 'AboutToStartEvent' callbacks from CCD",
             security =
             {
                 @SecurityRequirement(name = "Authorization"),

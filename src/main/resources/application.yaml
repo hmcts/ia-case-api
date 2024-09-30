@@ -319,6 +319,7 @@ security:
       - "recordAttendeesAndDuration"
       - "uploadHearingRecording"
       - "turnOnNotifications"
+      - "updateTribunalDecision"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -374,6 +375,7 @@ security:
       - "turnOnNotifications"
       - "generateServiceRequest"
       - "markAppealAsRemitted"
+      - "progressMigratedCase"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -478,6 +480,7 @@ security:
       - "sendPaymentReminderNotification"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "ariaCreateCase"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"

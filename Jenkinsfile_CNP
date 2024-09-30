@@ -12,13 +12,13 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "ia-task-configuration-internal"
+def dmnBranch = "ia-task-configuration-migration"
 def bpmnBranch = "master"
 
 def secrets = [
         'rpx-${env}': [
                 secret('mc-s2s-client-secret', 'S2S_SECRET'),
-                secret('mc-idam-client-secret', 'IDAM_SECRET'),
+                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
                 secret('system-user-name', 'SYSTEM_USER_NAME'),
                 secret('system-user-password', 'SYSTEM_USER_PASSWORD'),
         ],
@@ -102,7 +102,9 @@ def secrets = [
                 secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
                 secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
-                secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
+                secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
+                secret('system-user-username', 'IA_SYSTEM_USERNAME'),
+                secret('system-user-password', 'IA_SYSTEM_PASSWORD')
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),

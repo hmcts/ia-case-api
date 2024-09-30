@@ -60,6 +60,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
+    APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J(
+        "appellantHasFixedAddressAdminJ", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
@@ -1979,6 +1982,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
     }),
 
+    IS_ADMIN(
+        "isAdmin", new TypeReference<YesOrNo>() {}),
+
     WITNESS_LEVEL_FLAGS(
         "witnessLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
 
@@ -2295,9 +2301,6 @@ public enum AsylumCaseFieldDefinition {
 
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
-
-    IS_ADMIN(
-            "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
@@ -2706,7 +2709,7 @@ public enum AsylumCaseFieldDefinition {
 
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
-    
+
     OOC_ADDRESS_LINE_4(
         "oocAddressLine4", new TypeReference<String>(){}),
 
@@ -2718,6 +2721,37 @@ public enum AsylumCaseFieldDefinition {
 
     LEGAL_REP_HAS_ADDRESS(
         "legalRepHasAddress", new TypeReference<YesOrNo>(){}),
+
+    IS_ARIA_MIGRATED(
+        "isAriaMigrated", new TypeReference<YesOrNo>(){}),
+
+    // Temporary value to set the case state as 'Migrated'
+    IS_ARIA_MIGRATED_TEMPORARY(
+            "isAriaMigratedTemporary", new TypeReference<YesOrNo>(){}),
+
+    // Temporary value to set the case desired state
+    ARIA_DESIRED_STATE(
+        "ariaDesiredState", new TypeReference<State>(){}),
+
+    // Temporary value to show the selected desired state value
+    ARIA_DESIRED_STATE_SELECTED_VALUE(
+        "ariaDesiredStateSelectedValue", new TypeReference<String>(){}),
+
+    DESIRED_STATE_CORRECT(
+        "desiredStateCorrect", new TypeReference<YesOrNo>(){}),
+    MIGRATION_MAIN_TEXT(
+        "migrationMainText", new TypeReference<String>(){}),
+    MIGRATION_MAIN_TEXT_VISIBLE(
+        "migrationMainTextVisible", new TypeReference<String>(){}),
+    MIGRATION_HMC_SECOND_PART_VISIBLE(
+        "migrationHmcSecondPartVisible", new TypeReference<String>(){}),
+    ADD_CASE_NOTES_MIGRATION(
+        "addCaseNotesMigration", new TypeReference<List<IdValue<CaseNoteMigration>>>(){}),
+    IS_ARIA_MIGRATED_FILTER(
+            "isAriaMigratedFilter", new TypeReference<YesOrNo>(){}),
+    ARIA_MIGRATION_TASK_DUE_DAYS(
+            "ariaMigrationTaskDueDays", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
