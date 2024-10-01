@@ -64,6 +64,8 @@ java:
           alias: app-insights-connection-string
         - name: postgres-auth-values-password
           alias: PG_AUTH_VALUES_YAML_PASS
+        - name: dlrm-telephony-feature-flag
+          alias: DLRM_TELEPHONY_FEATURE_FLAG
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres

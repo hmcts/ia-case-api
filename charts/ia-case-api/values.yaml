@@ -86,6 +86,8 @@ java:
           alias: PG_AUTH_VALUES_YAML_PASS
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
+        - name: dlrm-telephony-feature-flag
+          alias: DLRM_TELEPHONY_FEATURE_FLAG
 
 ia-case-payments-api:
   enabled: false
