@@ -88,6 +88,7 @@ class MakeAnApplicationMidEventTest {
         "OTHER",
         "CHANGE_HEARING_TYPE",
         "SET_ASIDE_A_DECISION",
+        "APPLICATION_UNDER_RULE_31_OR_RULE_32",
         "OTHER"
     })
     void should_return_valid_make_an_application_types(String type) {
@@ -103,7 +104,8 @@ class MakeAnApplicationMidEventTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(OTHER.name(), OTHER.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
-            new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()));
+            new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()),
+            new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
             new DynamicList(values.get(0), values);
 
@@ -201,6 +203,11 @@ class MakeAnApplicationMidEventTest {
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Explain why the decision should be set aside.");
+                break;
+            case APPLICATION_UNDER_RULE_31_OR_RULE_32:
+                verify(asylumCase, times(1))
+                    .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                        "Explain why the decision should be set aside or changed.");
                 break;
             default:
                 break;
