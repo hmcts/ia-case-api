@@ -13,6 +13,7 @@
           "newFeeAmount": "2000",
           "paymentStatus": "Paid",
           "feeUpdateReason": "decisionTypeChanged",
+          "feeUpdateTribunalAction": "additionalPayment",
           "feeUpdateRecorded": {
             "values": [
               "feeUpdateRecorded"
@@ -40,6 +41,7 @@
         "newFeeAmount": "2000",
         "paymentStatus": "Paid",
         "feeUpdateReason": "decisionTypeChanged",
+        "feeUpdateTribunalAction": "additionalPayment",
         "feeUpdateCompletedStages": [
           "feeUpdateRecorded",
           "feeUpdateAdditionalFeeRequested"

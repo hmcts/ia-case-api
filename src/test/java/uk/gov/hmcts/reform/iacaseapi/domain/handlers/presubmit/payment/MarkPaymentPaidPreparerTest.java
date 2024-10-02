@@ -2,14 +2,33 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.AG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,7 +45,13 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -417,6 +442,51 @@ class MarkPaymentPaidPreparerTest {
         assertThatThrownBy(() -> markPaymentPaidPreparer.handle(ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("appealTypesWithRemissionOptions")
+    void should_pass_checkRemissionConditions_if_remission_or_late_remission_present(
+        AppealType appealType,
+        Optional<RemissionType> remissionType,
+        Optional<RemissionType> lateRemission) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(remissionType);
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(lateRemission);
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.REJECTED));
+
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).isEmpty();
+    }
+
+    private static Stream<Arguments> appealTypesWithRemissionOptions() {
+        return Stream.of(
+            Arguments.of(EA, Optional.of(HO_WAIVER_REMISSION), Optional.empty()),
+            Arguments.of(EA, Optional.empty(), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(EA, Optional.of(NO_REMISSION), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(HU, Optional.of(HO_WAIVER_REMISSION), Optional.empty()),
+            Arguments.of(HU, Optional.empty(), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(HU, Optional.of(NO_REMISSION), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(EU, Optional.of(HO_WAIVER_REMISSION), Optional.empty()),
+            Arguments.of(EU, Optional.empty(), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(EU, Optional.of(NO_REMISSION), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(PA, Optional.of(HO_WAIVER_REMISSION), Optional.empty()),
+            Arguments.of(PA, Optional.empty(), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(PA, Optional.of(NO_REMISSION), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(AG, Optional.of(HO_WAIVER_REMISSION), Optional.empty()),
+            Arguments.of(AG, Optional.empty(), Optional.of(HO_WAIVER_REMISSION)),
+            Arguments.of(AG, Optional.of(NO_REMISSION), Optional.of(HO_WAIVER_REMISSION))
+        );
     }
 
 }
