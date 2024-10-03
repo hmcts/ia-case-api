@@ -2726,11 +2726,9 @@ public enum AsylumCaseFieldDefinition {
     IS_ARIA_MIGRATED_TEMPORARY(
             "isAriaMigratedTemporary", new TypeReference<YesOrNo>(){}),
 
-    // Temporary value to set the case desired state
     ARIA_DESIRED_STATE(
         "ariaDesiredState", new TypeReference<State>(){}),
 
-    // Temporary value to show the selected desired state value
     ARIA_DESIRED_STATE_SELECTED_VALUE(
         "ariaDesiredStateSelectedValue", new TypeReference<String>(){}),
 
