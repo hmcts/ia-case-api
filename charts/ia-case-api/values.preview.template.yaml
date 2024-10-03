@@ -796,9 +796,13 @@ ccd:
 
   ccd-user-profile-api:
     java:
+      disableKeyVaults: true
+      imagePullPolicy: Always
+      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
-      imagePullPolicy: Always
+        minReplicas: 1
+        maxReplicas: 1
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
       keyVaults: [ ]
       devcpuRequests: 500m
@@ -810,8 +814,6 @@ ccd:
         USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
         USER_PROFILE_DB_NAME: "pr-${CHANGE_ID}-user-profile"
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
-
-      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-data-store-api:
     java:
@@ -853,6 +855,8 @@ ccd:
     java:
       autoscaling:
         enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/am/role-assignment-service:latest
       ingressHost: am-role-assignment-${SERVICE_FQDN}
@@ -861,6 +865,7 @@ ccd:
       devcpuLimits: 1
       devmemoryLimits: 4Gi
       environment:
+        ROLE_ASSIGNMENT_DB_USERNAME: hmcts
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
         RUN_LD_ON_STARTUP: false
@@ -881,6 +886,11 @@ ccd:
               alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
             - name: role-assignment-service-LD-SDK-KEY
               alias: LD_SDK_KEY
+      secrets:
+        ROLE_ASSIGNMENT_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
 
   ccd-admin-web:
     nodejs:
@@ -897,6 +907,7 @@ ccd:
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+      disableKeyVaults: true
       imagePullPolicy: Always
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
@@ -904,17 +915,26 @@ ccd:
       devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       environment:
         DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
         DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
+        DEFINITION_STORE_TX_TIMEOUT_DEFAULT: 60
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
+        DEFINITION_STORE_DB_USERNAME: hmcts
+      secrets:
+        DEFINITION_STORE_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
       keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
