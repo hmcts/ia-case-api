@@ -404,7 +404,8 @@ class SendNotificationHandlerTest {
                     Event.END_APPEAL_AUTOMATICALLY,
                     Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
                     Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
-                    Event.PROGRESS_MIGRATED_CASE
+                    Event.PROGRESS_MIGRATED_CASE,
+                    Event.REFUND_CONFIRMATION
                 ).contains(event)) {
                 assertTrue(canHandle);
             } else {
@@ -487,7 +488,8 @@ class SendNotificationHandlerTest {
                         Event.DECIDE_FTPA_APPLICATION,
                         Event.PROGRESS_MIGRATED_CASE,
                         Event.UPDATE_TRIBUNAL_DECISION,
-                        Event.SEND_PAYMENT_REMINDER_NOTIFICATION
+                        Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
+                        Event.REFUND_CONFIRMATION
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {

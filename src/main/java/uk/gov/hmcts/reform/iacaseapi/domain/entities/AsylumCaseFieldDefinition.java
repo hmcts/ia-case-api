@@ -1,18 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.FtpaDecisionCheckValues;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+
+import java.util.List;
 
 public enum AsylumCaseFieldDefinition {
 
@@ -2729,6 +2724,7 @@ public enum AsylumCaseFieldDefinition {
 
     OOC_ADDRESS_LINE_1(
         "oocAddressLine1", new TypeReference<String>(){}),
+
     OOC_ADDRESS_LINE_2(
         "oocAddressLine2", new TypeReference<String>(){}),
 
@@ -2742,14 +2738,14 @@ public enum AsylumCaseFieldDefinition {
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
 
-    FEE_UPDATE_TRIBUNAL_ACTION(
-            "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
+   FEE_UPDATE_TRIBUNAL_ACTION(
+           "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
 
     AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
-            "automaticRemissionReminderLegalRep", new TypeReference<String>(){}),
+            "automaticRemissionReminderLegalRep", new TypeReference<String>() {}),
 
     REFUND_CONFIRMATION_APPLIED(
-            "refundConfirmationApplied", new TypeReference<YesOrNo>(){}),
+            "refundConfirmationApplied", new TypeReference<YesOrNo>() {}),
 
     OOC_ADDRESS_LINE_4(
         "oocAddressLine4", new TypeReference<String>(){}),
