@@ -16,6 +16,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
+@MockitoSettings(strictness = Strictness.LENIENT)
 class RequestFeeRemissionPreparerTest {
 
     @Mock private Callback<AsylumCase> callback;
@@ -151,7 +154,8 @@ class RequestFeeRemissionPreparerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
-
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {

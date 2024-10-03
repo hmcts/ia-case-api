@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +32,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDa
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
@@ -267,7 +271,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
     void should_return_whether_panel_is_required(YesOrNo yesOrNo) {
         when(asylumCase.read(IS_PANEL_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
@@ -275,7 +279,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
     void isIntegrated_should_work_as_expected(YesOrNo integrated) {
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(integrated));
 
@@ -283,7 +287,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
     void relistCaseImmediately_should_work_as_expected(YesOrNo relist) {
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class))
             .thenReturn(Optional.of(relist));
@@ -300,7 +304,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE","BEFORE_HEARING_DATE"})
+    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE", "BEFORE_HEARING_DATE"})
     void adjournBeforeHearingDay_should_work_as_expected(HearingAdjournmentDay adjournmentDay) {
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(adjournmentDay));
@@ -309,7 +313,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE","BEFORE_HEARING_DATE"})
+    @EnumSource(value = HearingAdjournmentDay.class, names = {"ON_HEARING_DATE", "BEFORE_HEARING_DATE"})
     void adjournOnHearingDay_should_work_as_expected(HearingAdjournmentDay adjournmentDay) {
         when(asylumCase.read(HEARING_ADJOURNMENT_WHEN, HearingAdjournmentDay.class))
             .thenReturn(Optional.of(adjournmentDay));
@@ -348,7 +352,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = YesOrNo.class, names = {"YES","NO"})
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
     void should_return_whether_case_uses_location_ref_data(YesOrNo yesOrNo) {
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
@@ -414,6 +418,54 @@ class HandlerUtilsTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertFalse(isOnlyRemoteToRemoteHearingChannelUpdate(callback));
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = {"NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION"})
+    void should_return_is_non_aip_remission_exists_proper_value(RemissionType remissionType) {
+
+        if (NO_REMISSION.equals(remissionType)) {
+            assertFalse(HandlerUtils.isRemissionExists(Optional.of(remissionType)));
+        } else {
+            assertTrue(HandlerUtils.isRemissionExists(Optional.of(remissionType)));
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAipRemissionParameters")
+    void should_return_aip_remission_exists_proper_value(RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption, boolean isDlrmFeeRemissionFlag, boolean expectedResult) {
+        boolean actualResult = HandlerUtils.isRemissionExistsAip(Optional.of(remissionOption), Optional.of(helpWithFeesOption), isDlrmFeeRemissionFlag);
+        assertEquals(expectedResult, actualResult);
+    }
+
+    private static Stream<Arguments> provideAipRemissionParameters() {
+        return Stream.of(
+            Arguments.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, true, true),
+            Arguments.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, false, false),
+            Arguments.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, true, true),
+            Arguments.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WILL_PAY_FOR_APPEAL, true, true),
+
+            Arguments.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, true, true),
+            Arguments.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, true, true),
+            Arguments.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.WILL_PAY_FOR_APPEAL, true, true),
+
+            Arguments.of(RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, true, true),
+            Arguments.of(RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, true, true),
+            Arguments.of(RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WILL_PAY_FOR_APPEAL, true, true),
+
+            Arguments.of(RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, true, true),
+            Arguments.of(RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, true, true),
+            Arguments.of(RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.WILL_PAY_FOR_APPEAL, true, true),
+
+            Arguments.of(RemissionOption.NO_REMISSION, HelpWithFeesOption.WANT_TO_APPLY, true, true),
+            Arguments.of(RemissionOption.NO_REMISSION, HelpWithFeesOption.ALREADY_APPLIED, true, true),
+            Arguments.of(RemissionOption.NO_REMISSION, HelpWithFeesOption.WILL_PAY_FOR_APPEAL, true, false),
+
+            Arguments.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES, HelpWithFeesOption.WANT_TO_APPLY, true, true),
+            Arguments.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES, HelpWithFeesOption.ALREADY_APPLIED, true, true),
+            Arguments.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES, HelpWithFeesOption.WILL_PAY_FOR_APPEAL, true, true)
+        );
     }
 
     @ParameterizedTest

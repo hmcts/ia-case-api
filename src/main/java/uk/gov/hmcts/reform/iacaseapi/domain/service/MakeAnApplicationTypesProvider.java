@@ -359,6 +359,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(SET_ASIDE_A_DECISION.name(), SET_ASIDE_A_DECISION.toString()));
+                values.add(new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 

@@ -442,6 +442,8 @@ dependencies {
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.2.14'
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
     contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
+    contractTestRuntime group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath

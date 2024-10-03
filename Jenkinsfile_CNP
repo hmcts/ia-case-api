@@ -179,6 +179,10 @@ withPipeline(type, product, component) {
     """
     }
 
+//enableFortifyScan()
+enableSecurityScan()
+//enableMutationTest()
+
     afterSuccess('akschartsinstall') {
         onPR {
             githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
@@ -194,16 +198,69 @@ withPipeline(type, product, component) {
     }
 
     afterAlways('functionalTest:preview') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         sh """
       ./bin/add-org-roles-to-users.sh
     """
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/functional",
+                reportFiles          : 'index.html',
+                reportName           : 'Functional Test Report'
+        ])
+
     }
 
-    afterAlways('functionalTest:aat') {
+        afterAlways('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+    }
+
+    afterAlways('smoketest:preview') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/smoke",
+                reportFiles          : "index.html",
+                reportName           : "Smoke Test Report"
+        ]
+    }
+
+    afterAlways('test') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/test",
+                reportFiles          : "index.html",
+                reportName           : "Unit Test Report"
+        ]
+        publishHTML([
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports",
+                reportFiles          : 'dependency-check-report.html',
+                reportName           : 'Dependency Check Report'
+        ])
+    }
+
+    afterSuccess('sonarscan') {
+
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/integration",
+                reportFiles          : "index.html",
+                reportName           : "Integration Test Report"
+        ]
     }
 
     enableSlackNotifications('#ia-tech')

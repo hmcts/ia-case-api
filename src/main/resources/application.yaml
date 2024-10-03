@@ -38,6 +38,25 @@ management:
       uri: ${IA_HEARINGS_API_URL:http://127.0.0.1:8100}/health
       response: '"status":"UP"'
 
+fees-register:
+  api:
+    url: ${FEES_REGISTER_API_URL:http://localhost:8991}
+  fees:
+    feeWithHearing:
+      channel: default
+      event: issue
+      jurisdiction1: tribunal
+      jurisdiction2: immigration and asylum chamber
+      keyword: HearingOral
+      service: other
+    feeWithoutHearing:
+      channel: default
+      event: issue
+      jurisdiction1: tribunal
+      jurisdiction2: immigration and asylum chamber
+      keyword: HearingPaper
+      service: other
+
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
@@ -114,6 +133,7 @@ requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
+legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 sendPaymentReminderNotification.dueInMinutesSinceSubmission: ${PAYMENT_REMINDER_DUE_IN_MINUTES:10080}
@@ -374,7 +394,9 @@ security:
       - "updateDetentionLocation"
       - "turnOnNotifications"
       - "generateServiceRequest"
+      - "recordRemissionReminder"
       - "markAppealAsRemitted"
+      - "refundConfirmation"
       - "progressMigratedCase"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -431,6 +453,7 @@ security:
       - "uploadAddendumEvidenceLegalRep"
       - "pipActivation"
       - "applyForFTPAAppellant"
+      - "requestFeeRemission"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -477,9 +500,10 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
-      - "sendPaymentReminderNotification"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "recordRemissionReminder"
+      - "sendPaymentReminderNotification"
       - "ariaCreateCase"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
