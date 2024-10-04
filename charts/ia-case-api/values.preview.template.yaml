@@ -16,7 +16,7 @@ java:
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
-    IA_TIMED_EVENT_SERVICE_URL: ${TES_URL}
+    IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
@@ -32,6 +32,7 @@ java:
     AAC_URL: https://aac-${SERVICE_FQDN}
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+    FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
   keyVaults:
     ia:
@@ -79,7 +80,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
+    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-348
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -126,8 +127,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-925
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-868 or relevant PR number to change DLRM
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -199,8 +199,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1271 #pr-1069 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1123
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -568,8 +567,8 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
-    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1069
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1139
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m

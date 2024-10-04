@@ -8,7 +8,8 @@ public enum RemissionOption {
     FEE_WAIVER_FROM_HOME_OFFICE("feeWaiverFromHo"),
     UNDER_18_GET_SUPPORT("under18GetSupportFromLocalAuthority"),
     PARENT_GET_SUPPORT("parentGetSupportFromLocalAuthority"),
-    NO_REMISSION("noneOfTheseStatements");
+    NO_REMISSION("noneOfTheseStatements"),
+    I_WANT_TO_GET_HELP_WITH_FEES("iWantToGetHelpWithFees");
 
 
     @JsonValue
