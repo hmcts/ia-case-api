@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_MIGRATION_TASK_DUE_DAYS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_TEMPORARY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.LATEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -140,8 +139,7 @@ class AriaCreateCaseHandlerTest {
 
                 boolean canHandle = ariaCreateCaseHandler.canHandle(callbackStage, callback);
 
-                if ((callbackStage == ABOUT_TO_SUBMIT && event == Event.ARIA_CREATE_CASE)
-                    || (event == Event.START_APPEAL && asylumCase.read(IS_ARIA_MIGRATED_TEMPORARY, YesOrNo.class).equals(Optional.of(YesOrNo.YES)))) {
+                if (callbackStage == ABOUT_TO_SUBMIT && event == Event.ARIA_CREATE_CASE) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
