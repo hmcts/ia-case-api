@@ -1,10 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_TYPE_CHANGED_WITH_REFUND_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_TRIBUNAL_ACTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_FEE_AMOUNT_GBP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction.REFUND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
@@ -14,21 +24,27 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 @Component
 public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
+    private final FeeService feeService;
 
-    public ManageFeeUpdateHandler(FeatureToggler featureToggler) {
+    public ManageFeeUpdateHandler(FeatureToggler featureToggler, FeeService feeService) {
         this.featureToggler = featureToggler;
+        this.feeService = feeService;
     }
 
     public boolean canHandle(
@@ -83,6 +99,29 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
             FEE_UPDATE_COMPLETED_STAGES,
             new ArrayList<>(feeUpdateCompleteStages)
         );
+
+        Optional<FeeUpdateReason> feeUpdateReason = asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class);
+
+        Optional<FeeTribunalAction> feeTribunalAction = asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class);
+
+        if (feeUpdateReason.isPresent() && feeUpdateReason.get().equals(DECISION_TYPE_CHANGED)
+            && feeTribunalAction.isPresent() && feeTribunalAction.get().equals(REFUND)) {
+            asylumCase.write(DECISION_TYPE_CHANGED_WITH_REFUND_FLAG, YES);
+            FeesHelper.findFeeByHearingType(feeService, asylumCase);
+        }
+
+        String decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class).orElse("");
+        Optional<String> updatedDecisionHearingFeeOption = asylumCase.read(UPDATED_DECISION_HEARING_FEE_OPTION, String.class);
+
+        if (updatedDecisionHearingFeeOption.isPresent() || feeTribunalAction.isPresent()) {
+            String feeAmountGbp = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
+            asylumCase.write(PREVIOUS_FEE_AMOUNT_GBP, feeAmountGbp);
+            FeesHelper.findFeeByHearingType(feeService, asylumCase);
+            if (updatedDecisionHearingFeeOption.isPresent()) {
+                asylumCase.write(PREVIOUS_DECISION_HEARING_FEE_OPTION, decisionHearingFeeOption);
+                asylumCase.write(DECISION_HEARING_FEE_OPTION, updatedDecisionHearingFeeOption.get());
+            }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

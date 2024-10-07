@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_APPEAL_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADA_SUITABILITY_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
@@ -238,7 +239,8 @@ class GenerateDocumentHandlerTest {
             SUBMIT_CLARIFYING_QUESTION_ANSWERS,
             RECORD_ADJOURNMENT_DETAILS,
             REQUEST_CASE_BUILDING,
-            ASYNC_STITCHING_COMPLETE
+            ASYNC_STITCHING_COMPLETE,
+            UPDATE_TRIBUNAL_DECISION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -286,6 +288,7 @@ class GenerateDocumentHandlerTest {
                 verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
                 verify(expectedUpdatedCase).write(APPEAL_DATE, FAKE_APPEAL_DATE.toString());
                 verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE,EXPECTED_FTPA_DEADLINE_UK.toString());
+                verify(expectedUpdatedCase).clear(UPDATED_APPEAL_DECISION);
             }
 
             reset(callback);
