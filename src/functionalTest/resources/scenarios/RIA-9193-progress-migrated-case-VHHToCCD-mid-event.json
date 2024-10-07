@@ -1,0 +1,33 @@
+{
+  "description": "RIA-9193 Progress migrated case VHHToCCD mid Event",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=migrateAriaCasesDocumentUploaderMidEvent",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "progressMigratedCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "ariaDesiredState": "ftpaDecided",
+          "isAriaMigrated": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "ftpaDecided",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAriaMigrated": "Yes",
+        "isAdmin": "Yes",
+        "ariaDesiredState": "ftpaDecided",
+        "migrationMainTextVisible": "VHHToCCD"
+      }
+    }
+  }
+}

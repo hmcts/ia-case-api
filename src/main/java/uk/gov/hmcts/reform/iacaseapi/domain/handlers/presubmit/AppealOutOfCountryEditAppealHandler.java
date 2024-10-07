@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -43,8 +44,9 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL
-                   || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+            && (callback.getEvent() == Event.START_APPEAL
+                || callback.getEvent() == Event.EDIT_APPEAL
+                || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
             && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
@@ -76,6 +78,8 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
                 clearHumanRightsDecision(asylumCase);
                 clearRefusalOfProtection(asylumCase);
+                clearEntryClearanceDecision(asylumCase);
+                clearLeaveUK(asylumCase);
 
                 YesOrNo isDetained = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
                 // If non-accelerated Detained or non Detained - remove Decision Receive date
@@ -122,7 +126,8 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 );
 
                 clearOutOfCountryDecision(asylumCase);
-                asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+                clearOutOfCountryAdminJ(asylumCase);
+                asylumCase.clear(SEARCH_POSTCODE);
                 clearAdaSuitabilityFields(asylumCase);
             }
 
@@ -154,20 +159,14 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         if (outOfCountryDecisionTypeOptional.isPresent()) {
             OutOfCountryDecisionType outOfCountryDecisionType = outOfCountryDecisionTypeOptional.get();
             switch (outOfCountryDecisionType) {
-                case REFUSAL_OF_HUMAN_RIGHTS:
+                case REFUSAL_OF_HUMAN_RIGHTS, REFUSE_PERMIT:
                     clearRefusalOfProtection(asylumCase);
-                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
                     asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
                     asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
                     break;
                 case REFUSAL_OF_PROTECTION:
                     clearHumanRightsDecision(asylumCase);
-                    break;
-                case REFUSE_PERMIT:
-                    clearRefusalOfProtection(asylumCase);
-                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
-                    asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
-                    asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
                     break;
                 case REMOVAL_OF_CLIENT:
                     clearHumanRightsDecision(asylumCase);
@@ -177,6 +176,43 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                     break;
             }
         }
+    }
+
+    private void clearOutOfCountryAdminJ(AsylumCase asylumCase) {
+        Optional<OutOfCountryCircumstances> outOfCountryCircumstancesOptional =
+            asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
+
+        if (outOfCountryCircumstancesOptional.isPresent()) {
+            OutOfCountryCircumstances outOfCountryDecisionType = outOfCountryCircumstancesOptional.get();
+
+            switch (outOfCountryDecisionType) {
+                case ENTRY_CLEARANCE_DECISION:
+                    clearLeaveUK(asylumCase);
+                    asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+                    asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
+                    asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                    break;
+                case LEAVE_UK:
+                    clearEntryClearanceDecision(asylumCase);
+                    break;
+                case NONE:
+                    clearEntryClearanceDecision(asylumCase);
+                    clearLeaveUK(asylumCase);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void clearLeaveUK(AsylumCase asylumCase) {
+        asylumCase.clear(DATE_CLIENT_LEAVE_UK_ADMIN_J);
+    }
+
+    private void clearEntryClearanceDecision(AsylumCase asylumCase) {
+        asylumCase.clear(GWF_REFERENCE_NUMBER);
+        asylumCase.clear(DATE_ENTRY_CLEARANCE_DECISION);
     }
 
     private void clearHumanRightsDecision(AsylumCase asylumCase) {
