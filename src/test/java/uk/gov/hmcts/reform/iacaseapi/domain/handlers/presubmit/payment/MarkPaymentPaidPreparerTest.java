@@ -138,7 +138,7 @@ class MarkPaymentPaidPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
-    void should_return_error_for_old_pa_ea_hu_cases(AppealType appealType) {
+    void should_return_error_for_old_ea_hu_eu_cases(AppealType appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -155,7 +155,7 @@ class MarkPaymentPaidPreparerTest {
     }
 
     @Test
-    void should_return_error_for_old_pa_ea_hu_cases_when_is_lr_journey_and_dlrm_fee_remission_is_enabled() {
+    void should_return_error_for_old_pa_cases_when_is_lr_journey_and_dlrm_fee_remission_is_enabled() {
         Mockito.when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
