@@ -123,6 +123,7 @@ ia-case-payments-api:
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
 
+
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
