@@ -33,6 +33,7 @@ public enum Event {
     REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),
     GENERATE_HEARING_BUNDLE("generateHearingBundle"),
     CUSTOMISE_HEARING_BUNDLE("customiseHearingBundle"),
+    GENERATE_UPDATED_HEARING_BUNDLE("generateUpdatedHearingBundle"),
     ASYNC_STITCHING_COMPLETE("asyncStitchingComplete"),
     DECISION_AND_REASONS_STARTED("decisionAndReasonsStarted"),
     GENERATE_DECISION_AND_REASONS("generateDecisionAndReasons"),
