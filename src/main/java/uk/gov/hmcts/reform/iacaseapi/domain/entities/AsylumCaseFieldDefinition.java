@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -2674,6 +2673,9 @@ public enum AsylumCaseFieldDefinition {
 
     IS_REMOTE_HEARING("isRemoteHearing", new TypeReference<YesOrNo>(){}),
 
+    NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){}),
+    NOTIFICATIONS_SENT("notificationsSent", new TypeReference<List<IdValue<String>>>(){}),
+
     REQUEST_FEE_REMISSION_DATE(
         "requestFeeRemissionDate", new TypeReference<String>(){}),
 
@@ -2693,8 +2695,7 @@ public enum AsylumCaseFieldDefinition {
         "previousDecisionHearingFeeOption", new TypeReference<String>(){}),
 
     UPDATED_DECISION_HEARING_FEE_OPTION(
-        "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
-    ;
+        "updatedDecisionHearingFeeOption", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
