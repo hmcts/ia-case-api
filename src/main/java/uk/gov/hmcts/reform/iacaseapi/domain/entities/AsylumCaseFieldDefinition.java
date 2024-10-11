@@ -2695,10 +2695,10 @@ public enum AsylumCaseFieldDefinition {
     UPDATED_DECISION_HEARING_FEE_OPTION(
         "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
 
-    ARIA_MIGRATED(
+    IS_ARIA_MIGRATED(
             "isAriaMigrated", new TypeReference<YesOrNo>(){}),
 
-    _MIGRATED_FILTER(
+    IS_ARIA_MIGRATED_FILTER(
             "isAriaMigratedFilter", new TypeReference<YesOrNo>(){}),
     ;
 
