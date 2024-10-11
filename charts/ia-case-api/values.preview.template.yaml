@@ -411,7 +411,7 @@ ia-bail-case-api:
       OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-      LOCATION_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
