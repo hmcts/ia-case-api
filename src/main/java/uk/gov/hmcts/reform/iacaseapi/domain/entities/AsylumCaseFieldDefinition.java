@@ -264,6 +264,9 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_SUBMITTED(
         "ftpaRespondentSubmitted", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_GROUNDS(
+            "ftpaAppellantGrounds", new TypeReference<String>(){}),
+
     FTPA_APPELLANT_APPLICATION_DATE(
         "ftpaAppellantApplicationDate", new TypeReference<String>(){}),
 
@@ -1301,6 +1304,8 @@ public enum AsylumCaseFieldDefinition {
         "feeAmountForDisplay", new TypeReference<String>(){}),
     FEE_AMOUNT_GBP(
         "feeAmountGbp", new TypeReference<String>(){}),
+    PREVIOUS_FEE_AMOUNT_GBP(
+        "previousFeeAmountGbp", new TypeReference<String>(){}),
     PBA_NUMBER(
             "pbaNumber", new TypeReference<String>(){}),
     PAYMENT_DESCRIPTION(
@@ -2274,6 +2279,9 @@ public enum AsylumCaseFieldDefinition {
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
 
+    HAS_ADDED_LEGAL_REP_DETAILS(
+        "hasAddedLegalRepDetails", new TypeReference<YesOrNo>(){}),
+
     HEARING_REQ_SUFFIX(
         "hearingReqSuffix", new TypeReference<String>(){}),
 
@@ -2598,14 +2606,44 @@ public enum AsylumCaseFieldDefinition {
     REASON_REHEARING_RULE_32(
             "reasonRehearingRule32", new TypeReference<String>(){}),
 
+    IS_DLRM_FEE_REFUND_ENABLED(
+            "isDlrmFeeRefundEnabled", new TypeReference<YesOrNo>(){}),
+
+    IS_LATE_REMISSION_REQUEST(
+            "isLateRemissionRequest", new TypeReference<YesOrNo>(){}),
+
+    ASYLUM_SUPPORT_REF_NUMBER(
+        "asylumSupportRefNumber", new TypeReference<String>(){}),
+
+    HELP_WITH_FEES_REF_NUMBER(
+        "helpWithFeesRefNumber", new TypeReference<String>(){}),
+
+    LOCAL_AUTHORITY_LETTERS(
+        "localAuthorityLetters", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    LATE_REMISSION_OPTION(
+        "lateRemissionOption", new TypeReference<RemissionOption>(){}),
+
+    LATE_ASYLUM_SUPPORT_REF_NUMBER(
+        "lateAsylumSupportRefNumber", new TypeReference<String>(){}),
+
+    LATE_HELP_WITH_FEES_OPTION(
+        "lateHelpWithFeesOption", new TypeReference<HelpWithFeesOption>(){}),
+
+    LATE_HELP_WITH_FEES_REF_NUMBER(
+        "lateHelpWithFeesRefNumber", new TypeReference<String>(){}),
+
+    LATE_LOCAL_AUTHORITY_LETTERS(
+        "lateLocalAuthorityLetters", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
     SOURCE_OF_REMITTAL(
-            "sourceOfRemittal", new TypeReference<SourceOfRemittal>(){}),
+        "sourceOfRemittal", new TypeReference<SourceOfRemittal>(){}),
 
     JUDGES_NAMES_TO_EXCLUDE(
-            "judgesNamesToExclude", new TypeReference<String>(){}),
+        "judgesNamesToExclude", new TypeReference<String>(){}),
 
     REMITTED_ADDITIONAL_INSTRUCTIONS(
-            "remittedAdditionalInstructions", new TypeReference<String>(){}),
+        "remittedAdditionalInstructions", new TypeReference<String>(){}),
 
     APPEAL_REMITTED_DATE(
         "appealRemittedDate", new TypeReference<String>() {}),
@@ -2636,8 +2674,28 @@ public enum AsylumCaseFieldDefinition {
     IS_REMOTE_HEARING("isRemoteHearing", new TypeReference<YesOrNo>(){}),
 
     NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){}),
-    NOTIFICATIONS_SENT("notificationsSent", new TypeReference<List<IdValue<String>>>(){});
+    NOTIFICATIONS_SENT("notificationsSent", new TypeReference<List<IdValue<String>>>(){}),
 
+    REQUEST_FEE_REMISSION_DATE(
+        "requestFeeRemissionDate", new TypeReference<String>(){}),
+
+    FEE_UPDATE_TRIBUNAL_ACTION(
+        "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
+
+    AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
+        "automaticRemissionReminderLegalRep", new TypeReference<String>(){}),
+
+    REFUND_CONFIRMATION_APPLIED(
+        "refundConfirmationApplied", new TypeReference<YesOrNo>(){}),
+
+    DECISION_TYPE_CHANGED_WITH_REFUND_FLAG(
+        "decisionTypeChangedWithRefundFlag", new TypeReference<YesOrNo>(){}),
+
+    PREVIOUS_DECISION_HEARING_FEE_OPTION(
+        "previousDecisionHearingFeeOption", new TypeReference<String>(){}),
+
+    UPDATED_DECISION_HEARING_FEE_OPTION(
+        "updatedDecisionHearingFeeOption", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

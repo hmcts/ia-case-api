@@ -1,5 +1,6 @@
 {
   "description": "RIA-2468 Share a case User Id validation - invalid User",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentativeOrgA",

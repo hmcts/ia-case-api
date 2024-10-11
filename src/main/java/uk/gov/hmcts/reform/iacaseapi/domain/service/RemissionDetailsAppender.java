@@ -5,6 +5,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -115,11 +116,43 @@ public class RemissionDetailsAppender {
         return append(existingRemissionDetails, newRemissionDetails);
     }
 
+    public List<IdValue<RemissionDetails>> appendAsylumSupportRefNumberRemissionDetails(
+        List<IdValue<RemissionDetails>> existingRemissionDetails,
+        String feeRemissionType,
+        String asylumSupportReference
+    ) {
+        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, asylumSupportReference);
+
+        return append(existingRemissionDetails, newRemissionDetails);
+    }
+
+    public List<IdValue<RemissionDetails>> appendRemissionOptionDetails(
+        List<IdValue<RemissionDetails>> existingRemissionDetails,
+        String feeRemissionType,
+        String helpWithFeesOption,
+        String helpWithFeesRefNumber
+    ) {
+        RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType);
+        newRemissionDetails.setHelpWithFeesOption(helpWithFeesOption);
+        newRemissionDetails.setHelpWithFeesReferenceNumber(helpWithFeesRefNumber);
+        return append(existingRemissionDetails, newRemissionDetails);
+    }
+
+    public List<IdValue<RemissionDetails>> appendLocalAuthorityRemissionDetails(
+        List<IdValue<RemissionDetails>> existingRemissionDetails,
+        String feeRemissionType,
+        List<IdValue<DocumentWithMetadata>> localAuthorityLetter
+    ) {
+        final RemissionDetails newRemissionDetails = new RemissionDetails(feeRemissionType, localAuthorityLetter);
+
+        return append(existingRemissionDetails, newRemissionDetails);
+    }
+
     private List<IdValue<RemissionDetails>> append(
         List<IdValue<RemissionDetails>> existingRemissionDetails,
         RemissionDetails newRemissionDetails) {
 
-        final  List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
+        final List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
 
         int index = existingRemissionDetails.size() + 1;
 

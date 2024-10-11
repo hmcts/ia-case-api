@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATED_APPEAL_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -217,27 +218,27 @@ class GenerateDocumentHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "SUBMIT_APPEAL",
-        "SUBMIT_CASE",
-        "LIST_CASE",
-        "EDIT_CASE_LISTING",
-        "GENERATE_DECISION_AND_REASONS",
-        "GENERATE_HEARING_BUNDLE",
-        "CUSTOMISE_HEARING_BUNDLE",
-        "SEND_DECISION_AND_REASONS",
-        "ADJOURN_HEARING_WITHOUT_DATE",
-        "END_APPEAL",
-        "SUBMIT_CMA_REQUIREMENTS",
-        "LIST_CMA",
-        "END_APPEAL_AUTOMATICALLY",
-        "EDIT_APPEAL_AFTER_SUBMIT",
-        "GENERATE_UPPER_TRIBUNAL_BUNDLE",
-        "SUBMIT_REASONS_FOR_APPEAL",
-        "SUBMIT_CLARIFYING_QUESTION_ANSWERS",
-        "RECORD_ADJOURNMENT_DETAILS",
-        "REQUEST_CASE_BUILDING",
-        "ASYNC_STITCHING_COMPLETE",
-        "SAVE_NOTIFICATIONS_TO_DATA"
+            "SUBMIT_APPEAL",
+            "SUBMIT_CASE",
+            "LIST_CASE",
+            "EDIT_CASE_LISTING",
+            "GENERATE_DECISION_AND_REASONS",
+            "GENERATE_HEARING_BUNDLE",
+            "CUSTOMISE_HEARING_BUNDLE",
+            "SEND_DECISION_AND_REASONS",
+            "ADJOURN_HEARING_WITHOUT_DATE",
+            "END_APPEAL",
+            "SUBMIT_CMA_REQUIREMENTS",
+            "LIST_CMA",
+            "END_APPEAL_AUTOMATICALLY",
+            "EDIT_APPEAL_AFTER_SUBMIT",
+            "GENERATE_UPPER_TRIBUNAL_BUNDLE",
+            "SUBMIT_REASONS_FOR_APPEAL",
+            "SUBMIT_CLARIFYING_QUESTION_ANSWERS",
+            "RECORD_ADJOURNMENT_DETAILS",
+            "REQUEST_CASE_BUILDING",
+            "ASYNC_STITCHING_COMPLETE",
+            "SAVE_NOTIFICATIONS_TO_DATA"
     })
     void should_generate_document_and_update_the_case(Event event) {
         AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -253,20 +254,20 @@ class GenerateDocumentHandlerTest {
             when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.empty());
             when(caseDetails.getState()).thenReturn(state);
             when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class))
-                .thenReturn(Optional.of("Yes"));
+                    .thenReturn(Optional.of("Yes"));
             when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
         }
 
         if (event.equals(SEND_DECISION_AND_REASONS)) {
             when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
-                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+                    .thenReturn(Optional.of(AppealDecision.ALLOWED));
             when(dateProvider.now()).thenReturn(FAKE_APPEAL_DATE);
         }
 
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(expectedUpdatedCase, callbackResponse.getData());

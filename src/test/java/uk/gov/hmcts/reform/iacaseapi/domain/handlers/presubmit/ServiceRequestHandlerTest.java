@@ -5,14 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,59 +47,21 @@ class ServiceRequestHandlerTest {
     }
 
     @Test
-    void no_journey_type_should_make_feePayment_submit_callback() {
+    void should_make_feePayment_submit_callback() {
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty()); // empty = not AIP
-
-        AsylumCase responseAsylumCase = mock(AsylumCase.class);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(responseAsylumCase); // empty = not AIP
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
-    }
-
-    @Test
-    void lr_should_make_feePayment_submit_callback() {
-
-        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
         AsylumCase responseAsylumCase = mock(AsylumCase.class);
         when(feePayment.aboutToSubmit(callback)).thenReturn(responseAsylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
     }
 
-    @Test
-    void aip_should_not_make_feePayment_submit_callback() {
-
-        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        // JourneyType optional empty = not AIP
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-    }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
