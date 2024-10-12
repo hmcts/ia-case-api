@@ -57,9 +57,9 @@ public class UpdateTribunalDecisionDocumentUploadRule31MidEvent implements PreSu
 
                 Document previousDecisionAndReasonsDoc = decisionAndReasonsDoc.get();
 
-                Document amendedDecisionAndReasonsDoc = new Document(previousDecisionAndReasonsDoc.getDocumentUrl(), previousDecisionAndReasonsDoc.getDocumentBinaryUrl(), getDecisionAndReasonsFilename(asylumCase));
+                Document updatedDecisionAndReasonsDoc = new Document(previousDecisionAndReasonsDoc.getDocumentUrl(), previousDecisionAndReasonsDoc.getDocumentBinaryUrl(), getDecisionAndReasonsFilename(asylumCase));
 
-                asylumCase.write(DECISION_AND_REASON_DOCS_UPLOAD, amendedDecisionAndReasonsDoc);
+                asylumCase.write(DECISION_AND_REASON_DOCS_UPLOAD, updatedDecisionAndReasonsDoc);
             }
             return new PreSubmitCallbackResponse<>(asylumCase);
 
@@ -86,6 +86,6 @@ public class UpdateTribunalDecisionDocumentUploadRule31MidEvent implements PreSu
                 + "-"
                 + "Decision-and-reasons"
                 + "-"
-                + "AMENDED.pdf";
+                + "UPDATED.pdf";
     }
 }
