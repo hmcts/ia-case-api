@@ -196,20 +196,19 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class);
 
         verify(asylumCase, times(1)).read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class);
-        verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
         verify(asylumCase, times(1)).read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
         verify(asylumCase, times(1)).read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class);
 
         if (!listCaseHearingCentre.equals(DECISION_WITHOUT_HEARING) && decisionWithoutHearingFlag.equals(NO)) {
+            verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
             verify(asylumCase, times(1)).read(LIST_CASE_HEARING_DATE, String.class);
-        }
+            verify(asylumCase, times(1)).read(IS_INTEGRATED, YesOrNo.class);
 
-        verify(asylumCase, times(1)).read(IS_INTEGRATED, YesOrNo.class);
-
-        if (isIntegrated(asylumCase)) {
-            verify(asylumCase, times(1)).read(LISTING_LENGTH, HoursMinutes.class);
-        } else {
-            verify(asylumCase, times(1)).read(LIST_CASE_HEARING_LENGTH, String.class);
+            if (isIntegrated(asylumCase)) {
+                verify(asylumCase, times(1)).read(LISTING_LENGTH, HoursMinutes.class);
+            } else {
+                verify(asylumCase, times(1)).read(LIST_CASE_HEARING_LENGTH, String.class);
+            }
         }
 
         verify(asylumCase, times(1)).read(APPEAL_DECISION, String.class);

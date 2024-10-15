@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingConductionOptions.DECISION_WITHOUT_HEARING;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,17 +17,26 @@ public class PreviousHearing {
 
     @Getter
     private Optional<String> attendingJudge;
+
     @Getter
     private Optional<String> attendingAppellant;
+
     @Getter
     private Optional<String> attendingHomeOfficeLegalRepresentative;
+
     @Getter
     private Optional<HoursAndMinutes> actualCaseHearingLength;
+
+    @Getter
     private String ariaListingReference;
-    private HearingCentre listCaseHearingCentre;
+
     @Getter
     private String listCaseHearingDate;
+
+    @Getter
     private String listCaseHearingLength;
+
+    private HearingCentre listCaseHearingCentre;
     private String appealDecision;
     private List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments;
 
@@ -47,8 +57,6 @@ public class PreviousHearing {
         List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments
 
     ) {
-        requireNonNull(ariaListingReference);
-        requireNonNull(listCaseHearingLength);
         requireNonNull(appealDecision);
         requireNonNull(finalDecisionAndReasonsDocuments);
 
@@ -64,19 +72,9 @@ public class PreviousHearing {
         this.finalDecisionAndReasonsDocuments = finalDecisionAndReasonsDocuments;
     }
 
-    public String getAriaListingReference() {
-        requireNonNull(ariaListingReference);
-        return ariaListingReference;
-    }
-
     public HearingCentre getListCaseHearingCentre() {
         requireNonNull(listCaseHearingCentre);
         return listCaseHearingCentre;
-    }
-
-    public String getListCaseHearingLength() {
-        requireNonNull(listCaseHearingLength);
-        return listCaseHearingLength;
     }
 
     public String getAppealDecision() {
@@ -88,4 +86,5 @@ public class PreviousHearing {
         requireNonNull(finalDecisionAndReasonsDocuments);
         return finalDecisionAndReasonsDocuments;
     }
+
 }
