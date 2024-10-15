@@ -42,8 +42,8 @@ public class NoticeOfChangeSetOrganisationToRemove implements PreSubmitCallbackH
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = apiDelegator.delegate(callback, aacUrl + setSetOrganisationToRemoveApiPath);
+        // AsylumCase asylumCase = apiDelegator.delegate(callback, aacUrl + setSetOrganisationToRemoveApiPath);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(callback.getCaseDetails().getCaseData());
     }
 }
