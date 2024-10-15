@@ -127,8 +127,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         final Optional<HoursAndMinutes> actualCaseHearingLength = asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class);
 
-        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
-            .orElseThrow(() -> new IllegalStateException("listCaseHearingCentre is missing."));
+        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(null);
 
         final boolean decisionWithoutHearing = asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)
                 .map(yesOrNo -> YesOrNo.YES == yesOrNo).orElse(false);
@@ -137,19 +136,21 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         String ariaListingReference = null;
         String listCaseHearingLength = null;
 
-        if (!listCaseHearingCentre.equals(HearingCentre.DECISION_WITHOUT_HEARING) && !decisionWithoutHearing) {
-            ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
-                    .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
-
+        if (listCaseHearingCentre != null && !listCaseHearingCentre.equals(HearingCentre.DECISION_WITHOUT_HEARING) && !decisionWithoutHearing) {
             listCaseHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
                     .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
 
-            listCaseHearingLength = isIntegrated(asylumCase)
-                    ? asylumCase.read(LISTING_LENGTH, HoursMinutes.class)
-                    .map(listingLength -> String.valueOf(listingLength.convertToIntegerMinutes()))
-                    .orElseThrow(() -> new IllegalStateException("listingLength is missing."))
-                    : asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
-                    .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing."));
+            if (isIntegrated(asylumCase)) {
+                ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
+
+                listCaseHearingLength = asylumCase.read(LISTING_LENGTH, HoursMinutes.class)
+                        .map(listingLength -> String.valueOf(listingLength.convertToIntegerMinutes()))
+                        .orElseThrow(() -> new IllegalStateException("listingLength is missing."));
+            } else {
+                listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
+                        .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing."));
+            }
         }
 
         final String appealDecision = asylumCase.read(APPEAL_DECISION, String.class)

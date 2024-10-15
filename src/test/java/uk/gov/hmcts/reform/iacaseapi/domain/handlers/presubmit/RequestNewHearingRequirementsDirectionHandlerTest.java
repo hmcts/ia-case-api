@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.contains;
@@ -107,12 +106,8 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     void should_append_new_direction_to_existing_directions_for_the_case(
             YesOrNo isIntegrated, HearingCentre listCaseHearingCentre, YesOrNo decisionWithoutHearingFlag
     ) {
-
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
-        final List<IdValue<DocumentWithMetadata>> hearingRequirements =
-                singletonList(new IdValue<>("1", hearingRequirements1));
-
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2020-10-06";
@@ -138,13 +133,10 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
         when(asylumCase.read(ATTENDING_JUDGE, String.class)).thenReturn(Optional.of(attendingJudge));
         when(asylumCase.read(ATTENDING_APPELLANT, String.class)).thenReturn(Optional.of(attendingAppellant));
-        when(asylumCase.read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class))
-                .thenReturn(Optional.of(attendingHomeOfficeLegalRepresentative));
-        when(asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class))
-                .thenReturn(Optional.of(actualCaseHearingLength));
+        when(asylumCase.read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class)).thenReturn(Optional.of(attendingHomeOfficeLegalRepresentative));
+        when(asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class)).thenReturn(Optional.of(actualCaseHearingLength));
         when(asylumCase.read(ARIA_LISTING_REFERENCE, String.class)).thenReturn(Optional.of(ariaListingReference));
-        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
-                .thenReturn(Optional.of(listCaseHearingCentre));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.ofNullable(listCaseHearingCentre));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(isIntegrated));
         when(asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)).thenReturn(Optional.of(decisionWithoutHearingFlag));
@@ -199,12 +191,12 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
         verify(asylumCase, times(1)).read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class);
 
-        if (!listCaseHearingCentre.equals(DECISION_WITHOUT_HEARING) && decisionWithoutHearingFlag.equals(NO)) {
-            verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
+        if (listCaseHearingCentre != null && !listCaseHearingCentre.equals(DECISION_WITHOUT_HEARING) && decisionWithoutHearingFlag.equals(NO)) {
             verify(asylumCase, times(1)).read(LIST_CASE_HEARING_DATE, String.class);
             verify(asylumCase, times(1)).read(IS_INTEGRATED, YesOrNo.class);
 
             if (isIntegrated(asylumCase)) {
+                verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
                 verify(asylumCase, times(1)).read(LISTING_LENGTH, HoursMinutes.class);
             } else {
                 verify(asylumCase, times(1)).read(LIST_CASE_HEARING_LENGTH, String.class);
@@ -215,7 +207,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
         verify(asylumCase, times(1)).write(PREVIOUS_HEARINGS, Collections.EMPTY_LIST);
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, NO);
-
     }
 
     static Stream<Arguments> hearingCentersScenarios() {
@@ -223,7 +214,8 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                 Arguments.of(YES, NEWPORT, YES),
                 Arguments.of(YES, NEWPORT, NO),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, YES),
-                Arguments.of(NO, DECISION_WITHOUT_HEARING, NO)
+                Arguments.of(NO, DECISION_WITHOUT_HEARING, NO),
+                Arguments.of(NO, null, NO)
         );
     }
 
