@@ -1,0 +1,32 @@
+{
+  "description": "RIA-9152 Aria Create Case should set relevant data (isAriaMigrated, appealReferenceNumber)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "SystemUser",
+    "input": {
+      "eventId": "ariaCreateCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appealReferenceNumber": null,
+          "ariaMigrationTaskDueDays": "5"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5,}\/[0-9]{4}/",
+        "isAriaMigrated": "Yes",
+        "isAriaMigratedFilter": "Yes",
+        "appealSubmissionDate": "{$TODAY}",
+        "ariaMigrationTaskDueDays": "5"
+      }
+    }
+  }
+}

@@ -3,16 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_PROTECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -61,9 +60,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-               && Arrays.asList(
-                Event.SUBMIT_APPEAL)
-                   .contains(callback.getEvent());
+               && Event.SUBMIT_APPEAL.equals(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -80,6 +77,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 .getCaseData();
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+        Optional<OutOfCountryCircumstances> outOfCountryCircumstances = asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
 
         // If case data has oocDecisionType && ADA=YES, it means appeal was moving from in-country to OOC
         if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase) && outOfCountryDecisionTypeOptional.isEmpty()) {
@@ -89,13 +87,23 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
         } else if (!HandlerUtils.isAipJourney(asylumCase)) {
             boolean isOutOfCountry = outOfCountryDecisionTypeOptional.isPresent();
+            boolean isOutOfCountryCircumstances = outOfCountryCircumstances.isPresent();
+
             AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("Appeal type is missing"));
-            LocalDate decisionDate = isOutOfCountry
-                ? handleOutOfCountryAppeal(asylumCase, outOfCountryDecisionTypeOptional.get())
-                : handleInCountryAppeal(asylumCase, appealType);
-            if (decisionDate != null
-                && decisionDate.isBefore(dateProvider.now().minusDays(isOutOfCountry ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
+            LocalDate decisionDate;
+
+            if (isInternalCase(asylumCase)) {
+                decisionDate = isOutOfCountryCircumstances
+                    ? handleOutOfCountryInternalAppeal(asylumCase, outOfCountryCircumstances.get())
+                    : handleInCountryAppeal(asylumCase, appealType);
+            } else {
+                decisionDate = isOutOfCountry
+                    ? handleOutOfCountryAppeal(asylumCase, outOfCountryDecisionTypeOptional.get())
+                    : handleInCountryAppeal(asylumCase, appealType);
+            }
+
+            if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances)) {
                 asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
                 asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
             } else {
@@ -133,18 +141,18 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
             case REMOVAL_OF_CLIENT:
                 Optional<String> homeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
                 return parse(homeOfficeDecisionLetterDate
-                        .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+                    .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
 
             case REFUSAL_OF_PROTECTION:
                 Optional<String> dateClientLeaveUk = asylumCase.read(DATE_CLIENT_LEAVE_UK);
                 return parse(dateClientLeaveUk
-                        .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
+                    .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
 
             case REFUSAL_OF_HUMAN_RIGHTS:
             case REFUSE_PERMIT:
                 Optional<String> dateEntryClearanceDecision = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
                 return parse(dateEntryClearanceDecision
-                        .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
+                    .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
 
             default:
                 throw new RequiredFieldMissingException("decisionLetterReceivedDate is not present");
@@ -160,5 +168,27 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
             return parse(homeOfficeDecisionDate
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
         }
+    }
+
+    private LocalDate handleOutOfCountryInternalAppeal(AsylumCase asylumCase, OutOfCountryCircumstances outOfCountryCircumstances) {
+        switch (outOfCountryCircumstances) {
+            case ENTRY_CLEARANCE_DECISION:
+                Optional<String> dateEntryClearanceDecision = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
+                return parse(dateEntryClearanceDecision
+                    .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
+
+            case LEAVE_UK:
+            case NONE:
+                Optional<String> homeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+                return parse(homeOfficeDecisionLetterDate
+                    .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+
+            default:
+                throw new RequiredFieldMissingException("decisionLetterReceivedDate is not present");
+        }
+    }
+
+    private boolean isDecisionDateBeforeAppealOutOfTimeDate(LocalDate decisionDate, boolean isOutOfCountry, boolean isOutOfCountryCircumstances) {
+        return decisionDate.isBefore(dateProvider.now().minusDays(isOutOfCountry || isOutOfCountryCircumstances ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk));
     }
 }

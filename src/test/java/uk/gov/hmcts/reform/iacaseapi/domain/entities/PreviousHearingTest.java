@@ -81,58 +81,6 @@ class PreviousHearingTest {
             attendingAppellant,
             attendingHomeOfficeLegalRepresentative,
             actualCaseHearingLength,
-            null,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            null,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            null,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            null,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
             ariaListingReference,
             listCaseHearingCentre,
             listCaseHearingDate,
