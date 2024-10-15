@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingConductionOptions.DECISION_WITHOUT_HEARING;
 
 import java.util.List;
 import java.util.Optional;
