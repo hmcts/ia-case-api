@@ -141,13 +141,13 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
                     .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
 
             if (isIntegrated(asylumCase)) {
-                ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
-                        .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
-
                 listCaseHearingLength = asylumCase.read(LISTING_LENGTH, HoursMinutes.class)
                         .map(listingLength -> String.valueOf(listingLength.convertToIntegerMinutes()))
                         .orElseThrow(() -> new IllegalStateException("listingLength is missing."));
             } else {
+                ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
+
                 listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
                         .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing."));
             }

@@ -196,9 +196,9 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
             verify(asylumCase, times(1)).read(IS_INTEGRATED, YesOrNo.class);
 
             if (isIntegrated(asylumCase)) {
-                verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
                 verify(asylumCase, times(1)).read(LISTING_LENGTH, HoursMinutes.class);
             } else {
+                verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
                 verify(asylumCase, times(1)).read(LIST_CASE_HEARING_LENGTH, String.class);
             }
         }
