@@ -1,17 +1,9 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DATE_OF_COMPLIANCE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_EVENT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_LOCATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION_DETAIL;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SEND_DIRECTION_DESCRIPTION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SEND_DIRECTION_LIST;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent.INITIAL_LISTING;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -20,22 +12,23 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.PreviousListingDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DueDateService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.refdata.CourtVenue;
@@ -43,11 +36,17 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.refdata.Cour
 @Component
 public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
 
+    private final Appender<PreviousListingDetails> previousListingDetailsAppender;
     private final DueDateService dueDateService;
     private final LocationRefDataService locationRefDataService;
 
-    public CaseListingHandler(DueDateService dueDateService, LocationRefDataService locationRefDataService) {
+    public CaseListingHandler(
+        Appender<PreviousListingDetails> previousListingDetailsAppender,
+        DueDateService dueDateService,
+        LocationRefDataService locationRefDataService
+    ) {
         this.dueDateService = dueDateService;
+        this.previousListingDetailsAppender = previousListingDetailsAppender;
         this.locationRefDataService = locationRefDataService;
     }
 
@@ -62,6 +61,7 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
                && callback.getEvent() == Event.CASE_LISTING;
     }
 
+    @Override
     public PreSubmitCallbackResponse<BailCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<BailCase> callback
@@ -69,15 +69,9 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-
-        final BailCase bailCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-
+        BailCase bailCase = callback.getCaseDetails().getCaseData();
         ListingEvent listingEvent = bailCase.read(LISTING_EVENT, ListingEvent.class)
             .orElseThrow(() -> new RequiredFieldMissingException("listingEvent is not present"));
-
         if (listingEvent == INITIAL_LISTING) {
             String hearingDate = bailCase.read(LIST_CASE_HEARING_DATE, String.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("listingHearingDate is not present"));
@@ -111,7 +105,41 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
 
             bailCase.write(SEND_DIRECTION_LIST, "Home Office");
             bailCase.write(DATE_OF_COMPLIANCE, dueDate);
-            bailCase.write(UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE, YesOrNo.YES);
+            bailCase.write(UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE, YES);
+        } else {
+            CaseDetails<BailCase> caseDetailsBefore = callback.getCaseDetailsBefore().orElse(null);
+            BailCase bailCaseBefore = caseDetailsBefore == null ? null : caseDetailsBefore.getCaseData();
+            if (bailCaseBefore != null) {
+                ListingEvent prevListingEvent = bailCaseBefore.read(LISTING_EVENT, ListingEvent.class)
+                    .orElse(null);
+                ListingHearingCentre prevListingLocation = bailCaseBefore.read(LISTING_LOCATION,
+                                                                               ListingHearingCentre.class)
+                    .orElse(null);
+                String prevListingHearingDate = bailCaseBefore.read(LIST_CASE_HEARING_DATE, String.class)
+                    .orElse(null);
+                String prevListingHearingDuration = bailCaseBefore.read(LISTING_HEARING_DURATION, String.class)
+                    .orElse(null);
+
+                if (prevListingEvent == null || prevListingLocation == null || prevListingHearingDate == null || prevListingHearingDuration == null) {
+                    PreSubmitCallbackResponse<BailCase> response = new PreSubmitCallbackResponse<>(bailCase);
+                    response.addError("Relisting is only available after an initial listing.");
+                    return response;
+                }
+
+                Optional<List<IdValue<PreviousListingDetails>>> maybeExistingPreviousListingDetails =
+                    bailCase.read(PREVIOUS_LISTING_DETAILS);
+                final PreviousListingDetails newPreviousListingDetails =
+                    new PreviousListingDetails(prevListingEvent,
+                                               prevListingLocation,
+                                               prevListingHearingDate,
+                                               prevListingHearingDuration);
+                List<IdValue<PreviousListingDetails>> allPreviousListingDetails =
+                    previousListingDetailsAppender.append(newPreviousListingDetails,
+                                                          maybeExistingPreviousListingDetails.orElse(emptyList()));
+
+                bailCase.write(PREVIOUS_LISTING_DETAILS, allPreviousListingDetails);
+                bailCase.write(HAS_BEEN_RELISTED, YES);
+            }
         }
 
         updateListingLocValueByUsingRefDataLocValue(bailCase);
@@ -125,7 +153,7 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
 
         if (isBailsLocationRefDataEnabled == YES) {
             Value selectedRefDataLocation = bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class)
-                .map(dynamicList -> dynamicList.getValue()).orElse(null);
+                .map(DynamicList::getValue).orElse(null);
 
             if (selectedRefDataLocation != null) {
                 saveRefDataListingLocationDetail(bailCase, selectedRefDataLocation.getCode());
@@ -147,9 +175,7 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
     private void saveRefDataListingLocationDetail(BailCase bailCase, String epimmsId) {
         if (!StringUtils.isEmpty(epimmsId)) {
             Optional<CourtVenue> courtVenue = locationRefDataService.getCourtVenuesByEpimmsId(epimmsId);
-            if (courtVenue.isPresent()) {
-                bailCase.write(REF_DATA_LISTING_LOCATION_DETAIL, courtVenue.get());
-            }
+            courtVenue.ifPresent(venue -> bailCase.write(REF_DATA_LISTING_LOCATION_DETAIL, venue));
         }
     }
 }

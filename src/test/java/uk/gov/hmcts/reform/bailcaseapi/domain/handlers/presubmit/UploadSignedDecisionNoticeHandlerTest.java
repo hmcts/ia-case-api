@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_DATE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPrio
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +78,6 @@ public class UploadSignedDecisionNoticeHandlerTest {
         when(unsignedDecisionNoticeMetadata1.getTag()).thenReturn(DocumentTag.BAIL_DECISION_UNSIGNED);
         when(tribunalDocument1.getTag()).thenReturn(DocumentTag.UPLOAD_DOCUMENT);
         when(tribunalDocument2.getTag()).thenReturn(DocumentTag.BAIL_SUBMISSION);
-
     }
 
     @Test
@@ -104,6 +102,8 @@ public class UploadSignedDecisionNoticeHandlerTest {
             .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocumentsWithoutUnSignedDoc);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
+        verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.NO);
+        verify(bailCase, times(1)).clear(DECISION_UNSIGNED_DOCUMENT);
     }
 
     @Test
@@ -124,6 +124,7 @@ public class UploadSignedDecisionNoticeHandlerTest {
             .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
+        verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.NO);
     }
 
     @Test
@@ -142,6 +143,7 @@ public class UploadSignedDecisionNoticeHandlerTest {
             .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
+        verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.NO);
     }
 
     @Test
@@ -155,7 +157,6 @@ public class UploadSignedDecisionNoticeHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-
         assertThatThrownBy(
             () -> uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

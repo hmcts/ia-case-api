@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -9,25 +10,38 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.BailCaseUtils;
 import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.DecisionType;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.Appender;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> {
 
+    private final Appender<PreviousDecisionDetails> previousDecisionDetailsAppender;
     private final DateProvider dateProvider;
 
     private static final String REFUSED = "refused";
     private static final String GRANTED = "granted";
     private static final String REFUSED_UNDER_IMA = "refusedUnderIma";
 
-    public DecisionTypeAppender(DateProvider dateProvider) {
+    public DecisionTypeAppender(
+        Appender<PreviousDecisionDetails> previousDecisionDetailsAppender,
+        DateProvider dateProvider
+    ) {
+        this.previousDecisionDetailsAppender = previousDecisionDetailsAppender;
         this.dateProvider = dateProvider;
     }
 
@@ -75,7 +89,7 @@ public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> 
         if (
             BailCaseUtils.isImaEnabled(bailCase)
                 && (decisionGrantedOrRefused.equals(REFUSED_UNDER_IMA)
-                    || recordTheDecisionList.equals(REFUSED_UNDER_IMA))) {
+                || recordTheDecisionList.equals(REFUSED_UNDER_IMA))) {
             bailCase.write(RECORD_DECISION_TYPE, DecisionType.REFUSED_UNDER_IMA);
 
         } else if (decisionGrantedOrRefused.equals(REFUSED) || recordTheDecisionList.equals(REFUSED)
@@ -87,7 +101,7 @@ public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> 
             bailCase.write(RECORD_DECISION_TYPE, DecisionType.GRANTED);
 
         } else if ((decisionGrantedOrRefused.equals(GRANTED) && releaseStatusYesOrNo == NO)
-                   || (ssConsentDecision == YES && releaseStatusYesOrNo == NO)) {
+            || (ssConsentDecision == YES && releaseStatusYesOrNo == NO)) {
             bailCase.write(RECORD_DECISION_TYPE, DecisionType.CONDITIONAL_GRANT);
 
         } else {
@@ -98,10 +112,37 @@ public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> 
         // Following two definitions are needed for UI only.
         // It is to have different section for Unsigned Decision Details for Admin and Judges.
         bailCase.write(DECISION_UNSIGNED_DETAILS_DATE, decisionDate);
-        bailCase.write(RECORD_UNSIGNED_DECISION_TYPE,
-                       bailCase.read(RECORD_DECISION_TYPE, String.class)
-                           .orElseThrow(() -> new IllegalStateException("Record decision type missing")));
+        bailCase.write(
+            RECORD_UNSIGNED_DECISION_TYPE,
+            bailCase.read(RECORD_DECISION_TYPE, String.class)
+                .orElseThrow(() -> new IllegalStateException("Record decision type missing"))
+        );
         bailCase.clear(HAS_CASE_BEEN_FORCED_TO_HEARING);
+        CaseDetails<BailCase> caseDetailsBefore = callback.getCaseDetailsBefore().orElse(null);
+        BailCase bailCaseBefore = caseDetailsBefore == null ? null : caseDetailsBefore.getCaseData();
+        if (bailCaseBefore != null) {
+            String prevDecisionDetailsDate = bailCaseBefore.read(DECISION_DETAILS_DATE, String.class)
+                .orElse(null);
+            String prevRecordDecisionType = bailCaseBefore.read(RECORD_DECISION_TYPE, String.class)
+                .orElse(null);
+            Document prevUploadSignedDecisionNoticeDocument = bailCaseBefore.read(
+                    UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class)
+                .orElse(null);
+            if (prevDecisionDetailsDate != null && prevRecordDecisionType != null && prevUploadSignedDecisionNoticeDocument != null) {
+                Optional<List<IdValue<PreviousDecisionDetails>>> maybeExistingPreviousDecisionDetails =
+                    bailCase.read(PREVIOUS_DECISION_DETAILS);
+                final PreviousDecisionDetails newPreviousDecisionDetails = new PreviousDecisionDetails(
+                    prevDecisionDetailsDate, prevRecordDecisionType, prevUploadSignedDecisionNoticeDocument);
+                List<IdValue<PreviousDecisionDetails>> allPreviousDecisionDetails = previousDecisionDetailsAppender
+                    .append(
+                        newPreviousDecisionDetails,
+                        maybeExistingPreviousDecisionDetails.orElseGet(Collections::emptyList)
+                    );
+                bailCase.write(PREVIOUS_DECISION_DETAILS, allPreviousDecisionDetails);
+                bailCase.clear(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT);
+            }
+        }
+
         return new PreSubmitCallbackResponse<>(bailCase);
     }
 
