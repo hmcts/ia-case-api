@@ -122,6 +122,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
@@ -506,8 +507,7 @@ class EditAppealAfterSubmitHandlerTest {
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
-
-        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
 
         assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
         assertThat(outOfTime.getValue()).isEqualTo(NO);
@@ -530,13 +530,12 @@ class EditAppealAfterSubmitHandlerTest {
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+        editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
-        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+        verify(asylumCase, times(3)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(3)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getAllValues()).contains(SUBMISSION_OUT_OF_TIME);
         assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
         assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
