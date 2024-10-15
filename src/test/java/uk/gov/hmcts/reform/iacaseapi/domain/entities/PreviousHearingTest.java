@@ -96,19 +96,6 @@ class PreviousHearingTest {
             actualCaseHearingLength,
             ariaListingReference,
             listCaseHearingCentre,
-            null,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
             listCaseHearingDate,
             null,
             appealDecision,
