@@ -569,7 +569,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1221
     # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1139
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
@@ -1204,7 +1204,6 @@ aac-manage-case-assignment:
             alias: IDAM_NOC_APPROVER_PASSWORD
           - name: notify-mca-api-key-secret
             alias: NOTIFY_MCA_API_KEY
-
 
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
