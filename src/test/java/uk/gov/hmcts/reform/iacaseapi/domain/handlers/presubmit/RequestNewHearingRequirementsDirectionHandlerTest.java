@@ -260,7 +260,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
 
     @Test
     void should_not_allow_null_arguments() {
-
         assertThatThrownBy(() -> requestNewHearingRequirementsDirectionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
