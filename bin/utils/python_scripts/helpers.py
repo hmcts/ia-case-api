@@ -73,7 +73,7 @@ def process_field_type(entry):
     field_type = entry.get('FieldType')
 
     if field_type == 'Label':
-        return f'redacted - {entry["ID"]}'
+        return None
     elif field_type == 'Text':
         if 'number' in entry["ID"].lower:
             return '123456789'
@@ -93,6 +93,36 @@ def process_field_type(entry):
         return '10 Street'
     elif field_type == 'Email':
         return 'email@redacted.com'
+    elif field_type == 'appealGroundsEuRefusal':
+        return None
+    elif field_type == 'appealGroundsHumanRightsRefusal':
+        return None
+    elif field_type == 'appealGroundsDecisionHumanRightsRefusal':
+        return None
+    elif field_type == 'appealGroundsDeprivation':
+        return None
+    elif field_type == 'appealGroundsHumanRights':
+        return None
+    elif field_type == 'appealGroundsProtection':
+        return None
+    elif field_type == 'isFeeConsistentWithDecision':
+        return None
+    elif field_type == 'feeUpdateStatus':
+        return None
+    elif field_type == 'isDocumentSignedToday':
+        return None
+    elif field_type == 'makeAnApplication':
+        return None
+    elif field_type == 'FlagLauncher':
+        return None
+    elif field_type == 'ComponentLauncher':
+        return None
+    elif field_type == 'Document':
+        return None
+    elif field_type == 'appealGroundsEuRefusal':
+        return None
+    elif field_type == 'appealGroundsEuRefusal':
+        return None
 
 
 def get_fields_from_case_field_json(filepath: str) -> dict:
@@ -129,9 +159,59 @@ def get_fields_from_case_field_json(filepath: str) -> dict:
     return redacted_dict
 
 
+def get_unique_field_types(filepath: str) -> set:
+    """Extract unique FieldType values from the JSON."""
+    field_types = set()  # Use a set to store unique FieldType values
+
+    try:
+        with open(filepath, 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found.")
+        return set()
+    except json.JSONDecodeError:
+        print(f"Error: Failed to decode JSON from file '{filepath}'.")
+        return set()
+
+    # Iterate over the entries and collect FieldType values
+    for entry in data:
+        if isinstance(entry, dict):  # Ensure the entry is a dictionary
+            field_type = entry.get('FieldType')
+            if field_type:
+                field_types.add(field_type)
+
+    return field_types
+
+
+def output_field_types_to_csv(filepath: str):
+    """Write the unique FieldType values to a CSV file."""
+    # Extract unique FieldType values
+    field_types = get_unique_field_types(filepath)
+
+    # Define the output directory and CSV file path
+    output_directory = settings.scripts_dir
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    csv_filepath = os.path.join(output_directory, 'unique_field_types.csv')
+
+    # Write the FieldType values to the CSV file
+    try:
+        with open(csv_filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['FieldType'])  # CSV header
+            for field_type in field_types:
+                writer.writerow([field_type])
+        print(f"Unique FieldTypes have been written to '{csv_filepath}'")
+    except Exception as e:
+        print(f"Error writing to CSV: {e}")
+
+
 
 # remove_first_n_rows("/ia-case-api/bin/utils/python_scripts/output_csv_files/case_event_202407221346_redacted.csv", 2)
 
 # update_case_data_with_latest_event("/ia-case-api/bin/utils/python_scripts/output_csv_files/case_data_202407221421_redacted.csv", "ia-case-api/bin/utils/python_scripts/output_csv_files/case_event_202407221346_redacted_reduced.csv")
 
-get_fields_from_case_field_json("/Users/jacobcohensolirius/HMCTS/IA/ia-ccd-definitions/definitions/appeal/json/CaseField.json")
+# get_fields_from_case_field_json("/ia-ccd-definitions/definitions/appeal/json/CaseField.json")
+
+# output_field_types_to_csv('/scratches/scratch_3.json')
