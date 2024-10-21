@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExistsAip;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -41,8 +41,8 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.RECORD_REMISSION_DECISION
-               && featureToggler.getValue("remissions-feature", false);
+            && callback.getEvent() == Event.RECORD_REMISSION_DECISION
+            && featureToggler.getValue("remissions-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -69,6 +69,8 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
             case EU:
             case PA:
             case AG:
+                final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+
                 Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
 
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
@@ -80,7 +82,7 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
                 Optional<RemissionDecision> remissionDecision =
                     asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType) && !isRemissionExistsAip(remissionOptionAip, helpWithFeesOptionAip)) {
+                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType) && !isRemissionExistsAip(remissionOptionAip, helpWithFeesOptionAip, isDlrmFeeRemissionFlag)) {
 
                     callbackResponse.addError("You cannot record a remission decision because a remission has not been requested for this appeal");
 
@@ -89,7 +91,7 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
                     callbackResponse.addError("The fee for this appeal has already been paid.");
 
                 } else if (remissionDecision.isPresent()
-                           && Arrays.asList(APPROVED, PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())) {
+                    && Arrays.asList(APPROVED, PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())) {
 
                     callbackResponse.addError("The remission decision for this appeal has already been recorded.");
 
@@ -112,26 +114,13 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         return callbackResponse;
     }
 
-    private boolean isRemissionExists(Optional<RemissionType> remissionType) {
-
-        return remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION;
-    }
-
-    private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
-        boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-
-        return (remissionOption.isPresent() && remissionOption.get() != NO_REMISSION)
-               || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
-                  && isDlrmFeeRemission;
-    }
-
     private boolean isRemissionAmountLeftPaid(
         Optional<RemissionDecision> remissionDecision, Optional<PaymentStatus> paymentStatus
     ) {
 
         return remissionDecision.isPresent()
-               && Arrays.asList(PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())
-               && paymentStatus.isPresent()
-               && Arrays.asList(PaymentStatus.PAID).contains(paymentStatus.get());
+            && Arrays.asList(PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())
+            && paymentStatus.isPresent()
+            && Arrays.asList(PaymentStatus.PAID).contains(paymentStatus.get());
     }
 }

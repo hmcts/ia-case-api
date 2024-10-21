@@ -1,26 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.AG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExistsAip;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -111,7 +101,8 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                     if (isAipJourney) {
                         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
                         Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-                        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption)) {
+                        final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+                        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)) {
                             callbackResponse.addError(NOT_AVAILABLE_LABEL);
                         }
                     } else {
@@ -148,12 +139,14 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
         // old cases
-        if ((appealType == PA && remissionType.isEmpty() && paPaymentType.isEmpty())
-            || (isEaHuEuAg && remissionType.isEmpty()
-            && eaHuPaymentType.isEmpty())) {
+        if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType)
+                && ((appealType == PA && paPaymentType.isEmpty()) || (isEaHuEuAg && eaHuPaymentType.isEmpty()))
+        ) {
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
-        if (isEaHuEuAg && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
+        if (!isRemissionExists(remissionType)
+            && !isRemissionExists(lateRemissionType)
+            && isEaHuEuAg
             && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payNow")
             && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
@@ -172,14 +165,6 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         } else if (remissionDecisionApproved(asylumCase)) {
             callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
         }
-    }
-
-    private boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
-        boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-
-        return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
-            || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
-            && isDlrmFeeRemission;
     }
 
     private boolean awaitingRemissionDecision(AsylumCase asylumCase) {
