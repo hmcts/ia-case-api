@@ -131,6 +131,8 @@ class Settings:
         'interpreterGivenNames': 'redacted - interpreterGivenNames',
         'interpreterPhoneNumber': '12345678999',
         'flagComment': 'redacted - flagComment',
+        'physicalOrMentalHealthIssuesDescription': 'redacted - physicalOrMentalHealthIssuesDescription',
+        'pastExperiencesDescription': 'redacted - pastExperiencesDescription'
     }
 
     csv_rows_to_redact = {
