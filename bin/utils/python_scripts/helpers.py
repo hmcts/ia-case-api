@@ -123,6 +123,9 @@ def process_field_type(entry):
         return None
     elif field_type == 'appealGroundsEuRefusal':
         return None
+    else:
+        print(f'Unrecognised field type: {field_type}')
+        return None
 
 
 def get_fields_from_case_field_json(filepath: str) -> dict:
