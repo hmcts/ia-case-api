@@ -39,10 +39,11 @@ public class EventTest {
         assertEquals("imaStatus", Event.IMA_STATUS.toString());
         assertEquals("changeTribunalCentre", Event.CHANGE_TRIBUNAL_CENTRE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
+        assertEquals("uploadHearingRecording", Event.UPLOAD_HEARING_RECORDING.toString());
     }
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(34, Event.values().length);
+        assertEquals(35, Event.values().length);
     }
 }

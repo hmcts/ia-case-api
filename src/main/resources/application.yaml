@@ -118,6 +118,7 @@ security:
       - "imaStatus"
       - "forceCaseToHearing"
       - "changeTribunalCentre"
+      - "uploadHearingRecording"
     caseworker-ia-homeofficebail:
       - "startApplication"
       - "uploadBailSummary"
@@ -149,6 +150,7 @@ security:
       - "maintainBailCaseLinks"
       - "createFlag"
       - "forceCaseToHearing"
+      - "uploadHearingRecording"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

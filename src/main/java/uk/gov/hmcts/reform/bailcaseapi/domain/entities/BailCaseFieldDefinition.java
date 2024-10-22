@@ -663,7 +663,10 @@ public enum BailCaseFieldDefinition {
     IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED_FT(
         "isBailsLocationReferenceDataEnabledFt", new TypeReference<YesOrNo>() {}),
     HAS_CASE_BEEN_FORCED_TO_HEARING(
-        "hasCaseBeenForcedToHearing", new TypeReference<YesOrNo>() {});
+        "hasCaseBeenForcedToHearing", new TypeReference<YesOrNo>() {}),
+
+    HEARING_RECORDING_DOCUMENTS(
+        "hearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){});
 
     private final String value;
     private final TypeReference typeReference;
