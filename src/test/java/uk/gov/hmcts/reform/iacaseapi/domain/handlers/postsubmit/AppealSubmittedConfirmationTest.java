@@ -183,7 +183,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeAdminConfirmation.png)\n");
+                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())

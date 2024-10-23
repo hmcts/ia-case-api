@@ -4,9 +4,11 @@ import static java.time.LocalDate.parse;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -66,7 +68,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return (((callbackStage == PreSubmitCallbackStage.MID_EVENT  && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID))
+        return (((callbackStage == PreSubmitCallbackStage.MID_EVENT && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID))
             || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
             && callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT);
     }
@@ -87,6 +89,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+        YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
 
         if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
                 .orElse(NO) == YES) {
@@ -100,6 +103,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
             handleInCountryAgeAssessmentAppeal(asylumCase);
             clearLitigationFriendDetails(asylumCase);
+        } else if (isInternalCase(asylumCase) && appellantInUk.equals(NO)) {
+            handleOutOfCountryAppeal(asylumCase, REFUSE_PERMIT);
         } else {
             handleInCountryAppeal(asylumCase);
         }
@@ -111,6 +116,9 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
+            if (isInternalCase(asylumCase)) {
+                clearLegalRepFields(asylumCase);
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -142,6 +150,28 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                         }
                     }
             );
+        }
+    }
+
+    private void clearLegalRepFields(AsylumCase asylumCase) {
+        YesOrNo appellantsRepresentation = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class).orElse(NO);
+        if (YES.equals(appellantsRepresentation)) {
+            asylumCase.clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+            asylumCase.clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+            asylumCase.clear(LEGAL_REP_COMPANY_PAPER_J);
+            asylumCase.clear(LEGAL_REP_GIVEN_NAME);
+            asylumCase.clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+            asylumCase.clear(LEGAL_REP_EMAIL);
+            asylumCase.clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+
+            asylumCase.clear(LEGAL_REP_ADDRESS_U_K);
+            asylumCase.clear(OOC_ADDRESS_LINE_1);
+            asylumCase.clear(OOC_ADDRESS_LINE_2);
+            asylumCase.clear(OOC_ADDRESS_LINE_3);
+            asylumCase.clear(OOC_ADDRESS_LINE_4);
+            asylumCase.clear(OOC_COUNTRY_LINE);
+            asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
+            asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
         }
     }
 

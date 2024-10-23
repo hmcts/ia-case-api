@@ -1,0 +1,27 @@
+{
+  "description": "RIA-9458 Aria Create Case should set relevant data (isAriaMigrated, appealReferenceNumber)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "SystemUser",
+    "input": {
+      "eventId": "ariaCreateCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appealReferenceNumber": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You must provide ariaMigrationTaskDueDays as part of the case creation."],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": null
+      }
+    }
+  }
+}

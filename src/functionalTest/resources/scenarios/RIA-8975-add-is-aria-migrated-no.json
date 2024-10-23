@@ -1,0 +1,25 @@
+{
+  "description": "RIA-8975 Add is ARIA migrated flag (NO) during start appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAriaMigrated": "No",
+        "isAriaMigratedFilter": "No"
+      }
+    }
+  }
+}

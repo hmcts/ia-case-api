@@ -94,14 +94,14 @@ class ManageFeeUpdateHandlerTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
-            new CheckValues<>(Collections.singletonList(
-                "Fee update recorded"
-            ));
+                new CheckValues<>(Collections.singletonList(
+                        "Fee update recorded"
+                ));
 
         final List<String> expectedFeeUpdateStatus =
-            Arrays.asList(
-                "Fee update recorded"
-            );
+                Arrays.asList(
+                        "Fee update recorded"
+                );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -112,7 +112,7 @@ class ManageFeeUpdateHandlerTest {
         when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(REFUND));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -128,22 +128,22 @@ class ManageFeeUpdateHandlerTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
-            new CheckValues<>(Arrays.asList(
-                "Refund approved",
-                "Fee update not required"
-            ));
+                new CheckValues<>(Arrays.asList(
+                        "Refund approved",
+                        "Fee update not required"
+                ));
 
         final List<String> completedStagesFeeUpdateStatus =
-            Arrays.asList(
-                "Fee update recorded",
-                "Refund approved"
-            );
+                Arrays.asList(
+                        "Fee update recorded",
+                        "Refund approved"
+                );
         final List<String> expectedFeeUpdateStatus =
-            Arrays.asList(
-                "Fee update recorded",
-                "Refund approved",
-                "Fee update not required"
-            );
+                Arrays.asList(
+                        "Fee update recorded",
+                        "Refund approved",
+                        "Fee update not required"
+                );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -153,7 +153,7 @@ class ManageFeeUpdateHandlerTest {
         when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStagesFeeUpdateStatus));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -165,9 +165,9 @@ class ManageFeeUpdateHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> manageFeeUpdateHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -184,7 +184,7 @@ class ManageFeeUpdateHandlerTest {
                 boolean canHandle = manageFeeUpdateHandler.canHandle(callbackStage, callback);
 
                 if ((event == Event.MANAGE_FEE_UPDATE)
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -282,18 +282,18 @@ class ManageFeeUpdateHandlerTest {
 
     private static Stream<Arguments> provideParameterValues() {
         return Stream.of(
-            Arguments.of(DECISION_TYPE_CHANGED, REFUND),
-            Arguments.of(DECISION_TYPE_CHANGED, ADDITIONAL_PAYMENT),
-            Arguments.of(DECISION_TYPE_CHANGED, NO_ACTION),
-            Arguments.of(APPEAL_NOT_VALID, REFUND),
-            Arguments.of(APPEAL_NOT_VALID, ADDITIONAL_PAYMENT),
-            Arguments.of(APPEAL_NOT_VALID, NO_ACTION),
-            Arguments.of(FEE_REMISSION_CHANGED, REFUND),
-            Arguments.of(FEE_REMISSION_CHANGED, ADDITIONAL_PAYMENT),
-            Arguments.of(FEE_REMISSION_CHANGED, NO_ACTION),
-            Arguments.of(APPEAL_WITHDRAWN, REFUND),
-            Arguments.of(APPEAL_WITHDRAWN, ADDITIONAL_PAYMENT),
-            Arguments.of(APPEAL_WITHDRAWN, NO_ACTION)
+                Arguments.of(DECISION_TYPE_CHANGED, REFUND),
+                Arguments.of(DECISION_TYPE_CHANGED, ADDITIONAL_PAYMENT),
+                Arguments.of(DECISION_TYPE_CHANGED, NO_ACTION),
+                Arguments.of(APPEAL_NOT_VALID, REFUND),
+                Arguments.of(APPEAL_NOT_VALID, ADDITIONAL_PAYMENT),
+                Arguments.of(APPEAL_NOT_VALID, NO_ACTION),
+                Arguments.of(FEE_REMISSION_CHANGED, REFUND),
+                Arguments.of(FEE_REMISSION_CHANGED, ADDITIONAL_PAYMENT),
+                Arguments.of(FEE_REMISSION_CHANGED, NO_ACTION),
+                Arguments.of(APPEAL_WITHDRAWN, REFUND),
+                Arguments.of(APPEAL_WITHDRAWN, ADDITIONAL_PAYMENT),
+                Arguments.of(APPEAL_WITHDRAWN, NO_ACTION)
         );
     }
 }
