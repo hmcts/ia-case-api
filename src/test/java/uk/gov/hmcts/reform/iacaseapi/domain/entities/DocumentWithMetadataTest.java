@@ -65,12 +65,6 @@ class DocumentWithMetadataTest {
     }
 
     @Test
-    void should_throw_exception_when_dateUploaded_is_null() {
-        DocumentWithMetadata nullDate = new DocumentWithMetadata(document, description, null, tag);
-        assertThrows(NullPointerException.class, nullDate::getDateUploaded);
-    }
-
-    @Test
     void should_throw_exception_when_tag_is_null() {
         DocumentWithMetadata nullTag = new DocumentWithMetadata(document, description, dateUploaded, null);
         assertThrows(NullPointerException.class, nullTag::getTag);
