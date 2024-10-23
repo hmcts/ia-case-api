@@ -86,13 +86,7 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
             List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
                 maybeExistingLegalRepDocuments.orElse(emptyList());
 
-            for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
-                if (existingLegalRepDocument.getValue().getTag() != null) {
-                    if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)) {
-                        legalRepDocumentsContainSupportDocs = true;
-                    }
-                }
-            }
+            legalRepDocumentsContainSupportDocs = checkIfAppealNotSubmittedDocumentExist(existingLegalRepDocuments);
 
             if (legalRepDocumentsContainSupportDocs) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
@@ -107,5 +101,16 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean checkIfAppealNotSubmittedDocumentExist(List<IdValue<DocumentWithMetadata>> listOfLegalRepDocuments) {
+        for (IdValue<DocumentWithMetadata> existingLegalRepDocument : listOfLegalRepDocuments) {
+            if (existingLegalRepDocument.getValue().getTag() != null) {
+                if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

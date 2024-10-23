@@ -89,12 +89,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
                 if (isDlrmFeeRemission) {
                     if (isAipJourney) {
-                        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-                        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-                        final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-                        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)) {
-                            callbackResponse.addError(NOT_AVAILABLE_LABEL);
-                        }
+                        processAipRemissionConditions(asylumCase, callbackResponse);
                     } else {
                         checkPaymentConditions(appealType, asylumCase, callbackResponse, remissionType, lateRemissionType);
                     }
@@ -165,4 +160,12 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         return HandlerUtils.isInternalCase(asylumCase) && HandlerUtils.isAppellantInDetention(asylumCase);
     }
 
+    private void processAipRemissionConditions(AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
+        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
+        final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)) {
+            callbackResponse.addError(NOT_AVAILABLE_LABEL);
+        }
+    }
 }
