@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -71,7 +72,7 @@ class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    void should_successfully_retain_the_current_state() {
+    void should_successfully_retain_the_current_state_stitching_not_done() {
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -86,7 +87,25 @@ class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    void should_successfully_change_the_current_state_to_pre_hearing() {
+    void should_successfully_retain_the_current_state_stitching_not_done_updated_hearing_bundle() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(caseDetails.getState()).thenReturn(State.PRE_HEARING);
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_BUNDLES);
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
+
+        assertEquals(State.PRE_HEARING, returnedCallbackResponse.getState());
+    }
+
+    @Test
+    void should_successfully_change_the_current_state_to_pre_hearing_stitching_done() {
 
         Bundle finishedBundle =
             new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("DONE"), Optional.empty(),
@@ -104,6 +123,29 @@ class AdvancedFinalBundlingStateHandlerTest {
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "DONE");
 
         assertEquals(State.PRE_HEARING, returnedCallbackResponse.getState());
+    }
+
+    @Test
+    void should_successfully_retain_the_current_state_stitching_done_updated_hearing_bundle() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(caseDetails.getState()).thenReturn(State.DECISION);
+        Bundle finishedBundle =
+            new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("DONE"), Optional.empty(),
+                YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.clear();
+        caseBundles.add(new IdValue<>("1", finishedBundle));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_BUNDLES);
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "DONE");
+
+        assertEquals(State.DECISION, returnedCallbackResponse.getState());
     }
 
     @Test

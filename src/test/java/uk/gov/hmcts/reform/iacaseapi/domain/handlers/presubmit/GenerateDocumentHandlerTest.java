@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL_AUTOMATICALLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_UPDATED_HEARING_BUNDLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_DECISION_AND_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_HEARING_BUNDLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_UPPER_TRIBUNAL_BUNDLE;
@@ -226,6 +227,7 @@ class GenerateDocumentHandlerTest {
             GENERATE_DECISION_AND_REASONS,
             GENERATE_HEARING_BUNDLE,
             CUSTOMISE_HEARING_BUNDLE,
+            GENERATE_UPDATED_HEARING_BUNDLE,
             SEND_DECISION_AND_REASONS,
             ADJOURN_HEARING_WITHOUT_DATE,
             END_APPEAL,
@@ -396,6 +398,7 @@ class GenerateDocumentHandlerTest {
                         GENERATE_DECISION_AND_REASONS,
                         GENERATE_HEARING_BUNDLE,
                         CUSTOMISE_HEARING_BUNDLE,
+                        GENERATE_UPDATED_HEARING_BUNDLE,
                         SEND_DECISION_AND_REASONS,
                         ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL,
@@ -556,6 +559,7 @@ class GenerateDocumentHandlerTest {
                         GENERATE_DECISION_AND_REASONS,
                         GENERATE_HEARING_BUNDLE,
                         CUSTOMISE_HEARING_BUNDLE,
+                        GENERATE_UPDATED_HEARING_BUNDLE,
                         EDIT_CASE_LISTING,
                         SEND_DECISION_AND_REASONS,
                         ADJOURN_HEARING_WITHOUT_DATE,
@@ -606,7 +610,7 @@ class GenerateDocumentHandlerTest {
                     && (eventsThatDontRequireStitching.contains(event))) {
                     assertTrue(canHandle);
                 } else if (event.equals(GENERATE_HEARING_BUNDLE)
-                    || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
+                    || event.equals(CUSTOMISE_HEARING_BUNDLE) || event.equals(GENERATE_UPDATED_HEARING_BUNDLE)) {
                     assertFalse(canHandle);
                 } else {
                     assertFalse(canHandle, "event: " + event + ", stage: " + callbackStage);

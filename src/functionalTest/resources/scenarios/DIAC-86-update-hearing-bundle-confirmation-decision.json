@@ -1,0 +1,22 @@
+{
+  "description": "DIAC-86 Updated hearing bundle confirmation decision state",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateUpdatedHearingBundle",
+      "state": "decision",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# The hearing bundle is being generated",
+      "body": "#### What happens next\n\nYou will soon be able to view the hearing bundle in the [Documents tab](/cases/case-details/1234#Documents) in your case details page.</br>All other parties will be notified when the hearing bundle is available.</br>If the bundle fails to generate, you will get a notification and you will need to try again."
+    }
+  }
+}
