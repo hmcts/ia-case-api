@@ -24,38 +24,38 @@ class PreviousHearingTest {
     private final String appealDecision = "Dismissed";
 
     private final Document doc = new Document(
-        "documentUrl",
-        "binaryUrl",
-        "documentFilename");
-
-    private final DocumentWithMetadata decisionAndReasonsDocument = new DocumentWithMetadata(
-        new Document(
             "documentUrl",
             "binaryUrl",
-            "documentFilename"),
-        "description",
-        "dateUploaded",
-        DocumentTag.FINAL_DECISION_AND_REASONS_PDF
+            "documentFilename");
+
+    private final DocumentWithMetadata decisionAndReasonsDocument = new DocumentWithMetadata(
+            new Document(
+                    "documentUrl",
+                    "binaryUrl",
+                    "documentFilename"),
+            "description",
+            "dateUploaded",
+            DocumentTag.FINAL_DECISION_AND_REASONS_PDF
     );
 
     private final List<IdValue<DocumentWithMetadata>> allFinalDecisionAndReasonsDocuments = asList(
-        new IdValue<DocumentWithMetadata>(
-            "1",
-            decisionAndReasonsDocument
-        )
+            new IdValue<DocumentWithMetadata>(
+                    "1",
+                    decisionAndReasonsDocument
+            )
     );
 
     private PreviousHearing previousHearing = new PreviousHearing(
-        attendingJudge,
-        attendingAppellant,
-        attendingHomeOfficeLegalRepresentative,
-        actualCaseHearingLength,
-        ariaListingReference,
-        listCaseHearingCentre,
-        listCaseHearingDate,
-        listCaseHearingLength,
-        appealDecision,
-        allFinalDecisionAndReasonsDocuments
+            attendingJudge,
+            attendingAppellant,
+            attendingHomeOfficeLegalRepresentative,
+            actualCaseHearingLength,
+            ariaListingReference,
+            listCaseHearingCentre,
+            listCaseHearingDate,
+            listCaseHearingLength,
+            appealDecision,
+            allFinalDecisionAndReasonsDocuments
     );
 
     @Test
@@ -63,7 +63,7 @@ class PreviousHearingTest {
         assertEquals(attendingJudge, previousHearing.getAttendingJudge());
         assertEquals(attendingAppellant, previousHearing.getAttendingAppellant());
         assertEquals(attendingHomeOfficeLegalRepresentative,
-            previousHearing.getAttendingHomeOfficeLegalRepresentative());
+                previousHearing.getAttendingHomeOfficeLegalRepresentative());
         assertEquals(actualCaseHearingLength, previousHearing.getActualCaseHearingLength());
         assertEquals(ariaListingReference, previousHearing.getAriaListingReference());
         assertEquals(listCaseHearingCentre, previousHearing.getListCaseHearingCentre());
@@ -77,81 +77,29 @@ class PreviousHearingTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            null,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
+                attendingJudge,
+                attendingAppellant,
+                attendingHomeOfficeLegalRepresentative,
+                actualCaseHearingLength,
+                ariaListingReference,
+                listCaseHearingCentre,
+                listCaseHearingDate,
+                listCaseHearingLength,
+                null,
+                allFinalDecisionAndReasonsDocuments))
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            null,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            null,
-            listCaseHearingLength,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            null,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            null,
-            allFinalDecisionAndReasonsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            appealDecision,
-            null))
-            .isExactlyInstanceOf(NullPointerException.class);
+                attendingJudge,
+                attendingAppellant,
+                attendingHomeOfficeLegalRepresentative,
+                actualCaseHearingLength,
+                ariaListingReference,
+                listCaseHearingCentre,
+                listCaseHearingDate,
+                listCaseHearingLength,
+                appealDecision,
+                null))
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 }
