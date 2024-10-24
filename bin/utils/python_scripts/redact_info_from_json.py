@@ -1,6 +1,7 @@
 import os
 import json
 import csv
+import sys
 
 from filepath_settings import settings
 
@@ -23,6 +24,8 @@ replace_mapping_keys = [x.lower() for x in list(settings.replace_mapping_dict.ke
 replace_csv_mapping_keys = [x.lower() for x in list(settings.csv_rows_to_redact.keys())]
 
 lowercase_dict = {key.lower(): value for key, value in settings.replace_mapping_dict.items()}
+
+csv.field_size_limit(sys.maxsize)
 
 
 def redact_values_from_json(file_path, keys_to_redact):
