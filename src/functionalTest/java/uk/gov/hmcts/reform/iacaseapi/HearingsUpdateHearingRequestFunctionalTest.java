@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HearingsUpdateHea
  */
 @Slf4j
 @ActiveProfiles("functional")
-@Disabled
 public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationTest {
 
     @BeforeEach
