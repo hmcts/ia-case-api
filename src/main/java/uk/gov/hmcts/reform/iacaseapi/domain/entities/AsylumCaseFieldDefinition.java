@@ -596,6 +596,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_NOTES(
         "caseNotes", new TypeReference<List<IdValue<CaseNote>>>(){}),
 
+    HEARING_ID_LIST(
+            "hearingIdList", new TypeReference<DynamicList>(){}),
+
     ADD_CASE_NOTE_DOCUMENT(
         "addCaseNoteDocument", new TypeReference<Document>(){}),
 

@@ -89,6 +89,8 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         asylumCase.write(CASE_NOTES, allCaseNotes);
 
+        asylumCase.write(HEARING_ID_LIST, 1);
+
         asylumCase.clear(ADD_CASE_NOTE_SUBJECT);
         asylumCase.clear(ADD_CASE_NOTE_DESCRIPTION);
         asylumCase.clear(ADD_CASE_NOTE_DOCUMENT);
