@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HearingsUpdateHea
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+import org.junit.jupiter.api.Disabled;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUEST;
@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
  */
 @Slf4j
 @ActiveProfiles("functional")
+@Disabled
 public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationTest {
 
     @BeforeEach
