@@ -16,6 +16,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class StartAppealCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public StartAppealCreateCaseHandler() {
+    }
+
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
