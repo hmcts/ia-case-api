@@ -26,17 +26,5 @@
   ],
   "legalRepReferenceNumber": "CASE001",
   "legalRepresentativeEmailAddress": "ia-law-firm-org-sc@fake.hmcts.net",
-  "paymentReference": "RC-1627-5070-9329-7815",
-  "changeHearings": {
-    "value": {
-      "code": "INTER",
-      "label": "In Person"
-    },
-    "list_items": [
-      {
-        "code": "INTER",
-        "label": "In Person"
-      }
-    ]
-  }
+  "paymentReference": "RC-1627-5070-9329-7815"
 }
