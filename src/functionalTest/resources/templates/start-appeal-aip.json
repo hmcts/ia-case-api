@@ -16,5 +16,17 @@
       }
     }
   ],
-  "journeyType": "aip"
+  "journeyType": "aip",
+  "changeHearings": {
+    "value": {
+      "code": "INTER",
+      "label": "In Person"
+    },
+    "list_items": [
+      {
+        "code": "INTER",
+        "label": "In Person"
+      }
+    ]
+  }
 }
