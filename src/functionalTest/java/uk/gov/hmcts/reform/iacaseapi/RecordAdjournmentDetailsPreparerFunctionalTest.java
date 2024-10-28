@@ -1,17 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,9 +12,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
+
 @Slf4j
 @ActiveProfiles("functional")
-@Disabled
 public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreationTest {
 
     @BeforeEach
