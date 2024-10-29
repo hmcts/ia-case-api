@@ -1,3 +1,4 @@
+# Test DIAC-647
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
