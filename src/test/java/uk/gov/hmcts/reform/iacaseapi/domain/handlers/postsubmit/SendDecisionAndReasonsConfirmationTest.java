@@ -13,9 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -29,10 +27,6 @@ class SendDecisionAndReasonsConfirmationTest {
     @Mock
     private RoleAssignmentService roleAssignmentService;
     @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -45,7 +39,6 @@ class SendDecisionAndReasonsConfirmationTest {
     void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             sendDecisionAndReasonsConfirmation.handle(callback);

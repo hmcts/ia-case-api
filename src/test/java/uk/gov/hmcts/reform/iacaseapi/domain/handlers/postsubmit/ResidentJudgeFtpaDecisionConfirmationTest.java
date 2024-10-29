@@ -23,11 +23,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -52,11 +51,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     private FeatureToggler featureToggler;
     @Mock
     private RoleAssignmentService roleAssignmentService;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private UserDetails userDetails;
-
+    @InjectMocks
     private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation;
 
 
@@ -74,7 +69,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("granted"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -106,7 +100,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("partiallyGranted"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -137,7 +130,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("refused"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -169,7 +161,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of(
             "notAdmitted"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -201,7 +192,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule32"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -235,7 +225,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule35"));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(toggleDlrmFlag);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -275,7 +264,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("remadeRule31"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -307,7 +295,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("remadeRule32"));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(false);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -339,7 +326,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("remadeRule32"));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
