@@ -5,12 +5,16 @@ import static java.util.Collections.singletonList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
@@ -41,6 +45,7 @@ public class RoleAssignmentService {
         this.roleAssignmentApi = roleAssignmentApi;
         this.userDetails = userDetails;
         this.idamService = idamService;
+
     }
 
     public void assignRole(long caseDetailsId, String assigneeId) {
@@ -110,6 +115,46 @@ public class RoleAssignmentService {
             roleAssignmentApi.deleteRoleAssignment(
                 idamService.getServiceUserToken(),
                 serviceAuthTokenGenerator.generate(), assignmentId);
+        }
+    }
+
+    public void removeCaseManagerRole(
+            Callback<AsylumCase> callback,
+            List<String> rolesForRemoval,
+            List<RoleCategory> roleCategories
+    ) {
+        List<String> userRoles = userDetails.getRoles();
+
+        if (userRoles.stream().noneMatch(rolesForRemoval::contains)) {
+            log.info("User does not have the required roles. Case Manager role was not removed.");
+            return;
+        }
+
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleName(List.of(RoleName.CASE_MANAGER))
+            .roleCategory(roleCategories)
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(caseId)
+            ))
+            .build();
+        log.debug("Query role assignment with the parameters: {}", queryRequest);
+
+        RoleAssignmentResource roleAssignmentResource = queryRoleAssignments(queryRequest);
+        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().findFirst();
+
+        if (roleAssignment.isPresent()) {
+            String actorId = roleAssignment.get().getActorId();
+            log.info("Removing Case Manager role from user {} for case ID {}", actorId, caseId);
+
+            deleteRoleAssignment(roleAssignment.get().getId());
+
+            log.info("Successfully removed Case Manager role from user {} for case ID {}", actorId, caseId);
+        } else {
+            log.error("Problem removing Case Manager role for case ID {}. Role assignment for user not found", caseId);
         }
     }
 

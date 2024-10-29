@@ -63,7 +63,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     @BeforeEach
     void setup() {
         residentJudgeFtpaDecisionConfirmation =
-            new ResidentJudgeFtpaDecisionConfirmation(featureToggler, roleAssignmentService, userDetailsProvider);
+            new ResidentJudgeFtpaDecisionConfirmation(featureToggler, roleAssignmentService);
     }
 
     @Test
