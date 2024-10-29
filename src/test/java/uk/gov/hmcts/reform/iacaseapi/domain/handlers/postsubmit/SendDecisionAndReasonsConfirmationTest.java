@@ -10,24 +10,33 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class SendDecisionAndReasonsConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-
-    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation =
-            new SendDecisionAndReasonsConfirmation();
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @InjectMocks
+    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation;
 
     @Test
     void should_return_confirmation() {
