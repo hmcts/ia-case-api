@@ -12,7 +12,7 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "ia-task-configuration-master-refund"
+def dmnBranch = "ia-task-configuration-dlrm-fc"
 def bpmnBranch = "master"
 
 def secrets = [
@@ -102,7 +102,9 @@ def secrets = [
                 secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
                 secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
-                secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
+                secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
+                secret('system-user-username', 'IA_SYSTEM_USERNAME'),
+                secret('system-user-password', 'IA_SYSTEM_PASSWORD')
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -183,17 +185,15 @@ enableSecurityScan()
 
     afterSuccess('akschartsinstall') {
         onPR {
-            if (env.ENABLE_WA == true) {
-                githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
-                githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
-                env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-                env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-                env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-                sh """
-                ./bin/pull-latest-dmn-files.sh ${dmnBranch}
-                ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-            """
-            }
+            githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+            githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+            env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+            sh """
+            ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+            ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+        """
         }
     }
 
@@ -240,7 +240,7 @@ enableSecurityScan()
                 reportDir            : "build/reports/tests/test",
                 reportFiles          : "index.html",
                 reportName           : "Unit Test Report"
-        ]      
+        ]
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
