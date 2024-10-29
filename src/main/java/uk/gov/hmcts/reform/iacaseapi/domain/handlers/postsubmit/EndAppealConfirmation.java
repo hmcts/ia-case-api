@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
@@ -37,11 +36,9 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         + "Contact the respondent to tell them what has changed, including any action they need to take.\n";
 
     private final RoleAssignmentService roleAssignmentService;
-    private final UserDetailsProvider userDetailsProvider;
 
-    public EndAppealConfirmation(RoleAssignmentService roleAssignmentService, UserDetailsProvider userDetailsProvider) {
+    public EndAppealConfirmation(RoleAssignmentService roleAssignmentService) {
         this.roleAssignmentService = roleAssignmentService;
-        this.userDetailsProvider = userDetailsProvider;
     }
 
     @Override

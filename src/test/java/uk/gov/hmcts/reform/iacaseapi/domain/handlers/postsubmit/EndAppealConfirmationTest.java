@@ -14,10 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -37,10 +35,6 @@ class EndAppealConfirmationTest {
     private AsylumCase asylumCase;
     @Mock
     private RoleAssignmentService roleAssignmentService;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private UserDetails userDetails;
     @InjectMocks
     private EndAppealConfirmation endAppealConfirmation;
 
@@ -50,7 +44,7 @@ class EndAppealConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);
 
@@ -77,7 +71,6 @@ class EndAppealConfirmationTest {
             .thenReturn(Optional.of(""));
         when(asylumCase.read(AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED))
             .thenReturn(Optional.of("Yes"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);
@@ -104,7 +97,6 @@ class EndAppealConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of("FAIL"));
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);

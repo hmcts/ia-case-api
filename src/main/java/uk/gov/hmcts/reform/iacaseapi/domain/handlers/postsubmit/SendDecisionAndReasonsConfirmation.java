@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -20,11 +19,9 @@ import java.util.List;
 @Component
 public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
-    private final UserDetailsProvider userDetailsProvider;
 
-    public SendDecisionAndReasonsConfirmation(RoleAssignmentService roleAssignmentService, UserDetailsProvider userDetailsProvider) {
+    public SendDecisionAndReasonsConfirmation(RoleAssignmentService roleAssignmentService) {
         this.roleAssignmentService = roleAssignmentService;
-        this.userDetailsProvider = userDetailsProvider;
     }
 
     public boolean canHandle(
