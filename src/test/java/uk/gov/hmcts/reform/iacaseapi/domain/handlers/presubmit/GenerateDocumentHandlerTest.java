@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_U
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CMA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAINTAIN_CASE_LINKS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MANAGE_FEE_UPDATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
@@ -443,7 +444,8 @@ class GenerateDocumentHandlerTest {
                         EDIT_APPEAL_AFTER_SUBMIT,
                         REINSTATE_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        UPDATE_TRIBUNAL_DECISION
+                        UPDATE_TRIBUNAL_DECISION,
+                        MANAGE_FEE_UPDATE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -603,7 +605,8 @@ class GenerateDocumentHandlerTest {
                         CHANGE_DIRECTION_DUE_DATE,
                         REINSTATE_APPEAL,
                         SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        UPDATE_TRIBUNAL_DECISION
+                        UPDATE_TRIBUNAL_DECISION,
+                        MANAGE_FEE_UPDATE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

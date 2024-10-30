@@ -34,6 +34,7 @@ java:
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
+    PAYMENT_REMINDER_DUE_IN_MINUTES: 1
   keyVaults:
     ia:
       resourceGroup: ia
@@ -128,7 +129,6 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
 #    image: hmctspublic.azurecr.io/ia/case-documents-api:latest #pr-868 or relevant PR number to change DLRM
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-903
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -200,7 +200,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1333
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m

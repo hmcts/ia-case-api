@@ -141,6 +141,9 @@ public enum Event {
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     RECORD_REMISSION_REMINDER("recordRemissionReminder"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
+    SEND_PAYMENT_REMINDER_NOTIFICATION("sendPaymentReminderNotification"),
+    ARIA_CREATE_CASE("ariaCreateCase"),
+    PROGRESS_MIGRATED_CASE("progressMigratedCase"),
     REFUND_CONFIRMATION("refundConfirmation"),
 
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
