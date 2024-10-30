@@ -47,7 +47,7 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
                 RoleCategory.LEGAL_OPERATIONS,
                 RoleCategory.ADMIN,
                 RoleCategory.JUDICIAL);
-        roleAssignmentService.removeCaseManagerRole(callback, rolesForRemoval, roleCategories);
+        roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()), rolesForRemoval, roleCategories);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();

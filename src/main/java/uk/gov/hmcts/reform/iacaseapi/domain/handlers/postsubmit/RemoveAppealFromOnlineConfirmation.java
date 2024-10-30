@@ -39,7 +39,8 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        roleAssignmentService.removeCaseManagerRole(callback, List.of(UserRole.CASE_OFFICER.name()), List.of(RoleCategory.LEGAL_OPERATIONS));
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        roleAssignmentService.removeCaseManagerRole(caseId, List.of(UserRole.CASE_OFFICER.name()), List.of(RoleCategory.LEGAL_OPERATIONS));
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
