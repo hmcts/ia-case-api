@@ -10,9 +10,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
@@ -119,7 +117,7 @@ public class RoleAssignmentService {
     }
 
     public void removeCaseManagerRole(
-            Callback<AsylumCase> callback,
+            String caseId,
             List<String> rolesForRemoval,
             List<RoleCategory> roleCategories
     ) {
@@ -130,7 +128,6 @@ public class RoleAssignmentService {
             return;
         }
 
-        String caseId = String.valueOf(callback.getCaseDetails().getId());
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .roleName(List.of(RoleName.CASE_MANAGER))

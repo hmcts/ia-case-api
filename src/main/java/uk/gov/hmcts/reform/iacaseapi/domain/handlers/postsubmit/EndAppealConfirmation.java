@@ -70,7 +70,8 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
                 RoleCategory.LEGAL_OPERATIONS,
                 RoleCategory.ADMIN,
                 RoleCategory.JUDICIAL);
-        roleAssignmentService.removeCaseManagerRole(callback, rolesForRemoval, roleCategories);
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        roleAssignmentService.removeCaseManagerRole(caseId, rolesForRemoval, roleCategories);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
