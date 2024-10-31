@@ -199,8 +199,8 @@ class RoleAssignmentServiceTest {
                 List.of(UserRole.JUDGE.name(), UserRole.JUDICIARY.name()),
                 List.of(RoleCategory.JUDICIAL));
 
-        verify(roleAssignmentApi).queryRoleAssignments(eq(accessToken), eq(serviceToken), eq(queryRequest));
-        verify(roleAssignmentApi).deleteRoleAssignment(eq(systemAccessToken), eq(serviceToken),eq(assignmentId));
+        verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
+        verify(roleAssignmentApi).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);
 
     }
 
