@@ -124,6 +124,9 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     clearRemissionDetails(asylumCase);
                 }
 
+                asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
+                        isfeePaymentEnabled ? YES : YesOrNo.NO);
+
                 asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
                 break;
 
@@ -221,9 +224,6 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
     }
 
     private void setFeePaymentDetails(AsylumCase asylumCase, AppealType appealType) {
-
-        asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
-            isfeePaymentEnabled ? YES : YesOrNo.NO);
 
         if (!asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
             asylumCase.write(PAYMENT_STATUS, PAYMENT_PENDING);

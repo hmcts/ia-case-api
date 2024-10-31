@@ -63,6 +63,8 @@ class EditAppealAfterSubmitHandlerTest {
     private DueDateService dueDateService;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock
+    private DocumentWithDescription appealWasNotSubmitted;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -123,6 +125,36 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
+        verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
+        verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
+        verify(asylumCase)
+            .write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
+
+        verify(asylumCase).clear(NEW_MATTERS);
+
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+
+    @Test
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_ooc_and_is_internal_case() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(eq(SUBMISSION_OUT_OF_TIME), eq(YesOrNo.NO));
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
@@ -260,6 +292,35 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(NEW_MATTERS);
 
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
+    void should_clear_legal_rep_flags_when_internal_case_and_appellant_representation_is_yes() {
+        List<IdValue<DocumentWithDescription>> notSubmittedDocument =
+            List.of(
+                new IdValue<>("1", appealWasNotSubmitted)
+            );
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2020-03-08"));
+
+        when(asylumCase.read(IS_ADMIN)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_WAS_NOT_SUBMITTED_REASON)).thenReturn(Optional.of("reason"));
+        when(asylumCase.read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS)).thenReturn(Optional.of(notSubmittedDocument));
+        when(asylumCase.read(LEGAL_REP_COMPANY_PAPER_J)).thenReturn(Optional.of("company"));
+        when(asylumCase.read(LEGAL_REP_FAMILY_NAME_PAPER_J)).thenReturn(Optional.of("name"));
+        when(asylumCase.read(LEGAL_REP_EMAIL)).thenReturn(Optional.of("email"));
+        when(asylumCase.read(LEGAL_REP_REF_NUMBER_PAPER_J)).thenReturn(Optional.of("refNumber"));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
     }
 
     @Test
@@ -673,5 +734,35 @@ class EditAppealAfterSubmitHandlerTest {
         assertEquals(asylumCase, response.getData());
 
         assertDoesNotThrow(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+
+    @Test
+    void should_clear_LR_when_appellants_representation_is_yes() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+        verify(asylumCase, times(1)).clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_COMPANY_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_GIVEN_NAME);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_EMAIL);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+
+        verify(asylumCase, times(1)).clear(LEGAL_REP_ADDRESS_U_K);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_1);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_2);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_3);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_4);
+        verify(asylumCase, times(1)).clear(OOC_COUNTRY_LINE);
+        verify(asylumCase, times(1)).clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_HAS_ADDRESS);
     }
 }

@@ -11,16 +11,26 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_APPEAL_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.LEAVE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_PROTECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REMOVAL_OF_CLIENT;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -28,12 +38,14 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -50,8 +62,14 @@ class HomeOfficeReferenceNumberTruncatorTest {
     private HomeOfficeReferenceNumberTruncator homeOfficeReferenceNumberTruncator =
         new HomeOfficeReferenceNumberTruncator();
 
-    @Test
-    void should_truncate_home_office_reference_numbers_for_submit_appeal() {
+    @ParameterizedTest
+    @MethodSource("truncatorScenarios")
+    void should_truncate_home_office_reference_numbers_for_submit_appeal(
+        YesOrNo isAdmin,
+        YesOrNo isAgeAssessment,
+        OutOfCountryDecisionType outOfCountryDecisionType,
+        OutOfCountryCircumstances outOfCountryCircumstances
+    ) {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
@@ -71,6 +89,11 @@ class HomeOfficeReferenceNumberTruncatorTest {
                 when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
                 when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of(input));
+
+                when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(isAdmin));
+                when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(isAgeAssessment));
+                when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(outOfCountryDecisionType));
+                when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(outOfCountryCircumstances));
 
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -97,7 +120,7 @@ class HomeOfficeReferenceNumberTruncatorTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, never()).write(any(),any());
+        verify(asylumCase, never()).write(any(), any());
 
         reset(asylumCase);
     }
@@ -116,7 +139,7 @@ class HomeOfficeReferenceNumberTruncatorTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, never()).write(any(),any());
+        verify(asylumCase, never()).write(any(), any());
 
         reset(asylumCase);
     }
@@ -151,13 +174,24 @@ class HomeOfficeReferenceNumberTruncatorTest {
             });
     }
 
-    @Test
-    void should_throw_when_home_office_reference_is_not_present_for_submit_appeal() {
+    @ParameterizedTest
+    @MethodSource("truncatorScenarios")
+    void should_throw_when_home_office_reference_is_not_present_for_submit_appeal(
+        YesOrNo isAdmin,
+        YesOrNo isAgeAssessment,
+        OutOfCountryDecisionType outOfCountryDecisionType,
+        OutOfCountryCircumstances outOfCountryCircumstances
+    ) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(isAdmin));
+        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(isAgeAssessment));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(outOfCountryDecisionType));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(outOfCountryCircumstances));
 
         assertThatThrownBy(
             () -> homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -193,7 +227,7 @@ class HomeOfficeReferenceNumberTruncatorTest {
                 boolean canHandle = homeOfficeReferenceNumberTruncator.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                    Event.SUBMIT_APPEAL)
+                        Event.SUBMIT_APPEAL)
                     .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
@@ -227,5 +261,14 @@ class HomeOfficeReferenceNumberTruncatorTest {
             () -> homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    static Stream<Arguments> truncatorScenarios() {
+        return Stream.of(
+            Arguments.of(YesOrNo.NO, YesOrNo.NO, REFUSAL_OF_PROTECTION, LEAVE_UK),
+            Arguments.of(YesOrNo.NO, YesOrNo.NO, REMOVAL_OF_CLIENT, LEAVE_UK),
+            Arguments.of(YesOrNo.YES, YesOrNo.NO, REMOVAL_OF_CLIENT, LEAVE_UK),
+            Arguments.of(YesOrNo.YES, YesOrNo.NO, REMOVAL_OF_CLIENT, OutOfCountryCircumstances.NONE)
+        );
     }
 }
