@@ -39,6 +39,8 @@ class SendDecisionAndReasonsConfirmationTest {
     void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234123412341234L);
 
         PostSubmitCallbackResponse callbackResponse =
                 sendDecisionAndReasonsConfirmation.handle(callback);

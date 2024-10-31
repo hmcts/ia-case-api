@@ -186,7 +186,7 @@ class RoleAssignmentServiceTest {
             .build();
         Assignment assignment = Assignment.builder()
                 .actorId("987987987987")
-                .id("assignmentId123")
+                .id(assignmentId)
                 .build();
         RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(assignment));
 
@@ -200,7 +200,7 @@ class RoleAssignmentServiceTest {
                 List.of(RoleCategory.JUDICIAL));
 
         verify(roleAssignmentApi).queryRoleAssignments(eq(accessToken), eq(serviceToken), eq(queryRequest));
-        verify(roleAssignmentApi).deleteRoleAssignment(eq(systemAccessToken), eq(serviceToken),eq("assignmentId123"));
+        verify(roleAssignmentApi).deleteRoleAssignment(eq(systemAccessToken), eq(serviceToken),eq(assignmentId));
 
     }
 
