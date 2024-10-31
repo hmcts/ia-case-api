@@ -192,7 +192,7 @@ class RoleAssignmentServiceTest {
 
         when(userDetails.getRoles()).thenReturn(List.of(UserRole.JUDGE.name()));
 
-        when(roleAssignmentApi.queryRoleAssignments(eq(accessToken), eq(serviceToken), eq(queryRequest)))
+        when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
             .thenReturn(roleAssignmentResource);
 
         roleAssignmentService.removeCaseManagerRole("1234123412341234",
