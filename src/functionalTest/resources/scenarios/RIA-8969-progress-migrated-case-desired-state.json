@@ -1,0 +1,60 @@
+{
+  "description": "RIA-8969 Progress migrated case when desired state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "progressMigratedCase",
+      "state": "migrated",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "isAdmin": "Yes",
+          "isAriaMigrated": "Yes",
+          "ariaDesiredState": "preHearing",
+          "appellantInUk": "Yes",
+          "appellantInDetention": "No",
+          "submissionOutOfTime": "No",
+          "paymentStatus": "Payment pending",
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "NE21JX",
+            "PostTown": "Example Town",
+            "AddressLine1": "5",
+            "AddressLine2": "Example Street"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "preHearing",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
+        "isAdmin": "Yes",
+        "isAriaMigrated": "Yes",
+        "ariaDesiredState": "preHearing",
+        "appellantInUk": "Yes",
+        "appellantInDetention": "No",
+        "submissionOutOfTime": "No",
+        "paymentStatus": "Payment pending",
+        "appellantHasFixedAddress": "Yes",
+        "appellantAddress": {
+          "County": "",
+          "Country": "United Kingdom",
+          "PostCode": "NE21JX",
+          "PostTown": "Example Town",
+          "AddressLine1": "5",
+          "AddressLine2": "Example Street"
+        }
+      }
+    }
+  }
+}
