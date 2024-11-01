@@ -1230,6 +1230,8 @@ wa:
 
   camunda-bpm:
     java:
+      releaseNameOverride: "{{ .Release.Name }}-camunda"
+      ingressHost: "camunda-{{ .Release.Name }}.preview.platform.hmcts.net"
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
