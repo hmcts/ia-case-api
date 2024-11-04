@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -52,7 +53,7 @@ public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<AsylumC
                 for (IdValue<DocumentWithMetadata> documentWithMetadataIdValue : idValuesOptional.get()) {
                     try {
                         documentWithMetadataIdValue.getValue().getDocument();
-                        documentWithMetadataIdValue.getValue().getDateUploaded();
+                        validateDocumentUploadedDate(documentWithMetadataIdValue);
                     } catch (NullPointerException npe) {
                         asylumCasePreSubmitCallbackResponse.addError("If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change.");
                         return asylumCasePreSubmitCallbackResponse;
@@ -62,6 +63,13 @@ public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<AsylumC
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void validateDocumentUploadedDate(IdValue<DocumentWithMetadata> documentWithMetadataIdValue) {
+        if (Objects.isNull(documentWithMetadataIdValue.getValue().getDateUploaded())
+                && Objects.isNull(documentWithMetadataIdValue.getValue().getDateTimeUploaded())) {
+            throw new NullPointerException();
+        }
     }
 
     private List<AsylumCaseFieldDefinition> getFieldDefinitions() {
