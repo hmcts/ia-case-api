@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -67,13 +66,6 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             return response;
         }
 
-        List<RoleCategory> roleCategories = List.of(RoleCategory.PROFESSIONAL);
-        roleAssignmentService.removeCreatorRoles(
-                caseId, userIdToRevokeAccessFrom.get(), roleCategories);
-
-        log.info("Retrying - Revoke case roles for the appeal with case ID {} and userId {}",
-                caseId, userIdToRevokeAccessFrom);
-
         RoleAssignmentResource roleAssignmentResource = getRoleAssignmentsForUser(caseId);
         log.info("Found '{}' '[CREATOR]' and '[LEGALREPRESENTATIVE]' case roles in the appeal with case ID {}",
                 roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
@@ -118,7 +110,9 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
                 .filter(ra -> ra.getActorId().equals(userId)).findFirst();
 
         if (roleAssignment.isPresent()) {
-            log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
+            log.info("Revoking {}'s access to appeal with case ID {}",
+                    roleAssignment.get().getRoleName().equals(RoleName.CREATOR) ? "Appellant" : "Legal Representative",
+                    caseId);
 
             roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId());
 
