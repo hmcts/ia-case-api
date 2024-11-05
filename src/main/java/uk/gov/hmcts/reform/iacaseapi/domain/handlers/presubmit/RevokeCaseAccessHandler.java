@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -55,7 +57,7 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        long caseId = callback.getCaseDetails().getId();
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
         Optional<String> userIdToRevokeAccessFrom
             = asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class);
 
@@ -66,6 +68,15 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             return response;
         }
 
+        List<String> rolesForRemoval = List.of(
+                UserRole.LEGAL_REPRESENTATIVE.name(),
+                UserRole.CITIZEN.name());
+
+        List<RoleCategory> roleCategories = List.of(RoleCategory.PROFESSIONAL);
+        roleAssignmentService.removeCreatorRoles(
+                caseId, userIdToRevokeAccessFrom.get(), rolesForRemoval, roleCategories);
+
+        /*
         RoleAssignmentResource roleAssignmentResource
                 = getRoleAssignmentsForUser(userIdToRevokeAccessFrom.get(), caseId);
 
@@ -79,7 +90,7 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
 
             deleteRoleAssignment(roleAssignmentResource, caseId);
         }
-
+        */
         return response;
     }
 
