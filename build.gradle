@@ -294,7 +294,7 @@ dependencyManagement {
         dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.16.0') {
             entry 'jackson-dataformat-csv'
             entry 'jackson-dataformat-yaml'
-       }
+        }
 
         dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.16.0') {
             entry 'jackson-datatype-jsr310'

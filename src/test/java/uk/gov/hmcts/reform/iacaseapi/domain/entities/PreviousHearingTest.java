@@ -77,29 +77,29 @@ class PreviousHearingTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new PreviousHearing(
-                attendingJudge,
-                attendingAppellant,
-                attendingHomeOfficeLegalRepresentative,
-                actualCaseHearingLength,
-                ariaListingReference,
-                listCaseHearingCentre,
-                listCaseHearingDate,
-                listCaseHearingLength,
-                null,
-                allFinalDecisionAndReasonsDocuments))
-                .isExactlyInstanceOf(NullPointerException.class);
+            attendingJudge,
+            attendingAppellant,
+            attendingHomeOfficeLegalRepresentative,
+            actualCaseHearingLength,
+            ariaListingReference,
+            listCaseHearingCentre,
+            listCaseHearingDate,
+            listCaseHearingLength,
+            null,
+            allFinalDecisionAndReasonsDocuments))
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
-                attendingJudge,
-                attendingAppellant,
-                attendingHomeOfficeLegalRepresentative,
-                actualCaseHearingLength,
-                ariaListingReference,
-                listCaseHearingCentre,
-                listCaseHearingDate,
-                listCaseHearingLength,
-                appealDecision,
-                null))
-                .isExactlyInstanceOf(NullPointerException.class);
+            attendingJudge,
+            attendingAppellant,
+            attendingHomeOfficeLegalRepresentative,
+            actualCaseHearingLength,
+            ariaListingReference,
+            listCaseHearingCentre,
+            listCaseHearingDate,
+            listCaseHearingLength,
+            appealDecision,
+            null))
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

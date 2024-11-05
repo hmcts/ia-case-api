@@ -116,8 +116,8 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         Optional<List<IdValue<PreviousHearing>>> maybePreviousHearings =
                 asylumCase.read(PREVIOUS_HEARINGS);
 
-        final List<IdValue<PreviousHearing>> existingPreviousHearings =
-                maybePreviousHearings.orElse(emptyList());
+        final List<IdValue<PreviousHearing>> existingPreviousHearings =                
+            maybePreviousHearings.orElse(emptyList());
 
         final Optional<String> attendingJudge = asylumCase.read(ATTENDING_JUDGE, String.class);
 
