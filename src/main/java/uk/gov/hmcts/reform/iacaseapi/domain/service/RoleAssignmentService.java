@@ -85,16 +85,8 @@ public class RoleAssignmentService {
     public void removeCreatorRoles(
             String caseId,
             String userId,
-            List<String> rolesForRemoval,
             List<RoleCategory> roleCategories
     ) {
-        List<String> userRoles = userDetails.getRoles();
-
-        if (userRoles.stream().noneMatch(rolesForRemoval::contains)) {
-            log.info("User does not have the required roles. Case Manager role was not removed.");
-            return;
-        }
-
         QueryRequest queryRequest = QueryRequest.builder()
                 .roleType(List.of(RoleType.CASE))
                 .roleName(List.of(RoleName.CREATOR))
