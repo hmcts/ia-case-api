@@ -1687,9 +1687,6 @@ public enum AsylumCaseFieldDefinition {
     LOCAL_AUTHORITY_POLICY(
         "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
 
-    CASE_ROLE_ASSIGNMENTS(
-        "caseRoleAssignments", new TypeReference<String>(){}),
-
     REVOKE_ACCESS_FOR_USER_ID(
         "revokeAccessForUserId", new TypeReference<String>(){}),
 

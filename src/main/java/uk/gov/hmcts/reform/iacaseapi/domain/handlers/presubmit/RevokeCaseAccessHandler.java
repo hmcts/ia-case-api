@@ -26,10 +26,10 @@ import static java.util.Objects.requireNonNull;
 
 @Component
 @Slf4j
-public class RevokeLegalRepresentativeAccessHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
 
-    public RevokeLegalRepresentativeAccessHandler(RoleAssignmentService roleAssignmentService) {
+    public RevokeCaseAccessHandler(RoleAssignmentService roleAssignmentService) {
         this.roleAssignmentService = roleAssignmentService;
     }
 
@@ -59,6 +59,8 @@ public class RevokeLegalRepresentativeAccessHandler implements PreSubmitCallback
         Optional<String> userIdToRevokeAccessFrom
             = asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class);
 
+        log.info("Revoke case roles for the appeal with case ID {} and userId {}", caseId, userIdToRevokeAccessFrom);
+
         if (userIdToRevokeAccessFrom.isEmpty()) {
             response.addError("User ID is required to revoke case access");
             return response;
@@ -67,7 +69,7 @@ public class RevokeLegalRepresentativeAccessHandler implements PreSubmitCallback
         RoleAssignmentResource roleAssignmentResource
                 = getRoleAssignmentsForUser(userIdToRevokeAccessFrom.get(), caseId);
 
-        log.debug("Found {} 'Creator', 'Legal Representative' roles for case access in the appeal with case ID {}",
+        log.info("Found '{}' '[CREATOR]' and '[LEGALREPRESENTATIVE]' case roles in the appeal with case ID {}",
                 roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
 
         if (roleAssignmentResource.getRoleAssignmentResponse().isEmpty()) {
@@ -92,7 +94,7 @@ public class RevokeLegalRepresentativeAccessHandler implements PreSubmitCallback
                 Attributes.CASE_ID, List.of(String.valueOf(caseId))
             )).build();
 
-        log.debug("Query role assignment with the parameters: {}, for case reference: {}",
+        log.info("Query role assignment with the parameters: {}, for case reference: {}",
                 queryRequest, caseId);
 
         return roleAssignmentService.queryRoleAssignments(queryRequest);
