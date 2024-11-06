@@ -254,7 +254,6 @@ sonarqube {
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java," +
-                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/service/RoleAssignmentService.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/presubmit/RevokeCaseAccessHandler.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/postsubmit/RevokeCaseAccessConfirmation.java"
     }

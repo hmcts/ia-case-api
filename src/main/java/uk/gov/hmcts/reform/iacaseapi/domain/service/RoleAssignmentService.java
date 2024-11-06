@@ -3,32 +3,23 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static java.util.Collections.singletonList;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RequestedRoles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
 @Component
-@Slf4j
 public class RoleAssignmentService {
     public static final String ROLE_NAME = "tribunal-caseworker";
     private final AuthTokenGenerator serviceAuthTokenGenerator;
@@ -82,38 +73,6 @@ public class RoleAssignmentService {
         );
     }
 
-    public void removeCreatorRoles(
-            String caseId,
-            String userId,
-            List<RoleCategory> roleCategories
-    ) {
-        QueryRequest queryRequest = QueryRequest.builder()
-                .roleType(List.of(RoleType.CASE))
-                .roleName(List.of(RoleName.CREATOR))
-                .roleCategory(roleCategories)
-                .attributes(Map.of(
-                        Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                        Attributes.CASE_TYPE, List.of("Asylum"),
-                        Attributes.CASE_ID, List.of(caseId)
-                ))
-                .build();
-        log.info("Query role assignment with the parameters: {}, caseId: {}", queryRequest, caseId);
-
-        RoleAssignmentResource roleAssignmentResource = queryRoleAssignments(queryRequest);
-        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream()
-                .filter(ra -> ra.getActorId().equals(userId)).findFirst();
-
-        if (roleAssignment.isPresent()) {
-            String actorId = roleAssignment.get().getActorId();
-            log.info("Removing [CREATOR] role from user {} for case ID {}", actorId, caseId);
-
-            deleteRoleAssignment(roleAssignment.get().getId());
-
-            log.info("Successfully removed [CREATOR] role from user {} for case ID {}", actorId, caseId);
-        } else {
-            log.error("Problem removing [CREATOR] role for case ID {}. Role assignment for user not found", caseId);
-        }
-    }
 
     public RoleAssignmentResource queryRoleAssignments(QueryRequest queryRequest) {
         return roleAssignmentApi.queryRoleAssignments(
