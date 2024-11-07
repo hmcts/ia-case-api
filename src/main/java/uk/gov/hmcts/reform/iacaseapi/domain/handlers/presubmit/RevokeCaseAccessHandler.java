@@ -79,7 +79,30 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             response.addError("User ID doesn't have access to case: " + userIdToRevokeAccessFrom
                     + " caseId:" + caseId);
         } else {
-            ccdCaseAssignment.revokeLegalRepAccessToCase(callback, userIdToRevokeAccessFrom, legalRepOrgId);
+            // TODO: remove log
+            roleAssignmentResource.getRoleAssignmentResponse().forEach(roleAssignment -> {
+                log.info("Role Assignment: Role assignment ID - {}, Role assigned - {}, IDAM User ID - {}, "
+                    + "IDAM User ID Type - {}, ",
+                    roleAssignment.getId(),
+                    roleAssignment.getRoleName(),
+                    roleAssignment.getActorId(),
+                    roleAssignment.getActorIdType());
+
+                if (roleAssignment.getRoleCategory() == RoleCategory.CITIZEN) {
+                    deleteRoleAssignment(roleAssignment.getId());
+
+                } else if (roleAssignment.getRoleCategory() == RoleCategory.PROFESSIONAL) {
+
+                    log.info("Revoking Legal representative's access to appeal with case ID {},"
+                        + " role assignment ID {}", caseId, roleAssignment.getId());
+
+                    ccdCaseAssignment.revokeLegalRepAccessToCase(callback, userIdToRevokeAccessFrom, legalRepOrgId);
+
+                    log.info("Successfully revoked Legal representative's access to appeal with case ID {},"
+                            + " role assignment ID {}", caseId, roleAssignment.getId());
+                }
+            });
+
         }
 
         return response;
@@ -103,24 +126,9 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
         return roleAssignmentService.queryRoleAssignments(queryRequest);
     }
 
-    private void deleteRoleAssignment(RoleAssignmentResource roleAssignmentResource, String userId, String caseId) {
-        // TODO: remove log
-        roleAssignmentResource.getRoleAssignmentResponse().forEach(roleAssignment ->
-            log.info("Role Assignment: Role assigned - {}, IDAM User ID - {}, IDAM User ID Type - {}, ",
-                roleAssignment.getRoleName(),
-                roleAssignment.getActorId(),
-                roleAssignment.getActorIdType())
-        );
-
-        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().findFirst();
-        if (roleAssignment.isPresent()) {
-            log.info("Revoking {}'s access to appeal with case ID {}",
-                    roleAssignment.get().getRoleName().equals(RoleName.CREATOR) ? "Appellant" : "Legal Representative",
-                    caseId);
-            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId());
-            log.info("Successfully revoked User's access to appeal with case ID {}", caseId);
-        } else {
-            log.error("Problem revoking User's access to appeal with case ID {}. Role assignment for appellant not found", caseId);
-        }
+    private void deleteRoleAssignment(String roleAssignmentId) {
+        log.info("Revoking appellant's access to appeal with role assignment ID {}", roleAssignmentId);
+        roleAssignmentService.deleteRoleAssignment(roleAssignmentId);
+        log.info("Successfully revoked appellant's access to appeal with role assignment ID {}", roleAssignmentId);
     }
 }
