@@ -176,6 +176,7 @@ class RoleAssignmentServiceTest {
     void removeCaseManagerRoleShouldRemoveShouldRemoveRole() {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
+            .grantType(List.of(GrantType.SPECIFIC))
             .roleName(List.of(RoleName.CASE_MANAGER))
             .roleCategory(List.of(RoleCategory.JUDICIAL))
             .attributes(Map.of(
