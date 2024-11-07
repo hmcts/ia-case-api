@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,12 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
+    private final CcdCaseAssignment ccdCaseAssignment;
 
-    public RevokeCaseAccessHandler(RoleAssignmentService roleAssignmentService) {
+    public RevokeCaseAccessHandler(RoleAssignmentService roleAssignmentService,
+                                   CcdCaseAssignment ccdCaseAssignment) {
         this.roleAssignmentService = roleAssignmentService;
+        this.ccdCaseAssignment = ccdCaseAssignment;
     }
 
     @Override
@@ -59,14 +63,13 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
         String caseId = String.valueOf(callback.getCaseDetails().getId());
         String userIdToRevokeAccessFrom = asylumCase.read(
                 AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class)
-                .orElseThrow(() -> new IllegalStateException("Legal Representative or Appellant User ID is not present."));;
+                .orElseThrow(() -> new IllegalStateException("Legal Representative or Appellant User ID is not present."));
+
+        String legalRepOrgId = asylumCase.read(
+                AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, String.class)
+                .orElseThrow(() -> new IllegalStateException("Legal Representative Organisation ID is not present."));
 
         log.info("Revoke case roles for the appeal with case ID {} and userId {}", caseId, userIdToRevokeAccessFrom);
-
-        if (userIdToRevokeAccessFrom.isEmpty()) {
-            response.addError("User ID is required to revoke case access");
-            return response;
-        }
 
         RoleAssignmentResource roleAssignmentResource = getRoleAssignmentsForUser(caseId, userIdToRevokeAccessFrom);
         log.info("Found '{}' '[CREATOR]' and '[LEGALREPRESENTATIVE]' case roles in the appeal with case ID {}",
@@ -76,8 +79,7 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             response.addError("User ID doesn't have access to case: " + userIdToRevokeAccessFrom
                     + " caseId:" + caseId);
         } else {
-
-            deleteRoleAssignment(roleAssignmentResource, userIdToRevokeAccessFrom, caseId);
+            ccdCaseAssignment.revokeLegalRepAccessToCase(callback, userIdToRevokeAccessFrom, legalRepOrgId);
         }
 
         return response;

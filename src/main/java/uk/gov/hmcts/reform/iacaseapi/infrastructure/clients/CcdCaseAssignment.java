@@ -59,12 +59,37 @@ public class CcdCaseAssignment {
         requireNonNull(callback, "callback must not be null");
         requireNonNull(organisationIdentifier, "organisation identifier must not be null");
 
-        final long caseId = callback.getCaseDetails().getId();
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
         final UserDetails userDetails = userDetailsProvider.getUserDetails();
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
 
+        revokeUserAccessToCase(callback, organisationIdentifier, idamUserId, serviceAuthorizationToken, accessToken);
+    }
+
+    public void revokeLegalRepAccessToCase(
+            final Callback<AsylumCase> callback,
+            final String legalRepIdamUserId,
+            final String organisationIdentifier
+    ) {
+        requireNonNull(callback, "callback must not be null");
+        requireNonNull(organisationIdentifier, "organisation identifier must not be null");
+        requireNonNull(legalRepIdamUserId, "Legal representative IDAM user identifier must not be null");
+
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final UserDetails userDetails = userDetailsProvider.getUserDetails();
+        final String accessToken = userDetails.getAccessToken();
+
+        revokeUserAccessToCase(callback, organisationIdentifier, legalRepIdamUserId, serviceAuthorizationToken, accessToken);
+    }
+
+    private void revokeUserAccessToCase(Callback<AsylumCase> callback,
+                                        String organisationIdentifier,
+                                        String idamUserId,
+                                        String serviceAuthorizationToken,
+                                        String accessToken) {
+
+        final long caseId = callback.getCaseDetails().getId();
         Map<String, Object> payload = buildRevokeAccessPayload(organisationIdentifier, caseId, idamUserId);
 
         HttpEntity<Map<String, Object>> requestEntity =
