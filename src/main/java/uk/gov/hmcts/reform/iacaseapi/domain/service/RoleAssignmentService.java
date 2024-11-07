@@ -130,6 +130,7 @@ public class RoleAssignmentService {
 
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
+            .grantType(List.of(GrantType.SPECIFIC))
             .roleName(List.of(RoleName.CASE_MANAGER))
             .roleCategory(roleCategories)
             .attributes(Map.of(
