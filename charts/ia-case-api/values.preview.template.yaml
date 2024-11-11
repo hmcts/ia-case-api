@@ -34,6 +34,7 @@ java:
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
+    PAYMENT_REMINDER_DUE_IN_MINUTES: 1
     IA_GOV_NOTIFY_KEY: ${IA_GOV_NOTIFY_KEY}
     IA_BAIL_GOV_NOTIFY_KEY: ${IA_BAIL_GOV_NOTIFY_KEY}
   keyVaults:
@@ -133,8 +134,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-939
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:pr-925
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -206,8 +206,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1302
-    # image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1271 #pr-1069 or relevant PR number to change
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -419,7 +418,7 @@ ia-bail-case-api:
       OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-      LOCATION_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
@@ -457,8 +456,8 @@ ia-timed-event-service:
   enabled: ${ENABLE_TES}
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-182
-    # image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
+    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
