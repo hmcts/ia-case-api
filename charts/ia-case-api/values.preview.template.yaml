@@ -206,7 +206,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1302
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -456,8 +456,8 @@ ia-timed-event-service:
   enabled: ${ENABLE_TES}
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
-    #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
+#    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-182
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
