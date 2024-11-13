@@ -154,7 +154,6 @@ public enum Event {
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     TRIGGER_CMR_LISTED("triggerCmrListed"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
-    SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
