@@ -2735,6 +2735,9 @@ public enum AsylumCaseFieldDefinition {
 
     IS_REMOTE_HEARING("isRemoteHearing", new TypeReference<YesOrNo>(){}),
 
+    NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){}),
+    NOTIFICATIONS_SENT("notificationsSent", new TypeReference<List<IdValue<String>>>(){}),
+
     REQUEST_FEE_REMISSION_DATE(
             "requestFeeRemissionDate", new TypeReference<String>(){}),
 
