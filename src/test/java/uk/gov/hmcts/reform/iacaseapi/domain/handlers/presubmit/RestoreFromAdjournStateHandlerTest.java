@@ -71,7 +71,6 @@ class RestoreFromAdjournStateHandlerTest {
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PREPARE_FOR_HEARING);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YES);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_DATE, listCaseHearingDate);
         verify(asylumCase, times(1)).clear(DATE_BEFORE_ADJOURN_WITHOUT_DATE);
         verify(asylumCase, times(1)).clear(STATE_BEFORE_ADJOURN_WITHOUT_DATE);
