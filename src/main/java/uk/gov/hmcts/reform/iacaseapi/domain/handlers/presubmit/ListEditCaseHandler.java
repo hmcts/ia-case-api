@@ -166,6 +166,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         asylumCase.clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         asylumCase.clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
         asylumCase.clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
         asylumCase.clear(ATTENDING_TCW);
         asylumCase.clear(ATTENDING_JUDGE);
