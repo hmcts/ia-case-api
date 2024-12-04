@@ -505,6 +505,9 @@ security:
       - "recordRemissionReminder"
       - "sendPaymentReminderNotification"
       - "ariaCreateCase"
+      - "revokeCaseAccess"
+    caseworker-ia-internal:
+      - "revokeCaseAccess"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
