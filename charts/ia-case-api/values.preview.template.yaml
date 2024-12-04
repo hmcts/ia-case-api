@@ -27,9 +27,9 @@ java:
     OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
-    ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+    ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-pr-2429.preview.platform.hmcts.net
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
-    AAC_URL: https://aac-${SERVICE_FQDN}
+    AAC_URL: https://aac-ia-case-api-pr-2429.preview.platform.hmcts.net
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
