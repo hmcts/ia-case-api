@@ -8,12 +8,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.TtlProvider;
 
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Service
 public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<AsylumCase> {
+    private final TtlProvider ttlProvider;
+
+    public AppealSetTtlDraftHandler(TtlProvider ttlProvider) {
+        this.ttlProvider = ttlProvider;
+    }
 
     @Override
     public boolean canHandle(
@@ -38,7 +44,13 @@ public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<Asylum
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        log.info("Setting TTL when starting appeal, caseId [{}]", callback.getCaseDetails().getId());
+        String ttl = ttlProvider.getTtl();
+
+        log.info(
+            "Setting TTL when starting appeal, caseId {}, TTL {}",
+            callback.getCaseDetails().getId(),
+            ttl
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

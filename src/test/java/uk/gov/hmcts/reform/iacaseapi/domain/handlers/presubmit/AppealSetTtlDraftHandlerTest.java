@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.TtlProvider;
 
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -38,12 +40,14 @@ class AppealSetTtlDraftHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private TtlProvider ttlProvider;
 
     private AppealSetTtlDraftHandler appealSetTtlDraftHandler;
 
     @BeforeEach
     void setUp() {
-        appealSetTtlDraftHandler = new AppealSetTtlDraftHandler();
+        appealSetTtlDraftHandler = new AppealSetTtlDraftHandler(ttlProvider);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
@@ -55,6 +59,7 @@ class AppealSetTtlDraftHandlerTest {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(ttlProvider.getTtl()).thenReturn("ttl");
 
         // when
         PreSubmitCallbackResponse<AsylumCase> response = appealSetTtlDraftHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -62,6 +67,7 @@ class AppealSetTtlDraftHandlerTest {
         // then
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
+        verify(ttlProvider).getTtl();
     }
 
     @Test
