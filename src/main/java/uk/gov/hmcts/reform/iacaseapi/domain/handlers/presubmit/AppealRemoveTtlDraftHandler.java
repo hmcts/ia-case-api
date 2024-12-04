@@ -20,8 +20,8 @@ public class AppealRemoveTtlDraftHandler implements PreSubmitCallbackHandler<Asy
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        requireNonNull(callbackStage, "callbackStage parameter must not be null");
-        requireNonNull(callback, "callback parameter must not be null");
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.SUBMIT_APPEAL;
