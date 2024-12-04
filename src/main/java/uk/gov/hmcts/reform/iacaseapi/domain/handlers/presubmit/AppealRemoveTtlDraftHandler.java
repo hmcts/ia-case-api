@@ -13,7 +13,7 @@ import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Service
-public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AppealRemoveTtlDraftHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Override
     public boolean canHandle(
@@ -24,7 +24,7 @@ public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<Asylum
         requireNonNull(callback, "callback parameter must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.START_APPEAL;
+               && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<Asylum
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        log.info("Setting TTL when starting appeal, caseId [{}]", callback.getCaseDetails().getId());
+        log.info("Removing TTL when submitting appeal, caseId [{}]", callback.getCaseDetails().getId());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
