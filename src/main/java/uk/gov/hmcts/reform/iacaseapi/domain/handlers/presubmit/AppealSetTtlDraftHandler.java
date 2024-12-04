@@ -22,18 +22,6 @@ public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<Asylum
     }
 
     @Override
-    public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
-        requireNonNull(callbackStage, "callbackStage must not be null");
-        requireNonNull(callback, "callback must not be null");
-
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.START_APPEAL;
-    }
-
-    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -53,5 +41,17 @@ public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<Asylum
         );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    @Override
+    public boolean canHandle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && callback.getEvent() == Event.START_APPEAL;
     }
 }
