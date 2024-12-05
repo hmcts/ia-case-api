@@ -23,7 +23,9 @@ class DeletionDateProviderTest {
     @Mock
     DateProvider dateProvider;
     @Mock
-    LocalDate localDate, deletionDate;
+    LocalDate localDate;
+    @Mock
+    LocalDate deletionDate;
 
     @BeforeEach
     void setUp() {
