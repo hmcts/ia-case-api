@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -23,9 +23,9 @@ class DeletionDateProviderTest {
     @Mock
     DateProvider dateProvider;
     @Mock
-    LocalDate localDate;
+    LocalDateTime localTime;
     @Mock
-    LocalDate deletionDate;
+    LocalDateTime deletionTime;
 
     @BeforeEach
     void setUp() {
@@ -35,15 +35,15 @@ class DeletionDateProviderTest {
     @Test
     void should_return_deletion_date() {
         // given
-        when(dateProvider.now()).thenReturn(localDate);
-        when(localDate.plusDays(365)).thenReturn(deletionDate);
+        when(dateProvider.nowWithTime()).thenReturn(localTime);
+        when(localTime.plusDays(365)).thenReturn(deletionTime);
 
         // when
-        LocalDate res = deletionDateProvider.getDeletionDate();
+        LocalDateTime res = deletionDateProvider.getDeletionTime();
 
         // then
-        assertEquals(deletionDate, res);
-        verify(dateProvider).now();
-        verify(localDate).plusDays(365);
+        assertEquals(deletionTime, res);
+        verify(dateProvider).nowWithTime();
+        verify(localTime).plusDays(365);
     }
 }

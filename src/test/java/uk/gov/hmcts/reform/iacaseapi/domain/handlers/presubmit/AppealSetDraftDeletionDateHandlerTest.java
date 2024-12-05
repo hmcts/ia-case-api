@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,7 +43,7 @@ class AppealSetDraftDeletionDateHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private LocalDate deletionDate;
+    private LocalDateTime deletionDate;
     @Mock
     private DeletionDateProvider deletionDateProvider;
 
@@ -56,7 +56,7 @@ class AppealSetDraftDeletionDateHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(deletionDate.toString()).thenReturn("2024-12-05");
+        when(deletionDate.toString()).thenReturn("2024-12-05T12:00:00");
     }
 
     @Test
@@ -64,7 +64,7 @@ class AppealSetDraftDeletionDateHandlerTest {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(deletionDateProvider.getDeletionDate()).thenReturn(deletionDate);
+        when(deletionDateProvider.getDeletionTime()).thenReturn(deletionDate);
 
         // when
         PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftDeletionDateHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -72,8 +72,8 @@ class AppealSetDraftDeletionDateHandlerTest {
         // then
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
-        verify(deletionDateProvider).getDeletionDate();
-        verify(asylumCase).write(DELETION_DATE, "2024-12-05");
+        verify(deletionDateProvider).getDeletionTime();
+        verify(asylumCase).write(DELETION_DATE, "2024-12-05T12:00:00");
     }
 
     @Test

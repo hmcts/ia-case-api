@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,7 +36,7 @@ public class AppealSetDraftDeletionDateHandler implements PreSubmitCallbackHandl
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        LocalDate deletionDate = deletionDateProvider.getDeletionDate();
+        LocalDateTime deletionDate = deletionDateProvider.getDeletionTime();
 
         asylumCase.write(DELETION_DATE, deletionDate.toString());
 
