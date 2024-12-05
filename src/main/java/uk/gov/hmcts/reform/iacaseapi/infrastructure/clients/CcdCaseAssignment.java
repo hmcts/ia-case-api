@@ -65,6 +65,33 @@ public class CcdCaseAssignment {
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
 
+        revokeUserAccessToCase(caseId, organisationIdentifier, idamUserId, serviceAuthorizationToken, accessToken);
+    }
+
+    public void revokeLegalRepAccessToCase(
+            final long caseId,
+            final String legalRepIdamUserId,
+            final String organisationIdentifier
+    ) {
+        requireNonNull(caseId, "caseId must not be null");
+        requireNonNull(organisationIdentifier, "organisation identifier must not be null");
+        requireNonNull(legalRepIdamUserId, "Legal representative IDAM user identifier must not be null");
+
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final UserDetails userDetails = userDetailsProvider.getUserDetails();
+        final String accessToken = userDetails.getAccessToken();
+
+        revokeUserAccessToCase(
+                caseId, organisationIdentifier, legalRepIdamUserId, serviceAuthorizationToken, accessToken);
+    }
+
+    private void revokeUserAccessToCase(long caseId,
+                                        String organisationIdentifier,
+                                        String idamUserId,
+                                        String serviceAuthorizationToken,
+                                        String accessToken) {
+
+
         Map<String, Object> payload = buildRevokeAccessPayload(organisationIdentifier, caseId, idamUserId);
 
         HttpEntity<Map<String, Object>> requestEntity =
@@ -86,7 +113,7 @@ public class CcdCaseAssignment {
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
                 "Couldn't revoke CCD case access for case ["
-                + callback.getCaseDetails().getId()
+                + caseId
                 + "] using API: "
                 + ccdUrl + ccdAssignmentsApiPath,
                 e
@@ -94,7 +121,7 @@ public class CcdCaseAssignment {
         }
 
         log.info("Revoke Access. Http status received from CCD API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+                response.getStatusCodeValue(), caseId);
     }
 
     public void assignAccessToCase(

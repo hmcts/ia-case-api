@@ -13,6 +13,7 @@
 ./bin/utils/ccd-add-role.sh "caseworker-ia-iacjudge" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-wa-task-configuration" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-ia-srcaseofficer" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "caseworker-ia-internal" "$USER_TOKEN" "$SERVICE_TOKEN"
 
 ./bin/utils/ccd-add-role.sh "caseworker-ras-validation" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-caa" "$USER_TOKEN" "$SERVICE_TOKEN"
