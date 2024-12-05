@@ -150,6 +150,7 @@ class EventTest {
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
         assertEquals("recordRemissionReminder", Event.RECORD_REMISSION_REMINDER.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
+        assertEquals("saveNotificationsToData", Event.SAVE_NOTIFICATIONS_TO_DATA.toString());
         assertEquals("sendPaymentReminderNotification", Event.SEND_PAYMENT_REMINDER_NOTIFICATION.toString());
         assertEquals("ariaCreateCase", Event.ARIA_CREATE_CASE.toString());
         assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());

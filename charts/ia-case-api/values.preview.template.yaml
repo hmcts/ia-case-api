@@ -39,6 +39,10 @@ java:
     ia:
       resourceGroup: ia
       secrets:
+        - name: ia-gov-notify-key
+          alias: IA_GOV_NOTIFY_KEY
+        - name: ia-bail-gov-notify-key
+          alias: IA_BAIL_GOV_NOTIFY_KEY
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
         - name: em-stitching-enabled
@@ -200,7 +204,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1343
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -209,8 +213,6 @@ ia-case-notifications-api:
     devmemoryLimits: 4Gi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
-      IA_GOV_NOTIFY_KEY: "test_key-7f72d0fb-2bc4-421b-bceb-1bf5bf350ff9-3df5a74b-f25b-4052-b00f-3f71d33cd0eb"
-      IA_BAIL_GOV_NOTIFY_KEY: "testkey-b9593914-99e1-484e-ad63-a51d7b4c164f-b817a2e5-7a30-4938-98f0-6099110c2879"
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -451,7 +453,6 @@ ia-timed-event-service:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
-    #    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-95
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -571,6 +572,7 @@ ia-aip-frontend:
   nodejs:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    # image: hmctspublic.azurecr.io/ia/aip-frontend:pr-972
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
