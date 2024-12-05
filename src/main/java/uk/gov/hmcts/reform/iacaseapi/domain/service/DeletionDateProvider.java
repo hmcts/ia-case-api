@@ -13,7 +13,7 @@ public class DeletionDateProvider {
 
     public DeletionDateProvider(
         DateProvider dateProvider,
-        @Value("${appeal_draft_ttl_days}") int appealDraftTtlDays
+        @Value("${appealDraftTtlDays}") int appealDraftTtlDays
     ) {
         this.dateProvider = dateProvider;
         this.appealDraftTtlDays = appealDraftTtlDays;
