@@ -13,8 +13,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.TtlProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,13 +27,14 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DELETION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class AppealSetTtlDraftHandlerTest {
+class AppealSetDraftDeletionDateHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -41,33 +43,37 @@ class AppealSetTtlDraftHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private TtlProvider ttlProvider;
+    private LocalDate deletionDate;
+    @Mock
+    private DeletionDateProvider deletionDateProvider;
 
-    private AppealSetTtlDraftHandler appealSetTtlDraftHandler;
+    private AppealSetDraftDeletionDateHandler appealSetDraftDeletionDateHandler;
 
     @BeforeEach
     void setUp() {
-        appealSetTtlDraftHandler = new AppealSetTtlDraftHandler(ttlProvider);
+        appealSetDraftDeletionDateHandler = new AppealSetDraftDeletionDateHandler(deletionDateProvider);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(deletionDate.toString()).thenReturn("2024-12-05");
     }
 
     @Test
-    void should_write_ttl() {
+    void should_write_deletion_date() {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(ttlProvider.getTtl()).thenReturn("ttl");
+        when(deletionDateProvider.getDeletionDate()).thenReturn(deletionDate);
 
         // when
-        PreSubmitCallbackResponse<AsylumCase> response = appealSetTtlDraftHandler.handle(ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftDeletionDateHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         // then
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
-        verify(ttlProvider).getTtl();
+        verify(deletionDateProvider).getDeletionDate();
+        verify(asylumCase).write(DELETION_DATE, "2024-12-05");
     }
 
     @Test
@@ -79,7 +85,7 @@ class AppealSetTtlDraftHandlerTest {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-                boolean canHandle = appealSetTtlDraftHandler.canHandle(callbackStage, callback);
+                boolean canHandle = appealSetDraftDeletionDateHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && event == Event.START_APPEAL) {
                     assertTrue(canHandle);
@@ -93,7 +99,7 @@ class AppealSetTtlDraftHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> appealSetTtlDraftHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> appealSetDraftDeletionDateHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }

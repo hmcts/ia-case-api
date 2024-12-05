@@ -48,6 +48,7 @@ java:
     PAYMENT_REMINDER_DUE_IN_MINUTES: 10080
     IA_GOV_NOTIFY_KEY: ${IA_GOV_NOTIFY_KEY}
     IA_BAIL_GOV_NOTIFY_KEY: ${IA_BAIL_GOV_NOTIFY_KEY}
+    APPEAL_DRAFT_TTL_DAYS: 365
   postgresql:
     auth:
       username: ia_case_api

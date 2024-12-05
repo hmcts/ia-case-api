@@ -9,35 +9,39 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class TtlProviderTest {
-    private TtlProvider ttlProvider;
+class DeletionDateProviderTest {
+    private DeletionDateProvider deletionDateProvider;
 
     @Mock
     DateProvider dateProvider;
+    @Mock
+    LocalDate localDate, deletionDate;
 
     @BeforeEach
     void setUp() {
-        ttlProvider = new TtlProvider(dateProvider);
+        deletionDateProvider = new DeletionDateProvider(dateProvider, 365);
     }
 
     @Test
-    void should_return_ttl() {
+    void should_return_deletion_date() {
         // given
-        when(dateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
+        when(dateProvider.now()).thenReturn(localDate);
+        when(localDate.plusDays(365)).thenReturn(deletionDate);
 
         // when
-        String ttl = ttlProvider.getTtl();
+        LocalDate res = deletionDateProvider.getDeletionDate();
 
         // then
-        assertNotNull(ttl);
-        verify(dateProvider).nowWithTime();
+        assertEquals(deletionDate, res);
+        verify(dateProvider).now();
+        verify(localDate).plusDays(365);
     }
 }

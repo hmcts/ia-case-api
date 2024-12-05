@@ -8,17 +8,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.TtlProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
+
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DELETION_DATE;
+
 @Slf4j
 @Service
-public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<AsylumCase> {
-    private final TtlProvider ttlProvider;
+public class AppealSetDraftDeletionDateHandler implements PreSubmitCallbackHandler<AsylumCase> {
+    private final DeletionDateProvider deletionDateProvider;
 
-    public AppealSetTtlDraftHandler(TtlProvider ttlProvider) {
-        this.ttlProvider = ttlProvider;
+    public AppealSetDraftDeletionDateHandler(DeletionDateProvider deletionDateProvider) {
+        this.deletionDateProvider = deletionDateProvider;
     }
 
     @Override
@@ -32,12 +36,14 @@ public class AppealSetTtlDraftHandler implements PreSubmitCallbackHandler<Asylum
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String ttl = ttlProvider.getTtl();
+        LocalDate deletionDate = deletionDateProvider.getDeletionDate();
+
+        asylumCase.write(DELETION_DATE, deletionDate.toString());
 
         log.info(
-            "Setting TTL when starting appeal, caseId {}, TTL {}",
+            "Setting deletionDate when starting appeal, caseId {}, deletionDate {}",
             callback.getCaseDetails().getId(),
-            ttl
+            deletionDate
         );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
