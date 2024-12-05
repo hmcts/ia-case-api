@@ -9,17 +9,17 @@ import java.time.LocalDate;
 @Service
 public class DeletionDateProvider {
     private final DateProvider dateProvider;
-    private final int appealTtlDays;
+    private final int appealDraftTtlDays;
 
     public DeletionDateProvider(
         DateProvider dateProvider,
-        @Value("${appeal_ttl_days}") int appealTtlDays
+        @Value("${appeal_draft_ttl_days}") int appealDraftTtlDays
     ) {
         this.dateProvider = dateProvider;
-        this.appealTtlDays = appealTtlDays;
+        this.appealDraftTtlDays = appealDraftTtlDays;
     }
 
     public LocalDate getDeletionDate() {
-        return dateProvider.now().plusDays(appealTtlDays);
+        return dateProvider.now().plusDays(appealDraftTtlDays);
     }
 }
