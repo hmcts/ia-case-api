@@ -16,6 +16,7 @@ public class DocumentWithMetadata implements HasDocument {
     private Document document;
     @Getter
     private String description;
+    @Getter
     private String dateUploaded;
     private DocumentTag tag;
     @Getter
@@ -82,11 +83,6 @@ public class DocumentWithMetadata implements HasDocument {
     public Document getDocument() {
         requireNonNull(document);
         return document;
-    }
-
-    public String getDateUploaded() {
-        requireNonNull(dateUploaded);
-        return dateUploaded;
     }
 
     public DocumentTag getTag() {
