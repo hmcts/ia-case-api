@@ -11,11 +11,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TIME_TO_LIVE;
 
 @Slf4j
 @Service
-public class AppealRemoveDraftDeletionDateHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AppealRemoveDraftTtlHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Override
     public boolean canHandle(
@@ -40,7 +40,7 @@ public class AppealRemoveDraftDeletionDateHandler implements PreSubmitCallbackHa
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        asylumCase.clear(TTL);
+        asylumCase.clear(TIME_TO_LIVE);
 
         log.info("Removing TTL when submitting appeal, caseId {}", callback.getCaseDetails().getId());
 
