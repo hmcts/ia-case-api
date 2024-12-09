@@ -3,18 +3,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TtlDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DELETION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
 
 @Slf4j
 @Service
@@ -36,9 +39,16 @@ public class AppealSetDraftDeletionDateHandler implements PreSubmitCallbackHandl
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        LocalDateTime deletionDate = deletionDateProvider.getDeletionTime();
+        LocalDate deletionDate = deletionDateProvider.getDeletionDate();
 
-        asylumCase.write(DELETION_DATE, deletionDate.toString());
+        asylumCase.write(TTL, deletionDate.toString());
+
+        asylumCase.write(AsylumCaseFieldDefinition.TTL,
+            TtlDetails.builder()
+                .manualTtlOverride(deletionDate)
+                .doNotDelete(YesOrNo.YES)
+                .build()
+        );
 
         log.info(
             "Setting deletionDate when starting appeal, caseId {}, deletionDate {}",

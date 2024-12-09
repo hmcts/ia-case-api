@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Service
 public class DeletionDateProvider {
@@ -19,7 +19,7 @@ public class DeletionDateProvider {
         this.appealDraftTtlDays = appealDraftTtlDays;
     }
 
-    public LocalDateTime getDeletionTime() {
-        return dateProvider.nowWithTime().plusDays(appealDraftTtlDays);
+    public LocalDate getDeletionDate() {
+        return dateProvider.now().plusDays(appealDraftTtlDays);
     }
 }

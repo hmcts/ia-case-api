@@ -8,14 +8,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TtlDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,11 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DELETION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -43,7 +46,7 @@ class AppealSetDraftDeletionDateHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private LocalDateTime deletionDate;
+    private LocalDate deletionDate;
     @Mock
     private DeletionDateProvider deletionDateProvider;
 
@@ -56,7 +59,7 @@ class AppealSetDraftDeletionDateHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(deletionDate.toString()).thenReturn("2024-12-05T12:00:00");
+        when(deletionDate.toString()).thenReturn("2024-12-05");
     }
 
     @Test
@@ -64,7 +67,7 @@ class AppealSetDraftDeletionDateHandlerTest {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(deletionDateProvider.getDeletionTime()).thenReturn(deletionDate);
+        when(deletionDateProvider.getDeletionDate()).thenReturn(deletionDate);
 
         // when
         PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftDeletionDateHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -72,8 +75,12 @@ class AppealSetDraftDeletionDateHandlerTest {
         // then
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
-        verify(deletionDateProvider).getDeletionTime();
-        verify(asylumCase).write(DELETION_DATE, "2024-12-05T12:00:00");
+        verify(deletionDateProvider).getDeletionDate();
+        TtlDetails ttl = TtlDetails.builder()
+                .manualTtlOverride(deletionDate)
+                .doNotDelete(YesOrNo.YES)
+                .build();
+        verify(asylumCase).write(eq(TTL), eq(ttl));
     }
 
     @Test
