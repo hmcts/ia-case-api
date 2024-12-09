@@ -396,6 +396,7 @@ security:
       - "generateServiceRequest"
       - "recordRemissionReminder"
       - "markAppealAsRemitted"
+      - "saveNotificationsToData"
       - "refundConfirmation"
       - "progressMigratedCase"
     caseworker-ia-homeofficeapc:
@@ -500,6 +501,7 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
+      - "saveNotificationsToData"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
       - "recordRemissionReminder"
@@ -572,3 +574,9 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 caseIdListJsonLocation: caseIdForRetrigger.json
+
+govnotify:
+  baseUrl: "https://api.notifications.service.gov.uk"
+  key: ${IA_GOV_NOTIFY_KEY:gov-key}
+  bail:
+    key: ${IA_BAIL_GOV_NOTIFY_KEY:gov-bail-key}
