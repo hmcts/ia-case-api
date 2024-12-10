@@ -77,6 +77,7 @@ class AppealSetDraftTtlHandlerTest {
         assertEquals(asylumCase, response.getData());
         verify(deletionDateProvider).getDeletionDate();
         TtlDetails ttl = TtlDetails.builder()
+                .systemSetTtl(deletionDate)
                 .manualTtlOverride(deletionDate)
                 .doNotDelete(YesOrNo.YES)
                 .build();
