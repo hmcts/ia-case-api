@@ -42,8 +42,8 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
 
         TtlDetails ttlDetails = TtlDetails.builder()
-                .systemSetTtl(deletionDate)
-                .manualTtlOverride(deletionDate)
+                .systemSetTtl(deletionDate.toString())
+                .manualTtlOverride(deletionDate.toString())
                 .doNotDelete(YesOrNo.YES)
                 .build();
         log.info(
