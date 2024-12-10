@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -41,20 +42,26 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
         LocalDate deletionDate = deletionDateProvider.getDeletionDate();
 
-        asylumCase.write(TTL, deletionDate.toString());
-
         asylumCase.write(AsylumCaseFieldDefinition.TTL,
             TtlDetails.builder()
+                .systemSetTtl(deletionDate)
                 .manualTtlOverride(deletionDate)
                 .doNotDelete(YesOrNo.YES)
                 .build()
         );
 
-        log.info(
-            "Setting deletionDate when starting appeal, caseId {}, deletionDate {}",
-            callback.getCaseDetails().getId(),
-            deletionDate
-        );
+        Optional<TtlDetails> ttlOpt = asylumCase.read(AsylumCaseFieldDefinition.TTL, TtlDetails.class);
+        if (ttlOpt.isPresent()) {
+            TtlDetails ttl = ttlOpt.get();
+            log.info(
+                    "Setting deletionDate when starting appeal, caseId {}, systemSetTtl {}, manualTtlOverride {}," +
+                            " doNotDelete {}",
+                    callback.getCaseDetails().getId(),
+                    ttl.getSystemSetTtl(),
+                    ttl.getManualTtlOverride(),
+                    ttl.getDoNotDelete()
+            );
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
