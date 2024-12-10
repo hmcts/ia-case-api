@@ -40,13 +40,22 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
         LocalDate deletionDate = deletionDateProvider.getDeletionDate();
 
-        asylumCase.write(AsylumCaseFieldDefinition.TTL,
-            TtlDetails.builder()
+
+        TtlDetails ttlDetails = TtlDetails.builder()
                 .systemSetTtl(deletionDate)
                 .manualTtlOverride(deletionDate)
                 .doNotDelete(YesOrNo.YES)
-                .build()
+                .build();
+        log.info(
+                "Setting deletionDate when starting appeal, ttlDetails {}, caseId {}, systemSetTtl {}," +
+                        " manualTtlOverride {}, doNotDelete {}",
+                callback.getCaseDetails().getId(),
+                ttlDetails,
+                ttlDetails.getSystemSetTtl(),
+                ttlDetails.getManualTtlOverride(),
+                ttlDetails.getDoNotDelete()
         );
+        asylumCase.write(AsylumCaseFieldDefinition.TTL, ttlDetails);
 
         Optional<TtlDetails> ttlOpt = asylumCase.read(AsylumCaseFieldDefinition.TTL, TtlDetails.class);
         if (ttlOpt.isPresent()) {
