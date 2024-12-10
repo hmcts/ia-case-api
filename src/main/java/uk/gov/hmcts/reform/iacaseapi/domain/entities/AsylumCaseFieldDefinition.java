@@ -2809,7 +2809,7 @@ public enum AsylumCaseFieldDefinition {
             "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
 
     TTL(
-            "ttl", new TypeReference<String>(){}),
+            "ttl", new TypeReference<TtlDetails>(){}),
     ;
 
     private final String value;
