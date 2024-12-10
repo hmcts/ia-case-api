@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TIME_TO_LIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
 
 @Slf4j
 @Service
@@ -40,7 +40,7 @@ public class AppealRemoveDraftTtlHandler implements PreSubmitCallbackHandler<Asy
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        asylumCase.clear(TIME_TO_LIVE);
+        asylumCase.clear(TTL);
 
         log.info("Removing TTL when submitting appeal, caseId {}", callback.getCaseDetails().getId());
 

@@ -2808,8 +2808,8 @@ public enum AsylumCaseFieldDefinition {
     UPDATED_DECISION_HEARING_FEE_OPTION(
             "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
 
-    TIME_TO_LIVE(
-            "timeToLive", new TypeReference<String>(){}),
+    TTL(
+            "ttl", new TypeReference<String>(){}),
     ;
 
     private final String value;

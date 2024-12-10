@@ -30,7 +30,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TIME_TO_LIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -80,7 +80,7 @@ class AppealSetDraftTtlHandlerTest {
                 .manualTtlOverride(deletionDate)
                 .doNotDelete(YesOrNo.YES)
                 .build();
-        verify(asylumCase).write(eq(TIME_TO_LIVE), eq(ttl));
+        verify(asylumCase).write(eq(TTL), eq(ttl));
     }
 
     @Test

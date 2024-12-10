@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TIME_TO_LIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
 
 @Slf4j
 @Service
@@ -41,9 +41,9 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
         LocalDate deletionDate = deletionDateProvider.getDeletionDate();
 
-        asylumCase.write(TIME_TO_LIVE, deletionDate.toString());
+        asylumCase.write(TTL, deletionDate.toString());
 
-        asylumCase.write(AsylumCaseFieldDefinition.TIME_TO_LIVE,
+        asylumCase.write(AsylumCaseFieldDefinition.TTL,
             TtlDetails.builder()
                 .manualTtlOverride(deletionDate)
                 .doNotDelete(YesOrNo.YES)
