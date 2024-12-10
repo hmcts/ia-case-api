@@ -18,8 +18,6 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
-
 @Slf4j
 @Service
 public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<AsylumCase> {
