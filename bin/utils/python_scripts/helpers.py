@@ -57,9 +57,9 @@ def update_case_data_with_latest_event(case_data_file, case_event_file):
             updated_data_rows.append(next(data_reader))
             for row in data_reader:
                 row[1] = created_date if row[1] != 'last_modified_date' else row[1]
-                row[4] = state_id if row[3] != 'state' else row[3]
-                row[5] = data if row[5] != 'data' else row[5]
-                row[6] = data_classification if row[6] != 'data_classification' else row[6]
+                row[5] = state_id if row[3] != 'state' else row[3]
+                row[6] = data if row[5] != 'data' else row[5]
+                row[7] = data_classification if row[6] != 'data_classification' else row[6]
                 updated_data_rows.append(row)
 
         output_file = case_data_file.rsplit('.', 1)[0] + '_modified.csv'
