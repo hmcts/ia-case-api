@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -40,35 +39,19 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
         LocalDate deletionDate = deletionDateProvider.getDeletionDate();
 
-
         TtlDetails ttlDetails = TtlDetails.builder()
-                .systemSetTtl(deletionDate.toString())
-                .manualTtlOverride(deletionDate.toString())
-                .doNotDelete(YesOrNo.YES)
-                .build();
-        log.info(
-                "Setting deletionDate when starting appeal, caseId {}, ttlDetails {}, systemSetTtl {}," +
-                        " manualTtlOverride {}, doNotDelete {}",
-                callback.getCaseDetails().getId(),
-                ttlDetails,
-                ttlDetails.getSystemSetTtl(),
-                ttlDetails.getManualTtlOverride(),
-                ttlDetails.getDoNotDelete()
-        );
+            .systemTtl(deletionDate.toString())
+            .overrideTTL(deletionDate.toString())
+            .isSuspended(YesOrNo.YES)
+            .build();
+
         asylumCase.write(AsylumCaseFieldDefinition.TTL, ttlDetails);
 
-        Optional<TtlDetails> ttlOpt = asylumCase.read(AsylumCaseFieldDefinition.TTL, TtlDetails.class);
-        if (ttlOpt.isPresent()) {
-            TtlDetails ttl = ttlOpt.get();
-            log.info(
-                    "Setting deletionDate when starting appeal, caseId {}, systemSetTtl {}, manualTtlOverride {}," +
-                            " doNotDelete {}",
-                    callback.getCaseDetails().getId(),
-                    ttl.getSystemSetTtl(),
-                    ttl.getManualTtlOverride(),
-                    ttl.getDoNotDelete()
-            );
-        }
+        log.info(
+            "Setting deletionDate when starting appeal, caseId {}, ttlDetails {}",
+            callback.getCaseDetails().getId(),
+            ttlDetails
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

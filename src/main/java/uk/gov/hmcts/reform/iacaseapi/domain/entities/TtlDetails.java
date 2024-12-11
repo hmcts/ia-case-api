@@ -9,18 +9,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @Data
 @Builder
 public class TtlDetails {
-    private final String systemSetTtl;
-    private final String manualTtlOverride;
-    private YesOrNo doNotDelete;
+    private final String systemTtl;
+    private final String overrideTTL;
+    private YesOrNo isSuspended;
 
     @JsonCreator
     public TtlDetails(
-        @JsonProperty("system_set_ttl") String systemSetTtl,
-        @JsonProperty("manual_ttl_override") String manualTtlOverride,
-        @JsonProperty("do_not_delete") YesOrNo doNotDelete
+        @JsonProperty("SystemTTL") String systemTtl,
+        @JsonProperty("OverrideTTL") String overrideTTL,
+        @JsonProperty("Suspended") YesOrNo isSuspended
     ) {
-        this.systemSetTtl = systemSetTtl;
-        this.manualTtlOverride = manualTtlOverride;
-        this.doNotDelete = doNotDelete;
+        this.systemTtl = systemTtl;
+        this.overrideTTL = overrideTTL;
+        this.isSuspended = isSuspended;
     }
 }
