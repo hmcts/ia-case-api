@@ -137,7 +137,7 @@ class RoleAssignmentServiceTest {
     void removeCaseManagerRoleShouldNotRemoveRoleWithoutRequiredRoles() {
         when(userDetails.getRoles()).thenReturn(List.of("citizen"));
 
-        roleAssignmentService.removeCaseManagerRole("1234123412341234", List.of(UserRole.CASE_OFFICER.name()), List.of(RoleCategory.LEGAL_OPERATIONS));
+        roleAssignmentService.removeCaseManagerRole("1234123412341234", List.of(UserRole.CASE_OFFICER.getId()), List.of(RoleCategory.LEGAL_OPERATIONS));
 
         verify(roleAssignmentApi, never()).queryRoleAssignments(anyString(), anyString(), any(QueryRequest.class));
         verify(roleAssignmentApi, never()).deleteRoleAssignment(anyString(),anyString(), anyString());
@@ -163,13 +163,13 @@ class RoleAssignmentServiceTest {
                 .build();
         RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(assignment));
 
-        when(userDetails.getRoles()).thenReturn(List.of(UserRole.JUDGE.name()));
+        when(userDetails.getRoles()).thenReturn(List.of(UserRole.JUDGE.getId()));
 
         when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
             .thenReturn(roleAssignmentResource);
 
         roleAssignmentService.removeCaseManagerRole("1234123412341234",
-                List.of(UserRole.JUDGE.name(), UserRole.JUDICIARY.name()),
+                List.of(UserRole.JUDGE.getId(), UserRole.JUDICIARY.getId()),
                 List.of(RoleCategory.JUDICIAL));
 
         verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
