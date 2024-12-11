@@ -62,10 +62,10 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         final String hoEndAppealInstructStatus =
             asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class).orElse("");
 
-        List<String> rolesForRemoval = List.of(UserRole.CASE_OFFICER.name(),
-                UserRole.ADMIN_OFFICER.name(),
-                UserRole.JUDGE.name(),
-                UserRole.JUDICIARY.name());
+        List<String> rolesForRemoval = List.of(UserRole.CASE_OFFICER.getId(),
+                UserRole.ADMIN_OFFICER.getId(),
+                UserRole.JUDGE.getId(),
+                UserRole.JUDICIARY.getId());
         List<RoleCategory> roleCategories = List.of(
                 RoleCategory.LEGAL_OPERATIONS,
                 RoleCategory.ADMIN,
