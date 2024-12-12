@@ -9,8 +9,8 @@
 
 vault_name="ia-aat"
 
-USERNAME=$(az keyvault secret show --vault-name $vault_name --name ccd-admin-web-username)
-PASSWORD=$(az keyvault secret show --vault-name $vault_name --name ccd-admin-web-password)
+USERNAME=$IA_CCD_ADMIN_USERNAME
+PASSWORD=$IA_CCD_ADMIN_PASSWORD
 
 REDIRECT_URI="https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
 CLIENT_ID="ccd_admin"
