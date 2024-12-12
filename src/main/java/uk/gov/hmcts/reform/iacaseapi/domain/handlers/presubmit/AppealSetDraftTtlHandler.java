@@ -56,7 +56,7 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
                     callback.getCaseDetails().getId(),
                     ttlJsonString
             );
-            String asylumCaseJsonString = objectMapper.writeValueAsString(ttlCcdObject);
+            String asylumCaseJsonString = objectMapper.writeValueAsString(asylumCase);
             log.info(
                     "Setting ttl when starting appeal, caseId {}, asylumCase {}",
                     callback.getCaseDetails().getId(),
