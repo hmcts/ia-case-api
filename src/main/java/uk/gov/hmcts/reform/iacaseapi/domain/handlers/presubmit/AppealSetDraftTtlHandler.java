@@ -52,16 +52,22 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
         try {
             String ttlJsonString = objectMapper.writeValueAsString(ttlCcdObject);
             log.info(
-                    "Setting deletionDate when starting appeal, caseId {}, ttlJsonString {}",
+                    "Setting ttl when starting appeal, caseId {}, ttlJsonString {}",
                     callback.getCaseDetails().getId(),
                     ttlJsonString
+            );
+            String asylumCaseJsonString = objectMapper.writeValueAsString(ttlCcdObject);
+            log.info(
+                    "Setting ttl when starting appeal, caseId {}, asylumCase {}",
+                    callback.getCaseDetails().getId(),
+                    asylumCaseJsonString
             );
         } catch (JsonProcessingException e) {
             log.error("Error", e);
         }
-        
+
         log.info(
-            "Setting deletionDate when starting appeal, caseId {}, ttlDetails {}",
+            "Setting ttl when starting appeal, caseId {}, ttlDetails {}",
             callback.getCaseDetails().getId(),
             ttlCcdObject
         );
