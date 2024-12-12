@@ -7,11 +7,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import java.time.LocalDate;
 
 @Service
-public class DeletionDateProvider {
+public class TtlProvider {
     private final DateProvider dateProvider;
     private final int appealDraftTtlDays;
 
-    public DeletionDateProvider(
+    public TtlProvider(
         DateProvider dateProvider,
         @Value("${appealDraftTtlDays}") int appealDraftTtlDays
     ) {

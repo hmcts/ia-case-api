@@ -14,8 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.TtlProvider;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -48,13 +47,13 @@ class AppealSetDraftTtlHandlerTest {
     @Mock
     private LocalDate deletionDate;
     @Mock
-    private DeletionDateProvider deletionDateProvider;
+    private TtlProvider ttlProvider;
 
     private AppealSetDraftTtlHandler appealSetDraftTtlHandler;
 
     @BeforeEach
     void setUp() {
-        appealSetDraftTtlHandler = new AppealSetDraftTtlHandler(deletionDateProvider);
+        appealSetDraftTtlHandler = new AppealSetDraftTtlHandler(ttlProvider);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
@@ -67,7 +66,7 @@ class AppealSetDraftTtlHandlerTest {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(deletionDateProvider.getTtl()).thenReturn(deletionDate);
+        when(ttlProvider.getTtl()).thenReturn(deletionDate);
 
         // when
         PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftTtlHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -75,11 +74,11 @@ class AppealSetDraftTtlHandlerTest {
         // then
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
-        verify(deletionDateProvider).getTtl();
+        verify(ttlProvider).getTtl();
         TtlCcdObject ttl = TtlCcdObject.builder()
-                .systemTtl(deletionDate.toString())
+                .systemTTL(deletionDate.toString())
                 .overrideTTL(deletionDate.toString())
-                .isSuspended(YesOrNo.NO)
+                .suspended("No")
                 .build();
         verify(asylumCase).write(eq(TTL), eq(ttl));
     }

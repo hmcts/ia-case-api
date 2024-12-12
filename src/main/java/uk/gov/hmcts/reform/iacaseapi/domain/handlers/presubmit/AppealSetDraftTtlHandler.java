@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -10,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DeletionDateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.TtlProvider;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,10 +21,10 @@ import static java.util.Objects.requireNonNull;
 public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private static final String TTL_SUSPENDED_NO = "No";
 
-    private final DeletionDateProvider deletionDateProvider;
+    private final TtlProvider ttlProvider;
 
-    public AppealSetDraftTtlHandler(DeletionDateProvider deletionDateProvider) {
-        this.deletionDateProvider = deletionDateProvider;
+    public AppealSetDraftTtlHandler(TtlProvider ttlProvider) {
+        this.ttlProvider = ttlProvider;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String ttlString = deletionDateProvider.getTtl().toString();
+        String ttlString = ttlProvider.getTtl().toString();
 
         TtlCcdObject ttlCcdObject = TtlCcdObject.builder()
                 .suspended(TTL_SUSPENDED_NO)
@@ -46,10 +48,22 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
 
         asylumCase.write(AsylumCaseFieldDefinition.TTL, ttlCcdObject);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String ttlJsonString = objectMapper.writeValueAsString(ttlCcdObject);
+            log.info(
+                    "Setting deletionDate when starting appeal, caseId {}, ttlJsonString {}",
+                    callback.getCaseDetails().getId(),
+                    ttlJsonString
+            );
+        } catch (JsonProcessingException e) {
+            log.error("Error", e);
+        }
+        
         log.info(
             "Setting deletionDate when starting appeal, caseId {}, ttlDetails {}",
             callback.getCaseDetails().getId(),
-                ttlCcdObject
+            ttlCcdObject
         );
 
         return new PreSubmitCallbackResponse<>(asylumCase);

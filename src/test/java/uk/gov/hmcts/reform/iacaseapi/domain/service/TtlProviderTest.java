@@ -17,8 +17,8 @@ import static org.mockito.Mockito.when;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class DeletionDateProviderTest {
-    private DeletionDateProvider deletionDateProvider;
+class TtlProviderTest {
+    private TtlProvider ttlProvider;
 
     @Mock
     DateProvider dateProvider;
@@ -29,7 +29,7 @@ class DeletionDateProviderTest {
 
     @BeforeEach
     void setUp() {
-        deletionDateProvider = new DeletionDateProvider(dateProvider, 365);
+        ttlProvider = new TtlProvider(dateProvider, 365);
     }
 
     @Test
@@ -39,7 +39,7 @@ class DeletionDateProviderTest {
         when(localDate.plusDays(365)).thenReturn(deletionDate);
 
         // when
-        LocalDate res = deletionDateProvider.getTtl();
+        LocalDate res = ttlProvider.getTtl();
 
         // then
         assertEquals(deletionDate, res);
