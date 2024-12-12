@@ -5,20 +5,11 @@ import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class AsylumCaseFieldDefinitionTest {
-
-    List<AsylumCaseFieldDefinition> exceptions = List.of(new AsylumCaseFieldDefinition[]{
-        ATTENDING_TCW,
-        PRISON_NOMS,
-        PRISON_NOMS_AO,
-        CASE_LEVEL_FLAGS
-    });
-
     @Test
     void mapped_to_equivalent_field_name() {
         Stream.of(AsylumCaseFieldDefinition.values())

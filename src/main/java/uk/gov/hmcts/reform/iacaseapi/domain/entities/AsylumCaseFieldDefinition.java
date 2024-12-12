@@ -11,9 +11,6 @@ import java.util.List;
 
 public enum AsylumCaseFieldDefinition {
 
-    TTL(
-            "TTL", new TypeReference<TtlDetails>(){}),
-
     WA_DUMMY_POSTCODE("waDummyPostcode", new TypeReference<String>(){}),
 
     CHANGE_ORGANISATION_REQUEST_FIELD(
@@ -2809,8 +2806,10 @@ public enum AsylumCaseFieldDefinition {
             "previousDecisionHearingFeeOption", new TypeReference<String>(){}),
 
     UPDATED_DECISION_HEARING_FEE_OPTION(
-            "updatedDecisionHearingFeeOption", new TypeReference<String>(){})
+            "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
 
+    TTL(
+            "TTL", new TypeReference<TtlDetails>(){})
     ;
 
     private final String value;

@@ -42,7 +42,7 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
         TtlDetails ttlDetails = TtlDetails.builder()
             .systemTtl(deletionDate.toString())
             .overrideTTL(deletionDate.toString())
-            .isSuspended(YesOrNo.YES)
+            .isSuspended(YesOrNo.NO)
             .build();
 
         asylumCase.write(AsylumCaseFieldDefinition.TTL, ttlDetails);

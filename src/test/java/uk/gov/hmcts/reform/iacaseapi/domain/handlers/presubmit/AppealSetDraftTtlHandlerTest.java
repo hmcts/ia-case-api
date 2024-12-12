@@ -63,7 +63,7 @@ class AppealSetDraftTtlHandlerTest {
     }
 
     @Test
-    void should_write_deletion_date() {
+    void should_write_ttl() {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -79,7 +79,7 @@ class AppealSetDraftTtlHandlerTest {
         TtlDetails ttl = TtlDetails.builder()
                 .systemTtl(deletionDate.toString())
                 .overrideTTL(deletionDate.toString())
-                .isSuspended(YesOrNo.YES)
+                .isSuspended(YesOrNo.NO)
                 .build();
         verify(asylumCase).write(eq(TTL), eq(ttl));
     }
