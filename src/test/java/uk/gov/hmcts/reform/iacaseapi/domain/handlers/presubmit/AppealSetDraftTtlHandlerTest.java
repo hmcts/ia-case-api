@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TTL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +68,7 @@ class AppealSetDraftTtlHandlerTest {
         when(ttlProvider.getTtl()).thenReturn(deletionDate);
 
         // when
-        PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftTtlHandler.handle(ABOUT_TO_START, callback);
+        PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftTtlHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         // then
         assertNotNull(response);
@@ -93,7 +93,7 @@ class AppealSetDraftTtlHandlerTest {
 
                 boolean canHandle = appealSetDraftTtlHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START && event == Event.START_APPEAL) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && event == Event.START_APPEAL) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -105,7 +105,7 @@ class AppealSetDraftTtlHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> appealSetDraftTtlHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> appealSetDraftTtlHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
