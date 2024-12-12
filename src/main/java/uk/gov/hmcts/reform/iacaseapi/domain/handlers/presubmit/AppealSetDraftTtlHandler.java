@@ -94,7 +94,7 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                && callback.getEvent() == Event.START_APPEAL;
     }
 }
