@@ -19,7 +19,7 @@ public class DeletionDateProvider {
         this.appealDraftTtlDays = appealDraftTtlDays;
     }
 
-    public LocalDate getDeletionDate() {
+    public LocalDate getTtl() {
         return dateProvider.now().plusDays(appealDraftTtlDays);
     }
 }

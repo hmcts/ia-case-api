@@ -39,7 +39,7 @@ class DeletionDateProviderTest {
         when(localDate.plusDays(365)).thenReturn(deletionDate);
 
         // when
-        LocalDate res = deletionDateProvider.getDeletionDate();
+        LocalDate res = deletionDateProvider.getTtl();
 
         // then
         assertEquals(deletionDate, res);

@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.TtlDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TtlCcdObject;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -67,7 +67,7 @@ class AppealSetDraftTtlHandlerTest {
         // given
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("some-existing-reference-number"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(deletionDateProvider.getDeletionDate()).thenReturn(deletionDate);
+        when(deletionDateProvider.getTtl()).thenReturn(deletionDate);
 
         // when
         PreSubmitCallbackResponse<AsylumCase> response = appealSetDraftTtlHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -75,8 +75,8 @@ class AppealSetDraftTtlHandlerTest {
         // then
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
-        verify(deletionDateProvider).getDeletionDate();
-        TtlDetails ttl = TtlDetails.builder()
+        verify(deletionDateProvider).getTtl();
+        TtlCcdObject ttl = TtlCcdObject.builder()
                 .systemTtl(deletionDate.toString())
                 .overrideTTL(deletionDate.toString())
                 .isSuspended(YesOrNo.NO)
