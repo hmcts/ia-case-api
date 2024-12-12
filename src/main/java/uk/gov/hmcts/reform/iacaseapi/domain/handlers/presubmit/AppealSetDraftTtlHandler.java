@@ -46,9 +46,20 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
                 .systemTTL(ttlString)
                 .build();
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String asylumCaseJsonString = objectMapper.writeValueAsString(asylumCase);
+            log.info(
+                    "Setting ttl when starting appeal, caseId {}, asylumCase1 {}",
+                    callback.getCaseDetails().getId(),
+                    asylumCaseJsonString
+            );
+        } catch (JsonProcessingException e) {
+            log.error("Error", e);
+        }
+
         asylumCase.write(AsylumCaseFieldDefinition.TTL, ttlCcdObject);
 
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             String ttlJsonString = objectMapper.writeValueAsString(ttlCcdObject);
             log.info(
@@ -58,7 +69,7 @@ public class AppealSetDraftTtlHandler implements PreSubmitCallbackHandler<Asylum
             );
             String asylumCaseJsonString = objectMapper.writeValueAsString(asylumCase);
             log.info(
-                    "Setting ttl when starting appeal, caseId {}, asylumCase {}",
+                    "Setting ttl when starting appeal, caseId {}, asylumCase2 {}",
                     callback.getCaseDetails().getId(),
                     asylumCaseJsonString
             );
