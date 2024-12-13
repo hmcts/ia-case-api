@@ -283,9 +283,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         setDlrmFeeRemissionFeatureFlag(callback.getEvent(), asylumCase);
         setDlrmFeeRefundFeatureFlag(callback.getEvent(), asylumCase);
 
-        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
+        AsylumCase asylumCaseWithNotificationMarker = null;
+        if (featureToggler.getValue("save-notifications-feature", false)) {
+            asylumCaseWithNotificationMarker = notificationSender.send(callback);
+        }
 
-        return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
+        return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker != null ? asylumCaseWithNotificationMarker : asylumCase);
     }
 
     private boolean isPaid(Callback<AsylumCase> callback) {
