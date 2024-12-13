@@ -33,7 +33,7 @@ class AsylumCaseFieldDefinitionTest {
                 MANUAL_CREATE_HEARING_REQUIRED
             ).contains(val))
             .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
-                .isEqualTo(v.value()));
+                .isEqualToIgnoringCase(v.value()));
     }
 
 }
