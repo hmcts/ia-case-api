@@ -7,8 +7,11 @@
 ##
 ## Returns a valid IDAM user token for the given username and password.
 
-USERNAME=servicesatcdmiac@gmail.com
-PASSWORD=IacConfig29
+vault_name="ia-aat"
+
+USERNAME=$IA_CCD_ADMIN_USERNAME
+PASSWORD=$IA_CCD_ADMIN_PASSWORD
+
 REDIRECT_URI="https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
 CLIENT_ID="ccd_admin"
 CLIENT_SECRET="HoxnBugNkz9jE9QK0pvMVGjgEhBtN9Zv"
