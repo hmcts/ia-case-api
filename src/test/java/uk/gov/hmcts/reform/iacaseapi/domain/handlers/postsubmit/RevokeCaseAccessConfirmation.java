@@ -30,6 +30,7 @@ public class RevokeCaseAccessConfirmation implements PostSubmitCallbackHandler<A
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
 
+        postSubmitResponse.setConfirmationHeader("");
         postSubmitResponse.setConfirmationHeader("# You have revoked case access for the appeal");
 
         return postSubmitResponse;
