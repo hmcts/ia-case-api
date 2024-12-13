@@ -41,13 +41,12 @@ public class RestoreFromAdjournStateHandler implements PreSubmitCallbackStateHan
         String previousHearingDate = asylumCase.read(DATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class)
             .orElseThrow(() -> new IllegalStateException("dateBeforeAdjournWithoutDate is missing."));
 
-        String stateBeforeAdjournment = asylumCase.read(STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class).
-                orElseThrow(() -> new IllegalStateException("stateBeforeAdjournment is missing."));
+        String stateBeforeAdjournment = asylumCase.read(STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("stateBeforeAdjournment is missing."));
 
         if (stateBeforeAdjournment.equals("decision")) {
             asylumCase.write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YesOrNo.NO);
-        }
-        else {
+        } else {
             asylumCase.write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YesOrNo.YES);
         }
 
