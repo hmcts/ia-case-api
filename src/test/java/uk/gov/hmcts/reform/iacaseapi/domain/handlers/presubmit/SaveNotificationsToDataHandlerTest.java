@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -55,6 +56,8 @@ class SaveNotificationsToDataHandlerTest {
     private StoredNotification mockedStoredNotification;
     @Mock
     private StoredNotification mockedStoredNotification2;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private final String reference = "someReference";
     private final String notificationId = "someNotificationId";
@@ -72,7 +75,8 @@ class SaveNotificationsToDataHandlerTest {
         when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
             notificationClient,
-            storedNotificationAppender);
+            storedNotificationAppender,
+            featureToggler);
     }
 
     @Test
@@ -363,6 +367,52 @@ class SaveNotificationsToDataHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
+    @Test
+    void handling_should_throw_if_cannot_actually_handle_due_to_feature_flag() {
+        when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(false);
+
+        assertThatThrownBy(() -> saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void handling_should_not_throw_if_cannot_actually_handle_due_to_feature_flag() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+                List.of(new IdValue<>(reference, notificationId));
+        List<IdValue<StoredNotification>> storedNotifications =
+                List.of(
+                        new IdValue<>("1", mockedStoredNotification),
+                        new IdValue<>("2", mockedStoredNotification2)
+                );
+
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeEmail);
+        when(notification.getEmailAddress()).thenReturn(Optional.of(email));
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        when(notification.getSubject()).thenReturn(Optional.of(subject));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        when(mockedStoredNotification.getNotificationId()).thenReturn("1");
+        when(mockedStoredNotification2.getNotificationId()).thenReturn("2");
+
+
+        when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(true);
+
+        assertDoesNotThrow(() -> {
+            saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        });
+    }
+
     @ParameterizedTest
     @EnumSource(value = Event.class)
     void it_can_handle_callback(Event event) {
@@ -372,7 +422,8 @@ class SaveNotificationsToDataHandlerTest {
             boolean canHandle = saveNotificationsToDataHandler.canHandle(callbackStage, callback);
 
             if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && SAVE_NOTIFICATIONS_TO_DATA == callback.getEvent()) {
+                && SAVE_NOTIFICATIONS_TO_DATA == callback.getEvent()
+                && featureToggler.getValue("save-notifications-feature", false)) {
 
                 assertTrue(canHandle);
             } else {
