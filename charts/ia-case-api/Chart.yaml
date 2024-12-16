@@ -80,7 +80,7 @@ dependencies:
     condition: ccd-message-publisher.enabled
   - name: redis
     version: ~16.13.0
-    repository: "https://charts.bitnami.com/bitnami"
+    repository: "oci://registry-1.docker.io/bitnamicharts/redis"
     condition: redis.enabled
   - name: am-org-role-mapping-service
     version: ~0.0.48
