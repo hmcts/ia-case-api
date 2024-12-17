@@ -12,7 +12,7 @@
         "replacements": {
           "listCaseHearingCentre": "taylorHouse",
           "dateBeforeAdjournWithoutDate": "2018-12-31T12:34:56",
-          "stateBeforeAdjournWithoutDate": "prepareForHearing",
+          "stateBeforeAdjournWithoutDate": "decision",
           "adjournHearingWithoutDateReasons": "Court closed"
         }
       }
@@ -26,7 +26,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "listCaseHearingDate": "2018-12-31T12:34:56",
-        "doesTheCaseNeedToBeRelisted": "Yes",
+        "doesTheCaseNeedToBeRelisted": "No",
         "sendDirectionActionAvailable": "No",
         "notificationsSent": [
           {
