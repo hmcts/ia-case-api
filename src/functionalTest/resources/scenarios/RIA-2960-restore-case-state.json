@@ -21,7 +21,7 @@
   "expectation": {
     "status": 200,
     "errors": [],
-    "state": "decision",
+    "state": "prepareForHearing",
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
