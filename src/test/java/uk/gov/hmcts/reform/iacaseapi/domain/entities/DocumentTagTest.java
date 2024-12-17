@@ -20,6 +20,7 @@ class DocumentTagTest {
         assertEquals("hearingRequirements", DocumentTag.HEARING_REQUIREMENTS.toString());
         assertEquals("caseSummary", DocumentTag.CASE_SUMMARY.toString());
         assertEquals("hearingBundle", DocumentTag.HEARING_BUNDLE.toString());
+        assertEquals("updatedHearingBundle", DocumentTag.UPDATED_HEARING_BUNDLE.toString());
         assertEquals("addendumEvidence", DocumentTag.ADDENDUM_EVIDENCE.toString());
         assertEquals("decisionAndReasons", DocumentTag.DECISION_AND_REASONS_DRAFT.toString());
         assertEquals("decisionAndReasonsCoverLetter", DocumentTag.DECISION_AND_REASONS_COVER_LETTER.toString());
@@ -55,6 +56,6 @@ class DocumentTagTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(44, DocumentTag.values().length);
+        assertEquals(45, DocumentTag.values().length);
     }
 }
