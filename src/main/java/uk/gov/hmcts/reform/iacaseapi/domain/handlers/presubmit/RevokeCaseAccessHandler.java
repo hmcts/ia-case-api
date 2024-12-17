@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID;
 
 @Component
 @Slf4j
@@ -73,6 +76,9 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             deleteCaseRoleAssignments(caseId, roleAssignmentResource, userIdToRevokeAccessFrom, legalRepOrgId);
         }
 
+        asylumCase.write(REVOKE_ACCESS_FOR_USER_ID, null);
+        asylumCase.write(REVOKE_ACCESS_FOR_USER_ORG_ID, null);
+
         return response;
     }
 
@@ -82,26 +88,26 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             String userIdToRevokeAccessFrom,
             String organisationId
     ) {
-        roleAssignmentResource.getRoleAssignmentResponse().forEach(roleAssignment -> {
-            // TODO delete log
-            log.info("Role Assignment: Role assignment ID - {}, Role assigned - {}, IDAM User ID - {}, "
-                            + "IDAM User ID Type - {}, ",
-                    roleAssignment.getId(),
-                    roleAssignment.getRoleName(),
-                    roleAssignment.getActorId(),
-                    roleAssignment.getActorIdType());
+        Assignment roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().get(0);
 
-            if (roleAssignment.getRoleCategory() == RoleCategory.CITIZEN) {
-                deleteRoleAssignment(roleAssignment.getId());
-            } else if (roleAssignment.getRoleCategory() == RoleCategory.PROFESSIONAL) {
-                log.info("Revoking Legal representative's access to appeal with case ID {},"
-                        + " role assignment ID {}", caseId, roleAssignment.getId());
-                ccdCaseAssignment.revokeLegalRepAccessToCase(caseId, userIdToRevokeAccessFrom, organisationId);
+        // TODO delete log
+        log.info("Role Assignment: Role assignment ID - {}, Role assigned - {}, IDAM User ID - {}, "
+                        + "IDAM User ID Type - {}, ",
+                roleAssignment.getId(),
+                roleAssignment.getRoleName(),
+                roleAssignment.getActorId(),
+                roleAssignment.getActorIdType());
 
-                log.info("Successfully revoked Legal representative's access to appeal with case ID {},"
-                        + " role assignment ID {}", caseId, roleAssignment.getId());
-            }
-        });
+        if (roleAssignment.getRoleCategory() == RoleCategory.CITIZEN) {
+            deleteRoleAssignment(roleAssignment.getId());
+        } else if (roleAssignment.getRoleCategory() == RoleCategory.PROFESSIONAL) {
+            log.info("Revoking Legal representative's access to appeal with case ID {},"
+                    + " role assignment ID {}", caseId, roleAssignment.getId());
+            ccdCaseAssignment.revokeLegalRepAccessToCase(caseId, userIdToRevokeAccessFrom, organisationId);
+
+            log.info("Successfully revoked Legal representative's access to appeal with case ID {},"
+                    + " role assignment ID {}", caseId, roleAssignment.getId());
+        }
     }
 
     private void deleteRoleAssignment(String roleAssignmentId) {

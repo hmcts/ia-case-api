@@ -99,6 +99,8 @@ class RevokeCaseAccessHandlerTest {
 
         verify(ccdCaseAssignment).revokeLegalRepAccessToCase(caseId, userId, orgId);
         verifyNoMoreInteractions(roleAssignmentService);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, null);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, null);
     }
 
     @Test
@@ -131,7 +133,8 @@ class RevokeCaseAccessHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, userId);
-
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, null);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, null);
         verifyNoInteractions(ccdCaseAssignment);
     }
 
