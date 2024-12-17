@@ -90,19 +90,9 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
     ) {
         Assignment roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().get(0);
 
-        // TODO delete log
-        log.info("Role Assignment: Role assignment ID - {}, Role assigned - {}, IDAM User ID - {}, "
-                        + "IDAM User ID Type - {}, ",
-                roleAssignment.getId(),
-                roleAssignment.getRoleName(),
-                roleAssignment.getActorId(),
-                roleAssignment.getActorIdType());
-
         if (roleAssignment.getRoleCategory() == RoleCategory.CITIZEN) {
             deleteRoleAssignment(roleAssignment.getId());
         } else if (roleAssignment.getRoleCategory() == RoleCategory.PROFESSIONAL) {
-            log.info("Revoking Legal representative's access to appeal with case ID {},"
-                    + " role assignment ID {}", caseId, roleAssignment.getId());
             ccdCaseAssignment.revokeLegalRepAccessToCase(caseId, userIdToRevokeAccessFrom, organisationId);
 
             log.info("Successfully revoked Legal representative's access to appeal with case ID {},"
