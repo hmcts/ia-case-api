@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -18,9 +16,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
@@ -30,7 +25,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,9 +54,10 @@ class RevokeCaseAccessHandlerTest {
     private RoleAssignmentService roleAssignmentService;
     @Mock
     private RoleAssignmentResource roleAssignmentResource;
-    @Captor
-    private ArgumentCaptor<QueryRequest> queryRequestCaptor;
     private RevokeCaseAccessHandler revokeCaseAccessHandler;
+    private final long caseId = 1234;
+    private final String userId = UUID.randomUUID().toString();
+    private final String orgId = "org123";
 
     @BeforeEach
     public void setUp() {
@@ -74,83 +70,82 @@ class RevokeCaseAccessHandlerTest {
     @Test
     void should_revoke_case_access_when_legal_rep_have_access() {
 
-        final long caseId = 1234;
-        final String legalRepUserId = UUID.randomUUID().toString();
-        final String legalRepOrgId = "org123";
-
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class))
-                .thenReturn(Optional.of(legalRepUserId));
+                .thenReturn(Optional.of(userId));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, String.class))
-                .thenReturn(Optional.of(legalRepOrgId));
+                .thenReturn(Optional.of(orgId));
 
-        when(roleAssignmentService.queryRoleAssignments(any(QueryRequest.class)))
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, userId))
                 .thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(
                 List.of(Assignment.builder().id("1")
                         .roleCategory(RoleCategory.PROFESSIONAL)
-                        .actorId(legalRepUserId)
+                        .actorId(userId)
                         .roleName(RoleName.LEGAL_REPRESENTATIVE)
                         .roleType(RoleType.CASE)
                         .actorIdType(ActorIdType.IDAM)
                         .build()));
 
-        doNothing().when(ccdCaseAssignment).revokeLegalRepAccessToCase(caseId, legalRepUserId, legalRepOrgId);
+        doNothing().when(ccdCaseAssignment).revokeLegalRepAccessToCase(caseId, userId, orgId);
 
         // when
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 revokeCaseAccessHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
+        // Then
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, userId);
+
+        verify(ccdCaseAssignment).revokeLegalRepAccessToCase(caseId, userId, orgId);
+        verifyNoMoreInteractions(roleAssignmentService);
+    }
+
+    @Test
+    void should_revoke_case_access_when_citizen_have_access() {
+
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class))
+                .thenReturn(Optional.of(userId));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, String.class))
+                .thenReturn(Optional.empty());
+
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, userId))
+                .thenReturn(roleAssignmentResource);
+        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(
+                List.of(Assignment.builder().id("1")
+                        .roleCategory(RoleCategory.CITIZEN)
+                        .actorId(userId)
+                        .roleName(RoleName.CREATOR)
+                        .roleType(RoleType.CASE)
+                        .actorIdType(ActorIdType.IDAM)
+                        .build()));
+
+        doNothing().when(roleAssignmentService).deleteRoleAssignment("1");
+
+        // when
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                revokeCaseAccessHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         // Then
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(roleAssignmentService).queryRoleAssignments(queryRequestCaptor.capture());
+        verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, userId);
 
-        QueryRequest queryRequest = queryRequestCaptor.getValue();
-        assertEquals(List.of(RoleType.CASE), queryRequest.getRoleType());
-        assertEquals(List.of(RoleCategory.PROFESSIONAL), queryRequest.getRoleCategory());
-        assertEquals(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE), queryRequest.getRoleName());
-        assertEquals(List.of(legalRepUserId), queryRequest.getActorId());
-        Map<Attributes, List<String>> attributes = queryRequest.getAttributes();
-        assertEquals(List.of(Jurisdiction.IA.name()), attributes.get(Attributes.JURISDICTION));
-        assertEquals(List.of(String.valueOf(caseId)), attributes.get(Attributes.CASE_ID));
-        assertEquals(List.of("Asylum"), attributes.get(Attributes.CASE_TYPE));
-
-        verify(ccdCaseAssignment).revokeLegalRepAccessToCase(caseId, legalRepUserId, legalRepOrgId);
+        verifyNoInteractions(ccdCaseAssignment);
     }
 
     @Test
     void should_return_error_when_legal_rep_idam_user_id_is_not_provided() {
         // given
-        final long caseId = 1234;
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class))
                 .thenReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> revokeCaseAccessHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Legal Representative IDAM user ID is not present.")
-                .isExactlyInstanceOf(IllegalStateException.class);
-        verifyNoInteractions(roleAssignmentService, ccdCaseAssignment);
-    }
-
-    @Test
-    void should_return_error_when_legal_rep_organisation_id_is_not_provided() {
-        // given
-        final long caseId = 1234;
-        final String legalRepUserId = UUID.randomUUID().toString();
-        final String legalRepOrgId = "org123";
-
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class))
-                .thenReturn(Optional.of(legalRepUserId));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, String.class))
-                .thenReturn(Optional.empty());
-
-        // then
-        assertThatThrownBy(() -> revokeCaseAccessHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Legal Representative Organisation ID is not present.")
+                .hasMessage("IDAM user ID is not present.")
                 .isExactlyInstanceOf(IllegalStateException.class);
         verifyNoInteractions(roleAssignmentService, ccdCaseAssignment);
     }
@@ -158,17 +153,13 @@ class RevokeCaseAccessHandlerTest {
     @Test
     void should_return_error_when_legal_rep_does_not_have_role_assignments_to_case() {
         // given
-        final long caseId = 1234;
-        final String legalRepUserId = UUID.randomUUID().toString();
-        final String legalRepOrgId = "org12";
-
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class))
-                .thenReturn(Optional.of(legalRepUserId));
+                .thenReturn(Optional.of(userId));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, String.class))
-                .thenReturn(Optional.of(legalRepOrgId));
+                .thenReturn(Optional.of(orgId));
 
-        when(roleAssignmentService.queryRoleAssignments(any(QueryRequest.class)))
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, userId))
                 .thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(Collections.emptyList());
 
@@ -181,7 +172,7 @@ class RevokeCaseAccessHandlerTest {
 
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
-                .contains(String.format("Legal representative doesn't have access to case: %s caseId: %s", legalRepUserId, caseId));
+                .contains(String.format("User doesn't have access to case: %s caseId: %s", userId, caseId));
 
         verifyNoInteractions(ccdCaseAssignment);
     }
