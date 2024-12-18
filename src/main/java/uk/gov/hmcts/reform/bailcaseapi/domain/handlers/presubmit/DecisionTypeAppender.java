@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.BailCaseUtils;
 import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.DecisionType;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;

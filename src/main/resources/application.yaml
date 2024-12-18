@@ -75,6 +75,7 @@ security:
     caseworker-ia-system:
       - "clearLegalRepresentativeDetails"
       - "caseListing"
+      - "testTimedEventSchedule"
     caseworker-caa:
       - "nocRequest"
       - "clearLegalRepresentativeDetails"
@@ -118,6 +119,7 @@ security:
       - "imaStatus"
       - "forceCaseToHearing"
       - "changeTribunalCentre"
+      - "testTimedEventSchedule"
       - "uploadHearingRecording"
     caseworker-ia-homeofficebail:
       - "startApplication"
@@ -213,8 +215,12 @@ prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v
 prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refdata/external/v1/organisations}
 location.ref.data.url: ${LOCATION_REF_DATA_URL:http://localhost:8991}
 
+timed-event-service:
+  url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
 featureFlag:
   isDocumentGenerationEnabled: ${IA_DOCUMENT_GENERATION_ENABLED:true}
+  timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
 
 launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}

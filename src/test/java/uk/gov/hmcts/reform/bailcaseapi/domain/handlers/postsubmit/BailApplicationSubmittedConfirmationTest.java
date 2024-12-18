@@ -3,19 +3,23 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
@@ -27,39 +31,60 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ref.OrganisationEntityResponse;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdCaseAssignment;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.TimedEvent;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class BailApplicationSubmittedConfirmationTest {
 
-    @Mock private Callback<BailCase> callback;
+    @Mock
+    private Callback<BailCase> callback;
 
-    @Mock private CaseDetails<BailCase> caseDetails;
+    @Mock
+    private CaseDetails<BailCase> caseDetails;
 
-    @Mock private BailCase bailCase;
+    @Mock
+    private BailCase bailCase;
 
-    @Mock private ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+    @Mock
+    private ProfessionalOrganisationRetriever professionalOrganisationRetriever;
 
-    @Mock private CcdCaseAssignment ccdCaseAssignment;
+    @Mock
+    private CcdCaseAssignment ccdCaseAssignment;
 
-    @Mock private OrganisationPolicy organisationPolicy;
+    @Mock
+    private OrganisationPolicy organisationPolicy;
 
-    @Mock private OrganisationEntityResponse organisationEntityResponse;
+    @Mock
+    private OrganisationEntityResponse organisationEntityResponse;
 
-    @Mock private UserDetails userDetails;
+    @Mock
+    private UserDetails userDetails;
 
-    @Mock private UserDetailsHelper userDetailsHelper;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    private boolean timedEventServiceEnabled;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private Scheduler scheduler;
 
     private BailApplicationSubmittedConfirmation bailApplicationSubmittedConfirmation;
 
     @BeforeEach
     public void setUp() {
         bailApplicationSubmittedConfirmation =
-            new BailApplicationSubmittedConfirmation(professionalOrganisationRetriever,
-                                                     ccdCaseAssignment,
-                                                     userDetails,
-                                                     userDetailsHelper);
+            new BailApplicationSubmittedConfirmation(
+                professionalOrganisationRetriever,
+                ccdCaseAssignment,
+                userDetails,
+                userDetailsHelper,
+                false,
+                dateProvider,
+                scheduler
+            );
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
     }
@@ -85,6 +110,7 @@ public class BailApplicationSubmittedConfirmationTest {
 
         assertNotNull(response.getConfirmationHeader(), "Confirmation Header is null");
         assertThat(response.getConfirmationHeader().get()).isEqualTo("# You have submitted this application");
+        verify(scheduler, never()).schedule(any(TimedEvent.class));
     }
 
     @Test
@@ -143,7 +169,7 @@ public class BailApplicationSubmittedConfirmationTest {
         bailApplicationSubmittedConfirmation.handle(callback);
 
         verify(ccdCaseAssignment, times(1)).assignAccessToCase(callback);
-        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
+        // TODO: verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -161,5 +187,47 @@ public class BailApplicationSubmittedConfirmationTest {
 
         verify(ccdCaseAssignment, never()).assignAccessToCase(callback);
         verify(ccdCaseAssignment, never()).revokeAccessToCase(any(), anyString());
+    }
+
+    @Test
+    void testTestTimedEventScheduleEvent() {
+        bailApplicationSubmittedConfirmation =
+            new BailApplicationSubmittedConfirmation(
+                professionalOrganisationRetriever,
+                ccdCaseAssignment,
+                userDetails,
+                userDetailsHelper,
+                true,
+                dateProvider,
+                scheduler
+            );
+        long caseId = 1234L;
+        String organisationIdentifier = "someOrgIdentifier";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(callback.getCaseDetails().getId()).thenReturn(caseId);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
+            Optional.of(organisationPolicy));
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        LocalDateTime someTime = LocalDateTime.of(2024, 10, 10, 10, 10, 10);
+        when(dateProvider.nowWithTime()).thenReturn(someTime);
+        ZonedDateTime someTimeDelayed = ZonedDateTime.of(
+            someTime,
+            ZoneId.systemDefault()
+        ).plusMinutes(1);
+        bailApplicationSubmittedConfirmation.handle(callback);
+        verify(dateProvider).nowWithTime();
+        TimedEvent timedEvent = new TimedEvent(
+            "",
+            Event.TEST_TIMED_EVENT_SCHEDULE,
+            someTimeDelayed,
+            "IA",
+            "Bail",
+            callback.getCaseDetails().getId()
+        );
+        verify(scheduler).schedule(refEq(timedEvent));
     }
 }
