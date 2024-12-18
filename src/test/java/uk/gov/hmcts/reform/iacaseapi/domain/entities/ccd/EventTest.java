@@ -103,6 +103,7 @@ class EventTest {
         assertEquals("manageFeeUpdate", Event.MANAGE_FEE_UPDATE.toString());
         assertEquals("nocRequest", Event.NOC_REQUEST.toString());
         assertEquals("removeRepresentation", Event.REMOVE_REPRESENTATION.toString());
+        assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
         assertEquals("removeLegalRepresentative", Event.REMOVE_LEGAL_REPRESENTATIVE.toString());
         assertEquals("requestFeeRemission", Event.REQUEST_FEE_REMISSION.toString());
         assertEquals("recordOutOfTimeDecision", Event.RECORD_OUT_OF_TIME_DECISION.toString());
@@ -155,10 +156,11 @@ class EventTest {
         assertEquals("ariaCreateCase", Event.ARIA_CREATE_CASE.toString());
         assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());
         assertEquals("refundConfirmation", Event.REFUND_CONFIRMATION.toString());
+        assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(151, Event.values().length);
+        assertEquals(152, Event.values().length);
     }
 }
