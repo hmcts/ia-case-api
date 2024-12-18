@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.59
+version: 0.0.60
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -55,7 +55,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
-    version: 2.0.25
+    version: 2.0.23
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-ccdorc.enabled
   - name: em-stitching
@@ -67,7 +67,7 @@ dependencies:
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: aac-manage-case-assignment.enabled
   - name: wa
-    version: ~1.0.6
+    version: ~1.0.5
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
