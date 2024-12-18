@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.58
+version: 0.0.59
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -11,11 +11,11 @@ dependencies:
     version: 5.2.1
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: ccd
-    version: ~9.0.22
+    version: ~9.2.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
-    version: ~1.0.16
+    version: ~1.0.18
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-webapp.enabled
   - name: idam-pr
@@ -63,7 +63,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
-    version: ~0.2.11
+    version: ~0.2.16
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: aac-manage-case-assignment.enabled
   - name: wa
@@ -71,11 +71,11 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
-    version: 1.0.6
+    version: 1.0.7
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: servicebus.enabled
   - name: ccd-message-publisher
-    version: ~0.1.11
+    version: ~0.1.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-message-publisher.enabled
   - name: redis
@@ -83,7 +83,7 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     condition: redis.enabled
   - name: am-org-role-mapping-service
-    version: ~0.0.48
+    version: ~0.0.68
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: am-org-role-mapping-service.enabled
   - name: postgresql
