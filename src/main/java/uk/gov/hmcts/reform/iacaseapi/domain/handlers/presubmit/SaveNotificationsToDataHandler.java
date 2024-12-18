@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -36,13 +37,16 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private final NotificationClient notificationClient;
     private final Appender<StoredNotification> notificationAppender;
 
+    private final FeatureToggler featureToggler;
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
-        Appender<StoredNotification> notificationAppender
+        Appender<StoredNotification> notificationAppender,
+        FeatureToggler featureToggler
     ) {
         this.notificationClient = notificationClient;
         this.notificationAppender = notificationAppender;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -53,7 +57,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA;
+               && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
+                && featureToggler.getValue("save-notifications-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

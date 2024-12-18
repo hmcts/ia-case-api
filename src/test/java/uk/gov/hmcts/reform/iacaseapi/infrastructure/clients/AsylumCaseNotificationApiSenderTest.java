@@ -5,11 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
@@ -23,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class AsylumCaseNotificationApiSenderTest {
 
@@ -42,6 +46,8 @@ class AsylumCaseNotificationApiSenderTest {
 
     private AsylumCaseNotificationApiSender asylumCaseNotificationApiSender;
 
+    @Mock
+    private FeatureToggler featureToggler;
 
     @BeforeEach
     public void setUp() {
@@ -52,8 +58,10 @@ class AsylumCaseNotificationApiSenderTest {
                 CCD_SUBMITTED_PATH,
                 false,
                 dateProvider,
-                scheduler
+                scheduler,
+                featureToggler
             );
+        when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(true);
     }
     
     @Test
@@ -102,7 +110,8 @@ class AsylumCaseNotificationApiSenderTest {
                 CCD_SUBMITTED_PATH,
                 true,
                 dateProvider,
-                scheduler
+                scheduler,
+                featureToggler
             );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
@@ -132,4 +141,37 @@ class AsylumCaseNotificationApiSenderTest {
 
         assertEquals(notifiedAsylumCase, callbackResponse);
     }
+
+    @Test
+    void does_not_schedule_save_notification_to_data_event_if_feature_toggle_is_disabled() {
+        asylumCaseNotificationApiSender =
+                new AsylumCaseNotificationApiSender(
+                        asylumCaseCallbackApiDelegator,
+                        ENDPOINT,
+                        CCD_SUBMITTED_PATH,
+                        true,
+                        dateProvider,
+                        scheduler,
+                        featureToggler
+                );
+        final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
+
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+                .thenReturn(notifiedAsylumCase);
+        LocalDateTime localDateTime =
+                LocalDateTime.of(2004, Month.FEBRUARY, 5, 10, 57, 33);
+        when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(false);
+        when(dateProvider.nowWithTime()).thenReturn(localDateTime);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(0L);
+
+        final AsylumCase callbackResponse = asylumCaseNotificationApiSender.send(callback);
+
+        verify(scheduler, never()).schedule(any());
+        verify(asylumCaseCallbackApiDelegator, times(1))
+                .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
+
+        assertEquals(notifiedAsylumCase, callbackResponse);
+    }
+
 }

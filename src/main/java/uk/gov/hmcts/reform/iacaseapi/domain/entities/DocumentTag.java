@@ -17,6 +17,7 @@ public enum DocumentTag {
     HEARING_REQUIREMENTS("hearingRequirements"),
     CASE_SUMMARY("caseSummary"),
     HEARING_BUNDLE("hearingBundle"),
+    UPDATED_HEARING_BUNDLE("updatedHearingBundle"),
     ADDENDUM_EVIDENCE("addendumEvidence"),
     DECISION_AND_REASONS_DRAFT("decisionAndReasons"),
     DECISION_AND_REASONS_COVER_LETTER("decisionAndReasonsCoverLetter"),
