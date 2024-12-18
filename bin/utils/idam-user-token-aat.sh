@@ -14,7 +14,7 @@ PASSWORD=$IA_CCD_ADMIN_PASSWORD
 
 REDIRECT_URI="https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
 CLIENT_ID="ccd_admin"
-CLIENT_SECRET="HoxnBugNkz9jE9QK0pvMVGjgEhBtN9Zv"
+CLIENT_SECRET=${ADMIN_WEB_IDAM_SECRET}
 SCOPE="openid%20profile%20roles"
 
 curl --silent --show-error \
