@@ -40,3 +40,5 @@ echo "Setting up WA Users and role assignments..."
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "hmcts-ctsc" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "task-supervisor" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
+
+./bin/utils/organisational-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "SYSTEM"
