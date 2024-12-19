@@ -136,6 +136,7 @@ paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION
 legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
+sendPaymentReminderNotification.dueInMinutesSinceSubmission: ${PAYMENT_REMINDER_DUE_IN_MINUTES:10080}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -268,6 +269,7 @@ security:
       - "addAppealResponse"
       - "createCaseSummary"
       - "generateHearingBundle"
+      - "generateUpdatedHearingBundle"
       - "customiseHearingBundle"
       - "asyncStitchingComplete"
       - "revertStateToAwaitingRespondentEvidence"
@@ -338,6 +340,7 @@ security:
       - "recordAttendeesAndDuration"
       - "uploadHearingRecording"
       - "turnOnNotifications"
+      - "updateTribunalDecision"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -394,7 +397,9 @@ security:
       - "generateServiceRequest"
       - "recordRemissionReminder"
       - "markAppealAsRemitted"
+      - "saveNotificationsToData"
       - "refundConfirmation"
+      - "progressMigratedCase"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -497,9 +502,15 @@ security:
       - "recordAdjournmentDetails"
       - "triggerCmrListed"
       - "decisionWithoutHearingListed"
+      - "saveNotificationsToData"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
       - "recordRemissionReminder"
+      - "sendPaymentReminderNotification"
+      - "ariaCreateCase"
+      - "revokeCaseAccess"
+    caseworker-ia-internal:
+      - "revokeCaseAccess"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
@@ -567,3 +578,9 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 caseIdListJsonLocation: caseIdForRetrigger.json
+
+govnotify:
+  baseUrl: "https://api.notifications.service.gov.uk"
+  key: ${IA_GOV_NOTIFY_KEY:gov-key}
+  bail:
+    key: ${IA_BAIL_GOV_NOTIFY_KEY:gov-bail-key}

@@ -45,6 +45,7 @@ java:
     PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 20160
     PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 20160
     ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS: 15
+    PAYMENT_REMINDER_DUE_IN_MINUTES: 10080
   postgresql:
     auth:
       username: ia_case_api
@@ -56,6 +57,10 @@ java:
     ia:
       resourceGroup: ia
       secrets:
+        - name: ia-gov-notify-key
+          alias: IA_GOV_NOTIFY_KEY
+        - name: ia-bail-gov-notify-key
+          alias: IA_BAIL_GOV_NOTIFY_KEY
         - name: docmosis-enabled
           alias: IA_DOCMOSIS_ENABLED
         - name: em-stitching-enabled

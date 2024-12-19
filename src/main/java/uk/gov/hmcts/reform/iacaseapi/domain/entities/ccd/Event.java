@@ -33,6 +33,7 @@ public enum Event {
     REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),
     GENERATE_HEARING_BUNDLE("generateHearingBundle"),
     CUSTOMISE_HEARING_BUNDLE("customiseHearingBundle"),
+    GENERATE_UPDATED_HEARING_BUNDLE("generateUpdatedHearingBundle"),
     ASYNC_STITCHING_COMPLETE("asyncStitchingComplete"),
     DECISION_AND_REASONS_STARTED("decisionAndReasonsStarted"),
     GENERATE_DECISION_AND_REASONS("generateDecisionAndReasons"),
@@ -109,6 +110,7 @@ public enum Event {
     NOC_REQUEST("nocRequest"),
     REMOVE_REPRESENTATION("removeRepresentation"),
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
+    REVOKE_CASE_ACCESS("revokeCaseAccess"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
@@ -140,6 +142,9 @@ public enum Event {
     UPDATE_TRIBUNAL_DECISION("updateTribunalDecision"),
     RECORD_REMISSION_REMINDER("recordRemissionReminder"),
     MARK_APPEAL_AS_REMITTED("markAppealAsRemitted"),
+    SEND_PAYMENT_REMINDER_NOTIFICATION("sendPaymentReminderNotification"),
+    ARIA_CREATE_CASE("ariaCreateCase"),
+    PROGRESS_MIGRATED_CASE("progressMigratedCase"),
     REFUND_CONFIRMATION("refundConfirmation"),
 
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
@@ -151,6 +156,7 @@ public enum Event {
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     TRIGGER_CMR_LISTED("triggerCmrListed"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
+    SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -71,6 +71,8 @@ def secrets = [
                 secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
                 secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
                 secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+                secret('ia-gov-notify-key', 'IA_GOV_NOTIFY_KEY'),
+                secret('ia-bail-gov-notify-key', 'IA_BAIL_GOV_NOTIFY_KEY'),
                 secret('app-insights-connection-string', 'app-insights-connection-string'),
                 secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
                 secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
@@ -87,7 +89,9 @@ def secrets = [
                 secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
 
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
-                secret('ccd-client-secret', 'CCD_CLIENT_SECRET')
+                secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
+                secret('system-user-username', 'IA_SYSTEM_USERNAME'),
+                secret('system-user-password', 'IA_SYSTEM_PASSWORD')
 
         ]
 ]
