@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2960 Restore state from adjourned",
+  "description": "RIA-2961 Restore state from adjourned, from decision",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
