@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,6 +15,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,6 +61,8 @@ class RoleAssignmentServiceTest {
     private IdamService idamService;
     @Mock
     private CaseDetails<CaseData> caseDetails;
+    @Captor
+    private ArgumentCaptor<QueryRequest> queryRequestCaptor;
     private final String userId = "userId";
     private final long caseId = 1234567890L;
     private final String accessToken = "accessToken";
@@ -130,6 +135,29 @@ class RoleAssignmentServiceTest {
             eq(serviceToken),
             eq(assignmentId)
         );
+
+    }
+
+    @Test
+    void getCaseRoleAssignmentsForUserTest() {
+
+        roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, userId);
+
+        verify(roleAssignmentApi).queryRoleAssignments(
+                eq(accessToken),
+                eq(serviceToken),
+                queryRequestCaptor.capture()
+        );
+
+        QueryRequest queryRequest = queryRequestCaptor.getValue();
+        assertEquals(List.of(RoleType.CASE), queryRequest.getRoleType());
+        assertEquals(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN), queryRequest.getRoleCategory());
+        assertEquals(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE), queryRequest.getRoleName());
+        assertEquals(List.of(userId), queryRequest.getActorId());
+        Map<Attributes, List<String>> attributes = queryRequest.getAttributes();
+        assertEquals(List.of(Jurisdiction.IA.name()), attributes.get(Attributes.JURISDICTION));
+        assertEquals(List.of(String.valueOf(caseId)), attributes.get(Attributes.CASE_ID));
+        assertEquals(List.of("Asylum"), attributes.get(Attributes.CASE_TYPE));
 
     }
 
