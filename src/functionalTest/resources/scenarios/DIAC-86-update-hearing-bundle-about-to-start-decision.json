@@ -1,0 +1,250 @@
+{
+  "description": "DIAC-86 Updated hearing bundle preparer decision state",
+  "enabled": "{$featureFlag.isEmStitchingEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateUpdatedHearingBundle",
+      "state": "decision",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "ariaListingReference": "LP/12345/2019",
+          "legalRepReferenceNumber": "REF54321",
+          "hearingDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-7}",
+                "tag": "hearingNotice"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-14}",
+                "tag": "caseSummary"
+              }
+            }
+          ],
+          "legalRepresentativeDocuments": [
+            {
+              "id": "3",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-7}",
+                "tag": "caseSummary"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-7}",
+                "tag": "caseArgument"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-14}",
+                "tag": "appealSubmission"
+              }
+            }
+          ],
+          "additionalEvidenceDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-7}",
+                "tag": "additionalEvidence"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-14}",
+                "tag": "additionalEvidence"
+              }
+            }
+          ],
+          "respondentDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-7}",
+                "tag": "respondentEvidence"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": "",
+                "dateUploaded": "{$TODAY-14}",
+                "tag": "respondentEvidence"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "customHearingDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          }
+        ],
+        "customLegalRepDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          }
+        ],
+        "customAdditionalEvidenceDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          }
+        ],
+        "customRespondentDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          }
+        ]
+      }
+    }
+  }
+}
