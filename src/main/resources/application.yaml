@@ -257,6 +257,7 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "ManageTTL"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "sendDirection"
@@ -509,6 +510,7 @@ security:
       - "sendPaymentReminderNotification"
       - "ariaCreateCase"
       - "revokeCaseAccess"
+      - "ManageTTL"
     caseworker-ia-internal:
       - "revokeCaseAccess"
     caseworker-ia-task-retrigger:
