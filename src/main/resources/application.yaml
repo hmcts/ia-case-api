@@ -232,6 +232,10 @@ security:
     caseworker-approver:
       - "removeRepresentation"
       - "removeLegalRepresentative"
+    cft-ttl-manager:
+      - "startAppeal"
+    TTL-admin:
+      - "startAppeal"
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
       - "editAppeal"
