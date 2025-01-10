@@ -514,6 +514,8 @@ security:
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+    caseworker-ia-rparobot:
+      - "addCaseNote"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
