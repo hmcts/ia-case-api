@@ -69,60 +69,41 @@ def update_case_data_with_latest_event(case_data_file, case_event_file):
 
 
 def process_field_type(entry):
-
     field_type = entry.get('FieldType')
 
-    if field_type == 'Label':
+    # Set of field types that should return None
+    none_field_types = {
+        'Label', 'YesOrNo', 'checklist', 'FixedRadioList', 'Collection',
+        'appealGroundsEuRefusal', 'appealGroundsHumanRightsRefusal',
+        'appealGroundsDecisionHumanRightsRefusal', 'appealGroundsDeprivation',
+        'appealGroundsHumanRights', 'appealGroundsProtection',
+        'isFeeConsistentWithDecision', 'feeUpdateStatus',
+        'isDocumentSignedToday', 'makeAnApplication', 'FlagLauncher',
+        'ComponentLauncher', 'Document', 'MoneyGBP',
+        'caseManagementLocationRefData', 'DynamicMultiSelectList', 'Collection', 'SearchCriteria',
+        'interpreterSpokenLanguage', 'Label', 'checklistOutOfCountry', 'TextArea', 'hoursAndMinutes', 'FixedRadioList',
+        'appealGroundsDeprivation', 'interpreterSignLanguage', 'appealGroundsRevocation', 'pinInPost',
+        'appealGroundsDecisionHumanRightsRefusal', 'ChangeOrganisationRequest', 'WaysToPay', 'direction', 'DynamicList',
+        'feeUpdateRecorded', 'DateTime', 'OrganisationPolicy', 'MultiSelectList', 'FixedList', 'hearingSchedule',
+        'caseManagementLocation', 'ftpaDecisionCheckList', 'adjournmentDetail'
+    }
+
+    if field_type in none_field_types:
         return None
-    elif field_type == 'Text':
-        if 'number' in entry["ID"].lower:
+
+    if field_type == 'Text':
+        if 'number' in entry["ID"].lower():
             return '123456789'
         else:
             return f'redacted - {entry["ID"]}'
     elif field_type == 'Date':
         return '1970-01-10'
-    elif field_type == 'YesOrNo':
-        return None
-    elif field_type == 'checklist':
-        return None
-    elif field_type == 'FixedRadioList':
-        return None
-    elif field_type == 'Collection':
-        return None
     elif field_type == 'AddressUK':
-        return '10 Street'
+        return f'10 Street - {entry["ID"]}'
     elif field_type == 'Email':
         return 'email@redacted.com'
-    elif field_type == 'appealGroundsEuRefusal':
-        return None
-    elif field_type == 'appealGroundsHumanRightsRefusal':
-        return None
-    elif field_type == 'appealGroundsDecisionHumanRightsRefusal':
-        return None
-    elif field_type == 'appealGroundsDeprivation':
-        return None
-    elif field_type == 'appealGroundsHumanRights':
-        return None
-    elif field_type == 'appealGroundsProtection':
-        return None
-    elif field_type == 'isFeeConsistentWithDecision':
-        return None
-    elif field_type == 'feeUpdateStatus':
-        return None
-    elif field_type == 'isDocumentSignedToday':
-        return None
-    elif field_type == 'makeAnApplication':
-        return None
-    elif field_type == 'FlagLauncher':
-        return None
-    elif field_type == 'ComponentLauncher':
-        return None
-    elif field_type == 'Document':
-        return None
-    elif field_type == 'appealGroundsEuRefusal':
-        return None
-    elif field_type == 'appealGroundsEuRefusal':
-        return None
+    elif field_type == 'PhoneUK':
+        return '07451290313'
     else:
         print(f'Unrecognised field type: {field_type}')
         return None
@@ -187,18 +168,14 @@ def get_unique_field_types(filepath: str) -> set:
 
 
 def output_field_types_to_csv(filepath: str):
-    """Write the unique FieldType values to a CSV file."""
-    # Extract unique FieldType values
     field_types = get_unique_field_types(filepath)
 
-    # Define the output directory and CSV file path
     output_directory = settings.scripts_dir
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
     csv_filepath = os.path.join(output_directory, 'unique_field_types.csv')
 
-    # Write the FieldType values to the CSV file
     try:
         with open(csv_filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
