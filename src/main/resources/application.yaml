@@ -81,6 +81,8 @@ security:
       - "clearLegalRepresentativeDetails"
     caseworker-approver:
       - "applyNocDecision"
+    caseworker-ia-rparobot:
+      - "addCaseNote"
     caseworker-ia-legalrep-solicitor:
       - "startApplication"
       - "submitApplication"
