@@ -37,3 +37,9 @@ yarn.lock
 /nbdist/
 /.nb-gradle/
 /pacts/
+
+### Python Scripts output dirs ###
+bin/utils/python_scripts/input_csv_files/
+bin/utils/python_scripts/output_csv_files/
+bin/utils/python_scripts/output_jsons/
+bin/utils/python_scripts/__pycache__/
