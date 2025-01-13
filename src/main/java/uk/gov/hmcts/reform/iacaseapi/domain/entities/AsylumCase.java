@@ -7,7 +7,6 @@ import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
 public class AsylumCase extends HashMap<String, Object> implements CaseData {
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AsylumCase() {
@@ -26,7 +25,6 @@ public class AsylumCase extends HashMap<String, Object> implements CaseData {
     */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> read(AsylumCaseFieldDefinition extractor) {
-
         Object o = this.get(extractor.value());
 
         if (o == null) {

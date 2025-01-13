@@ -157,6 +157,7 @@ public enum Event {
     TRIGGER_CMR_LISTED("triggerCmrListed"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
+    MANAGE_TTL("ManageTTL"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
