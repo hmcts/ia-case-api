@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2960 Restore state from adjourned",
+  "description": "RIA-2961 Restore state from adjourned, from decision",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -12,7 +12,7 @@
         "replacements": {
           "listCaseHearingCentre": "taylorHouse",
           "dateBeforeAdjournWithoutDate": "2018-12-31T12:34:56",
-          "stateBeforeAdjournWithoutDate": "finalBundling",
+          "stateBeforeAdjournWithoutDate": "decision",
           "adjournHearingWithoutDateReasons": "Court closed"
         }
       }
@@ -21,13 +21,13 @@
   "expectation": {
     "status": 200,
     "errors": [],
-    "state": "finalBundling",
+    "state": "decision",
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "listCaseHearingDate": "2018-12-31T12:34:56",
-        "doesTheCaseNeedToBeRelisted": "Yes",
-        "sendDirectionActionAvailable": "Yes",
+        "doesTheCaseNeedToBeRelisted": "No",
+        "sendDirectionActionAvailable": "No",
         "notificationsSent": [
           {
             "id": "1234_RE_LIST_CASE_ADMIN_OFFICER",
