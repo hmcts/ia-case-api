@@ -3,25 +3,32 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+
+import java.util.List;
 
 @Component
+@Slf4j
 public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public static final String DLRM_SETASIDE_FEATURE_FLAG = "dlrm-setaside-feature-flag";
     private final FeatureToggler featureToggler;
+    private final RoleAssignmentService roleAssignmentService;
 
-    ResidentJudgeFtpaDecisionConfirmation(
-        FeatureToggler featureToggler
-    ) {
+    ResidentJudgeFtpaDecisionConfirmation(FeatureToggler featureToggler,
+                                          RoleAssignmentService roleAssignmentService) {
         this.featureToggler = featureToggler;
-
+        this.roleAssignmentService = roleAssignmentService;
     }
 
     public boolean canHandle(
@@ -60,6 +67,9 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
         boolean isDlrmSetAside
                 = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
+
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        roleAssignmentService.removeCaseManagerRole(caseId,List.of(UserRole.JUDGE.getId(), UserRole.JUDICIARY.getId()),List.of(RoleCategory.JUDICIAL));
 
         switch (ftpaOutcomeType) {
 
@@ -118,5 +128,6 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
 
         return postSubmitResponse;
     }
+
 }
 
