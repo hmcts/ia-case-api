@@ -20,7 +20,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have changed the due date",
-      "body": "#### What happens next\n\nThe parties has been notified of their time extension. You can see the status of the direction in the [directions tab](/case/IA/Asylum/1234#directions)"
+      "body": "#### What happens next\n\nThe parties have been notified of their time extension. You can see the status of the direction in the [directions tab](/case/IA/Asylum/1234#directions)"
     }
   }
 }
