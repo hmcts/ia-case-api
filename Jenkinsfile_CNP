@@ -55,6 +55,8 @@ def secrets = [
                 secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
                 secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 
+                secret('ccd-admin-web-username', 'IA_CCD_ADMIN_USERNAME'),
+                secret('ccd-admin-web-password', 'IA_CCD_ADMIN_PASSWORD'),
 
                 secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
                 secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),

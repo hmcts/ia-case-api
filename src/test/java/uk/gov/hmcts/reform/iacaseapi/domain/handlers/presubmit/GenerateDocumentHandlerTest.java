@@ -174,6 +174,7 @@ class GenerateDocumentHandlerTest {
         "GENERATE_DECISION_AND_REASONS",
         "GENERATE_HEARING_BUNDLE",
         "CUSTOMISE_HEARING_BUNDLE",
+        "GENERATE_UPDATED_HEARING_BUNDLE",
         "SEND_DECISION_AND_REASONS",
         "ADJOURN_HEARING_WITHOUT_DATE",
         "END_APPEAL",
@@ -337,6 +338,7 @@ class GenerateDocumentHandlerTest {
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
+                        GENERATE_UPDATED_HEARING_BUNDLE,
                     SEND_DECISION_AND_REASONS,
                     ADJOURN_HEARING_WITHOUT_DATE,
                     END_APPEAL,
@@ -488,6 +490,7 @@ class GenerateDocumentHandlerTest {
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
+                        GENERATE_UPDATED_HEARING_BUNDLE,
                     EDIT_CASE_LISTING,
                     SEND_DECISION_AND_REASONS,
                     ADJOURN_HEARING_WITHOUT_DATE,
@@ -540,7 +543,7 @@ class GenerateDocumentHandlerTest {
                 && (eventsThatDontRequireStitching.contains(event))) {
                 assertTrue(canHandle);
             } else if (event.equals(GENERATE_HEARING_BUNDLE)
-                || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
+                    || event.equals(CUSTOMISE_HEARING_BUNDLE) || event.equals(GENERATE_UPDATED_HEARING_BUNDLE)) {
                 assertFalse(canHandle);
             } else {
                 assertFalse(canHandle, "event: " + event + ", stage: " + callbackStage);

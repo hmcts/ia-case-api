@@ -1395,6 +1395,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS(
         "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {}),
 
+    IS_HEARING_BUNDLE_UPDATED(
+        "isHearingBundleUpdated", new TypeReference<YesOrNo>() {}),
+
     HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
         "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
 
@@ -1686,6 +1689,12 @@ public enum AsylumCaseFieldDefinition {
 
     LOCAL_AUTHORITY_POLICY(
         "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
+
+    REVOKE_ACCESS_FOR_USER_ID(
+            "revokeAccessForUserId", new TypeReference<String>(){}),
+
+    REVOKE_ACCESS_FOR_USER_ORG_ID(
+            "revokeAccessForUserOrgId", new TypeReference<String>(){}),
 
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
