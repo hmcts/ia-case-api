@@ -9,11 +9,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -26,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -70,6 +75,8 @@ class RemoveRepresentationPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(organisationPolicy.getOrganisation()).thenReturn(
+                Organisation.builder().organisationID("123").organisationName("test").build());
         when(asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -101,10 +108,10 @@ class RemoveRepresentationPreparerTest {
     @EnumSource(value = Event.class, names = {
         "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
     })
-    void should_respond_with_error_for_legal_rep_when_organisation_policy_not_present() {
+    void should_respond_with_error_for_legal_rep_when_organisation_policy_not_present(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.empty());
 
@@ -120,6 +127,44 @@ class RemoveRepresentationPreparerTest {
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideOrganisationPolicyValues")
+    void should_respond_with_error_for_legal_rep_when_organisation_id_not_present(Event event, OrganisationPolicy orgPolicy) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(orgPolicy));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            removeRepresentationPreparer.handle(
+                PreSubmitCallbackStage.ABOUT_TO_START,
+                callback
+            );
+
+        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
+        assertThat(response.getErrors()).contains("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
+        assertThat(response.getErrors()).contains("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
+
+        verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
+        verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
+    }
+
+    private static Stream<Arguments> provideOrganisationPolicyValues() {
+        return Stream.of(
+                Arguments.of(Event.REMOVE_REPRESENTATION, OrganisationPolicy.builder().build()),
+                Arguments.of(Event.REMOVE_LEGAL_REPRESENTATIVE, OrganisationPolicy.builder().build()),
+                Arguments.of(Event.REMOVE_REPRESENTATION, OrganisationPolicy.builder().organisation(Organisation.builder().build()).build()),
+                Arguments.of(Event.REMOVE_LEGAL_REPRESENTATIVE, OrganisationPolicy.builder().organisation(Organisation.builder().build()).build()),
+                Arguments.of(Event.REMOVE_REPRESENTATION, OrganisationPolicy.builder().organisation(Organisation.builder().organisationName("Org1").build()).build()),
+                Arguments.of(Event.REMOVE_LEGAL_REPRESENTATIVE, OrganisationPolicy.builder().organisation(Organisation.builder().organisationName("Org1").build()).build()),
+                Arguments.of(Event.REMOVE_REPRESENTATION, OrganisationPolicy.builder().organisation(Organisation.builder().organisationID("").build()).build()),
+                Arguments.of(Event.REMOVE_LEGAL_REPRESENTATIVE, OrganisationPolicy.builder().organisation(Organisation.builder().organisationID("").build()).build()),
+                Arguments.of(Event.REMOVE_REPRESENTATION, OrganisationPolicy.builder().organisation(Organisation.builder().organisationID(null).build()).build()),
+                Arguments.of(Event.REMOVE_LEGAL_REPRESENTATIVE, OrganisationPolicy.builder().organisation(Organisation.builder().organisationID(null).build()).build())
+        );
     }
 
     @Test
