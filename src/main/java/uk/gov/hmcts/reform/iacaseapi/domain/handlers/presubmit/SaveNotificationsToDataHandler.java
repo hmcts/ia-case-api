@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
