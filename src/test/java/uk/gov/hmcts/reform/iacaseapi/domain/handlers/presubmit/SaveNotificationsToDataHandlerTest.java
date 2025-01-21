@@ -23,6 +23,7 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -62,7 +63,7 @@ class SaveNotificationsToDataHandlerTest {
     @Mock
     private FeatureToggler featureToggler;
 
-    private final String reference = "someReference";
+    private final String reference = "someReference_" + Instant.now().toEpochMilli();
     private final String notificationId = "someNotificationId";
     private final String body = "someBody";
     private final String notificationTypeEmail = "email";

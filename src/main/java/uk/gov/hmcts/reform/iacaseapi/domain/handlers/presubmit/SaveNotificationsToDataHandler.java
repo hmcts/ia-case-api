@@ -17,6 +17,7 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
@@ -140,9 +144,29 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .map(idValue -> idValue.getValue().getNotificationId())
             .toList();
         return sentNotificationIds.stream()
-            .filter(idValue -> !storedNotificationIds.contains(idValue.getValue()))
+            .filter(idValue -> filterNotificationsSentInTheLastSevenDays(idValue)
+                        && !storedNotificationIds.contains(idValue.getValue()))
             .map(IdValue::getValue)
             .toList();
+    }
+
+    private boolean filterNotificationsSentInTheLastSevenDays(IdValue<String> idValue) {
+        // Regular expression to match the timestamp at the end of the sentNotifications id
+        String dateInEpochMillisPattern = "_(\\d{13})$";
+        Pattern pattern = Pattern.compile(dateInEpochMillisPattern);;
+        Matcher matcher = pattern.matcher(idValue.getId());
+
+        if (matcher.find()) {
+            // Calculate the timestamp in milliseconds for 7 days ago
+            long sevenDaysAgoMillis = Instant.now().minusMillis(7L * 24 * 60 * 60 * 1000).toEpochMilli();
+
+            long notificationDateInMillis = Long.parseLong(matcher.group(1));
+
+            // Check if the timestamp is within the last 7 days
+            return notificationDateInMillis >= sevenDaysAgoMillis;
+        }
+
+        return false;
     }
 
     private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
