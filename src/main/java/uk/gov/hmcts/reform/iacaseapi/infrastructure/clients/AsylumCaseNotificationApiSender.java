@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
+import java.security.SecureRandom;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -32,7 +32,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     private final FeatureToggler featureToggler;
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
 
     public AsylumCaseNotificationApiSender(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
