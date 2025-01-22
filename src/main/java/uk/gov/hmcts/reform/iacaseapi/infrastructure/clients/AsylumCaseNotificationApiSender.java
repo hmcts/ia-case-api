@@ -32,6 +32,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     private final FeatureToggler featureToggler;
+    Random random = new Random();
 
     public AsylumCaseNotificationApiSender(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
@@ -96,7 +97,6 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         LocalTime baseTime = LocalTime.of(saveNotificationScheduleAtHour, 0);
 
         // Randomize minutes and seconds between 0-saveNotificationScheduleMaxMinutes minutes and 0-59 seconds
-        Random random = new Random();
         int randomMinutes = random.nextInt(0, saveNotificationScheduleMaxMinutes);
         int randomSeconds = random.nextInt(0, 60);
 

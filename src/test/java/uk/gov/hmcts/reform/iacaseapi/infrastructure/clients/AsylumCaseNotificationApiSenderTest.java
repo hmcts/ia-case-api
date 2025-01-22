@@ -188,7 +188,7 @@ class AsylumCaseNotificationApiSenderTest {
         assertEquals("IA", timedEventCaptorValue.getJurisdiction());
         assertEquals("Asylum", timedEventCaptorValue.getCaseType());
         assertEquals(1L, timedEventCaptorValue.getCaseId());
-        assertEquals(timedEventCaptorValue.getScheduledDateTime().getHour(), SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR);
+        assertEquals(SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, timedEventCaptorValue.getScheduledDateTime().getHour());
     }
 
     @Test

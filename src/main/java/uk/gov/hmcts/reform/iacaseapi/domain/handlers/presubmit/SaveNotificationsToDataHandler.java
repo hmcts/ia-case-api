@@ -152,7 +152,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private boolean filterNotificationsSentInTheLastSevenDays(IdValue<String> idValue) {
         // Regular expression to match the timestamp at the end of the sentNotifications id
         String dateInEpochMillisPattern = "_(\\d{13})$";
-        Pattern pattern = Pattern.compile(dateInEpochMillisPattern);;
+        Pattern pattern = Pattern.compile(dateInEpochMillisPattern);
         Matcher matcher = pattern.matcher(idValue.getId());
 
         if (matcher.find()) {
