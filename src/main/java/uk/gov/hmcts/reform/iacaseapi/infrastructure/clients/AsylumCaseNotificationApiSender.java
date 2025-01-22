@@ -91,24 +91,24 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     }
 
     private ZonedDateTime determineScheduleTime() {
-            ZonedDateTime now = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault());
-            // Define saveNotificationScheduleAtHour eg:11:00 PM as the base time
-            LocalTime baseTime = LocalTime.of(saveNotificationScheduleAtHour, 0);
+        ZonedDateTime now = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault());
+        // Define saveNotificationScheduleAtHour eg:11:00 PM as the base time
+        LocalTime baseTime = LocalTime.of(saveNotificationScheduleAtHour, 0);
 
-            // Randomize minutes and seconds between 0-saveNotificationScheduleMaxMinutes minutes and 0-59 seconds
-            Random random = new Random();
-            int randomMinutes = random.nextInt(0, saveNotificationScheduleMaxMinutes);
-            int randomSeconds = random.nextInt(0, 60);
+        // Randomize minutes and seconds between 0-saveNotificationScheduleMaxMinutes minutes and 0-59 seconds
+        Random random = new Random();
+        int randomMinutes = random.nextInt(0, saveNotificationScheduleMaxMinutes);
+        int randomSeconds = random.nextInt(0, 60);
 
-            // If notification sent time is before saveNotificationScheduleAtHour
-            if (now.toLocalTime().isBefore(baseTime)) {
-                return now.toLocalDate().atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
-                        .atZone(now.getZone());
-            } else {
-                // If notification sent time is after saveNotificationScheduleAtHour eg: 11 PM, schedule for the next day
-                return now.toLocalDate().plusDays(1).atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
-                        .atZone(now.getZone());
-            }
+        // If notification sent time is before saveNotificationScheduleAtHour
+        if (now.toLocalTime().isBefore(baseTime)) {
+            return now.toLocalDate().atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
+                    .atZone(now.getZone());
+        } else {
+            // If notification sent time is after saveNotificationScheduleAtHour eg: 11 PM, schedule for the next day
+            return now.toLocalDate().plusDays(1).atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
+                    .atZone(now.getZone());
         }
+    }
 
 }
