@@ -41,7 +41,6 @@ public final class MapFieldAssertor {
                 List actualValueCollection = (List) actualValue;
 
                 for (int i = 0; i < expectedValueCollection.size(); i++) {
-
                     String pathWithKeyAndIndex = pathWithKey + "." + i;
 
                     Object expectedValueItem = expectedValueCollection.get(i);
