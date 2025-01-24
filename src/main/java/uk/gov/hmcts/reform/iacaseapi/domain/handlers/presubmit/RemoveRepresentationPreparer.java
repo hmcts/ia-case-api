@@ -2,8 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -15,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @Component
 public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -42,10 +46,15 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isEmpty()) {
+        Optional<OrganisationPolicy> localAuthorityPolicy = callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        if (localAuthorityPolicy.isEmpty()) {
+            // For appeals submitted before 10 February 2021, localAuthorityPolicy was not added to the case data
             response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
-            return response;
+
+        } else if (localAuthorityPolicy.get().getOrganisation() == null
+                || isEmpty(localAuthorityPolicy.get().getOrganisation().getOrganisationID())) {
+            response.addError("This appellant is not currently represented so Notice of Change cannot be actioned. Please contact the Service Desk giving this error message.");
         } else {
 
             Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
@@ -58,8 +67,8 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
                 )
             );
 
-            return response;
         }
+        return response;
     }
 }
 
