@@ -64,19 +64,23 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
     private final NextHearingDateService nextHearingDateService;
+    private final HearingIdListProcessor hearingIdListProcessor;
 
     public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
                                CaseManagementLocationService caseManagementLocationService,
                                @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
                                DirectionAppender directionAppender,
                                LocationRefDataService locationRefDataService,
-                               NextHearingDateService nextHearingDateService) {
+                               NextHearingDateService nextHearingDateService,
+                               HearingIdListProcessor hearingIdListProcessor
+    ) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
         this.nextHearingDateService = nextHearingDateService;
+        this.hearingIdListProcessor = hearingIdListProcessor;
     }
 
     public boolean canHandle(
@@ -211,6 +215,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         } else {
             log.debug("Next hearing date feature not enabled");
         }
+
+        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

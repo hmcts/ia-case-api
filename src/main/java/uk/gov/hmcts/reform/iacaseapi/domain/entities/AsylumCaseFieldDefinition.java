@@ -2817,6 +2817,12 @@ public enum AsylumCaseFieldDefinition {
     UPDATED_DECISION_HEARING_FEE_OPTION(
             "updatedDecisionHearingFeeOption", new TypeReference<String>(){}),
 
+    CURRENT_HEARING_ID(
+            "currentHearingId", new TypeReference<String>() {}),
+
+    HEARING_ID_LIST(
+            "hearingIdList", new TypeReference<List<IdValue<String>>>(){}),
+
     ;
 
     private final String value;
