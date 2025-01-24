@@ -47,11 +47,14 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         Optional<OrganisationPolicy> localAuthorityPolicy = callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
-        if (localAuthorityPolicy.isEmpty()
-                || localAuthorityPolicy.get().getOrganisation() == null
-                || isEmpty(localAuthorityPolicy.get().getOrganisation().getOrganisationID())) {
+        if (localAuthorityPolicy.isEmpty()) {
+            // For appeals submitted before 10 February 2021, localAuthorityPolicy was not added to the case data
             response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
+
+        } else if (localAuthorityPolicy.get().getOrganisation() == null
+                || isEmpty(localAuthorityPolicy.get().getOrganisation().getOrganisationID())) {
+            response.addError("This appellant is not currently represented so Notice of Change cannot be actioned. Please contact the Service Desk giving this error message.");
         } else {
 
             Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");

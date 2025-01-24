@@ -145,8 +145,7 @@ class RemoveRepresentationPreparerTest {
             );
 
         assertThat(response.getData()).isInstanceOf(AsylumCase.class);
-        assertThat(response.getErrors()).contains("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
-        assertThat(response.getErrors()).contains("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
+        assertThat(response.getErrors()).contains("This appellant is not currently represented so Notice of Change cannot be actioned. Please contact the Service Desk giving this error message.");
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
