@@ -66,13 +66,14 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final NextHearingDateService nextHearingDateService;
     private final HearingIdListProcessor hearingIdListProcessor;
 
-    public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
-                               CaseManagementLocationService caseManagementLocationService,
-                               @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
-                               DirectionAppender directionAppender,
-                               LocationRefDataService locationRefDataService,
-                               NextHearingDateService nextHearingDateService,
-                               HearingIdListProcessor hearingIdListProcessor
+    public ListEditCaseHandler(
+        HearingCentreFinder hearingCentreFinder,
+        CaseManagementLocationService caseManagementLocationService,
+        @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
+        DirectionAppender directionAppender,
+        LocationRefDataService locationRefDataService,
+        NextHearingDateService nextHearingDateService,
+        HearingIdListProcessor hearingIdListProcessor
     ) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
@@ -112,13 +113,15 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             HearingCentre listCaseHearingCentre = HearingCentre
                 .fromEpimsId(listingLocationId, true)
                 .orElseThrow(() -> new IllegalStateException(
-                    String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
+                    String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
+                        listingLocationId)));
             asylumCase.write(LIST_CASE_HEARING_CENTRE, listCaseHearingCentre);
 
             if (locationRefDataService.isCaseManagementLocation(listingLocationId)) {
                 HearingCentre hearingCentre = HearingCentre.fromEpimsId(listingLocationId, false)
                     .orElseThrow(() -> new IllegalStateException(
-                        String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
+                        String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
+                            listingLocationId)));
 
                 Optional<DynamicList> optionalHearingCentreDynamicList =
                     asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
