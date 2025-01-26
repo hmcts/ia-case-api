@@ -870,7 +870,7 @@ ccd:
         RUN_LD_ON_STARTUP: false
         ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
         ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role_assignment"
-        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"q
       keyVaults:
         am:
           resourceGroup: am
