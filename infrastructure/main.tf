@@ -8,7 +8,8 @@ provider "azurerm" {
 
 provider "azurerm" {
   features {}
-  resource_provider_registrations = "none"
+  
+  skip_provider_registration = true
   alias                      = "cft_vnet"
   subscription_id            = var.aks_subscription_id
 }
