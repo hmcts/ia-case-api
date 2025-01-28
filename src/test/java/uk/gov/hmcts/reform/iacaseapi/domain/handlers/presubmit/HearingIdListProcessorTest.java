@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -87,6 +88,25 @@ class HearingIdListProcessorTest {
         assertEquals("34567", newHearingIdList.get(1).getValue());
         assertEquals("3", newHearingIdList.get(2).getId());
         assertEquals("12345", newHearingIdList.get(2).getValue());
+    }
+
+
+    @Test
+    void should_not_add_hearing_id_if_already_exists() {
+        // given
+        when(asylumCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
+        IdValue<String> idValue1 = new IdValue<>("1", "23456");
+        IdValue<String> idValue2 = new IdValue<>("2", "12345");
+        List<IdValue<String>> existingHearingIdList = Arrays.asList(idValue1, idValue2);
+        when(asylumCase.read(HEARING_ID_LIST)).thenReturn(Optional.of(existingHearingIdList));
+
+        // when
+        hearingIdListProcessor.processHearingIdList(bailCase);
+
+        // then
+        verify(asylumCase).read(eq(CURRENT_HEARING_ID, String.class));
+        verify(asylumCase).read(eq(HEARING_ID_LIST));
+        Mockito.verifyNoMoreInteractions(bailCase);
     }
 
     @Test

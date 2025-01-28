@@ -29,11 +29,25 @@ public class HearingIdListProcessor {
 
                 final List<IdValue<String>> hearingIdList = maybeHearingIdList.orElse(emptyList());
 
-                List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
-
-                asylumCase.write(HEARING_ID_LIST, newHearingIdList);
+                if (doesNotContainHearingId(hearingIdList, hearingId)) {
+                    List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
+                    asylumCase.write(HEARING_ID_LIST, newHearingIdList);
+                }
             }
         }
+    }
+
+    private boolean doesNotContainHearingId(
+            List<IdValue<String>> existingHearingIdList,
+            String newHearingId
+    ) {
+        for (IdValue<String> existingHearingId : existingHearingIdList) {
+            if (newHearingId.equals(existingHearingId.getValue())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private List<IdValue<String>> appendToHearingIdList(
