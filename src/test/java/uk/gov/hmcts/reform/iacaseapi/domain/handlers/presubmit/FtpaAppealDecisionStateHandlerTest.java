@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -41,12 +42,14 @@ class FtpaAppealDecisionStateHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private HearingDecisionProcessor hearingDecisionProcessor;
 
     private FtpaAppealDecisionStateHandler ftpaAppealDecisionStateHandler;
 
     @BeforeEach
     public void setUp() {
-        ftpaAppealDecisionStateHandler = new FtpaAppealDecisionStateHandler();
+        ftpaAppealDecisionStateHandler = new FtpaAppealDecisionStateHandler(hearingDecisionProcessor);
     }
 
     @Test
@@ -64,6 +67,7 @@ class FtpaAppealDecisionStateHandlerTest {
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.FTPA_DECIDED);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
+        verify(hearingDecisionProcessor).processHearingFtpaAppellantDecision(asylumCase);
     }
 
     @Test
@@ -81,6 +85,7 @@ class FtpaAppealDecisionStateHandlerTest {
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.FTPA_DECIDED);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
+        verify(hearingDecisionProcessor).processHearingFtpaAppellantDecision(asylumCase);
     }
 
 
@@ -100,6 +105,7 @@ class FtpaAppealDecisionStateHandlerTest {
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(priorState);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
+        verify(hearingDecisionProcessor).processHearingFtpaAppellantDecision(asylumCase);
     }
 
     @Test

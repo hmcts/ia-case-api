@@ -25,9 +25,8 @@ public class HearingIdListProcessor {
             if (hearingIdOpt.isPresent()) {
                 String hearingId = hearingIdOpt.get();
 
-                Optional<List<IdValue<String>>> maybeHearingIdList = asylumCase.read(HEARING_ID_LIST);
-
-                final List<IdValue<String>> hearingIdList = maybeHearingIdList.orElse(emptyList());
+                Optional<List<IdValue<String>>> hearingIdListOpt = asylumCase.read(HEARING_ID_LIST);
+                final List<IdValue<String>> hearingIdList = hearingIdListOpt.orElse(emptyList());
 
                 if (doesNotContainHearingId(hearingIdList, hearingId)) {
                     List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
@@ -38,8 +37,8 @@ public class HearingIdListProcessor {
     }
 
     private boolean doesNotContainHearingId(
-            List<IdValue<String>> existingHearingIdList,
-            String newHearingId
+        List<IdValue<String>> existingHearingIdList,
+        String newHearingId
     ) {
         for (IdValue<String> existingHearingId : existingHearingIdList) {
             if (newHearingId.equals(existingHearingId.getValue())) {
@@ -54,7 +53,6 @@ public class HearingIdListProcessor {
         List<IdValue<String>> existingHearingIdList,
         String newHearingId
     ) {
-
         final List<IdValue<String>> allHearingIds = new ArrayList<>();
 
         int index = 1;

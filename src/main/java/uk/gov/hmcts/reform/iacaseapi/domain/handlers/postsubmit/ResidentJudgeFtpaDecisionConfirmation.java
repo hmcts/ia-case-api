@@ -10,18 +10,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @Component
 public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public static final String DLRM_SETASIDE_FEATURE_FLAG = "dlrm-setaside-feature-flag";
     private final FeatureToggler featureToggler;
+    private final HearingDecisionProcessor hearingDecisionProcessor;
 
     ResidentJudgeFtpaDecisionConfirmation(
-        FeatureToggler featureToggler
+        FeatureToggler featureToggler,
+        HearingDecisionProcessor hearingDecisionProcessor
     ) {
         this.featureToggler = featureToggler;
-
+        this.hearingDecisionProcessor = hearingDecisionProcessor;
     }
 
     public boolean canHandle(
@@ -115,6 +118,8 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             default:
                 throw new IllegalStateException("FtpaDecisionOutcome is not present");
         }
+
+        hearingDecisionProcessor.processHearingDecision(asylumCase, ftpaOutcomeType);
 
         return postSubmitResponse;
     }

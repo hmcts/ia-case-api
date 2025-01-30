@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +48,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     private AsylumCase asylumCase;
     @Mock
     private FeatureToggler featureToggler;
+    @Mock
+    private HearingDecisionProcessor hearingDecisionProcessor;
 
     private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation;
 
@@ -54,7 +57,7 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     @BeforeEach
     void setup() {
         residentJudgeFtpaDecisionConfirmation =
-            new ResidentJudgeFtpaDecisionConfirmation(featureToggler);
+            new ResidentJudgeFtpaDecisionConfirmation(featureToggler, hearingDecisionProcessor);
     }
 
     @Test
@@ -85,6 +88,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "granted");
     }
 
     @Test
@@ -116,6 +121,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "partiallyGranted");
     }
 
     @Test
@@ -146,6 +153,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "refused");
     }
 
     @Test
@@ -177,6 +186,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "notAdmitted");
     }
 
     @Test
@@ -208,6 +219,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "reheardRule32");
     }
 
     @ParameterizedTest
@@ -250,6 +263,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
                     .contains(
                             "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
         }
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "reheardRule35");
     }
 
     @Test
@@ -280,6 +295,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "remadeRule31");
     }
 
     @Test
@@ -312,6 +329,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "remadeRule32");
     }
 
     @Test
@@ -343,6 +362,8 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
+
+        verify(hearingDecisionProcessor).processHearingDecision(asylumCase, "remadeRule32");
     }
 
     @Test
@@ -411,6 +432,4 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
                 Arguments.of(false)
         );
     }
-
-
 }

@@ -2823,6 +2823,9 @@ public enum AsylumCaseFieldDefinition {
     HEARING_ID_LIST(
             "hearingIdList", new TypeReference<List<IdValue<String>>>(){}),
 
+    HEARING_DECISION_LIST(
+            "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
+
     ;
 
     private final String value;

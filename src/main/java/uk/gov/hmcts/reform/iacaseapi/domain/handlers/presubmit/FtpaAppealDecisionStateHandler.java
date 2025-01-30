@@ -10,9 +10,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @Component
 public class FtpaAppealDecisionStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+    private final HearingDecisionProcessor hearingDecisionProcessor;
+
+    public FtpaAppealDecisionStateHandler(HearingDecisionProcessor hearingDecisionProcessor) {
+        this.hearingDecisionProcessor = hearingDecisionProcessor;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -41,9 +47,12 @@ public class FtpaAppealDecisionStateHandler implements PreSubmitCallbackStateHan
 
         final State currentState = callback.getCaseDetails().getState();
 
+        hearingDecisionProcessor.processHearingFtpaAppellantDecision(asylumCase);
+
         if (currentState == State.FTPA_SUBMITTED || currentState == State.FTPA_DECIDED) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.FTPA_DECIDED);
         }
+
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }
 }

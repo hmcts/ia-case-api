@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -25,14 +28,21 @@ class SendDecisionAndReasonsConfirmationTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private HearingDecisionProcessor hearingDecisionProcessor;
 
-    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation =
-        new SendDecisionAndReasonsConfirmation();
+    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation;
+
+    @BeforeEach
+    public void setUp() {
+        sendDecisionAndReasonsConfirmation = new SendDecisionAndReasonsConfirmation(hearingDecisionProcessor);
+    }
 
     @Test
     void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PostSubmitCallbackResponse callbackResponse =
             sendDecisionAndReasonsConfirmation.handle(callback);
@@ -53,6 +63,8 @@ class SendDecisionAndReasonsConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab.");
+
+        verify(hearingDecisionProcessor).processHearingAppealDecision(asylumCase);
     }
 
     @Test
