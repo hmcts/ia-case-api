@@ -51,6 +51,7 @@ public class HearingDecisionProcessor {
 
             List<IdValue<HearingDecision>> newHearingDecisionList;
             if (existingHearingDecisionIdValueOpt.isPresent()) {
+                log.info("------------- processHearingDecision 666");
                 IdValue<HearingDecision> existingHearingDecisionIdValue = existingHearingDecisionIdValueOpt.get();
                 HearingDecision newHearingDecision = new HearingDecision(currentHearingId, decision);
                 IdValue<HearingDecision> newHearingDecisionIdValue =
@@ -58,9 +59,11 @@ public class HearingDecisionProcessor {
                 newHearingDecisionList =
                         updateHearingDecisionInHearingDecisionList(hearingDecisionList, newHearingDecisionIdValue);
             } else {
+                log.info("------------- processHearingDecision 777");
                 HearingDecision newHearingDecision = new HearingDecision(currentHearingId, decision);
                 newHearingDecisionList = appendToHearingDecisionList(hearingDecisionList, newHearingDecision);
             }
+            log.info("------------- processHearingDecision 888 {}", newHearingDecisionList);
             asylumCase.write(HEARING_DECISION_LIST, newHearingDecisionList);
         }
     }
