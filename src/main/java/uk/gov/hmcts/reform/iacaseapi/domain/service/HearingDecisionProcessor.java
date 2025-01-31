@@ -21,7 +21,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Slf4j
 public class HearingDecisionProcessor {
     public void processHearingAppealDecision(AsylumCase asylumCase) {
+        log.info("------------- processHearingAppealDecision 111");
         Optional<String> appealDecisionOpt = asylumCase.read(APPEAL_DECISION, String.class);
+        log.info("------------- processHearingAppealDecision 222 appealDecisionOpt {}", appealDecisionOpt);
 
         processHearingDecisionIfDecisionPresent(asylumCase, appealDecisionOpt);
     }
@@ -33,10 +35,13 @@ public class HearingDecisionProcessor {
     }
 
     public void processHearingDecision(AsylumCase asylumCase, String decision) {
+        log.info("------------- processHearingDecision 333 decision {}", decision);
         Optional<String> currentHearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
+        log.info("------------- processHearingDecision 444 currentHearingIdOpt {}", currentHearingIdOpt);
 
         if (currentHearingIdOpt.isPresent()) {
             String currentHearingId = currentHearingIdOpt.get();
+            log.info("------------- processHearingDecision 555 currentHearingId {}", currentHearingId);
 
             Optional<List<IdValue<HearingDecision>>> hearingDecisionListOpt = asylumCase.read(HEARING_DECISION_LIST);
             final List<IdValue<HearingDecision>> hearingDecisionList = hearingDecisionListOpt.orElse(emptyList());
