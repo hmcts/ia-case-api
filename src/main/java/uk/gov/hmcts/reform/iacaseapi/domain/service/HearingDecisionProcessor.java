@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -14,27 +16,25 @@ import static java.util.Collections.emptyList;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
 
 @Component
 @Slf4j
 public class HearingDecisionProcessor {
     public void processHearingAppealDecision(AsylumCase asylumCase) {
         log.info("------------- processHearingAppealDecision 111");
-        Optional<String> appealDecisionOpt = asylumCase.read(APPEAL_DECISION, String.class);
-        log.info("------------- processHearingAppealDecision 222 appealDecisionOpt {}", appealDecisionOpt);
-
-        processHearingDecisionIfDecisionPresent(asylumCase, appealDecisionOpt);
+        Optional<AppealDecision> appealDecisionOpt = asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class);
+        String appealDecision;
+        if (appealDecisionOpt.isPresent()) {
+            appealDecision = appealDecisionOpt.get().getValue();
+        } else {
+            appealDecision = "decided";
+        }
+        processHearingDecision(asylumCase, appealDecision);
     }
 
-    public void processHearingFtpaAppellantDecision(AsylumCase asylumCase) {
-        Optional<String> ftpaDecisionOpt = asylumCase.read(FTPA_APPELLANT_DECISION_OUTCOME_TYPE, String.class);
-
-        processHearingDecisionIfDecisionPresent(asylumCase, ftpaDecisionOpt);
-    }
-
-    public void processHearingDecision(AsylumCase asylumCase, String decision) {
+    private void processHearingDecision(AsylumCase asylumCase, String decision) {
         log.info("------------- processHearingDecision 333 decision {}", decision);
         Optional<String> currentHearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
         log.info("------------- processHearingDecision 444 currentHearingIdOpt {}", currentHearingIdOpt);
@@ -65,14 +65,6 @@ public class HearingDecisionProcessor {
             }
             log.info("------------- processHearingDecision 888 {}", newHearingDecisionList);
             asylumCase.write(HEARING_DECISION_LIST, newHearingDecisionList);
-        }
-    }
-
-    private void processHearingDecisionIfDecisionPresent(AsylumCase asylumCase, Optional<String> decisionOpt) {
-        if (decisionOpt.isPresent()) {
-            processHearingDecision(asylumCase, decisionOpt.get());
-        } else {
-            processHearingDecision(asylumCase, "decided");
         }
     }
 
