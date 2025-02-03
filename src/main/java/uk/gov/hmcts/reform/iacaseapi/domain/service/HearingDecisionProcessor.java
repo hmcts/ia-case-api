@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Slf4j
 public class HearingDecisionProcessor {
     public void processHearingAppealDecision(AsylumCase asylumCase) {
-        log.info("------------- processHearingAppealDecision 111");
         Optional<AppealDecision> appealDecisionOpt = asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class);
         String appealDecision;
         if (appealDecisionOpt.isPresent()) {
@@ -33,13 +32,10 @@ public class HearingDecisionProcessor {
     }
 
     private void processHearingDecision(AsylumCase asylumCase, String decision) {
-        log.info("------------- processHearingDecision 333 decision {}", decision);
         Optional<String> currentHearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
-        log.info("------------- processHearingDecision 444 currentHearingIdOpt {}", currentHearingIdOpt);
 
         if (currentHearingIdOpt.isPresent()) {
             String currentHearingId = currentHearingIdOpt.get();
-            log.info("------------- processHearingDecision 555 currentHearingId {}", currentHearingId);
 
             Optional<List<IdValue<HearingDecision>>> hearingDecisionListOpt = asylumCase.read(HEARING_DECISION_LIST);
             final List<IdValue<HearingDecision>> hearingDecisionList = hearingDecisionListOpt.orElse(emptyList());
@@ -49,7 +45,6 @@ public class HearingDecisionProcessor {
 
             List<IdValue<HearingDecision>> newHearingDecisionList;
             if (existingHearingDecisionIdValueOpt.isPresent()) {
-                log.info("------------- processHearingDecision 666");
                 IdValue<HearingDecision> existingHearingDecisionIdValue = existingHearingDecisionIdValueOpt.get();
                 HearingDecision newHearingDecision = new HearingDecision(currentHearingId, decision);
                 IdValue<HearingDecision> newHearingDecisionIdValue =
@@ -57,11 +52,9 @@ public class HearingDecisionProcessor {
                 newHearingDecisionList =
                         updateHearingDecisionInHearingDecisionList(hearingDecisionList, newHearingDecisionIdValue);
             } else {
-                log.info("------------- processHearingDecision 777");
                 HearingDecision newHearingDecision = new HearingDecision(currentHearingId, decision);
                 newHearingDecisionList = appendToHearingDecisionList(hearingDecisionList, newHearingDecision);
             }
-            log.info("------------- processHearingDecision 888 {}", newHearingDecisionList);
             asylumCase.write(HEARING_DECISION_LIST, newHearingDecisionList);
         }
     }
