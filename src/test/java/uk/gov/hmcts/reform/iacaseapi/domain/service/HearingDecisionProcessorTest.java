@@ -42,7 +42,7 @@ class HearingDecisionProcessorTest {
     @Test
     void processHearingAppealDecision_should_add_hearing_decision_to_empty_list() {
         // given
-        given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.of("decision"));
+        given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.of("allowed"));
         given(asylumCase.read(CURRENT_HEARING_ID, String.class)).willReturn(Optional.of("12345"));
         given(asylumCase.read(HEARING_DECISION_LIST)).willReturn(Optional.empty());
 
@@ -55,17 +55,17 @@ class HearingDecisionProcessorTest {
         assertEquals(1, hearingDecisionList.size());
         assertEquals("1", hearingDecisionList.get(0).getId());
         assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("decision", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("allowed", hearingDecisionList.get(0).getValue().getDecision());
     }
 
     @Test
     void processHearingAppealDecision_should_add_hearing_decision_to_existing_list() {
         // given
-        given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.of("decision"));
+        given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.of("allowed"));
         given(asylumCase.read(CURRENT_HEARING_ID, String.class)).willReturn(Optional.of("12345"));
 
-        HearingDecision hearingDecision1 = new HearingDecision("23456", "decision1");
-        HearingDecision hearingDecision2 = new HearingDecision("34567", "decision2");
+        HearingDecision hearingDecision1 = new HearingDecision("23456", "dismissed");
+        HearingDecision hearingDecision2 = new HearingDecision("34567", "dismissed");
         List<IdValue<HearingDecision>> existingHearingDecisionList = List.of(
             new IdValue<>("1", hearingDecision1),
             new IdValue<>("2", hearingDecision2)
@@ -81,23 +81,23 @@ class HearingDecisionProcessorTest {
         assertEquals(3, hearingDecisionList.size());
         assertEquals("1", hearingDecisionList.get(0).getId());
         assertEquals("23456", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("decision1", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("dismissed", hearingDecisionList.get(0).getValue().getDecision());
         assertEquals("2", hearingDecisionList.get(1).getId());
         assertEquals("34567", hearingDecisionList.get(1).getValue().getHearingId());
-        assertEquals("decision2", hearingDecisionList.get(1).getValue().getDecision());
+        assertEquals("dismissed", hearingDecisionList.get(1).getValue().getDecision());
         assertEquals("3", hearingDecisionList.get(2).getId());
         assertEquals("12345", hearingDecisionList.get(2).getValue().getHearingId());
-        assertEquals("decision", hearingDecisionList.get(2).getValue().getDecision());
+        assertEquals("allowed", hearingDecisionList.get(2).getValue().getDecision());
     }
 
     @Test
     void processHearingAppealDecision_should_update_hearing_decision_in_existing_list() {
         // given
-        given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.of("decision"));
+        given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.of("allowed"));
         given(asylumCase.read(CURRENT_HEARING_ID, String.class)).willReturn(Optional.of("12345"));
 
-        HearingDecision hearingDecision1 = new HearingDecision("12345", "decision1");
-        HearingDecision hearingDecision2 = new HearingDecision("34567", "decision2");
+        HearingDecision hearingDecision1 = new HearingDecision("12345", "dismissed");
+        HearingDecision hearingDecision2 = new HearingDecision("34567", "dismissed");
         List<IdValue<HearingDecision>> existingHearingDecisionList = List.of(
             new IdValue<>("1", hearingDecision1),
             new IdValue<>("2", hearingDecision2)
@@ -113,23 +113,30 @@ class HearingDecisionProcessorTest {
         assertEquals(2, hearingDecisionList.size());
         assertEquals("1", hearingDecisionList.get(0).getId());
         assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("decision", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("allowed", hearingDecisionList.get(0).getValue().getDecision());
         assertEquals("2", hearingDecisionList.get(1).getId());
         assertEquals("34567", hearingDecisionList.get(1).getValue().getHearingId());
-        assertEquals("decision2", hearingDecisionList.get(1).getValue().getDecision());
+        assertEquals("dismissed", hearingDecisionList.get(1).getValue().getDecision());
     }
 
     @Test
     void processHearingAppealDecision_should_not_add_hearing_decision_if_no_decision() {
         // given
+        // given
         given(asylumCase.read(APPEAL_DECISION, String.class)).willReturn(Optional.empty());
+        given(asylumCase.read(CURRENT_HEARING_ID, String.class)).willReturn(Optional.of("12345"));
+        given(asylumCase.read(HEARING_DECISION_LIST)).willReturn(Optional.empty());
 
         // when
         hearingDecisionProcessor.processHearingAppealDecision(asylumCase);
 
         // then
-        verify(asylumCase).read(APPEAL_DECISION, String.class);
-        verifyNoMoreInteractions(asylumCase);
+        verify(asylumCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
+        List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
+        assertEquals(1, hearingDecisionList.size());
+        assertEquals("1", hearingDecisionList.get(0).getId());
+        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
+        assertEquals("decided", hearingDecisionList.get(0).getValue().getDecision());
     }
 
     @Test
@@ -231,13 +238,19 @@ class HearingDecisionProcessorTest {
     void processHearingFtpaAppellantDecision_should_not_add_hearing_decision_if_no_decision() {
         // given
         given(asylumCase.read(FTPA_APPELLANT_DECISION_OUTCOME_TYPE, String.class)).willReturn(Optional.empty());
+        given(asylumCase.read(CURRENT_HEARING_ID, String.class)).willReturn(Optional.of("12345"));
+        given(asylumCase.read(HEARING_DECISION_LIST)).willReturn(Optional.empty());
 
         // when
         hearingDecisionProcessor.processHearingFtpaAppellantDecision(asylumCase);
 
         // then
-        verify(asylumCase).read(FTPA_APPELLANT_DECISION_OUTCOME_TYPE, String.class);
-        verifyNoMoreInteractions(asylumCase);
+        verify(asylumCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
+        List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
+        assertEquals(1, hearingDecisionList.size());
+        assertEquals("1", hearingDecisionList.get(0).getId());
+        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
+        assertEquals("decided", hearingDecisionList.get(0).getValue().getDecision());
     }
 
     @Test

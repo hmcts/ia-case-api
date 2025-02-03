@@ -69,7 +69,11 @@ public class HearingDecisionProcessor {
     }
 
     private void processHearingDecisionIfDecisionPresent(AsylumCase asylumCase, Optional<String> decisionOpt) {
-        decisionOpt.ifPresent(s -> processHearingDecision(asylumCase, s));
+        if (decisionOpt.isPresent()) {
+            processHearingDecision(asylumCase, decisionOpt.get());
+        } else {
+            processHearingDecision(asylumCase, "decided");
+        }
     }
 
     private Optional<IdValue<HearingDecision>> getHearingDecisionId(
