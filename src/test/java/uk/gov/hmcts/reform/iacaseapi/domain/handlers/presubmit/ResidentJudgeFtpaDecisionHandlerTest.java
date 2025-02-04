@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -97,6 +98,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     @Mock
     private FtpaDisplayService ftpaDisplayService;
     @Mock
+    private HearingDecisionProcessor hearingDecisionProcessor;
+    @Mock
     private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
@@ -108,18 +111,19 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     private final LocalDate now = LocalDate.now();
 
     private final FtpaDecisionCheckValues ftpaCheckValues =
-            new FtpaDecisionCheckValues(List.of("specialReasons"),
-                    List.of("countryGuidance"),
-                    List.of("specialDifficulty"));
+        new FtpaDecisionCheckValues(List.of("specialReasons"),
+            List.of("countryGuidance"),
+            List.of("specialDifficulty")
+        );
 
     @BeforeEach
     public void setUp() {
-
         residentJudgeFtpaDecisionHandler = new ResidentJudgeFtpaDecisionHandler(
             dateProvider,
             documentReceiver,
             documentsAppender,
             ftpaDisplayService,
+            hearingDecisionProcessor,
             featureToggler
         );
 
@@ -213,6 +217,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED, YES);
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED, NO);
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED, YES);
+
+        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, "granted");
     }
 
     @ParameterizedTest
@@ -301,6 +307,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_DECIDED, YES);
         verify(asylumCase, times(1)).write(IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_SUBMITTED, NO);
         verify(asylumCase, times(1)).write(IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_DECIDED, YES);
+
+        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, "granted");
     }
 
 
@@ -397,6 +405,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
+
+        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, decisionOutcomeType);
     }
 
     @ParameterizedTest
@@ -438,6 +448,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
         verify(asylumCase, times(0)).read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class);
 
+        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, decisionOutcomeType);
     }
 
     @ParameterizedTest
@@ -479,6 +490,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
         verify(asylumCase, times(0)).read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class);
 
+        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, decisionOutcomeType);
     }
 
     @Test
@@ -505,6 +517,8 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(ftpaDisplayService, times(1)).setFtpaCaseDlrmFlag(any(AsylumCase.class), anyBoolean());
         verify(asylumCase, times(1)).write(FTPA_LIST, ftpaApplications);
         verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
+
+        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, "granted");
     }
 
 

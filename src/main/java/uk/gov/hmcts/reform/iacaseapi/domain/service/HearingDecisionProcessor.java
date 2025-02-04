@@ -31,6 +31,10 @@ public class HearingDecisionProcessor {
         processHearingDecision(asylumCase, appealDecision);
     }
 
+    public void processHearingFtpaDecision(AsylumCase asylumCase, String decision) {
+        processHearingDecision(asylumCase, decision);
+    }
+
     private void processHearingDecision(AsylumCase asylumCase, String decision) {
         Optional<String> currentHearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
 
