@@ -132,3 +132,5 @@ am-org-role-mapping-service:
   enabled: false
 redis:
   enabled: false
+ia-hearings-api:
+  enabled: false
