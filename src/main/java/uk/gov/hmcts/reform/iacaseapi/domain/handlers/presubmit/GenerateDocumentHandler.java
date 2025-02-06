@@ -13,11 +13,13 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -34,6 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @Component
+@Slf4j
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isDocmosisEnabled;
@@ -166,6 +169,10 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("EndAppeal Test before update:: Appeal type: {} asylumCase in GenerateDocumentHandler - {}",
+                callback.getCaseDetails().getCaseData().read(APPEAL_TYPE, AppealType.class).orElse(null),
+                callback.getCaseDetails().getCaseData());
+
         AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
 
         if (Event.EDIT_CASE_LISTING.equals(callback.getEvent())) {
@@ -179,6 +186,9 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         if (Event.SEND_DECISION_AND_REASONS.equals(callback.getEvent())) {
             saveDecisionDetails(asylumCaseWithGeneratedDocument);
         }
+        log.info("EndAppeal Test after update:: Appeal type: {} asylumCase in GenerateDocumentHandler - {}",
+                callback.getCaseDetails().getCaseData().read(APPEAL_TYPE, AppealType.class).orElse(null),
+                callback.getCaseDetails().getCaseData());
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithGeneratedDocument);
     }

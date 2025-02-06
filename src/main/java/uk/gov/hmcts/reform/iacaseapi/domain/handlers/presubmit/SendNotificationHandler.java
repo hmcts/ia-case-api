@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REFUND_ENABLED;
@@ -18,8 +19,10 @@ import java.util.List;
 import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -35,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
 @Component
+@Slf4j
 public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final NotificationSender<AsylumCase> notificationSender;
@@ -279,11 +283,19 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        log.info("EndAppeal Test before update:: Appeal type: {} asylumCase in SendNotificationHandler - {}",
+                asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null),
+                asylumCase);
+
         setDlrmSetAsideFeatureFlag(callback.getEvent(), asylumCase);
         setDlrmFeeRemissionFeatureFlag(callback.getEvent(), asylumCase);
         setDlrmFeeRefundFeatureFlag(callback.getEvent(), asylumCase);
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
+
+        log.info("EndAppeal Test after update:: Appeal type: {} asylumCase in SendNotificationHandler - {}",
+                asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null),
+                asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
