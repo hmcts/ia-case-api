@@ -54,12 +54,9 @@ export IA_WA_CTSC_ADMIN_PASSWORD_2=$(az keyvault secret show --vault-name ia-aat
 export TEST_JUDGE_X_USERNAME=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-username --query value -o tsv)
 export TEST_JUDGE_X_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-password --query value -o tsv)
 
+# rpx-aat
 export IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name rpx-aat --name mc-idam-client-secret --query value -o tsv)
 
 #civil s2s-aat
 export S2S_SECRET=$(az keyvault secret show --vault-name civil-aat --name microservicekey-civil-service --query value -o tsv)
 export HEALTH_WORK_ALLOCATION_TASK_API=TBD
-
-
-
-
