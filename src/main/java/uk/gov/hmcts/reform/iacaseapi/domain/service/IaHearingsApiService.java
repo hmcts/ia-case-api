@@ -50,7 +50,10 @@ public class IaHearingsApiService {
     }
 
     public AsylumCase aboutToSubmit(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToSubmitPath);
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
+
+        return asylumCase;
     }
 
     public AsylumCase updateHearing(Callback<AsylumCase> callback) {

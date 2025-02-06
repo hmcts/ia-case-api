@@ -71,10 +71,6 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        log.info("EndAppeal Test before update:: Appeal type: {} asylumCase in EndAppealHandler - {}",
-                asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null),
-                asylumCase);
-
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);
         if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus == PaymentStatus.PAID) {
@@ -113,7 +109,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
         }
 
-        log.info("EndAppeal Test after case data change:: Appeal type: {} asylumCase in EndAppealHandler - {}",
+        log.info("EndAppeal Test after case data change:: Appeal type: {} asylumCase in EndAppealHandler - {}\n\n\n",
                 asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null),
                 asylumCase);
 

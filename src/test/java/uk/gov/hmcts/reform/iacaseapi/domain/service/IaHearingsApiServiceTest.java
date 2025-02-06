@@ -76,7 +76,7 @@ public class IaHearingsApiServiceTest {
     @Test
     void should_delegate_aboutToSubmit_call() {
         iaHearingsApiService.aboutToSubmit(callback);
-        verify(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
+        verify(asylumCase, times(1)).write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
     }
 
     @Test

@@ -106,7 +106,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
-        log.info("EndAppeal Test:: Appeal type: {} asylumCaseWithHomeOfficeData - {}",
+        log.info("EndAppeal Test data:: Appeal type: {} asylumCaseWithHomeOfficeData - {}\n\n\n",
                 asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class).orElse(null),
                 asylumCaseWithHomeOfficeData);
 

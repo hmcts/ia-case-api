@@ -169,10 +169,6 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        log.info("EndAppeal Test before update:: Appeal type: {} asylumCase in GenerateDocumentHandler - {}",
-                callback.getCaseDetails().getCaseData().read(APPEAL_TYPE, AppealType.class).orElse(null),
-                callback.getCaseDetails().getCaseData());
-
         AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
 
         if (Event.EDIT_CASE_LISTING.equals(callback.getEvent())) {
@@ -186,7 +182,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         if (Event.SEND_DECISION_AND_REASONS.equals(callback.getEvent())) {
             saveDecisionDetails(asylumCaseWithGeneratedDocument);
         }
-        log.info("EndAppeal Test after update:: Appeal type: {} asylumCase in GenerateDocumentHandler - {}",
+        log.info("EndAppeal Test after update:: Appeal type: {} asylumCase in GenerateDocumentHandler - {}\n\n\n",
                 callback.getCaseDetails().getCaseData().read(APPEAL_TYPE, AppealType.class).orElse(null),
                 callback.getCaseDetails().getCaseData());
 
