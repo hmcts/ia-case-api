@@ -260,7 +260,7 @@ https://mirrord.dev
 After the plugin is installed there should be a Mirror icon near the top right of Intellij, click that and debug the app. This should display some quick dialog box saying roughly "waiting for pod to be ready". Then in the Intellij console you should see the app starting up with the usually spring boot stuff.
 Break points and debug should now behave as normal.
 
-e.g. the method getCcdEventAuthorizor() is a good place to test things are working as this point in the code should get executed as the app inializes
+e.g. the method getCcdEventAuthorizor() in SecurityConfiguration line 93 is a good place to test things are working as this point in the code should get executed as the app inializes
 
 If you want to clean up the environment just run:
 
