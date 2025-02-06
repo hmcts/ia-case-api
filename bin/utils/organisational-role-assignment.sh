@@ -20,7 +20,6 @@ BASEDIR=$(dirname "$0")
 
 USER_TOKEN=$($BASEDIR/idam-user-token.sh $USERNAME $PASSWORD)
 USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
-echo "username: $USERNAME password: $PASSWORD user_token: $USER_TOKEN user_id: $USER_ID"
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh iac \
   $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}))
 

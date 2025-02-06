@@ -9,20 +9,13 @@ source .env.local
 export ENVIRONMENT=preview
 # urls
 export URL=$XUI_WEBAPP_URL
-#export CIVIL_SERVICE_URL=$JAVA_URL
 export SERVICE_AUTH_PROVIDER_API_BASE_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 export IDAM_API_BASE_URL="https://idam-api.aat.platform.hmcts.net"
 export IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
 export CCD_IDAM_REDIRECT_URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
-#export CCD_DEFINITION_STORE_API_BASE_URL=${CCD_DEFINITION_STORE_API_URL:-"http://ccd-definition-store-api-aat.service.core-compute-aat.internal"}
-export CCD_DEFINITION_STORE_API_BASE_URL="http://ccd-definition-store-api-aat.service.core-compute-aat.internal"
-
-# from civil
-export CAMUNDA_BASE_URL=$CAMUNDA_URL
-#export DEFINITION_IMPORTER_USERNAME=$(az keyvault secret show --vault-name civil-aat --name ccd-importer-username --query value -o tsv)
-#export DEFINITION_IMPORTER_PASSWORD=$(az keyvault secret show --vault-name civil-aat --name ccd-importer-password --query value -o tsv)
-#export CCD_CONFIGURER_IMPORTER_USERNAME=$DEFINITION_IMPORTER_USERNAME
-#export CCD_CONFIGURER_IMPORTER_PASSWORD=$DEFINITION_IMPORTER_PASSWORD
+export CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-mike-pr-1.preview.platform.hmcts.net"
+export ROLE_ASSIGNMENT_URL="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+export CAMUNDA_BASE_URL="https://camunda-ia-case-api-mike.preview.platform.hmcts.net"
 
 # ccd-aat
 export CCD_API_GATEWAY_IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name ccd-aat --name ccd-api-gateway-oauth2-client-secret --query value -o tsv)
@@ -43,7 +36,6 @@ export IAC_S2S_KEY=$(az keyvault secret show --vault-name s2s-aat --name microse
 export IA_CCD_ADMIN_USERNAME=$(az keyvault secret show --vault-name ia-aat --name ccd-admin-web-username --query value -o tsv)
 export IA_CCD_ADMIN_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name ccd-admin-web-password --query value -o tsv)
 
-
 # for org roles
 export IA_WA_ADMINOFFICER_USERNAME=$(az keyvault secret show --vault-name ia-aat --name wa-test-adminofficer-username --query value -o tsv)
 export IA_WA_ADMINOFFICER_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name wa-test-adminofficer-password --query value -o tsv)
@@ -59,15 +51,15 @@ export IA_WA_JUDGE_USERNAME=$(az keyvault secret show --vault-name ia-aat --name
 export IA_WA_JUDGE_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name wa-test-judge-password --query value -o tsv)
 export IA_WA_CTSC_ADMIN_USERNAME_2=$(az keyvault secret show --vault-name ia-aat --name wa-test-ctsc-admin-username-2 --query value -o tsv)
 export IA_WA_CTSC_ADMIN_PASSWORD_2=$(az keyvault secret show --vault-name ia-aat --name wa-test-ctsc-admin-password-2 --query value -o tsv)
+export TEST_JUDGE_X_USERNAME=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-username --query value -o tsv)
+export TEST_JUDGE_X_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-password --query value -o tsv)
 
+export IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name rpx-aat --name mc-idam-client-secret --query value -o tsv)
 
 #civil s2s-aat
 export S2S_SECRET=$(az keyvault secret show --vault-name civil-aat --name microservicekey-civil-service --query value -o tsv)
 export HEALTH_WORK_ALLOCATION_TASK_API=TBD
 
-# definition placeholders
-#export CCD_DEF_CASE_SERVICE_BASE_URL=$JAVA_URL
-#export CCD_DEF_GEN_APP_SERVICE_BASE_URL=$GA_URL
-#export CCD_DEF_VERSION="-${user}-1"
+
 
 

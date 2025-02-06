@@ -17,10 +17,10 @@ echo "Importing Org Roles to the pod"
 #./bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
 #rm -rf $(pwd)/build/ccd-release-config
 
-#echo "Importing Camunda definitions"
+echo "Importing Camunda definitions"
 #./bin/pull-latest-camunda-files.sh ${camundaBranch}
-#./bin/pull-latest-camunda-wa-files.sh ${waStandaloneBranch}
-#./bin/pull-latest-dmn-files.sh ${dmnBranch}
+./bin/pull-latest-camunda-wa-files.sh ${waStandaloneBranch}
+./bin/pull-latest-dmn-files.sh ${dmnBranch}
 #\rm -rf $(pwd)/camunda
 
 echo "ENV variables set for devuser-preview environment."
