@@ -31,6 +31,7 @@ echo "Setting up WA Users and role assignments..."
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_USERNAME_1}" "${IA_WA_ADMINOFFICER_PASSWORD_1}" "PUBLIC" "hearing-centre-admin" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,routine_work,review_case"}' "ADMIN"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_USERNAME_1}" "${IA_WA_ADMINOFFICER_PASSWORD_1}" "PUBLIC" "hmcts-admin" '{"jurisdiction":"IA","primaryLocation":"765324"}' "ADMIN"
 
+# failing with invalid_grant error, build still green when commented so assumed no longer used
 #./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_USERNAME}" "${IA_WA_JUDGE_PASSWORD}" "PUBLIC" "leadership-judge" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,decision_making_work,applications,access_requests"}' "JUDICIAL"
 #./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_USERNAME}" "${IA_WA_JUDGE_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "JUDICIAL"
 #./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_USERNAME}" "${IA_WA_JUDGE_PASSWORD}" "PUBLIC" "judge" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,decision_making_work,applications"}' "JUDICIAL"
