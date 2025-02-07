@@ -23,6 +23,7 @@
 
 ./bin/utils/ccd-add-role.sh "citizen" "$USER_TOKEN" "$SERVICE_TOKEN"
 
+./bin/utils/ccd-add-role.sh "cft-ttl-manager" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "pui-case-manager" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "pui-user-manager" "$USER_TOKEN" "$SERVICE_TOKEN"
 
