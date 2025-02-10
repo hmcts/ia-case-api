@@ -37,6 +37,7 @@ class EventTest {
         assertEquals("generateHearingBundle", Event.GENERATE_HEARING_BUNDLE.toString());
         assertEquals("asyncStitchingComplete", Event.ASYNC_STITCHING_COMPLETE.toString());
         assertEquals("customiseHearingBundle", Event.CUSTOMISE_HEARING_BUNDLE.toString());
+        assertEquals("generateUpdatedHearingBundle", Event.GENERATE_UPDATED_HEARING_BUNDLE.toString());
         assertEquals("decisionAndReasonsStarted", Event.DECISION_AND_REASONS_STARTED.toString());
         assertEquals("generateDecisionAndReasons", Event.GENERATE_DECISION_AND_REASONS.toString());
         assertEquals("sendDecisionAndReasons", Event.SEND_DECISION_AND_REASONS.toString());
@@ -102,6 +103,7 @@ class EventTest {
         assertEquals("manageFeeUpdate", Event.MANAGE_FEE_UPDATE.toString());
         assertEquals("nocRequest", Event.NOC_REQUEST.toString());
         assertEquals("removeRepresentation", Event.REMOVE_REPRESENTATION.toString());
+        assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
         assertEquals("removeLegalRepresentative", Event.REMOVE_LEGAL_REPRESENTATIVE.toString());
         assertEquals("requestFeeRemission", Event.REQUEST_FEE_REMISSION.toString());
         assertEquals("recordOutOfTimeDecision", Event.RECORD_OUT_OF_TIME_DECISION.toString());
@@ -147,14 +149,21 @@ class EventTest {
         assertEquals("updateTribunalDecision", Event.UPDATE_TRIBUNAL_DECISION.toString());
         assertEquals("reTriggerWaBulkTasks", Event.RE_TRIGGER_WA_BULK_TASKS.toString());
         assertEquals("reTriggerWaTasks", Event.RE_TRIGGER_WA_TASKS.toString());
+        assertEquals("recordRemissionReminder", Event.RECORD_REMISSION_REMINDER.toString());
         assertEquals("markAppealAsRemitted", Event.MARK_APPEAL_AS_REMITTED.toString());
+        assertEquals("saveNotificationsToData", Event.SAVE_NOTIFICATIONS_TO_DATA.toString());
+        assertEquals("sendPaymentReminderNotification", Event.SEND_PAYMENT_REMINDER_NOTIFICATION.toString());
+        assertEquals("ariaCreateCase", Event.ARIA_CREATE_CASE.toString());
+        assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());
+        assertEquals("refundConfirmation", Event.REFUND_CONFIRMATION.toString());
+        assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
         assertEquals("updateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
         assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
-     
+
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(146, Event.values().length);
+        assertEquals(154, Event.values().length);
     }
 }

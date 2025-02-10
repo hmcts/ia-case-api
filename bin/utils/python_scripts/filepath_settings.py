@@ -5,6 +5,7 @@ PYTHON_SCRIPTS_DIR = os.path.join(PROJECT_DIR)
 EXPORTED_CSV_INPUT_DIR = os.path.join(PYTHON_SCRIPTS_DIR, 'input_csv_files')
 OUTPUT_CSV_DIR = os.path.join(PYTHON_SCRIPTS_DIR, "output_csv_files")
 OUTPUT_JSON_DIRECTORY = os.path.join(PYTHON_SCRIPTS_DIR, "output_jsons")
+FIELD_REDACTION_JSONS_DIRECTORY = os.path.join(PYTHON_SCRIPTS_DIR, 'field_redaction_jsons')
 
 
 class Settings:
@@ -13,6 +14,7 @@ class Settings:
     exported_csv_dir = EXPORTED_CSV_INPUT_DIR
     output_csv_dir = OUTPUT_CSV_DIR
     output_json_directory = OUTPUT_JSON_DIRECTORY
+    field_redaction_jsons = FIELD_REDACTION_JSONS_DIRECTORY
 
     replace_mapping_dict = {
         'email': 'email@email.com',
@@ -128,7 +130,10 @@ class Settings:
         'interpreterFamilyName': 'redacted - interpreterFamilyName',
         'interpreterGivenNames': 'redacted - interpreterGivenNames',
         'interpreterPhoneNumber': '12345678999',
-        'flagComment': 'redacted - flagComment'
+        'flagComment': 'redacted - flagComment',
+        'physicalOrMentalHealthIssuesDescription': 'redacted - physicalOrMentalHealthIssuesDescription',
+        'pastExperiencesDescription': 'redacted - pastExperiencesDescription',
+        'witnessFamilyName': 'redacted - witnessFamilyName'
     }
 
     csv_rows_to_redact = {

@@ -7,50 +7,57 @@ import java.util.Optional;
 
 public enum State {
 
-    APPEAL_STARTED("appealStarted"),
-    APPEAL_STARTED_BY_ADMIN("appealStartedByAdmin"),
-    APPEAL_SUBMITTED("appealSubmitted"),
-    APPEAL_SUBMITTED_OUT_OF_TIME("appealSubmittedOutOfTime"),
-    PENDING_PAYMENT("pendingPayment"),
-    AWAITING_RESPONDENT_EVIDENCE("awaitingRespondentEvidence"),
-    CASE_BUILDING("caseBuilding"),
-    CASE_UNDER_REVIEW("caseUnderReview"),
-    RESPONDENT_REVIEW("respondentReview"),
-    SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements"),
-    LISTING("listing"),
-    PREPARE_FOR_HEARING("prepareForHearing"),
-    FINAL_BUNDLING("finalBundling"),
-    PRE_HEARING("preHearing"),
-    DECISION("decision"),
-    DECIDED("decided"),
-    ENDED("ended"),
-    APPEAL_TAKEN_OFFLINE("appealTakenOffline"),
-    AWAITING_REASONS_FOR_APPEAL("awaitingReasonsForAppeal"),
-    REASONS_FOR_APPEAL_SUBMITTED("reasonsForAppealSubmitted"),
-    FTPA_SUBMITTED("ftpaSubmitted"),
-    FTPA_DECIDED("ftpaDecided"),
-    AWAITING_CLARIFYING_QUESTIONS_ANSWERS("awaitingClarifyingQuestionsAnswers"),
-    CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED("clarifyingQuestionsAnswersSubmitted"),
-    AWAITING_CMA_REQUIREMENTS("awaitingCmaRequirements"),
-    CMA_REQUIREMENTS_SUBMITTED("cmaRequirementsSubmitted"),
-    CMA_ADJUSTMENTS_AGREED("cmaAdjustmentsAgreed"),
-    CMA_LISTED("cmaListed"),
-    ADJOURNED("adjourned"),
-    REMITTED("remitted"),
+    APPEAL_STARTED("appealStarted", "Appeal started"),
+    APPEAL_STARTED_BY_ADMIN("appealStartedByAdmin", "Appeal started by admin"),
+    APPEAL_SUBMITTED("appealSubmitted", "Appeal submitted"),
+    APPEAL_SUBMITTED_OUT_OF_TIME("appealSubmittedOutOfTime", "Appeal submitted out of time"),
+    PENDING_PAYMENT("pendingPayment", "Payment pending"),
+    AWAITING_RESPONDENT_EVIDENCE("awaitingRespondentEvidence", "Awaiting respondent evidence"),
+    CASE_BUILDING("caseBuilding", "Case building"),
+    CASE_UNDER_REVIEW("caseUnderReview", "Case under review"),
+    RESPONDENT_REVIEW("respondentReview", "Respondent review"),
+    SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements", "Submit hearing requirements"),
+    LISTING("listing", "Listing"),
+    PREPARE_FOR_HEARING("prepareForHearing", "Prepare for hearing"),
+    FINAL_BUNDLING("finalBundling", "Final bundling"),
+    PRE_HEARING("preHearing", "Pre hearing"),
+    DECISION("decision", "Decision"),
+    DECIDED("decided", "Decided"),
+    ENDED("ended", "Ended"),
+    APPEAL_TAKEN_OFFLINE("appealTakenOffline", "Appeal taken offline"),
+    AWAITING_REASONS_FOR_APPEAL("awaitingReasonsForAppeal", "Awaiting reasons for appeal"),
+    REASONS_FOR_APPEAL_SUBMITTED("reasonsForAppealSubmitted", "Reasons for appeal submitted"),
+    FTPA_SUBMITTED("ftpaSubmitted", "FTPA Submitted"),
+    FTPA_DECIDED("ftpaDecided", "FTPA Decided"),
+    AWAITING_CLARIFYING_QUESTIONS_ANSWERS("awaitingClarifyingQuestionsAnswers", "Awaiting clarifying questions answers"),
+    CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED("clarifyingQuestionsAnswersSubmitted", "Clarifying questions answers submitted"),
+    AWAITING_CMA_REQUIREMENTS("awaitingCmaRequirements", "Awaiting Cma requirements"),
+    CMA_REQUIREMENTS_SUBMITTED("cmaRequirementsSubmitted", "Cma requirements submitted"),
+    CMA_ADJUSTMENTS_AGREED("cmaAdjustmentsAgreed", "Cma adjustments agreed"),
+    CMA_LISTED("cmaListed", "Cma listed"),
+    ADJOURNED("adjourned", "Adjourned"),
+    REMITTED("remitted", "Remitted"),
+    MIGRATED("migrated", "Migrated"),
 
     @JsonEnumDefaultValue
-    UNKNOWN("unknown");
+    UNKNOWN("unknown", "Unknown");
 
     @JsonValue
     private final String id;
+    private final String description;
 
-    State(String id) {
+    State(String id, String description) {
         this.id = id;
+        this.description = description;
     }
 
     @Override
     public String toString() {
         return id;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public static Optional<State> getStateFrom(String s) {

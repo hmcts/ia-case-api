@@ -109,6 +109,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(SET_ASIDE_A_DECISION.name(), SET_ASIDE_A_DECISION.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+            new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -208,6 +209,46 @@ class MakeAnApplicationTypesProviderTest {
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_RESPONDENT_EVIDENCE",
+        "CASE_BUILDING",
+        "AWAITING_REASONS_FOR_APPEAL",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "AWAITING_CMA_REQUIREMENTS",
+        "CASE_UNDER_REVIEW",
+        "REASONS_FOR_APPEAL_SUBMITTED",
+        "RESPONDENT_REVIEW",
+        "SUBMIT_HEARING_REQUIREMENTS",
+        "ADJOURNED",
+        "PREPARE_FOR_HEARING",
+        "PRE_HEARING",
+        "DECISION"
+    })
+    void should_return_correct_application_types_when_internal_case_non_detained(State state) {
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(OTHER.name(), OTHER.toString()));
 
         DynamicList actualList =
             new DynamicList(values.get(0), values);

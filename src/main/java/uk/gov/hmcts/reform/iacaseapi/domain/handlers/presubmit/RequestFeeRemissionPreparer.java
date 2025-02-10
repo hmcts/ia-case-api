@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
+               && !isAipJourney(callback.getCaseDetails().getCaseData())
                && featureToggler.getValue("remissions-feature", false);
     }
 

@@ -169,7 +169,7 @@ public class CcdScenarioRunnerTest {
 
                     if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
                         log.info((char) 27 + "\033[31m" + "SCENARIO: " + description + " **disabled**");
-                        continue;
+                        break;
                     }
 
                     log.info((char) 27 + "\033[33m" + "SCENARIO: " + description);
@@ -216,6 +216,8 @@ public class CcdScenarioRunnerTest {
                         MapValueExtractor.extract(scenario, "expectation"),
                         templatesByFilename
                     );
+
+                    System.out.println(actualResponseBody);
 
                     Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
                     Map<String, Object> expectedResponse = MapSerializer.deserialize(expectedResponseBody);
