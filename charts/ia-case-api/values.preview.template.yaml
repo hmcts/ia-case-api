@@ -11,7 +11,7 @@ java:
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
-    #Un comment APIs if you need to test a local version.
+    #Un comment APIs if you need to test a local version
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
@@ -1231,6 +1231,7 @@ wa:
 
   camunda-bpm:
     java:
+      image: "hmctsprivatetemp.azurecr.io/camunda/bpm:latest"
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
