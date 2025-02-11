@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 @Component
+@Slf4j
 public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
@@ -48,6 +50,10 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        log.info("DLRM remission feature flag enabled? {}",
+                featureToggler.getValue("dlrm-refund-feature-flag", false));
+        log.info("IS {} AiP journey? {}", callback.getCaseDetails().getId(),
+                isAipJourney(callback.getCaseDetails().getCaseData()));
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && Arrays.asList(
                 Event.START_APPEAL,
@@ -70,6 +76,9 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
+        log.info("Appeal Type in {} - {}", callback.getCaseDetails().getId(),
+                optionalAppealType.map(AppealType::getValue).orElse(null));
+        
         if (optionalAppealType.isEmpty()) {
             return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
         }
@@ -84,8 +93,11 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case HU:
             case PA:
             case EU:
+                log.info("Remission details to be set here for {}: ", callback.getCaseDetails().getId());
                 asylumCase.clear(FEE_REMISSION_TYPE);
                 setFeeRemissionTypeDetails(asylumCase);
+                log.info("Remission Type for {} is : {}", callback.getCaseDetails().getId(),
+                        asylumCase.read(FEE_REMISSION_TYPE, String.class));
                 break;
 
             default:
