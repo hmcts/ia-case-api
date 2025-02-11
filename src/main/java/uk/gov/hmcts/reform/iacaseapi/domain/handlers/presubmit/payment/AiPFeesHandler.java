@@ -84,11 +84,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         switch (optionalAppealType.get()) {
-            case DC:
-            case RP:
-                callbackResponse.addError("You cannot request a fee remission for this appeal");
-                break;
-
             case EA:
             case HU:
             case PA:
@@ -98,6 +93,11 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 setFeeRemissionTypeDetails(asylumCase);
                 log.info("Remission Type for {} is : {}", callback.getCaseDetails().getId(),
                         asylumCase.read(FEE_REMISSION_TYPE, String.class));
+                break;
+
+            case DC:
+            case RP:
+                clearRemissionDetails(asylumCase);
                 break;
 
             default:
@@ -112,6 +112,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
 
         if (remissionOption.isPresent()) {
+            log.info("Remission Option selected {}: ", remissionOption.get());
             switch (remissionOption.get()) {
                 case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
                     asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
@@ -157,6 +158,14 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             }
         }
 
+    }
+
+    private void clearRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+        asylumCase.clear(FEE_REMISSION_TYPE);
+        asylumCase.clear(HELP_WITH_FEES_OPTION);
+        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
     }
 
 }

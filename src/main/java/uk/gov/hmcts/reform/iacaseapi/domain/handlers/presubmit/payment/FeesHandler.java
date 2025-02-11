@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 import java.util.Arrays;
@@ -57,6 +58,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             Event.START_APPEAL,
             Event.EDIT_APPEAL
         ).contains(callback.getEvent())
+            && !isAipJourney(callback.getCaseDetails().getCaseData())
             && isfeePaymentEnabled;
     }
 
