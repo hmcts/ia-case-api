@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -18,6 +17,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REF_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
@@ -68,10 +68,13 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+        Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
-        switch (appealType) {
+        if (optionalAppealType.isEmpty()) {
+            return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
+        }
+
+        switch (optionalAppealType.get()) {
             case DC:
             case RP:
                 callbackResponse.addError("You cannot request a fee remission for this appeal");
