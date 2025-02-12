@@ -343,9 +343,9 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3'
 
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
-    implementation (group: 'net.minidev', name: 'json-smart', version: '2.4.8'){
+    implementation (group: 'net.minidev', name: 'json-smart', version: '2.4.10'){
         version {
-            strictly('2.4.8')
+            strictly('2.4.10')
         }
     }
     implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
