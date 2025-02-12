@@ -342,12 +342,6 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml'
     implementation group: 'org.apache.commons', name: 'commons-lang3'
 
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
-    implementation (group: 'net.minidev', name: 'json-smart', version: '2.4.10'){
-        version {
-            strictly('2.4.10')
-        }
-    }
     implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
@@ -396,7 +390,6 @@ dependencies {
 
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 
-    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
     implementation 'joda-time:joda-time:2.12.7'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.43'
