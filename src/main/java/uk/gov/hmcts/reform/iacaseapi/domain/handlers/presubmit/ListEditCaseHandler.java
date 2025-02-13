@@ -219,7 +219,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             log.debug("Next hearing date feature not enabled");
         }
 
-        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
+        hearingIdListProcessor.processHearingIdList(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -48,12 +48,11 @@ class HearingIdListProcessorTest {
     @Test
     void should_add_hearing_id_list_if_does_not_exist() {
         // given
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(asylumCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
         when(asylumCase.read(HEARING_ID_LIST)).thenReturn(Optional.empty());
 
         // when
-        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
+        hearingIdListProcessor.processHearingIdList(asylumCase);
 
         // then
         verify(asylumCase).write(eq(HEARING_ID_LIST), newHearingIdListArgumentCaptor.capture());
@@ -66,7 +65,6 @@ class HearingIdListProcessorTest {
     @Test
     void should_add_hearing_id_to_existing_list() {
         // given
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(asylumCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
         IdValue<String> idValue1 = new IdValue<>("1", "23456");
         IdValue<String> idValue2 = new IdValue<>("2", "34567");
@@ -74,7 +72,7 @@ class HearingIdListProcessorTest {
         when(asylumCase.read(HEARING_ID_LIST)).thenReturn(Optional.of(existingHearingIdList));
 
         // when
-        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
+        hearingIdListProcessor.processHearingIdList(asylumCase);
 
         // then
         verify(asylumCase).write(eq(HEARING_ID_LIST), newHearingIdListArgumentCaptor.capture());
@@ -92,7 +90,6 @@ class HearingIdListProcessorTest {
     @Test
     void should_not_add_hearing_id_if_already_exists() {
         // given
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(asylumCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
         IdValue<String> idValue1 = new IdValue<>("1", "23456");
         IdValue<String> idValue2 = new IdValue<>("2", "12345");
@@ -100,7 +97,7 @@ class HearingIdListProcessorTest {
         when(asylumCase.read(HEARING_ID_LIST)).thenReturn(Optional.of(existingHearingIdList));
 
         // when
-        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
+        hearingIdListProcessor.processHearingIdList(asylumCase);
 
         // then
         verify(asylumCase).read(eq(CURRENT_HEARING_ID), eq(String.class));
