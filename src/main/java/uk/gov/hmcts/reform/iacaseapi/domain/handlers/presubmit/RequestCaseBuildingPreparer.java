@@ -74,9 +74,13 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
                         + "      -a schedule of the disputed issues;\n"
                         + "      -the appellant’s brief submissions on each of those issues, which explain (with reference to the decision under challenge; the evidence and appropriate legal authority) why the issues should be resolved in the appellant’s favour; and\n"
                         + "      -the name of the author of the ASA and the date on which it was prepared.\n"
-                        + "-If the appellant’s application was made on or after 28 June 2022, the appellant’s brief submissions within the ASA must also expressly address the applicable provisions of the Nationality and Borders Act 2022 (including the different stages of the assessment set out at section 32 of NABA 2022).\n"
-                        + "-The appellant must, by the same date, upload an indexed bundle of all evidence to be relied on in the appeal including witness statements and all evidence relevant to the issues in dispute as set out within the ASA and which has not been included in the respondent’s bundle. This bundle, together with any witness statements; expert evidence or country information evidence included, must comply with Practice Direction (1.11.2024) Part 3, sections 7.1, 7.2, 7.9, 8, 9 and 10.\n"
-                        + "Parties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.\n"
+                        + "-If the appellant’s application was made on or after 28 June 2022, the appellant’s brief submissions within the ASA must also expressly address the applicable provisions of the Nationality "
+                        + "and Borders Act 2022 (including the different stages of the assessment set out at section 32 of NABA 2022).\n"
+                        + "-The appellant must, by the same date, upload an indexed bundle of all evidence to be relied on in the appeal including witness statements and all evidence relevant to the issues in "
+                        + "dispute as set out within the ASA and which has not been included in the respondent’s bundle. "
+                        + "This bundle, together with any witness statements; expert evidence or country information evidence included, must comply with Practice Direction (1.11.2024) Part 3, sections 7.1, 7.2, 7.9, 8, 9 and 10.\n"
+                        + "Parties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. "
+                        + "Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.\n"
         );
 
         boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
