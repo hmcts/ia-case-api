@@ -19,21 +19,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 public class HearingIdListProcessor {
     public void processHearingIdList(AsylumCase asylumCase) {
         Optional<String> hearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
-        log.info("-----hearingIdOpt: {}", hearingIdOpt);
         if (hearingIdOpt.isPresent()) {
             String hearingId = hearingIdOpt.get();
 
             Optional<List<IdValue<String>>> hearingIdListOpt = asylumCase.read(HEARING_ID_LIST);
             final List<IdValue<String>> hearingIdList = hearingIdListOpt.orElse(emptyList());
-            log.info("-----hearingIdList 111: {}", hearingIdList);
 
             if (doesNotContainHearingId(hearingIdList, hearingId)) {
                 List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
-                log.info("-----newHearingIdList: {}", newHearingIdList);
                 asylumCase.write(HEARING_ID_LIST, newHearingIdList);
             }
-
-            log.info("-----hearingIdList 222: {}", hearingIdList);
         }
     }
 
