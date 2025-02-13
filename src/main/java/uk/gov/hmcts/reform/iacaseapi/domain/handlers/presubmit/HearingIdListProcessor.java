@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -20,18 +19,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Component
 public class HearingIdListProcessor {
     public void processHearingIdList(Callback<AsylumCase> callback, AsylumCase asylumCase) {
-        if (callback.getEvent() == Event.LIST_CASE) {
-            Optional<String> hearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
-            if (hearingIdOpt.isPresent()) {
-                String hearingId = hearingIdOpt.get();
+        Optional<String> hearingIdOpt = asylumCase.read(CURRENT_HEARING_ID, String.class);
+        if (hearingIdOpt.isPresent()) {
+            String hearingId = hearingIdOpt.get();
 
-                Optional<List<IdValue<String>>> hearingIdListOpt = asylumCase.read(HEARING_ID_LIST);
-                final List<IdValue<String>> hearingIdList = hearingIdListOpt.orElse(emptyList());
+            Optional<List<IdValue<String>>> hearingIdListOpt = asylumCase.read(HEARING_ID_LIST);
+            final List<IdValue<String>> hearingIdList = hearingIdListOpt.orElse(emptyList());
 
-                if (doesNotContainHearingId(hearingIdList, hearingId)) {
-                    List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
-                    asylumCase.write(HEARING_ID_LIST, newHearingIdList);
-                }
+            if (doesNotContainHearingId(hearingIdList, hearingId)) {
+                List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
+                asylumCase.write(HEARING_ID_LIST, newHearingIdList);
             }
         }
     }

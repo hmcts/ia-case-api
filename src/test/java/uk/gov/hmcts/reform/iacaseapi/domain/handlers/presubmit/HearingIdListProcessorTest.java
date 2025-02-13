@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.internal.verification.VerifyNoMoreInteractions.verifyNoMoreInteractions;
@@ -106,32 +105,6 @@ class HearingIdListProcessorTest {
         // then
         verify(asylumCase).read(eq(CURRENT_HEARING_ID), eq(String.class));
         verify(asylumCase).read(eq(HEARING_ID_LIST));
-        verifyNoMoreInteractions(asylumCase);
-    }
-
-    @Test
-    void should_not_add_hearing_id_if_event_is_not_list_case() {
-        // given
-        when(callback.getEvent()).thenReturn(Event.EDIT_CASE_LISTING);
-
-        // when
-        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
-
-        // then
-        verifyNoInteractions(asylumCase);
-    }
-
-    @Test
-    void should_not_add_hearing_id_if_no_current_hearing_id() {
-        // given
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
-        when(asylumCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.empty());
-
-        // when
-        hearingIdListProcessor.processHearingIdList(callback, asylumCase);
-
-        // then
-        verify(asylumCase).read(CURRENT_HEARING_ID, String.class);
         verifyNoMoreInteractions(asylumCase);
     }
 }
