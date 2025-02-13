@@ -76,7 +76,7 @@ class RequestCaseBuildingPreparerTest {
     @MethodSource("caseTypeScenarios")
     void should_prepare_send_direction_fields(YesOrNo yesOrNo, Parties expectedParties) {
         final String expectedExplanationContains =
-            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
+            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.";
 
         final String expectedDueDate = "2019-10-08";
 
@@ -121,7 +121,7 @@ class RequestCaseBuildingPreparerTest {
         Parties party
     ) {
         final String expectedExplanationContains =
-            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
+            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.";
 
         final String expectedDueDate = "2019-10-08";
 
