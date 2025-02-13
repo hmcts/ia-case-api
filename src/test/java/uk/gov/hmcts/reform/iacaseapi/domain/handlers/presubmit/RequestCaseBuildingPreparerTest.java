@@ -76,7 +76,7 @@ class RequestCaseBuildingPreparerTest {
     @MethodSource("caseTypeScenarios")
     void should_prepare_send_direction_fields(YesOrNo yesOrNo, Parties expectedParties) {
         final String expectedExplanationContains =
-            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.";
+            "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
 
         final String expectedDueDate = "2019-10-08";
 
@@ -121,7 +121,7 @@ class RequestCaseBuildingPreparerTest {
         Parties party
     ) {
         final String expectedExplanationContains =
-            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.";
+            "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
 
         final String expectedDueDate = "2019-10-08";
 
@@ -247,7 +247,7 @@ class RequestCaseBuildingPreparerTest {
     void should_return_current_date_plus_9_days_when_submission_is_an_ada_case() {
 
         final String expectedExplanationContains =
-                "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
+                "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2023-02-16";
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedDueDate).atStartOfDay(ZoneOffset.UTC);
