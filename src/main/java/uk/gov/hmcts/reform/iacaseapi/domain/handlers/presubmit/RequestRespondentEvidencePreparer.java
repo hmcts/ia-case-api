@@ -130,7 +130,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             + "- a copy of any Pre-Sentence Report.\n"
             + "- a copy of the appellant’s criminal record.\n"
             + "- a copy of any Parole Report or other document relating to the appellant’s period in custody and/or release.\n"
-            + "- a copy of any mental health report.\n"
+            + "- a copy of any mental health report.\n\n"
             + "Parties must ensure they conduct proceedings with procedural rigour. "
             + "The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, "
             + "nor failures to comply with directions issued by the Tribunal. "
