@@ -77,7 +77,8 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                         + "- not exceed 6 pages unless reasons are submitted in an accompanying application.\n"
                         + "- not contain standard or pro-forma paragraphs.\n"
                         + "- provide the name of the author of the review and the date.\n\n"
-                        + "Parties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24."
+                        + "Parties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. "
+                        + "Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24."
         );
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
