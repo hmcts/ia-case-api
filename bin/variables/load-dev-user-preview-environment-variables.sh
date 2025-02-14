@@ -14,7 +14,7 @@ export IDAM_API_BASE_URL="https://idam-api.aat.platform.hmcts.net"
 export IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
 export CCD_IDAM_REDIRECT_URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
 export CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-mike-pr-1.preview.platform.hmcts.net"
-export ROLE_ASSIGNMENT_URL="http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+export ROLE_ASSIGNMENT_URL="https://am-role-assignment-ia-case-api-mike-pr-1.preview.platform.hmcts.net"
 export CAMUNDA_BASE_URL="https://camunda-ia-case-api-mike.preview.platform.hmcts.net"
 
 # ccd-aat
