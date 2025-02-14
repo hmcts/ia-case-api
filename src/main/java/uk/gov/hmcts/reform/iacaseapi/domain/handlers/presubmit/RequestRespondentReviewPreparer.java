@@ -65,7 +65,7 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
                 "By the date below you must review the appellant’s ASA and bundle.\n"
-                        + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) Practice Direction (1.11.2024) Part 2, section 2.1 (e), Part 3, sections 7.11 – 7.12. Specifically, the review must:\n"
+                        + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) Practice Direction (1.11.2024) Part 2, section 2.1 (e), Part 3, sections 7.11 – 7.12. Specifically, the review must:\n\n"
                         + "- be meaningful.\n"
                         + "- explain whether you agree that the schedule of disputed issues is correct. If not, the review must set out the correct list of disputed issues, including whether there are any further issues that the respondent wishes to raise.\n"
                         + "- state whether you oppose or accept the appellant’s position on each issue and why.\n"
