@@ -180,12 +180,12 @@ withPipeline(type, product, component) {
         for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
             if (label == "enable_hearings") {
                 sh """
-                eval \\\$(./bin/variables/load-hearings-preview-environment-variables.sh ${CHANGE_ID})
+                eval \$(./bin/variables/load-hearings-preview-environment-variables.sh ${CHANGE_ID})
                 ./bin/add-roles.sh
                 """
             } else {
                 sh """
-                eval \\\$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+                eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
                 ./bin/add-roles.sh
                 """
             }
