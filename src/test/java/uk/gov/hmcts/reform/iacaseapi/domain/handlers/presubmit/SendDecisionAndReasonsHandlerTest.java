@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +39,8 @@ class SendDecisionAndReasonsHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private HearingDecisionProcessor hearingDecisionProcessor;
     private LocalDate fakeAppealDate = LocalDate.now();
 
     private SendDecisionAndReasonsHandler sendDecisionAndReasonsHandler;
@@ -46,7 +49,7 @@ class SendDecisionAndReasonsHandlerTest {
     public void setup() {
 
         sendDecisionAndReasonsHandler =
-                new SendDecisionAndReasonsHandler(dateProvider);
+                new SendDecisionAndReasonsHandler(dateProvider, hearingDecisionProcessor);
         when(dateProvider.now()).thenReturn(fakeAppealDate);
     }
 

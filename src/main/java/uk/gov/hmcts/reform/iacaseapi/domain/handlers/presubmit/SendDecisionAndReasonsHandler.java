@@ -14,14 +14,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @Component
 public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
+    private final HearingDecisionProcessor hearingDecisionProcessor;
 
-    public SendDecisionAndReasonsHandler(DateProvider dateProvider) {
+    public SendDecisionAndReasonsHandler(
+        DateProvider dateProvider,
+        HearingDecisionProcessor hearingDecisionProcessor
+    ) {
         this.dateProvider = dateProvider;
+        this.hearingDecisionProcessor = hearingDecisionProcessor;
     }
 
     public boolean canHandle(
@@ -55,6 +61,8 @@ public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<A
         }
 
         asylumCase.write(SEND_DECISIONS_AND_REASONS_DATE,  dateProvider.now().toString());
+
+        hearingDecisionProcessor.processHearingAppealDecision(callback.getCaseDetails().getCaseData());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

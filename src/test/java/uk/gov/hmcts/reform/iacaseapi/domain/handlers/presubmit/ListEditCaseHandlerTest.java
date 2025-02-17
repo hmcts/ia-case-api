@@ -47,8 +47,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -103,12 +101,11 @@ class ListEditCaseHandlerTest {
     @Mock
     private List<IdValue<Direction>> listOfDirections;
     @Mock
-    private NextHearingDateService nextHearingDateSerice;
-    @Captor
-    private ArgumentCaptor<NextHearingDetails> nextHearingDetailsArgumentCaptor;
-    private int dueDaysSinceSubmission = 15;
+    private NextHearingDateService nextHearingDateService;
+    @Mock
+    private HearingIdListProcessor hearingIdListProcessor;
 
-    private String directionExplanation = "You have a direction for this case.\n"
+    private final String directionExplanation = "You have a direction for this case.\n"
                                           + "\n"
                                           + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
                                           + "\n"
@@ -126,12 +123,15 @@ class ListEditCaseHandlerTest {
     @BeforeEach
     public void setUp() {
 
+        int dueDaysSinceSubmission = 15;
         listEditCaseHandler = new ListEditCaseHandler(hearingCentreFinder,
             caseManagementLocationService,
             dueDaysSinceSubmission,
             directionAppender,
             locationRefDataService,
-            nextHearingDateSerice);
+            nextHearingDateService,
+            hearingIdListProcessor
+        );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
@@ -577,13 +577,13 @@ class ListEditCaseHandlerTest {
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
     public void should_not_set_next_hearing_date_if_feature_not_enabled(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateSerice.enabled()).thenReturn(false);
+        when(nextHearingDateService.enabled()).thenReturn(false);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
     }
 
@@ -591,7 +591,7 @@ class ListEditCaseHandlerTest {
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
     public void should_set_next_hearing_date_from_hearings(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateSerice.enabled()).thenReturn(true);
+        when(nextHearingDateService.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
@@ -603,8 +603,8 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateSerice, times(1)).calculateNextHearingDateFromHearings(callback);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+        verify(nextHearingDateService, times(1)).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
 
@@ -612,7 +612,7 @@ class ListEditCaseHandlerTest {
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
     public void should_set_next_hearing_date_from_case_data(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateSerice.enabled()).thenReturn(true);
+        when(nextHearingDateService.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
 
@@ -620,9 +620,21 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
-        verify(nextHearingDateSerice).calculateNextHearingDateFromCaseData(callback);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
+    }
+
+    @Test
+    public void should_process_hearing_id_list() {
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(asylumCase.read(CURRENT_HEARING_ID)).thenReturn(Optional.of("12345"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback);
     }
 
     @Test

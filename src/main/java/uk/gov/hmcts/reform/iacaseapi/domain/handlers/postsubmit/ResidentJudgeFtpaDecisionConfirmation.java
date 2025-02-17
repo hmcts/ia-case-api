@@ -18,14 +18,14 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
     private final FeatureToggler featureToggler;
 
     ResidentJudgeFtpaDecisionConfirmation(
-        FeatureToggler featureToggler
+            FeatureToggler featureToggler
     ) {
         this.featureToggler = featureToggler;
 
     }
 
     public boolean canHandle(
-        Callback<AsylumCase> callback
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -33,30 +33,30 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
     }
 
     public PostSubmitCallbackResponse handle(
-        Callback<AsylumCase> callback
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
 
         final String ftpaApplicantType =
-            asylumCase
-                .read(FTPA_APPLICANT_TYPE, String.class)
-                .orElseThrow(() -> new IllegalStateException("FtpaApplicantType is not present"));
+                asylumCase
+                        .read(FTPA_APPLICANT_TYPE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("FtpaApplicantType is not present"));
 
         PostSubmitCallbackResponse postSubmitResponse =
-            new PostSubmitCallbackResponse();
+                new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationHeader("# You've recorded the First-tier permission to appeal decision");
 
         String ftpaOutcomeType = asylumCase.read(ftpaApplicantType.equals("appellant") == true ? FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE : FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)
-            .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
+                .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
         boolean isDlrmSetAside
                 = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
@@ -66,16 +66,16 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             case "granted":
             case "partiallyGranted":
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                        + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
+                        "#### What happens next\n\n"
+                                + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
             case "refused":
             case "notAdmitted":
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                        + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
+                        "#### What happens next\n\n"
+                                + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
@@ -100,13 +100,13 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
                     postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                            + "A Judge will update the decision.<br>"
+                            "#### What happens next\n\n"
+                                    + "A Judge will update the decision.<br>"
                     );
                 } else {
                     postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                            + "Both parties have been notified of the decision.<br>"
+                            "#### What happens next\n\n"
+                                    + "Both parties have been notified of the decision.<br>"
                     );
                 }
 
