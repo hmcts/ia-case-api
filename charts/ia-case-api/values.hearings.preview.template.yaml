@@ -30,7 +30,7 @@ java:
     ROLE_ASSIGNMENT_URL: ${ROLE_ASSIGNMENT_URL}
     CASE_DOCUMENT_AM_URL: ${CASE_DOCUMENT_AM_URL}
     AAC_URL: https://aac-${SERVICE_FQDN}
-    CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-aat.preview.platform.hmcts.net"
+    CCD_DEFINITION_STORE_API_BASE_URL: "http://ccd-definition-store-api-aat.service.core-compute-aat.internal"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-aat.service.core-compute-aat.internal"
     DUMMY: true
