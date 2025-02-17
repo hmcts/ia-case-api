@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @Component
 public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -46,7 +45,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
     private final FtpaDisplayService ftpaDisplayService;
-    private final HearingDecisionProcessor hearingDecisionProcessor;
     private final FeatureToggler featureToggler;
 
     public ResidentJudgeFtpaDecisionHandler(
@@ -54,14 +52,12 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
         FtpaDisplayService ftpaDisplayService,
-        HearingDecisionProcessor hearingDecisionProcessor,
         FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
         this.ftpaDisplayService = ftpaDisplayService;
-        this.hearingDecisionProcessor = hearingDecisionProcessor;
         this.featureToggler = featureToggler;
     }
 
@@ -233,8 +229,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         );
 
         addToFtpaList(asylumCase, ftpaApplicantType);
-
-        hearingDecisionProcessor.processHearingFtpaDecision(asylumCase, currentDecision);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
