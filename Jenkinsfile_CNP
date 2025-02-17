@@ -177,18 +177,25 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
 
     before('smoketest:preview') {
-        for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
+        def hasHearingsLabel = false
+
+        for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_")) {
             if (label == "enable_hearings") {
-                sh """
-                eval \$(./bin/variables/load-hearings-preview-environment-variables.sh ${CHANGE_ID})
-                ./bin/add-roles.sh
-                """
-            } else {
-                sh """
-                eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-                ./bin/add-roles.sh
-                """
+                hasHearingsLabel = true
+                break
             }
+        }
+
+        if (hasHearingsLabel) {
+            sh """
+        eval \$(./bin/variables/load-hearings-preview-environment-variables.sh ${CHANGE_ID})
+        ./bin/add-roles.sh
+        """
+        } else {
+            sh """
+        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ./bin/add-roles.sh
+        """
         }
     }
 
