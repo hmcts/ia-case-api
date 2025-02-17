@@ -184,16 +184,11 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
 
     before('smoketest:preview') {
-        if (hasHearingsLabel) {
+        if (!hasHearingsLabel) {
             sh """
-        eval \$(./bin/variables/load-hearings-preview-environment-variables.sh ${CHANGE_ID})
-        ./bin/add-roles.sh
-        """
-        } else {
-            sh """
-        eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ./bin/add-roles.sh
-        """
+                eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+                ./bin/add-roles.sh
+                """
         }
     }
 
@@ -220,9 +215,7 @@ enableSecurityScan()
     afterAlways('functionalTest:preview') {
         //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-        if (hasHearingsLabel) {
-            env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
-        } else {
+        if (!hasHearingsLabel) {
             env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             sh """
                   ./bin/add-org-roles-to-users.sh
