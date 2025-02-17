@@ -51,7 +51,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingDecisionProcessor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -504,8 +503,6 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         verify(ftpaDisplayService, times(1)).setFtpaCaseDlrmFlag(any(AsylumCase.class), anyBoolean());
         verify(asylumCase, times(1)).write(FTPA_LIST, ftpaApplications);
         verify(asylumCase, times(1)).write(IS_FTPA_LIST_VISIBLE, YES);
-
-        verify(hearingDecisionProcessor).processHearingFtpaDecision(asylumCase, "granted");
     }
 
 
