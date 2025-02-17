@@ -80,7 +80,7 @@ class RequestRespondentReviewPreparerTest {
     @ValueSource (strings = {"", "YES", "NO"})
     void should_prepare_send_direction_fields(String isAda) {
 
-        final String expectedExplanationContains = "You must respond to the Tribunal and tell them:";
+        final String expectedExplanationContains = "By the date below you must review the appellant’s ASA and bundle.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
         final String expectedAdaDateDue = "2018-11-25";
@@ -113,7 +113,7 @@ class RequestRespondentReviewPreparerTest {
 
         assertThat(
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .containsSequence("You have until the date indicated below to review");
+            .containsSequence("By the date below you must review the appellant’s ASA and bundle.");
 
         assertThat(
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
