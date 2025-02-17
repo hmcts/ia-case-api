@@ -140,6 +140,13 @@ withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
     env.ENABLE_WA = false
     env.ENABLE_TES = false
+    def hasHearingsLabel = false
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_")) {
+        if (label == "enable_hearings") {
+            hasHearingsLabel = true
+            break
+        }
+    }
     env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
         if (label == "enable_wa") {
@@ -177,15 +184,6 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
 
     before('smoketest:preview') {
-        def hasHearingsLabel = false
-
-        for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_")) {
-            if (label == "enable_hearings") {
-                hasHearingsLabel = true
-                break
-            }
-        }
-
         if (hasHearingsLabel) {
             sh """
         eval \$(./bin/variables/load-hearings-preview-environment-variables.sh ${CHANGE_ID})
@@ -222,10 +220,15 @@ enableSecurityScan()
     afterAlways('functionalTest:preview') {
         //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-        env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        sh """
-      ./bin/add-org-roles-to-users.sh
-    """
+        if (hasHearingsLabel) {
+            env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+        } else {
+            env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            sh """
+                  ./bin/add-org-roles-to-users.sh
+                """
+        }
+
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
