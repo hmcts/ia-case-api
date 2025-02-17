@@ -13,6 +13,7 @@
           "newFeeAmount": "2000",
           "paymentStatus": "Paid",
           "feeUpdateReason": "decisionTypeChanged",
+          "feeUpdateTribunalAction": "refund",
           "feeUpdateRecorded": {
             "values": [
               "feeUpdateRecorded"
@@ -40,6 +41,8 @@
         "newFeeAmount": "2000",
         "paymentStatus": "Paid",
         "feeUpdateReason": "decisionTypeChanged",
+        "feeUpdateTribunalAction": "refund",
+        "decisionTypeChangedWithRefundFlag": "Yes",
         "feeUpdateCompletedStages": [
           "feeUpdateRecorded",
           "refundApproved"

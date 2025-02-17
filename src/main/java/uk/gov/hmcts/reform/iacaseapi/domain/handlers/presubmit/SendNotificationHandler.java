@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REFUND_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
@@ -92,7 +94,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECISION_WITHOUT_HEARING,
             Event.LIST_CASE,
             Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-            Event.EDIT_CASE_LISTING,
             Event.END_APPEAL,
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
             Event.REQUEST_CASE_BUILDING,
@@ -160,7 +161,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECIDE_COSTS_APPLICATION,
             Event.DECIDE_FTPA_APPLICATION,
             Event.UPDATE_TRIBUNAL_DECISION,
-            Event.MARK_APPEAL_AS_REMITTED
+            Event.RECORD_REMISSION_REMINDER,
+            Event.MARK_APPEAL_AS_REMITTED,
+            Event.REFUND_CONFIRMATION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -181,6 +184,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
         }
+
+        if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
+            eventsToHandle.add(Event.EDIT_CASE_LISTING);
+        }
+
         return eventsToHandle;
     }
 
@@ -212,7 +220,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
             Event.REQUEST_RESPONSE_REVIEW,
             Event.MARK_APPEAL_AS_ADA,
-            Event.EDIT_CASE_LISTING,
             Event.TRANSFER_OUT_OF_ADA,
             Event.SEND_DIRECTION,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
@@ -232,7 +239,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECISION_WITHOUT_HEARING,
             Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
             Event.REMOVE_APPEAL_FROM_ONLINE,
-            Event.ADJOURN_HEARING_WITHOUT_DATE
+            Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.MANAGE_FEE_UPDATE,
+            Event.MARK_APPEAL_AS_REMITTED,
+            Event.DECIDE_FTPA_APPLICATION,
+            Event.UPDATE_TRIBUNAL_DECISION,
+            Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
+            Event.PROGRESS_MIGRATED_CASE,
+            Event.REFUND_CONFIRMATION
         );
 
         if (!isSaveAndContinueEnabled) {
@@ -246,6 +260,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (isRespondentApplication(callback.getCaseDetails().getCaseData())) {
             eventsToHandle.add(Event.RESIDENT_JUDGE_FTPA_DECISION);
             eventsToHandle.add(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        }
+
+        if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
+            eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
 
         return eventsToHandle;
@@ -263,6 +281,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         setDlrmSetAsideFeatureFlag(callback.getEvent(), asylumCase);
         setDlrmFeeRemissionFeatureFlag(callback.getEvent(), asylumCase);
+        setDlrmFeeRefundFeatureFlag(callback.getEvent(), asylumCase);
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
@@ -305,6 +324,19 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (Event.SUBMIT_APPEAL.equals(event)) {
             asylumCase.write(IS_DLRM_FEE_REMISSION_ENABLED,
                 featureToggler.getValue("dlrm-fee-remission-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
+        }
+    }
+
+    private boolean notifyHomeOfficeOnEditCaseListingEvent(Callback<AsylumCase> callback) {
+        // Notifications are not sent out if the only update is a remote to remote hearing channel update
+        // (VID to TEL or TEL to VID)
+        return !HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate(callback);
+    }
+
+    private void setDlrmFeeRefundFeatureFlag(Event event, AsylumCase asylumCase) {
+        if (Event.SUBMIT_APPEAL.equals(event)) {
+            asylumCase.write(IS_DLRM_FEE_REFUND_ENABLED,
+                featureToggler.getValue("dlrm-refund-feature-flag", false) ? YesOrNo.YES : YesOrNo.NO);
         }
     }
 }

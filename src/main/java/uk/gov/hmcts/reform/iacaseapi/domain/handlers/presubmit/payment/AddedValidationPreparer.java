@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REFUND_CONFIRMATION_APPLIED;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -50,7 +52,8 @@ public class AddedValidationPreparer implements PreSubmitCallbackHandler<AsylumC
 
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).equals(Optional.of(PaymentStatus.PAID))) {
+        if (asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).equals(Optional.of(PaymentStatus.PAID))
+            && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
             asylumCasePreSubmitCallbackResponse.addError("You have already paid for this appeal.");
         }
 

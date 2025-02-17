@@ -1,6 +1,6 @@
 {
   "description": "RIA-697-RIA-237-RIA-985-RIA-2694 Add appeal response -- replace previous",
-  "enabled": false,
+  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

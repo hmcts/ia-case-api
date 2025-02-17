@@ -36,6 +36,7 @@ public class FtpaApplications {
     private FtpaDecisionCheckValues<String> ftpaDecisionNotesPoints;
     private String ftpaDecisionNotesDescription;
     private String ftpaDecisionDate;
+    private String ftpaAppellantGroundsText;
 
     private FtpaApplications() {
         // noop -- for deserializer

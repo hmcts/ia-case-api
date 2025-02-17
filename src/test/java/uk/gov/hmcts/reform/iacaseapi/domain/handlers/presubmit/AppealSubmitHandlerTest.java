@@ -92,6 +92,28 @@ class AppealSubmitHandlerTest {
         assertEquals(YesOrNo.YES, yesOrNoCaptor.getValue());
     }
 
+    @Test
+    void should_make_service_request_tab_visible_when_remission_type_does_not_exist() {
+
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+
+        appealSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        ArgumentCaptor<AsylumCaseFieldDefinition> tabVisibleFieldCaptor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
+        ArgumentCaptor<Object> yesOrNoCaptor = ArgumentCaptor.forClass(YesOrNo.class);
+        verify(asylumCase, times(1))
+            .write(tabVisibleFieldCaptor.capture(), yesOrNoCaptor.capture());
+
+        assertEquals(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, tabVisibleFieldCaptor.getValue());
+        assertEquals(YesOrNo.YES, yesOrNoCaptor.getValue());
+    }
+
     @ParameterizedTest
     @EnumSource(value = RemissionDecision.class, names = {"PARTIALLY_APPROVED", "APPROVED"})
     void should_make_service_request_tab_hidden_if_remission_not_rejected(RemissionDecision remissionDecision) {

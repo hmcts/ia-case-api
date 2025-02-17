@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +16,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -20,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
@@ -63,7 +69,38 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
             currentState = State.CASE_UNDER_REVIEW;
         }
 
+        updatePaymentServiceRequestDetails(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+    }
+
+    private void updatePaymentServiceRequestDetails(AsylumCase asylumCase) {
+        Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(
+                AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class);
+
+        if (paymentStatusOptional.isPresent()
+            && !PaymentStatus.PAID.equals(paymentStatusOptional.get())
+            && hasNoRemission(asylumCase)) {
+
+            asylumCase.write(AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YES);
+
+            Optional<String> paymentReferenceOpt = asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_REFERENCE);
+
+            if (paymentReferenceOpt.isPresent() && isNotEmpty(paymentReferenceOpt.get())) {
+                asylumCase.write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YES);
+            }
+        }
+    }
+
+    private boolean hasNoRemission(AsylumCase asylumCase) {
+        Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        Optional<RemissionDecision> optionalRemissionDecision =
+                asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+
+        return optRemissionType.isEmpty()
+                || optRemissionType.get() == RemissionType.NO_REMISSION
+                || (optionalRemissionDecision.isPresent()
+                && optionalRemissionDecision.get() != RemissionDecision.APPROVED);
     }
 
     private void updateAppellantContactDetails(AsylumCase asylumCase) {
@@ -74,7 +111,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
             Subscriber subscriber = subscriptionsOptional.get().stream().findFirst().map(IdValue::getValue).orElse(null);
 
             if (subscriber != null) {
-                ContactPreference contactPreference = subscriber.getWantsEmail() == YesOrNo.YES
+                ContactPreference contactPreference = subscriber.getWantsEmail() == YES
                     ? ContactPreference.WANTS_EMAIL
                     : ContactPreference.WANTS_SMS;
 

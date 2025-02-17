@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppender;
 
@@ -84,6 +85,8 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_MOBILE_PHONE_NUMBER);
         asylumCase.clear(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER);
+
+        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
 
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY, company);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_NAME, name);

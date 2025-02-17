@@ -1,6 +1,6 @@
 {
   "description": "RIA-4272 Last modified direction publish - Request response review direction to legal representative",
-  "enabled": false,
+  "enabled": true,
   "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

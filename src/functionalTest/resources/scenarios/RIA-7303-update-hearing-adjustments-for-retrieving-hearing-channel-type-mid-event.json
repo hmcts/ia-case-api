@@ -1,6 +1,6 @@
 {
   "description": "RIA-7303 update hearing adjustments for retrieving hearing channel type mid event",
-  "disabled": true,
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",

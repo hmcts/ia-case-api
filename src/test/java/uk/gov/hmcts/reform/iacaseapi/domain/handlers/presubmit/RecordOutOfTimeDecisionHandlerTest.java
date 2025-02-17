@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +83,7 @@ class RecordOutOfTimeDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
 
-        verify(asylumCase, times(1)).write(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(RECORDED_OUT_OF_TIME_DECISION, YES);
         verify(asylumCase, times(1))
             .write(OUT_OF_TIME_DECISION_MAKER, "Tribunal Caseworker");
     }
@@ -99,7 +101,7 @@ class RecordOutOfTimeDecisionHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_OUT_OF_TIME_DECISION);
 
-        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
         when(outOfTimeDecisionDetailsAppender.getAllOutOfTimeDecisionDetails()).thenReturn(previousOutOfTimeDecisionDetails);
         when(asylumCase.read(OUT_OF_TIME_DECISION_DOCUMENT, Document.class)).thenReturn(Optional.of(outOfTimeDecisionDocument));
@@ -203,6 +205,38 @@ class RecordOutOfTimeDecisionHandlerTest {
         assertThatThrownBy(() -> recordOutOfTimeDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void should_create_end_appeal_notice_pdf_and_append_to_letter_notifications_documents_for_internal_non_detained() {
+
+        List<DocumentWithMetadata> outOfTimeDecisionDocumentsWithMetadata =
+            Arrays.asList(
+                outOfTimeDecisionDocumentWithMetadata
+            );
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.RECORD_OUT_OF_TIME_DECISION);
+        when(asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class)).thenReturn(Optional.of(OutOfTimeDecisionType.IN_TIME));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        when(asylumCase.read(OUT_OF_TIME_DECISION_DOCUMENT, Document.class)).thenReturn(Optional.of(outOfTimeDecisionDocument));
+        when(asylumCase.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(existingTribunalDocuments));
+
+        when(documentReceiver.receive(outOfTimeDecisionDocument, "", DocumentTag.INTERNAL_OUT_OF_TIME_DECISION_LETTER))
+            .thenReturn(outOfTimeDecisionDocumentWithMetadata);
+
+        when(documentsAppender
+            .append(existingTribunalDocuments, outOfTimeDecisionDocumentsWithMetadata))
+            .thenReturn(allTribunalDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            recordOutOfTimeDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
     }
 
 

@@ -9,6 +9,8 @@
   "appealType": "protection",
   "hasNewMatters": "No",
   "hasOtherAppeals": "No",
+  "appellantInUk": "Yes",
+  "submissionOutOfTime": "No",
   "appealGroundsProtection": {
     "values": [
       "protectionRefugeeConvention"

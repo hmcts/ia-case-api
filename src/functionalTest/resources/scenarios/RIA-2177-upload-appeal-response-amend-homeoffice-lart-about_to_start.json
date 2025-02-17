@@ -1,6 +1,6 @@
 {
   "description": "RIA-2177 Amend appeal response is add only (HO - LART) - list uploaded files",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "HomeOfficeLart",

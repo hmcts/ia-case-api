@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -14,11 +15,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_HEARING_CENTRE_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SELECTED_HEARING_CENTRE_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.HATTON_CROSS;
 
 import java.util.Collections;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
@@ -193,9 +197,19 @@ class ChangeHearingCentreHandlerTest {
         );
         when(asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class)).thenReturn(Optional.of(hearingCentreList));
 
+        CaseManagementLocationRefData
+            expectedCml = new CaseManagementLocationRefData(Region.NATIONAL, hearingCentreList);
+
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
+            .thenReturn(expectedCml);
+
         changeHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase).read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
         verify(asylumCase).write(HEARING_CENTRE, HATTON_CROSS);
+        verify(asylumCase).write(SELECTED_HEARING_CENTRE_REF_DATA,
+            hearingCentreList.getValue().getLabel());
+
+        verify(asylumCase).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
     }
 }

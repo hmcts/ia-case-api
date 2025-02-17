@@ -125,9 +125,9 @@ public class CcdScenarioRunnerTest {
                 .load("/scenarios/" + scenarioPattern)
                 .values();
 
-        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
-        log.info((char) 27 + "[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
-        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "\033[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
+        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
         int maxRetries = 3;
         for (String scenarioSource : scenarioSources) {
             String description = "";
@@ -167,11 +167,11 @@ public class CcdScenarioRunnerTest {
                     }
 
                     if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
-                        log.info((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
-                        continue;
+                        log.info((char) 27 + "\033[31m" + "SCENARIO: " + description + " **disabled**");
+                        break;
                     }
 
-                    log.info((char) 27 + "[33m" + "SCENARIO: " + description);
+                    log.info((char) 27 + "\033[33m" + "SCENARIO: " + description);
 
                     Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
@@ -216,6 +216,8 @@ public class CcdScenarioRunnerTest {
                         templatesByFilename
                     );
 
+                    System.out.println(actualResponseBody);
+
                     Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
                     Map<String, Object> expectedResponse = MapSerializer.deserialize(expectedResponseBody);
 
@@ -238,8 +240,8 @@ public class CcdScenarioRunnerTest {
             }
         }
 
-        log.info((char) 27 + "[36m" + "-------------------------------------------------------------------");
-        log.info((char) 27 + "[0m");
+        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
+        log.info((char) 27 + "\033[0m");
         if (!haveAllPassed) {
             throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + failedScenarios.stream().map(Object::toString).collect(Collectors.joining(";\n")));
         }
@@ -439,6 +441,12 @@ public class CcdScenarioRunnerTest {
         if ("Citizen".equalsIgnoreCase(credentials)) {
             return authorizationHeadersProvider
                 .getCitizenAuthorization();
+        }
+
+        if ("SystemUser".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                    .getSystemUserAuthorization();
         }
 
         return new Headers();

@@ -10,9 +10,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEW_FEE_AMOUNT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
@@ -31,6 +33,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -124,6 +128,28 @@ class ManageFeeUpdateMidEventTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains(
+                "You cannot choose this option because there is no remission request associated with this appeal");
+    }
+
+    @Test
+    void handle_should_return_error_if_aip_journey_and_remission_does_not_exists() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.NO_REMISSION));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();

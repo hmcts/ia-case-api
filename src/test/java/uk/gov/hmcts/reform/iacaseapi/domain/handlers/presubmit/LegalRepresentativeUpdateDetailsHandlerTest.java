@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppender;
 
 
@@ -101,6 +102,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         verify(asylumCase, times(1)).clear(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER));
 
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_NAME), eq(legalRepName));
+        verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_FAMILY_NAME), eq(legalRepFamilyName));
         verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_MOBILE_PHONE_NUMBER), eq(legalRepMobilePhoneNumber));

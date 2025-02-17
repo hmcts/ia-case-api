@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,15 +22,24 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -40,6 +50,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -190,6 +201,65 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
         verify(asylumCase, times(1)).clear(SUBSCRIPTIONS);
+    }
+
+    @ParameterizedTest
+    @MethodSource("providePaymentUpdateScenarios")
+    void should_update_payment_details_when_payment_is_pending_and_remission_rejected(
+            PaymentStatus paymentStatus,
+            String paymentReference,
+            RemissionType remissionType,
+            RemissionDecision remissionDecision,
+            boolean updateServiceRequestData) {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class))
+                .thenReturn(Optional.of(paymentStatus));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_REFERENCE))
+                .thenReturn(Optional.ofNullable(paymentReference));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_TYPE, RemissionType.class))
+                .thenReturn(Optional.ofNullable(remissionType));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_DECISION, RemissionDecision.class))
+                .thenReturn(Optional.ofNullable(remissionDecision));
+
+        PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        if (updateServiceRequestData) {
+            verify(asylumCase, times(1)).write(
+                    AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+
+            if (StringUtils.isNotEmpty(paymentReference)) {
+                verify(asylumCase, times(1))
+                        .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+            }
+        } else {
+            verify(asylumCase, never())
+                    .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+            verify(asylumCase, never()).write(
+                    AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+        }
+    }
+
+    static Stream<Arguments> providePaymentUpdateScenarios() {
+        final String reference = "1111-1111-1111-1111";
+        return Stream.of(
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.NO_REMISSION, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, null, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, null, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, null, RemissionType.NO_REMISSION, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, null, null, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, "", RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, "", null, null, true),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
+                Arguments.of(PaymentStatus.PAID, reference, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, false),
+                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HELP_WITH_FEES, null, false),
+                Arguments.of(PaymentStatus.PAID, reference, RemissionType.NO_REMISSION, null, false)
+        );
     }
 
     @Test

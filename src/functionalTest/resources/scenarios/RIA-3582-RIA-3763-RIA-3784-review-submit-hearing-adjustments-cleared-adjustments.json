@@ -1,7 +1,7 @@
 {
   "description": "RIA-3582-RIA-3763-RIA-3784 Current hearing adjustments cleared for FTPA reheard appeal - feature flag enabled",
   "launchDarklyKey": "reheard-feature:true",
-  "disabled": true,
+  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 import java.util.Map;
+import java.util.UUID;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -98,12 +99,39 @@ class CcdCaseAssignmentTest {
     @Test
     void should_send_delete_to_revoke_ccd_case_access_and_receive_204() {
 
-        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        setUpRevokeCcdCaseAccess();
         when(userDetails.getId()).thenReturn(IDAM_ID_OF_USER_CREATING_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
+
+        ccdCaseAssignment.revokeAccessToCase(callback, "some-org-identifier");
+        verify(restTemplate)
+            .exchange(
+                anyString(),
+                eq(HttpMethod.DELETE),
+                any(HttpEntity.class),
+                eq(Object.class)
+            );
+    }
+
+    @Test
+    void should_send_delete_to_revoke_legal_rep_access_to_case_and_receive_204() {
+
+        setUpRevokeCcdCaseAccess();
+
+        ccdCaseAssignment.revokeLegalRepAccessToCase(123L, UUID.randomUUID().toString(), "some-org-identifier");
+        verify(restTemplate).exchange(
+            anyString(),
+            eq(HttpMethod.DELETE),
+            any(HttpEntity.class),
+            eq(Object.class)
+        );
+    }
+
+    private void setUpRevokeCcdCaseAccess() {
+        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
 
         when(restTemplate
             .exchange(
@@ -115,15 +143,6 @@ class CcdCaseAssignmentTest {
         ).thenReturn(responseEntity);
 
         when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.NO_CONTENT.value());
-
-        ccdCaseAssignment.revokeAccessToCase(callback, "some-org-identifier");
-        verify(restTemplate)
-            .exchange(
-                anyString(),
-                eq(HttpMethod.DELETE),
-                any(HttpEntity.class),
-                eq(Object.class)
-            );
     }
 
     @Test

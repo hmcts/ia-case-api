@@ -12,9 +12,12 @@ public enum DocumentTag {
     ADDITIONAL_EVIDENCE("additionalEvidence"),
     REHEARD_HEARING_NOTICE("reheardHearingNotice"),
     HEARING_NOTICE("hearingNotice"),
+    REHEARD_HEARING_NOTICE_LISTED("reheardHearingNoticeRelisted"),
+    HEARING_NOTICE_LISTED("hearingNoticeRelisted"),
     HEARING_REQUIREMENTS("hearingRequirements"),
     CASE_SUMMARY("caseSummary"),
     HEARING_BUNDLE("hearingBundle"),
+    UPDATED_HEARING_BUNDLE("updatedHearingBundle"),
     ADDENDUM_EVIDENCE("addendumEvidence"),
     DECISION_AND_REASONS_DRAFT("decisionAndReasons"),
     DECISION_AND_REASONS_COVER_LETTER("decisionAndReasonsCoverLetter"),
@@ -44,6 +47,8 @@ public enum DocumentTag {
     IAUT_2_FORM("iAUT2Form"),
     REMITTAL_DECISION("remittalDecision"),
     NOTICE_OF_ADJOURNED_HEARING("noticeOfAdjournedHearing"),
+    APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
+    INTERNAL_OUT_OF_TIME_DECISION_LETTER("internalOutOfTimeDecisionLetter"),
 
     @JsonEnumDefaultValue
     NONE("");

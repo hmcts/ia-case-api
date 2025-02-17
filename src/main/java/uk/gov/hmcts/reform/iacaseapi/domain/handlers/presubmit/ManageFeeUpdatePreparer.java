@@ -61,11 +61,12 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
         asylumCase.write(DISPLAY_FEE_UPDATE_STATUS, displayFeeUpdateStatus);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-        if (completedStages.isPresent()
-            && completedStages.get().get(completedStages.get().size() - 1).equals("feeUpdateNotRequired")) {
-            callbackResponse.addError("You can no longer manage a fee update for this appeal "
-                + "because a fee update has been recorded as not required.");
-            return callbackResponse;
+        if (completedStages.isPresent() && !completedStages.get().isEmpty()) {
+            if (completedStages.get().get(completedStages.get().size() - 1).equals("feeUpdateNotRequired")) {
+                callbackResponse.addError("You can no longer manage a fee update for this appeal "
+                                          + "because a fee update has been recorded as not required.");
+                return callbackResponse;
+            }
         }
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)

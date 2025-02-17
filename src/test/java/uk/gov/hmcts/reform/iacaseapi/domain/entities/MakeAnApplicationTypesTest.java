@@ -24,10 +24,11 @@ class MakeAnApplicationTypesTest {
         assertEquals("Other", MakeAnApplicationTypes.OTHER.toString());
         assertEquals("Change hearing type", MakeAnApplicationTypes.CHANGE_HEARING_TYPE.toString());
         assertEquals("Set aside a decision", MakeAnApplicationTypes.SET_ASIDE_A_DECISION.toString());
+        assertEquals("Application under rule 31 or rule 32", MakeAnApplicationTypes.APPLICATION_UNDER_RULE_31_OR_RULE_32.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(15, MakeAnApplicationTypes.values().length);
+        assertEquals(16, MakeAnApplicationTypes.values().length);
     }
 }

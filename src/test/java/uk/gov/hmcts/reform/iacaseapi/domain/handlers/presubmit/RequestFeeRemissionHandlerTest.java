@@ -26,6 +26,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
@@ -37,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
@@ -45,6 +48,7 @@ import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
+@MockitoSettings(strictness = Strictness.LENIENT)
 class RequestFeeRemissionHandlerTest {
 
     @Mock private Callback<AsylumCase> callback;
@@ -60,7 +64,7 @@ class RequestFeeRemissionHandlerTest {
     @BeforeEach
     void setUp() {
         RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
-
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
         requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender);
     }
 
@@ -549,11 +553,11 @@ class RequestFeeRemissionHandlerTest {
 
     @Test
     void it_can_handle_callback() {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         for (Event event : Event.values()) {
-
+            when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {

@@ -1,16 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,12 +25,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RequestedRoles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
@@ -49,6 +56,8 @@ class RoleAssignmentServiceTest {
     private IdamService idamService;
     @Mock
     private CaseDetails<CaseData> caseDetails;
+    @Captor
+    private ArgumentCaptor<QueryRequest> queryRequestCaptor;
     private final String userId = "userId";
     private final long caseId = 1234567890L;
     private final String accessToken = "accessToken";
@@ -121,6 +130,29 @@ class RoleAssignmentServiceTest {
             eq(serviceToken),
             eq(assignmentId)
         );
+
+    }
+
+    @Test
+    void getCaseRoleAssignmentsForUserTest() {
+
+        roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, userId);
+
+        verify(roleAssignmentApi).queryRoleAssignments(
+                eq(accessToken),
+                eq(serviceToken),
+                queryRequestCaptor.capture()
+        );
+
+        QueryRequest queryRequest = queryRequestCaptor.getValue();
+        assertEquals(List.of(RoleType.CASE), queryRequest.getRoleType());
+        assertEquals(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN), queryRequest.getRoleCategory());
+        assertEquals(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE), queryRequest.getRoleName());
+        assertEquals(List.of(userId), queryRequest.getActorId());
+        Map<Attributes, List<String>> attributes = queryRequest.getAttributes();
+        assertEquals(List.of(Jurisdiction.IA.name()), attributes.get(Attributes.JURISDICTION));
+        assertEquals(List.of(String.valueOf(caseId)), attributes.get(Attributes.CASE_ID));
+        assertEquals(List.of("Asylum"), attributes.get(Attributes.CASE_TYPE));
 
     }
 }

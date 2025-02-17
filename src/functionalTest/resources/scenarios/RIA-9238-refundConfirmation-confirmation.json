@@ -1,0 +1,22 @@
+{
+  "description": "RIA-9238 Refund Confirmation confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "refundConfirmation",
+      "state": "appealSubmitted",
+      "id": 9238,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Refund request completed",
+      "body": "#### What happens next\n\nParties will be notified with the next steps"
+    }
+  }
+}

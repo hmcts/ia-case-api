@@ -1,27 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-
-import java.util.Arrays;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,8 +7,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -43,8 +24,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class SendNotificationHandlerTest {
 
@@ -55,7 +48,11 @@ class SendNotificationHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCaseBefore;
     @Mock
     private FeatureToggler featureToggler;
 
@@ -69,11 +66,11 @@ class SendNotificationHandlerTest {
 
         ReflectionTestUtils.setField(sendNotificationHandler, "isSaveAndContinueEnabled", true);
 
-        lenient().when(callback.getCaseDetails()).thenReturn(caseDetails);
-        lenient().when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        lenient().when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-        lenient().when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        lenient().when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
     }
 
     @Test
@@ -323,7 +320,176 @@ class SendNotificationHandlerTest {
                         Event.DECIDE_FTPA_APPLICATION,
                         Event.UPDATE_TRIBUNAL_DECISION,
                         Event.REQUEST_RESPONSE_REVIEW,
-                        Event.MARK_APPEAL_AS_REMITTED
+                        Event.RECORD_REMISSION_REMINDER,
+                        Event.MARK_APPEAL_AS_REMITTED,
+                        Event.REFUND_CONFIRMATION
+                    ).contains(event)) {
+                    assertTrue(canHandle);
+                } else {
+                    assertFalse(canHandle);
+                }
+            }
+
+            reset(callback);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(Event.class)
+    void it_can_handle_callback_given_internal_case(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
+
+            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                &&
+                Arrays.asList(
+                    Event.EDIT_APPEAL_AFTER_SUBMIT,
+                    Event.REQUEST_RESPONDENT_EVIDENCE,
+                    Event.REQUEST_RESPONDENT_REVIEW,
+                    Event.DECIDE_AN_APPLICATION,
+                    Event.MAKE_AN_APPLICATION,
+                    Event.ADA_SUITABILITY_REVIEW,
+                    Event.APPLY_FOR_FTPA_APPELLANT,
+                    Event.APPLY_FOR_FTPA_RESPONDENT,
+                    Event.REMOVE_DETAINED_STATUS,
+                    Event.REINSTATE_APPEAL,
+                    Event.RECORD_OUT_OF_TIME_DECISION,
+                    Event.END_APPEAL,
+                    Event.SUBMIT_APPEAL,
+                    Event.UPDATE_HEARING_ADJUSTMENTS,
+                    Event.MARK_AS_READY_FOR_UT_TRANSFER,
+                    Event.REQUEST_CASE_BUILDING,
+                    Event.UPDATE_DETENTION_LOCATION,
+                    Event.GENERATE_HEARING_BUNDLE,
+                    Event.SEND_DECISION_AND_REASONS,
+                    Event.END_APPEAL_AUTOMATICALLY,
+                    Event.RECORD_REMISSION_DECISION,
+                    Event.MARK_APPEAL_PAID,
+                    Event.LIST_CASE,
+                    Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                    Event.REQUEST_RESPONSE_REVIEW,
+                    Event.MARK_APPEAL_AS_ADA,
+                    Event.EDIT_CASE_LISTING,
+                    Event.TRANSFER_OUT_OF_ADA,
+                    Event.SEND_DIRECTION,
+                    Event.RESIDENT_JUDGE_FTPA_DECISION,
+                    Event.MAINTAIN_CASE_LINKS,
+                    Event.CHANGE_HEARING_CENTRE,
+                    Event.CREATE_CASE_LINK,
+                    Event.UPLOAD_ADDITIONAL_EVIDENCE,
+                    Event.REQUEST_RESPONSE_AMEND,
+                    Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                    Event.EDIT_APPEAL_AFTER_SUBMIT,
+                    Event.CHANGE_HEARING_CENTRE,
+                    Event.CHANGE_DIRECTION_DUE_DATE,
+                    Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                    Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                    Event.UPLOAD_ADDENDUM_EVIDENCE,
+                    Event.TURN_ON_NOTIFICATIONS,
+                    Event.DECISION_WITHOUT_HEARING,
+                    Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+                    Event.REMOVE_APPEAL_FROM_ONLINE,
+                    Event.ADJOURN_HEARING_WITHOUT_DATE,
+                    Event.MANAGE_FEE_UPDATE,
+                    Event.MARK_APPEAL_AS_REMITTED,
+                    Event.DECIDE_FTPA_APPLICATION,
+                    Event.UPDATE_TRIBUNAL_DECISION,
+                    Event.END_APPEAL_AUTOMATICALLY,
+                    Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                    Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
+                    Event.PROGRESS_MIGRATED_CASE,
+                    Event.REFUND_CONFIRMATION
+                ).contains(event)) {
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
+            }
+        }
+
+        reset(callback);
+
+    }
+
+    @Test
+    void it_can_handle_internal_case_callback() {
+
+        for (Event event : Event.values()) {
+
+            when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+            when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+            when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
+
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    &&
+                    Arrays.asList(
+                        Event.EDIT_APPEAL_AFTER_SUBMIT,
+                        Event.REQUEST_RESPONDENT_EVIDENCE,
+                        Event.REQUEST_RESPONDENT_REVIEW,
+                        Event.DECIDE_AN_APPLICATION,
+                        Event.MAKE_AN_APPLICATION,
+                        Event.ADA_SUITABILITY_REVIEW,
+                        Event.APPLY_FOR_FTPA_APPELLANT,
+                        Event.APPLY_FOR_FTPA_RESPONDENT,
+                        Event.REMOVE_DETAINED_STATUS,
+                        Event.REINSTATE_APPEAL,
+                        Event.RECORD_OUT_OF_TIME_DECISION,
+                        Event.END_APPEAL,
+                        Event.SUBMIT_APPEAL,
+                        Event.UPDATE_HEARING_ADJUSTMENTS,
+                        Event.MARK_AS_READY_FOR_UT_TRANSFER,
+                        Event.REQUEST_CASE_BUILDING,
+                        Event.UPDATE_DETENTION_LOCATION,
+                        Event.GENERATE_HEARING_BUNDLE,
+                        Event.SEND_DECISION_AND_REASONS,
+                        Event.END_APPEAL_AUTOMATICALLY,
+                        Event.RECORD_REMISSION_DECISION,
+                        Event.MARK_APPEAL_PAID,
+                        Event.LIST_CASE,
+                        Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                        Event.REQUEST_RESPONSE_REVIEW,
+                        Event.MARK_APPEAL_AS_ADA,
+                        Event.EDIT_CASE_LISTING,
+                        Event.TRANSFER_OUT_OF_ADA,
+                        Event.SEND_DIRECTION,
+                        Event.RESIDENT_JUDGE_FTPA_DECISION,
+                        Event.MAINTAIN_CASE_LINKS,
+                        Event.CHANGE_HEARING_CENTRE,
+                        Event.CREATE_CASE_LINK,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE,
+                        Event.REQUEST_RESPONSE_AMEND,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+                        Event.EDIT_APPEAL_AFTER_SUBMIT,
+                        Event.CHANGE_HEARING_CENTRE,
+                        Event.CHANGE_DIRECTION_DUE_DATE,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE,
+                        Event.TURN_ON_NOTIFICATIONS,
+                        Event.DECISION_WITHOUT_HEARING,
+                        Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+                        Event.REMOVE_APPEAL_FROM_ONLINE,
+                        Event.ADJOURN_HEARING_WITHOUT_DATE,
+                        Event.MANAGE_FEE_UPDATE,
+                        Event.MARK_APPEAL_AS_REMITTED,
+                        Event.DECIDE_FTPA_APPLICATION,
+                        Event.PROGRESS_MIGRATED_CASE,
+                        Event.UPDATE_TRIBUNAL_DECISION,
+                        Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
+                        Event.REFUND_CONFIRMATION
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
@@ -358,6 +524,38 @@ class SendNotificationHandlerTest {
         }
 
         reset(callback);
+    }
+
+    @Test
+    void cannot_handle_edit_case_listing_for_remote_to_remote_hearing_channel_update() {
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
+
+            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW) {
+
+                assertFalse(canHandle);
+            }
+        }
     }
 
     @Test

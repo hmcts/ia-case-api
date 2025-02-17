@@ -112,6 +112,24 @@ class UpdateTribunalDecisionHandlerTest {
     }
 
     @Test
+    void should_write_IS_DECISION_RULE_31_NO() {
+        final DynamicList dynamicList = new DynamicList(
+                new Value("dismissed", "No"),
+                newArrayList()
+        );
+        when(asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class))
+                .thenReturn(Optional.of(dynamicList));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
+        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, NO);
+    }
+
+    @Test
     void should_write_updated_appeal_decision_dismissed() {
         final DynamicList dynamicList = new DynamicList(
             new Value("dismissed", "Yes, change decision to Dismissed"),
@@ -132,6 +150,7 @@ class UpdateTribunalDecisionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
+        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
         verify(asylumCase).clear(FTPA_APPELLANT_SUBMITTED);
         verify(asylumCase).clear(FTPA_RESPONDENT_SUBMITTED);
@@ -158,6 +177,7 @@ class UpdateTribunalDecisionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Allowed");
+        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CORRECTED_DECISION_AND_REASONS, allAppendedDecisionAndReasosn);
         verify(asylumCase, times(1)).write(UPDATE_TRIBUNAL_DECISION_DATE, now.toString());
         assertThat(capturedDecision.getUpdatedDecisionDate()).isEqualTo(now.toString());

@@ -17,8 +17,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# The appeal has been saved\n# You still need to submit it",
-      "body": "### Do this next\n\nIf you're ready to proceed [submit the appeal](/case/IA/Asylum/1234/trigger/submitAppeal).\n\n#### Not ready to submit yet?\nYou can return to the case details to make changes."
+      "header": "# You have saved your appeal\n# You still need to submit it",
+      "body": "### Do this next\n\nIf you're ready to submit your appeal, select 'Submit your appeal' in the 'Next step' dropdown list from your case details page.\n\n#### Not ready to submit your appeal yet?\nYou can return to the case details page to make changes from the ‘Next step’ dropdown list."
     }
   }
 }

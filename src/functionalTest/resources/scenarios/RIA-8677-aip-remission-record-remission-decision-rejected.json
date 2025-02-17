@@ -1,6 +1,6 @@
 {
   "description": "RIA-8677 AIP Remissions - Admin officer record rejected remission decision",
-  "enabled": false,
+  "enabled": true,
   "launchDarklyKey": "remissions-feature:true",
   "launchDarklyKey": "dlrm-fee-remission-feature-flag:true",
   "request": {
