@@ -208,8 +208,8 @@ enableSecurityScan()
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         env.SERVICE_AUTH_PROVIDER_API_BASE_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        env.CCD_IDAM_REDIRECT_URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
-        env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-pr-${pr}.preview.platform.hmcts.net"
+//        env.CCD_IDAM_REDIRECT_URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
+//        env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-pr-${pr}.preview.platform.hmcts.net"
         sh """
       ./bin/add-org-roles-to-users.sh
     """
