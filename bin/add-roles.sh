@@ -15,6 +15,7 @@
 ./bin/utils/ccd-add-role.sh "caseworker-ia-srcaseofficer" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-ia-internal" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-ia-rparobot" "$USER_TOKEN" "$SERVICE_TOKEN"
+./bin/utils/ccd-add-role.sh "cft-ttl-manager" "$USER_TOKEN" "$SERVICE_TOKEN"
 
 ./bin/utils/ccd-add-role.sh "caseworker-ras-validation" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-caa" "$USER_TOKEN" "$SERVICE_TOKEN"
@@ -77,3 +78,4 @@
 ./bin/utils/ccd-add-role.sh "caseworker-ia-bails" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-ia-homeofficebail" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "ia_bail_caseflags_profile" "$USER_TOKEN" "$SERVICE_TOKEN"
+
