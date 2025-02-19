@@ -148,7 +148,7 @@ public class RoleAssignmentService {
         if (roleAssignment.isPresent()) {
             String actorId = roleAssignment.get().getActorId();
             String assignmentId = roleAssignment.get().getId();
-            log.info("Removing Case Manager role from user: {} for case ID: {}, assignement ID: {}", actorId, caseId, assignmentId);
+            log.info("Removing Case Manager role from user: {} for case ID: {}, assignment ID: {}", actorId, caseId, assignmentId);
 
             deleteRoleAssignment(assignmentId);
 
