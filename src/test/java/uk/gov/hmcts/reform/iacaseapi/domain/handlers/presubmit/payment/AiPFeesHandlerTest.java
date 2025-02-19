@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -255,6 +258,34 @@ class AiPFeesHandlerTest {
         verifyFeeOptionDetailsCleared();
     }
 
+    @Test
+    void should_not_clear_remission_data_when_asylum_support_reference_is_missing() {
+
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
+                .thenReturn(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE));
+        when(asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class)).thenReturn(Optional.empty());
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, never()).clear(HELP_WITH_FEES_OPTION);
+        verify(asylumCase, never()).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
+        verify(asylumCase, times(1))
+                .write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
+        verifyFeeOptionDetailsCleared();
+    }
+
     @ParameterizedTest
     @EnumSource(value = RemissionOption.class, names = {"UNDER_18_GET_SUPPORT", "PARENT_GET_SUPPORT"})
     void should_write_remission_data_for_appeals_with_local_authority_support(RemissionOption remissionOption) {
@@ -284,16 +315,18 @@ class AiPFeesHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = RemissionOption.class, names = {"NO_REMISSION", "I_WANT_TO_GET_HELP_WITH_FEES"})
-    void should_write_remission_data_for_appeals_with_help_with_fee(RemissionOption remissionOption) {
+    @MethodSource(value = "provideRemissionAndHelpWithFeeOptionData")
+    void should_write_remission_data_for_appeals_with_help_with_fee(RemissionOption remissionOption,
+                                                                    HelpWithFeesOption helpWithFeesOption) {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(remissionOption));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
+                .thenReturn(Optional.of(remissionOption));
         when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class))
-                .thenReturn(Optional.of(HelpWithFeesOption.ALREADY_APPLIED));
+                .thenReturn(Optional.of(helpWithFeesOption));
         when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class))
                 .thenReturn(Optional.of(HelpWithFeesOption.ALREADY_APPLIED));
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -314,6 +347,16 @@ class AiPFeesHandlerTest {
                 .write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
         verifyFeeOptionDetailsCleared();
     }
+
+    private static Stream<Arguments> provideRemissionAndHelpWithFeeOptionData() {
+        return Stream.of(
+                Arguments.of(RemissionOption.NO_REMISSION, HelpWithFeesOption.WANT_TO_APPLY),
+                Arguments.of(RemissionOption.NO_REMISSION, HelpWithFeesOption.ALREADY_APPLIED),
+                Arguments.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES, HelpWithFeesOption.WANT_TO_APPLY),
+                Arguments.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES, HelpWithFeesOption.ALREADY_APPLIED)
+        );
+    }
+
 
     @Test
     void should_not_write_remission_data_when_no_remission_and_no_hwf() {

@@ -113,7 +113,9 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 }
 
                 asylumCase = feePayment.aboutToSubmit(callback);
-                if (isRemissionsEnabled == YES) {
+
+                Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+                if (isRemissionsEnabled == YES && remissionOption.isPresent()) {
                     setFeeRemissionTypeDetails(asylumCase);
                 } else {
                     setFeePaymentDetails(asylumCase, optionalAppealType.get());
@@ -181,12 +183,16 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 case I_WANT_TO_GET_HELP_WITH_FEES:
                     Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
 
-                    if (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL) {
+                    if (helpWithFeesOption.isEmpty() || helpWithFeesOption.get() == WILL_PAY_FOR_APPEAL) {
+                        if (remissionOption.get() == RemissionOption.NO_REMISSION) {
+                            clearRemissionDetails(asylumCase);
+                        }
+                    } else {
                         asylumCase.write(REMISSION_OPTION, RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES);
                         asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
+                        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+                        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
                     }
-                    asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-                    asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
                     break;
 
                 default:
