@@ -173,7 +173,10 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
                 case UNDER_18_GET_SUPPORT:
                 case PARENT_GET_SUPPORT:
-                    asylumCase.write(FEE_REMISSION_TYPE, "Local Authority Support");
+                    asylumCase.write(FEE_REMISSION_TYPE,
+                            remissionOption.get() == RemissionOption.UNDER_18_GET_SUPPORT
+                                    ? "Local Authority Support - Under 18"
+                                    : "Local Authority Support - Parent or Guardian");
                     asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                     asylumCase.clear(HELP_WITH_FEES_OPTION);
                     asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
