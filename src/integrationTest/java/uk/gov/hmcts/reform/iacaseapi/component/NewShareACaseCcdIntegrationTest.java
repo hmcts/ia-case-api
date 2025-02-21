@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
+
 @Slf4j
 class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithCcdAssignmentsStub, WithAcaAssignmentsStub, WithUserDetailsStub, WithReferenceDataStub {
