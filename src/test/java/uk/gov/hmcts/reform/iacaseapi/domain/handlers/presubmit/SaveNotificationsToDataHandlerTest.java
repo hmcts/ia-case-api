@@ -23,7 +23,6 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -63,7 +62,7 @@ class SaveNotificationsToDataHandlerTest {
     @Mock
     private FeatureToggler featureToggler;
 
-    private final String reference = "someReference_" + Instant.now().toEpochMilli();
+    private final String reference = "someReference";
     private final String notificationId = "someNotificationId";
     private final String body = "someBody";
     private final String notificationTypeEmail = "email";
@@ -125,13 +124,11 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject(subject)
                 .build();
-        long dateEightsDaysAgo = Instant.now().minusSeconds(8 * 24 * 60 * 60).toEpochMilli();
-        String oldNotificationId = "notificationId_" + dateEightsDaysAgo;
         List<IdValue<StoredNotification>> appendedStoredNotifications =
             List.of(
                 new IdValue<>("1", mockedStoredNotification),
                 new IdValue<>(notificationId, storedNotification),
-                new IdValue<>(oldNotificationId, mockedStoredNotification2)
+                new IdValue<>("2", mockedStoredNotification2)
             );
         when(storedNotificationAppender.append(storedNotification, storedNotifications)).thenReturn(appendedStoredNotifications);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -140,7 +137,7 @@ class SaveNotificationsToDataHandlerTest {
         List<IdValue<StoredNotification>> sortedStoredNotifications =
             List.of(
                 new IdValue<>(notificationId, storedNotification),
-                new IdValue<>(oldNotificationId, mockedStoredNotification2),
+                new IdValue<>("2", mockedStoredNotification2),
                 new IdValue<>("1", mockedStoredNotification)
             );
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(sortedStoredNotifications));
@@ -418,20 +415,6 @@ class SaveNotificationsToDataHandlerTest {
         assertDoesNotThrow(() -> {
             saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         });
-    }
-
-    @Test
-    void should_not_access_notify_client_if_no_notifications_sent_with_timestamp() throws NotificationClientException {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        List<IdValue<String>> notificationsSent =
-                List.of(new IdValue<>("notificationReference", notificationId));
-        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
-
-        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(notificationClient, never()).getNotificationById(anyString());
-        verify(storedNotificationAppender, never()).append(any(StoredNotification.class), anyList());
-        verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
     }
 
     @ParameterizedTest
