@@ -514,6 +514,8 @@ security:
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+    caseworker-ia-rparobot:
+      - "addCaseNote"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -578,6 +580,10 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 caseIdListJsonLocation: caseIdForRetrigger.json
+
+saveNotificationsData:
+  scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
+  scheduleMaxMinutes: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES:50}
 
 govnotify:
   baseUrl: "https://api.notifications.service.gov.uk"

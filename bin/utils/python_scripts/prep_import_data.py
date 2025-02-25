@@ -6,7 +6,9 @@ from create_jsons_from_event_csv import create_jsons_from_csv
 from redact_info_from_json import redact_values_from_csv
 
 
-def prep_import_data(directory: str = settings.exported_csv_dir, events_to_get_individual_json: list[int] = None, update_id: bool = True, redact_events: bool = True):
+def prep_import_data(
+        directory: str = settings.exported_csv_dir, events_to_get_individual_json: list[int] = None,
+        update_id: bool = False, redact_events: bool = True):
     """
     Function to prep exported CSV data for importing. Redacts and transforms most recent exported files within
     python_scripts directory. To only redact case data CSV run with redact_events=False
@@ -67,6 +69,6 @@ def replace_case_data_id(new_id: str, file_path: str):
     return file_path
 
 
-# prep_import_data(events_to_get_individual_json=range(1, 100))
+prep_import_data(events_to_get_individual_json=range(1, 100))
 
-prep_import_data(redact_events=False)
+# prep_import_data(redact_events=False)
