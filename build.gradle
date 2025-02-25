@@ -27,6 +27,7 @@ plugins {
     id "io.freefair.lombok" version "6.6.3"
 }
 
+
 apply plugin: 'java'
 apply plugin: 'net.serenity-bdd.serenity-gradle-plugin'
 apply plugin: 'project-report'
