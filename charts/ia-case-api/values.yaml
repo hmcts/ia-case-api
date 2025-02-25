@@ -94,6 +94,7 @@ java:
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
 
+
 ia-case-payments-api:
   enabled: false
 ia-case-documents-api:
