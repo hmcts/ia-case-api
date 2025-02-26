@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
-import java.security.SecureRandom;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -27,20 +25,15 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     private final String notificationsApiEndpoint;
     private final String aboutToSubmitPath;
     private final boolean timedEventServiceEnabled;
-    private final int saveNotificationScheduleAtHour;
-    private final int saveNotificationScheduleMaxMinutes;
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     private final FeatureToggler featureToggler;
-    SecureRandom random = new SecureRandom();
 
     public AsylumCaseNotificationApiSender(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
         @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
-        @Value("${saveNotificationsData.scheduleAtHour}") int saveNotificationScheduleAtHour,
-        @Value("${saveNotificationsData.scheduleMaxMinutes}") int saveNotificationScheduleMaxMinutes,
         DateProvider dateProvider,
         Scheduler scheduler,
         FeatureToggler featureToggler
@@ -49,8 +42,6 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         this.notificationsApiEndpoint = notificationsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.timedEventServiceEnabled = timedEventServiceEnabled;
-        this.saveNotificationScheduleAtHour = saveNotificationScheduleAtHour;
-        this.saveNotificationScheduleMaxMinutes = saveNotificationScheduleMaxMinutes;
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
         this.featureToggler = featureToggler;
@@ -73,13 +64,14 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
 
     private void scheduleSaveNotificationToData(Callback<AsylumCase> callback) {
         if (timedEventServiceEnabled) {
-
+            ZonedDateTime scheduledTime = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault())
+                    .plusSeconds(15);
             try {
                 scheduler.schedule(
                         new TimedEvent(
                                 "",
                                 Event.SAVE_NOTIFICATIONS_TO_DATA,
-                                determineScheduleTime(),
+                                scheduledTime,
                                 "IA",
                                 "Asylum",
                                 callback.getCaseDetails().getId()
@@ -90,25 +82,4 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
             }
         }
     }
-
-    private ZonedDateTime determineScheduleTime() {
-        ZonedDateTime now = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault());
-        // Define saveNotificationScheduleAtHour eg:11:00 PM as the base time
-        LocalTime baseTime = LocalTime.of(saveNotificationScheduleAtHour, 0);
-
-        // Randomize minutes and seconds between 0-saveNotificationScheduleMaxMinutes minutes and 0-59 seconds
-        int randomMinutes = random.nextInt(0, saveNotificationScheduleMaxMinutes);
-        int randomSeconds = random.nextInt(0, 60);
-
-        // If notification sent time is before saveNotificationScheduleAtHour
-        if (now.toLocalTime().isBefore(baseTime)) {
-            return now.toLocalDate().atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
-                    .atZone(now.getZone());
-        } else {
-            // If notification sent time is after saveNotificationScheduleAtHour eg: 11 PM, schedule for the next day
-            return now.toLocalDate().plusDays(1).atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
-                    .atZone(now.getZone());
-        }
-    }
-
 }
