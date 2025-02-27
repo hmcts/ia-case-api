@@ -304,10 +304,7 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE,
-                remissionOption == RemissionOption.UNDER_18_GET_SUPPORT
-                        ? "Local Authority Support - Under 18"
-                        : "Local Authority Support - Parent or Guardian");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Local Authority Support");
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_OPTION);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
