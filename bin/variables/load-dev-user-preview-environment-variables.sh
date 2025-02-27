@@ -13,9 +13,9 @@ export SERVICE_AUTH_PROVIDER_API_BASE_URL="http://rpe-service-auth-provider-aat.
 export IDAM_API_BASE_URL="https://idam-api.aat.platform.hmcts.net"
 export IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
 export CCD_IDAM_REDIRECT_URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
-export CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-mike-pr-1.preview.platform.hmcts.net"
-export ROLE_ASSIGNMENT_URL="https://am-role-assignment-ia-case-api-mike-pr-1.preview.platform.hmcts.net"
-export CAMUNDA_BASE_URL="https://camunda-ia-case-api-mike.preview.platform.hmcts.net"
+export CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-$user-pr-1.preview.platform.hmcts.net"
+export ROLE_ASSIGNMENT_URL="https://am-role-assignment-ia-case-api-$user-pr-1.preview.platform.hmcts.net"
+export CAMUNDA_BASE_URL="https://camunda-ia-case-api-$user.preview.platform.hmcts.net"
 
 # ccd-aat
 export CCD_API_GATEWAY_IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name ccd-aat --name ccd-api-gateway-oauth2-client-secret --query value -o tsv)
