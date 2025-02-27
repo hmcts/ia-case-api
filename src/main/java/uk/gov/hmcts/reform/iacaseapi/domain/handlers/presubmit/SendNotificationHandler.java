@@ -80,9 +80,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private List<Event> getEventsToHandle(Callback<AsylumCase> callback) {
         List<Event> eventsToHandle = Lists.newArrayList(
+            Event.SUBMIT_APPEAL,
             Event.START_APPEAL,
             Event.EDIT_APPEAL,
-            Event.SUBMIT_APPEAL,
             Event.SEND_DIRECTION,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
@@ -208,9 +208,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REINSTATE_APPEAL,
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.END_APPEAL,
+            Event.SUBMIT_APPEAL,
             Event.START_APPEAL,
             Event.EDIT_APPEAL,
-            Event.SUBMIT_APPEAL,
             Event.UPDATE_HEARING_ADJUSTMENTS,
             Event.MARK_AS_READY_FOR_UT_TRANSFER,
             Event.REQUEST_CASE_BUILDING,
