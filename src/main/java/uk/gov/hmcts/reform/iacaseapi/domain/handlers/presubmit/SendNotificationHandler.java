@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -33,8 +34,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
-
 @Component
+@Slf4j
 public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final NotificationSender<AsylumCase> notificationSender;
@@ -191,6 +192,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
 
+        log.info("-----------getEventsToHandle {}", eventsToHandle);
+
         return eventsToHandle;
     }
 
@@ -269,6 +272,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
+
+        log.info("-----------getInternalEventsToHandle {}", eventsToHandle);
 
         return eventsToHandle;
     }
