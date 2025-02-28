@@ -1232,7 +1232,6 @@ wa:
 
   camunda-bpm:
     java:
-      image: "hmctsprivatetemp.azurecr.io/camunda/bpm:latest"
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
@@ -1255,7 +1254,6 @@ wa:
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         ALLOWED_JURISDICTIONS: ia
         ALLOWED_CASE_TYPES: asylum
-#        logging.level.root: DEBUG
 
   wa-case-event-handler:
     java:
@@ -1286,7 +1284,6 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
   wa-workflow-api:
     java:
-#      ingressHost: wa-workflow-api-${SERVICE_FQDN}
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
