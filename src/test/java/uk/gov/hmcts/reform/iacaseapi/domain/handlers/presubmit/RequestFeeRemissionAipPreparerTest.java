@@ -276,8 +276,7 @@ class RequestFeeRemissionAipPreparerTest {
     }
 
     @Test
-    void handle_should_thow_exception_if_help_with_fees_option_is_not_present(
-    ) {
+    void handle_should_throw_exception_if_help_with_fees_option_is_not_present() {
         AppealType appealType = AppealType.HU;
         RemissionOption previousRemissionOptionOption = I_WANT_TO_GET_HELP_WITH_FEES;
         RemissionDetails remissionDetails = new RemissionDetails(previousRemissionOptionOption.toString(), WANT_TO_APPLY.toString(), "HWF123");
@@ -308,7 +307,14 @@ class RequestFeeRemissionAipPreparerTest {
         RemissionOption remissionOption
     ) {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.NO_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(remissionOption));
+
+        if (remissionOption ==  I_WANT_TO_GET_HELP_WITH_FEES) {
+            when(asylumCase.read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class))
+                    .thenReturn(Optional.of(HelpWithFeesOption.ALREADY_APPLIED));
+            when(asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class))
+                    .thenReturn(Optional.of("HWF-A1B-23"));
+        }
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipPreparer.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -338,6 +344,7 @@ class RequestFeeRemissionAipPreparerTest {
         verify(asylumCase, times(1)).clear(LATE_LOCAL_AUTHORITY_LETTERS);
 
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE), anyString());
+        verify(asylumCase, times(1)).write(eq(FEE_REMISSION_TYPE), anyString());
     }
 
     private static Stream<Arguments> previousRemissionDecisionTestData() {
