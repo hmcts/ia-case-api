@@ -5,10 +5,10 @@ set -eu
 microservice=${1}
 oneTimePassword=${2}
 
-EVALUTED_SERVICE_AUTH_PROVIDER_API_BASE_URL="${SERVICE_AUTH_PROVIDER_API_BASE_URL:-http://localhost:4502}"
+EVALUATED_SERVICE_AUTH_PROVIDER_API_BASE_URL="${SERVICE_AUTH_PROVIDER_API_BASE_URL:-http://localhost:4502}"
 
 curl -v --insecure --fail --show-error --silent -X POST \
-  ${EVALUTED_SERVICE_AUTH_PROVIDER_API_BASE_URL}/lease \
+  ${EVALUATED_SERVICE_AUTH_PROVIDER_API_BASE_URL}/lease \
   -H "Content-Type: application/json" \
   -d '{
     "microservice": "'${microservice}'",
