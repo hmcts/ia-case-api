@@ -231,11 +231,11 @@ NB2. Use aat env variable for preview environment user creation as it uses aat's
 
 As an alternative for a development environment there is a procedure in place where after running the command below the required services are created in Preview under the developer's name, so these will be exclusively for the named developer use.
 
-While connected to the VPN simply run one of the below commands from your project's (ia-case-api) folder:
+While connected to the VPN run one of the below command from your project's (ia-case-api) folder:
 Note: be sure to have Docker running
 
 ```shell
-npx @hmcts/dev-env@latest && ./bin/setup-devuser-preview-env.sh
+npx @hmcts/dev-env@latest 
 ```
 
 Then to check that the environment is up in preview
@@ -248,10 +248,15 @@ az aks get-credentials --resource-group cft-preview-01-rg --name cft-preview-01-
 kubectl -n ia get pods | grep mike
 ```
 
-The above should list roughly 30 pods, wait until all pods are up correctly looking like
+The above should list roughly 30 pods. Wait until all pods, but specifically "ia-case-api-mike-ccd-definition-store" , are up and running and look like the below
 
 ```shell
-ia-case-api-mike-java-5765ff68d8-zz6df                            1/1     Running
+ia-case-api-mike-ccd-definition-store-55fc7d9695-r945t                   1/1     Running
+```
+once the pods are all up run the below command from the ia-case-api directory
+
+```shell
+./bin/setup-devuser-preview-env.sh
 ```
 
 You should now be able to connect via Mirrord. First install the Intellij plugin (older versions of Intellij seem to not work with the latest plugin which is required, at time of writing Intellij 2024.3.2.1 plugin 3.66.0)
