@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
+@Getter
 public enum UserRole {
 
     CASE_OFFICER("caseworker-ia-caseofficer"),
