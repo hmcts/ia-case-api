@@ -90,3 +90,7 @@ dependencies:
     version: 1.0.2
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: postgresql.enabled
+  - name: ia-hearings-api
+    version: 0.0.19
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-hearings-api.enabled
