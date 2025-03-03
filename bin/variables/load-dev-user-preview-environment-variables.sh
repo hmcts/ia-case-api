@@ -57,6 +57,3 @@ export TEST_JUDGE_X_PASSWORD=$(az keyvault secret show --vault-name ia-aat --nam
 # rpx-aat
 export IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name rpx-aat --name mc-idam-client-secret --query value -o tsv)
 
-#civil s2s-aat
-export S2S_SECRET=$(az keyvault secret show --vault-name civil-aat --name microservicekey-civil-service --query value -o tsv)
-export HEALTH_WORK_ALLOCATION_TASK_API=TBD
