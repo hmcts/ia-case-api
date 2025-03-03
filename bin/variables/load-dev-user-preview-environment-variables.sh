@@ -16,6 +16,9 @@ export CCD_IDAM_REDIRECT_URL="https://ccd-case-management-web-aat.service.core-c
 export CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-ia-case-api-$user-pr-1.preview.platform.hmcts.net"
 export ROLE_ASSIGNMENT_URL="https://am-role-assignment-ia-case-api-$user-pr-1.preview.platform.hmcts.net"
 export CAMUNDA_BASE_URL="https://camunda-ia-case-api-$user.preview.platform.hmcts.net"
+export SERVICES_WORK_ALLOCATION_TASK_API="https://wa-task-management-api-ia-case-api-$user-pr-1.preview.platform.hmcts.net"
+export SERVICES_WA_WORKFLOW_API_URL="https://wa-workflow-api-ia-case-api-$user-pr-1.preview.platform.hmcts.net"
+export WA_SUPPORTED_JURISDICTIONS="IA"
 
 # ccd-aat
 export CCD_API_GATEWAY_IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name ccd-aat --name ccd-api-gateway-oauth2-client-secret --query value -o tsv)
