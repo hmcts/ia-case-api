@@ -56,4 +56,3 @@ export TEST_JUDGE_X_PASSWORD=$(az keyvault secret show --vault-name ia-aat --nam
 
 # rpx-aat
 export IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name rpx-aat --name mc-idam-client-secret --query value -o tsv)
-
