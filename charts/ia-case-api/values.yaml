@@ -94,6 +94,7 @@ java:
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
 
+
 ia-case-payments-api:
   enabled: false
 ia-case-documents-api:
@@ -131,4 +132,6 @@ aac-manage-case-assignment:
 am-org-role-mapping-service:
   enabled: false
 redis:
+  enabled: false
+ia-hearings-api:
   enabled: false
