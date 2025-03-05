@@ -35,6 +35,7 @@ java:
     FEES_REGISTER_API_URL: "http://fees-register-api-aat.service.core-compute-aat.internal"
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    IA_HEARINGS_API_URL: "https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net"
   keyVaults:
     ia:
       resourceGroup: ia
