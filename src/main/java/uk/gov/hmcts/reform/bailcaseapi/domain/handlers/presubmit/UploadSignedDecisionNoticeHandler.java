@@ -28,20 +28,20 @@ public class UploadSignedDecisionNoticeHandler implements PreSubmitCallbackHandl
     private final DateProvider dateProvider;
 
     public UploadSignedDecisionNoticeHandler(
-        DateProvider dateProvider
+            DateProvider dateProvider
     ) {
         this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<BailCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<BailCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.UPLOAD_SIGNED_DECISION_NOTICE;
+                && callback.getEvent() == Event.UPLOAD_SIGNED_DECISION_NOTICE;
     }
 
     @Override
@@ -50,29 +50,29 @@ public class UploadSignedDecisionNoticeHandler implements PreSubmitCallbackHandl
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<BailCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<BailCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         final BailCase bailCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
         // For cases prior to RIA-6280, the unsigned document was saved in Tribunal Documents.
         // For such cases, when we do upload signed decision, we still want to check if
         // document with tag BAIL_DECISION_UNSIGNED is present, if so, remove it from the Tribunal Collection.
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingTribunalDocuments =
-            bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
+                bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
 
         final List<IdValue<DocumentWithMetadata>> existingTribunalDocuments =
-            maybeExistingTribunalDocuments.orElse(Collections.emptyList());
+                maybeExistingTribunalDocuments.orElse(Collections.emptyList());
 
         List<IdValue<DocumentWithMetadata>> allTribunalDocuments = new ArrayList<>(existingTribunalDocuments);
         allTribunalDocuments
-            .removeIf(document -> document.getValue().getTag().equals(DocumentTag.BAIL_DECISION_UNSIGNED));
+                .removeIf(document -> document.getValue().getTag().equals(DocumentTag.BAIL_DECISION_UNSIGNED));
         bailCase.write(TRIBUNAL_DOCUMENTS_WITH_METADATA, allTribunalDocuments);
 
         // By this point, we have already cleared the fields UNSIGNED_DECISION_DOCUMENTS_WITH_METADATA

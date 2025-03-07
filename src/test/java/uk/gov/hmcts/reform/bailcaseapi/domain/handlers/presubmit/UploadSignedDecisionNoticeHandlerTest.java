@@ -9,15 +9,12 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -56,21 +53,13 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Mock
     private DocumentWithMetadata tribunalDocument2;
 
-    @Captor
-    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingDecisionNoticeDocumentsCaptor;
-
-    private List<IdValue<DocumentWithMetadata>> existingTribunalDocumentsWithMetadata = new ArrayList<>();
-
     private UploadSignedDecisionNoticeHandler uploadSignedDecisionNoticeHandler;
 
     private final LocalDateTime nowWithTime = LocalDateTime.now();
 
     @BeforeEach
     public void setUp() {
-        uploadSignedDecisionNoticeHandler =
-            new UploadSignedDecisionNoticeHandler(
-                dateProvider
-            );
+        uploadSignedDecisionNoticeHandler = new UploadSignedDecisionNoticeHandler(dateProvider);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_SIGNED_DECISION_NOTICE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
@@ -83,23 +72,23 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Test
     void should_add_outcome_date_state_and_remove_unsigned_doc_from_tribunal() {
         List<IdValue<DocumentWithMetadata>> tribunalDocumentsWithUnsignedDoc = List.of(
-            new IdValue<>("1", tribunalDocument1),
-            new IdValue<>("2", tribunalDocument2),
-            new IdValue<>("3", unsignedDecisionNoticeMetadata1));
+                new IdValue<>("1", tribunalDocument1),
+                new IdValue<>("2", tribunalDocument2),
+                new IdValue<>("3", unsignedDecisionNoticeMetadata1));
         when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(tribunalDocumentsWithUnsignedDoc));
         final List<IdValue<DocumentWithMetadata>> tribunalDocumentsWithoutUnSignedDoc = List.of(
-            new IdValue<>("1", tribunalDocument1),
-            new IdValue<>("2", tribunalDocument2));
+                new IdValue<>("1", tribunalDocument1),
+                new IdValue<>("2", tribunalDocument2));
 
         PreSubmitCallbackResponse<BailCase> callbackResponse =
-            uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(bailCase, callbackResponse.getData());
         verify(bailCase, times(1)).read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
         //Verify - No Document is left in the Tribunal Documents
         verify(bailCase, times(1))
-            .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocumentsWithoutUnSignedDoc);
+                .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocumentsWithoutUnSignedDoc);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.NO);
@@ -109,19 +98,19 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Test
     void should_handle_when_tribunal_collection_not_contains_unsigned_document() {
         List<IdValue<DocumentWithMetadata>> tribunalDocuments = List.of(
-            new IdValue<>("1", tribunalDocument1),
-            new IdValue<>("2", tribunalDocument2));
+                new IdValue<>("1", tribunalDocument1),
+                new IdValue<>("2", tribunalDocument2));
         when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(tribunalDocuments));
 
         PreSubmitCallbackResponse<BailCase> callbackResponse =
-            uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(bailCase, callbackResponse.getData());
         verify(bailCase, times(1)).read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
         //Verify - Tribunal Documents are same, as there is no Unsigned Document
         verify(bailCase, times(1))
-            .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
+                .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.NO);
@@ -133,14 +122,14 @@ public class UploadSignedDecisionNoticeHandlerTest {
         when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(tribunalDocuments));
 
         PreSubmitCallbackResponse<BailCase> callbackResponse =
-            uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(bailCase, callbackResponse.getData());
         verify(bailCase, times(1)).read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
         //Verify - Tribunal Documents are same, as there is no document
         verify(bailCase, times(1))
-            .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
+                .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.NO);
@@ -149,7 +138,7 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Test
     void should_get_dispatch_priority_as_latest() {
         DispatchPriority dispatchPriority =
-            uploadSignedDecisionNoticeHandler.getDispatchPriority();
+                uploadSignedDecisionNoticeHandler.getDispatchPriority();
 
         assertNotNull(dispatchPriority);
         assertEquals(DispatchPriority.LATEST, dispatchPriority);
@@ -158,29 +147,29 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(
-            () -> uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                () -> uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadSignedDecisionNoticeHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> uploadSignedDecisionNoticeHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                () -> uploadSignedDecisionNoticeHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> uploadSignedDecisionNoticeHandler.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 }

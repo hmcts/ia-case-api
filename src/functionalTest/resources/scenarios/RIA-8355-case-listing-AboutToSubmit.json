@@ -13,7 +13,8 @@
           "listingEvent": "initialListing",
           "listingLocation": "newcastleCfctc",
           "listingHearingLength": "90",
-          "listingHearingDate": "{$TODAY+5}T10:00:00.000"
+          "listingHearingDate": "{$TODAY+5}T10:00:00.000",
+          "currentHearingId": "12345"
         }
       }
     }
@@ -29,7 +30,14 @@
         "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
         "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
         "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
-        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted"
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "currentHearingId": "12345",
+        "hearingIdList": [
+          {
+            "id": "1",
+            "value": "12345"
+          }
+        ]
       }
     }
   }

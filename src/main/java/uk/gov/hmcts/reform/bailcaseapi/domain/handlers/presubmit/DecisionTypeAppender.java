@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.HearingDecisionProcessor;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +29,7 @@ import java.util.Optional;
 public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> {
 
     private final Appender<PreviousDecisionDetails> previousDecisionDetailsAppender;
+    private final HearingDecisionProcessor hearingDecisionProcessor;
     private final DateProvider dateProvider;
 
     private static final String REFUSED = "refused";
@@ -37,9 +38,11 @@ public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> 
 
     public DecisionTypeAppender(
         Appender<PreviousDecisionDetails> previousDecisionDetailsAppender,
+        HearingDecisionProcessor hearingDecisionProcessor,
         DateProvider dateProvider
     ) {
         this.previousDecisionDetailsAppender = previousDecisionDetailsAppender;
+        this.hearingDecisionProcessor = hearingDecisionProcessor;
         this.dateProvider = dateProvider;
     }
 
@@ -140,6 +143,8 @@ public class DecisionTypeAppender implements PreSubmitCallbackHandler<BailCase> 
                 bailCase.clear(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT);
             }
         }
+
+        hearingDecisionProcessor.processHearingDecision(bailCase);
 
         return new PreSubmitCallbackResponse<>(bailCase);
     }

@@ -59,30 +59,32 @@ class MakeNewApplicationSubmitHandlerTest {
     }
 
     @Test
-    void should_handle_make_new_application_about_to_submit() {
-
+    void should_handle_make_new_application_about_to_submit_and_do_not_preserve_hearing_data() {
+        // given
         when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
 
+        // when
         PreSubmitCallbackResponse<BailCase> response =
             makeNewApplicationSubmitHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
 
+        // then
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(bailCase);
         assertThat(response.getErrors()).isEmpty();
 
-        verify(makeNewApplicationService, times(1)).clearFieldsAboutToSubmit(bailCase);
-        verify(makeNewApplicationService, times(1)).appendPriorApplication(bailCase, bailCaseBefore);
+        verify(makeNewApplicationService).clearFieldsAboutToSubmit(bailCase);
+        verify(makeNewApplicationService).appendPriorApplication(bailCase, bailCaseBefore);
         when(featureToggleService.imaEnabled()).thenReturn(false);
+        verify(bailCase).write(IS_IMA_ENABLED, YesOrNo.NO);
     }
 
     @Test
     void it_can_handle_callback() {
-
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
@@ -100,12 +102,14 @@ class MakeNewApplicationSubmitHandlerTest {
 
     @Test
     void should_throw_when_case_details_before_is_not_present() {
-
+        // given
         when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.empty());
 
+        // when
+        // then
         assertThatThrownBy(() ->
            makeNewApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .hasMessage("Case details before missing")
@@ -115,6 +119,7 @@ class MakeNewApplicationSubmitHandlerTest {
     @ParameterizedTest
     @CsvSource({"true", "false"})
     void should_set_ima_field(boolean featureFlag) {
+        // given
         when(featureToggleService.imaEnabled()).thenReturn(featureFlag);
         when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -122,13 +127,15 @@ class MakeNewApplicationSubmitHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
 
+        // when
         makeNewApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        // then
         verify(bailCase, times(1)).write(IS_IMA_ENABLED, featureFlag ? YesOrNo.YES : YesOrNo.NO);
     }
 
     @Test
     void should_not_allow_null_arguments() {
-
         assertThatThrownBy(() -> makeNewApplicationSubmitHandler
             .canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -152,12 +159,15 @@ class MakeNewApplicationSubmitHandlerTest {
 
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
-
+        // given
         assertThatThrownBy(() -> makeNewApplicationSubmitHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
+
+        // when
+        // then
         assertThatThrownBy(() -> makeNewApplicationSubmitHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isExactlyInstanceOf(NullPointerException.class);
 

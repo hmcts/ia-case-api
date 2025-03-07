@@ -24,39 +24,39 @@ public class MoveApplicationToDecidedHandler implements PreSubmitCallbackHandler
     private final DateProvider dateProvider;
 
     public MoveApplicationToDecidedHandler(
-        DateProvider dateProvider
+            DateProvider dateProvider
     ) {
         this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<BailCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<BailCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.MOVE_APPLICATION_TO_DECIDED;
+                && callback.getEvent() == Event.MOVE_APPLICATION_TO_DECIDED;
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<BailCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<BailCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         final BailCase bailCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
         PreSubmitCallbackResponse<BailCase> response = new PreSubmitCallbackResponse<>(bailCase);
 
         Optional<Document> maybeUploadSignedDecision =
-            bailCase.read(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class);
+                bailCase.read(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class);
 
         if (maybeUploadSignedDecision.isEmpty()) {
             response.addError("You must upload a signed decision notice before moving the application to decided.");

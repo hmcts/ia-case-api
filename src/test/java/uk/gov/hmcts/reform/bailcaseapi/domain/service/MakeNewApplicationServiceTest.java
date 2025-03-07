@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_USER;
@@ -15,8 +17,8 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Arrays;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +38,9 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.PriorApplication;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +64,7 @@ class MakeNewApplicationServiceTest {
     private MakeNewApplicationService makeNewApplicationService;
 
     @Mock
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Captor
     private ArgumentCaptor<List<IdValue<PriorApplication>>> existingPriorApplicationsCaptor;
@@ -73,61 +78,76 @@ class MakeNewApplicationServiceTest {
 
     @Test
     void should_append_prior_application_to_empty_list() {
-
+        // given
         when(priorApplicationAppender.append(Mockito.any(PriorApplication.class), Mockito.anyList()))
             .thenReturn(allAppendedPriorApplications);
 
+        // when
         makeNewApplicationService.appendPriorApplication(bailCase, bailCaseBefore);
 
-        Mockito.verify(priorApplicationAppender, Mockito.times(1)).append(
+        // then
+        verify(priorApplicationAppender, Mockito.times(1)).append(
             newPriorApplicationCaptor.capture(),
             existingPriorApplicationsCaptor.capture());
 
-        Mockito.verify(bailCase, Mockito.times(1)).write(PRIOR_APPLICATIONS, allAppendedPriorApplications);
+        verify(bailCase, Mockito.times(1)).write(PRIOR_APPLICATIONS, allAppendedPriorApplications);
     }
 
 
     @Test
     void should_remove_fields_not_in_list_about_to_start() {
+        // given
         BailCase bailCase = new BailCase();
         bailCase.write(CURRENT_USER, "current_user");
         bailCase.write(OUTCOME_STATE, "applicationEnded");
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
+        // when
         makeNewApplicationService.clearFieldsAboutToStart(bailCase);
+
+        // then
         assertThat(bailCase).isEmpty();
     }
 
     @Test
     void should_remove_fields_not_in_list_about_to_submit() {
+        // given
         BailCase bailCase = new BailCase();
         bailCase.write(CURRENT_USER, "current_user");
         bailCase.write(OUTCOME_STATE, "applicationEnded");
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
+        // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
+
+        // then
         assertThat(bailCase).isEmpty();
     }
 
     @Test
     void should_remove_if_value_is_null() {
+        // given
         BailCase bailCase = new BailCase();
         bailCase.write(CURRENT_USER, null);
         bailCase.write(OUTCOME_STATE, null);
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
+        // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
+
+        // then
         assertThat(bailCase).isEmpty();
     }
 
     @ParameterizedTest
     @EnumSource(value = UserRoleLabel.class, names = {"LEGAL_REPRESENTATIVE", "HOME_OFFICE_BAIL"})
     void should_clear_role_dependent_field(UserRoleLabel userRoleLabel) {
+        // given
         List<IdValue<DocumentWithDescription>> b1DocumentList =
-            Arrays.asList(
+            singletonList(
                 new IdValue<>("1", b1Document)
             );
 
@@ -135,14 +155,18 @@ class MakeNewApplicationServiceTest {
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
 
+        // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
-        Mockito.verify(bailCase, Mockito.times(1)).remove(UPLOAD_B1_FORM_DOCS);
+
+        // then
+        verify(bailCase, Mockito.times(1)).remove(UPLOAD_B1_FORM_DOCS);
     }
 
     @Test
     void should_not_clear_role_dependent_field_if_admin() {
+        // given
         List<IdValue<DocumentWithDescription>> b1DocumentList =
-            Arrays.asList(
+            asList(
                 new IdValue<>("1", b1Document)
             );
 
@@ -150,14 +174,17 @@ class MakeNewApplicationServiceTest {
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
+        // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
-        Mockito.verify(bailCase, Mockito.times(0)).clear(UPLOAD_B1_FORM_DOCS);
+
+        // then
+        verify(bailCase, Mockito.times(0)).clear(UPLOAD_B1_FORM_DOCS);
     }
 
     @Test
     void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
 
-        Mockito.doThrow(Mockito.mock(JsonProcessingException.class))
+        doThrow(Mockito.mock(JsonProcessingException.class))
             .when(mapper)
             .writeValueAsString(bailCaseBefore);
 
@@ -168,11 +195,16 @@ class MakeNewApplicationServiceTest {
 
     @Test
     void should_convert_string_to_bail_case() throws JsonProcessingException {
+        // given
         String caseDataJson = "{\"endApplicationOutcome\":\"Bail dismissed without a hearing\","
             + "\"applicantGivenNames\":\"John\",\"applicantFamilyName\":\"Smith\","
             + "\"outcomeState\":\"applicationEnded\",\"endApplicationDate\":\"2022-06-20\"}";
         when(mapper.readValue(caseDataJson, BailCase.class)).thenReturn(bailCase);
+
+        // then
         BailCase bailCase = makeNewApplicationService.getBailCaseFromString(caseDataJson);
+
+        // then
         assertNotNull(bailCase);
     }
 
@@ -186,31 +218,46 @@ class MakeNewApplicationServiceTest {
 
     @Test
     void should_keep_case_notes_about_to_start() {
+        // given
         BailCase bailCase = new BailCase();
         bailCase.write(CASE_NOTES, "case note");
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        // when
         makeNewApplicationService.clearFieldsAboutToStart(bailCase);
+
+        // then
         assertTrue(bailCase.containsKey(CASE_NOTES.value()));
     }
 
     @Test
     void should_keep_case_notes_about_to_submit() {
+        // given
         BailCase bailCase = new BailCase();
         bailCase.write(CASE_NOTES, "case note");
 
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
+
+        // then
         assertTrue(bailCase.containsKey(CASE_NOTES.value()));
     }
 
     @Test
     void should_keep_hearing_details_about_to_submit() {
+        // given
         BailCase bailCase = new BailCase();
         bailCase.write(LISTING_LOCATION, ListingHearingCentre.BIRMINGHAM);
         bailCase.write(LIST_CASE_HEARING_DATE, "2024-04-04T08:00:00.000");
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
+
+        // then
         assertTrue(bailCase.containsKey(LISTING_LOCATION.value()));
         assertTrue(bailCase.containsKey(LIST_CASE_HEARING_DATE.value()));
     }

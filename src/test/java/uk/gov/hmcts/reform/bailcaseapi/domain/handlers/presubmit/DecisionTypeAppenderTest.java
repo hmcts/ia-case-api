@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.HearingDecisionProcessor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +58,8 @@ class DecisionTypeAppenderTest {
     @Mock
     private DecisionTypeAppender decisionTypeAppender;
     @Mock
+    private HearingDecisionProcessor hearingDecisionProcessor;
+    @Mock
     private DateProvider dateProvider;
     @Mock
     private Appender<PreviousDecisionDetails> previousDecisionDetailsAppender;
@@ -74,7 +77,11 @@ class DecisionTypeAppenderTest {
 
     @BeforeEach
     public void setUp() {
-        decisionTypeAppender = new DecisionTypeAppender(previousDecisionDetailsAppender, dateProvider);
+        decisionTypeAppender = new DecisionTypeAppender(
+            previousDecisionDetailsAppender,
+            hearingDecisionProcessor,
+            dateProvider
+        );
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_THE_DECISION);
@@ -103,6 +110,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -140,6 +148,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -165,6 +174,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -191,6 +201,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -217,6 +228,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -242,6 +254,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -268,6 +281,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -291,6 +305,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -314,6 +329,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test
@@ -337,6 +353,7 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
         verify(bailCase, times(0)).read(PREVIOUS_DECISION_DETAILS);
+        verify(hearingDecisionProcessor).processHearingDecision(bailCase);
     }
 
     @Test

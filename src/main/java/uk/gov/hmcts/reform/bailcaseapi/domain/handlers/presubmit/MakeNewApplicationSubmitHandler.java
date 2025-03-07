@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_IMA_ENABLED;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -42,9 +43,11 @@ public class MakeNewApplicationSubmitHandler implements PreSubmitCallbackStateHa
     }
 
     @Override
-    public PreSubmitCallbackResponse<BailCase> handle(PreSubmitCallbackStage callbackStage, Callback<BailCase> callback,
-                                                      PreSubmitCallbackResponse<BailCase> callbackResponse) {
-
+    public PreSubmitCallbackResponse<BailCase> handle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<BailCase> callback,
+        PreSubmitCallbackResponse<BailCase> callbackResponse
+    ) {
         requireNonNull(callbackResponse, "callback must not be null");
 
         if (!canHandle(callbackStage, callback)) {

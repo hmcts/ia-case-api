@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
-
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent.INITIAL_LISTING;
@@ -65,6 +65,7 @@ class CaseListingHandlerTest {
     @Mock private DueDateService dueDateService;
     @Mock private Appender<PreviousListingDetails> previousListingDetailsAppender;
     @Mock private LocationRefDataService locationRefDataService;
+    @Mock private HearingIdListProcessor hearingIdListProcessor;
 
     @Captor
     private ArgumentCaptor<BailCaseFieldDefinition> bailExtractorCaptor;
@@ -78,7 +79,12 @@ class CaseListingHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        caseListingHandler = new CaseListingHandler(previousListingDetailsAppender, dueDateService, locationRefDataService);
+        caseListingHandler = new CaseListingHandler(
+            previousListingDetailsAppender,
+            dueDateService,
+            locationRefDataService,
+            hearingIdListProcessor
+        );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CASE_LISTING);
@@ -95,18 +101,24 @@ class CaseListingHandlerTest {
                                                              LocalDate.now()
         )).thenReturn(zonedDueDateTime);
 
-        newCastle = new CourtVenue("Newcastle Civil & Family Courts and Tribunals Centre",
-                                   "Newcastle Civil And Family Courts And Tribunals Centre",
-                                   "366796",
-                                   "Open",
-                                   "Y",
-                                   "Y",
-                                   "Barras Bridge, Newcastle-Upon-Tyne",
-                                   "NE1 8QF");
+        newCastle = new CourtVenue(
+            "Newcastle Civil & Family Courts and Tribunals Centre",
+            "Newcastle Civil And Family Courts And Tribunals Centre",
+            "366796",
+            "Open",
+            "Y",
+            "Y",
+            "Barras Bridge, Newcastle-Upon-Tyne",
+            "NE1 8QF"
+        );
     }
 
     @Test
     void should_set_case_listing_data() {
+
+        when(bailCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
+        when(bailCaseBefore.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
+
         PreSubmitCallbackResponse<BailCase> response = caseListingHandler.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback
@@ -127,6 +139,7 @@ class CaseListingHandlerTest {
         verify(bailCase, times(1)).write(SEND_DIRECTION_LIST, "Home Office");
         verify(bailCase, times(1)).write(DATE_OF_COMPLIANCE,
                                          zonedDueDateTime.toLocalDate().toString());
+        verify(hearingIdListProcessor).processHearingId(bailCase);
     }
 
     @Test
@@ -146,11 +159,13 @@ class CaseListingHandlerTest {
 
         verify(bailCase, times(0)).write(UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE, YesOrNo.YES);
         verify(bailCase, times(0)).write(SEND_DIRECTION_LIST, "Home Office");
+        verifyNoInteractions(hearingIdListProcessor);
     }
 
     @Test
     void should_set_ccd_location_id_and_listing_location_detail_based_on_location_ref_data() {
-        when(bailCase.read(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class)).thenReturn(Optional.of(new DynamicList(
             new Value("366796", "Newcastle"),
             new DynamicList(
@@ -160,6 +175,7 @@ class CaseListingHandlerTest {
                 .getListItems()
         )));
         when(locationRefDataService.getCourtVenuesByEpimmsId("366796")).thenReturn(Optional.of(newCastle));
+        when(bailCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
 
         PreSubmitCallbackResponse<BailCase> response = caseListingHandler.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
@@ -170,6 +186,7 @@ class CaseListingHandlerTest {
         assertEquals(bailCase, response.getData());
         verify(bailCase, times(1)).write(LISTING_LOCATION, NEWCASTLE);
         verify(bailCase, times(1)).write(REF_DATA_LISTING_LOCATION_DETAIL, newCastle);
+        verify(hearingIdListProcessor).processHearingId(bailCase);
     }
 
     @Test
@@ -180,7 +197,6 @@ class CaseListingHandlerTest {
             () -> caseListingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("listingEvent is not present")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
-
     }
 
     @Test
@@ -198,7 +214,6 @@ class CaseListingHandlerTest {
 
     @Test
     void it_can_handle_callback() {
-
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
@@ -253,11 +268,16 @@ class CaseListingHandlerTest {
         when(bailCase.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.RELISTING));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
-        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
-        when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class)).thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
+        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class))
+            .thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
+        when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class))
+            .thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
         when(bailCaseBefore.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(caseListHearingDate));
         when(bailCaseBefore.read(LISTING_HEARING_DURATION, String.class)).thenReturn(Optional.of("60"));
-        PreSubmitCallbackResponse<BailCase> response = caseListingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        when(bailCaseBefore.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12346"));
+        when(bailCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
+        PreSubmitCallbackResponse<BailCase> response =
+                caseListingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(bailCase, response.getData());
@@ -267,18 +287,24 @@ class CaseListingHandlerTest {
         verify(bailCaseBefore, times(1)).read(LISTING_HEARING_DURATION, String.class);
         verify(bailCase, times(1)).read(PREVIOUS_LISTING_DETAILS);
         final PreviousListingDetails newPreviousListingDetails =
-            new PreviousListingDetails(ListingEvent.INITIAL_LISTING,
-                                       ListingHearingCentre.BIRMINGHAM,
-                                       caseListHearingDate,
-                                       "60");
-        verify(previousListingDetailsAppender, times(1)).append(newPreviousListingDetails, emptyList());
+            new PreviousListingDetails(
+                ListingEvent.INITIAL_LISTING,
+                ListingHearingCentre.BIRMINGHAM,
+                caseListHearingDate,
+                "60"
+            );
+        verify(previousListingDetailsAppender, times(1))
+            .append(newPreviousListingDetails, emptyList());
         verify(bailCase, times(1)).write(eq(PREVIOUS_LISTING_DETAILS), any(List.class));
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.YES);
+        verify(hearingIdListProcessor).processPreviousHearingId(bailCaseBefore, bailCase);
     }
 
     @Test
     void should_handle_relisting_with_previous_hearing_details_list() {
         when(bailCase.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.RELISTING));
+        when(bailCase.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
+        when(bailCaseBefore.read(CURRENT_HEARING_ID, String.class)).thenReturn(Optional.of("12345"));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
         when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.RELISTING));
@@ -287,15 +313,18 @@ class CaseListingHandlerTest {
         when(bailCaseBefore.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(caseListHearingDate));
         when(bailCaseBefore.read(LISTING_HEARING_DURATION, String.class)).thenReturn(Optional.of("100"));
         List<PreviousListingDetails> storedPrevListingDetails =
-            List.of(new PreviousListingDetails(ListingEvent.INITIAL_LISTING,
-                                               ListingHearingCentre.BIRMINGHAM,
-                                               caseListHearingDate,
-                                               "60"));
+            List.of(new PreviousListingDetails(
+                ListingEvent.INITIAL_LISTING,
+                ListingHearingCentre.BIRMINGHAM,
+                caseListHearingDate,
+                "60"
+            ));
         List<IdValue<PreviousListingDetails>> idValueStoredPrevListingDetails = new ArrayList<>();
         idValueStoredPrevListingDetails.add(new IdValue<>("1", storedPrevListingDetails.get(0)));
         when(bailCase.read(PREVIOUS_LISTING_DETAILS)).thenReturn(Optional.of(idValueStoredPrevListingDetails));
 
-        PreSubmitCallbackResponse<BailCase> response = caseListingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<BailCase> response =
+                caseListingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(bailCase, response.getData());
@@ -305,14 +334,17 @@ class CaseListingHandlerTest {
         verify(bailCaseBefore, times(1)).read(LISTING_HEARING_DURATION, String.class);
         verify(bailCase, times(1)).read(PREVIOUS_LISTING_DETAILS);
         final PreviousListingDetails newPreviousListingDetails =
-            new PreviousListingDetails(ListingEvent.RELISTING,
-                                       ListingHearingCentre.BELFAST,
-                                       caseListHearingDate,
-                                       "100");
+            new PreviousListingDetails(
+                ListingEvent.RELISTING,
+                ListingHearingCentre.BELFAST,
+                caseListHearingDate,
+                "100"
+            );
         verify(previousListingDetailsAppender, times(1)).append(newPreviousListingDetails,
                                                                 idValueStoredPrevListingDetails);
         verify(bailCase, times(1)).write(eq(PREVIOUS_LISTING_DETAILS), any(List.class));
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.YES);
+        verify(hearingIdListProcessor).processPreviousHearingId(bailCaseBefore, bailCase);
     }
 
     @Test
@@ -334,6 +366,7 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
+        verifyNoInteractions(hearingIdListProcessor);
     }
 
     @Test
@@ -341,7 +374,8 @@ class CaseListingHandlerTest {
         when(bailCase.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.RELISTING));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
-        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
+        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class))
+            .thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
         when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<BailCase> response =
@@ -356,6 +390,7 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
+        verifyNoInteractions(hearingIdListProcessor);
     }
 
     @Test
@@ -363,8 +398,10 @@ class CaseListingHandlerTest {
         when(bailCase.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.RELISTING));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
-        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
-        when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class)).thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
+        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class))
+            .thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
+        when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class))
+            .thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
         when(bailCaseBefore.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<BailCase> response =
@@ -379,6 +416,7 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
+        verifyNoInteractions(hearingIdListProcessor);
     }
 
     @Test
@@ -386,8 +424,10 @@ class CaseListingHandlerTest {
         when(bailCase.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.RELISTING));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(bailCaseBefore);
-        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class)).thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
-        when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class)).thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
+        when(bailCaseBefore.read(LISTING_EVENT, ListingEvent.class))
+            .thenReturn(Optional.of(ListingEvent.INITIAL_LISTING));
+        when(bailCaseBefore.read(LISTING_LOCATION, ListingHearingCentre.class))
+            .thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
         when(bailCaseBefore.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(caseListHearingDate));
         when(bailCaseBefore.read(LISTING_HEARING_DURATION, String.class)).thenReturn(Optional.empty());
 
@@ -403,5 +443,6 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
+        verifyNoInteractions(hearingIdListProcessor);
     }
 }

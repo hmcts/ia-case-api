@@ -6,12 +6,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.HearingDecision;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.PriorApplication;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
@@ -19,21 +19,17 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
 public class MakeNewApplicationService {
-
-    @Autowired
-    private Appender<PriorApplication> appender;
-
-    @Autowired
-    private UserDetails userDetails;
-
-    @Autowired
-    private UserDetailsHelper userDetailsHelper;
-
+    private final Appender<PriorApplication> appender;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
     private final ObjectMapper mapper;
 
-    public MakeNewApplicationService(Appender<PriorApplication> appender,
-                                     UserDetails userDetails, UserDetailsHelper userDetailsHelper,
-                                     ObjectMapper mapper) {
+    public MakeNewApplicationService(
+        Appender<PriorApplication> appender,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper,
+        ObjectMapper mapper
+    ) {
         this.appender = appender;
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
@@ -41,20 +37,16 @@ public class MakeNewApplicationService {
     }
 
     public void appendPriorApplication(BailCase bailCase, BailCase bailCaseBefore) {
-
         Optional<List<IdValue<PriorApplication>>> maybeExistingPriorApplication =
             bailCaseBefore.read(BailCaseFieldDefinition.PRIOR_APPLICATIONS);
 
         String nextAppId = String.valueOf(maybeExistingPriorApplication.orElse(Collections.emptyList()).size() + 1);
-
-
 
         List<IdValue<PriorApplication>> allPriorApplications = appender.append(
             buildNewPriorApplication(nextAppId, bailCaseBefore),
             maybeExistingPriorApplication.orElse(Collections.emptyList()));
 
         bailCase.write(BailCaseFieldDefinition.PRIOR_APPLICATIONS, allPriorApplications);
-
     }
 
     private void clearUnrelatedFields(BailCase bailCase, List<String> listOfValidDefinitions) {
@@ -117,12 +109,14 @@ public class MakeNewApplicationService {
         if (caseDataJson == null || caseDataJson.isEmpty()) {
             throw new IllegalArgumentException("CaseData (json) is missing");
         }
-        BailCase bailCase = new BailCase();
+
+        BailCase bailCase;
         try {
             bailCase = mapper.readValue(caseDataJson, BailCase.class);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Could not convert data", e);
         }
+
         return bailCase;
     }
 
@@ -141,7 +135,8 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.APPLICANT_PRISON_DETAILS.value(),
         BailCaseFieldDefinition.APPLICANT_ARRIVAL_IN_UK.value(),
         BailCaseFieldDefinition.CASE_NOTES.value(),
-        BailCaseFieldDefinition.IS_IMA_ENABLED.value());
+        BailCaseFieldDefinition.IS_IMA_ENABLED.value()
+    );
 
     private static final List<String> VALID_ABOUT_TO_SUBMIT_MAKE_NEW_APPLICATION_FIELDS = List.of(
         BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL.value(),
@@ -302,5 +297,6 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY.value(),
         BailCaseFieldDefinition.LISTING_LOCATION.value(),
         BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION.value(),
-        BailCaseFieldDefinition.LIST_CASE_HEARING_DATE.value());
+        BailCaseFieldDefinition.LIST_CASE_HEARING_DATE.value()
+    );
 }

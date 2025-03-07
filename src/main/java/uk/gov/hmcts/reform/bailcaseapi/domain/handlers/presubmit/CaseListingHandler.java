@@ -39,15 +39,18 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
     private final Appender<PreviousListingDetails> previousListingDetailsAppender;
     private final DueDateService dueDateService;
     private final LocationRefDataService locationRefDataService;
+    private final HearingIdListProcessor hearingIdListProcessor;
 
     public CaseListingHandler(
         Appender<PreviousListingDetails> previousListingDetailsAppender,
         DueDateService dueDateService,
-        LocationRefDataService locationRefDataService
+        LocationRefDataService locationRefDataService,
+        HearingIdListProcessor hearingIdListProcessor
     ) {
         this.dueDateService = dueDateService;
         this.previousListingDetailsAppender = previousListingDetailsAppender;
         this.locationRefDataService = locationRefDataService;
+        this.hearingIdListProcessor = hearingIdListProcessor;
     }
 
     public boolean canHandle(
@@ -106,6 +109,8 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
             bailCase.write(SEND_DIRECTION_LIST, "Home Office");
             bailCase.write(DATE_OF_COMPLIANCE, dueDate);
             bailCase.write(UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE, YES);
+
+            hearingIdListProcessor.processHearingId(bailCase);
         } else {
             CaseDetails<BailCase> caseDetailsBefore = callback.getCaseDetailsBefore().orElse(null);
             BailCase bailCaseBefore = caseDetailsBefore == null ? null : caseDetailsBefore.getCaseData();
@@ -120,7 +125,11 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
                 String prevListingHearingDuration = bailCaseBefore.read(LISTING_HEARING_DURATION, String.class)
                     .orElse(null);
 
-                if (prevListingEvent == null || prevListingLocation == null || prevListingHearingDate == null || prevListingHearingDuration == null) {
+                if (prevListingEvent == null
+                    || prevListingLocation == null
+                    || prevListingHearingDate == null
+                    || prevListingHearingDuration == null
+                ) {
                     PreSubmitCallbackResponse<BailCase> response = new PreSubmitCallbackResponse<>(bailCase);
                     response.addError("Relisting is only available after an initial listing.");
                     return response;
@@ -129,16 +138,21 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
                 Optional<List<IdValue<PreviousListingDetails>>> maybeExistingPreviousListingDetails =
                     bailCase.read(PREVIOUS_LISTING_DETAILS);
                 final PreviousListingDetails newPreviousListingDetails =
-                    new PreviousListingDetails(prevListingEvent,
-                                               prevListingLocation,
-                                               prevListingHearingDate,
-                                               prevListingHearingDuration);
+                    new PreviousListingDetails(
+                        prevListingEvent,
+                        prevListingLocation,
+                        prevListingHearingDate,
+                        prevListingHearingDuration
+                    );
                 List<IdValue<PreviousListingDetails>> allPreviousListingDetails =
                     previousListingDetailsAppender.append(newPreviousListingDetails,
                                                           maybeExistingPreviousListingDetails.orElse(emptyList()));
 
+                hearingIdListProcessor.processPreviousHearingId(bailCaseBefore, bailCase);
+
                 bailCase.write(PREVIOUS_LISTING_DETAILS, allPreviousListingDetails);
                 bailCase.write(HAS_BEEN_RELISTED, YES);
+
             }
         }
 

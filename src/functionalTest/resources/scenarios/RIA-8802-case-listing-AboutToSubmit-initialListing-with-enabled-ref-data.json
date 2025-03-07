@@ -13,6 +13,7 @@
           "listingEvent": "initialListing",
           "listingHearingDate": "{$TODAY+5}T10:00:00.000",
           "isBailsLocationReferenceDataEnabled": "Yes",
+          "currentHearingId": "12345",
           "refDataListingLocation": {
             "value": {
               "code": "366796",
@@ -36,6 +37,13 @@
         "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
         "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
         "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "currentHearingId": "12345",
+        "hearingIdList": [
+          {
+            "id": "1",
+            "value": "12345"
+          }
+        ],
         "refDataListingLocationDetail": {
           "postcode": "NE1 8QF",
           "epimms_id": "366796",
