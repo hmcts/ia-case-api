@@ -39,9 +39,9 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
     private final DateProvider dateProvider;
 
     public RequestFeeRemissionAipPreparer(
-        FeatureToggler featureToggler,
-        RemissionDetailsAppender remissionDetailsAppender,
-        DateProvider dateProvider
+            FeatureToggler featureToggler,
+            RemissionDetailsAppender remissionDetailsAppender,
+            DateProvider dateProvider
     ) {
         this.featureToggler = featureToggler;
         this.remissionDetailsAppender = remissionDetailsAppender;
@@ -49,21 +49,21 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.REQUEST_FEE_REMISSION
-            && isAipJourney(callback.getCaseDetails().getCaseData())
-            && featureToggler.getValue("dlrm-refund-feature-flag", false);
+                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
+                && isAipJourney(callback.getCaseDetails().getCaseData())
+                && featureToggler.getValue("dlrm-refund-feature-flag", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -74,7 +74,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
         final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
-            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+                .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         switch (appealType) {
             case DC:
@@ -117,14 +117,14 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private boolean appealHasRemissionOption(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption) {
         return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
-            || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL);
+                || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL);
     }
 
     private boolean previousRemissionExistsAndDecided(Optional<RemissionOption> remissionType, Optional<HelpWithFeesOption> helpWithFeesOption, Optional<RemissionDecision> remissionDecision) {
         return remissionType.isPresent()
-            && appealHasRemissionOption(remissionType, helpWithFeesOption)
-            && remissionDecision.isPresent()
-            && List.of(APPROVED, PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get());
+                && appealHasRemissionOption(remissionType, helpWithFeesOption)
+                && remissionDecision.isPresent()
+                && List.of(APPROVED, PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get());
     }
 
     private void assignLateRemissionValuesToRemissionValues(AsylumCase asylumCase) {
@@ -134,10 +134,15 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
             RemissionOption remissionOption = lateRemissionOption.get();
             asylumCase.write(REMISSION_OPTION, remissionOption);
             if (remissionOption == RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE) {
+                asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
                 asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                 asylumCase.clear(HELP_WITH_FEES_OPTION);
                 asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
                 asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+            } else if (remissionOption == RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE) {
+                asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
+            } else if (remissionOption == RemissionOption.UNDER_18_GET_SUPPORT || remissionOption == RemissionOption.PARENT_GET_SUPPORT) {
+                asylumCase.write(FEE_REMISSION_TYPE, "Local Authority Support");
             }
         }
 
@@ -155,6 +160,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         Optional<String> lateHelpWithFeesRefNumber = asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class);
 
         if (lateHelpWithFees.isPresent() && lateHelpWithFeesRefNumber.isPresent()) {
+            asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
             asylumCase.write(HELP_WITH_FEES_OPTION, lateHelpWithFees.get());
             asylumCase.write(HELP_WITH_FEES_REF_NUMBER, lateHelpWithFeesRefNumber.get());
 
@@ -180,19 +186,19 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
 
         RemissionOption remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class)
-            .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
+                .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
 
         switch (remissionOption) {
             case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
                 String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class).orElse("");
 
                 previousRemissionDetails = remissionDetailsAppender.appendAsylumSupportRefNumberRemissionDetails(
-                    existingRemissionDetails, remissionOption.toString(), asylumSupportReference);
+                        existingRemissionDetails, remissionOption.toString(), asylumSupportReference);
                 break;
 
             case FEE_WAIVER_FROM_HOME_OFFICE:
                 previousRemissionDetails = remissionDetailsAppender.appendRemissionOptionDetails(
-                    existingRemissionDetails, remissionOption.toString(), null, null);
+                        existingRemissionDetails, remissionOption.toString(), null, null);
                 break;
 
             case UNDER_18_GET_SUPPORT:
@@ -201,7 +207,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
                 if (localAuthorityLetters.isPresent()) {
                     previousRemissionDetails = remissionDetailsAppender.appendLocalAuthorityRemissionDetails(
-                        existingRemissionDetails, remissionOption.toString(), localAuthorityLetters.get());
+                            existingRemissionDetails, remissionOption.toString(), localAuthorityLetters.get());
                 }
                 break;
 
@@ -210,7 +216,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 String helpWithFeesRefNumber = asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse("");
 
                 previousRemissionDetails = remissionDetailsAppender.appendRemissionOptionDetails(
-                    existingRemissionDetails, remissionOption.toString(), helpWithFeesOption.toString(), helpWithFeesRefNumber);
+                        existingRemissionDetails, remissionOption.toString(), helpWithFeesOption.toString(), helpWithFeesRefNumber);
                 break;
 
             default:
@@ -225,44 +231,44 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private void appendPreviousRemissionDecisionDetails(List<IdValue<RemissionDetails>> previousRemissionDetails, AsylumCase asylumCase) {
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
-            .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
+                .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
         String feeAmount = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");
 
         previousRemissionDetails
-            .forEach(idValue -> {
-                RemissionDetails remissionDetails = idValue.getValue();
+                .forEach(idValue -> {
+                    RemissionDetails remissionDetails = idValue.getValue();
 
-                if (remissionDetails.getRemissionDecision() == null) {
-                    remissionDetails.setFeeAmount(feeAmount);
+                    if (remissionDetails.getRemissionDecision() == null) {
+                        remissionDetails.setFeeAmount(feeAmount);
 
-                    switch (remissionDecision) {
-                        case APPROVED:
-                        case PARTIALLY_APPROVED:
-                            String amountRemitted = asylumCase.read(AMOUNT_REMITTED, String.class).orElse("");
-                            String amountLeftToPay = asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class).orElse("");
-                            remissionDetails.setAmountRemitted(amountRemitted);
-                            remissionDetails.setAmountLeftToPay(amountLeftToPay);
+                        switch (remissionDecision) {
+                            case APPROVED:
+                            case PARTIALLY_APPROVED:
+                                String amountRemitted = asylumCase.read(AMOUNT_REMITTED, String.class).orElse("");
+                                String amountLeftToPay = asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class).orElse("");
+                                remissionDetails.setAmountRemitted(amountRemitted);
+                                remissionDetails.setAmountLeftToPay(amountLeftToPay);
 
-                            if (remissionDecision == APPROVED) {
-                                remissionDetails.setRemissionDecision("Approved");
-                            } else {
+                                if (remissionDecision == APPROVED) {
+                                    remissionDetails.setRemissionDecision("Approved");
+                                } else {
+                                    String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
+                                    remissionDetails.setRemissionDecision("Partially approved");
+                                    remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
+                                }
+                                break;
+
+                            case REJECTED:
                                 String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
-                                remissionDetails.setRemissionDecision("Partially approved");
+                                remissionDetails.setRemissionDecision("Rejected");
                                 remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
-                            }
-                            break;
+                                break;
 
-                        case REJECTED:
-                            String remissionDecisionReason = asylumCase.read(REMISSION_DECISION_REASON, String.class).orElse("");
-                            remissionDetails.setRemissionDecision("Rejected");
-                            remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
-                            break;
-
-                        default:
-                            break;
+                            default:
+                                break;
+                        }
                     }
-                }
-            });
+                });
 
         remissionDetailsAppender.setRemissions(previousRemissionDetails);
     }
