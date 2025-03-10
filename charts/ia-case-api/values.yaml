@@ -27,7 +27,7 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    COMMON_DATA_API: http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    COMMON_DATA_API: "http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CASE_DOCUMENT_AM_URL: "http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IA_HEARINGS_API_URL: "http://ia-hearings-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -94,6 +94,7 @@ java:
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
 
+
 ia-case-payments-api:
   enabled: false
 ia-case-documents-api:
@@ -131,4 +132,6 @@ aac-manage-case-assignment:
 am-org-role-mapping-service:
   enabled: false
 redis:
+  enabled: false
+ia-hearings-api:
   enabled: false
