@@ -25,7 +25,7 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
     }
 
     public boolean canHandle(
-        Callback<AsylumCase> callback
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -33,7 +33,7 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
     }
 
     public PostSubmitCallbackResponse handle(
-        Callback<AsylumCase> callback
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -50,12 +50,12 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
         roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()), rolesForRemoval, roleCategories);
 
         PostSubmitCallbackResponse postSubmitResponse =
-            new PostSubmitCallbackResponse();
+                new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationHeader("# You've uploaded the Decision and Reasons document");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab."
+                "#### What happens next\n\n"
+                        + "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab."
         );
 
         return postSubmitResponse;
