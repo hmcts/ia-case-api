@@ -2,15 +2,28 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
+import java.util.List;
+
+@Slf4j
 @Component
 public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private final RoleAssignmentService roleAssignmentService;
+
+    public RemoveAppealFromOnlineConfirmation(RoleAssignmentService roleAssignmentService) {
+        this.roleAssignmentService = roleAssignmentService;
+    }
 
     @Override
     public boolean canHandle(Callback<AsylumCase> callback) {
@@ -26,6 +39,9 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        roleAssignmentService.removeCaseManagerRole(caseId, List.of(UserRole.CASE_OFFICER.getId()), List.of(RoleCategory.LEGAL_OPERATIONS));
+
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
@@ -40,4 +56,5 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
 
         return postSubmitResponse;
     }
+
 }
