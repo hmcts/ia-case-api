@@ -128,10 +128,14 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
         Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-        State state = isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)
-            && !isPayLaterAppeal && !isPaymentStatusPaid ? PENDING_PAYMENT : APPEAL_SUBMITTED;
+        boolean remissionExistsAip = isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag);
+        State state = remissionExistsAip && !isPayLaterAppeal && !isPaymentStatusPaid
+                ? PENDING_PAYMENT : APPEAL_SUBMITTED;
         if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             state = currentState;
+        }
+        if (isPayLaterAppeal && remissionExistsAip) {
+            state = APPEAL_SUBMITTED;
         }
         return new PreSubmitCallbackResponse<>(asylumCase, state);
     }
