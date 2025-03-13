@@ -120,7 +120,7 @@ class AppealOutOfCountryHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
     }
 
     @ParameterizedTest
@@ -141,7 +141,7 @@ class AppealOutOfCountryHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
     }
 
     @ParameterizedTest
