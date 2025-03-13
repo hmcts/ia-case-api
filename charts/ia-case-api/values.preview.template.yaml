@@ -1231,7 +1231,6 @@ wa:
 
   camunda-bpm:
     java:
-      image: hmctsprivatetemp.azurecr.io/camunda/bpm:latest
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
