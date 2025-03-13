@@ -69,10 +69,15 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
 
         //Default consider appellant living in UK
         AtomicReference<YesOrNo> outOfCountry = new AtomicReference<>(NO);
+        AtomicReference<YesOrNo> inUK = new AtomicReference<>(NO);
         asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).ifPresent(
-            appellantInUk -> outOfCountry.set(YES)
+            appellantInUk -> outOfCountry.set(appellantInUk.equals(NO) ? YES : NO)
+        );
+        asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).ifPresent(
+                appellantInUk -> inUK.set(appellantInUk.equals(NO) ? YES : NO)
         );
         asylumCase.write(APPEAL_OUT_OF_COUNTRY, outOfCountry.get());
+        asylumCase.write(APPELLANT_IN_UK, inUK.get());
 
         final long caseId = callback.getCaseDetails().getId();
         log.info("Appeal Out Of Country: {} for case ID {}", outOfCountry.get(), caseId);
