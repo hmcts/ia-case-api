@@ -24,7 +24,7 @@
         "appellantInUk": "Yes",
         "journeyType": "aip",
         "appealReferenceNumber": "DRAFT",
-        "sendDirectionActionAvailable": "No",
+        "sendDirectionActionAvailable": "Yes",
         "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/"
       }
     }
