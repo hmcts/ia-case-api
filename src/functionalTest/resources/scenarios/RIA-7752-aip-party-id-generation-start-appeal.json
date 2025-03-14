@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
-          "appellantInUk": "Yes",
+          "appellantInUk": "No",
           "journeyType": "aip"
         }
       }
@@ -21,10 +21,10 @@
     "caseData": {
       "template": "minimal-aip-appeal-submitted.json",
       "replacements": {
-        "appellantInUk": "Yes",
+        "appellantInUk": "No",
         "journeyType": "aip",
         "appealReferenceNumber": "DRAFT",
-        "sendDirectionActionAvailable": "Yes",
+        "sendDirectionActionAvailable": "No",
         "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/"
       }
     }
