@@ -10,8 +10,7 @@
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
           "appellantInUk": "Yes",
-          "journeyType": "aip",
-          "hasSponsor": "Yes"
+          "journeyType": "aip"
         }
       }
     }
@@ -26,8 +25,7 @@
         "journeyType": "aip",
         "appealReferenceNumber": "DRAFT",
         "sendDirectionActionAvailable": "No",
-        "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
-        "hasSponsor": "Yes"
+        "appellantPartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/"
       }
     }
   }
