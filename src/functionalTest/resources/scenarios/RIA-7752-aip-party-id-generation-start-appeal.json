@@ -9,8 +9,9 @@
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
-          "appellantInUk": "No",
-          "journeyType": "aip"
+          "appellantInUk": "Yes",
+          "journeyType": "aip",
+          "hasSponsor": "Null"
         }
       }
     }
@@ -21,7 +22,7 @@
     "caseData": {
       "template": "minimal-aip-appeal-submitted.json",
       "replacements": {
-        "appellantInUk": "No",
+        "appellantInUk": "Yes",
         "journeyType": "aip",
         "appealReferenceNumber": "DRAFT",
         "sendDirectionActionAvailable": "No",
