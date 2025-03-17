@@ -108,13 +108,13 @@ class ResidentJudgeFtpaDecisionHandlerTest {
     private final LocalDate now = LocalDate.now();
 
     private final FtpaDecisionCheckValues ftpaCheckValues =
-            new FtpaDecisionCheckValues(List.of("specialReasons"),
-                    List.of("countryGuidance"),
-                    List.of("specialDifficulty"));
+        new FtpaDecisionCheckValues(List.of("specialReasons"),
+            List.of("countryGuidance"),
+            List.of("specialDifficulty")
+        );
 
     @BeforeEach
     public void setUp() {
-
         residentJudgeFtpaDecisionHandler = new ResidentJudgeFtpaDecisionHandler(
             dateProvider,
             documentReceiver,
@@ -437,7 +437,6 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
         verify(asylumCase, times(1)).write(FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
         verify(asylumCase, times(0)).read(FTPA_APPLICATION_RESPONDENT_DOCUMENT, Document.class);
-
     }
 
     @ParameterizedTest
@@ -478,7 +477,6 @@ class ResidentJudgeFtpaDecisionHandlerTest {
 
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
         verify(asylumCase, times(0)).read(FTPA_APPLICATION_APPELLANT_DOCUMENT, Document.class);
-
     }
 
     @Test

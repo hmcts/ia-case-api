@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @Slf4j
@@ -62,17 +63,25 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final LocationRefDataService locationRefDataService;
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
+    private final NextHearingDateService nextHearingDateService;
+    private final HearingIdListProcessor hearingIdListProcessor;
 
-    public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
-                               CaseManagementLocationService caseManagementLocationService,
-                               @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
-                               DirectionAppender directionAppender,
-                               LocationRefDataService locationRefDataService) {
+    public ListEditCaseHandler(
+        HearingCentreFinder hearingCentreFinder,
+        CaseManagementLocationService caseManagementLocationService,
+        @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
+        DirectionAppender directionAppender,
+        LocationRefDataService locationRefDataService,
+        NextHearingDateService nextHearingDateService,
+        HearingIdListProcessor hearingIdListProcessor
+    ) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
         this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
+        this.nextHearingDateService = nextHearingDateService;
+        this.hearingIdListProcessor = hearingIdListProcessor;
     }
 
     public boolean canHandle(
@@ -104,13 +113,15 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             HearingCentre listCaseHearingCentre = HearingCentre
                 .fromEpimsId(listingLocationId, true)
                 .orElseThrow(() -> new IllegalStateException(
-                    String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
+                    String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
+                        listingLocationId)));
             asylumCase.write(LIST_CASE_HEARING_CENTRE, listCaseHearingCentre);
 
             if (locationRefDataService.isCaseManagementLocation(listingLocationId)) {
                 HearingCentre hearingCentre = HearingCentre.fromEpimsId(listingLocationId, false)
                     .orElseThrow(() -> new IllegalStateException(
-                        String.format("No Hearing Centre found for Listing location with Epimms ID: %s", listingLocationId)));
+                        String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
+                            listingLocationId)));
 
                 Optional<DynamicList> optionalHearingCentreDynamicList =
                     asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
@@ -194,6 +205,21 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 addDirection(asylumCase);
             }
         }
+
+        if (nextHearingDateService.enabled()) {
+            log.debug("Next hearing date feature enabled");
+            if (HandlerUtils.isIntegrated(asylumCase)) {
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromHearings(callback));
+            } else {
+                asylumCase.write(NEXT_HEARING_DETAILS,
+                    nextHearingDateService.calculateNextHearingDateFromCaseData(callback));
+            }
+        } else {
+            log.debug("Next hearing date feature not enabled");
+        }
+
+        hearingIdListProcessor.processHearingIdList(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
