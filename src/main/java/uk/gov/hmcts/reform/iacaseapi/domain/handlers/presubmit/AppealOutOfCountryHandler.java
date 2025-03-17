@@ -73,7 +73,7 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
             appellantInUk -> outOfCountry.set(appellantInUk.equals(NO) ? YES : NO)
         );
         asylumCase.write(APPEAL_OUT_OF_COUNTRY, outOfCountry.get());
-        asylumCase.write(APPELLANT_IN_UK, outOfCountry.get().equals(YES) ? YES : NO);
+        asylumCase.write(APPELLANT_IN_UK, outOfCountry.get().equals(YES) ? NO : YES);
 
         final long caseId = callback.getCaseDetails().getId();
         log.info("Appeal Out Of Country: {} for case ID {}", outOfCountry.get(), caseId);
