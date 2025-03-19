@@ -5,15 +5,11 @@ import static java.util.Objects.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -40,7 +36,7 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
         }
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseManagerRole(caseId, List.of(UserRole.CASE_OFFICER.getId()), List.of(RoleCategory.LEGAL_OPERATIONS));
+        roleAssignmentService.removeCaseManagerRole(caseId);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();

@@ -5,15 +5,11 @@ import static java.util.Objects.requireNonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -39,15 +35,7 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        List<String> rolesForRemoval = List.of(UserRole.CASE_OFFICER.getId(),
-                UserRole.ADMIN_OFFICER.getId(),
-                UserRole.JUDGE.getId(),
-                UserRole.JUDICIARY.getId());
-        List<RoleCategory> roleCategories = List.of(
-                RoleCategory.LEGAL_OPERATIONS,
-                RoleCategory.ADMIN,
-                RoleCategory.JUDICIAL);
-        roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()), rolesForRemoval, roleCategories);
+        roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()));
 
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();

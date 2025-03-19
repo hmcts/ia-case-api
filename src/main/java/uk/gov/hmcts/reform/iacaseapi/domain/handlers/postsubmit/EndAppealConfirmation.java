@@ -7,15 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -62,16 +58,8 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         final String hoEndAppealInstructStatus =
             asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class).orElse("");
 
-        List<String> rolesForRemoval = List.of(UserRole.CASE_OFFICER.getId(),
-                UserRole.ADMIN_OFFICER.getId(),
-                UserRole.JUDGE.getId(),
-                UserRole.JUDICIARY.getId());
-        List<RoleCategory> roleCategories = List.of(
-                RoleCategory.LEGAL_OPERATIONS,
-                RoleCategory.ADMIN,
-                RoleCategory.JUDICIAL);
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseManagerRole(caseId, rolesForRemoval, roleCategories);
+        roleAssignmentService.removeCaseManagerRole(caseId);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();

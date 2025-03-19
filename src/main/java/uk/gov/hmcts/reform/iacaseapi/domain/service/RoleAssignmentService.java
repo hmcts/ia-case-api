@@ -116,23 +116,12 @@ public class RoleAssignmentService {
         }
     }
 
-    public void removeCaseManagerRole(
-            String caseId,
-            List<String> rolesForRemoval,
-            List<RoleCategory> roleCategories
-    ) {
-        List<String> userRoles = userDetails.getRoles();
-
-        if (userRoles.stream().noneMatch(rolesForRemoval::contains)) {
-            log.info("User does not have the required roles. Case Manager role was not removed.");
-            return;
-        }
-
+    public void removeCaseManagerRole(String caseId) {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .grantType(List.of(GrantType.SPECIFIC))
             .roleName(List.of(RoleName.CASE_MANAGER))
-            .roleCategory(roleCategories)
+            .roleCategory(List.of(RoleCategory.LEGAL_OPERATIONS))
             .attributes(Map.of(
                 Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
                 Attributes.CASE_TYPE, List.of("Asylum"),
@@ -153,7 +142,7 @@ public class RoleAssignmentService {
 
             log.info("Successfully removed Case Manager role from user {} for case ID {}", actorId, caseId);
         } else {
-            log.error("Problem removing Case Manager role for case ID {}. Role assignment for user not found", caseId);
+            log.error("Problem removing Case Manager role for case ID {}. No role assignment found.", caseId);
         }
     }
 
