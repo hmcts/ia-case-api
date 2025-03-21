@@ -456,7 +456,7 @@ class PaymentStateHandlerTest {
         Assert.assertNotNull(returnedCallbackResponse);
         Assert.assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (hasRemission(remissionOption, helpWithFeesOption) && !payLater.equals(PAY_LATER) && type != PA) {
+        if (hasRemission(remissionOption, helpWithFeesOption) && !payLater.equals(PAY_LATER)) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);

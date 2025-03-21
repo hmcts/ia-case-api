@@ -100,7 +100,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
         boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
         if (isDlrmFeeRemission && isAipJourney) {
-            return handleDlrmFeeRemission(callback, appealType, currentState, isPayLaterAppeal, isPaymentStatusPaid);
+            return handleDlrmFeeRemission(callback, currentState, isPayLaterAppeal, isPaymentStatusPaid);
         } else if (isAipJourney && isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
@@ -123,14 +123,13 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         }
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(Callback<AsylumCase> callback, AppealType appealType, State currentState, boolean isPayLaterAppeal, boolean isPaymentStatusPaid) {
+    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(Callback<AsylumCase> callback, State currentState, boolean isPayLaterAppeal, boolean isPaymentStatusPaid) {
         final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
         Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-        boolean remissionExistsAip = isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag);
-        State state = remissionExistsAip && !isPayLaterAppeal && !isPaymentStatusPaid && appealType != AppealType.PA
-                ? PENDING_PAYMENT : APPEAL_SUBMITTED;
+        State state = isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)
+            && !isPayLaterAppeal && !isPaymentStatusPaid ? PENDING_PAYMENT : APPEAL_SUBMITTED;
         if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             state = currentState;
         }
