@@ -12,8 +12,8 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "master"
-def bpmnBranch = "master"
+def dmnBranch = "SNI-7286-fix-review-appeal"
+def bpmnBranch = "SNI-7286-fix-review-appeal"
 
 def secrets = [
         'rpx-${env}': [
