@@ -35,6 +35,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
     ) {
         log.error("Exception for the CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
+        log.error("Exception 1", e);
         ExceptionUtils.printRootCauseStackTrace(e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
@@ -46,6 +47,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
     ) {
         log.error("Exception for the CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
+        log.error("Exception 2", e);
         errorResponseLogger.maybeLogException(e.getCause());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -61,6 +63,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
     ) {
         log.error("Exception for the CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
+        log.error("Exception 3", ex);
         ExceptionUtils.printRootCauseStackTrace(ex);
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
