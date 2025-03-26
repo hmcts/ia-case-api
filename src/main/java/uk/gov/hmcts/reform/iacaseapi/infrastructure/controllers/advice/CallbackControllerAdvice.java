@@ -64,5 +64,4 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         ExceptionUtils.printRootCauseStackTrace(ex);
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
-
 }
