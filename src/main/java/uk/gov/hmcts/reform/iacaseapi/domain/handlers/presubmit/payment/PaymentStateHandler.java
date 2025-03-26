@@ -88,6 +88,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
             || (remissionType.isPresent());
+        log.info("Payment status {} isPaymentStatusPendingOrFailed: {} for reference: {}",
+                paymentStatus.isPresent() ? paymentStatus.get() : "Doesn't exist", isPaymentStatusPendingOrFailed, callback.getCaseDetails().getId());
         boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
 
         boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
@@ -104,6 +106,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         } else if (isAipJourney && isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
+            log.info("EU/EA/HU appeal: {} in decideAppealState - reference: {}, isPaymentStatusPendingOrFailed: {}",
+                    appealType, callback.getCaseDetails().getId(), isPaymentStatusPendingOrFailed);
             return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
@@ -115,10 +119,13 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             case EU:
             case AG:
                 if (isPaymentStatusPendingOrFailed) {
+                    log.info("Appeal Type: {},  state: PENDING_PAYMENT", appealType);
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
+                log.info("Appeal Type: {},  state: APPEAL_SUBMITTED", appealType);
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
+                log.info("In decideAppealState - default: Appeal Type: {},  state: APPEAL_SUBMITTED", appealType);
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
         }
     }
