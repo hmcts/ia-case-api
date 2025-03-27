@@ -92,7 +92,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
                 paymentStatus.isPresent() ? paymentStatus.get() : "Doesn't exist", isPaymentStatusPendingOrFailed, callback.getCaseDetails().getId());
         boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
 
-        boolean isDlrmFeeRemission = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+        boolean isDlrmFeeRemissionEnabled = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
 
         boolean isAipJourney = asylumCase
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
@@ -100,13 +100,18 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             .orElse(false);
         State currentState = callback.getCaseDetails().getState();
         String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
+
+        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
         boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
         log.info("Case reference: {}, currentState: {}, paAppealTypePaymentOption: {}, isPayLaterAppeal: {}, "
                 + "isPaymentStatusPendingOrFailed: {}", callback.getCaseDetails().getId(), currentState,
                 paAppealTypePaymentOption, isPayLaterAppeal, isPaymentStatusPendingOrFailed);
-        if (isDlrmFeeRemission && isAipJourney) {
+        boolean remissionExistsAip = isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionEnabled);
+
+        if (isDlrmFeeRemissionEnabled && isAipJourney && remissionExistsAip) {
             log.info("in isDlrmFeeRemission && isAipJourney");
-            return handleDlrmFeeRemission(callback, currentState, isPayLaterAppeal, isPaymentStatusPaid);
+            return handleDlrmFeeRemission(callback, currentState, isPayLaterAppeal, isPaymentStatusPaid, remissionExistsAip);
         } else if (isAipJourney && isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             log.info("in isAipJourney && isValidPayLaterPaymentEvent");
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
@@ -135,13 +140,14 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         }
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(Callback<AsylumCase> callback, State currentState, boolean isPayLaterAppeal, boolean isPaymentStatusPaid) {
-        final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
+    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(Callback<AsylumCase> callback,
+                                                                         State currentState,
+                                                                         boolean isPayLaterAppeal,
+                                                                         boolean isPaymentStatusPaid,
+                                                                         boolean aipRemissionExists) {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-        State state = isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)
-            && !isPayLaterAppeal && !isPaymentStatusPaid ? PENDING_PAYMENT : APPEAL_SUBMITTED;
+        State state = aipRemissionExists && !isPayLaterAppeal && !isPaymentStatusPaid
+                ? PENDING_PAYMENT : APPEAL_SUBMITTED;
         if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             state = currentState;
         }
