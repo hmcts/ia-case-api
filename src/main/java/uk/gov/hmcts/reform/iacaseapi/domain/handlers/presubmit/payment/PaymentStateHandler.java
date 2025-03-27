@@ -101,9 +101,14 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         State currentState = callback.getCaseDetails().getState();
         String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
         boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
+        log.info("Case reference: {}, currentState: {}, paAppealTypePaymentOption: {}, isPayLaterAppeal: {}, "
+                + "isPaymentStatusPendingOrFailed: {}", callback.getCaseDetails().getId(), currentState,
+                paAppealTypePaymentOption, isPayLaterAppeal, isPaymentStatusPendingOrFailed);
         if (isDlrmFeeRemission && isAipJourney) {
+            log.info("in isDlrmFeeRemission && isAipJourney");
             return handleDlrmFeeRemission(callback, currentState, isPayLaterAppeal, isPaymentStatusPaid);
         } else if (isAipJourney && isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
+            log.info("in isAipJourney && isValidPayLaterPaymentEvent");
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
             log.info("EU/EA/HU appeal: {} in decideAppealState - reference: {}, isPaymentStatusPendingOrFailed: {}",
@@ -147,6 +152,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         List<State> invalidStates = List.of(APPEAL_STARTED, APPEAL_STARTED_BY_ADMIN, PENDING_PAYMENT);
         boolean isPaymentEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
         boolean isValidState = !invalidStates.contains(currentState);
+        log.info("Reference: {}, currentState: {}, isPayLaterAppeal: {}, isPaymentEvent: {}, isValidState: {}",
+                callback.getCaseDetails().getId(), currentState, isPayLaterAppeal, isPaymentEvent, isValidState);
         return isPayLaterAppeal && isPaymentEvent && isValidState;
     }
 
