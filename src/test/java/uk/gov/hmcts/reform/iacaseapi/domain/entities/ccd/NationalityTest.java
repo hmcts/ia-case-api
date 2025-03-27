@@ -63,8 +63,8 @@ class NationalityTest {
         assertEquals("Cocos (Keeling) Islands", Nationality.CC.toString());
         assertEquals("Colombia", Nationality.CO.toString());
         assertEquals("Comoros", Nationality.KM.toString());
-        assertEquals("Congo (Brazzaville)", Nationality.CG.toString());
-        assertEquals("Congo, Democratic Republic of the", Nationality.CD.toString());
+        assertEquals("Congo (Rep of)", Nationality.CG.toString());
+        assertEquals("Congo (Dem. Rep of)", Nationality.CD.toString());
         assertEquals("Cook Islands", Nationality.CK.toString());
         assertEquals("Costa Rica", Nationality.CR.toString());
         assertEquals("Côte d'Ivoire", Nationality.CI.toString());
