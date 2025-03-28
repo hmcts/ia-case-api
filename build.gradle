@@ -9,7 +9,6 @@ buildscript {
     }
 }
 
-
 plugins {
     id 'application'
     id 'checkstyle'
@@ -59,6 +58,15 @@ def jarName = 'ia-case-api.jar'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
+
+tasks.withType(Test).configureEach {
+    maxHeapSize = "2g"
+    jvmArgs = ["-XX:MaxMetaspaceSize=512m"]
+}
+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs = ["-Xmx2g", "-XX:MaxMetaspaceSize=512m"]
+}
 
 java {
     toolchain {
