@@ -17,6 +17,7 @@ java:
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
+    IA_HEARINGS_API_URL:  https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
@@ -656,16 +657,6 @@ ia-aip-frontend:
     auth:
       enabled: false
 
-idam-pr:
-  releaseNameOverride: ${SERVICE_NAME}-idam-pr
-  enabled: true
-  redirect_uris:
-    XUI:
-      - https://xui-${SERVICE_FQDN}/oauth2/callback
-    CCD Admin:
-      - https://admin-web-${SERVICE_FQDN}/oauth2redirect
-    ccd_data_store_api:
-      - https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
 
 ccd-case-document-am-api:
   enabled: true
@@ -686,7 +677,7 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:latest
+    image: hmctspublic.azurecr.io/xui/webapp:pr-3979
     ingressHost: xui-${SERVICE_FQDN}
     memoryRequests: 2Gi
     cpuRequests: 2000m
@@ -735,6 +726,8 @@ xui-webapp:
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
       PROTOCOL: http
+      PREVIEW_DEPLOYMENT_ID: "iac-${CHANGE_ID}"
+      ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -1309,6 +1302,11 @@ servicebus:
         subscriptionNeeded: yes
       - name: jrd-topic
         subscriptionNeeded: yes
+      - name: ccd-events
+        subscriptionNeeded: yes
+        requiresSession: true
+    queues:
+      - name: tribunals-to-hearing-api
 
 ccd-message-publisher:
   enabled: true
@@ -1403,7 +1401,63 @@ am-org-role-mapping-service:
       RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
 
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
+    releaseNameOverride: ${SERVICE_NAME}-hearings-api
+    ingressHost: ia-hearings-api-${SERVICE_FQDN}
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+      DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_BUNDLER_URL: https://em-ccdorc-${SERVICE_FQDN}
+      EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      XUI_URL: "xui-${SERVICE_FQDN}"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "${SERVICE_NAME}-hmcsb-iac"
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
+      HMC_DEPLOYMENT_ID: "iac-${CHANGE_ID}"
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+      CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
+
+hmcsb:
+  enabled: true
+  resourceGroup: hmc-shared-aat
+  sbNamespace: hmc-servicebus-aat
+  #Each topic/queue matches up to one used in the config above
+  setup:
+    topics:
+      - name: iac
+        fullName: hmc-to-cft-aat
+        create: false
+        subscriptionNeeded: yes
+        ignoreSubscriptionDeletion: true
+        rules:
+          - name: "servicefilter"
+            filterType: CorrelationFilter
+            correlationFilter:
+              - name: "hmctsServiceId"
+                value: "BFA1"
+              - name: "hmctsDeploymentId"
+                value: "iac-${CHANGE_ID}"
 
 postgresql:
   enabled: true
@@ -1423,4 +1477,5 @@ postgresql:
       - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
+      - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
 
