@@ -1435,7 +1435,6 @@ ia-hearings-api:
       HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
       HMC_DEPLOYMENT_ID: "iac-${CHANGE_ID}"
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-      CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
 
 
 hmcsb:
