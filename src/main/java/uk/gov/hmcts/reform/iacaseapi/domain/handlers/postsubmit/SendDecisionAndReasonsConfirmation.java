@@ -2,15 +2,23 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
+@Slf4j
 @Component
 public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+    private final RoleAssignmentService roleAssignmentService;
+
+    public SendDecisionAndReasonsConfirmation(RoleAssignmentService roleAssignmentService) {
+        this.roleAssignmentService = roleAssignmentService;
+    }
 
     public boolean canHandle(
             Callback<AsylumCase> callback
@@ -27,6 +35,8 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()));
+
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
 
@@ -38,4 +48,5 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
 
         return postSubmitResponse;
     }
+
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -10,7 +11,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
+@Slf4j
 @Component
 public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -28,6 +31,11 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         + "#### Do this next\n\n"
         + "Contact the respondent to tell them what has changed, including any action they need to take.\n";
 
+    private final RoleAssignmentService roleAssignmentService;
+
+    public EndAppealConfirmation(RoleAssignmentService roleAssignmentService) {
+        this.roleAssignmentService = roleAssignmentService;
+    }
 
     @Override
     public boolean canHandle(
@@ -49,6 +57,9 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final String hoEndAppealInstructStatus =
             asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class).orElse("");
+
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        roleAssignmentService.removeCaseManagerRole(caseId);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
@@ -74,4 +85,5 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
             postSubmitResponse.setConfirmationBody(HEARING_CANCEL_SUCCEED);
         }
     }
+
 }
