@@ -571,7 +571,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1260
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -1219,15 +1219,19 @@ wa:
     databaseNamePrefix: "pr-${CHANGE_ID}-"
   wa-initiation-batch:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
   wa-reconfiguration-batch:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
   wa-termination-batch:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-termination-batch"
   wa-message-cron-service:
     job:
+      schedule: "*/1 * * * *"
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
 
   camunda-bpm:
