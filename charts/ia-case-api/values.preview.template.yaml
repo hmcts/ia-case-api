@@ -571,7 +571,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    image: hmctspublic.azurecr.io/ia/aip-frontend:pr-1260
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -785,6 +785,7 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66a4048-20250203150702
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 1
