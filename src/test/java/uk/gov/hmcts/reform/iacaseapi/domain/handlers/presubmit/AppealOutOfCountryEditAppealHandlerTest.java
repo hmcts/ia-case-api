@@ -76,11 +76,9 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
-        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
-        clearSponsor(asylumCase);
     }
 
     @ParameterizedTest
@@ -105,11 +103,9 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
-        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
-        clearSponsor(asylumCase);
     }
 
     @ParameterizedTest
@@ -134,11 +130,9 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
-        verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
-        clearSponsor(asylumCase);
     }
 
     @ParameterizedTest
@@ -164,8 +158,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES);
         verify(asylumCase, times(1)).clear(APPELLANT_HAS_FIXED_ADDRESS);
         verify(asylumCase, times(1)).clear(APPELLANT_ADDRESS);
-        verify(asylumCase, times(1)).read(HAS_SPONSOR, YesOrNo.class);
-        clearSponsor(asylumCase);
         verify(asylumCase, times(1)).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearRefusalOfProtection(asylumCase);
         verify(asylumCase, times(2)).clear(DECISION_LETTER_RECEIVED_DATE);
