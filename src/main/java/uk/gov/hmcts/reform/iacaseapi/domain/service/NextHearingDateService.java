@@ -39,7 +39,9 @@ public class NextHearingDateService {
             log.error("Failed to calculate Next hearing date from hearings for case ID {}", caseId);
             return calculateNextHearingDateFromCaseData(callback);
         } else {
-            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
+            log.info("Next hearing date successfully calculated from hearings for case ID {}, "
+                    + "nextHearingId {}, nextHearingDate {}",
+                    caseId, nextHearingDetails.getHearingId(), nextHearingDetails.getHearingDateTime());
             return nextHearingDetails;
         }
     }
