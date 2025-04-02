@@ -728,6 +728,7 @@ xui-webapp:
       PROTOCOL: http
       PREVIEW_DEPLOYMENT_ID: "iac-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
+      SERVICES_HEARINGS_COMPONENT_API_IAC: http://ia-hearings-api-ia-case-api-pr-2511.preview.platform.hmcts.net
     keyVaults:
       rpx:
         resourceGroup: rpx
