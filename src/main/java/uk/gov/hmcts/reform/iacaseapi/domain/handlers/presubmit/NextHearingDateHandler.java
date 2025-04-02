@@ -37,14 +37,13 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         List<Event> targetEvents = List.of(
-            UPDATE_NEXT_HEARING_INFO,
             LIST_CASE,
             EDIT_CASE_LISTING,
             CMR_LISTING,
             CMR_RE_LISTING);
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && targetEvents.contains(callback.getEvent());
+        return (callbackStage ==  PreSubmitCallbackStage.ABOUT_TO_START && callback.getEvent() == UPDATE_NEXT_HEARING_INFO)
+                || (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && targetEvents.contains(callback.getEvent()));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

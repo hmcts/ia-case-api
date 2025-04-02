@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CMR_RE_LIS
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_NEXT_HEARING_INFO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -84,7 +85,11 @@ class NextHearingDateHandlerTest {
         when(nextHearingDateSerice.enabled()).thenReturn(false);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        handler.handle(ABOUT_TO_SUBMIT, callback);
+        if (event == UPDATE_NEXT_HEARING_INFO) {
+            handler.handle(ABOUT_TO_START, callback);
+        } else {
+            handler.handle(ABOUT_TO_SUBMIT, callback);
+        }
 
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
@@ -104,7 +109,8 @@ class NextHearingDateHandlerTest {
             .thenReturn(Optional.of(nextHearingDetails));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            handler.handle(ABOUT_TO_SUBMIT, callback);
+            event == UPDATE_NEXT_HEARING_INFO ? handler.handle(ABOUT_TO_START, callback)
+                    : handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         verify(nextHearingDateSerice, times(1)).calculateNextHearingDateFromHearings(callback);
@@ -136,7 +142,7 @@ class NextHearingDateHandlerTest {
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            handler.handle(ABOUT_TO_SUBMIT, callback);
+            handler.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
@@ -159,10 +165,9 @@ class NextHearingDateHandlerTest {
 
                 boolean canHandle = handler.canHandle(callbackStage, callback);
 
-                if (List.of(LIST_CASE, EDIT_CASE_LISTING, UPDATE_NEXT_HEARING_INFO, CMR_LISTING, CMR_RE_LISTING)
-                        .contains(event)
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-
+                if ((event == UPDATE_NEXT_HEARING_INFO && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
+                    || (List.of(LIST_CASE, EDIT_CASE_LISTING, CMR_LISTING, CMR_RE_LISTING).contains(event)
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -180,7 +185,7 @@ class NextHearingDateHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> handler.canHandle(ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -188,7 +193,7 @@ class NextHearingDateHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> handler.handle(ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
