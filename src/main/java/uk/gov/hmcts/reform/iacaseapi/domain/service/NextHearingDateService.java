@@ -27,9 +27,13 @@ public class NextHearingDateService {
         NextHearingDetails nextHearingDetails = null;
 
         try {
-            AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
             nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
                 .orElse(null);
+            log.error("Next hearing date from hearings API, caseReference: {}, nextHearingID: {}, nextHearingDate: " +
+                    "{}", callback.getCaseDetails().getId(),
+                    nextHearingDetails != null ? nextHearingDetails.getHearingId() : null,
+                    nextHearingDetails != null ? nextHearingDetails.getHearingDateTime() : null);
         } catch (AsylumCaseServiceResponseException e) {
             log.error("Setting next hearing date from hearings failed: ", e);
         }

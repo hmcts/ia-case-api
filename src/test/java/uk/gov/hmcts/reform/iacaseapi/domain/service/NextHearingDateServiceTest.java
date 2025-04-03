@@ -78,7 +78,7 @@ class NextHearingDateServiceTest {
     @Test
     public void test_calculateNextHearingDateFromHearings() {
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
         when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
             .thenReturn(Optional.of(nextHearingDetailsFromHearings));
 
@@ -92,7 +92,7 @@ class NextHearingDateServiceTest {
 
     @Test
     public void should_get_next_hearing_date_from_case_data_when_calculating_from_hearings_fails() {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
         when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
             .thenReturn(Optional.empty());
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
@@ -108,7 +108,7 @@ class NextHearingDateServiceTest {
     @Test
     public void should_get_next_hearing_date_from_case_data_when_calculating_from_hearings_throws_exception() {
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
-        when(iaHearingsApiService.aboutToSubmit(callback))
+        when(iaHearingsApiService.aboutToStart(callback))
             .thenThrow(new AsylumCaseServiceResponseException("error message", null));
 
         NextHearingDetails nextHearingDetails =
