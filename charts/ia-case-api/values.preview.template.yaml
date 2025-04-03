@@ -1432,9 +1432,9 @@ ia-hearings-api:
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       XUI_URL: "xui-${SERVICE_FQDN}"
       HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
-      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "${SERVICE_NAME}-hmcsb-iac"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "${SERVICE_NAME}-hmcsb-ia"
       HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
-      HMC_DEPLOYMENT_ID: "iac-${CHANGE_ID}"
+      HMC_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-pr-2511.preview.platform.hmcts.net
 
 
@@ -1445,7 +1445,7 @@ hmcsb:
   #Each topic/queue matches up to one used in the config above
   setup:
     topics:
-      - name: iac
+      - name: ia
         fullName: hmc-to-cft-aat
         create: false
         subscriptionNeeded: yes
@@ -1457,7 +1457,7 @@ hmcsb:
               - name: "hmctsServiceId"
                 value: "BFA1"
               - name: "hmctsDeploymentId"
-                value: "iac-${CHANGE_ID}"
+                value: "ia-${CHANGE_ID}"
 
 postgresql:
   enabled: true
