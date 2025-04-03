@@ -43,7 +43,7 @@ public class HearingCancelledHandler implements PreSubmitCallbackHandler<AsylumC
 
             // Update next hearing date
             asylumCase.write(NEXT_HEARING_DETAILS,
-                nextHearingDateService.calculateNextHearingDateFromHearings(callback));
+                nextHearingDateService.calculateNextHearingDateFromHearings(callback, callbackStage));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

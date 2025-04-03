@@ -582,7 +582,7 @@ class ListEditCaseHandlerTest {
 
         listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
         verify(nextHearingDateService, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
     }
@@ -603,7 +603,8 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateService, times(1)).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService, times(1))
+                .calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
         verify(nextHearingDateService, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
@@ -620,7 +621,8 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService, never())
+                .calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
         verify(nextHearingDateService).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
@@ -634,7 +636,7 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
     }
 
     @Test

@@ -91,7 +91,8 @@ class NextHearingDateHandlerTest {
             handler.handle(ABOUT_TO_SUBMIT, callback);
         }
 
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(
+                        callback, event == UPDATE_NEXT_HEARING_INFO ? ABOUT_TO_START : ABOUT_TO_SUBMIT);
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
     }
@@ -113,7 +114,9 @@ class NextHearingDateHandlerTest {
                     : handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateSerice, times(1)).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, times(1))
+                .calculateNextHearingDateFromHearings(
+                        callback, event == UPDATE_NEXT_HEARING_INFO ? ABOUT_TO_START : ABOUT_TO_SUBMIT);
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
@@ -130,7 +133,7 @@ class NextHearingDateHandlerTest {
             handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
         verify(nextHearingDateSerice).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
@@ -145,7 +148,7 @@ class NextHearingDateHandlerTest {
             handler.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback);
+        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
         verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), captor.capture());
 

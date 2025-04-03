@@ -210,7 +210,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             log.debug("Next hearing date feature enabled");
             if (HandlerUtils.isIntegrated(asylumCase)) {
                 asylumCase.write(NEXT_HEARING_DETAILS,
-                    nextHearingDateService.calculateNextHearingDateFromHearings(callback));
+                    nextHearingDateService.calculateNextHearingDateFromHearings(callback, callbackStage));
             } else {
                 asylumCase.write(NEXT_HEARING_DETAILS,
                     nextHearingDateService.calculateNextHearingDateFromCaseData(callback));

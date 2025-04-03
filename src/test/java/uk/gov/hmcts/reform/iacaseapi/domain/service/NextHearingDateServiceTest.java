@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDateTime;
@@ -83,7 +84,7 @@ class NextHearingDateServiceTest {
             .thenReturn(Optional.of(nextHearingDetailsFromHearings));
 
         NextHearingDetails nextHearingDetails =
-            nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
 
         assertNotNull(nextHearingDetails);
 
@@ -98,7 +99,7 @@ class NextHearingDateServiceTest {
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
 
         NextHearingDetails nextHearingDetails =
-            nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
 
         assertNotNull(nextHearingDetails);
 
@@ -112,7 +113,7 @@ class NextHearingDateServiceTest {
             .thenThrow(new AsylumCaseServiceResponseException("error message", null));
 
         NextHearingDetails nextHearingDetails =
-            nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
 
         assertNotNull(nextHearingDetails);
 
