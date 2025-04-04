@@ -212,7 +212,7 @@ class SendNotificationHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
         assertThatThrownBy(() -> sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -237,6 +237,8 @@ class SendNotificationHandlerTest {
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     &&
                     Arrays.asList(
+                        Event.START_APPEAL,
+                        Event.EDIT_APPEAL,
                         Event.SUBMIT_APPEAL,
                         Event.SEND_DIRECTION,
                         Event.CHANGE_DIRECTION_DUE_DATE,
@@ -362,6 +364,8 @@ class SendNotificationHandlerTest {
                     Event.REINSTATE_APPEAL,
                     Event.RECORD_OUT_OF_TIME_DECISION,
                     Event.END_APPEAL,
+                    Event.START_APPEAL,
+                    Event.EDIT_APPEAL,
                     Event.SUBMIT_APPEAL,
                     Event.UPDATE_HEARING_ADJUSTMENTS,
                     Event.MARK_AS_READY_FOR_UT_TRANSFER,
@@ -448,6 +452,8 @@ class SendNotificationHandlerTest {
                         Event.REINSTATE_APPEAL,
                         Event.RECORD_OUT_OF_TIME_DECISION,
                         Event.END_APPEAL,
+                        Event.START_APPEAL,
+                        Event.EDIT_APPEAL,
                         Event.SUBMIT_APPEAL,
                         Event.UPDATE_HEARING_ADJUSTMENTS,
                         Event.MARK_AS_READY_FOR_UT_TRANSFER,

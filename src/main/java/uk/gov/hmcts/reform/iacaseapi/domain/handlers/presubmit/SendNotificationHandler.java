@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -33,8 +34,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
-
 @Component
+@Slf4j
 public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final NotificationSender<AsylumCase> notificationSender;
@@ -81,6 +82,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private List<Event> getEventsToHandle(Callback<AsylumCase> callback) {
         List<Event> eventsToHandle = Lists.newArrayList(
             Event.SUBMIT_APPEAL,
+            Event.START_APPEAL,
+            Event.EDIT_APPEAL,
             Event.SEND_DIRECTION,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
@@ -189,6 +192,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
 
+        log.info("-----------getEventsToHandle {}", eventsToHandle);
+
         return eventsToHandle;
     }
 
@@ -207,6 +212,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.END_APPEAL,
             Event.SUBMIT_APPEAL,
+            Event.START_APPEAL,
+            Event.EDIT_APPEAL,
             Event.UPDATE_HEARING_ADJUSTMENTS,
             Event.MARK_AS_READY_FOR_UT_TRANSFER,
             Event.REQUEST_CASE_BUILDING,
@@ -265,6 +272,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
+
+        log.info("-----------getInternalEventsToHandle {}", eventsToHandle);
 
         return eventsToHandle;
     }
