@@ -158,7 +158,7 @@ public enum Event {
     CMR_LISTING("cmrListing"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
-    UPDATE_NEXT_HEARING_INFO("updateNextHearingInfo"),
+    UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -157,7 +157,7 @@ class EventTest {
         assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());
         assertEquals("refundConfirmation", Event.REFUND_CONFIRMATION.toString());
         assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
-        assertEquals("updateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
+        assertEquals("UpdateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
         assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
 
     }

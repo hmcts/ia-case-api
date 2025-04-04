@@ -510,7 +510,7 @@ security:
       - "sendPaymentReminderNotification"
       - "ariaCreateCase"
       - "revokeCaseAccess"
-      - "updateNextHearingInfo"
+      - "UpdateNextHearingInfo"
       - "hearingCancelled"
     caseworker-ia-internal:
       - "revokeCaseAccess"
@@ -520,7 +520,7 @@ security:
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:
-      - "updateNextHearingInfo"
+      - "UpdateNextHearingInfo"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
