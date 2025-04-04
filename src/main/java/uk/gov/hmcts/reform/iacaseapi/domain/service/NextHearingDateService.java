@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Slf4j
@@ -23,13 +24,21 @@ public class NextHearingDateService {
         return featureToggler.getValue("nextHearingDateEnabled", false);
     }
 
-    public NextHearingDetails calculateNextHearingDateFromHearings(Callback<AsylumCase> callback) {
+    public NextHearingDetails calculateNextHearingDateFromHearings(
+            Callback<AsylumCase> callback,
+            PreSubmitCallbackStage callbackStage) {
         NextHearingDetails nextHearingDetails = null;
 
         try {
-            AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
+            AsylumCase asylumCase = callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+                    ? iaHearingsApiService.aboutToStart(callback)
+                    : iaHearingsApiService.aboutToSubmit(callback);
             nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
                 .orElse(null);
+            log.error("Next hearing date from hearings API, caseReference: {}, nextHearingID: {}, nextHearingDate: " +
+                    "{}", callback.getCaseDetails().getId(),
+                    nextHearingDetails != null ? nextHearingDetails.getHearingId() : null,
+                    nextHearingDetails != null ? nextHearingDetails.getHearingDateTime() : null);
         } catch (AsylumCaseServiceResponseException e) {
             log.error("Setting next hearing date from hearings failed: ", e);
         }
@@ -39,7 +48,9 @@ public class NextHearingDateService {
             log.error("Failed to calculate Next hearing date from hearings for case ID {}", caseId);
             return calculateNextHearingDateFromCaseData(callback);
         } else {
-            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
+            log.info("Next hearing date successfully calculated from hearings for case ID {}, "
+                    + "nextHearingId {}, nextHearingDate {}",
+                    caseId, nextHearingDetails.getHearingId(), nextHearingDetails.getHearingDateTime());
             return nextHearingDetails;
         }
     }
@@ -52,5 +63,12 @@ public class NextHearingDateService {
 
         return NextHearingDetails.builder()
             .hearingId("999").hearingDateTime(listCaseHearingDate).build();
+    }
+
+    public void clearHearingDateInformation(AsylumCase asylumCase) {
+        asylumCase.clear(LIST_CASE_HEARING_DATE);
+        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
+            .hearingId(null).hearingDateTime(null).build();
+        asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
     }
 }
