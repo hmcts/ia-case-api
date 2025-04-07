@@ -35,10 +35,6 @@ public class NextHearingDateService {
                     : iaHearingsApiService.aboutToSubmit(callback);
             nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
                 .orElse(null);
-            log.error("Next hearing date from hearings API, caseReference: {}, nextHearingID: {}, nextHearingDate: " +
-                    "{}", callback.getCaseDetails().getId(),
-                    nextHearingDetails != null ? nextHearingDetails.getHearingId() : null,
-                    nextHearingDetails != null ? nextHearingDetails.getHearingDateTime() : null);
         } catch (AsylumCaseServiceResponseException e) {
             log.error("Setting next hearing date from hearings failed: ", e);
         }
@@ -48,9 +44,7 @@ public class NextHearingDateService {
             log.error("Failed to calculate Next hearing date from hearings for case ID {}", caseId);
             return calculateNextHearingDateFromCaseData(callback);
         } else {
-            log.info("Next hearing date successfully calculated from hearings for case ID {}, "
-                    + "nextHearingId {}, nextHearingDate {}",
-                    caseId, nextHearingDetails.getHearingId(), nextHearingDetails.getHearingDateTime());
+            log.info("Next hearing date successfully calculated from hearings for case ID {}", caseId);
             return nextHearingDetails;
         }
     }

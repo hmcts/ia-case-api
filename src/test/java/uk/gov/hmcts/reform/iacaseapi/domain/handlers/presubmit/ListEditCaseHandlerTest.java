@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -33,7 +32,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -56,7 +54,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocationRefDa
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
@@ -118,7 +115,6 @@ class ListEditCaseHandlerTest {
 
     private ListEditCaseHandler listEditCaseHandler;
     private final String listCaseHearingDate = LocalDateTime.now().plusDays(1).toString();
-
 
     @BeforeEach
     public void setUp() {
@@ -571,60 +567,6 @@ class ListEditCaseHandlerTest {
         assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("No Hearing Centre found for Listing location with Epimms ID: 386417777")
             .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    public void should_not_set_next_hearing_date_if_feature_not_enabled(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateService.enabled()).thenReturn(false);
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-
-        listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromCaseData(callback);
-        verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    public void should_set_next_hearing_date_from_hearings(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateService.enabled()).thenReturn(true);
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-
-        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
-            .hearingId("hearingId").hearingDateTime("hearingDateTime").build();
-        when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
-            .thenReturn(Optional.of(nextHearingDetails));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        verify(nextHearingDateService, times(1))
-                .calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromCaseData(callback);
-        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
-    public void should_set_next_hearing_date_from_case_data(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateService.enabled()).thenReturn(true);
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        verify(nextHearingDateService, never())
-                .calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
-        verify(nextHearingDateService).calculateNextHearingDateFromCaseData(callback);
-        verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
 
     @Test

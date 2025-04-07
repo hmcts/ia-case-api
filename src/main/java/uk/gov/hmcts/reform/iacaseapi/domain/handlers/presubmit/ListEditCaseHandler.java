@@ -206,21 +206,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
-        if (nextHearingDateService.enabled()) {
-            log.debug("Next hearing date feature enabled");
-            if (HandlerUtils.isIntegrated(asylumCase)) {
-                asylumCase.write(NEXT_HEARING_DETAILS,
-                    nextHearingDateService.calculateNextHearingDateFromHearings(callback, callbackStage));
-            } else {
-                asylumCase.write(NEXT_HEARING_DETAILS,
-                    nextHearingDateService.calculateNextHearingDateFromCaseData(callback));
-            }
-        } else {
-            log.debug("Next hearing date feature not enabled");
-        }
-
-        hearingIdListProcessor.processHearingIdList(asylumCase);
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
