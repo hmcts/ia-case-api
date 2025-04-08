@@ -197,6 +197,24 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
+            "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void doesnt_called_detained_appeal_when_ft_is_disabled(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, never()).clear(REMOVAL_ORDER_OPTIONS);
+        verify(asylumCase, never()).clear(REMOVAL_ORDER_DATE);
+        verify(asylumCase, never()).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
         "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_change_to_out_of_country_refusal_of_protection_clear_in_country_details(Event event) {
