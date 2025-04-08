@@ -1417,7 +1417,7 @@ ia-hearings-api:
       HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_URL: http://ccd-data-store-api-ia-case-api-pr-2511.preview.platform.hmcts.net
+      CCD_URL: https://ccd-data-store-api-ia-case-api-pr-2511.preview.platform.hmcts.net
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
