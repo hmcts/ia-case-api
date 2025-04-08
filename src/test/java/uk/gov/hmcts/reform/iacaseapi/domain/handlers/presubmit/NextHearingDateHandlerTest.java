@@ -168,7 +168,7 @@ class NextHearingDateHandlerTest {
 
                 boolean canHandle = handler.canHandle(callbackStage, callback);
 
-                if ((event == UPDATE_NEXT_HEARING_INFO && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
+                if (event == UPDATE_NEXT_HEARING_INFO
                     || (List.of(LIST_CASE, EDIT_CASE_LISTING, CMR_LISTING, CMR_RE_LISTING).contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)) {
                     assertTrue(canHandle);
