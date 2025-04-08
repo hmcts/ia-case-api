@@ -1429,7 +1429,7 @@ ia-hearings-api:
       AAC_URL: https://aac-${SERVICE_FQDN}
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
-      XUI_URL: "xui-${SERVICE_FQDN}"
+      XUI_URL: "https://xui-${SERVICE_FQDN}"
       HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
       HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "${SERVICE_NAME}-hmcsb-ia"
       HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
