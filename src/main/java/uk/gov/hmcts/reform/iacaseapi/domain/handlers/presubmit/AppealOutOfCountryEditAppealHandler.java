@@ -113,6 +113,10 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(CUSTODIAL_SENTENCE);
                 asylumCase.clear(IRC_NAME);
                 asylumCase.clear(PRISON_NAME);
+                asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                asylumCase.clear(REMOVAL_ORDER_OPTIONS);
+                asylumCase.clear(REMOVAL_ORDER_DATE);
+                asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
                 Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
                 if (optionalHasSponsor.isPresent() && optionalHasSponsor.get().equals(NO)) {
                     clearSponsor(asylumCase);

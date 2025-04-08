@@ -161,7 +161,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         clearRefusalOfProtection(asylumCase);
         verify(asylumCase, times(2)).clear(DECISION_LETTER_RECEIVED_DATE);
-        verify(asylumCase, times(2)).clear(DEPORTATION_ORDER_OPTIONS);
+        verify(asylumCase, times(3)).clear(DEPORTATION_ORDER_OPTIONS);
 
         verify(asylumCase, times(2)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
@@ -173,6 +173,9 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(CUSTODIAL_SENTENCE);
         verify(asylumCase, times(1)).clear(IRC_NAME);
         verify(asylumCase, times(1)).clear(PRISON_NAME);
+        verify(asylumCase, times(1)).clear(REMOVAL_ORDER_OPTIONS);
+        verify(asylumCase, times(1)).clear(REMOVAL_ORDER_DATE);
+        verify(asylumCase, times(1)).clear(DATE_CUSTODIAL_SENTENCE);
         clearAdaSuitabilityFields(asylumCase);
     }
 
