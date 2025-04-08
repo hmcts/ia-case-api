@@ -693,7 +693,7 @@ xui-webapp:
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
       SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-ia-case-api-pr-2511.preview.platform.hmcts.net
+      SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-ia-case-api-pr-2511.preview.platform.hmcts.net
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
