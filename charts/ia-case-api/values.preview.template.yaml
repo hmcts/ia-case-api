@@ -1435,6 +1435,37 @@ ia-hearings-api:
       HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
       HMC_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-pr-2511.preview.platform.hmcts.net
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+
+ia-cron-unnotified-hearings-processor:
+  enabled: true
+  job:
+    kind: CronJob
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-491'
+    releaseNameOverride: ${SERVICE_NAME}-ia-cron-unnotified-hearings-processor
+    name: ${SERVICE_NAME}-ia-cron-unnotified-hearings-processor
+    schedule: "*/5 * * * *"
+    aadIdentityName: ia
+    environment:
+      HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+      CCD_URL: https://ccd-data-store-api-ia-case-api-pr-2511.preview.platform.hmcts.net
+      AAC_URL: https://aac-${SERVICE_FQDN}
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      XUI_URL: "https://xui-${SERVICE_FQDN}"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "${SERVICE_NAME}-hmcsb-ia"
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
+      HMC_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-pr-2511.preview.platform.hmcts.net
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+      TASK_NAME: UnNotifiedHearingsProcessor
 
 
 hmcsb:

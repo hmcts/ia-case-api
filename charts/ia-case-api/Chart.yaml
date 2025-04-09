@@ -49,11 +49,15 @@ dependencies:
   - name: ccd-case-document-am-api
     version: 1.7.14
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: ia-hearings-api.enabled
+    condition: ccd-case-document-am-api.enabled
   - name: ia-hearings-api
     version: 0.0.19
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: ccd-case-document-am-api.enabled
+    condition: ia-hearings-api.enabled
+  - name: ia-cron-config
+    version: 0.0.1
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-cron-unnotified-hearings-processor.enabled
   - name: em-ccdorc
     version: 2.0.23
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
@@ -64,7 +68,7 @@ dependencies:
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
     version: ~0.2.16
-    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: aac-manage-case-assignment.enabled
   - name: wa
     version: ~1.0.5
