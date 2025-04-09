@@ -1445,7 +1445,6 @@ ia-cron-unnotified-hearings-processor:
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-unnotified-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-unnotified-hearings-processor
     schedule: "*/5 * * * *"
-    aadIdentityName: ia
     environment:
       HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
       CCD_URL: https://ccd-data-store-api-ia-case-api-pr-2511.preview.platform.hmcts.net
