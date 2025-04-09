@@ -57,8 +57,8 @@ dependencies:
   - name: ia-cron-config
     version: 0.0.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    alias: ia-cron-unnotified-hearings-processor
-    condition: ia-cron-unnotified-hearings-processor.enabled
+    alias: ia-cron-hearings-processor
+    condition: ia-cron-hearings-processor.enabled
   - name: em-ccdorc
     version: 2.0.23
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'

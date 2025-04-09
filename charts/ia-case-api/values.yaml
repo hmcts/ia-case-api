@@ -130,7 +130,7 @@ aac-manage-case-assignment:
   enabled: false
 am-org-role-mapping-service:
   enabled: false
-ia-cron-unnotified-hearings-processor:
+ia-cron-hearings-processor:
   enabled: false
 redis:
   enabled: false
