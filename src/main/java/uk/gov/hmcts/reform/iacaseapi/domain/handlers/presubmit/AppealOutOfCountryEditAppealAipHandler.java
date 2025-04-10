@@ -223,6 +223,8 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
                     clearAipFieldsForAppealType(asylumCase, true);
                 }
             }
+
+            asylumCase.write(HAS_SPONSOR, asylumCase.read(HAS_SPONSOR, YesOrNo.class).orElse(null));
         }
     }
 
