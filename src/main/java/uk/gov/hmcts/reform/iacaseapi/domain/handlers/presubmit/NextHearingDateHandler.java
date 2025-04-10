@@ -67,8 +67,6 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
             } else {
                 nextHearingDetails = nextHearingDateService.calculateNextHearingDateFromCaseData(callback);
             }
-            log.info("next hearing date calculated for event: {}, ccdId: {}, hearingDate: {}",
-                    callback.getEvent(), callback.getCaseDetails().getId(), nextHearingDetails.getHearingDateTime());
             asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
         } else {
             log.debug("Next hearing date feature not enabled");
