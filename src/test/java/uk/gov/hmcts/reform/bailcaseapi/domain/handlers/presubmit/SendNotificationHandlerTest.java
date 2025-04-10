@@ -39,9 +39,7 @@ class SendNotificationHandlerTest {
 
     @BeforeEach
     public void setUp() {
-
-        sendNotificationHandler =
-            new SendNotificationHandler(notificationSender);
+        sendNotificationHandler = new SendNotificationHandler(notificationSender);
     }
 
     @Test
@@ -84,7 +82,7 @@ class SendNotificationHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
         assertThatThrownBy(() -> sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -104,6 +102,8 @@ class SendNotificationHandlerTest {
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     &&
                     Arrays.asList(
+                        Event.START_APPLICATION,
+                        Event.EDIT_BAIL_APPLICATION,
                         Event.SUBMIT_APPLICATION,
                         Event.UPLOAD_BAIL_SUMMARY,
                         Event.UPLOAD_SIGNED_DECISION_NOTICE,
