@@ -4,10 +4,9 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import com.google.common.collect.Lists;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -106,6 +105,10 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
+        log.info("--------------------");
+        log.info("callback.getEvent(): {}", callback.getEvent());
+        log.info("asylumCaseWithHomeOfficeData keySet: {}", new TreeSet<String>(asylumCaseWithHomeOfficeData.keySet()));
+        log.info("--------------------");
         AppealType appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
