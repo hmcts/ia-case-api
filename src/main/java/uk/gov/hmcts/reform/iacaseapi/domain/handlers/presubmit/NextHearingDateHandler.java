@@ -42,7 +42,7 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
             CMR_LISTING,
             CMR_RE_LISTING);
 
-        return callback.getEvent() == UPDATE_NEXT_HEARING_INFO
+        return (callbackStage ==  PreSubmitCallbackStage.ABOUT_TO_START && callback.getEvent() == UPDATE_NEXT_HEARING_INFO)
                 || (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && targetEvents.contains(callback.getEvent()));
     }
 
