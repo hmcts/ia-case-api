@@ -33,7 +33,7 @@ java:
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    DUMMY: true
+    DUMMY_VARIABLE: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
   keyVaults:
     ia:
@@ -1402,8 +1402,6 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
-
-
 
 postgresql:
   enabled: true
