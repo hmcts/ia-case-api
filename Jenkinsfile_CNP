@@ -45,6 +45,8 @@ def secrets = [
                 secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
                 secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
                 secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
+                secret('ia-system-access-username', 'IA_SYSTEM_USERNAME'),
+                secret('ia-system-access-password', 'IA_SYSTEM_PASSWORD'),
 
                 secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
                 secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
@@ -189,7 +191,7 @@ enableSecurityScan()
 
     afterSuccess('akschartsinstall') {
         onPR {
-            if (env.ENABLE_WA) {
+            if (env.ENABLE_WA == true) {
                 githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
                 githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
                 env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"

@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -372,83 +373,34 @@ public class CcdScenarioRunnerTest {
 
         String credentials = MapValueExtractor.extract(scenario, "request.credentials");
 
-        if ("LegalRepresentative".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization();
-        }
-
-        if ("CaseOfficer".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getCaseOfficerAuthorization();
-        }
-
-        if ("AdminOfficer".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getAdminOfficerAuthorization();
-        }
-
-        if ("HomeOfficeApc".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficeApcAuthorization();
-        }
-
-        if ("HomeOfficeLart".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficeLartAuthorization();
-        }
-
-        if ("HomeOfficePou".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficePouAuthorization();
-        }
-
-        if ("HomeOfficeGeneric".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficeGenericAuthorization();
-        }
-
-        if ("LegalRepresentativeOrgA".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
+        return switch (Objects.requireNonNull(credentials).toLowerCase()) {
+            case "legalrepresentative" ->
+                authorizationHeadersProvider.getLegalRepresentativeAuthorization();
+            case "systemuser" ->
+                authorizationHeadersProvider.getSystemUserAuthorization();
+            case "caseofficer" ->
+                authorizationHeadersProvider.getCaseOfficerAuthorization();
+            case "adminofficer" ->
+                authorizationHeadersProvider.getAdminOfficerAuthorization();
+            case "homeofficeapc" ->
+                authorizationHeadersProvider.getHomeOfficeApcAuthorization();
+            case "homeofficelart" ->
+                authorizationHeadersProvider.getHomeOfficeLartAuthorization();
+            case "homeofficepou" ->
+                authorizationHeadersProvider.getHomeOfficePouAuthorization();
+            case "homeofficegeneric" -> authorizationHeadersProvider
+                    .getHomeOfficeGenericAuthorization();
+            case "legalrepresentativeorga" -> authorizationHeadersProvider
                 .getLegalRepresentativeOrgAAuthorization();
-        }
-
-        if ("LegalRepresentativeOrgSuccess".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                    .getLegalRepresentativeOrgSuccessAuthorization();
-        }
-
-        if ("LegalRepresentativeOrgDeleted".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
+            case "legalrepresentativeorgsuccess" -> authorizationHeadersProvider
+                .getLegalRepresentativeOrgSuccessAuthorization();
+            case "legalrepresentativeorgdeleted" -> authorizationHeadersProvider
                 .getLegalRepresentativeOrgDeletedAuthorization();
-        }
-
-        if ("Judge".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
+            case "judge" -> authorizationHeadersProvider
                 .getJudgeAuthorization();
-        }
-
-        if ("Citizen".equalsIgnoreCase(credentials)) {
-            return authorizationHeadersProvider
+            case "citizen" -> authorizationHeadersProvider
                 .getCitizenAuthorization();
-        }
-
-        if ("SystemUser".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                    .getSystemUserAuthorization();
-        }
-
-        return new Headers();
+            default -> new Headers();
+        };
     }
 }
