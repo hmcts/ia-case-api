@@ -1,0 +1,125 @@
+java:
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  devcpuRequests: 500m
+  devmemoryRequests: 1Gi
+  devcpuLimits: 2
+  devmemoryLimits: 4Gi
+  environment:
+    POSTGRES_HOST: ia-preview.postgres.database.azure.com
+    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
+    POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
+    POSTGRES_CONNECTION_OPTIONS: ""
+    #Un comment APIs if you need to test a local version
+    IA_CASE_DOCUMENTS_API_URL: ${IA_CASE_DOCUMENTS_API_URL}
+    IA_CASE_NOTIFICATIONS_API_URL: ${IA_CASE_NOTIFICATIONS_API_URL}
+    IA_CASE_PAYMENTS_API_URL: ${IA_CASE_PAYMENTS_API_URL}
+    IA_HOME_OFFICE_INTEGRATION_API_URL: ${IA_HOME_OFFICE_INTEGRATION_API_URL}
+    IA_TIMED_EVENT_SERVICE_URL: ${IA_TIMED_EVENT_SERVICE_URL}
+    IA_TIMED_EVENT_SERVICE_ENABLED: "true"
+    IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
+    IA_IDAM_REDIRECT_URI: ${IA_IDAM_REDIRECT_URI}
+    CCD_URL: ${CCD_URL}
+    CCD_GW_URL: ${CCD_GW_URL}
+    DM_URL: ${DM_URL}
+    IDAM_URL: ${IDAM_URL}
+    OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    IS_SAVE_AND_CONTINUE_ENABLED: "false"
+    ROLE_ASSIGNMENT_URL: ${ROLE_ASSIGNMENT_URL}
+    CASE_DOCUMENT_AM_URL: ${CASE_DOCUMENT_AM_URL}
+#    AAC_URL: https://aac-${SERVICE_FQDN}
+    CCD_DEFINITION_STORE_API_BASE_URL: "http://ccd-definition-store-api-aat.service.core-compute-aat.internal"
+    LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+    FEES_REGISTER_API_URL: "http://fees-register-api-aat.service.core-compute-aat.internal"
+    DUMMY: true
+    PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    IA_HEARINGS_API_URL: "https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net"
+  keyVaults:
+    ia:
+      resourceGroup: ia
+      secrets:
+        - name: ia-gov-notify-key
+          alias: IA_GOV_NOTIFY_KEY
+        - name: ia-bail-gov-notify-key
+          alias: IA_BAIL_GOV_NOTIFY_KEY
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: submit-hearing-requirements-enabled
+          alias: IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+        - name: postgres-auth-values-password
+          alias: PG_AUTH_VALUES_YAML_PASS
+  secrets:
+    POSTGRES_PASSWORD:
+      secretRef: postgres
+      key: PASSWORD
+      disabled: false
+
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/hearings-api:pr-484
+    releaseNameOverride: ${SERVICE_NAME}-hearings-api
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+    environment:
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+
+ia-case-payments-api:
+  enabled: false
+ia-case-documents-api:
+  enabled: false
+ia-case-notifications-api:
+  enabled: false
+ia-home-office-integration-api:
+  enabled: false
+ia-bail-case-api:
+  enabled: false
+ia-timed-event-service:
+  enabled: false
+idam-pr:
+  enabled: false
+xui-webapp:
+  enabled: false
+ccd:
+  enabled: false
+ia-aip-frontend:
+  enabled: false
+ccd-case-document-am-api:
+  enabled: false
+em-ccdorc:
+  enabled: false
+em-stitching:
+  enabled: false
+wa:
+  enabled: false
+servicebus:
+  enabled: false
+ccd-message-publisher:
+  enabled: false
+aac-manage-case-assignment:
+  enabled: false
+am-org-role-mapping-service:
+  enabled: false
+
