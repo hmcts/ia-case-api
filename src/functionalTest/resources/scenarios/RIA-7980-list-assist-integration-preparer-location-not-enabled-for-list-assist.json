@@ -1,5 +1,6 @@
 {
   "description": "RIA-7980 List Assist Integration preparer for location not enabled for list assist",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
