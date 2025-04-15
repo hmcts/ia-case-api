@@ -10,12 +10,15 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -24,14 +27,19 @@ class RemoveAppealFromOnlineConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
-
-    private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation =
-        new RemoveAppealFromOnlineConfirmation();
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
+    @InjectMocks
+    private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation;
 
     @Test
     void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_APPEAL_FROM_ONLINE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234123412341234L);
 
         PostSubmitCallbackResponse callbackResponse =
             removeAppealFromOnlineConfirmation.handle(callback);
