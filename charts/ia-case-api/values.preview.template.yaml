@@ -33,7 +33,7 @@ java:
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    DUMMY: false
+    DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
   keyVaults:
     ia:
@@ -804,7 +804,7 @@ ccd:
         enabled: false
       imagePullPolicy: Always
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      keyVaults: [ ]
+      keyVaults: {}
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 2
@@ -850,7 +850,7 @@ ccd:
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
-      keyVaults: []
+      keyVaults: {}
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
   am-role-assignment-service:
@@ -896,7 +896,7 @@ ccd:
         ADMINWEB_ELASTIC_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/index
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
-      keyVaults: []
+      keyVaults: {}
 
   ccd-definition-store-api:
     java:
@@ -919,7 +919,7 @@ ccd:
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
-      keyVaults: [ ]
+      keyVaults: {}
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
