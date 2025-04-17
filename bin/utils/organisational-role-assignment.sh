@@ -15,7 +15,6 @@ ROLE_CLASSIFICATION="${3:-PUBLIC}"
 ROLE_NAME="${4:-"tribunal-caseworker"}"
 ROLE_ATTRIBUTES="${5:-'{"jurisdiction":"IA"}'}"
 ROLE_CATEGORY="${6:-"LEGAL_OPERATIONS"}"
-AM_PROCESS="${7:-"staff-organisational-role-mapping"}"
 
 BASEDIR=$(dirname "$0")
 
@@ -23,8 +22,6 @@ USER_TOKEN=$($BASEDIR/idam-user-token.sh $USERNAME $PASSWORD)
 USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh iac \
   $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}))
-
-AM_REFERENCE="${8:-"${USER_ID}/${ROLE_NAME}"}"
 
 echo "\n\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
 echo "\n\nROLE ASSIGNMENT URL: \n Url: ${ROLE_ASSIGNMENT_URL}\n"
@@ -36,8 +33,8 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
   -H "Content-Type: application/json" \
   -d '{ "roleRequest": {
           "assignerId": "'"${USER_ID}"'",
-          "process": "'"${AM_PROCESS}"'",
-          "reference": "'"${AM_REFERENCE}"'",
+          "process": "staff-organisational-role-mapping",
+          "reference": "'"${USER_ID}/${ROLE_NAME}"'",
           "replaceExisting": true
         },
         "requestedRoles": [
@@ -54,4 +51,3 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
           }
         ]
       }'
-
