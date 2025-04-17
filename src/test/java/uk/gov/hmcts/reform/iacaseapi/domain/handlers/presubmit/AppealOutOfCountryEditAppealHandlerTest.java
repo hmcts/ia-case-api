@@ -180,9 +180,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-            "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
-    })
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
     void doesnt_called_detained_appeal_when_ft_is_disabled(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
