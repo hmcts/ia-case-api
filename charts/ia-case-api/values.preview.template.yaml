@@ -743,6 +743,8 @@ xui-webapp:
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
             alias: mc-idam-client-secret
+          - name: mc-idam-client-secret
+            alias: mc-idam-client-secret
           - name: system-user-name
             alias: system-user-name
           - name: system-user-password
