@@ -688,10 +688,10 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    memoryRequests: 3Gi
-    cpuRequests: 3000m
-    memoryLimits: 5Gi
-    cpuLimits: 4500m
+    memoryRequests: 2Gi
+    cpuRequests: 2000m
+    memoryLimits: 4Gi
+    cpuLimits: 3500m
     devmemoryRequests: 6Gi
     devcpuRequests: 2000m
     devmemoryLimits: 8Gi
