@@ -80,6 +80,10 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 clearRefusalOfProtection(asylumCase);
                 clearEntryClearanceDecision(asylumCase);
                 clearLeaveUK(asylumCase);
+                Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
+                if (optionalHasSponsor.isPresent() && optionalHasSponsor.get().equals(NO)) {
+                    clearSponsor(asylumCase);
+                }
 
                 YesOrNo isDetained = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
                 // If non-accelerated Detained or non Detained - remove Decision Receive date
@@ -93,9 +97,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                     asylumCase.clear(HOME_OFFICE_DECISION_DATE);
                 }
 
-                asylumCase.clear(HAS_SPONSOR);
                 asylumCase.clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
-                clearSponsor(asylumCase);
             }
 
             //Clear the In country fields

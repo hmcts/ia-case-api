@@ -58,7 +58,7 @@ class FtpaAppealDecisionStateHandlerTest {
         when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+                ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.FTPA_DECIDED);
@@ -75,7 +75,7 @@ class FtpaAppealDecisionStateHandlerTest {
         when(caseDetails.getState()).thenReturn(State.FTPA_SUBMITTED);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+                ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.FTPA_DECIDED);
@@ -94,7 +94,7 @@ class FtpaAppealDecisionStateHandlerTest {
         when(caseDetails.getState()).thenReturn(priorState);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+                ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(priorState);
@@ -106,15 +106,15 @@ class FtpaAppealDecisionStateHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
@@ -130,7 +130,7 @@ class FtpaAppealDecisionStateHandlerTest {
                 boolean canHandle = ftpaAppealDecisionStateHandler.canHandle(callbackStage, callback);
 
                 if (event == Event.LEADERSHIP_JUDGE_FTPA_DECISION
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
                 } else {
@@ -146,20 +146,20 @@ class FtpaAppealDecisionStateHandlerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler.handle(null, callback, callbackResponse))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                () -> ftpaAppealDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 }

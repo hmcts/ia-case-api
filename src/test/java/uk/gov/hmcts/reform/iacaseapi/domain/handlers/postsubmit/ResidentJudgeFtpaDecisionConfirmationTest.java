@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -47,14 +49,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     private AsylumCase asylumCase;
     @Mock
     private FeatureToggler featureToggler;
-
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
+    @InjectMocks
     private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation;
 
 
     @BeforeEach
     void setup() {
         residentJudgeFtpaDecisionConfirmation =
-            new ResidentJudgeFtpaDecisionConfirmation(featureToggler);
+            new ResidentJudgeFtpaDecisionConfirmation(featureToggler, roleAssignmentService);
     }
 
     @Test
@@ -67,24 +71,24 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("granted"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -98,24 +102,24 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("partiallyGranted"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -128,24 +132,24 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("refused"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -159,24 +163,24 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             "notAdmitted"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -190,24 +194,24 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("reheardRule32"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                        "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @ParameterizedTest
@@ -219,20 +223,19 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of("reheardRule35"));
+                .thenReturn(Optional.of("reheardRule35"));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(toggleDlrmFlag);
 
-
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())
@@ -263,23 +266,23 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             .thenReturn(Optional.of("remadeRule31"));
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Both parties have been notified of the decision.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains("Both parties have been notified of the decision.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -290,28 +293,27 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of("remadeRule32"));
+                .thenReturn(Optional.of("remadeRule32"));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(false);
 
-
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Both parties have been notified of the decision.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains("Both parties have been notified of the decision.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -322,27 +324,27 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
-            .thenReturn(Optional.of("remadeRule32"));
+                .thenReturn(Optional.of("remadeRule32"));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
+                residentJudgeFtpaDecisionConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You've disposed of the application");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# You've disposed of the application");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("A Judge will update the decision.<br>");
+                callbackResponse.getConfirmationBody().get())
+                .contains("A Judge will update the decision.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
     }
 
     @Test
@@ -352,21 +354,21 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
-            .hasMessage("FtpaApplicantType is not present")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .hasMessage("FtpaApplicantType is not present")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
@@ -397,12 +399,12 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.canHandle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
     private static Stream<Arguments> toggleDlrmSwitchMode() {

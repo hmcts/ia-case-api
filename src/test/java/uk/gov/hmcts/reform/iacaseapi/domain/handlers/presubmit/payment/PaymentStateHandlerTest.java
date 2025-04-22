@@ -453,10 +453,11 @@ class PaymentStateHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        Assert.assertNotNull(returnedCallbackResponse);
-        Assert.assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (hasRemission(remissionOption, helpWithFeesOption) && !payLater.equals(PAY_LATER)) {
+        if ((hasRemission(remissionOption, helpWithFeesOption) && !payLater.equals(PAY_LATER) && type != PA)
+                || (type == EA || type == HU || type == EU)) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
