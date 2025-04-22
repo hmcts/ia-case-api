@@ -3,6 +3,8 @@
     <!-- Suppress CVE-2024-38820 -->
     <suppress until="2025-08-26">
         <cve>CVE-2024-38820</cve>
+        <cve>CVE-2024-38286</cve>
+        <cve>CVE-2025-24813</cve>
     </suppress>
 </suppressions>
 
