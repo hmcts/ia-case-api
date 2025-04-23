@@ -718,7 +718,6 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS}
-      APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -744,8 +743,6 @@ xui-webapp:
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
             alias: mc-idam-client-secret
-          - name: appinsights-connection-string-mc
-            alias: appinsights-connection-string-mc
           - name: system-user-name
             alias: system-user-name
           - name: system-user-password
