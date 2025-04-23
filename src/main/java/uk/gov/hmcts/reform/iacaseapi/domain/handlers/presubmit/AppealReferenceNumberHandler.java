@@ -92,8 +92,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             String appealReferenceNumber =
                 appealReferenceNumberGenerator.generate(
                     callback.getCaseDetails().getId(),
-                    appealType,
-                    isDetainedAppeal
+                    appealType
                 );
 
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
