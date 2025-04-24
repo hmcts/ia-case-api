@@ -1405,7 +1405,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-491'
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ia-hearings-api-${SERVICE_FQDN}
     devcpuRequests: 500m
@@ -1441,7 +1441,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-491'
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
