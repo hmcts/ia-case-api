@@ -69,7 +69,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         if (optionalAppellantInUk.isPresent()) {
             YesOrNo appellantInUk = optionalAppellantInUk.get();
 
-            //Clear all the Out of country fields
+            // Clear all the Out of country fields
             if (appellantInUk.equals(YES)) {
                 log.info("Clearing Out Of Country fields for an In Country Appeal.");
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, NO);
@@ -100,7 +100,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
             }
 
-            //Clear the In country fields
+            // Clear the In country fields
             if (appellantInUk.equals(NO)) {
                 log.info("Clearing In Country fields for Out Of Country Appeal.");
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, YES);
@@ -113,6 +113,12 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(CUSTODIAL_SENTENCE);
                 asylumCase.clear(IRC_NAME);
                 asylumCase.clear(PRISON_NAME);
+                asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                if (featureToggler.getValue("ft-detained-appeal", false)) {
+                    asylumCase.clear(REMOVAL_ORDER_OPTIONS);
+                    asylumCase.clear(REMOVAL_ORDER_DATE);
+                    asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
+                }
                 Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
                 if (optionalHasSponsor.isPresent() && optionalHasSponsor.get().equals(NO)) {
                     clearSponsor(asylumCase);
