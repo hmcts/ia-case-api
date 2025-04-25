@@ -36,6 +36,7 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         this.professionalOrganisationRetriever = professionalOrganisationRetriever;
         this.ccdCaseAssignment = ccdCaseAssignment;
         this.featureToggler = featureToggler;
+
     }
 
     public boolean canHandle(
