@@ -56,7 +56,7 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
                       "caseType": "Bail"
                    },
                    "actorIdType": "IDAM"
-              },
+              }
           ]
       }'
 
