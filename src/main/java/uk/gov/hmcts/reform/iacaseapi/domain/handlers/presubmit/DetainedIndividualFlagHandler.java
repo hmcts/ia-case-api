@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.DETAINED_INDIVIDUAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
@@ -51,7 +52,7 @@ class DetainedIndividualFlagHandler implements PreSubmitCallbackHandler<AsylumCa
         asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).ifPresent((inDetention) -> {
             if (inDetention.equals(YES)) {
                 StrategicCaseFlagService caseFlagService =
-                        asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
+                        asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
                                 .map(StrategicCaseFlagService::new)
                                 .orElseGet(StrategicCaseFlagService::new);
 
@@ -60,7 +61,7 @@ class DetainedIndividualFlagHandler implements PreSubmitCallbackHandler<AsylumCa
                                 DETAINED_INDIVIDUAL, YES, systemDateProvider.nowWithTime().toString());
 
                 if (newFlagNeededCreating) {
-                    asylumCase.write(CASE_LEVEL_FLAGS, caseFlagService.getStrategicCaseFlag());
+                    asylumCase.write(APPELLANT_LEVEL_FLAGS, caseFlagService.getStrategicCaseFlag());
                 }
             }
         });

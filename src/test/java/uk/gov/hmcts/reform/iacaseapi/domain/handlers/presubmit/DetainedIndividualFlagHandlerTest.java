@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -57,7 +58,7 @@ public class DetainedIndividualFlagHandlerTest {
     @Test
     void activates_new_detained_individual_flag_when_appellant_in_detention_and_flag_is_not_already_set() {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 flagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -66,8 +67,8 @@ public class DetainedIndividualFlagHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(APPELLANT_IN_DETENTION, YesOrNo.class);
-        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
-        verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), any());
+        verify(asylumCase, times(1)).read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class);
+        verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
     }
 
     @Test
