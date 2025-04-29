@@ -47,6 +47,8 @@ echo "Setting up WA Users and role assignments..."
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "hearing-viewer" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "hearing-manager" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
 
-./bin/utils/organisational-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "SYSTEM"
-./bin/utils/system-user-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"
+#./bin/utils/system-user-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"
+./bin/utils/system-user-role-assignments.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}" "iac-system-users" "iac-hearing-system-user" "hearing-manager"
+./bin/utils/system-user-role-assignments.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}" "iac-system-users" "iac-hearing-system-user" "hearing-viewer"
+./bin/utils/system-user-role-assignments.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}" "iac-system-users" "iac-case-allocator-system-user" "case-allocator"
 
