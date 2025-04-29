@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
+@Slf4j
 @Component
 public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -64,12 +67,15 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
         boolean directionDueDateIsInFuture = LocalDate.parse(directionDueDate).isAfter(dateProvider.now());
 
         if (!directionDueDateIsInFuture) {
+
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+            log.error("Direction due date must be in the future");
             response.addError("Direction due date must be in the future");
             return response;
         }
 
+        log.info("Direction due date is in the future : {}", directionDueDate);
         Optional<List<IdValue<Direction>>> directionsOptional = asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS);
         List<IdValue<Direction>> directions = directionsOptional.orElse(Collections.emptyList());
 
