@@ -107,8 +107,8 @@ def secrets = [
                 secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
-                secret('system-user-username', 'IA_SYSTEM_USERNAME'),
-                secret('system-user-password', 'IA_SYSTEM_PASSWORD')
+                secret('system-username', 'IA_SYSTEM_USERNAME'),
+                secret('system-password', 'IA_SYSTEM_PASSWORD')
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
