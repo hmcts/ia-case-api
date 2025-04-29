@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.time.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,6 +69,9 @@ class HomeOfficeDecisionDateCheckerTest {
 
     @Captor
     private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractor;
+
+    @Captor
+    private ArgumentCaptor<YesOrNo> valueCaptor;
 
     @BeforeEach
     public void setUp() {
@@ -559,4 +563,70 @@ class HomeOfficeDecisionDateCheckerTest {
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
+    @Test
+    void handles_case_with_tribunal_received_date_when_in_time() {
+
+        final String tribunalReceivedDate = "2025-04-01";
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(asylumExtractor.capture(), valueCaptor.capture());
+        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
+        List<YesOrNo> values = valueCaptor.getAllValues();
+
+        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.get(0)).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_case_with_tribunal_received_date_when_out_of_time() {
+
+        final String tribunalReceivedDate = "2025-04-25";
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), valueCaptor.capture());
+        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
+        List<YesOrNo> values = valueCaptor.getAllValues();
+
+        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.get(0)).isEqualTo(YES);
+
+        assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(values.get(1)).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_case_without_tribunal_received_date_when_out_of_time() {
+
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), valueCaptor.capture());
+        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
+        List<YesOrNo> values = valueCaptor.getAllValues();
+
+        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.get(0)).isEqualTo(YES);
+
+        assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(values.get(1)).isEqualTo(NO);
+    }
 }
