@@ -93,6 +93,10 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
         );
         asylumCase.write(DIRECTIONS, allDirections);
 
+        for (IdValue<Direction> idValue : allDirections) {
+            log.info("Direction: {}", idValue.getValue().toString());
+        }
+
         Optional<CaseDetails<AsylumCase>> beforeCaseDetails = callback.getCaseDetailsBefore();
         if (beforeCaseDetails.isPresent()) {
             State preClarifyingState = beforeCaseDetails.get().getState();
