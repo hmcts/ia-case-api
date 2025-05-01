@@ -564,7 +564,7 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    void handles_case_with_tribunal_received_date_when_in_time() {
+    void handles_case_icc_with_tribunal_received_date_when_in_time() {
 
         final String tribunalReceivedDate = "2025-04-01";
         final String homeOfficeDecisionDate = "2025-03-25";
@@ -573,6 +573,7 @@ class HomeOfficeDecisionDateCheckerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -585,15 +586,16 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    void handles_case_with_tribunal_received_date_when_out_of_time() {
+    void handles_case_non_icc_with_tribunal_received_date_when_out_of_time() {
 
-        final String tribunalReceivedDate = "2025-04-25";
+        final String tribunalReceivedDate = "2025-04-01";
         final String homeOfficeDecisionDate = "2025-03-25";
         final String nowDate = "2025-04-28";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -609,13 +611,62 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    void handles_case_without_tribunal_received_date_when_out_of_time() {
+    void handles_case_icc_with_tribunal_received_date_when_out_of_time() {
+
+        final String tribunalReceivedDate = "2025-04-25";
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), valueCaptor.capture());
+        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
+        List<YesOrNo> values = valueCaptor.getAllValues();
+
+        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.get(0)).isEqualTo(YES);
+
+        assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(values.get(1)).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_case_icc_without_tribunal_received_date_when_out_of_time() {
 
         final String homeOfficeDecisionDate = "2025-03-25";
         final String nowDate = "2025-04-28";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), valueCaptor.capture());
+        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
+        List<YesOrNo> values = valueCaptor.getAllValues();
+
+        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.get(0)).isEqualTo(YES);
+
+        assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(values.get(1)).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_case_non_icc_without_tribunal_received_date_when_out_of_time() {
+
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
