@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1043 Determines whether appeal is submitted out of time - Internal In Country",
+  "description": "DIAC-1043 Determines whether appeal is submitted out of time - Admin In Country",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
