@@ -89,12 +89,13 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         } else if (!HandlerUtils.isAipJourney(asylumCase)) {
             boolean isOutOfCountry = outOfCountryDecisionTypeOptional.isPresent();
             boolean isOutOfCountryCircumstances = outOfCountryCircumstances.isPresent();
+            boolean isInternalCase = isInternalCase(asylumCase);
 
             AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("Appeal type is missing"));
             LocalDate decisionDate;
 
-            if (isInternalCase(asylumCase)) {
+            if (isInternalCase) {
                 decisionDate = isOutOfCountryCircumstances
                     ? handleOutOfCountryInternalAppeal(asylumCase, outOfCountryCircumstances.get())
                     : handleInCountryAppeal(asylumCase, appealType);
@@ -104,7 +105,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                     : handleInCountryAppeal(asylumCase, appealType);
             }
 
-            if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances, tribunalReceivedDateString)) {
+            if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances, tribunalReceivedDateString, isInternalCase)) {
                 asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
                 asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
             } else {
@@ -189,9 +190,9 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         }
     }
 
-    private boolean isDecisionDateBeforeAppealOutOfTimeDate(LocalDate decisionDate, boolean isOutOfCountry, boolean isOutOfCountryCircumstances, Optional<String> tribunalReceivedDateString) {
+    private boolean isDecisionDateBeforeAppealOutOfTimeDate(LocalDate decisionDate, boolean isOutOfCountry, boolean isOutOfCountryCircumstances, Optional<String> tribunalReceivedDateString, boolean isInternalCase) {
         // added for DIAC-1043 if tribunalReceivedDate is present use for out of time calculation otherwise use now
-        LocalDate dateForComparison = tribunalReceivedDateString.isPresent() ? parse(tribunalReceivedDateString.get()) : dateProvider.now();
+        LocalDate dateForComparison = (tribunalReceivedDateString.isPresent() && isInternalCase) ? parse(tribunalReceivedDateString.get()) : dateProvider.now();
         return decisionDate.isBefore(dateForComparison.minusDays(isOutOfCountry || isOutOfCountryCircumstances ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk));
     }
 }

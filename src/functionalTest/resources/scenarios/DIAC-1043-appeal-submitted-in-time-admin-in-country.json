@@ -1,0 +1,31 @@
+{
+  "description": "DIAC-1043 Determines whether appeal is submitted out of time - Admin In Country",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-20}",
+          "isAdmin": "Yes",
+          "tribunalReceivedDate": "{$TODAY-10}",
+          "appellantInUk": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-20}"
+      }
+    }
+  }
+}
