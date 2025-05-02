@@ -11,7 +11,7 @@
         "replacements": {
           "homeOfficeDecisionDate": "{$TODAY-20}",
           "isAdmin": "Yes",
-          "tribunalReceivedDate": "{$TODAY-20}",
+          "tribunalReceivedDate": "{$TODAY-2}",
           "appellantInUk": "Yes"
         }
       }
