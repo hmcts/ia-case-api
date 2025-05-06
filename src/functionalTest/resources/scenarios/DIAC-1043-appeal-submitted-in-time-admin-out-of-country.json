@@ -9,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "homeOfficeDecisionDate": "{$TODAY-35}",
           "isAdmin": "Yes",
           "tribunalReceivedDate": "{$TODAY-10}",
           "appellantInUk": "No",
