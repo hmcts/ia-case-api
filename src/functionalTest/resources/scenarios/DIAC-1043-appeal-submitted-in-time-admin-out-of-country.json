@@ -24,7 +24,7 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "submissionOutOfTime": "No",
-        "homeOfficeDecisionDate": "{$TODAY-35}",
+        "homeOfficeDecisionDate": "{$TODAY}",
         "appellantInUk": "No"
       }
     }
