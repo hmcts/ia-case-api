@@ -417,7 +417,7 @@ ia-bail-case-api:
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-      IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api-pr-985.preview.platform.hmcts.net
+      IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api-pr-983.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
