@@ -4,5 +4,7 @@
         <cve>CVE-2024-38286</cve>
         <cve>CVE-2024-38820</cve>
         <cve>CVE-2025-24813</cve>
+        <cve>CVE-2025-31650</cve>
+        <cve>CVE-2025-31651</cve>
     </suppress>
 </suppressions>
