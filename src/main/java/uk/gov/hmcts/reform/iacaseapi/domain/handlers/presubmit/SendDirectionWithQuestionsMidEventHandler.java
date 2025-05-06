@@ -1,47 +1,46 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED;
-
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED;
+
 @Slf4j
 @Component
-public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class SendDirectionWithQuestionsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final DirectionAppender appender;
 
     @Autowired
-    public SendDirectionWithQuestionsHandler(DateProvider dateProvider, DirectionAppender appender) {
+    public SendDirectionWithQuestionsMidEventHandler(DateProvider dateProvider, DirectionAppender appender) {
         this.dateProvider = dateProvider;
         this.appender = appender;
-    }
-
-    @Override
-    public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.EARLY;
     }
 
     @Override
@@ -49,15 +48,19 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && callback.getEvent() == Event.SEND_DIRECTION_WITH_QUESTIONS;
     }
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
@@ -101,7 +104,7 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
         if (beforeCaseDetails.isPresent()) {
             State preClarifyingState = beforeCaseDetails.get().getState();
             if (preClarifyingState != AWAITING_CLARIFYING_QUESTIONS_ANSWERS
-                && preClarifyingState != CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED) {
+                    && preClarifyingState != CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED) {
                 asylumCase.write(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, preClarifyingState);
             }
         }
