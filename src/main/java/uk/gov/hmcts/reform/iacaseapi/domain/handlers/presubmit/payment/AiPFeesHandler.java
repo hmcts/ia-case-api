@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJo
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 @Component
+@Slf4j
 public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
@@ -89,6 +91,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (optionalAppealType.isEmpty()) {
             return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
         }
+        log.info("AiP appeal type: {}, caseId: {}", optionalAppealType.get(), callback.getCaseDetails().getId());
 
         YesOrNo isRemissionsEnabled
                 = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
@@ -116,6 +119,8 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
                 Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
                 if (isRemissionsEnabled == YES && remissionOption.isPresent()) {
+                    log.info("AiP appeal type: {}, caseId: {}, remissionOption: {}",
+                            optionalAppealType.get(), callback.getCaseDetails().getId(), remissionOption.get());
                     setFeeRemissionTypeDetails(asylumCase);
                 } else {
                     setFeePaymentDetails(asylumCase, optionalAppealType.get());
