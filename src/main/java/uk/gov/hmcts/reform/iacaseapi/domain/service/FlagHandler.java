@@ -14,6 +14,7 @@ public final class FlagHandler {
         // Utility class - no instantiation
     }
 
+
     /**
      * Handles activation of a flag for an asylum case.
      * 
