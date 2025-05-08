@@ -1,0 +1,53 @@
+{
+  "description": "DIAC-976-set-detained-individual-flag-by-when-detained-appeal-submitted",
+  "disabled": "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantInDetention": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "protection",
+        "sendDirectionActionAvailable": "No",
+        "caseFlags": {
+          "partyName": null,
+          "roleOnCase": null,
+          "details": [
+            {
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "value": {
+                "name": "RRO (Restricted Reporting Order / Anonymisation)",
+                "flagCode": "CF0012",
+                "status": "Active",
+                "hearingRelevant": "Yes"
+              }
+            },
+            {
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "value": {
+                "name": "Detained individual",
+                "flagCode": "PF0019",
+                "status": "Active",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
