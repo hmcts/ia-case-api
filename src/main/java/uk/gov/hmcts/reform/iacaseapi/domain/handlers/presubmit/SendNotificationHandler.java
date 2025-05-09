@@ -192,8 +192,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
 
-        log.info("-----------getEventsToHandle {}", eventsToHandle);
-
         return eventsToHandle;
     }
 
@@ -272,8 +270,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
-
-        log.info("-----------getInternalEventsToHandle {}", eventsToHandle);
 
         return eventsToHandle;
     }
