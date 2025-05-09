@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.62
+version: 0.0.63
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -89,8 +89,8 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-message-publisher.enabled
   - name: redis
-    version: ~16.13.0
-    repository: "https://charts.bitnami.com/bitnami"
+    version: 20.13.4
+    repository: "oci://registry-1.docker.io/bitnamicharts"
     condition: redis.enabled
   - name: am-org-role-mapping-service
     version: ~0.0.68
