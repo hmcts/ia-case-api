@@ -1,6 +1,7 @@
 {
   "description": "DIAC-976-set-detained-individual-flag-by-when-detained-appeal-submitted",
   "disabled": "true",
+
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
