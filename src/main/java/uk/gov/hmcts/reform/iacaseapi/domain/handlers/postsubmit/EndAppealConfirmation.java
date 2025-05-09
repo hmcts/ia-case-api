@@ -59,7 +59,7 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
             asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class).orElse("");
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseManagerRole(caseId);
+        roleAssignmentService.removeCaseRoleAssignments(caseId);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();

@@ -5,7 +5,6 @@ import static java.util.Collections.singletonList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -116,12 +115,26 @@ public class RoleAssignmentService {
         }
     }
 
-    public void removeCaseManagerRole(String caseId) {
+    public void removeCaseRoleAssignments(String caseId) {
+        List<RoleName> roleNames = List.of(
+            RoleName.CASE_MANAGER,
+            RoleName.TRIBUNAL_CASEWORKER,
+            RoleName.SENIOR_TRIBUNAL_CASEWORKER,
+            RoleName.HEARING_JUDGE,
+            RoleName.FTPA_JUDGE,
+            RoleName.LEAD_JUDGE,
+            RoleName.HEARING_PANEL_JUDGE);
+        List<RoleCategory> roleCategories = List.of(
+            RoleCategory.LEGAL_OPERATIONS,
+            RoleCategory.JUDICIAL,
+            RoleCategory.ADMIN,
+            RoleCategory.CTSC
+        );
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .grantType(List.of(GrantType.SPECIFIC))
-            .roleName(List.of(RoleName.CASE_MANAGER))
-            .roleCategory(List.of(RoleCategory.LEGAL_OPERATIONS))
+            .roleName(roleNames)
+            .roleCategory(roleCategories)
             .attributes(Map.of(
                 Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
                 Attributes.CASE_TYPE, List.of("Asylum"),
@@ -131,18 +144,16 @@ public class RoleAssignmentService {
         log.debug("Query role assignment with the parameters: {}", queryRequest);
 
         RoleAssignmentResource roleAssignmentResource = queryRoleAssignments(queryRequest);
-        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().findFirst();
+        List<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().toList();
 
-        if (roleAssignment.isPresent()) {
-            String actorId = roleAssignment.get().getActorId();
-            String assignmentId = roleAssignment.get().getId();
-            log.info("Removing Case Manager role from user: {} for case ID: {}, assignment ID: {}", actorId, caseId, assignmentId);
-
-            deleteRoleAssignment(assignmentId);
-
-            log.info("Successfully removed Case Manager role from user {} for case ID {}", actorId, caseId);
+        if (!roleAssignment.isEmpty()) {
+            roleAssignment.forEach(assignment -> {
+                log.info("Removing Case role: {}", assignment);
+                deleteRoleAssignment(assignment.getId());
+                log.info("Successfully removed Case role assignment {} for case ID {}", assignment, caseId);
+            });
         } else {
-            log.error("Problem removing Case Manager role for case ID {}. No role assignment found.", caseId);
+            log.error("Problem removing Case roles for case ID {}. No role assignment(s) found.", caseId);
         }
     }
 
