@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FlagHandler;
 @Component
 class DetainedIndividualFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+
     private final DateProvider systemDateProvider;
 
     public DetainedIndividualFlagHandler(DateProvider systemDateProvider) {
