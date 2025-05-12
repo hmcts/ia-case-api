@@ -127,6 +127,5 @@ public class DetainedIndividualFlagHandlerTest {
         assertThatThrownBy(() -> flagHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-
     }
 }
