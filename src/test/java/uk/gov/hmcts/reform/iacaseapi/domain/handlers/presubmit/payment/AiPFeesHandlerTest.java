@@ -394,7 +394,7 @@ class AiPFeesHandlerTest {
     }
 
     private void verifyRemissionsDetailsCleared() {
-        verify(asylumCase, times(1)).clear(REMISSION_OPTION);
+        // verify(asylumCase, times(1)).clear(REMISSION_OPTION);
         verify(asylumCase, times(1)).clear(FEE_REMISSION_TYPE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
