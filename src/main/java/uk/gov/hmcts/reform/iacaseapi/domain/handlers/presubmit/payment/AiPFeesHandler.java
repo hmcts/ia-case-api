@@ -199,7 +199,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                             clearRemissionDetails(asylumCase);
                         }
                     } else {
-                        asylumCase.write(REMISSION_OPTION, RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES);
+                        // asylumCase.write(REMISSION_OPTION, RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES);
                         asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
                         asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                         asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
