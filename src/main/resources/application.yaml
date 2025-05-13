@@ -69,14 +69,14 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o
+            issuer-uri: ${OPEN_ID_IDAM_URL:http://sidam-simulator:5000}/o
         registration:
           oidc:
             client-id: ${IA_IDAM_CLIENT_ID:ia}
             client-secret: ${IA_IDAM_SECRET:something}
       resourceserver:
         jwt:
-          jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
+          jwk-set-uri: ${OPEN_ID_IDAM_URL:http://sidam-simulator:5000}/o/jwks
   cache:
     cache-names: userInfoCache, accessTokenCache
     caffeine:
