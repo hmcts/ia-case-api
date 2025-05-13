@@ -27,7 +27,7 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
           "roleRequest": {
               "assignerId": "'"${USER_ID}"'",
               "process": "'"${PROCESS}"'",
-              "reference": "'"${REFERENCE}"'",
+              "reference": "'"${USER_ID}/${ROLE_NAME}"'",
               "replaceExisting": true
           },
           "requestedRoles": [
