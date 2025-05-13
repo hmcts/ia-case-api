@@ -1436,6 +1436,7 @@ ia-hearings-api:
       HMC_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      DEPLOYMENT_FILTER_ENABLED: true
 
 ia-cron-hearings-processor:
   enabled: true
