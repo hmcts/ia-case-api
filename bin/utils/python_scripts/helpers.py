@@ -74,16 +74,14 @@ def process_field_type(entry):
     # Set of field types that should return None
     none_field_types = {
         'Label', 'YesOrNo', 'checklist', 'FixedRadioList', 'Collection',
-        'appealGroundsEuRefusal', 'appealGroundsHumanRightsRefusal',
-        'appealGroundsDecisionHumanRightsRefusal', 'appealGroundsDeprivation',
-        'appealGroundsHumanRights', 'appealGroundsProtection',
+        'appealGroundsEuRefusal','appealGroundsDeprivation',
         'isFeeConsistentWithDecision', 'feeUpdateStatus',
         'isDocumentSignedToday', 'makeAnApplication', 'FlagLauncher',
         'ComponentLauncher', 'Document', 'MoneyGBP',
-        'caseManagementLocationRefData', 'DynamicMultiSelectList', 'Collection', 'SearchCriteria',
-        'interpreterSpokenLanguage', 'Label', 'checklistOutOfCountry', 'TextArea', 'hoursAndMinutes', 'FixedRadioList',
-        'appealGroundsDeprivation', 'interpreterSignLanguage', 'appealGroundsRevocation', 'pinInPost',
-        'appealGroundsDecisionHumanRightsRefusal', 'ChangeOrganisationRequest', 'WaysToPay', 'direction', 'DynamicList',
+        'caseManagementLocationRefData', 'DynamicMultiSelectList', 'SearchCriteria',
+        'interpreterSpokenLanguage', 'checklistOutOfCountry', 'TextArea', 'hoursAndMinutes',
+        'interpreterSignLanguage', 'appealGroundsRevocation', 'pinInPost',
+        'ChangeOrganisationRequest', 'WaysToPay', 'direction', 'DynamicList',
         'feeUpdateRecorded', 'DateTime', 'OrganisationPolicy', 'MultiSelectList', 'FixedList', 'hearingSchedule',
         'caseManagementLocation', 'ftpaDecisionCheckList', 'adjournmentDetail'
     }

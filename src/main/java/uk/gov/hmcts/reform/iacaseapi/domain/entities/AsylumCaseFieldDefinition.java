@@ -103,20 +103,11 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_TYPE_DESCRIPTION(
         "appealTypeDescription", new TypeReference<String>(){}),
 
-    APPEAL_GROUNDS_PROTECTION(
-        "appealGroundsProtection", new TypeReference<CheckValues<String>>(){}),
-
     APPEAL_GROUNDS_HUMAN_RIGHTS(
         "appealGroundsHumanRights", new TypeReference<CheckValues<String>>(){}),
 
     APPEAL_GROUNDS_REVOCATION(
         "appealGroundsRevocation", new TypeReference<CheckValues<String>>(){}),
-
-    APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL(
-        "appealGroundsHumanRightsRefusal", new TypeReference<CheckValues<String>>(){}),
-
-    APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL(
-        "appealGroundsDecisionHumanRightsRefusal", new TypeReference<CheckValues<String>>(){}),
 
     APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS(
         "appealGroundsDeprivationHumanRights", new TypeReference<CheckValues<String>>(){}),
@@ -126,7 +117,6 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_GROUNDS_EU_REFUSAL(
         "appealGroundsEuRefusal", new TypeReference<CheckValues<String>>(){}),
-
 
     HAS_OTHER_APPEALS(
         "hasOtherAppeals", new TypeReference<String>(){}),

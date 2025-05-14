@@ -9,12 +9,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DEPRIVATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_EU_REFUSAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_PROTECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_REVOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
@@ -49,7 +46,7 @@ class AppealGroundsForDisplayFormatterTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private AppealGroundsForDisplayFormatter appealGroundsForDisplayFormatter =
+    private final AppealGroundsForDisplayFormatter appealGroundsForDisplayFormatter =
         new AppealGroundsForDisplayFormatter();
 
     @Test
@@ -67,12 +64,12 @@ class AppealGroundsForDisplayFormatterTest {
             ));
 
         final List<String> expectedAppealGrounds1 =
-            Arrays.asList(
-                "ground1"
-            );
+                List.of(
+                        "ground1"
+                );
 
         final List<String> expectedAppealGrounds2 =
-            Arrays.asList(
+            List.of(
                 "ground1",
                 "ground2"
             );
@@ -91,12 +88,11 @@ class AppealGroundsForDisplayFormatterTest {
         verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGrounds2));
         callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
+        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
@@ -115,13 +111,11 @@ class AppealGroundsForDisplayFormatterTest {
         verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
-        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
-        when(asylumCase.read(APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
         callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(3)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
+        verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
     }
 
     @Test
