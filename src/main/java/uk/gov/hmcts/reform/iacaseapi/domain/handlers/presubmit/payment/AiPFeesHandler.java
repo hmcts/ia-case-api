@@ -110,6 +110,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                             .orElse("decisionWithHearing");
                     asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
                     asylumCase.clear(PAYMENT_STATUS);
+                    asylumCase.clear(REMISSION_OPTION);
                     clearFeeOptionDetails(asylumCase);
                     clearRemissionDetails(asylumCase);
                     break;
@@ -141,6 +142,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                         .orElse("decisionWithHearing");
                 asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
                 asylumCase.clear(PAYMENT_STATUS);
+                asylumCase.clear(REMISSION_OPTION);
 
                 clearFeeOptionDetails(asylumCase);
                 clearRemissionDetails(asylumCase);
@@ -193,7 +195,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                             clearRemissionDetails(asylumCase);
                         }
                     } else {
-                        asylumCase.write(REMISSION_OPTION, RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES);
                         asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
                         asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                         asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
@@ -229,7 +230,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
     }
 
     private void clearRemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(REMISSION_OPTION);
         asylumCase.clear(FEE_REMISSION_TYPE);
         asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
         asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
