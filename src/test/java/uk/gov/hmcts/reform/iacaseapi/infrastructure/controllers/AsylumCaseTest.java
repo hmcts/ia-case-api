@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_PROTECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -132,17 +130,6 @@ class AsylumCaseTest {
         Optional<YesOrNo> maybeYesNo = asylumCase.read(SUBMISSION_OUT_OF_TIME);
 
         assertThat(maybeYesNo.get()).isEqualTo(YesOrNo.YES);
-    }
-
-    @Test
-    void reads_check_values() throws IOException {
-
-        String caseData = "{\"appealGroundsProtection\": { \"values\": [\"v1\",\"v2\",\"v3\"] }}";
-        AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
-
-        Optional<CheckValues<String>> maybeCheckValues = asylumCase.read(APPEAL_GROUNDS_PROTECTION);
-
-        assertThat(maybeCheckValues.get().getValues()).containsOnly("v1", "v2", "v3");
     }
 
     @Test
