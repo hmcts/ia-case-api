@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -44,7 +43,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJo
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 @Component
-@Slf4j
 public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
@@ -118,8 +116,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 asylumCase = feePayment.aboutToSubmit(callback);
 
                 Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-                log.info("Appeal type: {}, AipRemissionType: {}", optionalAppealType.get(),
-                        remissionOption.isPresent() ? remissionOption.get() : "");
                 if (isRemissionsEnabled == YES && remissionOption.isPresent()) {
                     setFeeRemissionTypeDetails(asylumCase);
                 } else {
@@ -188,10 +184,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 case NO_REMISSION:
                 case I_WANT_TO_GET_HELP_WITH_FEES:
                     Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-                    log.info("AiP remission details. RemissionOption: {}, HelpWithFee: {}, HWFRef: {}",
-                            remissionOption.get(),
-                            helpWithFeesOption.orElse(null),
-                            asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse(""));
 
                     if (helpWithFeesOption.isEmpty() || helpWithFeesOption.get() == WILL_PAY_FOR_APPEAL) {
                         if (remissionOption.get() == RemissionOption.NO_REMISSION) {
