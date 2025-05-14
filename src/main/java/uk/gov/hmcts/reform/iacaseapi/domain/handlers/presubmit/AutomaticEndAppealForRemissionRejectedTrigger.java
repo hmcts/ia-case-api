@@ -8,7 +8,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAccel
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Component
+@Slf4j
 public class AutomaticEndAppealForRemissionRejectedTrigger implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
@@ -78,7 +82,11 @@ public class AutomaticEndAppealForRemissionRejectedTrigger implements PreSubmitC
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
+        log.info("schedule14DaysInMinutes: {}, caseReference: {}",
+                schedule14DaysInMinutes, callback.getCaseDetails().getId());
+        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(5);
+        log.info("Timed Event to endAppealAutomatically when Remission rejected scheduled at: {} for {}",
+                scheduledDate.format(DateTimeFormatter.ISO_ZONED_DATE_TIME), callback.getCaseDetails().getId());
 
         TimedEvent timedEvent = scheduler.schedule(
             new TimedEvent(
