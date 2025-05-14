@@ -12,7 +12,7 @@ java:
     POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version.
-    IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api-pr-984.preview.platform.hmcts.net
+    IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
@@ -417,7 +417,7 @@ ia-bail-case-api:
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-      IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api-pr-984.preview.platform.hmcts.net
+      IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
