@@ -94,7 +94,8 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
             LocalDate decisionDate;
 
             if (isInternalCase(asylumCase)) {
-                decisionDate = isOutOfCountryCircumstances
+                boolean processAsOutOfCountryWithCircumstances = isOutOfCountry && isOutOfCountryCircumstances;
+                decisionDate = processAsOutOfCountryWithCircumstances
                     ? handleOutOfCountryInternalAppeal(asylumCase, outOfCountryCircumstances.get())
                     : handleInCountryAppeal(asylumCase, appealType);
             } else {
