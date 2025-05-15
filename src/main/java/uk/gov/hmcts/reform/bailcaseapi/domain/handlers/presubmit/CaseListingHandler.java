@@ -101,9 +101,6 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
                                + "- any other relevant information\n\n"
                                + "Next steps\n"
                                + "Sign in to your account to upload the Bail Summary.\n"
-                               + "You must complete this direction by: "
-                               + LocalDate.parse(dueDate, DateTimeFormatter.ISO_LOCAL_DATE)
-                               .format(DateTimeFormatter.ofPattern("d MMM yyyy"))
             );
 
             bailCase.write(SEND_DIRECTION_LIST, "Home Office");
