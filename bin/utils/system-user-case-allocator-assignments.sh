@@ -5,7 +5,7 @@
 USERNAME=${1:-system-user}
 PASSWORD=${2:-system-password}
 PROCESS=${3:-"iac-system-users"}
-ROLE_NAME="${5:-"case-allocator"}"
+ROLE_NAME="${4:-"case-allocator"}"
 
 BASEDIR=$(dirname "$0")
 
