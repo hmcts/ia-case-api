@@ -106,6 +106,8 @@ ia-bail-case-api:
   enabled: false
 ia-timed-event-service:
   enabled: false
+idam-pr:
+  enabled: false
 ia-hearings-api:
   enabled: false
 xui-webapp:

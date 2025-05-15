@@ -657,6 +657,16 @@ ia-aip-frontend:
     auth:
       enabled: false
 
+idam-pr:
+  releaseNameOverride: ${SERVICE_NAME}-idam-pr
+  enabled: true
+  redirect_uris:
+    XUI:
+      - https://xui-${SERVICE_FQDN}/oauth2/callback
+    CCD Admin:
+      - https://admin-web-${SERVICE_FQDN}/oauth2redirect
+    ccd_data_store_api:
+      - https://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
 
 ccd-case-document-am-api:
   enabled: true
