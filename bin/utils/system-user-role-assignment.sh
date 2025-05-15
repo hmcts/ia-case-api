@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
-## Usage: ./system-user-role-assignment.sh [username] [password] [process] [reference] [role_name]
+## Usage: ./system-user-role-assignment.sh [username] [password]
 ##
 
 USERNAME=${1:-system-user}
 PASSWORD=${2:-system-password}
-PROCESS=${3:-"iac-system-users"}
-REFERENCE=${4:-"add-system-role"}
-ROLE_NAME="${5:-"case-allocator"}"
 
 BASEDIR=$(dirname "$0")
 
@@ -15,8 +12,8 @@ USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh iac \
   $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}))
 
-echo -e "\n\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n Process: ${PROCESS}\n Reference: ${REFERENCE}"
-echo -e "\n\nROLE ASSIGNMENT URL: \n Url: ${ROLE_ASSIGNMENT_URL}\n"
+echo "\n\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
+echo "\n\nROLE ASSIGNMENT URL: \n Url: ${ROLE_ASSIGNMENT_URL}\n"
 
 curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" \
   -H "accept: application/vnd.uk.gov.hmcts.role-assignment-service.create-assignments+json;charset=UTF-8;version=1.0" \
@@ -26,8 +23,8 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
   -d '{
           "roleRequest": {
               "assignerId": "'"${USER_ID}"'",
-              "process": "'"${PROCESS}"'",
-              "reference": "'"${REFERENCE}"'",
+              "process": "iac-system-users",
+              "reference": "iac-hearings-system-user",
               "replaceExisting": true
           },
           "requestedRoles": [
@@ -35,7 +32,7 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
                   "actorId": "'"${USER_ID}"'",
                   "roleType": "ORGANISATION",
                   "classification": "PUBLIC",
-                  "roleName": "'"${ROLE_NAME}"'",
+                  "roleName": "hearing-manager",
                   "roleCategory": "SYSTEM",
                   "grantType": "STANDARD",
                   "attributes": {
@@ -48,15 +45,41 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
                   "actorId": "'"${USER_ID}"'",
                   "roleType": "ORGANISATION",
                   "classification": "PUBLIC",
-                  "roleName": "'"${ROLE_NAME}"'",
+                  "roleName": "hearing-viewer",
                   "roleCategory": "SYSTEM",
                   "grantType": "STANDARD",
                   "attributes": {
                       "jurisdiction": "IA",
-                      "caseType": "Bail"
+                      "caseType": "Asylum"
+                  },
+                  "actorIdType": "IDAM"
+              },
+              {
+                   "actorId": "'"${USER_ID}"'",
+                   "roleType": "ORGANISATION",
+                   "classification": "PUBLIC",
+                   "roleName": "hearing-manager",
+                   "roleCategory": "SYSTEM",
+                   "grantType": "STANDARD",
+                   "attributes": {
+                        "jurisdiction": "IA",
+                        "caseType": "Bail"
                    },
                    "actorIdType": "IDAM"
-              }
+               },
+               {
+                   "actorId": "'"${USER_ID}"'",
+                   "roleType": "ORGANISATION",
+                   "classification": "PUBLIC",
+                   "roleName": "hearing-viewer",
+                   "roleCategory": "SYSTEM",
+                   "grantType": "STANDARD",
+                   "attributes": {
+                         "jurisdiction": "IA",
+                         "caseType": "Bail"
+                    },
+                    "actorIdType": "IDAM"
+                 }
           ]
       }'
 
