@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.63
+version: 0.0.64
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
