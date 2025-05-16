@@ -57,8 +57,8 @@ export IA_WA_CTSC_ADMIN_PASSWORD_2=$(az keyvault secret show --vault-name ia-aat
 export TEST_JUDGE_X_USERNAME=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-username --query value -o tsv)
 export TEST_JUDGE_X_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-password --query value -o tsv)
 
-export IA_SYSTEM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name system-user-username --query value -o tsv)
-export IA_SYSTEM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name system-user-password --query value -o tsv)
+#export IA_SYSTEM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name system-user-username --query value -o tsv)
+#export IA_SYSTEM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name system-user-password --query value -o tsv)
 
 # rpx-aat
 export IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name rpx-aat --name mc-idam-client-secret --query value -o tsv)
