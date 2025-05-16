@@ -15,11 +15,6 @@
               "refugeeConvention",
               "humanitarianProtection"
             ]
-          },
-          "appealGroundsHumanRights": {
-            "values": [
-              "humanRights"
-            ]
           }
         }
       }
@@ -35,8 +30,7 @@
         "appealGroundsHumanRights": null,
         "appealGroundsForDisplay": [
           "refugeeConvention",
-          "humanitarianProtection",
-          "humanRights"
+          "humanitarianProtection"
         ]
       }
     }
