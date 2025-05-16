@@ -50,10 +50,6 @@ dependencies:
     version: 1.7.14
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
-  - name: idam-pr
-    version: ~2.3.0
-    repository: 'oci://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: idam-pr.enabled
   - name: ia-hearings-api
     version: 0.0.19
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
