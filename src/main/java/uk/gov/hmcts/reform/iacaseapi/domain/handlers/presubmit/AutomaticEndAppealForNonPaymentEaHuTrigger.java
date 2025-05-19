@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -57,18 +55,12 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
                 .getCaseData();
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
-
-        boolean lrAppealWithNoRemission = remissionType.map(
-                remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
-        boolean aipAppealWithNoRemission = remissionOption.isEmpty()
-                || remissionOption.map(remission -> remission.equals(RemissionOption.NO_REMISSION)).orElse(true);
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && !isAcceleratedDetainedAppeal(asylumCase)
-                && (isAipJourney(asylumCase) ? aipAppealWithNoRemission : lrAppealWithNoRemission)
+                && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
 
     }
