@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -44,7 +43,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJo
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 @Component
-@Slf4j
 public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
@@ -91,9 +89,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (optionalAppealType.isEmpty()) {
             return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
         }
-        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-        log.info("Appeal type: {}, AipRemissionType: {}", optionalAppealType.get(),
-                remissionOption.isPresent() ? remissionOption.get() : "");
 
         YesOrNo isRemissionsEnabled
                 = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
@@ -120,7 +115,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
                 asylumCase = feePayment.aboutToSubmit(callback);
 
-                // Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+                Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
                 if (isRemissionsEnabled == YES && remissionOption.isPresent()) {
                     setFeeRemissionTypeDetails(asylumCase);
                 } else {
@@ -158,8 +153,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
 
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-        log.info("AiP remission details. RemissionOption: {}",
-                remissionOption.isPresent() ? remissionOption.get() : "");
+        
         if (remissionOption.isPresent()) {
             switch (remissionOption.get()) {
                 case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
@@ -191,9 +185,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 case I_WANT_TO_GET_HELP_WITH_FEES:
                     Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
 
-                    log.info("AiP remission details. RemissionOption: {}, HelpWithFee: {},",
-                            remissionOption.isPresent() ? remissionOption.get() : "",
-                            helpWithFeesOption.isPresent() ? helpWithFeesOption.get() : "");
                     if (helpWithFeesOption.isEmpty() || helpWithFeesOption.get() == WILL_PAY_FOR_APPEAL) {
                         if (remissionOption.get() == RemissionOption.NO_REMISSION) {
                             clearRemissionDetails(asylumCase);
