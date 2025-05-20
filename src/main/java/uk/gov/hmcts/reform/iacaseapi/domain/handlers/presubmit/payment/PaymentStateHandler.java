@@ -116,12 +116,13 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
-        boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
-                && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
-                || (remissionOption.isPresent());
+        boolean isPaymentStatusPendingOrFailed = (paymentStatus.isPresent()
+                && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED))
+                || (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION);
 
-        log.info("RemissionOption: {}, isPaymentStatusPendingOrFailed: {}, current state:{}, isPayLaterAppeal: {}, caseID: {}",
-                remissionOption.orElse(null), isPaymentStatusPendingOrFailed, currentState, isPayLaterAppeal, callback.getCaseDetails().getId());
+        log.info("RemissionOption: {}, isPaymentStatusPendingOrFailed: {}, remissionOption: {}, current state:{}, isPayLaterAppeal: {}, caseID: {}",
+                remissionOption.orElse(null), isPaymentStatusPendingOrFailed, remissionOption.orElse(RemissionOption.NO_REMISSION),
+                currentState, isPayLaterAppeal, callback.getCaseDetails().getId());
         if (isDlrmFeeRemissionEnabled && aipRemissionExists) {
             return handleDlrmFeeRemission(callback, appealType, currentState, isPayLaterAppeal, isPaymentStatusPaid);
         } else if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
