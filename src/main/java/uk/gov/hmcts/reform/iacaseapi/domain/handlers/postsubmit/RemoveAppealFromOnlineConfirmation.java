@@ -36,7 +36,7 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
         }
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseManagerRole(caseId);
+        roleAssignmentService.removeCaseRoleAssignments(caseId);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();

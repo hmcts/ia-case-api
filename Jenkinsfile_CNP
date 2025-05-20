@@ -137,7 +137,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
-    def githubApi = new GithubAPI(this)
+    def githubApi = new GithubAPI(this) as Object
     env.ENABLE_WA = false
     env.ENABLE_TES = false
     env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"

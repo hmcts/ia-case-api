@@ -48,6 +48,31 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleA
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RoleAssignmentServiceTest {
 
+    private static final List<RoleName> ROLE_NAMES = List.of(
+            RoleName.CASE_MANAGER,
+            RoleName.TRIBUNAL_CASEWORKER,
+            RoleName.SENIOR_TRIBUNAL_CASEWORKER,
+            RoleName.HEARING_JUDGE,
+            RoleName.FTPA_JUDGE,
+            RoleName.LEAD_JUDGE,
+            RoleName.HEARING_PANEL_JUDGE);
+    private static final List<RoleCategory> ROLE_CATEGORIES = List.of(
+            RoleCategory.LEGAL_OPERATIONS,
+            RoleCategory.JUDICIAL,
+            RoleCategory.ADMIN,
+            RoleCategory.CTSC
+    );
+    public static final QueryRequest QUERY_REQUEST = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .grantType(List.of(GrantType.SPECIFIC))
+            .roleName(ROLE_NAMES)
+            .roleCategory(ROLE_CATEGORIES)
+            .attributes(Map.of(
+                    Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                    Attributes.CASE_TYPE, List.of("Asylum"),
+                    Attributes.CASE_ID, List.of("1234123412341234")
+            ))
+            .build();
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -82,7 +107,6 @@ class RoleAssignmentServiceTest {
 
     @Test
     void createsCaseRole() {
-
         roleAssignmentService.assignRole(caseDetails.getId(), "assigneeId");
 
         Map<String, String> attributes = new HashMap<>();
@@ -139,7 +163,6 @@ class RoleAssignmentServiceTest {
 
     @Test
     void getCaseRoleAssignmentsForUserTest() {
-
         roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, userId);
 
         verify(roleAssignmentApi).queryRoleAssignments(
@@ -161,58 +184,58 @@ class RoleAssignmentServiceTest {
     }
 
     @Test
-    void removeCaseManagerRoleShouldRemoveRole() {
-        QueryRequest queryRequest = QueryRequest.builder()
-            .roleType(List.of(RoleType.CASE))
-            .grantType(List.of(GrantType.SPECIFIC))
-            .roleName(List.of(RoleName.CASE_MANAGER))
-            .roleCategory(List.of(RoleCategory.LEGAL_OPERATIONS))
-            .attributes(Map.of(
-                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                Attributes.CASE_TYPE, List.of("Asylum"),
-                Attributes.CASE_ID, List.of("1234123412341234")
-            ))
-            .build();
+    void removeCaseRoleShouldRemoveRole() {
         Assignment assignment = Assignment.builder()
                 .actorId("987987987987")
                 .id(assignmentId)
                 .build();
         RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(assignment));
 
-        when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
+        when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, QUERY_REQUEST))
             .thenReturn(roleAssignmentResource);
 
-        roleAssignmentService.removeCaseManagerRole("1234123412341234");
+        roleAssignmentService.removeCaseRoleAssignments("1234123412341234");
 
-        verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
+        verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, QUERY_REQUEST);
         verify(roleAssignmentApi).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);
 
     }
 
     @Test
-    void removeCaseManagerRoleShouldLogErrorWhenRoleAssignmentNotFound() {
-        QueryRequest queryRequest = QueryRequest.builder()
-                .roleType(List.of(RoleType.CASE))
-                .grantType(List.of(GrantType.SPECIFIC))
-                .roleName(List.of(RoleName.CASE_MANAGER))
-                .roleCategory(List.of(RoleCategory.LEGAL_OPERATIONS))
-                .attributes(Map.of(
-                        Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                        Attributes.CASE_TYPE, List.of("Asylum"),
-                        Attributes.CASE_ID, List.of("1234123412341234")
-                ))
+    void removeCaseRoleShouldRemoveMultipleRoles() {
+        Assignment caseManagerAssignment = Assignment.builder()
+                .actorId("987987987987")
+                .id(assignmentId)
+                .roleName(RoleName.CASE_MANAGER)
                 .build();
+        Assignment hearingJudgeAssignment = Assignment.builder()
+                .actorId("454545454545")
+                .id(assignmentId)
+                .roleName(RoleName.HEARING_JUDGE)
+                .build();
+        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(caseManagerAssignment, hearingJudgeAssignment));
 
+        when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, QUERY_REQUEST))
+                .thenReturn(roleAssignmentResource);
+
+        roleAssignmentService.removeCaseRoleAssignments("1234123412341234");
+
+        verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, QUERY_REQUEST);
+        verify(roleAssignmentApi, times(2)).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);
+    }
+
+    @Test
+    void removeCaseRoleShouldLogErrorWhenRoleAssignmentNotFound() {
         RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of());
 
         when(userDetails.getRoles()).thenReturn(List.of(UserRole.JUDGE.getId()));
 
-        when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
+        when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, QUERY_REQUEST))
                 .thenReturn(roleAssignmentResource);
 
-        roleAssignmentService.removeCaseManagerRole("1234123412341234");
+        roleAssignmentService.removeCaseRoleAssignments("1234123412341234");
 
-        verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
+        verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, QUERY_REQUEST);
         verify(roleAssignmentApi, times(0)).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);
 
     }
