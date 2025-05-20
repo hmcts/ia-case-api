@@ -151,7 +151,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
 
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-
+        
         if (remissionOption.isPresent()) {
             switch (remissionOption.get()) {
                 case ASYLUM_SUPPORT_FROM_HOME_OFFICE:

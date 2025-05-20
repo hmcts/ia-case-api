@@ -205,7 +205,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1353
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -397,7 +397,7 @@ ia-bail-case-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
+    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-545
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
@@ -828,6 +828,7 @@ ccd:
         DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}        
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
@@ -1436,6 +1437,7 @@ ia-hearings-api:
       HMC_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      DEPLOYMENT_FILTER_ENABLED: true
 
 ia-cron-hearings-processor:
   enabled: true
