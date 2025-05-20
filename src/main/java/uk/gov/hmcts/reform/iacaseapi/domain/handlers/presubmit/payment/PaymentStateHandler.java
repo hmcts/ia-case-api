@@ -71,6 +71,9 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        log.info("PaymentStateHandler for caseId {}, currentState: {}",
+                callback.getCaseDetails().getId(),
+                callback.getCaseDetails().getState());
 
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
@@ -120,8 +123,12 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         if (isDlrmFeeRemissionEnabled && aipRemissionExists) {
             return handleDlrmFeeRemission(callback, appealType, currentState, isPayLaterAppeal, isPaymentStatusPaid);
         } else if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
+            log.info("isValidPayLaterPaymentEvent current state:{}, isPayLaterAppeal: {}, caseID: {}",
+                    currentState, isPayLaterAppeal, callback.getCaseDetails().getId());
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
+            log.info("decideAppealState current state:{}, isPaymentStatusPendingOrFailed: {}, caseID: {}",
+                    currentState, isPaymentStatusPendingOrFailed, callback.getCaseDetails().getId());
             return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
@@ -134,9 +141,12 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             case HU:
             case EU:
             case AG:
+                String appealReference = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).orElse("");
                 if (isPaymentStatusPendingOrFailed) {
+                    log.info("Appeal state 'pendingPayment' for appeal reference: {}", appealReference);
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
+                log.info("Appeal state 'pendingPayment' for appeal reference: {}", appealReference);
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
