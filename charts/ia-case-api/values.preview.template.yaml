@@ -36,6 +36,8 @@ java:
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 5
+    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 5
   keyVaults:
     ia:
       resourceGroup: ia
