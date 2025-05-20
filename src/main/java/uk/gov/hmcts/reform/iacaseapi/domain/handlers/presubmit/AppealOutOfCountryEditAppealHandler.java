@@ -98,6 +98,9 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 }
 
                 asylumCase.clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
+
+                // DIAC-963 added to clear OutOfCountryCircumstances to fix in country submit
+                asylumCase.clear(OOC_APPEAL_ADMIN_J);
             }
 
             // Clear the In country fields
