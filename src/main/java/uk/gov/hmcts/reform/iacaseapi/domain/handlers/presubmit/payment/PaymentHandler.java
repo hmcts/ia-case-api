@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -14,13 +13,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-@Slf4j
 public class PaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isfeePaymentEnabled;
@@ -65,9 +62,6 @@ public class PaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
             isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
-        log.info("PaymentHandler.handle(): paymentStatus: {}, caseReference: {}, state: {}",
-                asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).orElse(null),
-                callback.getCaseDetails().getId(), callback.getCaseDetails().getState());
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

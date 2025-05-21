@@ -71,9 +71,6 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        log.info("PaymentStateHandler for caseId {}, currentState: {}",
-                callback.getCaseDetails().getId(),
-                callback.getCaseDetails().getState());
 
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
@@ -84,10 +81,6 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         log.info("Appeal type [{}] and Remission type [{}] for caseId [{}]",
             appealType, remissionType, callback.getCaseDetails().getId());
 
-        boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
-            && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
-            || (remissionType.isPresent());
-
         boolean isAipJourney = asylumCase
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
             .map(journeyType -> journeyType == JourneyType.AIP)
@@ -97,7 +90,10 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         if (isAipJourney) {
             return decideAiPAppealState(callback, appealType, currentState);
         } else {
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
+            boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
+                    && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
+                    || (remissionType.isPresent());
+            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase, currentState);
         }
     }
 
@@ -120,36 +116,28 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
                 && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED))
                 || (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION);
 
-        log.info("RemissionOption: {}, isPaymentStatusPendingOrFailed: {}, remissionOption: {}, current state:{}, isPayLaterAppeal: {}, caseID: {}",
-                remissionOption.orElse(null), isPaymentStatusPendingOrFailed, remissionOption.orElse(RemissionOption.NO_REMISSION),
-                currentState, isPayLaterAppeal, callback.getCaseDetails().getId());
         if (isDlrmFeeRemissionEnabled && aipRemissionExists) {
             return handleDlrmFeeRemission(callback, appealType, currentState, isPayLaterAppeal, isPaymentStatusPaid);
         } else if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
-            log.info("isValidPayLaterPaymentEvent current state:{}, isPayLaterAppeal: {}, caseID: {}",
-                    currentState, isPayLaterAppeal, callback.getCaseDetails().getId());
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
-            log.info("decideAppealState current state:{}, isPaymentStatusPendingOrFailed: {}, caseID: {}",
-                    currentState, isPaymentStatusPendingOrFailed, callback.getCaseDetails().getId());
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
+            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase, currentState);
         }
     }
 
     private static PreSubmitCallbackResponse<AsylumCase> decideAppealState(AppealType appealType,
                                                                            boolean isPaymentStatusPendingOrFailed,
-                                                                           AsylumCase asylumCase) {
+                                                                           AsylumCase asylumCase,
+                                                                           State currentState) {
         switch (appealType) {
             case EA:
             case HU:
             case EU:
             case AG:
-                String appealReference = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).orElse("");
                 if (isPaymentStatusPendingOrFailed) {
-                    log.info("Appeal state 'pendingPayment' for appeal reference: {}", appealReference);
-                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
+                    return new PreSubmitCallbackResponse<>(
+                            asylumCase, currentState == APPEAL_STARTED ? PENDING_PAYMENT : currentState);
                 }
-                log.info("Appeal state 'pendingPayment' for appeal reference: {}", appealReference);
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);

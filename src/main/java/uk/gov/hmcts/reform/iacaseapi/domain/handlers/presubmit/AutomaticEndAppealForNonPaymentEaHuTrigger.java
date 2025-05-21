@@ -13,8 +13,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Set;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -32,13 +30,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Component
-@Slf4j
 public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
-
-    @Value("${paymentEaHuNoRemission.dueInMinutes}")
     int schedule14DaysInMinutes;
 
     public AutomaticEndAppealForNonPaymentEaHuTrigger(
@@ -69,14 +64,12 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         boolean lrAppealWithNoRemission = remissionType.map(
                 remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
 
-        log.info("AutomaticEndAppealForNonPaymentEaHuTrigger.canHandle(): lrAppealWithNoRemission: {}, "
-                + "aipAppealWithNoRemission: {}, caseReference: {}, state: {}", lrAppealWithNoRemission,
-                !aipAppealHasRemission(asylumCase), callback.getCaseDetails().getId(), callback.getCaseDetails().getState());
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && !isAcceleratedDetainedAppeal(asylumCase)
                 && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
+
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -87,8 +80,6 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
             throw new IllegalStateException("Cannot handle callback for auto end appeal for remission rejection");
         }
 
-        log.info("AutomaticEndAppealForNonPaymentEaHuTrigger.handle(): caseReference: {}, state: {}",
-                callback.getCaseDetails().getId(), callback.getCaseDetails().getState());
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
