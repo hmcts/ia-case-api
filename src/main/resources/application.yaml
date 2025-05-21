@@ -56,6 +56,8 @@ fees-register:
       jurisdiction2: immigration and asylum chamber
       keyword: HearingPaper
       service: other
+files:
+  detention-facilities-addresses: "detention-facilities.csv"
 
 spring:
   config:
@@ -108,6 +110,7 @@ spring:
     include:
       - postcodes
       - hc-mapping
+      - detention-addresses
   flyway.enabled: true
   flyway.baselineOnMigrate: true
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
