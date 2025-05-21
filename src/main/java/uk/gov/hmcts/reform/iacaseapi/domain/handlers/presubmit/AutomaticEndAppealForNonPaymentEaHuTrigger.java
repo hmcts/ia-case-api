@@ -5,7 +5,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -30,16 +34,16 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
-
-    @Value("${paymentEaHuNoRemission.dueInMinutes}")
     int schedule14DaysInMinutes;
 
     public AutomaticEndAppealForNonPaymentEaHuTrigger(
         DateProvider dateProvider,
-        Scheduler scheduler
+        Scheduler scheduler,
+        @Value("${paymentEaHuNoRemission.dueInMinutes}") int schedule14DaysInMinutes
     ) {
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
+        this.schedule14DaysInMinutes = schedule14DaysInMinutes;
     }
 
     public boolean canHandle(
@@ -57,10 +61,13 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
+        boolean lrAppealWithNoRemission = remissionType.map(
+                remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
+
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && !isAcceleratedDetainedAppeal(asylumCase)
-                && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
+                && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
 
     }
@@ -90,4 +97,12 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         asylumCase.write(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID, timedEvent.getId());
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
+    private boolean aipAppealHasRemission(AsylumCase asylumCase) {
+        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
+        return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
+                || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL);
+    }
+
 }

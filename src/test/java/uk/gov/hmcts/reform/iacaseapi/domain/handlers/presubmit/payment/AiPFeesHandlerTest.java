@@ -174,6 +174,7 @@ class AiPFeesHandlerTest {
                 .write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
         verifyFeeOptionDetailsCleared();
         verifyRemissionsDetailsCleared();
+        verify(asylumCase, times(1)).clear(REMISSION_OPTION);
     }
 
     @ParameterizedTest
@@ -200,6 +201,7 @@ class AiPFeesHandlerTest {
         verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
         verifyFeeOptionDetailsCleared();
         verifyRemissionsDetailsCleared();
+        verify(asylumCase, times(1)).clear(REMISSION_OPTION);
     }
 
     @Test
@@ -338,7 +340,6 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(REMISSION_OPTION, RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES);
         verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Help with Fees");
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
@@ -356,7 +357,6 @@ class AiPFeesHandlerTest {
                 Arguments.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES, HelpWithFeesOption.ALREADY_APPLIED)
         );
     }
-
 
     @Test
     void should_not_write_remission_data_when_no_remission_and_no_hwf() {
@@ -394,7 +394,6 @@ class AiPFeesHandlerTest {
     }
 
     private void verifyRemissionsDetailsCleared() {
-        verify(asylumCase, times(1)).clear(REMISSION_OPTION);
         verify(asylumCase, times(1)).clear(FEE_REMISSION_TYPE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);

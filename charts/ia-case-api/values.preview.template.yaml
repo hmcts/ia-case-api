@@ -34,8 +34,10 @@ java:
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    DUMMY_VAR: true
+    DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 5
+    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 5
   keyVaults:
     ia:
       resourceGroup: ia
