@@ -25,6 +25,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "doesTheCaseNeedToBeRelisted": "Yes",
         "sendDirectionActionAvailable": "No",
         "notificationsSent": [
           {
