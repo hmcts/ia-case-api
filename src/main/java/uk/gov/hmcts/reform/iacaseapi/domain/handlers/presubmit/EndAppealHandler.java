@@ -103,6 +103,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         // Prevents data populated in MarkAsReadyForUtTransferHandler being displayed on UI
         asylumCase.clear(APPEAL_READY_FOR_UT_TRANSFER);
         asylumCase.clear(UT_APPEAL_REFERENCE_NUMBER);
+        asylumCase.clear(LIST_CASE_HEARING_DATE);
 
         if (callback.getEvent() == Event.END_APPEAL && !deleteHearings(callback)) {
             asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);

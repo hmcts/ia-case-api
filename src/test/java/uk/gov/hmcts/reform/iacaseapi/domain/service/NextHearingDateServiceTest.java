@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDateTime;
@@ -76,12 +79,12 @@ class NextHearingDateServiceTest {
     @Test
     public void test_calculateNextHearingDateFromHearings() {
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
         when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
             .thenReturn(Optional.of(nextHearingDetailsFromHearings));
 
         NextHearingDetails nextHearingDetails =
-            nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
 
         assertNotNull(nextHearingDetails);
 
@@ -90,13 +93,13 @@ class NextHearingDateServiceTest {
 
     @Test
     public void should_get_next_hearing_date_from_case_data_when_calculating_from_hearings_fails() {
-        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(iaHearingsApiService.aboutToStart(callback)).thenReturn(asylumCase);
         when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
             .thenReturn(Optional.empty());
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
 
         NextHearingDetails nextHearingDetails =
-            nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
 
         assertNotNull(nextHearingDetails);
 
@@ -106,11 +109,11 @@ class NextHearingDateServiceTest {
     @Test
     public void should_get_next_hearing_date_from_case_data_when_calculating_from_hearings_throws_exception() {
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
-        when(iaHearingsApiService.aboutToSubmit(callback))
+        when(iaHearingsApiService.aboutToStart(callback))
             .thenThrow(new AsylumCaseServiceResponseException("error message", null));
 
         NextHearingDetails nextHearingDetails =
-            nextHearingDateService.calculateNextHearingDateFromHearings(callback);
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);
 
         assertNotNull(nextHearingDetails);
 
@@ -127,5 +130,25 @@ class NextHearingDateServiceTest {
         assertNotNull(nextHearingDetails);
 
         assertEquals(nextHearingDetailsFromCaseData, nextHearingDetails);
+    }
+
+    @Test
+    public void test_clearHearingDateInformation() {
+        AsylumCase asylumCase = new AsylumCase();
+        NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
+            .hearingDateTime("01/12/2024")
+            .hearingId("1234")
+            .build();
+        asylumCase.write(LIST_CASE_HEARING_DATE, LocalDateTime.now().toString());
+        asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
+
+        nextHearingDateService.clearHearingDateInformation(asylumCase);
+
+        NextHearingDetails cleared = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class).orElse(null);
+
+        assertNotNull(cleared);
+        assertNull(cleared.getHearingDateTime());
+        assertNull(cleared.getHearingId());
+        assertTrue(asylumCase.read(LIST_CASE_HEARING_DATE).isEmpty());
     }
 }
