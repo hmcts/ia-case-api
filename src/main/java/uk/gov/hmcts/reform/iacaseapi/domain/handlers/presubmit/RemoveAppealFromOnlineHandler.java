@@ -45,6 +45,7 @@ public class RemoveAppealFromOnlineHandler implements PreSubmitCallbackHandler<A
 
         asylumCase.write(AsylumCaseFieldDefinition.REMOVE_APPEAL_FROM_ONLINE_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        asylumCase.write(ADD_CASE_NOTE_ACTION_DISABLED, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
