@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SAVE_NOTIFICATIONS_SCHEDULED_DATE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -62,7 +65,12 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         requireNonNull(callback, "callback must not be null");
 
         if (featureToggler.getValue("save-notifications-feature", false)) {
-            scheduleSaveNotificationToData(callback);
+            final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            Optional<String> saveNotificationDataScheduledDate = asylumCase.read(SAVE_NOTIFICATIONS_SCHEDULED_DATE);
+            if (saveNotificationDataScheduledDate.isEmpty()
+                    || LocalDate.parse(saveNotificationDataScheduledDate.get()).isBefore(LocalDate.now())) {
+                scheduleSaveNotificationToData(callback);
+            }
         }
 
         return asylumCaseCallbackApiDelegator.delegate(
@@ -85,6 +93,8 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                                 callback.getCaseDetails().getId()
                         )
                 );
+                callback.getCaseDetails().getCaseData().write(
+                        SAVE_NOTIFICATIONS_SCHEDULED_DATE, dateProvider.now().toString());
             } catch (AsylumCaseServiceResponseException e) {
                 log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed: ", e);
             }
