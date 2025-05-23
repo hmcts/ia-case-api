@@ -1,32 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.DetentionFacilityAddressLoader;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Component
 public class DetentionFacilityAddressProvider {
 
-    private final DetentionFacilityAddressLoader addressLoader;
+    private final Map<String, String> addresses = new HashMap<>();
 
     public DetentionFacilityAddressProvider(DetentionFacilityAddressLoader addressLoader) {
-      this.addressLoader = addressLoader;
+        extractAddressesToMap(addressLoader);
     }
 
     public Optional<DetentionAddress> getAddressFor(String detentionFacility) {
-        Optional<String> maybeDetentionAddress = addressLoader.getAddressStringFor(detentionFacility);
+        String maybeDetentionAddress = this.addresses.get(detentionFacility);
 
-        if (maybeDetentionAddress.isEmpty()) {
+        if (maybeDetentionAddress == null) {
             return Optional.empty();
         }
 
-        String addressStr = maybeDetentionAddress.get();
-
-        String[] parts = addressStr.split(",");
+        String[] parts = maybeDetentionAddress.split(",");
 
         if (parts.length < 2) {
-            throw new RuntimeException("Invalid address: " + addressStr);
+            throw new IllegalStateException("Invalid address: " + maybeDetentionAddress);
         }
 
         String name = parts[0].trim();
@@ -43,5 +45,18 @@ public class DetentionFacilityAddressProvider {
         return Optional.of(new DetentionAddress(name, addressLines.toString(), postcode));
     }
 
-    public record DetentionAddress(String building, String addressLines, String postcode) {}
+    private void extractAddressesToMap(DetentionFacilityAddressLoader addressLoader) {
+        List<String> addressLines = addressLoader.loadAddress();
+        for (String line : addressLines) {
+            String[] parts = line.split(",", 2);
+            if (parts.length == 2) {
+                String key = parts[0].trim();
+                String value = parts[1].trim().replaceAll("^\"|\"$", ""); // remove surrounding quotes
+                addresses.put(key, value);
+            }
+        }
+    }
+
+    public record DetentionAddress(String building, String addressLines, String postcode) {
+    }
 }
