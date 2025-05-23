@@ -19,7 +19,7 @@ public class DetentionFacilityAddressLoader {
     private final String addressesFile;
 
     public DetentionFacilityAddressLoader(@Value("${files.detention-facilities-addresses}") String addressesFile) {
-        this.addressesFile = "/" + addressesFile;
+        this.addressesFile = addressesFile;
         loadPrisonAddresses();
     }
 

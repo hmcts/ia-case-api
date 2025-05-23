@@ -57,7 +57,7 @@ fees-register:
       keyword: HearingPaper
       service: other
 files:
-  detention-facilities-addresses: "detention-facilities.csv"
+  detention-facilities-addresses: "/detention-facilities.csv"
 
 spring:
   config:
