@@ -29,13 +29,11 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
@@ -77,30 +75,24 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
 
     private static Stream<Arguments> aipLrScheduleAppeal() {
         return Stream.of(
-            Arguments.of(Optional.of(JourneyType.AIP), Optional.empty(), Optional.of(RemissionOption.NO_REMISSION), EA), // AIP = chose no remission
-            Arguments.of(Optional.of(JourneyType.AIP), Optional.empty(), Optional.empty(), HU),
-            Arguments.of(Optional.of(JourneyType.AIP), Optional.empty(), Optional.empty(), EU),
-            Arguments.of(Optional.empty(), Optional.of(RemissionType.NO_REMISSION), Optional.empty(), EA), // LR = chose no remissions
-            Arguments.of(Optional.empty(), Optional.of(RemissionType.NO_REMISSION), Optional.empty(), HU),
-            Arguments.of(Optional.of(JourneyType.REP), Optional.of(RemissionType.NO_REMISSION), Optional.empty(), EU)
+            Arguments.of(Optional.empty(), EA), // AIP = remissions can't be chosen (empty)
+            Arguments.of(Optional.empty(), HU),
+            Arguments.of(Optional.empty(), EU),
+            Arguments.of(Optional.of(RemissionType.NO_REMISSION), EA), // LR = chose no remissions
+            Arguments.of(Optional.of(RemissionType.NO_REMISSION), HU),
+            Arguments.of(Optional.of(RemissionType.NO_REMISSION), EU)
         );
     }
 
     @ParameterizedTest
     @MethodSource("aipLrScheduleAppeal")
-    void should_schedule_automatic_end_appeal_14_days_from_now_ea_hu_eu_after_submission(
-            Optional<JourneyType> journeyType,
-            Optional<RemissionType> remissionType,
-            Optional<RemissionOption> aipRemissionOption,
-            AppealType appealType
-    ) {
+    void should_schedule_automatic_end_appeal_14_days_from_now_ea_hu_eu_after_submission(Optional<RemissionType> remissionType, AppealType appealType) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(journeyType);
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(remissionType);
-        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(aipRemissionOption);
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(remissionType);
         when(dateProvider.nowWithTime()).thenReturn(now);
         TimedEvent timedEvent = new TimedEvent(
             id,
@@ -312,21 +304,6 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION); // unqualified event
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void handling_should_throw_if_aip_with_remission_appeal_can_not_handle() {
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL); // unqualified event
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(EU));
-        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
-                .thenReturn(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE));
 
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback for auto end appeal for remission rejection")

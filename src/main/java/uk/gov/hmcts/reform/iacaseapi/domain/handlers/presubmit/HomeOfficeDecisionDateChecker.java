@@ -78,6 +78,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         Optional<OutOfCountryCircumstances> outOfCountryCircumstances = asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
+        Optional<String> tribunalReceivedDateString = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
 
         // If case data has oocDecisionType && ADA=YES, it means appeal was moving from in-country to OOC
         if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase) && outOfCountryDecisionTypeOptional.isEmpty()) {
@@ -88,6 +89,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         } else if (!HandlerUtils.isAipJourney(asylumCase)) {
             boolean isOutOfCountry = outOfCountryDecisionTypeOptional.isPresent();
             boolean isOutOfCountryCircumstances = outOfCountryCircumstances.isPresent();
+            boolean isInternalCase = isInternalCase(asylumCase);
 
             AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("Appeal type is missing"));
@@ -103,7 +105,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                     : handleInCountryAppeal(asylumCase, appealType);
             }
 
-            if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances)) {
+            if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances, tribunalReceivedDateString, isInternalCase)) {
                 asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
                 asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
             } else {
@@ -188,7 +190,9 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         }
     }
 
-    private boolean isDecisionDateBeforeAppealOutOfTimeDate(LocalDate decisionDate, boolean isOutOfCountry, boolean isOutOfCountryCircumstances) {
-        return decisionDate.isBefore(dateProvider.now().minusDays(isOutOfCountry || isOutOfCountryCircumstances ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk));
+    private boolean isDecisionDateBeforeAppealOutOfTimeDate(LocalDate decisionDate, boolean isOutOfCountry, boolean isOutOfCountryCircumstances, Optional<String> tribunalReceivedDateString, boolean isInternalCase) {
+        // added for DIAC-1043 if tribunalReceivedDate is present use for out of time calculation otherwise use now
+        LocalDate dateForComparison = (tribunalReceivedDateString.isPresent() && isInternalCase) ? parse(tribunalReceivedDateString.get()) : dateProvider.now();
+        return decisionDate.isBefore(dateForComparison.minusDays(isOutOfCountry || isOutOfCountryCircumstances ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk));
     }
 }
