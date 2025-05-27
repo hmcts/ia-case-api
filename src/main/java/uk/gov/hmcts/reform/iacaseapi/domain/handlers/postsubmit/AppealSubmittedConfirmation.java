@@ -263,9 +263,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private boolean isOutOfTimeDecisionFavorable(AsylumCase asylumCase) {
         Optional<YesOrNo> recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class);
         
-        // If no recorded decision yet, assume not favorable
+        // If no recorded decision yet, assume favorable
         if (recordedOutOfTimeDecision.isEmpty() || recordedOutOfTimeDecision.get() == NO) {
-            return false;
+            return true;
         }
         
         Optional<OutOfTimeDecisionType> outOfTimeDecisionType = asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class);
