@@ -5,14 +5,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.DC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +25,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
@@ -70,6 +75,10 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String ADMIN_HEADER = "# The appeal has been submitted";
     private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
         "\n\nYou can now apply for [interim relief](#).";
+    private static final String CMR_DETAINED_APPEAL_LABEL = 
+        "You must review the appeal in the documents tab. Create a listing task if a CMR is required for this detained appeal.\n\n"
+        + "If a CMR is not required for this detained appeal and the appeal looks valid, you must tell the respondent to supply their evidence\n\n"
+        + "Request respondent evidence.";
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
@@ -118,6 +127,12 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             postSubmitResponse.setConfirmationHeader(
                     submissionOutOfTime == NO ? DEFAULT_HEADER : ""
             );
+        }
+
+        // Check if this is a detained appeal case that qualifies for CMR message
+        if (shouldShowCmrDetainedAppealMessage(asylumCase, appealType, submissionOutOfTime)) {
+            setDetainedAppealCmrConfirmation(postSubmitResponse, asylumCase);
+            return postSubmitResponse;
         }
 
         switch (appealType) {
@@ -171,11 +186,102 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 setAgAppealTypeConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
                 break;
 
+            case DC:
+                setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
+                break;
+
             default:
                 setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
         }
 
         return postSubmitResponse;
+    }
+
+    /**
+     * Determines if the CMR detained appeal message should be shown.
+     * 
+     * @param asylumCase the asylum case
+     * @param appealType the appeal type
+     * @param submissionOutOfTime whether the submission is out of time
+     * @return true if CMR message should be shown, false otherwise
+     */
+    private boolean shouldShowCmrDetainedAppealMessage(AsylumCase asylumCase, AppealType appealType, YesOrNo submissionOutOfTime) {
+        // Must be an internal case (Legal Officer)
+        if (!isInternalCase(asylumCase)) {
+            return false;
+        }
+        
+        // Must be a detained appeal
+        if (!isAppellantInDetention(asylumCase)) {
+            return false;
+        }
+        
+        // Must be EA, HU, EU, or DC appeal type (excluding RA & PA)
+        if (!List.of(EA, HU, EU, DC).contains(appealType)) {
+            return false;
+        }
+        
+        // Check payment status - appeal should be paid or no payment required
+        if (!isPaymentSatisfied(asylumCase)) {
+            return false;
+        }
+        
+        // If out of time, check that recorded decision allows appeal to proceed
+        if (submissionOutOfTime == YES) {
+            return isOutOfTimeDecisionFavorable(asylumCase);
+        }
+        
+        return true;
+    }
+
+    /**
+     * Checks if payment requirements are satisfied.
+     */
+    private boolean isPaymentSatisfied(AsylumCase asylumCase) {
+        Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
+        
+        // If payment status is PAID, payment is satisfied
+        if (paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
+            return true;
+        }
+        
+        // Check if remission is approved (no payment needed)
+        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
+            // For remission cases, check if it's approved
+            return asylumCase.read(REMISSION_DECISION, uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.class)
+                .map(decision -> decision == uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED)
+                .orElse(false);
+        }
+        
+        // If no payment status and no remission, assume no payment required for now
+        // This may need refinement based on business rules
+        return paymentStatus.isEmpty();
+    }
+
+    /**
+     * Checks if out of time decision is favorable (IN_TIME or APPROVED).
+     */
+    private boolean isOutOfTimeDecisionFavorable(AsylumCase asylumCase) {
+        Optional<YesOrNo> recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class);
+        
+        // If no recorded decision yet, assume not favorable
+        if (recordedOutOfTimeDecision.isEmpty() || recordedOutOfTimeDecision.get() == NO) {
+            return false;
+        }
+        
+        Optional<OutOfTimeDecisionType> outOfTimeDecisionType = asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class);
+        
+        return outOfTimeDecisionType.isPresent() && 
+               (outOfTimeDecisionType.get() == OutOfTimeDecisionType.IN_TIME || 
+                outOfTimeDecisionType.get() == OutOfTimeDecisionType.APPROVED);
+    }
+
+    /**
+     * Sets the confirmation message for detained appeals requiring CMR consideration.
+     */
+    private void setDetainedAppealCmrConfirmation(PostSubmitCallbackResponse postSubmitResponse, AsylumCase asylumCase) {
+        postSubmitResponse.setConfirmationBody(DO_THIS_NEXT_LABEL + CMR_DETAINED_APPEAL_LABEL);
     }
 
     private void setEaHuAppealTypesConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
