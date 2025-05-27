@@ -75,10 +75,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String ADMIN_HEADER = "# The appeal has been submitted";
     private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
         "\n\nYou can now apply for [interim relief](#).";
-    private static final String CMR_DETAINED_APPEAL_LABEL = 
-        "You must review the appeal in the documents tab. Create a listing task if a CMR is required for this detained appeal.\n\n"
-        + "If a CMR is not required for this detained appeal and the appeal looks valid, you must tell the respondent to supply their evidence\n\n"
-        + "Request respondent evidence.";
+
+
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
@@ -131,7 +129,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         // Check if this is a detained appeal case that qualifies for CMR message
         if (shouldShowCmrDetainedAppealMessage(asylumCase, appealType, submissionOutOfTime)) {
-            setDetainedAppealCmrConfirmation(postSubmitResponse, asylumCase);
+            setDetainedAppealCmrConfirmation(postSubmitResponse, callback);
             return postSubmitResponse;
         }
 
@@ -280,8 +278,13 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     /**
      * Sets the confirmation message for detained appeals requiring CMR consideration.
      */
-    private void setDetainedAppealCmrConfirmation(PostSubmitCallbackResponse postSubmitResponse, AsylumCase asylumCase) {
-        postSubmitResponse.setConfirmationBody(DO_THIS_NEXT_LABEL + CMR_DETAINED_APPEAL_LABEL);
+    private void setDetainedAppealCmrConfirmation(PostSubmitCallbackResponse postSubmitResponse, Callback<AsylumCase> callback) {
+        String cmrDetainedAppealLabel = 
+            "You must review the appeal in the documents tab. Create a listing task if a [CMR is required for this detained appeal](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/createCmrListingTask).\n\n"
+            + "If a CMR is not required for this detained appeal and the appeal looks valid, you must tell the respondent to supply their evidence\n\n"
+            + "[Request respondent evidence](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/requestRespondentEvidence).</br>";
+        
+        postSubmitResponse.setConfirmationBody(DO_THIS_NEXT_LABEL + cmrDetainedAppealLabel);
     }
 
     private void setEaHuAppealTypesConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
