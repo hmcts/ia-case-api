@@ -1947,10 +1947,10 @@ public enum AsylumCaseFieldDefinition {
         "otherDetentionFacilityName", new TypeReference<OtherDetentionFacilityName>(){}),
 
     CUSTODIAL_SENTENCE(
-        "custodialSentence", new TypeReference<YesOrNo>(){}),
+        "releaseDateProvided", new TypeReference<YesOrNo>(){}),
 
     DATE_CUSTODIAL_SENTENCE(
-        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+        "releaseDate", new TypeReference<CustodialSentenceDate>(){}),
 
     DATE_CUSTODIAL_SENTENCE_AO(
         "dateCustodialSentenceAo", new TypeReference<CustodialSentenceDate>(){}),

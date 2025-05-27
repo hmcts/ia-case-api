@@ -86,10 +86,13 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
                 asylumCase.clear(PRISON_NOMS);
             }
 
-            //Clear custodial sentence date
+            //Clear custodial sentence date else clear bail
             if (asylumCase.read(CUSTODIAL_SENTENCE, YesOrNo.class).orElse(NO).equals(NO)) {
                 log.info("Clearing Custodial Sentence date");
                 asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
+            } else {
+                asylumCase.clear(HAS_PENDING_BAIL_APPLICATIONS);
+                asylumCase.clear(BAIL_APPLICATION_NUMBER);
             }
         }
 
