@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemis
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExistsAip;
 
 @Component
+@Slf4j
 public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String NOT_AVAILABLE_LABEL = "You cannot mark this appeal as paid";
@@ -118,9 +120,19 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
 
         // old cases
+        log.info(
+            "--------!isRemissionExists(remissionType) {}, remissionType {}, !isRemissionExists(lateRemissionType {}, " +
+                    "appealType {},  paPaymentType {}",
+            !isRemissionExists(remissionType),
+            remissionType,
+            !isRemissionExists(lateRemissionType),
+            appealType,
+            paPaymentType
+        );
         if (!isRemissionExists(remissionType)
                 && !isRemissionExists(lateRemissionType)
                 && (appealType == PA && paPaymentType.isEmpty())) {
+            log.info("-------222");
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 
@@ -128,6 +140,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
             && !isRemissionExists(lateRemissionType)
             && isEaHuEuAg
             && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
+            log.info("-------333");
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 
