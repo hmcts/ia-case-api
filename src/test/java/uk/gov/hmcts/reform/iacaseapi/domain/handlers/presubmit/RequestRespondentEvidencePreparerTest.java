@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -50,6 +51,7 @@ class RequestRespondentEvidencePreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
     private static final int DUE_IN_DAYS_ADA = 3;
+    private static final int DUE_IN_DAYS_DETAINED = 7;
 
     @Mock
     private FeatureToggler featureToggler;
@@ -74,7 +76,7 @@ class RequestRespondentEvidencePreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, featureToggler, dateProvider, dueDateService);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, featureToggler, dateProvider, dueDateService);
     }
 
     @Test
@@ -280,13 +282,13 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void handle_should_throw_error_for_the_detained_appeal() {
+    void handle_should_not_throw_error_for_the_detained_appeal() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2025-06-04"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -302,7 +304,7 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void handle_should_throw_error_for_aaa_appeal() {
+    void handle_should_not_throw_error_for_aaa_appeal() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
@@ -417,5 +419,59 @@ class RequestRespondentEvidencePreparerTest {
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    void should_return_due_date_for_accelerated_detained_appeal(AppealType appealType) {
+        LocalDate today = LocalDate.of(2025, 5,28);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(dueDateService.calculateDueDate(
+                any(), anyInt()))
+                .thenReturn(today.now().plusDays(DUE_IN_DAYS_ADA).atStartOfDay(ZoneOffset.UTC));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-05-31");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    void should_return_due_date_for_standard_case(AppealType appealType) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 05, 28));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-06-11");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    void should_return_due_date_for_detained_case(AppealType appealType) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 05, 28));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-06-04");
     }
 }
