@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1037 Request respondent evidence when detained - sendDirectionDateDue ",
+  "description": "DIAC-1037 Request respondent evidence when detained - check sendDirectionDateDue ",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

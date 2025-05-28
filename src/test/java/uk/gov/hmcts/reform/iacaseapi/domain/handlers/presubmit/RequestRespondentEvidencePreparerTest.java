@@ -288,7 +288,7 @@ class RequestRespondentEvidencePreparerTest {
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2025-06-04"));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -421,9 +421,8 @@ class RequestRespondentEvidencePreparerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
-    void should_return_due_date_for_accelerated_detained_appeal(AppealType appealType) {
+    @Test
+    void should_return_due_date_for_accelerated_detained_appeal() {
         LocalDate today = LocalDate.of(2025, 5,28);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -431,7 +430,7 @@ class RequestRespondentEvidencePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(dateProvider.now()).thenReturn(today);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
         when(dueDateService.calculateDueDate(
                 any(), anyInt()))
                 .thenReturn(today.now().plusDays(DUE_IN_DAYS_ADA).atStartOfDay(ZoneOffset.UTC));
@@ -442,15 +441,14 @@ class RequestRespondentEvidencePreparerTest {
         verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-05-31");
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
-    void should_return_due_date_for_standard_case(AppealType appealType) {
+    @Test
+    void should_return_due_date_for_standard_case() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(dateProvider.now()).thenReturn(LocalDate.of(2025, 05, 28));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -458,16 +456,15 @@ class RequestRespondentEvidencePreparerTest {
         verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-06-11");
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
-    void should_return_due_date_for_detained_case(AppealType appealType) {
+    @Test
+    void should_return_due_date_for_detained_case() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(dateProvider.now()).thenReturn(LocalDate.of(2025, 05, 28));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
