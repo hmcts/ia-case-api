@@ -131,6 +131,7 @@ requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:1
 requestRespondentEvidence.dueInDaysAda: ${REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS:3}
 requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
+requestRespondentReviewDetained.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DETAINED_DUE_IN_DAYS:7}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
 legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
