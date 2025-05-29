@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionTyp
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -423,7 +424,9 @@ class RequestRespondentEvidencePreparerTest {
 
     @Test
     void should_return_due_date_for_accelerated_detained_appeal() {
-        LocalDate today = LocalDate.of(2025, 5,28);
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        ZonedDateTime adaDueDate = today.plusDays(DUE_IN_DAYS_ADA).atStartOfDay(ZoneOffset.UTC);
+        String expectedDateDue = "2025-05-08";
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -433,42 +436,48 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
         when(dueDateService.calculateDueDate(
                 any(), anyInt()))
-                .thenReturn(today.now().plusDays(DUE_IN_DAYS_ADA).atStartOfDay(ZoneOffset.UTC));
+                .thenReturn(adaDueDate);
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-05-31");
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @Test
     void should_return_due_date_for_standard_case() {
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        String expectedDateDue = "2025-05-19";
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 05, 28));
+        when(dateProvider.now()).thenReturn(today);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-06-11");
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @Test
     void should_return_due_date_for_detained_case() {
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        String expectedDateDue = "2025-05-12";
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 05, 28));
+        when(dateProvider.now()).thenReturn(today);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, "2025-06-04");
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 }
