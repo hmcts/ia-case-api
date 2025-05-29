@@ -185,9 +185,6 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 break;
 
             case DC:
-                setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
-                break;
-
             default:
                 setDefaultConfirmation(postSubmitResponse, submissionOutOfTime, asylumCase);
         }

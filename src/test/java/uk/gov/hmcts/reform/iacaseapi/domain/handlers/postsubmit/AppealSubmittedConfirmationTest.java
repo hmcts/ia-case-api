@@ -378,7 +378,8 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
+            );
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -918,5 +919,278 @@ class AppealSubmittedConfirmationTest {
 
         assertNotNull(callbackResponse);
 
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"EA", "HU", "EU", "DC"})
+    void should_return_cmr_confirmation_for_detained_appeals_with_payment_satisfied(String appealType) {
+        // Given: Internal case (Legal Officer), detained appeal, payment satisfied, in time
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Do this next");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("You must review the appeal in the documents tab");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Create a listing task if a [CMR is required for this detained appeal]");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Request respondent evidence");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"EA", "HU", "EU", "DC"})
+    void should_return_cmr_confirmation_for_detained_appeals_out_of_time_with_favorable_decision(String appealType) {
+        // Given: Internal case, detained appeal, out of time but with favorable decision
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(OUT_OF_TIME_DECISION_TYPE, uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.IN_TIME));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Do this next");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("You must review the appeal in the documents tab");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Create a listing task if a [CMR is required for this detained appeal]");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"EA", "HU", "EU", "DC"})
+    void should_return_cmr_confirmation_for_detained_appeals_with_approved_remission(String appealType) {
+        // Given: Internal case, detained appeal, approved remission (no payment needed)
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_DECISION, uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Do this next");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("You must review the appeal in the documents tab");
+    }
+
+    @Test
+    void should_not_return_cmr_confirmation_for_non_internal_cases() {
+        // Given: Non-internal case (not Legal Officer)
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should not contain CMR message
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("Create a listing task if a CMR is required");
+    }
+
+    @Test
+    void should_not_return_cmr_confirmation_for_non_detained_appeals() {
+        // Given: Internal case but not detained
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should not contain CMR message
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("Create a listing task if a CMR is required");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"PA", "RP", "AG"})
+    void should_not_return_cmr_confirmation_for_excluded_appeal_types(String appealType) {
+        // Given: Internal detained case but excluded appeal type (PA, RP, AG)
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should not contain CMR message
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("Create a listing task if a CMR is required");
+    }
+
+    @Test
+    void should_not_return_cmr_confirmation_for_unpaid_appeals() {
+        // Given: Internal detained case but payment not satisfied
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should not contain CMR message
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("Create a listing task if a CMR is required");
+    }
+
+    @Test
+    void should_not_return_cmr_confirmation_for_out_of_time_with_rejected_decision() {
+        // Given: Internal detained case, out of time with rejected decision
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(OUT_OF_TIME_DECISION_TYPE, uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.REJECTED));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should not contain CMR message
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("Create a listing task if a CMR is required");
+    }
+
+    @Test
+    void should_not_return_cmr_confirmation_for_out_of_time_without_recorded_decision() {
+        // Given: Internal detained case, out of time but no recorded decision yet
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should not contain CMR message
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("Create a listing task if a CMR is required");
+    }
+
+    @Test
+    void should_build_cmr_url_with_correct_case_id() {
+        // Given: Internal case (Legal Officer), detained appeal, payment satisfied, in time
+        Long expectedCaseId = 1234567890L;
+        when(caseDetails.getId()).thenReturn(expectedCaseId);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.class))
+            .thenReturn(Optional.of(uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        // When
+        PostSubmitCallbackResponse callbackResponse = appealSubmittedConfirmation.handle(callback);
+
+        // Then
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        
+        // Should contain CMR message with correct case ID in both URLs
+        String expectedRespondentEvidenceUrl = "/case/IA/Asylum/" + expectedCaseId + "/trigger/requestRespondentEvidence";
+        String expectedCmrUrl = "/case/IA/Asylum/" + expectedCaseId + "/trigger/createCmrListingTask";
+        
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains(expectedRespondentEvidenceUrl);
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains(expectedCmrUrl);
+        
+        // Should not contain placeholder
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .doesNotContain("[CASE_REFERENCE]");
     }
 }
