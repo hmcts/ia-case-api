@@ -157,6 +157,7 @@ class EventTest {
         assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());
         assertEquals("refundConfirmation", Event.REFUND_CONFIRMATION.toString());
         assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
+        assertEquals("generateListCmrTask", Event.GENERATE_LIST_CMR_TASK.toString());
     }
 
     @Test
