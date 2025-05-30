@@ -378,8 +378,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains(
-                        "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
-                );
+                        "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains(
@@ -800,7 +799,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"NO", "YES"})
+    @ValueSource(strings = { "NO", "YES" })
     void lr_should_return_confirmation_for_age_assessment_appeals(String flag) {
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
