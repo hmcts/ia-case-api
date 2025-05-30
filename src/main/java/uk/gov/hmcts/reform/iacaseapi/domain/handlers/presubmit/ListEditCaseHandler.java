@@ -105,6 +105,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        // TODO isVirtualHearing() is "Yes", set
         if (isCaseUsingLocationRefData(asylumCase)) {
             DynamicList listingLocation = asylumCase.read(LISTING_LOCATION, DynamicList.class)
                 .orElseThrow(() -> new IllegalStateException("Listing location is missing"));

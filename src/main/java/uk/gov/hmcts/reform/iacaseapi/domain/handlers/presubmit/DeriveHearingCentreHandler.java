@@ -176,6 +176,9 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+        asylumCase.write(IS_VIRTUAL_HEARING,
+                Objects.equals(hearingCentre.getEpimsId(), HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId())
+                        ? YesOrNo.YES : YesOrNo.NO);
 
         if (isCaseUsingLocationRefData(asylumCase)) {
             DynamicList hearingCentreDynamicList = locationRefDataService.getCaseManagementLocationDynamicList();
