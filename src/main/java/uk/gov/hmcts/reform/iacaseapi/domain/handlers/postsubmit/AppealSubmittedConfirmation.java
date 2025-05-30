@@ -39,37 +39,37 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
     private static final String DO_THIS_NEXT_LABEL = "#### Do this next\n\n";
     private static final String PA_PAY_APPEAL_LABEL =
-            "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
+        "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
     private static final String EU_HU_PAY_APPEAL_LABEL = PA_PAY_APPEAL_LABEL
-            + " You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.";
+        + " You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.";
     private static final String HO_WAIVER_REMISSION_LABEL =
-            "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be asked to "
-                    + "provide more information. Once the review is complete you will be notified if there is any fee to pay.";
+        "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be asked to "
+            + "provide more information. Once the review is complete you will be notified if there is any fee to pay.";
     private static final String REVIEW_LABEL =
-            "\n\nOnce you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be "
-                    + "notified if it can proceed.";
+        "\n\nOnce you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be "
+            + "notified if it can proceed.";
     private static final String OUT_OF_TIME_PNG =
-            "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
+        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_ADMIN_PNG =
             "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL = OUT_OF_TIME_ADMIN_PNG + WHAT_HAPPENS_NEXT_LABEL;
     private static final String OUT_OF_TIME_DO_THIS_NEXT_LABEL = OUT_OF_TIME_PNG + DO_THIS_NEXT_LABEL;
     private static final String DEFAULT_LABEL =
-            "You will receive an email confirming that this appeal has been submitted successfully.";
+        "You will receive an email confirming that this appeal has been submitted successfully.";
     private static final String ADMIN_LABEL =
-            "A Legal Officer will check the appeal is valid and all parties will be notified of next steps.";
+        "A Legal Officer will check the appeal is valid and all parties will be notified of next steps.";
     private static final String EJP_LABEL =
             "A Legal Officer will progress the case to the correct state and upload the relevant documents at each point.";
     private static final String OUT_OF_TIME_DEFAULT_LABEL =
-            "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
-                    + "telling you whether your appeal can go ahead.";
+        "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
+            + "telling you whether your appeal can go ahead.";
     private static final String OUT_OF_TIME_ADMIN_LABEL =
             "A Legal Officer will decide if the appeal can proceed.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
     private static final String ADMIN_HEADER = "# The appeal has been submitted";
     private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
-            "\n\nYou can now apply for [interim relief](#).";
+        "\n\nYou can now apply for [interim relief](#).";
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
@@ -79,7 +79,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     }
 
     public boolean canHandle(
-            Callback<AsylumCase> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -87,28 +87,28 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     }
 
     public PostSubmitCallbackResponse handle(
-            Callback<AsylumCase> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         PostSubmitCallbackResponse postSubmitResponse =
-                new PostSubmitCallbackResponse();
+            new PostSubmitCallbackResponse();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         YesOrNo submissionOutOfTime =
-                requireNonNull(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
-                        .<RequiredFieldMissingException>orElseThrow(
-                                () -> new RequiredFieldMissingException("submission out of time is a required field")));
+            requireNonNull(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
+                .<RequiredFieldMissingException>orElseThrow(
+                    () -> new RequiredFieldMissingException("submission out of time is a required field")));
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         if (isInternalCase(asylumCase)) {
             postSubmitResponse.setConfirmationHeader(
@@ -129,12 +129,12 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
                     setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime, asylumCase);
                 } else if (remissionType.isPresent()
-                        && remissionType.get() == NO_REMISSION
-                        && !isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
+                           && remissionType.get() == NO_REMISSION
+                           && !isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
                     setEaHuAppealTypesConfirmation(postSubmitResponse, asylumCase, submissionOutOfTime);
                 } else if (remissionType.isPresent()
-                        && remissionType.get() == NO_REMISSION
-                        && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
+                           && remissionType.get() == NO_REMISSION
+                           && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
                     setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
                 } else {
 
@@ -144,18 +144,18 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
             case PA:
                 String paymentOption = asylumCase
-                        .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                        .orElse("");
+                    .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+                    .orElse("");
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
                     setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime, asylumCase);
                 } else if (remissionType.isPresent()
-                        && remissionType.get() == NO_REMISSION
-                        && !isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
+                           && remissionType.get() == NO_REMISSION
+                           && !isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
                     setPaAppealTypeConfirmation(postSubmitResponse, callback, asylumCase, submissionOutOfTime);
                 } else if (remissionType.isPresent()
-                        && remissionType.get() == NO_REMISSION
-                        && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
+                           && remissionType.get() == NO_REMISSION
+                           && isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))) {
                     if (paymentOption.equals("payLater")) {
                         setWaysToPayLabelPaPayLater(postSubmitResponse, callback, submissionOutOfTime, asylumCase);
                     } else {
@@ -182,26 +182,26 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                                 AsylumCase asylumCase, YesOrNo submissionOutOfTime) {
 
         asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                .ifPresent(paymentOption -> {
+            .ifPresent(paymentOption -> {
 
-                    if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
 
-                        postSubmitCallbackResponse.setConfirmationBody(
-                                submissionOutOfTime == NO
-                                        ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
-                                        : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
-                        );
-                    }
+                    postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                }
 
-                    if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && isInternalCase(asylumCase)) {
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && isInternalCase(asylumCase)) {
 
-                        postSubmitCallbackResponse.setConfirmationBody(
-                                submissionOutOfTime == NO
-                                        ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
-                                        : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
-                        );
-                    }
-                });
+                    postSubmitCallbackResponse.setConfirmationBody(
+                            submissionOutOfTime == NO
+                                    ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
+                                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                }
+            });
     }
 
     private void setPaAppealTypeConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
@@ -209,40 +209,40 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                              YesOrNo submissionOutOfTime) {
 
         final String paOverviewTabLabel =
-                "[" + "overview tab" + "](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#overview)";
+            "[" + "overview tab" + "](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#overview)";
         final String paPayLaterLabel =
-                "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the "
-                        + paOverviewTabLabel + " and following the instructions.";
+            "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the "
+                + paOverviewTabLabel + " and following the instructions.";
 
         asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                .ifPresent(paymentOption -> {
+            .ifPresent(paymentOption -> {
 
-                    if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
-                        postSubmitCallbackResponse.setConfirmationBody(
-                                submissionOutOfTime == NO
-                                        ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
-                                        : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
-                        );
-                    } else if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && isInternalCase(asylumCase)) {
-                        postSubmitCallbackResponse.setConfirmationBody(
-                                submissionOutOfTime == NO
-                                        ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
-                                        : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
-                        );
-                    } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER) && !isInternalCase(asylumCase)) {
-                        postSubmitCallbackResponse.setConfirmationBody(
-                                submissionOutOfTime == NO
-                                        ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
-                                        : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel + REVIEW_LABEL
-                        );
-                    } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER) && isInternalCase(asylumCase)) {
-                        postSubmitCallbackResponse.setConfirmationBody(
-                                submissionOutOfTime == NO
-                                        ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
-                                        : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + paPayLaterLabel + REVIEW_LABEL
-                        );
-                    }
-                });
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && !isInternalCase(asylumCase)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE) && isInternalCase(asylumCase)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                            submissionOutOfTime == NO
+                                    ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
+                                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER) && !isInternalCase(asylumCase)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel + REVIEW_LABEL
+                    );
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER) && isInternalCase(asylumCase)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                            submissionOutOfTime == NO
+                                    ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_ADMIN_LABEL + paPayLaterLabel + REVIEW_LABEL
+                    );
+                }
+            });
     }
 
     private void setRemissionConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
@@ -251,8 +251,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                           AsylumCase asylumCase) {
 
         if (remissionType == HO_WAIVER_REMISSION
-                || remissionType == HELP_WITH_FEES
-                || remissionType == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
+            || remissionType == HELP_WITH_FEES
+            || remissionType == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
 
             if (isInternalCase(asylumCase)) {
                 postSubmitCallbackResponse.setConfirmationBody(
@@ -345,13 +345,13 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     }
 
     private void setWaysToPayLabelPaPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
-                                             Callback<AsylumCase> callback,
-                                             YesOrNo submissionOutOfTime,
-                                             AsylumCase asylumCase) {
+                                         Callback<AsylumCase> callback,
+                                         YesOrNo submissionOutOfTime,
+                                         AsylumCase asylumCase) {
 
         String paPayLaterLabel = "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
-                + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
+            + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
+            + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
 
         if (isInternalCase(asylumCase)) {
             postSubmitCallbackResponse.setConfirmationBody(

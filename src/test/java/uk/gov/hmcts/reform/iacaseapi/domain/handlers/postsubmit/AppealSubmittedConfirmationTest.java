@@ -83,22 +83,22 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get()).contains("submitted");
+            callbackResponse.getConfirmationHeader().get()).contains("submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("You will receive an email confirming that this appeal has been submitted successfully.");
+            callbackResponse.getConfirmationBody().get())
+            .contains("You will receive an email confirming that this appeal has been submitted successfully.");
     }
 
     @Test
@@ -139,25 +139,25 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead.");
     }
 
     @Test
@@ -227,27 +227,27 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. ");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. ");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.");
     }
 
     @Test
@@ -260,28 +260,28 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. ");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. ");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.");
     }
 
     @Test
@@ -294,28 +294,28 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
     }
 
     @Test
@@ -328,27 +328,27 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
     }
 
     @ParameterizedTest
@@ -362,27 +362,27 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
     }
 
 
@@ -396,27 +396,27 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
     }
 
     @ParameterizedTest
@@ -431,24 +431,24 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your appeal has been submitted");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### Do this next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
-                );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
+            );
     }
 
     @Test
@@ -463,24 +463,24 @@ class AppealSubmittedConfirmationTest {
 
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your appeal has been submitted");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
-                );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
+            );
     }
 
     @ParameterizedTest
@@ -495,25 +495,25 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your appeal has been submitted");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal."
-                );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal."
+            );
     }
 
     @Test
@@ -527,25 +527,25 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your appeal has been submitted");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online."
-                );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online."
+            );
     }
 
     @Test
@@ -559,29 +559,29 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your appeal has been submitted");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains(
-                        "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the [overview tab]"
-                );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the [overview tab]"
+            );
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("and following the instructions."
-                );
+            callbackResponse.getConfirmationBody().get())
+            .contains("and following the instructions."
+            );
     }
 
     @ParameterizedTest
@@ -590,14 +590,14 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
-                .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+            .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -605,32 +605,32 @@ class AppealSubmittedConfirmationTest {
 
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
 
         if (flag.equals(NO.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get()
-                            .contains("# Your appeal has been submitted"));
+                callbackResponse.getConfirmationHeader().get()
+                    .contains("# Your appeal has been submitted"));
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                            + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.");
+                callbackResponse.getConfirmationBody().get())
+                .contains("You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.");
         }
         if (flag.equals(YES.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                            + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                            + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                            + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
-                    );
+                callbackResponse.getConfirmationBody().get())
+                .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
+                    + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
+                    + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                );
         }
 
     }
@@ -646,7 +646,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -654,38 +654,38 @@ class AppealSubmittedConfirmationTest {
 
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         if (flag.equals(NO.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains(
-                            "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                    +
-                                    " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay."
-                    );
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                        +
+                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay."
+                );
         }
         if (flag.equals(YES.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains(
-                            "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                                    +
-                                    "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                    +
-                                    " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                                    +
-                                    "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
-                    );
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
+                        +
+                        "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                        +
+                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
+                        +
+                        "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                );
         }
 
     }
@@ -700,19 +700,19 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your appeal has been submitted");
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been submitted");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("You will receive an email confirming that this appeal has been submitted successfully.");
+            callbackResponse.getConfirmationBody().get())
+            .contains("You will receive an email confirming that this appeal has been submitted successfully.");
     }
 
     @ParameterizedTest
@@ -725,17 +725,17 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("You have submitted this appeal beyond the deadline. "
-                        + "The Tribunal Case Officer will decide if it can proceed. "
-                        + "You'll get an email telling you whether your appeal can go ahead.");
+            callbackResponse.getConfirmationBody().get())
+            .contains("You have submitted this appeal beyond the deadline. "
+                + "The Tribunal Case Officer will decide if it can proceed. "
+                + "You'll get an email telling you whether your appeal can go ahead.");
     }
 
     @ParameterizedTest
@@ -744,55 +744,55 @@ class AppealSubmittedConfirmationTest {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(
-                Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
+            Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next");
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
 
         if (flag.equals(NO.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains(
-                            "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                    +
-                                    " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay."
-                    );
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                        +
+                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay."
+                );
 
         }
         if (flag.equals(YES.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains(
-                            "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                                    +
-                                    "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                                    +
-                                    " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                                    +
-                                    "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
-                    );
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
+                        +
+                        "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                        +
+                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
+                        +
+                        "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                );
 
         }
 
@@ -807,7 +807,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -815,33 +815,33 @@ class AppealSubmittedConfirmationTest {
 
         if (flag.equals(NO.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("You will receive an email confirming that this appeal has been submitted successfully."
-                            + "\n\nYou can now apply for [interim relief](#).");
+                callbackResponse.getConfirmationBody().get())
+                .contains("You will receive an email confirming that this appeal has been submitted successfully."
+                          + "\n\nYou can now apply for [interim relief](#).");
         }
 
         if (flag.equals(YES.toString())) {
             assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# Your appeal has been submitted");
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("#### What happens next");
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
 
             assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
-                            + "telling you whether your appeal can go ahead."
-                            + "\n\nYou can now apply for [interim relief](#).");
+                callbackResponse.getConfirmationBody().get())
+                .contains("You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
+                          + "telling you whether your appeal can go ahead."
+                          + "\n\nYou can now apply for [interim relief](#).");
         }
 
     }
@@ -853,8 +853,8 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -881,12 +881,12 @@ class AppealSubmittedConfirmationTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealSubmittedConfirmation.canHandle(null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -897,8 +897,8 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Appeal type is not present");
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("Appeal type is not present");
     }
 
     @Test
@@ -910,11 +910,11 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(
-                Optional.of(RemissionType.NO_REMISSION));
+            Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
         PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
+            appealSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
 
