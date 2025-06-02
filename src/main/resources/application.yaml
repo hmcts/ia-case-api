@@ -342,6 +342,7 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -401,6 +402,7 @@ security:
       - "saveNotificationsToData"
       - "refundConfirmation"
       - "progressMigratedCase"
+      - "generateListCmrTask"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
