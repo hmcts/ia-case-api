@@ -131,6 +131,7 @@ legalRepresentativeHearingRequirements.dueInDays: ${LEGAL_REP_HEARING_REQUIREMEN
 legalRepresentativeReview.dueInDays: ${LEGAL_REP_REVIEW_DUE_IN_DAYS:5}
 requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:14}
 requestRespondentEvidence.dueInDaysAda: ${REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS:3}
+requestRespondentEvidence.dueInDaysDetained: ${REQUEST_RESPONDENT_EVIDENCE_DETAINED_DUE_IN_DAYS:7}
 requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
