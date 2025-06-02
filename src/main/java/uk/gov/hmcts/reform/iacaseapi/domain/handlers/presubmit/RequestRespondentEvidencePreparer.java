@@ -31,6 +31,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
     private final int requestRespondentEvidenceDueInDays;
     private final int requestRespondentEvidenceDueInDaysAda;
+    private final int requestRespondentEvidenceDueInDaysDetained;
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final DueDateService dueDateService;
@@ -38,12 +39,14 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     public RequestRespondentEvidencePreparer(
         @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
         @Value("${requestRespondentEvidence.dueInDaysAda}") int requestRespondentEvidenceDueInDaysAda,
+        @Value("${requestRespondentEvidence.dueInDaysDetained}") int requestRespondentEvidenceDueInDaysDetained,
         FeatureToggler featureToggler,
         DateProvider dateProvider,
         DueDateService dueDateService
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
         this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
+        this.requestRespondentEvidenceDueInDaysDetained = requestRespondentEvidenceDueInDaysDetained;
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
         this.dueDateService = dueDateService;
@@ -139,9 +142,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate()
-                : dateProvider.now().plusDays(requestRespondentEvidenceDueInDays);
+        LocalDate dueDate = getDueDate(asylumCase);
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
@@ -159,5 +160,19 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         return homeOfficeSearchStatus.isEmpty()
             || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get());
+    }
+
+    private LocalDate getDueDate(AsylumCase asylumCase) {
+        LocalDate dueDate;
+
+        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+            dueDate = dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate();
+        } else if (HandlerUtils.isAppellantInDetention(asylumCase)) {
+            dueDate = dateProvider.now().plusDays(requestRespondentEvidenceDueInDaysDetained);
+        } else {
+            dueDate = dateProvider.now().plusDays(requestRespondentEvidenceDueInDays);
+        }
+
+        return dueDate;
     }
 }
