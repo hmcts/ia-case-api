@@ -2826,6 +2826,17 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    GENERATE_LIST_CMR_TASK_REQUESTED(
+            "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
+
+      DETENTION_BUILDING(
+          "detentionBuilding", new TypeReference<String>(){}),
+
+    DETENTION_ADDRESS_LINES(
+          "detentionAddressLines", new TypeReference<String>(){}),
+
+    DETENTION_POSTCODE(
+          "detentionPostcode", new TypeReference<String>(){})
     ;
 
     private final String value;
