@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
@@ -30,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -38,6 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -74,6 +77,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -94,6 +98,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -117,6 +122,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -143,6 +149,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
@@ -175,6 +182,7 @@ class ManageFeeUpdateMidEventTest {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -198,6 +206,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -220,6 +229,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -236,6 +246,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
 
@@ -251,6 +262,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
@@ -264,6 +276,34 @@ class ManageFeeUpdateMidEventTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionDecision.class, names = {"APPROVED", "PARTIALLY_APPROVED"})
+    void should_handle_if_pending_payment_and_appeal_type_PA(RemissionDecision remissionDecision) {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+                .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+                .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class))
+                .thenReturn(Optional.of(RemissionType.HELP_WITH_FEES));
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
+                .thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
+        when(asylumCase.read(NEW_FEE_AMOUNT, String.class)).thenReturn(Optional.of("1000"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isEmpty();
@@ -284,6 +324,7 @@ class ManageFeeUpdateMidEventTest {
                 "Fee update not required"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -318,6 +359,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -355,6 +397,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateRefundApproved"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -393,6 +436,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateAdditionalFeeRequested"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -432,6 +476,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateNotRequired"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -469,6 +514,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateNotRequired"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -508,6 +554,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateRefundInstructed"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -550,6 +597,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateNotRequired"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -590,6 +638,7 @@ class ManageFeeUpdateMidEventTest {
                 "feeUpdateAdditionalFeeRequested"
             ));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -630,6 +679,7 @@ class ManageFeeUpdateMidEventTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
@@ -698,5 +748,32 @@ class ManageFeeUpdateMidEventTest {
         assertThatThrownBy(() -> manageFeeUpdateMidEvent.handle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+
+    @Test
+    void should_not_allow_manage_a_fee_update_if_state_pending_payment_and_appeal_type_not_PA() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+                .thenReturn(Optional.of(AppealType.EA));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+                .contains(
+                        "Manage a Fee Update is only available for Protection appeal in Pending Payment state");
+        assertThatThrownBy(() -> manageFeeUpdateMidEvent
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 }
