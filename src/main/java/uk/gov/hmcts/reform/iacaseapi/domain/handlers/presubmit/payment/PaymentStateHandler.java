@@ -93,7 +93,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
                     && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
                     || (remissionType.isPresent());
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase, currentState);
+            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
 
@@ -121,22 +121,20 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         } else if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase, currentState);
+            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
 
     private static PreSubmitCallbackResponse<AsylumCase> decideAppealState(AppealType appealType,
                                                                            boolean isPaymentStatusPendingOrFailed,
-                                                                           AsylumCase asylumCase,
-                                                                           State currentState) {
+                                                                           AsylumCase asylumCase) {
         switch (appealType) {
             case EA:
             case HU:
             case EU:
             case AG:
                 if (isPaymentStatusPendingOrFailed) {
-                    return new PreSubmitCallbackResponse<>(
-                            asylumCase, currentState == APPEAL_STARTED ? PENDING_PAYMENT : currentState);
+                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:

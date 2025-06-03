@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
@@ -149,28 +148,6 @@ class PaymentStateHandlerTest {
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EU", "HU", "EA"}, mode = INCLUDE)
-    void should_return_current_state_for_EU_HU_EA_appeals_with_no_remission(AppealType appealType) {
-
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(ENDED);
-        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
-
-        when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
-        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
-        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(NO_REMISSION));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.FAILED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(ENDED);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
