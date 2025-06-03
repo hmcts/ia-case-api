@@ -51,7 +51,7 @@ public class DetentionFacilityAddressProvider {
             String[] parts = line.split(",", 2);
             if (parts.length == 2) {
                 String key = parts[0].trim();
-                String value = parts[1].trim().replaceAll("^\"|\"$", ""); // remove surrounding quotes
+                String value = parts[1].trim().replaceAll("^\"(.*)\"$", "$1");
                 addresses.put(key, value);
             }
         }
