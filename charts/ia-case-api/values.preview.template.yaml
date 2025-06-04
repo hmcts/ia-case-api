@@ -14,7 +14,6 @@ java:
     #Un comment APIs if you need to test a local version.
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     IA_HEARINGS_API_URL:  https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
@@ -83,7 +82,7 @@ global:
 
 
 ia-case-payments-api:
-  enabled: true #set to true if testing against a local branch
+  enabled: false #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
@@ -133,7 +132,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1001
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -152,6 +151,10 @@ ia-case-documents-api:
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
+      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      PAY_CALLBACK_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net/service-request-update
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
     keyVaults:
       ia:
         resourceGroup: ia
@@ -200,6 +203,8 @@ ia-case-documents-api:
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
           - name: app-insights-connection-string
             alias: app-insights-connection-string
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
@@ -586,7 +591,6 @@ ia-aip-frontend:
       MICROSERVICE: iac
       CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
       DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
-      #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
       IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
