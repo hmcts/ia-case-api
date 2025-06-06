@@ -657,7 +657,6 @@ ia-aip-frontend:
     auth:
       enabled: false
 
-
 ccd-case-document-am-api:
   enabled: true
   java:
