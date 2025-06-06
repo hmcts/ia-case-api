@@ -847,6 +847,7 @@ ccd:
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,ccpay_bubble,ctsc_work_allocation,pcq_consolidation_service,em_npa_app,hmc_cft_hearing_service,ccd_next_hearing_date_updater,em_annotation_app
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
