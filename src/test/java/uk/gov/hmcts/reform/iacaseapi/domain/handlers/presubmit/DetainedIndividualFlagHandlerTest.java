@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -20,6 +24,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -76,24 +82,26 @@ public class DetainedIndividualFlagHandlerTest {
         verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), any());
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "MARK_APPEAL_AS_DETAINED"}, mode = INCLUDE)
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
-        for (Event event : Event.values()) {
-            when(callback.getEvent()).thenReturn(event);
+        boolean canHandle = flagHandler.canHandle(ABOUT_TO_SUBMIT, callback);
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+        assertTrue(canHandle, "Can handle event " + event);
+    }
 
-                boolean canHandle = flagHandler.canHandle(callbackStage, callback);
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"}, mode = EXCLUDE)
+    void fails_can_handle_for_unsupported_events(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && callback.getEvent() == SUBMIT_APPEAL) {
-                    assertTrue(canHandle, "Can handle event " + event);
-                } else {
-                    assertFalse(canHandle, "Cannot handle event " + event);
-                }
-            }
-        }
+        boolean canHandle = flagHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
+        assertFalse(canHandle, "Cannot handle event " + event);
+
+        canHandle = flagHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        assertFalse(canHandle, "Cannot handle event " + event);
     }
 
     @Test
