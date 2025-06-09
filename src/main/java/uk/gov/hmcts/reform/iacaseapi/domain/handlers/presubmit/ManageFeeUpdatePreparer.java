@@ -75,6 +75,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
         switch (appealType) {
             case EA:
             case HU:
+            case PA:
             case EU:
 
                 PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
@@ -95,7 +96,6 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
                 callbackResponse.addError("You cannot manage a fee update for this appeal");
                 break;
 
-            case PA:
             default:
                 break;
         }

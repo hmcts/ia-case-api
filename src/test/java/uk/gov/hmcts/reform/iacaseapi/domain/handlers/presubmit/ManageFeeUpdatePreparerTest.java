@@ -90,7 +90,7 @@ class ManageFeeUpdatePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handling_should_error_for_payment_pending(AppealType type) {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
@@ -111,7 +111,7 @@ class ManageFeeUpdatePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU"})
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handling_should_error_for_no_payment_status(AppealType type) {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);

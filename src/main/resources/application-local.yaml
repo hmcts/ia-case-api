@@ -6,4 +6,3 @@ logging.level:
 idam:
   ia_system_user:
     scope: "openid profile authorities"
-# dummy comment
