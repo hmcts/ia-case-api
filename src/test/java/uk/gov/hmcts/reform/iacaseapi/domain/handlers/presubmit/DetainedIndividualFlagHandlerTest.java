@@ -83,7 +83,8 @@ public class DetainedIndividualFlagHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "MARK_APPEAL_AS_DETAINED", "REMOVE_DETAINED_STATUS"}, mode = INCLUDE)
+    @EnumSource(value = Event.class, names = {
+          "SUBMIT_APPEAL", "MARK_APPEAL_AS_DETAINED", "REMOVE_DETAINED_STATUS"}, mode = INCLUDE)
     void it_can_handle_callback(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
