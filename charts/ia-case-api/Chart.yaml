@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.64
+version: 0.0.65
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -12,68 +12,68 @@ dependencies:
     repository: 'oci://hmctspublic.azurecr.io/helm'
   - name: ccd
     version: ~9.2.1
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ccd.enabled
   - name: xui-webapp
     version: ~1.0.18
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: xui-webapp.enabled
   - name: ia-case-payments-api
     version: 0.0.22
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
     version: 0.0.40
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-case-documents-api.enabled
   - name: ia-case-notifications-api
     version: 0.0.49
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-case-notifications-api.enabled
   - name: ia-home-office-integration-api
     version: 0.0.26
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
     version: 0.0.49
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-aip-frontend.enabled
   - name: ia-bail-case-api
     version: 0.0.21
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-bail-case-api.enabled
   - name: ia-timed-event-service
     version: 0.0.27
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-timed-event-service.enabled
   - name: ccd-case-document-am-api
     version: 1.7.14
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ccd-case-document-am-api.enabled
   - name: ia-hearings-api
     version: 0.0.19
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ia-hearings-api.enabled
   - name: ia-cron-config
     version: 0.0.1
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     alias: ia-cron-hearings-processor
     condition: ia-cron-hearings-processor.enabled
   - name: em-ccdorc
     version: 2.0.23
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: em-ccdorc.enabled
   - name: em-stitching
     version: 1.0.53
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
     version: ~0.2.16
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: aac-manage-case-assignment.enabled
   - name: wa
     version: ~1.0.5
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: wa.enabled
   - name: servicebus
     version: 1.2.1
@@ -86,7 +86,7 @@ dependencies:
     alias: hmcsb
   - name: ccd-message-publisher
     version: ~0.1.20
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: ccd-message-publisher.enabled
   - name: redis
     version: 20.13.4
@@ -94,9 +94,9 @@ dependencies:
     condition: redis.enabled
   - name: am-org-role-mapping-service
     version: ~0.0.68
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: am-org-role-mapping-service.enabled
   - name: postgresql
     version: 1.0.2
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: postgresql.enabled
