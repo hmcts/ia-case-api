@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_LIST_CMR_TASK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
@@ -152,17 +153,18 @@ class GenerateListCmrTaskHandlerTest {
         assertThat(callbackResponse.getErrors()).contains("You need to match the appellant details before you can generate the list CMR task.");
     }
 
-    @Test
-    void should_handle_valid_callback_combination() {
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT", "ABOUT_TO_START"})
+    void should_handle_valid_callback_combinations(PreSubmitCallbackStage callbackStage) {
         when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
 
-        boolean canHandle = generateListCmrTaskHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        boolean canHandle = generateListCmrTaskHandler.canHandle(callbackStage, callback);
 
         assertTrue(canHandle);
     }
 
     @ParameterizedTest
-    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_START", "MID_EVENT"})
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"})
     void should_not_handle_generate_list_cmr_task_with_invalid_callback_stages(PreSubmitCallbackStage callbackStage) {
         when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
 
@@ -173,12 +175,14 @@ class GenerateListCmrTaskHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"GENERATE_LIST_CMR_TASK"}, mode = EnumSource.Mode.EXCLUDE)
-    void should_not_handle_other_events_with_about_to_submit_stage(Event event) {
+    void should_not_handle_other_events_with_valid_stages(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
-        boolean canHandle = generateListCmrTaskHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        boolean canHandle1 = generateListCmrTaskHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        boolean canHandle2 = generateListCmrTaskHandler.canHandle(ABOUT_TO_START, callback);
 
-        assertFalse(canHandle);
+        assertFalse(canHandle1);
+        assertFalse(canHandle2);
     }
 
     @ParameterizedTest
@@ -193,11 +197,12 @@ class GenerateListCmrTaskHandlerTest {
 
     private static Stream<Arguments> invalidEventAndStageCombo() {
         return Stream.of(
-                Arguments.of(Event.START_APPEAL, PreSubmitCallbackStage.ABOUT_TO_START),
+                Arguments.of(Event.START_APPEAL, ABOUT_TO_START),
                 Arguments.of(Event.SUBMIT_APPEAL, PreSubmitCallbackStage.MID_EVENT),
-                Arguments.of(Event.LIST_CASE, PreSubmitCallbackStage.ABOUT_TO_START),
+                Arguments.of(Event.LIST_CASE, ABOUT_TO_START),
                 Arguments.of(Event.SEND_DIRECTION, PreSubmitCallbackStage.MID_EVENT),
-                Arguments.of(Event.REQUEST_RESPONDENT_EVIDENCE, PreSubmitCallbackStage.ABOUT_TO_START)
+                Arguments.of(Event.REQUEST_RESPONDENT_EVIDENCE, ABOUT_TO_START),
+                Arguments.of(Event.GENERATE_LIST_CMR_TASK, PreSubmitCallbackStage.MID_EVENT)
         );
     }
 
@@ -221,7 +226,7 @@ class GenerateListCmrTaskHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT", "ABOUT_TO_START"}, mode = EnumSource.Mode.EXCLUDE)
     void should_throw_error_when_handling_with_wrong_callback_stage(PreSubmitCallbackStage callbackStage) {
         when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
 
@@ -238,6 +243,10 @@ class GenerateListCmrTaskHandlerTest {
         assertThatThrownBy(() -> generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
+
+        assertThatThrownBy(() -> generateListCmrTaskHandler.handle(ABOUT_TO_START, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -245,5 +254,44 @@ class GenerateListCmrTaskHandlerTest {
         assertThatThrownBy(() -> generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"PA", "RP"})
+    void should_validate_successfully_for_pa_rp_appeals_with_success_status_about_to_start(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateListCmrTaskHandler.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertThat(callbackResponse.getErrors()).isEmpty();
+
+        // Flag should NOT be written for ABOUT_TO_START stage (validation only)
+        verify(asylumCase, times(0)).write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"PA", "RP"})
+    void should_return_error_for_pa_rp_appeals_when_home_office_search_status_is_empty_about_to_start(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateListCmrTaskHandler.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("You need to match the appellant details before you can generate the list CMR task.");
+        
+        // Flag should NOT be written for ABOUT_TO_START stage, especially when there's an error
+        verify(asylumCase, times(0)).write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
     }
 } 

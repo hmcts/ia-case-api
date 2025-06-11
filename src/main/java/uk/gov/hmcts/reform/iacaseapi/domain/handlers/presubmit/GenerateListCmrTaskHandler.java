@@ -36,11 +36,12 @@ public class GenerateListCmrTaskHandler implements PreSubmitCallbackHandler<Asyl
 
         Event event = callback.getEvent();
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT 
+                || callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
                 && GENERATE_LIST_CMR_TASK == event;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+        public PreSubmitCallbackResponse<AsylumCase> handle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
@@ -48,13 +49,41 @@ public class GenerateListCmrTaskHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
+            return handleAboutToStart(asylumCase);
+        } else if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+            return handleAboutToSubmit(asylumCase);
+        } else {
+            throw new IllegalStateException("Unexpected callback stage: " + callbackStage);
+        }
+    }
+
+    private PreSubmitCallbackResponse<AsylumCase> handleAboutToStart(AsylumCase asylumCase) {
+        // ABOUT_TO_START: Only perform validation, no data modification
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+        
+        validateAppellantDetailsForPaRpAppeals(asylumCase, callbackResponse);
+        
+        return callbackResponse;
+    }
 
+    private PreSubmitCallbackResponse<AsylumCase> handleAboutToSubmit(AsylumCase asylumCase) {
+        // ABOUT_TO_SUBMIT: Perform validation and set the flag
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+        
+        validateAppellantDetailsForPaRpAppeals(asylumCase, callbackResponse);
+        
+        // Only proceed to set flag if validation passed
+        if (callbackResponse.getErrors().isEmpty()) {
+            asylumCase.write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
+        }
+        
+        return callbackResponse;
+    }
+
+    private void validateAppellantDetailsForPaRpAppeals(AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
@@ -62,14 +91,8 @@ public class GenerateListCmrTaskHandler implements PreSubmitCallbackHandler<Asyl
         if (Arrays.asList(AppealType.RP, AppealType.PA).contains(appealType)
                 && appellantDetailsNotMatchedOrFailed(asylumCase)) {
 
-            callbackResponse
-                    .addError("You need to match the appellant details before you can generate the list CMR task.");
-            return callbackResponse;
+            callbackResponse.addError("You need to match the appellant details before you can generate the list CMR task.");
         }
-
-        asylumCase.write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
