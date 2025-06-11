@@ -152,7 +152,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     }
 
     private boolean shouldMatchAppellantDetails(AsylumCase asylumCase) {
-        return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase) || HandlerUtils.isAppellantInDetention(asylumCase));
+        return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase));
     }
 
     private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
