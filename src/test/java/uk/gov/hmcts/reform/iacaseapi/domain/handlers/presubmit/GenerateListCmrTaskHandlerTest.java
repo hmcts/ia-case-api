@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,12 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GENERATE_LIST_CMR_TASK_REQUESTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_LIST_CMR_TASK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +26,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -33,7 +38,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class GenerateListCmrTaskHandlerTest {
 
     @Mock
@@ -51,18 +55,101 @@ class GenerateListCmrTaskHandlerTest {
     }
 
     @Test
-    void should_set_generate_list_cmr_task_requested_flag_to_yes() {
+    void should_throw_error_if_appeal_type_not_present() {
         when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("AppealType is not present.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"PA", "RP"})
+    void should_set_generate_list_cmr_task_requested_flag_to_yes_for_pa_rp_appeals_with_success_status(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+        assertThat(callbackResponse.getErrors()).isEmpty();
 
         verify(asylumCase, times(1)).write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"DC", "EA", "HU", "AG"})
+    void should_set_generate_list_cmr_task_requested_flag_to_yes_for_other_appeal_types_regardless_of_search_status(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        // HOME_OFFICE_SEARCH_STATUS is not stubbed because these appeal types bypass Home Office validation
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertThat(callbackResponse.getErrors()).isEmpty();
+
+        verify(asylumCase, times(1)).write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"PA", "RP"})
+    void should_return_error_for_pa_rp_appeals_when_home_office_search_status_is_empty(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("You need to match the appellant details before you can generate the list CMR task.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"FAIL", "MULTIPLE"})
+    void should_return_error_for_pa_appeals_when_home_office_search_status_failed(String searchStatus) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(searchStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("You need to match the appellant details before you can generate the list CMR task.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"FAIL", "MULTIPLE"})
+    void should_return_error_for_rp_appeals_when_home_office_search_status_failed(String searchStatus) {
+        when(callback.getEvent()).thenReturn(GENERATE_LIST_CMR_TASK);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(searchStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateListCmrTaskHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("You need to match the appellant details before you can generate the list CMR task.");
     }
 
     @Test
