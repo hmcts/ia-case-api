@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -9,8 +10,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GENERATE_LIST_CMR_TASK_REQUESTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_LIST_CMR_TASK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -47,8 +53,29 @@ public class GenerateListCmrTaskHandler implements PreSubmitCallbackHandler<Asyl
                         .getCaseDetails()
                         .getCaseData();
 
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
+        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+
+        // Only check for RP and PA appeal types
+        if (Arrays.asList(AppealType.RP, AppealType.PA).contains(appealType)
+                && appellantDetailsNotMatchedOrFailed(asylumCase)) {
+
+            callbackResponse
+                    .addError("You need to match the appellant details before you can generate the list CMR task.");
+            return callbackResponse;
+        }
+
         asylumCase.write(GENERATE_LIST_CMR_TASK_REQUESTED, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
+        Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
+
+        return homeOfficeSearchStatus.isEmpty()
+                || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get());
     }
 }
