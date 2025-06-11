@@ -106,7 +106,7 @@ ia-bail-case-api:
   enabled: false
 ia-timed-event-service:
   enabled: false
-idam-pr:
+ia-hearings-api:
   enabled: false
 xui-webapp:
   enabled: false
@@ -129,6 +129,8 @@ ccd-message-publisher:
 aac-manage-case-assignment:
   enabled: false
 am-org-role-mapping-service:
+  enabled: false
+ia-cron-hearings-processor:
   enabled: false
 redis:
   enabled: false
