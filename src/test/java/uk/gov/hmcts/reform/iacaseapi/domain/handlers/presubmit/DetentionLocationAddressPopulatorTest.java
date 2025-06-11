@@ -1,32 +1,44 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DetentionFacilityAddressProvider;
-
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_ADDRESS_LINES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_BUILDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_POSTCODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IRC_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_DETAINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.LATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DetentionFacilityAddressProvider;
 
 @ExtendWith(MockitoExtension.class)
 class DetentionLocationAddressPopulatorTest {
@@ -49,7 +61,6 @@ class DetentionLocationAddressPopulatorTest {
         addressPopulator = new DetentionLocationAddressPopulator(detentionFacilityAddressProvider);
         lenient().when(callback.getCaseDetails()).thenReturn(caseDetails);
         lenient().when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        asylumCase.write(APPELLANT_IN_DETENTION, YES);
 
         someValidIrcAddress = new DetentionFacilityAddressProvider.DetentionAddress(
                 "some-irc-building",
@@ -74,12 +85,17 @@ class DetentionLocationAddressPopulatorTest {
         );
     }
 
-    @Test
-    void should_populate_detention_location_address_for_irc() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
+    @ParameterizedTest
+    @EnumSource(
+          value = Event.class,
+          names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "UPDATE_DETENTION_LOCATION"}, mode = INCLUDE)
+    void should_populate_detention_location_address_for_irc(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn("ircName");
         asylumCase.write(DETENTION_FACILITY, IRC);
         asylumCase.write(IRC_NAME, "some-irc-name");
+        asylumCase.write(APPELLANT_IN_DETENTION, YES);
+
         when(detentionFacilityAddressProvider.getAddressFor("some-irc-name"))
                 .thenReturn(Optional.of(someValidIrcAddress));
 
@@ -92,12 +108,17 @@ class DetentionLocationAddressPopulatorTest {
         assertThat(data.read(DETENTION_POSTCODE)).isEqualTo(Optional.of("ABC 123"));
     }
 
-    @Test
-    void should_populate_detention_location_address_for_prison() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
+    @ParameterizedTest
+    @EnumSource(
+          value = Event.class,
+          names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "UPDATE_DETENTION_LOCATION"}, mode = INCLUDE)
+    void should_populate_detention_location_address_for_prison(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn("prisonName");
         asylumCase.write(DETENTION_FACILITY, IRC);
         asylumCase.write(IRC_NAME, "some-prison-name");
+        asylumCase.write(APPELLANT_IN_DETENTION, YES);
+
         when(detentionFacilityAddressProvider.getAddressFor("some-prison-name"))
                 .thenReturn(Optional.of(someValidPrisonAddress));
 
@@ -110,13 +131,75 @@ class DetentionLocationAddressPopulatorTest {
         assertThat(data.read(DETENTION_POSTCODE)).isEqualTo(Optional.of("XYZ 789"));
     }
 
-    @Test
-    void should_populate_detention_location_address_for_other_detention_facility() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
+    @ParameterizedTest
+    @EnumSource(
+          value = Event.class,
+          names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "UPDATE_DETENTION_LOCATION"}, mode = INCLUDE)
+    void should_populate_detention_location_address_for_other_detention_facility(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getPageId()).thenReturn("appellantAddress");
         asylumCase.write(DETENTION_FACILITY, OTHER);
         asylumCase.write(APPELLANT_ADDRESS, someAppellantAddress);
         asylumCase.write(OTHER_DETENTION_FACILITY_NAME, "some-other-facility-name");
+        asylumCase.write(APPELLANT_IN_DETENTION, YES);
+
+        PreSubmitCallbackResponse<AsylumCase> response = addressPopulator.handle(MID_EVENT, callback);
+
+        AsylumCase data = response.getData();
+
+        assertThat(data.read(DETENTION_BUILDING)).isEqualTo(Optional.of("some-building"));
+        assertThat(data.read(DETENTION_ADDRESS_LINES)).isEqualTo(Optional.of("some-street, some-town, some-country"));
+        assertThat(data.read(DETENTION_POSTCODE)).isEqualTo(Optional.of("UVW 321"));
+    }
+
+    @Test
+    void should_populate_detention_location_address_for_irc_when_marked_as_detained() {
+        when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_DETAINED);
+        when(callback.getPageId()).thenReturn("markAppealAsDetained_ircName");
+        asylumCase.write(DETENTION_FACILITY, IRC);
+        asylumCase.write(IRC_NAME, "some-irc-name");
+        asylumCase.write(APPELLANT_IN_DETENTION, NO);
+
+        when(detentionFacilityAddressProvider.getAddressFor("some-irc-name"))
+              .thenReturn(Optional.of(someValidIrcAddress));
+
+        PreSubmitCallbackResponse<AsylumCase> response = addressPopulator.handle(MID_EVENT, callback);
+
+        AsylumCase data = response.getData();
+
+        assertThat(data.read(DETENTION_BUILDING)).isEqualTo(Optional.of("some-irc-building"));
+        assertThat(data.read(DETENTION_ADDRESS_LINES)).isEqualTo(Optional.of("1 some street, some-town, some-county"));
+        assertThat(data.read(DETENTION_POSTCODE)).isEqualTo(Optional.of("ABC 123"));
+    }
+
+    @Test
+    void should_populate_detention_location_address_for_prison_when_marked_as_detained() {
+        when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_DETAINED);
+        when(callback.getPageId()).thenReturn("markAppealAsDetained_prisonName");
+        asylumCase.write(DETENTION_FACILITY, IRC);
+        asylumCase.write(IRC_NAME, "some-prison-name");
+        asylumCase.write(APPELLANT_IN_DETENTION, NO);
+
+        when(detentionFacilityAddressProvider.getAddressFor("some-prison-name"))
+              .thenReturn(Optional.of(someValidPrisonAddress));
+
+        PreSubmitCallbackResponse<AsylumCase> response = addressPopulator.handle(MID_EVENT, callback);
+
+        AsylumCase data = response.getData();
+
+        assertThat(data.read(DETENTION_BUILDING)).isEqualTo(Optional.of("some-prison-building"));
+        assertThat(data.read(DETENTION_ADDRESS_LINES)).isEqualTo(Optional.of("1 some street, some-town, some-county"));
+        assertThat(data.read(DETENTION_POSTCODE)).isEqualTo(Optional.of("XYZ 789"));
+    }
+
+    @Test
+    void should_populate_detention_location_address_for_other_detention_facility_when_marked_as_detained() {
+        when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_DETAINED);
+        when(callback.getPageId()).thenReturn("markAppealAsDetained_updateAppellantAddress");
+        asylumCase.write(DETENTION_FACILITY, OTHER);
+        asylumCase.write(APPELLANT_ADDRESS, someAppellantAddress);
+        asylumCase.write(OTHER_DETENTION_FACILITY_NAME, "some-other-facility-name");
+        asylumCase.write(APPELLANT_IN_DETENTION, NO);
 
         PreSubmitCallbackResponse<AsylumCase> response = addressPopulator.handle(MID_EVENT, callback);
 

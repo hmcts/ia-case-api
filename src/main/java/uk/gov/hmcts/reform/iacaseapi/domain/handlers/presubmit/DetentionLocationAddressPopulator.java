@@ -1,5 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_ADDRESS_LINES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_BUILDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_POSTCODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IRC_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_DETAINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_DETENTION_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -15,25 +42,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DetentionFacilityAddressProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DetentionFacilityAddressProvider.DetentionAddress;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
 @Component
 public class DetentionLocationAddressPopulator implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final Set<String> DETENTION_FACILITY_PAGE_IDS = Set.of("ircName", "prisonName", "appellantAddress");
+    private static final Set<String> DETENTION_FACILITY_PAGE_IDS = Set.of(
+          "ircName", "prisonName", "appellantAddress");
+    private static final Set<String> MARKING_APPEAL_AS_DETAINED_PAGE_IDS = Set.of(
+          "markAppealAsDetained_ircName", "markAppealAsDetained_prisonName", "markAppealAsDetained_updateAppellantAddress");
     private static final EnumSet<Event> SUPPORTED_EVENTS = EnumSet.of(
             START_APPEAL, EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT, UPDATE_DETENTION_LOCATION
     );
@@ -54,10 +69,19 @@ public class DetentionLocationAddressPopulator implements PreSubmitCallbackHandl
         YesOrNo appellantInDetention = callback.getCaseDetails()
                 .getCaseData().read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
 
-        return callbackStage == MID_EVENT
+        return (callbackStage == MID_EVENT
                 && (SUPPORTED_EVENTS.contains(callback.getEvent()))
                 && (DETENTION_FACILITY_PAGE_IDS.contains(callback.getPageId()))
-                && appellantInDetention.equals(YES);
+                && appellantInDetention.equals(YES)) || markingAppealAsDetained(appellantInDetention, callback, callbackStage);
+    }
+
+    private boolean markingAppealAsDetained(
+          YesOrNo appellantInDetention, Callback<AsylumCase> callback, PreSubmitCallbackStage callbackStage) {
+
+        return callbackStage == MID_EVENT &&
+              callback.getEvent() == MARK_APPEAL_AS_DETAINED &&
+              appellantInDetention.equals(NO) &&
+              MARKING_APPEAL_AS_DETAINED_PAGE_IDS.contains(callback.getPageId());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -120,4 +144,5 @@ public class DetentionLocationAddressPopulator implements PreSubmitCallbackHandl
 
         return String.join(", ", addressParts);
     }
+
 }
