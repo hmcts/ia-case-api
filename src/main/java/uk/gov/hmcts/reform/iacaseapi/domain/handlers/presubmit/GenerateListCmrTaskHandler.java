@@ -41,7 +41,7 @@ public class GenerateListCmrTaskHandler implements PreSubmitCallbackHandler<Asyl
                 && GENERATE_LIST_CMR_TASK == event;
     }
 
-        public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
