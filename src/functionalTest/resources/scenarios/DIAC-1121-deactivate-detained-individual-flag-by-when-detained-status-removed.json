@@ -1,0 +1,60 @@
+{
+  "description": "DIAC-1121-set-detained-flag-inactive-by-when-detained-status-removed",
+  "disabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "removeDetainedStatus",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantInDetention": "Yes",
+          "appellantLevelFlags": {
+            "partyName": null,
+            "roleOnCase": null,
+            "details": [
+              {
+                "id": "ec1a38c6-f67f-4944-ac00-7a482e0b81d8",
+                "value": {
+                  "name": "Detained individual",
+                  "flagCode": "PF0019",
+                  "status": "Active",
+                  "hearingRelevant": "Yes"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantInDetention": "No",
+        "appealType": "protection",
+        "sendDirectionActionAvailable": "Yes",
+        "appellantLevelFlags": {
+          "partyName": null,
+          "roleOnCase": null,
+          "details": [
+            {
+              "id": "ec1a38c6-f67f-4944-ac00-7a482e0b81d8",
+              "value": {
+                "name": "Detained individual",
+                "flagCode": "PF0019",
+                "status": "Inactive",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
