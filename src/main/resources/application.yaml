@@ -346,6 +346,8 @@ security:
       - "turnOnNotifications"
       - "updateTribunalDecision"
       - "generateListCmrTask"
+      - "markAppealAsDetained"
+
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
