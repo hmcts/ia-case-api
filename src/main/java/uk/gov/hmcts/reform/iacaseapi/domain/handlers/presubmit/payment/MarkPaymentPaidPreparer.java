@@ -116,12 +116,13 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
     private void checkPaymentConditions(AppealType appealType, AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse, Optional<RemissionType> remissionType, Optional<RemissionType> lateRemissionType) {
         Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+        Optional<String> paAipPaymentType = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class);
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
 
         // old cases
         log.info(
-            "--------!isRemissionExists(remissionType) {}, remissionType {}, !isRemissionExists(lateRemissionType {}, " +
+            "--------!isRemissionExists(remissionType) {}, remissionType {}, !isRemissionExists(lateRemissionType) {}, " +
                     "appealType {},  paPaymentType {}",
             !isRemissionExists(remissionType),
             remissionType,
@@ -131,7 +132,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         );
         if (!isRemissionExists(remissionType)
                 && !isRemissionExists(lateRemissionType)
-                && (appealType == PA && paPaymentType.isEmpty())) {
+                && (appealType == PA && paPaymentType.isEmpty() && paAipPaymentType.isEmpty())) {
             log.info("-------222");
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
