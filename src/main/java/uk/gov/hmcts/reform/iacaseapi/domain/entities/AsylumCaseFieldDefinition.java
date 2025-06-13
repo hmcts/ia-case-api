@@ -2829,7 +2829,7 @@ public enum AsylumCaseFieldDefinition {
     GENERATE_LIST_CMR_TASK_REQUESTED(
             "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
 
-      DETENTION_BUILDING(
+    DETENTION_BUILDING(
           "detentionBuilding", new TypeReference<String>(){}),
 
     DETENTION_ADDRESS_LINES(
