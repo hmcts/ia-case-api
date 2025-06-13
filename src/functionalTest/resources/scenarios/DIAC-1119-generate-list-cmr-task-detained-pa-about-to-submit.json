@@ -1,0 +1,44 @@
+{
+  "description": "DIAC-1119: CMR for a detained appeal RP and PA - successful submission for PA appeal",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateListCmrTask",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "PA",
+          "appellantInDetention": "Yes",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "generateListCmrTaskRequested": "No",
+          "detentionAddress": {
+            "AddressLine1": "456 Detention Road",
+            "PostTown": "Detention Town",
+            "PostCode": "DT2 2DT"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "PA",
+        "appellantInDetention": "Yes",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "generateListCmrTaskRequested": "Yes",
+        "detentionAddress": {
+          "AddressLine1": "456 Detention Road",
+          "PostTown": "Detention Town",
+          "PostCode": "DT2 2DT"
+        }
+      }
+    }
+  }
+} 
