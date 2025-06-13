@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealType": "PA",
+          "appealType": "protection",
           "appellantInDetention": "Yes",
           "homeOfficeSearchStatus": "SUCCESS"
         }
@@ -23,7 +23,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appealType": "PA",
+        "appealType": "protection",
         "appellantInDetention": "Yes",
         "homeOfficeSearchStatus": "SUCCESS",
         "generateListCmrTaskRequested": "Yes"

@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealType": "RP",
+          "appealType": "revocationOfProtection",
           "appellantInDetention": "Yes",
           "homeOfficeSearchStatus": "FAIL"
         }
@@ -25,7 +25,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appealType": "RP",
+        "appealType": "refusalOfHumanRights",
         "appellantInDetention": "Yes",
         "homeOfficeSearchStatus": "FAIL"
       }
