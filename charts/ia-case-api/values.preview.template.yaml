@@ -778,7 +778,7 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       imagePullPolicy: Always
-      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66a4048-20250203150702
+      image: hmctspublic.azurecr.io/ccd/api-gateway-web:latest
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 1
