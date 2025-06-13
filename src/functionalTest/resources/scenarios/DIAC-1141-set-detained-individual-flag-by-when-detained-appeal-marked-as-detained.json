@@ -1,16 +1,16 @@
 {
-  "description": "DIAC-976-set-detained-individual-flag-by-when-detained-appeal-submitted",
-  "disabled": true,
+  "description": "DIAC-1141-set-detained-individual-flag-by-when-detained-appeal-submitted",
+
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "AdminOfficer",
     "input": {
-      "eventId": "submitAppeal",
-      "state": "appealStarted",
+      "eventId": "markAppealAsDetained",
+      "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantInDetention": "Yes"
+          "appellantInDetention": "No"
         }
       }
     }
@@ -22,7 +22,10 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealType": "protection",
-        "sendDirectionActionAvailable": "No",
+        "sendDirectionActionAvailable": "Yes",
+        "appellantHasFixedAddress": null,
+        "mobileNumber": null,
+        "contactPreference": null,
         "appellantLevelFlags": {
           "partyName": null,
           "roleOnCase": null,
