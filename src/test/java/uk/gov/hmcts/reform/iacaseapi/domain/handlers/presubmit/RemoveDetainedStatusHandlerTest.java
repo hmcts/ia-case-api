@@ -65,6 +65,8 @@ class RemoveDetainedStatusHandlerTest {
         verify(asylumCase).clear(REMOVAL_ORDER_OPTIONS);
         verify(asylumCase).clear(REMOVAL_ORDER_DATE);
         verify(asylumCase).clear(DETENTION_STATUS);
+        verify(asylumCase).clear(DETENTION_REMOVAL_DATE);
+        verify(asylumCase).clear(DETENTION_REMOVAL_REASON);
     }
 
     @Test
@@ -92,6 +94,8 @@ class RemoveDetainedStatusHandlerTest {
         verify(asylumCase, never()).clear(REMOVAL_ORDER_OPTIONS);
         verify(asylumCase, never()).clear(REMOVAL_ORDER_DATE);
         verify(asylumCase, never()).clear(DETENTION_STATUS);
+        verify(asylumCase, never()).clear(DETENTION_REMOVAL_DATE);
+        verify(asylumCase, never()).clear(DETENTION_REMOVAL_REASON);
     }
 
     @Test
