@@ -12,15 +12,7 @@
         "replacements": {
           "appealType": "RP",
           "appellantInDetention": "Yes",
-          "homeOfficeSearchStatus": "FAIL",
-          "generateListCmrTaskRequested": "No",
-          "detentionAddress": {
-            "AddressLine1": "123 Detention Street",
-            "PostTown": "Detention City",
-            "PostCode": "DT1 1DT"
-          },
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-          "appealSubmissionDate": "2020-09-22"
+          "homeOfficeSearchStatus": "FAIL"
         }
       }
     }
@@ -35,15 +27,7 @@
       "replacements": {
         "appealType": "RP",
         "appellantInDetention": "Yes",
-        "homeOfficeSearchStatus": "FAIL",
-        "generateListCmrTaskRequested": "No",
-        "detentionAddress": {
-          "AddressLine1": "123 Detention Street",
-          "PostTown": "Detention City",
-          "PostCode": "DT1 1DT"
-        },
-        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "appealSubmissionDate": "2020-09-22"
+        "homeOfficeSearchStatus": "FAIL"
       }
     }
   }

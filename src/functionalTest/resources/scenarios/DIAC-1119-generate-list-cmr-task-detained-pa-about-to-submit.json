@@ -12,15 +12,7 @@
         "replacements": {
           "appealType": "PA",
           "appellantInDetention": "Yes",
-          "homeOfficeSearchStatus": "SUCCESS",
-          "generateListCmrTaskRequested": "No",
-          "detentionAddress": {
-            "AddressLine1": "456 Detention Road",
-            "PostTown": "Detention Town",
-            "PostCode": "DT2 2DT"
-          },
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-          "appealSubmissionDate": "2020-09-22"
+          "homeOfficeSearchStatus": "SUCCESS"
         }
       }
     }
@@ -34,14 +26,7 @@
         "appealType": "PA",
         "appellantInDetention": "Yes",
         "homeOfficeSearchStatus": "SUCCESS",
-        "generateListCmrTaskRequested": "Yes",
-        "detentionAddress": {
-          "AddressLine1": "456 Detention Road",
-          "PostTown": "Detention Town",
-          "PostCode": "DT2 2DT"
-        },
-        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "appealSubmissionDate": "2020-09-22"
+        "generateListCmrTaskRequested": "Yes"
       }
     }
   }
