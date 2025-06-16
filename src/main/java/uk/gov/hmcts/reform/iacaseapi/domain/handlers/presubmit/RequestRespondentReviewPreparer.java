@@ -24,17 +24,20 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
 
     private final int requestRespondentReviewDueInDays;
     private final int requestRespondentReviewDueInDaysForAda;
+    private final int requestRespondentReviewDueInDaysForDetained;
     private final DateProvider dateProvider;
     private final DueDateService dueDateService;
 
     public RequestRespondentReviewPreparer(
         @Value("${requestRespondentReview.dueInDays}") int requestRespondentReviewDueInDays,
         @Value("${requestRespondentReviewAda.dueInDays}") int requestRespondentReviewDueInDaysForAda,
+        @Value("${requestRespondentReviewDetained.dueInDays}") int requestRespondentReviewDueInDaysForDetained,
         DateProvider dateProvider,
         DueDateService dueDateService
     ) {
         this.requestRespondentReviewDueInDays = requestRespondentReviewDueInDays;
         this.requestRespondentReviewDueInDaysForAda = requestRespondentReviewDueInDaysForAda;
+        this.requestRespondentReviewDueInDaysForDetained = requestRespondentReviewDueInDaysForDetained;
         this.dateProvider = dateProvider;
         this.dueDateService = dueDateService;
     }
@@ -82,14 +85,27 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
         );
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
-        
-        LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentReviewDueInDaysForAda).toLocalDate()
-                : dateProvider.now().plusDays(requestRespondentReviewDueInDays);
+
+        LocalDate dueDate = getDueDate(asylumCase);
+
         asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
         asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private LocalDate getDueDate(AsylumCase asylumCase) {
+        LocalDate dueDate;
+
+        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+            dueDate = dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentReviewDueInDaysForAda).toLocalDate();
+        } else if (HandlerUtils.isAppellantInDetention(asylumCase)) {
+            dueDate = dateProvider.now().plusDays(requestRespondentReviewDueInDaysForDetained);
+        } else {
+            dueDate = dateProvider.now().plusDays(requestRespondentReviewDueInDays);
+        }
+
+        return dueDate;
     }
 }

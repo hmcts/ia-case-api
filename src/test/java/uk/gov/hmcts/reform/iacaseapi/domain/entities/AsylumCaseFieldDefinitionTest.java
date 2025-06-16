@@ -30,7 +30,9 @@ class AsylumCaseFieldDefinitionTest {
                 CASE_LEVEL_FLAGS,
                 MANUAL_CANCEL_HEARINGS_REQUIRED,
                 MANUAL_UPDATE_HEARING_REQUIRED,
-                MANUAL_CREATE_HEARING_REQUIRED
+                MANUAL_CREATE_HEARING_REQUIRED,
+                CUSTODIAL_SENTENCE,
+                DATE_CUSTODIAL_SENTENCE
             ).contains(val))
             .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
                 .isEqualTo(v.value()));
