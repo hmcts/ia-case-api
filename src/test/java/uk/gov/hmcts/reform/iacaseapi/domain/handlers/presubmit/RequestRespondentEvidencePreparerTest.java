@@ -596,11 +596,11 @@ class RequestRespondentEvidencePreparerTest {
         assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
         
         // Verify it contains detention-specific content
-        assertThat(actualExplanation).contains("By the date below you must review the appellant's explanation of case (AEC) and bundle.");
-        assertThat(actualExplanation).contains("Rule 24A (3) of the Tribunal Procedure Rules 2014");
-        assertThat(actualExplanation).contains("be meaningful and pragmatically address any evidence");
-        assertThat(actualExplanation).contains("not exceed 6 pages unless reasons are submitted");
-        assertThat(actualExplanation).contains("provide the name of the author of the review and the date");
+        assertThat(actualExplanation).contains("You must now upload all documents to the Tribunal");
+        assertThat(actualExplanation).contains("Rule 24 of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).contains("The explanation for refusal");
+        assertThat(actualExplanation).contains("Interview record (if any)");
+        assertThat(actualExplanation).contains("copy of any medical report (if any)");
         
         // Verify it does NOT contain non-detention content
         assertThat(actualExplanation).doesNotContain("directed to supply the documents");
@@ -645,9 +645,9 @@ class RequestRespondentEvidencePreparerTest {
         assertThat(actualExplanation).contains("copy of the Certificate of Conviction");
         
         // Verify it does NOT contain detention-specific content
-        assertThat(actualExplanation).doesNotContain("review the appellant's explanation of case (AEC) and bundle");
-        assertThat(actualExplanation).doesNotContain("Rule 24A (3) of the Tribunal Procedure Rules 2014");
-        assertThat(actualExplanation).doesNotContain("be meaningful and pragmatically address any evidence");
-        assertThat(actualExplanation).doesNotContain("not exceed 6 pages unless reasons are submitted");
+        assertThat(actualExplanation).doesNotContain("You must now upload all documents to the Tribunal");
+        assertThat(actualExplanation).doesNotContain("The explanation for refusal");
+        assertThat(actualExplanation).doesNotContain("Interview record (if any)");
+        assertThat(actualExplanation).doesNotContain("copy of any medical report (if any)");
     }
 }
