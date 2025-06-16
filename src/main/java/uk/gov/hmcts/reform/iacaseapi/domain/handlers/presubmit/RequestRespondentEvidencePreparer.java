@@ -183,7 +183,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 + "- any record of interview with the appellant in relation to the decision being appealed.\n"
                 + "- any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.\n"
                 + "- any other unpublished documents on which you rely.\n"
-                + "-the notice of any other appealable decision made in relation to the appellant.\n\n"
+                + "- the notice of any other appealable decision made in relation to the appellant.\n\n"
                 + "Where the appeal involves deportation, you must also include the following evidence:\n\n"
                 + "- a copy of the Certificate of Conviction.\n"
                 + "- a copy of any indictment/charge.\n"
