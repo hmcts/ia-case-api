@@ -136,7 +136,7 @@ class RequestRespondentEvidencePreparerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
     void should_prepare_send_direction_fields_ada(AppealType appealType) {
 
-        final String expectedExplanationContains = "By the date below you must review the appellant's explanation of case (AEC) and bundle.";
+        final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2023-01-22";
 
@@ -489,7 +489,7 @@ class RequestRespondentEvidencePreparerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
     void should_prepare_detention_specific_direction_explanation_for_detained_appeals(AppealType appealType) {
 
-        final String expectedExplanationContains = "By the date below you must review the appellant's explanation of case (AEC) and bundle.";
+        final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-11-30";
 
@@ -563,5 +563,91 @@ class RequestRespondentEvidencePreparerTest {
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
+    }
+
+    @Test
+    void should_use_detention_specific_explanation_text_for_detained_appeals() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+
+        String actualExplanation = asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION));
+        
+        // Verify it contains the standard opening
+        assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
+        
+        // Verify it contains detention-specific content
+        assertThat(actualExplanation).contains("By the date below you must review the appellant's explanation of case (AEC) and bundle.");
+        assertThat(actualExplanation).contains("Rule 24A (3) of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).contains("be meaningful and pragmatically address any evidence");
+        assertThat(actualExplanation).contains("not exceed 6 pages unless reasons are submitted");
+        assertThat(actualExplanation).contains("provide the name of the author of the review and the date");
+        
+        // Verify it does NOT contain non-detention content
+        assertThat(actualExplanation).doesNotContain("directed to supply the documents");
+        assertThat(actualExplanation).doesNotContain("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).doesNotContain("any record of interview with the appellant");
+    }
+
+    @Test
+    void should_use_standard_explanation_text_for_non_detained_appeals() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+
+        String actualExplanation = asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION));
+        
+        // Verify it contains the standard opening
+        assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
+        
+        // Verify it contains standard content
+        assertThat(actualExplanation).contains("directed to supply the documents");
+        assertThat(actualExplanation).contains("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).contains("any record of interview with the appellant");
+        assertThat(actualExplanation).contains("copy of the Certificate of Conviction");
+        
+        // Verify it does NOT contain detention-specific content
+        assertThat(actualExplanation).doesNotContain("review the appellant's explanation of case (AEC) and bundle");
+        assertThat(actualExplanation).doesNotContain("Rule 24A (3) of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).doesNotContain("be meaningful and pragmatically address any evidence");
+        assertThat(actualExplanation).doesNotContain("not exceed 6 pages unless reasons are submitted");
     }
 }

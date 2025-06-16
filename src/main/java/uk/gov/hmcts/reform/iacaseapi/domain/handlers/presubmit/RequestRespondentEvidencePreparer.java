@@ -152,7 +152,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
     private String getDirectionExplanation(AsylumCase asylumCase) {
         if (HandlerUtils.isAppellantInDetention(asylumCase)) {
-            return "By the date below you must review the appellant's explanation of case (AEC) and bundle.\n\n"
+            return "A notice of appeal has been lodged against this decision.\n\n"
+                + "By the date below you must review the appellant's explanation of case (AEC) and bundle.\n\n"
                 + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) "
                 + "the Practice Direction Part 2, section 2.1 (e), Part 3.\n\n"
                 + "Specifically, the review must:\n\n"
