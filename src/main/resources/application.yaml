@@ -54,7 +54,7 @@ spring:
     include:
       - hearingcentre-mapping
   cache:
-    cache-names: userInfoCache, accessTokenCache
+    cache-names: userInfoCache, accessTokenCache, systemTokenCache
     caffeine:
       spec: expireAfterAccess=3600s
 

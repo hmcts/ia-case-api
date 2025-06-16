@@ -14,5 +14,5 @@ jobs:
     steps:
     - uses: deepakputhraya/action-pr-title@master
       with:
-        regex: '^(DIAC-[0-9]{2,3} [a-zA-Z0-9._\- ]+)|(RIA-[0-9]{3,4} [a-zA-Z0-9._\- ]+)|(SNI-[0-9]{3,4} [a-zA-Z0-9._\- ]+)|(RIA-TASK [a-zA-Z0-9._\- ]+)|(\[Snyk\].+)$' # Regex the title should match.
+        regex: '^(DIAC-[0-9]{2,5} [a-zA-Z0-9._\- ]+)|(RIA-[0-9]{3,4} [a-zA-Z0-9._\- ]+)|(SNI-[0-9]{3,4} [a-zA-Z0-9._\- ]+)|(RIA-TASK [a-zA-Z0-9._\- ]+)|(\[Snyk\].+)$' # Regex the title should match.
         prefix_case_sensitive: true # title prefix are case insensitive:
