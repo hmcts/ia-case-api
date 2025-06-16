@@ -154,7 +154,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             return "A notice of appeal has been lodged against this decision.\n"
                 + "You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have until the date indicated below to supply your bundle.\n"
-                + "The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 and (ii) Practice Direction, Part 3, sections 7.1 – 7.4.\n"
+                + "The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 and (ii) Practice Direction, Part 3, sections 7.1 - 7.4.\n"
                 + "Specifically, the bundle must contain:\n"
                 + "- The explanation for refusal;\n"
                 + "- the deportation order and/or the notice of decision to make the order (if any);\n"
@@ -174,7 +174,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             return "A notice of appeal has been lodged against this decision.\n\n"
                 + "By the date indicated below the respondent is directed to supply the documents:\n\n"
                 + "The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) "
-                + "and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 – 7.4. Specifically, the bundle must contain:\n\n"
+                + "and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 - 7.4. Specifically, the bundle must contain:\n\n"
                 + "- the notice of decision appealed against.\n"
                 + "- any other document provided to the appellant giving reasons for that decision.\n"
                 + "- any evidence or material relevant to the disputed issues.\n"
