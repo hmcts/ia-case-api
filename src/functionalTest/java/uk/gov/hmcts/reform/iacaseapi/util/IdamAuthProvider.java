@@ -20,7 +20,8 @@ public class IdamAuthProvider {
     @Value("${idam.redirectUrl}")
     protected String idamRedirectUri;
 
-    protected String userScope = "openid profile roles";
+    @Value("${idam.scope}") 
+    protected String userScope;
 
     @Value("${spring.security.oauth2.client.registration.oidc.client-id}")
     protected String idamClientId;
