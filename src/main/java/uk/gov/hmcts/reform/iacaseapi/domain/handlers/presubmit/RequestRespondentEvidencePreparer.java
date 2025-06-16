@@ -112,33 +112,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         }
 
 
-        asylumCase.write(SEND_DIRECTION_EXPLANATION,
-            "A notice of appeal has been lodged against this decision.\n\n"
-            + "By the date indicated below the respondent is directed to supply the documents:\n\n"
-            + "The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) "
-            + "and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 – 7.4. Specifically, the bundle must contain:\n\n"
-            + "- the notice of decision appealed against.\n"
-            + "- any other document provided to the appellant giving reasons for that decision.\n"
-            + "- any evidence or material relevant to the disputed issues.\n"
-            + "- any statements of evidence.\n"
-            + "- the application form.\n"
-            + "- any record of interview with the appellant in relation to the decision being appealed.\n"
-            + "- any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.\n"
-            + "- any other unpublished documents on which you rely.\n"
-            + "-the notice of any other appealable decision made in relation to the appellant.\n\n"
-            + "Where the appeal involves deportation, you must also include the following evidence:\n\n"
-            + "- a copy of the Certificate of Conviction.\n"
-            + "- a copy of any indictment/charge.\n"
-            + "- a transcript of the Sentencing Judge’s Remarks.\n"
-            + "- a copy of any Pre-Sentence Report.\n"
-            + "- a copy of the appellant’s criminal record.\n"
-            + "- a copy of any Parole Report or other document relating to the appellant’s period in custody and/or release.\n"
-            + "- a copy of any mental health report.\n\n"
-            + "Parties must ensure they conduct proceedings with procedural rigour. "
-            + "The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, "
-            + "nor failures to comply with directions issued by the Tribunal. "
-            + "Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24."
-        );
+        asylumCase.write(SEND_DIRECTION_EXPLANATION, getDirectionExplanation(asylumCase));
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
@@ -174,5 +148,54 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         }
 
         return dueDate;
+    }
+
+    private String getDirectionExplanation(AsylumCase asylumCase) {
+        if (HandlerUtils.isAppellantInDetention(asylumCase)) {
+            return "A notice of appeal has been lodged against this decision.\n"
+                + "You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have until the date indicated below to supply your bundle.\n"
+                + "The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 and (ii) Practice Direction, Part 3, sections 7.1 – 7.4.\n"
+                + "Specifically, the bundle must contain:\n"
+                + "- The explanation for refusal;\n"
+                + "- the deportation order and/or the notice of decision to make the order (if any);\n"
+                + "- Interview record (if any);\n"
+                + "- Appellant's representations (if any);\n"
+                + "- a copy of any relevant indictment; pre-sentence report and/or OASys/ARNS reports (if any);\n"
+                + "- a copy of the Appellant's criminal record (if any);\n"
+                + "- a copy of the certificate of conviction (if any);\n"
+                + "- a transcript of the Sentencing Judge's Remarks (if any).\n"
+                + "- a copy of any Parole Report or other document relating to the appellant's period in custody and/or release (if any);\n"
+                + "- a copy of any medical report (if any).\n\n"
+                + "Parties must ensure they conduct proceedings with procedural rigour.\n"
+                + "The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, "
+                + "nor failures to comply with directions issued by the Tribunal. Parties are reminded of the possible sanctions for "
+                + "non-compliance set out in paragraph 5.3 of the Practice Direction.";
+        } else {
+            return "A notice of appeal has been lodged against this decision.\n\n"
+                + "By the date indicated below the respondent is directed to supply the documents:\n\n"
+                + "The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) "
+                + "and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 – 7.4. Specifically, the bundle must contain:\n\n"
+                + "- the notice of decision appealed against.\n"
+                + "- any other document provided to the appellant giving reasons for that decision.\n"
+                + "- any evidence or material relevant to the disputed issues.\n"
+                + "- any statements of evidence.\n"
+                + "- the application form.\n"
+                + "- any record of interview with the appellant in relation to the decision being appealed.\n"
+                + "- any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.\n"
+                + "- any other unpublished documents on which you rely.\n"
+                + "-the notice of any other appealable decision made in relation to the appellant.\n\n"
+                + "Where the appeal involves deportation, you must also include the following evidence:\n\n"
+                + "- a copy of the Certificate of Conviction.\n"
+                + "- a copy of any indictment/charge.\n"
+                + "- a transcript of the Sentencing Judge's Remarks.\n"
+                + "- a copy of any Pre-Sentence Report.\n"
+                + "- a copy of the appellant's criminal record.\n"
+                + "- a copy of any Parole Report or other document relating to the appellant's period in custody and/or release.\n"
+                + "- a copy of any mental health report.\n\n"
+                + "Parties must ensure they conduct proceedings with procedural rigour. "
+                + "The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, "
+                + "nor failures to comply with directions issued by the Tribunal. "
+                + "Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.";
+        }
     }
 }
