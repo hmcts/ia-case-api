@@ -79,7 +79,7 @@ public class LocationRefDataService {
     }
 
     private boolean isOpenLocation(CourtVenue courtVenue) {
-        return Objects.equals(courtVenue.getCourtStatus(), OPEN);
+        return OPEN.equalsIgnoreCase(courtVenue.getCourtStatus());
     }
 
     private boolean isHearingLocation(CourtVenue courtVenue) {
