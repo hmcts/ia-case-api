@@ -283,7 +283,7 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void handle_should_not_throw_error_for_the_detained_appeal() {
+    void handle_should_throw_error_for_the_detained_appeal_when_appellant_details_not_matched() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
@@ -301,7 +301,9 @@ class RequestRespondentEvidencePreparerTest {
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getErrors().isEmpty());;
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+                .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
     @Test
