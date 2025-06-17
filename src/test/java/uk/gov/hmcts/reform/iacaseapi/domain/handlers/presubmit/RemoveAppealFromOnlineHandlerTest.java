@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_ACTION_DISABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_APPEAL_FROM_ONLINE_DATE;
 
@@ -42,7 +43,7 @@ class RemoveAppealFromOnlineHandlerTest {
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
-    private LocalDate date = LocalDate.now();
+    private final LocalDate date = LocalDate.now();
 
     private RemoveAppealFromOnlineHandler removeAppealFromOnlineHandler;
 
@@ -69,6 +70,7 @@ class RemoveAppealFromOnlineHandlerTest {
 
         verify(asylumCase).write(REMOVE_APPEAL_FROM_ONLINE_DATE, date.toString());
         verify(asylumCase, times(1)).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(ADD_CASE_NOTE_ACTION_DISABLED, YesOrNo.NO);
     }
 
     @Test
