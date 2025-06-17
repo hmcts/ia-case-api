@@ -158,6 +158,7 @@ public enum Event {
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
+    APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
