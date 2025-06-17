@@ -381,6 +381,10 @@ public class MakeAnApplicationTypesProvider {
 
         }
 
+        if (shouldAddExpediteApplicationType(currentState, values)) {
+            values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+        }
+
         if (!values.isEmpty()) {
             dynamicList = new DynamicList(values.get(0), values);
         } else {
@@ -409,4 +413,14 @@ public class MakeAnApplicationTypesProvider {
             .equals(YesOrNo.YES);
     }
 
+    private boolean shouldAddExpediteApplicationType(State state, List<Value> values) {
+        Value expeditedValue = new Value(EXPEDITE.name(), EXPEDITE.toString());
+        List<State> notAllowedStates = List.of(APPEAL_STARTED, APPEAL_STARTED_BY_ADMIN);
+
+        boolean hasAppropriateRole = hasRole(ROLE_HO_RESPONDENT) || hasRole(ROLE_LEGAL_REP);
+
+        boolean alreadyAdded = !values.isEmpty() && values.contains(expeditedValue);
+
+        return !notAllowedStates.contains(state) && hasAppropriateRole && !alreadyAdded;
+    }
 }
