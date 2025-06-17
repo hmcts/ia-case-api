@@ -24,7 +24,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appellantsRepresentation": "Yes",
-        "isAdmin": "Yes"
+        "isAdmin": "Yes",
+        "journeyType": null
       }
     }
   }
