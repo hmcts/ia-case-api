@@ -153,7 +153,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private String getDirectionExplanation(AsylumCase asylumCase) {
         if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             return "A notice of appeal has been lodged against this decision.\n\n"
-                + "You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have until the date indicated below to supply your bundle.\n"
+                + "You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have until the date indicated below to supply your bundle.\n\n"
                 + "The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 and (ii) Practice Direction, Part 3, sections 7.1 - 7.4.\n"
                 + "Specifically, the bundle must contain:\n\n"
                 + "- The explanation for refusal;\n"
