@@ -67,22 +67,4 @@ public class AppellantInPersonManualHandler implements PreSubmitCallbackHandler<
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-
-    private void clearDetentionRelatedFields(AsylumCase asylumCase) {
-
-        log.info("Event: Remove Detained status - Clearing Detention related fields");
-        asylumCase.clear(DETENTION_FACILITY);
-        asylumCase.clear(IRC_NAME);
-        asylumCase.clear(PRISON_NAME);
-        asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
-        asylumCase.clear(PRISON_NOMS);
-        asylumCase.clear(CUSTODIAL_SENTENCE);
-        asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
-        asylumCase.clear(HAS_PENDING_BAIL_APPLICATIONS);
-        asylumCase.clear(BAIL_APPLICATION_NUMBER);
-        asylumCase.clear(REMOVAL_ORDER_OPTIONS);
-        asylumCase.clear(REMOVAL_ORDER_DATE);
-        asylumCase.clear(DETENTION_STATUS);
-    }
-
 }
