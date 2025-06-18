@@ -65,7 +65,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
     ) {
         log.error("Exception for the CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
-        log.error("Ex3: ", e);
+        log.error("Ex3: ", ex);
         log.error("--------------------------------");
         ExceptionUtils.printRootCauseStackTrace(ex);
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
