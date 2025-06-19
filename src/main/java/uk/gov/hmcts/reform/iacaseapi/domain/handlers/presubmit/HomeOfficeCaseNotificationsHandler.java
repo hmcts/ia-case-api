@@ -110,7 +110,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         log.info("----------asylumCaseWithHomeOfficeData");
 
         AsylumCase asylumCaseDataBefore =
-            callback.getCaseDetailsBefore().get().getCaseData()
+            callback.getCaseDetailsBefore().get().getCaseData();
         log.info("----------asylumCaseDataBefore");
         log.info("{}", asylumCaseDataBefore);
         log.info("----------asylumCaseDataBefore");
