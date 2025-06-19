@@ -35,7 +35,7 @@ public class AppellantInPersonManualConfirmation implements PostSubmitCallbackHa
         postSubmitResponse.setConfirmationHeader("# You have updated this case to Appellant in Person - Manual");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The appellant will be notified.\n\n"
+            + "This appeal will have to be continued by internal users\n\n"
         );
 
         return postSubmitResponse;
