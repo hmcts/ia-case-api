@@ -55,7 +55,7 @@ class AppellantInPersonManualConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next\n\n"
-                      + "The appellant will be notified.\n\n");
+                      + "This appeal will have to be continued by internal users\n\n");
     }
 
     @Test
