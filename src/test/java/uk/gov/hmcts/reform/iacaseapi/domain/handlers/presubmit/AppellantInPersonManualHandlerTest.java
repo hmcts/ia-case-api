@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
@@ -57,6 +58,7 @@ class AppellantInPersonManualHandlerTest {
         verify(asylumCase).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
         verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
         verify(asylumCase).clear(JOURNEY_TYPE);
+        verify(asylumCase).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
     }
 
 
