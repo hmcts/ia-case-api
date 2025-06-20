@@ -118,6 +118,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getEvent()).thenReturn(LIST_CASE);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
@@ -138,6 +139,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.empty());
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
