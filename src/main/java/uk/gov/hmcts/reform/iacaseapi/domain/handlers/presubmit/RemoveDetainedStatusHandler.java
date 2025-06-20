@@ -69,6 +69,8 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
         asylumCase.clear(REMOVAL_ORDER_OPTIONS);
         asylumCase.clear(REMOVAL_ORDER_DATE);
         asylumCase.clear(DETENTION_STATUS);
+        asylumCase.clear(DETENTION_REMOVAL_DATE);
+        asylumCase.clear(DETENTION_REMOVAL_REASON);
     }
 
 }
