@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -48,22 +49,23 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        final Optional<String> maybeHomeOfficeReference = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
 
-        if (!isInternalCase(asylumCase)
-            && !outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)
-            && !isAgeAssessmentAppealType(asylumCase)
-            || isInternalCase(asylumCase)
-            && !isEntryClearanceDecision(asylumCase)) {
+        // This is maybe a temporary fix.  Preferably we understand the exact condition in which it should be there
+        maybeHomeOfficeReference.ifPresent(homeOfficeReferenceNumber -> {
+              if (!isInternalCase(asylumCase)
+                    && !outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)
+                    && !isAgeAssessmentAppealType(asylumCase)
+                    || isInternalCase(asylumCase)
+                    && !isEntryClearanceDecision(asylumCase)) {
 
-            String homeOfficeReferenceNumber = asylumCase
-                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
-
-            if (homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
-                asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
-                    String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
+                  if (homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
+                      asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
+                            String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
+                  }
+              }
             }
-        }
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
