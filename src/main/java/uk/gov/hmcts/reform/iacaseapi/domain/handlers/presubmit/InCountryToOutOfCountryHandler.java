@@ -63,6 +63,7 @@ public class InCountryToOutOfCountryHandler implements PreSubmitCallbackHandler<
             asylumCase.clear(IRC_NAME);
             asylumCase.clear(PRISON_NAME);
         }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
