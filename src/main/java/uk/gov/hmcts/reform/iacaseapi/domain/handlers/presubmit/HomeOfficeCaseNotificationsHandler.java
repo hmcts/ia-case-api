@@ -115,7 +115,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         if (c.isPresent()) {
             AsylumCase asylumCaseDataBefore = c.get().getCaseData();
             log.info("----------asylumCaseDataBefore111");
-            Optional<AppealType> appealTypeBeforeOpt = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class);
+            Optional<AppealType> appealTypeBeforeOpt = asylumCaseDataBefore.read(APPEAL_TYPE, AppealType.class);
             log.info("{}", appealTypeBeforeOpt);
             log.info("----------asylumCaseDataBefore222");
         } else {
