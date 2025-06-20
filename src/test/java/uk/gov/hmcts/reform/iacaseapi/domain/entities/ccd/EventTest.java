@@ -158,10 +158,11 @@ class EventTest {
         assertEquals("refundConfirmation", Event.REFUND_CONFIRMATION.toString());
         assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
         assertEquals("generateListCmrTask", Event.GENERATE_LIST_CMR_TASK.toString());
+        assertEquals("appellantInPersonManual", Event.APPELLANT_IN_PERSON_MANUAL.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(153, Event.values().length);
+        assertEquals(154, Event.values().length);
     }
 }
