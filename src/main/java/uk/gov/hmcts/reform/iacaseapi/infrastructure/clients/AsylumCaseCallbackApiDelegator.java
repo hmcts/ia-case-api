@@ -71,8 +71,10 @@ public class AsylumCaseCallbackApiDelegator {
             if (res != null) {
                 log.info("----------AsylumCaseCallbackApiDelegator333000 res.getBody() == null: {}", res.getBody() == null);
                 if (res.getBody() != null) {
-                    log.info("----------AsylumCaseCallbackApiDelegator333000 res.getBody().getData() == null: {}",
-                    res.getBody().getData() == null);
+                    log.info(
+                        "----------AsylumCaseCallbackApiDelegator333000 res.getBody().getData() == null: {}",
+                        res.getBody().getData() == null
+                    );
                 }
             }
             log.info("----------AsylumCaseCallbackApiDelegator333000 res == null: {}", res == null);
