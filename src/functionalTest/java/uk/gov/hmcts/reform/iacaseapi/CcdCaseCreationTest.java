@@ -99,7 +99,7 @@ public class CcdCaseCreationTest {
     protected void fetchTokensAndUserIds() {
         s2sToken = s2sAuthTokenGenerator.generate();
 
-        legalRepToken = idamAuthProvider.getLegalRepToken();
+        legalRepToken = idamAuthProvider.getLegalRepOrgSuccessToken();
         citizenToken = idamAuthProvider.getCitizenToken();
         caseOfficerToken = idamAuthProvider.getCaseOfficerToken();
 
