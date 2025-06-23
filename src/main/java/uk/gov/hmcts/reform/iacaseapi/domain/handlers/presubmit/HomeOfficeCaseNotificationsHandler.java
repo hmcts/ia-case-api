@@ -111,7 +111,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         log.info("{}", appealTypeOpt);
         log.info("----------asylumCaseWithHomeOfficeData222");
 
-        AppealType appealType;
         Optional<CaseDetails<AsylumCase>> c = callback.getCaseDetailsBefore();
         if (c.isPresent()) {
             AsylumCase asylumCaseDataBefore = c.get().getCaseData();
@@ -119,12 +118,12 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             Optional<AppealType> appealTypeBeforeOpt = asylumCaseDataBefore.read(APPEAL_TYPE, AppealType.class);
             log.info("{}", appealTypeBeforeOpt);
             log.info("----------asylumCaseDataBefore222");
-            appealType = appealTypeBeforeOpt.get();
         } else {
-            appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
-                    .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
             log.info("----------asylumCaseDataBefore is not present");
         }
+
+        AppealType appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
