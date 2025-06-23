@@ -85,6 +85,7 @@ public class AsylumCaseCallbackApiDelegator {
             log.info("----------AsylumCaseCallbackApiDelegator333");
             Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
             log.info("{}", appealTypeOpt);
+            log.info("{}", asylumCase);
             log.info("----------AsylumCaseCallbackApiDelegator444");
             return asylumCase;
 
