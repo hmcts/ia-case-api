@@ -1,5 +1,5 @@
 {
-  "description": "RIA-892-RIA-2694 Request respondent evidence - prefill case details",
+  "description": "DIAC-1036 Request respondent evidence when appellant explicitly not detained - check sendDirectionExplanation uses standard text",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "appellantInDetention": "No",
           "homeOfficeSearchStatus": "SUCCESS",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
@@ -29,4 +30,4 @@
       }
     }
   }
-}
+} 
