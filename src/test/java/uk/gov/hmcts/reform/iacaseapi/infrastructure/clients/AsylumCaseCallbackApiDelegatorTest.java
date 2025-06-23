@@ -28,6 +28,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -48,6 +49,10 @@ class AsylumCaseCallbackApiDelegatorTest {
     private RestTemplate restTemplate;
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     @Mock
@@ -84,6 +89,9 @@ class AsylumCaseCallbackApiDelegatorTest {
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
             );
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         final AsylumCase actualAsylumCase = asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT);
 
@@ -206,6 +214,9 @@ class AsylumCaseCallbackApiDelegatorTest {
                 any(ParameterizedTypeReference.class)
             )).thenThrow(underlyingException);
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
         assertThatThrownBy(() -> asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
             .hasMessageContaining("Couldn't delegate callback to API")
@@ -253,6 +264,9 @@ class AsylumCaseCallbackApiDelegatorTest {
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
             )).thenThrow(underlyingException);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(() -> asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
