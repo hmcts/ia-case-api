@@ -59,16 +59,24 @@ public class AsylumCaseCallbackApiDelegator {
 
         try {
 
-            AsylumCase asylumCase = Optional
-                    .of(restTemplate
-                            .exchange(
-                                    endpoint,
-                                    HttpMethod.POST,
-                                    requestEntity,
-                                    new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
-                                    }
-                            )
-                    )
+            ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> res = restTemplate
+                    .exchange(
+                            endpoint,
+                            HttpMethod.POST,
+                            requestEntity,
+                            new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
+                            }
+                    );
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res == null: {}", res == null);
+            if (res != null) {
+                log.info("----------AsylumCaseCallbackApiDelegator333000 res.getBody() == null: {}", res.getBody() == null);
+                if (res.getBody() != null) {
+                    log.info("----------AsylumCaseCallbackApiDelegator333000 res.getBody().getData() == null: {}",
+                    res.getBody().getData() == null);
+                }
+            }
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res == null: {}", res == null);
+            AsylumCase asylumCase = Optional.of(res)
                     .map(ResponseEntity::getBody)
                     .map(PreSubmitCallbackResponse::getData)
                     .orElse(new AsylumCase());
