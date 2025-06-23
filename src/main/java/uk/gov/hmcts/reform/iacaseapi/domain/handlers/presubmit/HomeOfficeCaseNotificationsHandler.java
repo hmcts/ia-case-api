@@ -108,7 +108,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 .getCaseData();
         log.info("----------asylumCaseWithHomeOfficeData111");
         Optional<AppealType> appealTypeOpt = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class);
-        log.info("{}", asylumCaseWithHomeOfficeData);
         log.info("{}", appealTypeOpt);
         log.info("----------asylumCaseWithHomeOfficeData222");
 
@@ -117,7 +116,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             AsylumCase asylumCaseDataBefore = c.get().getCaseData();
             log.info("----------asylumCaseDataBefore111");
             Optional<AppealType> appealTypeBeforeOpt = asylumCaseDataBefore.read(APPEAL_TYPE, AppealType.class);
-            log.info("{}", asylumCaseDataBefore);
             log.info("{}", appealTypeBeforeOpt);
             log.info("----------asylumCaseDataBefore222");
         } else {
