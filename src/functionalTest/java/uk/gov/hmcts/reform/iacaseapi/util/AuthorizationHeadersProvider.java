@@ -28,29 +28,6 @@ public class AuthorizationHeadersProvider {
         );
     }
 
-    public Headers getSystemUserAuthorization() {
-
-        MultiValueMap<String, String> tokenRequestForm = new LinkedMultiValueMap<>();
-        tokenRequestForm.add("grant_type", "password");
-        tokenRequestForm.add("redirect_uri", idamRedirectUrl);
-        tokenRequestForm.add("client_id", idamClientId);
-        tokenRequestForm.add("client_secret", idamClientSecret);
-        tokenRequestForm.add("username", System.getenv("IA_SYSTEM_USERNAME"));
-        tokenRequestForm.add("password", System.getenv("IA_SYSTEM_PASSWORD"));
-        tokenRequestForm.add("scope", userScope);
-
-        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
-        String accessToken = tokens.computeIfAbsent(
-            "SystemUser",
-            user -> "Bearer " + idamApi.token(tokenRequestForm).getAccessToken()
-        );
-
-        return new Headers(
-            new Header("ServiceAuthorization", serviceToken),
-            new Header("Authorization", accessToken)
-        );
-    }
-
     public Headers getCaseOfficerAuthorization() {
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = idamAuthProvider.getCaseOfficerToken();
