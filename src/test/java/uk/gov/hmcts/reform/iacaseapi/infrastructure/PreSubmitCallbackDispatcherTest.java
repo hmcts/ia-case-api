@@ -80,13 +80,13 @@ class PreSubmitCallbackDispatcherTest {
     @Mock
     private CaseDetails<CaseData> caseDetails;
     @Mock
-    private CaseData caseData;
+    private AsylumCase caseData;
     @Mock
-    private CaseData caseDataMutation1;
+    private AsylumCase caseDataMutation1;
     @Mock
-    private CaseData caseDataMutation2;
+    private AsylumCase caseDataMutation2;
     @Mock
-    private CaseData caseDataMutation3;
+    private AsylumCase caseDataMutation3;
     @Mock
     private PreSubmitCallbackResponse<CaseData> response1;
     @Mock

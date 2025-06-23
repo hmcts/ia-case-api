@@ -11,6 +11,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -105,6 +106,21 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             callback
                 .getCaseDetails()
                 .getCaseData();
+        log.info("----------asylumCaseWithHomeOfficeData111");
+        Optional<AppealType> appealTypeOpt = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealTypeOpt);
+        log.info("----------asylumCaseWithHomeOfficeData222");
+
+        Optional<CaseDetails<AsylumCase>> c = callback.getCaseDetailsBefore();
+        if (c.isPresent()) {
+            AsylumCase asylumCaseDataBefore = c.get().getCaseData();
+            log.info("----------asylumCaseDataBefore111");
+            Optional<AppealType> appealTypeBeforeOpt = asylumCaseDataBefore.read(APPEAL_TYPE, AppealType.class);
+            log.info("{}", appealTypeBeforeOpt);
+            log.info("----------asylumCaseDataBefore222");
+        } else {
+            log.info("----------asylumCaseDataBefore is not present");
+        }
 
         AppealType appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
