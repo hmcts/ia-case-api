@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_HEARING_TYPE;
@@ -83,12 +85,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(OTHER.name(), OTHER.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
 
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
@@ -111,12 +113,12 @@ class MakeAnApplicationTypesProviderTest {
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()),
             new Value(OTHER.name(), OTHER.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @ParameterizedTest
@@ -161,12 +163,12 @@ class MakeAnApplicationTypesProviderTest {
             ));
         }
 
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @ParameterizedTest
@@ -210,12 +212,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
 
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @ParameterizedTest
@@ -250,12 +252,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(OTHER.name(), OTHER.toString()));
 
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @ParameterizedTest
@@ -291,9 +293,9 @@ class MakeAnApplicationTypesProviderTest {
         when(asylumCase.read(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems())
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems())
             .contains(new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()));
     }
 
@@ -318,12 +320,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(OTHER.name(), OTHER.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @ParameterizedTest
@@ -353,12 +355,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(OTHER.name(), OTHER.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
 
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @ParameterizedTest
@@ -388,12 +390,12 @@ class MakeAnApplicationTypesProviderTest {
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
@@ -410,12 +412,12 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(REINSTATE.name(), REINSTATE.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
@@ -442,12 +444,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
@@ -469,12 +471,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
@@ -500,12 +502,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
 
@@ -525,12 +527,12 @@ class MakeAnApplicationTypesProviderTest {
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
             new Value(TRANSFER.name(), TRANSFER.toString()));
-        DynamicList expectedList =
+        DynamicList actualList =
             new DynamicList(values.get(0), values);
 
-        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(actualList);
-        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @ParameterizedTest
@@ -549,12 +551,12 @@ class MakeAnApplicationTypesProviderTest {
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
             new Value(TRANSFER.name(), TRANSFER.toString()));
-        DynamicList expectedList =
+        DynamicList actualList =
             new DynamicList(values.get(0), values);
 
-        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(actualList);
-        assertThat(actualList.getListItems()).doesNotContainAnyElementsOf(expectedList.getListItems());
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).doesNotContainAnyElementsOf(actualList.getListItems());
     }
 
     @ParameterizedTest
@@ -575,12 +577,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(ADJOURN.name(), ADJOURN.toString()),
             new Value(EXPEDITE.name(), EXPEDITE.toString())
         );
-        DynamicList expectedList =
+        DynamicList actualList =
             new DynamicList(values.get(0), values);
 
-        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(actualList);
-        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @ParameterizedTest
@@ -610,12 +612,12 @@ class MakeAnApplicationTypesProviderTest {
             new Value(ADJOURN.name(), ADJOURN.toString()),
             new Value(EXPEDITE.name(), EXPEDITE.toString())
         );
-        DynamicList expectedList =
+        DynamicList actualList =
             new DynamicList(values.get(0), values);
 
-        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(actualList);
-        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @Test
@@ -624,10 +626,10 @@ class MakeAnApplicationTypesProviderTest {
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(APPEAL_TAKEN_OFFLINE);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
 
-        List<Value> values = expectedList.getListItems();
+        List<Value> values = actualList.getListItems();
         assertThatThrownBy(() -> values.get(0))
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -651,12 +653,12 @@ class MakeAnApplicationTypesProviderTest {
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(OTHER.name(), OTHER.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
     @Test
@@ -677,12 +679,78 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
-        DynamicList actualList =
+        DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
-        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
-        assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList).isEqualTo(expectedList);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "APPEAL_SUBMITTED", "AWAITING_RESPONDENT_EVIDENCE", "CASE_BUILDING", "AWAITING_REASONS_FOR_APPEAL",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS", "AWAITING_CMA_REQUIREMENTS", "CASE_UNDER_REVIEW",
+        "REASONS_FOR_APPEAL_SUBMITTED", "RESPONDENT_REVIEW", "SUBMIT_HEARING_REQUIREMENTS", "ADJOURNED",
+        "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
+    void should_return_expedite_application_type_from_submitted_state_in_ho_role(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+                new Value(EXPEDITE.name(), EXPEDITE.toString()));
+        DynamicList expectedList =
+                new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertTrue(actualList.getListItems().containsAll(expectedList.getListItems()));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "APPEAL_SUBMITTED", "AWAITING_RESPONDENT_EVIDENCE", "CASE_BUILDING", "AWAITING_REASONS_FOR_APPEAL",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS", "AWAITING_CMA_REQUIREMENTS", "CASE_UNDER_REVIEW",
+        "REASONS_FOR_APPEAL_SUBMITTED", "RESPONDENT_REVIEW", "SUBMIT_HEARING_REQUIREMENTS", "ADJOURNED",
+        "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
+    void should_return_expedite_application_type_from_submitted_state_in_legal_rep_role(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+                new Value(EXPEDITE.name(), EXPEDITE.toString()));
+        DynamicList expectedList =
+                new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertTrue(actualList.getListItems().containsAll(expectedList.getListItems()));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "APPEAL_STARTED", "APPEAL_STARTED_BY_ADMIN"
+    })
+    void should_not_return_expedite_application_type_for_appeal_started_states(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        DynamicList expectedList = new DynamicList("");
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertEquals(expectedList, actualList);
+    }
 }
