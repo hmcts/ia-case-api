@@ -233,4 +233,5 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
         asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
     }
+
 }
