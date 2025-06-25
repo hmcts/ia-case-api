@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
@@ -44,6 +45,15 @@ public class AppellantInPersonManualHandler implements PreSubmitCallbackHandler<
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        boolean isAdmin = HandlerUtils.isAdmin(asylumCase);
+        boolean hasAddedLegalRepDetails = HandlerUtils.hasAddedLegalRepDetails(asylumCase);
+        if (isAdmin || hasAddedLegalRepDetails) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError("You cannot request Appellant in Person - Manual for this appeal");
+
+            return response;
+        }
 
         asylumCase.write(APPELLANTS_REPRESENTATION, YES);
         asylumCase.write(IS_ADMIN, YES);
