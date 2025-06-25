@@ -54,6 +54,8 @@ public class AsylumCaseCallbackApiDelegator {
         AsylumCase asylumCase0 = callback.getCaseDetails().getCaseData();
         log.info("----------AsylumCaseCallbackApiDelegator111 {}", endpoint);
         Optional<AppealType> appealType0Opt = asylumCase0.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", asylumCase0);
+        log.info("{}", requestEntity.getBody().getCaseDetails().getCaseData());
         log.info("{}", appealType0Opt);
         log.info("----------AsylumCaseCallbackApiDelegator222 {}", endpoint);
 
