@@ -11,19 +11,21 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isAdmin": "No",
-          "hasAddedLegalRepDetails": "Yes"
+          "hasAddedLegalRepDetails": "Yes",
+          "journeyType": "rep"
         }
       }
     }
   },
   "expectation": {
     "status": 200,
-    "errors": [],
+    "errors": ["You cannot request Appellant in Person - Manual for this appeal"],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appellantsRepresentation": null,
-        "isAdmin": "No"
+        "isAdmin": "No",
+        "journeyType": "rep"
       }
     }
   }

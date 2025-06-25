@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.util.Optional;
@@ -69,6 +70,27 @@ class AppellantInPersonManualHandlerTest {
     }
 
     @Test
+    void should_update_case_appellant_in_person_manual_has_added_legal_rep_details() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
+        verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
+        verify(asylumCase).clear(JOURNEY_TYPE);
+        verify(asylumCase).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
+    }
+
+    @Test
     void should_respond_with_error_is_admin() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -90,11 +112,12 @@ class AppellantInPersonManualHandlerTest {
     }
 
     @Test
-    void should_respond_with_error_has_added_legal_rep_details() {
+    void should_respond_with_error_has_added_legal_rep_details_journey_type_rep() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
