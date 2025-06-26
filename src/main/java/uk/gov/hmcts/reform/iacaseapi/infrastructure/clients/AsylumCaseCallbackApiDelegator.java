@@ -80,6 +80,10 @@ public class AsylumCaseCallbackApiDelegator {
                 }
             }
             log.info("----------AsylumCaseCallbackApiDelegator333000 res == null: {}", res == null);
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res.getHeaders(): {}", res.getHeaders());
+            for (String key: res.getHeaders().keySet()) {
+                log.info("----------AsylumCaseCallbackApiDelegator333000 res header: {} - {}", key, res.getHeaders().get(key));
+            }
             AsylumCase asylumCase = Optional.of(res)
                     .map(ResponseEntity::getBody)
                     .map(PreSubmitCallbackResponse::getData)
