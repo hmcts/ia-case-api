@@ -371,7 +371,7 @@ dependencies {
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
-    implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2') {
+    implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.0') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
