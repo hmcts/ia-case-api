@@ -369,6 +369,7 @@ dependencies {
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
+    implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
