@@ -15,8 +15,8 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'pmd'
-    id 'com.github.ben-manes.versions' version '0.52.0'
-    id "info.solidsoft.pitest" version '1.15.0'
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id "info.solidsoft.pitest" version '1.9.0'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '10.0.4'
@@ -39,7 +39,7 @@ def versions = [
         junit              : '5.13.2',
         junitPlatform      : '1.13.2',
         sonarPitest        : '0.5',
-        pitest             : '1.20.0',
+        pitest             : '1.9.0',
         restAssured        : '5.5.5'
 ]
 
@@ -49,7 +49,8 @@ ext.libraries = [
                 "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
                 "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
                 "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}",
+                "org.junit.platform:junit-platform-launcher:${versions.junitPlatform}"
         ]
 ]
 
@@ -363,8 +364,8 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
 
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
@@ -433,7 +434,9 @@ dependencies {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
     }
 
-    testImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
+    testImplementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
+
+    testImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.0'
     testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
     testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version:  '4.5.14'
 
@@ -472,8 +475,6 @@ task runAndPublishConsumerPactTests(type: Test) {
 
 }
 
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 pact {
     broker {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
@@ -484,6 +485,12 @@ pact {
         version = project.pacticipantVersion
     }
 }
+
+pactPublish {
+    pactPublish = project.pact.publish
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 dependencyCheck {
     suppressionFile = 'config/owasp/suppressions.xml'
