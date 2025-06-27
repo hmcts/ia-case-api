@@ -410,7 +410,7 @@ dependencies {
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
 
-    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
