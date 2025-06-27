@@ -51,6 +51,16 @@ public class LocationRefDataServiceTest {
         "M1 3FS",
         COURT);
 
+    private CourtVenue openVrHearingCourtVenue = new CourtVenue("IAC National (Virtual)",
+        "IAC National (Virtual)",
+        "999970",
+        "Y",
+        "N",
+        "OPEN",
+        "Piccadilly Plaza",
+        "M1 4AH",
+        COURT);
+
     private CourtVenue openCaseManagementLocation = new CourtVenue(
         "Newcastle Civil & Family Courts and Tribunals Centre",
         "Newcastle Civil And Family Courts And Tribunals Centre",
@@ -131,6 +141,7 @@ public class LocationRefDataServiceTest {
 
         when(locationCategory.getCourtVenues()).thenReturn(List.of(
             openHearingCourtVenue,
+            openVrHearingCourtVenue,
             openNonHearingCourtVenue,
             closedHearingCourtVenue,
             closedNonHearingCourtVenue,
@@ -142,8 +153,8 @@ public class LocationRefDataServiceTest {
     void should_return_dynamicList_when_getHearingLocationsDynamicList() {
 
         dynamicList = new DynamicList(new Value("", ""),
-            List.of(new Value(openHearingCourtVenue.getEpimmsId(),
-                openHearingCourtVenue.getCourtName())));
+            List.of(new Value(openHearingCourtVenue.getEpimmsId(), openHearingCourtVenue.getCourtName()),
+                new Value(openVrHearingCourtVenue.getEpimmsId(), openVrHearingCourtVenue.getCourtName())));
 
         assertEquals(dynamicList, locationRefDataService.getHearingLocationsDynamicList());
     }
