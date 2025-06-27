@@ -113,7 +113,7 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
             return "You must now build your case to enable the respondent to conduct a thorough review of the appeal.\n\n"
                     + "By the date indicated below the Appellant is directed to:\n\n"
                     + "1. Upload an Appeal Skeleton Argument (“ASA”). The form and content of this ASA must comply with the terms of Practice Direction, Part 3.\n\n"
-                    + "  Specifically, the ASA must\n\n"
+                    + "   Specifically, the ASA must\n\n"
                     + "   - be no more than 12 pages of numbered paragraphs.\n\n"
                     + "   - be set out in three distinct parts, to include:\n"
                     + "      i) a concise summary of the appellant’s case;\n"
