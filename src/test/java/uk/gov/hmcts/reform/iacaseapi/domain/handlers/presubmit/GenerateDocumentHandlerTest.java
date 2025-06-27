@@ -192,13 +192,11 @@ class GenerateDocumentHandlerTest {
         "SAVE_NOTIFICATIONS_TO_DATA"
     })
     void should_generate_document_and_update_the_case(Event event) {
-        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(NO));
-
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
         if (event.equals(EDIT_CASE_LISTING)) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
