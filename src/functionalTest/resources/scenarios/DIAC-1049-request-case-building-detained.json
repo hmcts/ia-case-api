@@ -1,18 +1,19 @@
 {
   "description": "DIAC-1049 Request case building direction to legal representative - detained",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
     "input": {
-      "id": 1789,
       "eventId": "requestCaseBuilding",
       "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "sendDirectionDateDue": "{$TODAY+28}",
-          "notificationsSent": [],
-          "appellantInDetention": "Yes"
+          "appellantInDetention": "Yes",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "sendDirectionExplanation": null,
+          "sendDirectionParties": null,
+          "sendDirectionDateDue": null
         }
       }
     }
@@ -23,24 +24,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "directions": [
-          {
-            "id": "1",
-            "value": {
-              "explanation": "You must now build your case to enable the respondent to conduct a thorough review of the appeal.\n\nThe appellant and their representative are reminded that they have an obligation under Rule 2(4) of the Procedural Rules to help the Tribunal further the overriding objective to deal with cases fairly and justly; and to cooperate with the Tribunal generally.\n\nBy the date indicated below the appellant is directed to:\n- upload an Appeal Skeleton Argument (“ASA”). The form and content of this ASA must comply with the terms of Practice Direction (1.11.2024) Part 3, sections 7.1 – 7.2; 7.6 – 7.8; and 16.2. Specifically, the ASA must\n   - be no more than 12 pages of numbered paragraphs.\n   - be set out in three distinct parts, to include:\n      - a concise summary of the appellant’s case;\n      - a schedule of the disputed issues;\n      - the appellant’s brief submissions on each of those issues, which explain (with reference to the decision under challenge; the evidence and appropriate legal authority) why the issues should be resolved in the appellant’s favour; and\n      - the name of the author of the ASA and the date on which it was prepared.\n- If the appellant’s application was made on or after 28 June 2022, the appellant’s brief submissions within the ASA must also expressly address the applicable provisions of the Nationality and Borders Act 2022 (including the different stages of the assessment set out at section 32 of NABA 2022).\n- The appellant must, by the same date, upload an indexed bundle of all evidence to be relied on in the appeal including witness statements and all evidence relevant to the issues in dispute as set out within the ASA and which has not been included in the respondent’s bundle. This bundle, together with any witness statements; expert evidence or country information evidence included, must comply with Practice Direction (1.11.2024) Part 3, sections 7.1, 7.2, 7.9, 8, 9 and 10.\n\nParties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.",
-              "parties": "legalRepresentative",
-              "dateDue": "{$TODAY+28}",
-              "dateSent": "{$TODAY}",
-              "tag": "requestCaseBuilding"
-            }
-          }
-        ],
-        "notificationsSent": [
-          {
-            "id": "1789_LEGAL_REPRESENTATIVE_REQUEST_CASE_BUILDING",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
-          }
-        ]
+        "sendDirectionExplanation": "By the date below you must review the appellant’s ASA and bundle.\nThe review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) Practice Direction (1.11.2024) Part 2, section 2.1 (e), Part 3, sections 7.11 – 7.12. Specifically, the review must:\n\n- be meaningful.\n- explain whether you agree that the schedule of disputed issues is correct. If not, the review must set out the correct list of disputed issues, including whether there are any further issues that the respondent wishes to raise.\n- state whether you oppose or accept the appellant’s position on each issue and why.\n- cross-reference your submissions to paragraphs in the decision under appeal, pages in the respondent’s bundle, any country information evidence schedule, and/or any additional evidence relied upon.\n- specify which, if any, witnesses you intend to cross-examine and if you do not intend to cross-examine a witness, outline any objections to that witness’s statement being read by a judge.\n- address whether the appeal should be allowed on any ground if the appellant and/or their key witnesses are found to be credible according to the applicable standard of proof.\n- identify whether you are prepared to withdraw the decision (or part of it).\n- state whether the appeal can be resolved without a hearing.\n- not exceed 6 pages unless reasons are submitted in an accompanying application.\n- not contain standard or pro-forma paragraphs.\n- provide the name of the author of the review and the date.\n\nParties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.",
+        "sendDirectionParties": "respondent",
+        "sendDirectionDateDue": "{$TODAY+14}"
       }
     }
   }
