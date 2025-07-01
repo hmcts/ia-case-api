@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.singletonList;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +116,7 @@ public class RoleAssignmentService {
             serviceAuthTokenGenerator.generate(),
             actorId
         );
-        return roleAssignmentResource.getRoleAssignmentResponse()
+        return Optional.ofNullable(roleAssignmentResource.getRoleAssignmentResponse()).orElse(Collections.emptyList())
             .stream()
             .map(Assignment::getRoleName)
             .map(RoleName::getValue)
