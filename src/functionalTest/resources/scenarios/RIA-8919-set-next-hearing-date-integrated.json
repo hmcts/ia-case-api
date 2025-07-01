@@ -1,0 +1,36 @@
+{
+  "description": "RIA-8919 Set next hearing date for integrated cases",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "SystemUser",
+    "input": {
+      "id": 8919,
+      "eventId": "UpdateNextHearingInfo",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isIntegrated": "Yes",
+          "listCaseHearingDate": "2020-10-28T10:30:00.000"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "isIntegrated": "Yes",
+        "listCaseHearingDate": "2020-10-28T10:30:00.000",
+        "nextHearingDetails": {
+          "hearingID": "999",
+          "hearingDateTime": "2020-10-28T10:30:00.000"
+        }
+      }
+    }
+  }
+}

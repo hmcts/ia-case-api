@@ -1,0 +1,26 @@
+name: Delete Nightly Dev Branch
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5' # At 6:00 AM UTC, Monday through Friday
+  workflow_dispatch: # Optional: allows manual triggering
+
+jobs:
+  delete-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Delete 'nightly-dev' branch if it exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if the branch exists on origin
+          if git ls-remote --exit-code --heads origin nightly-dev > /dev/null; then
+            echo "Branch 'nightly-dev' exists. Deleting..."
+            # Delete the branch on origin
+            git push origin --delete nightly-dev
+          else
+            echo "Branch 'nightly-dev' does not exist. Nothing to delete."
+          fi
