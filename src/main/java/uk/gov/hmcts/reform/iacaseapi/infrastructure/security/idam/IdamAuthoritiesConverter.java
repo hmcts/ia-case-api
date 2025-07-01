@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @Component
@@ -23,13 +24,13 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
 
     static final String TOKEN_NAME = "tokenName";
 
-    private final IdamApi idamApi;
     private final IdamService idamService;
+    private final RoleAssignmentService roleAssignmentService;
 
-    public IdamAuthoritiesConverter(IdamApi idamApi,
-           IdamService idamService) {
-        this.idamApi = idamApi;
+    public IdamAuthoritiesConverter(IdamService idamService,
+                                    RoleAssignmentService roleAssignmentService) {
         this.idamService = idamService;
+        this.roleAssignmentService = roleAssignmentService;
     }
 
     @Override
@@ -47,9 +48,10 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
         try {
 
             UserInfo userInfo = idamService.getUserInfo("Bearer " + authorization);
-
-            return userInfo
-                .getRoles()
+            List<String> amRoles =
+                roleAssignmentService.getAmRolesFromUser(userInfo.getUid(), "Bearer " + authorization);
+            List<String> roles = Stream.concat(amRoles.stream(), userInfo.getRoles().stream()).toList();
+            return roles
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

@@ -27,28 +27,19 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
     @Override
     public UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails) {
 
-        switch (getLoggedInUserRole(userDetails)) {
-            case HOME_OFFICE_APC:
-            case HOME_OFFICE_POU:
-            case HOME_OFFICE_LART:
-            case HOME_OFFICE_GENERIC:
-                return UserRoleLabel.HOME_OFFICE_GENERIC;
-            case LEGAL_REPRESENTATIVE:
-                return UserRoleLabel.LEGAL_REPRESENTATIVE;
-            case CASE_OFFICER:
-                return UserRoleLabel.TRIBUNAL_CASEWORKER;
-            case ADMIN_OFFICER:
-                return UserRoleLabel.ADMIN_OFFICER;
-            case JUDICIARY:
-            case JUDGE:
-                return UserRoleLabel.JUDGE;
-            case CITIZEN:
-                return UserRoleLabel.CITIZEN;
-            case SYSTEM:
-                return UserRoleLabel.SYSTEM;
-
-            default:
-                throw new IllegalStateException("Unauthorized role to make an application");
-        }
+        return switch (getLoggedInUserRole(userDetails)) {
+            case HOME_OFFICE_APC, HOME_OFFICE_POU, HOME_OFFICE_LART, HOME_OFFICE_GENERIC ->
+                UserRoleLabel.HOME_OFFICE_GENERIC;
+            case LEGAL_REPRESENTATIVE -> UserRoleLabel.LEGAL_REPRESENTATIVE;
+            case CASE_OFFICER, TRIBUNAL_CASEWORKER, CHALLENGED_ACCESS_LEGAL_OPERATIONS, SENIOR_TRIBUNAL_CASEWORKER ->
+                UserRoleLabel.TRIBUNAL_CASEWORKER;
+            case ADMIN_OFFICER, HEARING_CENTRE_ADMIN, CTSC, CTSC_TEAM_LEADER, NATIONAL_BUSINESS_CENTRE,
+                 CHALLENGED_ACCESS_CTSC, CHALLENGED_ACCESS_ADMIN -> UserRoleLabel.ADMIN_OFFICER;
+            case IDAM_JUDGE, JUDICIARY, JUDGE, SENIOR_JUDGE, LEADERSHIP_JUDGE, FEE_PAID_JUDGE, LEAD_JUDGE,
+                 HEARING_JUDGE, FTPA_JUDGE, HEARING_PANEL_JUDGE, CHALLENGED_ACCESS_JUDICIARY -> UserRoleLabel.JUDGE;
+            case CITIZEN -> UserRoleLabel.CITIZEN;
+            case SYSTEM -> UserRoleLabel.SYSTEM;
+            default -> throw new IllegalStateException("Unauthorized role to make an application");
+        };
     }
 }

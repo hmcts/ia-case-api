@@ -85,15 +85,15 @@ public class RoleAssignmentService {
 
     public RoleAssignmentResource getCaseRoleAssignmentsForUser(long caseId, String idamUserId) {
         QueryRequest queryRequest = QueryRequest.builder()
-                .roleType(List.of(RoleType.CASE))
-                .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
-                .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
-                .actorId(List.of(idamUserId))
-                .attributes(Map.of(
-                        Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                        Attributes.CASE_TYPE, List.of("Asylum"),
-                        Attributes.CASE_ID, List.of(String.valueOf(caseId))
-                )).build();
+            .roleType(List.of(RoleType.CASE))
+            .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
+            .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
+            .actorId(List.of(idamUserId))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(String.valueOf(caseId))
+            )).build();
 
         log.info("Query role assignment with the parameters: {}, for case reference: {}", queryRequest, caseId);
 
@@ -106,6 +106,20 @@ public class RoleAssignmentService {
             serviceAuthTokenGenerator.generate(),
             queryRequest
         );
+    }
+
+    public List<String> getAmRolesFromUser(String actorId,
+                                           String authorization) {
+        RoleAssignmentResource roleAssignmentResource = roleAssignmentApi.getRoleAssignments(
+            authorization,
+            serviceAuthTokenGenerator.generate(),
+            actorId
+        );
+        return roleAssignmentResource.getRoleAssignmentResponse()
+            .stream()
+            .map(Assignment::getRoleName)
+            .map(RoleName::getValue)
+            .toList();
     }
 
     public void deleteRoleAssignment(String assignmentId) {

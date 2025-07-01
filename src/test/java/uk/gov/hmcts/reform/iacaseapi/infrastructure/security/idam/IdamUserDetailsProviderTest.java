@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import feign.FeignException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
@@ -30,7 +32,7 @@ class IdamUserDetailsProviderTest {
     @Mock
     private AccessTokenProvider accessTokenProvider;
     @Mock
-    private IdamApi idamApi;
+    private RoleAssignmentService roleAssignmentService;
     @Mock
     private IdamService idamService;
 
@@ -43,13 +45,52 @@ class IdamUserDetailsProviderTest {
         idamUserDetailsProvider =
             new IdamUserDetailsProvider(
                 accessTokenProvider,
-                idamApi,
+                roleAssignmentService,
                 idamService
             );
     }
 
     @Test
-    void should_call_idam_api_to_get_user_details() {
+    void should_call_idam_service_and_role_assignment_service_to_get_user_details() {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList("role-1", "role-2");
+        String expectedEmailAddress = "john.doe@example.com";
+        String expectedForename = "John";
+        String expectedSurname = "Doe";
+        String expectedName = expectedForename + " " + expectedSurname;
+
+        UserInfo userInfo = new UserInfo(
+            expectedEmailAddress,
+            expectedId,
+            expectedRoles,
+            expectedName,
+            expectedForename,
+            expectedSurname
+        );
+        List<String> expectedAmRoles = Arrays.asList("am-role-1", "am-role-2");
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        when(idamService.getUserInfo(expectedAccessToken)).thenReturn(userInfo);
+        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+            .thenReturn(expectedAmRoles);
+        UserDetails actualUserDetails = idamUserDetailsProvider.getUserDetails();
+
+        verify(idamService).getUserInfo(expectedAccessToken);
+
+        assertEquals(expectedAccessToken, actualUserDetails.getAccessToken());
+        assertEquals(expectedId, actualUserDetails.getId());
+        assertTrue(actualUserDetails.getRoles().containsAll(expectedRoles));
+        assertTrue(actualUserDetails.getRoles().containsAll(expectedAmRoles));
+        assertEquals(expectedEmailAddress, actualUserDetails.getEmailAddress());
+        assertEquals(expectedForename, actualUserDetails.getForename());
+        assertEquals(expectedSurname, actualUserDetails.getSurname());
+    }
+
+    @Test
+    void should_get_correct_roles_just_idam() {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -71,7 +112,45 @@ class IdamUserDetailsProviderTest {
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
         when(idamService.getUserInfo(expectedAccessToken)).thenReturn(userInfo);
+        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+            .thenReturn(Collections.emptyList());
+        UserDetails actualUserDetails = idamUserDetailsProvider.getUserDetails();
 
+        verify(idamService).getUserInfo(expectedAccessToken);
+
+        assertEquals(expectedAccessToken, actualUserDetails.getAccessToken());
+        assertEquals(expectedId, actualUserDetails.getId());
+        assertEquals(expectedRoles, actualUserDetails.getRoles());
+        assertEquals(expectedEmailAddress, actualUserDetails.getEmailAddress());
+        assertEquals(expectedForename, actualUserDetails.getForename());
+        assertEquals(expectedSurname, actualUserDetails.getSurname());
+    }
+
+    @Test
+    void should_get_correct_roles_just_role_assignment() {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList("role-1", "role-2");
+        String expectedEmailAddress = "john.doe@example.com";
+        String expectedForename = "John";
+        String expectedSurname = "Doe";
+        String expectedName = expectedForename + " " + expectedSurname;
+
+        UserInfo userInfo = new UserInfo(
+            expectedEmailAddress,
+            expectedId,
+            null,
+            expectedName,
+            expectedForename,
+            expectedSurname
+        );
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        when(idamService.getUserInfo(expectedAccessToken)).thenReturn(userInfo);
+        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+            .thenReturn(expectedRoles);
         UserDetails actualUserDetails = idamUserDetailsProvider.getUserDetails();
 
         verify(idamService).getUserInfo(expectedAccessToken);
@@ -108,7 +187,7 @@ class IdamUserDetailsProviderTest {
     }
 
     @Test
-    void should_throw_exception_if_idam_roles_missing() {
+    void should_throw_exception_if_idam_or_am_roles_missing() {
 
         String accessToken = "ABCDEFG";
 
