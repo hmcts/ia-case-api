@@ -27,6 +27,10 @@ core_case_data:
     url: ${CCD_URL:http://127.0.0.1:4452}
 
 spring:
+  cache:
+    cache-names: userInfoCache, accessTokenCache, legalRepATokenCache, caseOfficerTokenCache, adminOfficerTokenCache, homeOfficeApcTokenCache, homeOfficeLartTokenCache, homeOfficePouTokenCache, homeOfficeGenericTokenCache, legalRepShareCaseATokenCache, legalRepOrgSuccessTokenCache, legalRepOrgDeletedTokenCache, judgeTokenCache, citizenTokenCache, systemTokenCache
+    caffeine:
+      spec: expireAfterAccess=3600s
   security:
     oauth2:
       client:

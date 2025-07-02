@@ -81,10 +81,6 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         log.info("Appeal type [{}] and Remission type [{}] for caseId [{}]",
             appealType, remissionType, callback.getCaseDetails().getId());
 
-        boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
-            && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
-            || (remissionType.isPresent());
-
         boolean isAipJourney = asylumCase
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
             .map(journeyType -> journeyType == JourneyType.AIP)
@@ -94,6 +90,9 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         if (isAipJourney) {
             return decideAiPAppealState(callback, appealType, currentState);
         } else {
+            boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
+                    && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
+                    || (remissionType.isPresent());
             return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
@@ -113,9 +112,9 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
-        boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
-                && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
-                || (remissionOption.isPresent());
+        boolean isPaymentStatusPendingOrFailed = (paymentStatus.isPresent()
+                && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED))
+                || (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION);
 
         if (isDlrmFeeRemissionEnabled && aipRemissionExists) {
             return handleDlrmFeeRemission(callback, appealType, currentState, isPayLaterAppeal, isPaymentStatusPaid);
