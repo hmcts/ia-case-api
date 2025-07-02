@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class RoleNameTest {
@@ -14,29 +15,37 @@ class RoleNameTest {
         assertEquals(roleName.toString(), roleName.getValue());
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "case-manager, CASE_MANAGER",
+        "tribunal-caseworker, TRIBUNAL_CASEWORKER",
+        "challenged-access-legal-operations, CHALLENGED_ACCESS_LEGAL_OPERATIONS",
+        "senior-tribunal-caseworker, SENIOR_TRIBUNAL_CASEWORKER",
+        "hearing-centre-admin, HEARING_CENTRE_ADMIN",
+        "ctsc, CTSC",
+        "ctsc-team-leader, CTSC_TEAM_LEADER",
+        "national-business-centre, NATIONAL_BUSINESS_CENTRE",
+        "challenged-access-ctsc, CHALLENGED_ACCESS_CTSC",
+        "challenged-access-admin, CHALLENGED_ACCESS_ADMIN",
+        "judge, JUDGE",
+        "senior-judge, SENIOR_JUDGE",
+        "leadership-judge, LEADERSHIP_JUDGE",
+        "fee-paid-judge, FEE_PAID_JUDGE",
+        "lead-judge, LEAD_JUDGE",
+        "hearing-judge, HEARING_JUDGE",
+        "ftpa-judge, FTPA_JUDGE",
+        "hearing-panel-judge, HEARING_PANEL_JUDGE",
+        "challenged-access-judiciary, CHALLENGED_ACCESS_JUDICIARY",
+        "[LEGALREPRESENTATIVE], LEGAL_REPRESENTATIVE",
+        "[CREATOR], CREATOR",
+        "unknown, UNKNOWN"
+    })
+    void has_correct_values(String expectedValue, RoleName roleName) {
+        assertEquals(expectedValue, roleName.getValue());
+    }
+
     @Test
-    void has_correct_values() {
-        assertEquals("case-manager", RoleName.CASE_MANAGER.getValue());
-        assertEquals("tribunal-caseworker", RoleName.TRIBUNAL_CASEWORKER.getValue());
-        assertEquals("challenged-access-legal-operations", RoleName.CHALLENGED_ACCESS_LEGAL_OPERATIONS.getValue());
-        assertEquals("senior-tribunal-caseworker", RoleName.SENIOR_TRIBUNAL_CASEWORKER.getValue());
-        assertEquals("hearing-centre-admin", RoleName.HEARING_CENTRE_ADMIN.getValue());
-        assertEquals("ctsc", RoleName.CTSC.getValue());
-        assertEquals("ctsc-team-leader", RoleName.CTSC_TEAM_LEADER.getValue());
-        assertEquals("national-business-centre", RoleName.NATIONAL_BUSINESS_CENTRE.getValue());
-        assertEquals("challenged-access-ctsc", RoleName.CHALLENGED_ACCESS_CTSC.getValue());
-        assertEquals("challenged-access-admin", RoleName.CHALLENGED_ACCESS_ADMIN.getValue());
-        assertEquals("judge", RoleName.JUDGE.getValue());
-        assertEquals("senior-judge", RoleName.SENIOR_JUDGE.getValue());
-        assertEquals("leadership-judge", RoleName.LEADERSHIP_JUDGE.getValue());
-        assertEquals("fee-paid-judge", RoleName.FEE_PAID_JUDGE.getValue());
-        assertEquals("lead-judge", RoleName.LEAD_JUDGE.getValue());
-        assertEquals("hearing-judge", RoleName.HEARING_JUDGE.getValue());
-        assertEquals("ftpa-judge", RoleName.FTPA_JUDGE.getValue());
-        assertEquals("hearing-panel-judge", RoleName.HEARING_PANEL_JUDGE.getValue());
-        assertEquals("challenged-access-judiciary", RoleName.CHALLENGED_ACCESS_JUDICIARY.getValue());
-        assertEquals("[LEGALREPRESENTATIVE]", RoleName.LEGAL_REPRESENTATIVE.getValue());
-        assertEquals("[CREATOR]", RoleName.CREATOR.getValue());
-        assertEquals(21, RoleName.values().length);
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+        assertEquals(22, RoleName.values().length);
     }
 }

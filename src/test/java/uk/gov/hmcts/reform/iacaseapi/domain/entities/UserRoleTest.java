@@ -47,6 +47,7 @@ class UserRoleTest {
         "caseworker-ia-homeofficepou, HOME_OFFICE_POU",
         "caseworker-ia-respondentofficer, HOME_OFFICE_GENERIC",
         "citizen, CITIZEN",
+        "unknown, UNKNOWN"
     })
     void has_correct_values(String expectedId, UserRole userRole) {
         assertEquals(expectedId, userRole.toString());
