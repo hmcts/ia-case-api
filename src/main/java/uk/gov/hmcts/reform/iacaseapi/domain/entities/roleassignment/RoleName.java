@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
@@ -29,7 +30,9 @@ public enum RoleName {
     CHALLENGED_ACCESS_JUDICIARY("challenged-access-judiciary"),
     // caseworker-ia-legalrep-solicitor
     LEGAL_REPRESENTATIVE("[LEGALREPRESENTATIVE]"),
-    CREATOR("[CREATOR]");
+    CREATOR("[CREATOR]"),
+    @JsonEnumDefaultValue
+    UNKNOWN("unknown");;
 
     @JsonValue
     private final String value;

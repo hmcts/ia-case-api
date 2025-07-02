@@ -119,6 +119,7 @@ public class RoleAssignmentService {
         return Optional.ofNullable(roleAssignmentResource.getRoleAssignmentResponse()).orElse(Collections.emptyList())
             .stream()
             .map(Assignment::getRoleName)
+            .filter(roleName -> roleName != RoleName.UNKNOWN)
             .map(RoleName::getValue)
             .toList();
     }

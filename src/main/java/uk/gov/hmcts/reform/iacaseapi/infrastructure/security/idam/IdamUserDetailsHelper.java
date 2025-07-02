@@ -16,7 +16,8 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
     @Override
     public UserRole getLoggedInUserRole(UserDetails userDetails) {
 
-        Stream<UserRole> allowedRoles = Arrays.stream(UserRole.values());
+        Stream<UserRole> allowedRoles = Arrays.stream(UserRole.values())
+            .filter(r -> r != UserRole.UNKNOWN);
 
         return allowedRoles
             .filter(r -> userDetails.getRoles().contains(r.toString()))
