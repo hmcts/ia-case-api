@@ -9,7 +9,8 @@ public enum RemissionOption {
     UNDER_18_GET_SUPPORT("under18GetSupportFromLocalAuthority"),
     PARENT_GET_SUPPORT("parentGetSupportFromLocalAuthority"),
     NO_REMISSION("noneOfTheseStatements"),
-    I_WANT_TO_GET_HELP_WITH_FEES("iWantToGetHelpWithFees");
+    I_WANT_TO_GET_HELP_WITH_FEES("iWantToGetHelpWithFees"),
+    RECEIVES_LEGAL_AID("receivesLegalAid");
 
 
     @JsonValue
