@@ -24,12 +24,12 @@ def secrets = [
         ],
         'ia-${env}' : [
 
-                secret('wa-test-caseofficer-a-username', 'TEST_CASEOFFICER_USERNAME'),
-                secret('wa-test-caseofficer-a-password', 'TEST_CASEOFFICER_PASSWORD'),
+                secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+                secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
                 secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
                 secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
-                secret('wa-test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
-                secret('wa-test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+                secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+                secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
 
                 secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
                 secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
@@ -39,8 +39,8 @@ def secrets = [
                 secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
                 secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
                 secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
-                secret('wa-test-judge-username', 'TEST_JUDGE_X_USERNAME'),
-                secret('wa-test-judge-password', 'TEST_JUDGE_X_PASSWORD'),
+                secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+                secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
                 secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
                 secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
                 secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
@@ -191,7 +191,7 @@ enableSecurityScan()
 
     afterSuccess('akschartsinstall') {
         onPR {
-            if (env.ENABLE_WA) {
+            if (env.ENABLE_WA == true) {
                 githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
                 githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
                 env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
