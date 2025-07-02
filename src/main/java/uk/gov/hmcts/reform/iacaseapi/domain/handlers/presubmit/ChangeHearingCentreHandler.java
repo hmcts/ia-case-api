@@ -9,6 +9,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseU
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @Component
+@Slf4j
 public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final CaseManagementLocationService caseManagementLocationService;
@@ -67,10 +70,15 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, refDataHearingCentre.getLabel());
             maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), false)
                 .orElse(NEWPORT);
+            log.info("maybeHearingCentre code: {}, value: {}",
+                    maybeHearingCentre.getEpimsId(), maybeHearingCentre.getValue());
 
+            CaseManagementLocationRefData refDataCaseManagementLocation = caseManagementLocationService.getRefDataCaseManagementLocation(
+                    StaffLocation.getLocation(maybeHearingCentre).getName());
             asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
-                caseManagementLocationService.getRefDataCaseManagementLocation(
-                    StaffLocation.getLocation(maybeHearingCentre).getName()));
+                    refDataCaseManagementLocation);
+            log.info("caseManagementLocationRefData value: {}",
+                    refDataCaseManagementLocation.getBaseLocation().getValue());
         } else {
             maybeHearingCentre =
                 asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
@@ -78,9 +86,12 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
+        log.info("hearingCentre code: {}, value: {}",
+                maybeHearingCentre.getEpimsId(), maybeHearingCentre.getValue());
+        boolean isRemoteHearing = Objects.equals(maybeHearingCentre.getEpimsId(), HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId());
+        log.info("isRemoteHearing? {}", isRemoteHearing);
         asylumCase.write(IS_VIRTUAL_HEARING,
-                Objects.equals(maybeHearingCentre.getEpimsId(), HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId())
-                        ? YesOrNo.YES : YesOrNo.NO);
+                isRemoteHearing ? YesOrNo.YES : YesOrNo.NO);
 
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
