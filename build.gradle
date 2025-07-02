@@ -264,7 +264,9 @@ project.tasks['sonarqube'].group = "Verification"
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+        url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+    }
 }
 
 dependencyManagement {
@@ -355,8 +357,8 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.4'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.104'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.104'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.106'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.106'
 
     implementation group: 'com.google.guava', name: 'guava'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
@@ -369,7 +371,7 @@ dependencies {
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
-    implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2') {
+    implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {

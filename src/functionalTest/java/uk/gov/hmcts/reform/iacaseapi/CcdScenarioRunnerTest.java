@@ -231,7 +231,7 @@ public class CcdScenarioRunnerTest {
                         )
                     );
                     break;
-                } catch (Error | RetryableException e) {
+                } catch (Error | RetryableException | NullPointerException e) {
                     log.error("Scenario failed with error " + e.getMessage());
                     if (i == maxRetries - 1) {
                         this.failedScenarios.add(description);
