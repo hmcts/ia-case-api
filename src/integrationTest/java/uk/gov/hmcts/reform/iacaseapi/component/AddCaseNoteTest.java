@@ -21,7 +21,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub, WithRoleAssignmentStub, WithServiceAuthStub {
+class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
+    WithRoleAssignmentStub, WithServiceAuthStub {
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})

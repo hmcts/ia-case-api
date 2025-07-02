@@ -12,7 +12,7 @@ public interface WithRoleAssignmentStub {
     default void addRoleAssignmentActorStub(WireMockServer server) {
         server.addStubMapping(
             new StubMapping(
-                newRequestPattern(RequestMethod.GET, urlMatching("/amRoleAssignment/am/role-assignments/actors/.*"))
+                newRequestPattern(RequestMethod.GET, urlMatching("/amRoleAssignment/am/role-assignments/actors/[0-9]+"))
                     .build(),
                 aResponse()
                     .withStatus(200)

@@ -145,6 +145,6 @@ class IdamAuthoritiesConverterTest {
             IdentityManagerResponseException.class,
             () -> idamAuthoritiesConverter.convert(jwt)
         );
-        assertEquals("Could not get user details from IDAM", thrown.getMessage());
+        assertEquals("Could not get user details from IDAM or RoleAssignmentService", thrown.getMessage());
     }
 }

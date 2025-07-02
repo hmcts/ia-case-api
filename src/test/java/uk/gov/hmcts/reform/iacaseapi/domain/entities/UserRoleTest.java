@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -50,5 +51,34 @@ class UserRoleTest {
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(29, UserRole.values().length);
+    }
+
+    @Test
+    void get_admin_roles_correct_values() {
+        assertTrue(UserRole.getAdminRoles().contains("caseworker-ia-admofficer"));
+        assertTrue(UserRole.getAdminRoles().contains("hearing-centre-admin"));
+        assertTrue(UserRole.getAdminRoles().contains("ctsc"));
+        assertTrue(UserRole.getAdminRoles().contains("ctsc-team-leader"));
+        assertTrue(UserRole.getAdminRoles().contains("national-business-centre"));
+        assertTrue(UserRole.getAdminRoles().contains("challenged-access-ctsc"));
+        assertTrue(UserRole.getAdminRoles().contains("challenged-access-admin"));
+    }
+
+    @Test
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes_admin_roles() {
+        assertEquals(7, UserRole.getAdminRoles().size());
+    }
+
+    @Test
+    void get_ho_roles_correct_values() {
+        assertTrue(UserRole.getHomeOfficeRoles().contains("caseworker-ia-homeofficeapc"));
+        assertTrue(UserRole.getHomeOfficeRoles().contains("caseworker-ia-homeofficelart"));
+        assertTrue(UserRole.getHomeOfficeRoles().contains("caseworker-ia-homeofficepou"));
+        assertTrue(UserRole.getHomeOfficeRoles().contains("caseworker-ia-respondentofficer"));
+    }
+
+    @Test
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes_ho_roles() {
+        assertEquals(4, UserRole.getHomeOfficeRoles().size());
     }
 }

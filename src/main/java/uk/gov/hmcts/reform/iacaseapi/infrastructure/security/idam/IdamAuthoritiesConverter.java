@@ -57,7 +57,7 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
                 .collect(Collectors.toList());
 
         } catch (FeignException e) {
-            throw new IdentityManagerResponseException("Could not get user details from IDAM", e);
+            throw new IdentityManagerResponseException("Could not get user details from IDAM or RoleAssignmentService", e);
         }
 
     }
