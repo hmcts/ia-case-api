@@ -129,11 +129,10 @@ class RoleAssignmentServiceTest {
         roleAssignmentService.deleteRoleAssignment(assignmentId);
 
         verify(roleAssignmentApi).deleteRoleAssignment(
-            eq(systemAccessToken),
-            eq(serviceToken),
-            eq(assignmentId)
+            systemAccessToken,
+            serviceToken,
+            assignmentId
         );
-
     }
 
     @Test
@@ -178,17 +177,17 @@ class RoleAssignmentServiceTest {
             .build();
 
         when(roleAssignmentApi.getRoleAssignments(
-            eq(accessToken),
-            eq(serviceToken),
-            eq(userId)
+            accessToken,
+            serviceToken,
+            userId
         )).thenReturn(new RoleAssignmentResource(List.of(assignment1, assignment2, assignment3)));
 
         List<String> roles = roleAssignmentService.getAmRolesFromUser(userId, accessToken);
 
         verify(roleAssignmentApi).getRoleAssignments(
-            eq(accessToken),
-            eq(serviceToken),
-            eq(userId)
+            accessToken,
+            serviceToken,
+            userId
         );
         assertTrue(roles.contains(RoleName.CTSC_TEAM_LEADER.getValue()));
         assertTrue(roles.contains(RoleName.CTSC.getValue()));

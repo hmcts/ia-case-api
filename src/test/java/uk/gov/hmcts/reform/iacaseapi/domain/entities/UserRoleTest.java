@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class UserRoleTest {
@@ -15,37 +16,40 @@ class UserRoleTest {
         assertEquals(userRole.toString(), userRole.getId());
     }
 
-    @Test
-    void has_correct_values() {
-        assertEquals("caseworker-ia-caseofficer", UserRole.CASE_OFFICER.toString());
-        assertEquals("tribunal-caseworker", UserRole.TRIBUNAL_CASEWORKER.toString());
-        assertEquals("challenged-access-legal-operations", UserRole.CHALLENGED_ACCESS_LEGAL_OPERATIONS.toString());
-        assertEquals("senior-tribunal-caseworker", UserRole.SENIOR_TRIBUNAL_CASEWORKER.toString());
-        assertEquals("caseworker-ia-admofficer", UserRole.ADMIN_OFFICER.toString());
-        assertEquals("hearing-centre-admin", UserRole.HEARING_CENTRE_ADMIN.toString());
-        assertEquals("ctsc", UserRole.CTSC.toString());
-        assertEquals("ctsc-team-leader", UserRole.CTSC_TEAM_LEADER.toString());
-        assertEquals("national-business-centre", UserRole.NATIONAL_BUSINESS_CENTRE.toString());
-        assertEquals("challenged-access-ctsc", UserRole.CHALLENGED_ACCESS_CTSC.toString());
-        assertEquals("challenged-access-admin", UserRole.CHALLENGED_ACCESS_ADMIN.toString());
-        assertEquals("caseworker-ia-iacjudge", UserRole.IDAM_JUDGE.toString());
-        assertEquals("caseworker-ia-judiciary", UserRole.JUDICIARY.toString());
-        assertEquals("judge", UserRole.JUDGE.toString());
-        assertEquals("senior-judge", UserRole.SENIOR_JUDGE.toString());
-        assertEquals("leadership-judge", UserRole.LEADERSHIP_JUDGE.toString());
-        assertEquals("fee-paid-judge", UserRole.FEE_PAID_JUDGE.toString());
-        assertEquals("lead-judge", UserRole.LEAD_JUDGE.toString());
-        assertEquals("hearing-judge", UserRole.HEARING_JUDGE.toString());
-        assertEquals("ftpa-judge", UserRole.FTPA_JUDGE.toString());
-        assertEquals("hearing-panel-judge", UserRole.HEARING_PANEL_JUDGE.toString());
-        assertEquals("challenged-access-judiciary", UserRole.CHALLENGED_ACCESS_JUDICIARY.toString());
-        assertEquals("caseworker-ia-legalrep-solicitor", UserRole.LEGAL_REPRESENTATIVE.toString());
-        assertEquals("caseworker-ia-system", UserRole.SYSTEM.toString());
-        assertEquals("caseworker-ia-homeofficeapc", UserRole.HOME_OFFICE_APC.toString());
-        assertEquals("caseworker-ia-homeofficelart", UserRole.HOME_OFFICE_LART.toString());
-        assertEquals("caseworker-ia-homeofficepou", UserRole.HOME_OFFICE_POU.toString());
-        assertEquals("caseworker-ia-respondentofficer", UserRole.HOME_OFFICE_GENERIC.toString());
-        assertEquals("citizen", UserRole.CITIZEN.toString());
+    @ParameterizedTest
+    @CsvSource({
+        "caseworker-ia-caseofficer, CASE_OFFICER",
+        "tribunal-caseworker, TRIBUNAL_CASEWORKER",
+        "challenged-access-legal-operations, CHALLENGED_ACCESS_LEGAL_OPERATIONS",
+        "senior-tribunal-caseworker, SENIOR_TRIBUNAL_CASEWORKER",
+        "caseworker-ia-admofficer, ADMIN_OFFICER",
+        "hearing-centre-admin, HEARING_CENTRE_ADMIN",
+        "ctsc, CTSC",
+        "ctsc-team-leader, CTSC_TEAM_LEADER",
+        "national-business-centre, NATIONAL_BUSINESS_CENTRE",
+        "challenged-access-ctsc, CHALLENGED_ACCESS_CTSC",
+        "challenged-access-admin, CHALLENGED_ACCESS_ADMIN",
+        "caseworker-ia-iacjudge, IDAM_JUDGE",
+        "caseworker-ia-judiciary, JUDICIARY",
+        "judge, JUDGE",
+        "senior-judge, SENIOR_JUDGE",
+        "leadership-judge, LEADERSHIP_JUDGE",
+        "fee-paid-judge, FEE_PAID_JUDGE",
+        "lead-judge, LEAD_JUDGE",
+        "hearing-judge, HEARING_JUDGE",
+        "ftpa-judge, FTPA_JUDGE",
+        "hearing-panel-judge, HEARING_PANEL_JUDGE",
+        "challenged-access-judiciary, CHALLENGED_ACCESS_JUDICIARY",
+        "caseworker-ia-legalrep-solicitor, LEGAL_REPRESENTATIVE",
+        "caseworker-ia-system, SYSTEM",
+        "caseworker-ia-homeofficeapc, HOME_OFFICE_APC",
+        "caseworker-ia-homeofficelart, HOME_OFFICE_LART",
+        "caseworker-ia-homeofficepou, HOME_OFFICE_POU",
+        "caseworker-ia-respondentofficer, HOME_OFFICE_GENERIC",
+        "citizen, CITIZEN",
+    })
+    void has_correct_values(String expectedId, UserRole userRole) {
+        assertEquals(expectedId, userRole.toString());
     }
 
     @Test

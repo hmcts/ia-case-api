@@ -16,13 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @Service
 public class MakeAnApplicationTypesProvider {
 
-    private static final String ROLE_ADMIN = "caseworker-ia-admofficer";
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
-    private static final String ROLE_HO_APC = "caseworker-ia-homeofficeapc";
-    private static final String ROLE_HO_LART = "caseworker-ia-homeofficelart";
-    private static final String ROLE_HO_POU = "caseworker-ia-homeofficepou";
     private static final String ROLE_HO_RESPONDENT = "caseworker-ia-respondentofficer";
-    private static final List<String> HO_ROLES = List.of(ROLE_HO_APC, ROLE_HO_LART, ROLE_HO_POU, ROLE_HO_RESPONDENT);
 
     private final UserDetails userDetails;
 

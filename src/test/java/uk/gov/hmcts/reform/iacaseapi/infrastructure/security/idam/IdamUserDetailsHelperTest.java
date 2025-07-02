@@ -29,7 +29,7 @@ class IdamUserDetailsHelperTest {
         "caseworker-ia-system",
         "citizen"
     })
-    public void should_get_logged_in_with_a_valid_user_role(String roleName) {
+    void should_get_logged_in_with_a_valid_user_role(String roleName) {
         List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
         when(userDetails.getRoles()).thenReturn(expectedRoles);
@@ -49,7 +49,7 @@ class IdamUserDetailsHelperTest {
     }
 
     @Test
-    public void should_get_logged_in_user_role_unknown() {
+    void should_get_logged_in_user_role_unknown() {
 
         List<String> expectedRoles = Arrays.asList("caseworker-ia-unknown", "role-2");
 
@@ -67,7 +67,7 @@ class IdamUserDetailsHelperTest {
         "caseworker-ia-homeofficelart",
         "caseworker-ia-homeofficepou"
     })
-    public void should_get_logged_in_user_role_home_office_generic(String roleName) {
+    void should_get_logged_in_user_role_home_office_generic(String roleName) {
         List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
         when(userDetails.getRoles()).thenReturn(expectedRoles);
@@ -86,7 +86,7 @@ class IdamUserDetailsHelperTest {
         "challenged-access-ctsc",
         "challenged-access-admin"
     })
-    public void should_get_logged_in_user_role_admin(String roleName) {
+    void should_get_logged_in_user_role_admin(String roleName) {
         List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
         when(userDetails.getRoles()).thenReturn(expectedRoles);
@@ -109,7 +109,7 @@ class IdamUserDetailsHelperTest {
         "hearing-panel-judge",
         "challenged-access-judiciary"
     })
-    public void should_get_logged_in_user_role_judge(String roleName) {
+    void should_get_logged_in_user_role_judge(String roleName) {
         List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
         when(userDetails.getRoles()).thenReturn(expectedRoles);
@@ -125,7 +125,7 @@ class IdamUserDetailsHelperTest {
         "challenged-access-legal-operations",
         "senior-tribunal-caseworker"
     })
-    public void should_get_logged_in_user_role_case_officer(String roleName) {
+    void should_get_logged_in_user_role_case_officer(String roleName) {
         List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
         when(userDetails.getRoles()).thenReturn(expectedRoles);
