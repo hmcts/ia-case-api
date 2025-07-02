@@ -41,7 +41,7 @@ public enum UserRole {
     HOME_OFFICE_GENERIC("caseworker-ia-respondentofficer"),
     CITIZEN("citizen"),
     @JsonEnumDefaultValue
-    UNKNOWN("unknown");;
+    UNKNOWN("unknown");
 
     @JsonValue
     private final String id;

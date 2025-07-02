@@ -32,7 +32,7 @@ public enum RoleName {
     LEGAL_REPRESENTATIVE("[LEGALREPRESENTATIVE]"),
     CREATOR("[CREATOR]"),
     @JsonEnumDefaultValue
-    UNKNOWN("unknown");;
+    UNKNOWN("unknown");
 
     @JsonValue
     private final String value;
