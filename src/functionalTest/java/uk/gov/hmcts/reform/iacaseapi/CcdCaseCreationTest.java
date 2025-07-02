@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 @Slf4j
 @SpringBootTest()
 @ActiveProfiles("functional")
+@DirtiesContext
 @Disabled
 public class CcdCaseCreationTest {
 
