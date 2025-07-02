@@ -28,12 +28,12 @@ def component = "case-api"
 def secrets = [
         'ia-${env}': [
 
-                secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
-                secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+                secret('wa-test-caseofficer-a-username', 'TEST_CASEOFFICER_USERNAME'),
+                secret('wa-test-caseofficer-a-password', 'TEST_CASEOFFICER_PASSWORD'),
                 secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
                 secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
-                secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
-                secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+                secret('wa-test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+                secret('wa-test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
 
                 secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
                 secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
@@ -49,8 +49,8 @@ def secrets = [
                 secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
                 secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
                 secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
-                secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
-                secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+                secret('wa-test-judge-username', 'TEST_JUDGE_X_USERNAME'),
+                secret('wa-test-judge-password', 'TEST_JUDGE_X_PASSWORD'),
                 secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
                 secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
                 secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
