@@ -374,4 +374,12 @@ public class HandlerUtils {
             .map(ENTRY_CLEARANCE_DECISION::equals)
             .orElse(false);
     }
+
+    public static boolean isAdmin(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
+    public static boolean isAppellantInPersonManual(AsylumCase asylumCase) {
+        return isAdmin(asylumCase) && isAipJourney(asylumCase);
+    }
 }
