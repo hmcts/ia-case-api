@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
@@ -148,8 +150,9 @@ class IdamServiceTest {
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
     }
 
-    @Test
-    void getUserDetails_from_am() {
+    @ParameterizedTest
+    @CsvSource({"empty", "null"})
+    void getUserDetails_from_am(String expectedIdamRoles) {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -162,7 +165,39 @@ class IdamServiceTest {
         UserInfo expecteduUerInfo = new UserInfo(
             expectedEmailAddress,
             expectedId,
-            Collections.emptyList(),
+            expectedIdamRoles.equals("null") ? null : Collections.emptyList(),
+            expectedName,
+            expectedForename,
+            expectedSurname
+        );
+        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+            .thenReturn(expectedAmRoles);
+        UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
+        verify(idamApi).userInfo(expectedAccessToken);
+
+        assertEquals(expectedId, actualUserInfo.getUid());
+        assertEquals(expectedAmRoles, actualUserInfo.getRoles());
+        assertEquals(expectedEmailAddress, actualUserInfo.getEmail());
+        assertEquals(expectedForename, actualUserInfo.getGivenName());
+        assertEquals(expectedSurname, actualUserInfo.getFamilyName());
+    }
+
+    @Test
+    void getUserDetails_from_am_idam_roles_null() {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedAmRoles = Arrays.asList("role-3", "role-4");
+        String expectedEmailAddress = "john.doe@example.com";
+        String expectedForename = "John";
+        String expectedSurname = "Doe";
+        String expectedName = expectedForename + " " + expectedSurname;
+
+        UserInfo expecteduUerInfo = new UserInfo(
+            expectedEmailAddress,
+            expectedId,
+            null,
             expectedName,
             expectedForename,
             expectedSurname

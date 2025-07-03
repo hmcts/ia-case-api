@@ -69,7 +69,10 @@ public class IdamService {
         } catch (Exception e) {
             log.error("Error fetching AM roles for user: {}", userInfo.getUid(), e);
         }
-        List<String> roles = Stream.concat(amRoles.stream(), userInfo.getRoles().stream()).toList();
+        List<String> idamRoles = userInfo.getRoles() == null ?
+            Collections.emptyList() :
+            userInfo.getRoles();
+        List<String> roles = Stream.concat(amRoles.stream(), idamRoles.stream()).toList();
         userInfo.setRoles(roles);
         return userInfo;
     }
