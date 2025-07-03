@@ -36,6 +36,7 @@ java:
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY_VAR: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
   keyVaults:
     ia:
       resourceGroup: ia
@@ -80,7 +81,6 @@ global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
   postgresSecret: postgres
   databaseNamePrefix: "pr-${CHANGE_ID}-"
-
 
 ia-case-payments-api:
   enabled: true #set to true if testing against a local branch

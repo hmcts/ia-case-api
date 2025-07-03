@@ -35,15 +35,13 @@ public class RoleAssignmentService {
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
     private final RoleAssignmentApi roleAssignmentApi;
-    private final IdamService idamService;
 
     public RoleAssignmentService(AuthTokenGenerator serviceAuthTokenGenerator,
                                  RoleAssignmentApi roleAssignmentApi,
-                                 UserDetails userDetails, IdamService idamService) {
+                                 UserDetails userDetails) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.roleAssignmentApi = roleAssignmentApi;
         this.userDetails = userDetails;
-        this.idamService = idamService;
 
     }
 
@@ -124,15 +122,15 @@ public class RoleAssignmentService {
             .toList();
     }
 
-    public void deleteRoleAssignment(String assignmentId) {
+    public void deleteRoleAssignment(String assignmentId, String authorisation) {
         if (assignmentId != null) {
             roleAssignmentApi.deleteRoleAssignment(
-                idamService.getServiceUserToken(),
+                authorisation,
                 serviceAuthTokenGenerator.generate(), assignmentId);
         }
     }
 
-    public void removeCaseManagerRole(String caseId) {
+    public void removeCaseManagerRole(String caseId, String authorisation) {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .grantType(List.of(GrantType.SPECIFIC))
@@ -154,7 +152,7 @@ public class RoleAssignmentService {
             String assignmentId = roleAssignment.get().getId();
             log.info("Removing Case Manager role from user: {} for case ID: {}, assignment ID: {}", actorId, caseId, assignmentId);
 
-            deleteRoleAssignment(assignmentId);
+            deleteRoleAssignment(assignmentId, authorisation);
 
             log.info("Successfully removed Case Manager role from user {} for case ID {}", actorId, caseId);
         } else {
