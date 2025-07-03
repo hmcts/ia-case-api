@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
@@ -143,6 +144,53 @@ class RequestRespondentReviewPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumValueCaptor.capture());
+
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumYesNoCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumValueCaptor.getAllValues();
+        List<YesOrNo> asylumYesNoValues = asylumYesNoCaptor.getAllValues();
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+                .containsSequence(expectedExplanationContains);
+
+        assertThat(
+                asylumYesNoValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)))
+                .isEqualByComparingTo(YesOrNo.YES);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+    }
+
+    @Test
+    void should_prepare_send_direction_fields_detained_aip_manual() {
+
+        final String expectedExplanationContains = "By the date below you must review the appellant’s explanation of case (AEC) and bundle.";
+        final Parties expectedParties = Parties.RESPONDENT;
+        // detained appeals due date 7 calendar days in the future
+        final String expectedDateDue = "2018-11-30";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.ofNullable(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
