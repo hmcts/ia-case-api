@@ -1,0 +1,32 @@
+{
+  "description": "DIAC-1160 Update Case Appellant In Person - Manual",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "appellantInPersonManual",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "No",
+          "hasAddedLegalRepDetails": "Yes",
+          "journeyType": "rep"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You cannot request Appellant in Person - Manual for this appeal"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantsRepresentation": null,
+        "isAdmin": "No",
+        "journeyType": "rep"
+      }
+    }
+  }
+}
