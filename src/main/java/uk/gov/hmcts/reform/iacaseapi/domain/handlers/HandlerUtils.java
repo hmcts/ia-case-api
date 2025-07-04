@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -68,6 +70,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
 
+@Slf4j
 public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
@@ -312,6 +315,7 @@ public class HandlerUtils {
 
     // Assigns value to the field that is used for searching cases from hearing centre
     public static void setSelectedHearingCentreRefDataField(AsylumCase asylumCase, String hearingCentreLabel) {
+        log.info("Setting selectedHearingCentreRefData value to : {}", hearingCentreLabel);
         asylumCase.write(SELECTED_HEARING_CENTRE_REF_DATA, hearingCentreLabel);
     }
 
