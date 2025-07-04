@@ -52,11 +52,21 @@ public class DetentionFacilityEditAppealHandlerTest {
             .thenReturn(Optional.of(DetentionFacility.IRC.getValue()));
         PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
+
+        // case fields that should be cleared
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NOMS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
+
+        // case fields that should not be cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.IRC_NAME);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
+
+        // detention facility not cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.DETENTION_FACILITY);
     }
 
     @Test
@@ -66,8 +76,21 @@ public class DetentionFacilityEditAppealHandlerTest {
             .thenReturn(Optional.of(DetentionFacility.PRISON.getValue()));
         PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
+
+        // case fields that should be cleared
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IRC_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
+
+        // case fields that should not be cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.PRISON_NOMS);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
+
+        // detention facility not cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.DETENTION_FACILITY);
     }
 
     @Test
@@ -77,13 +100,49 @@ public class DetentionFacilityEditAppealHandlerTest {
             .thenReturn(Optional.of(DetentionFacility.OTHER.getValue()));
         PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
+
+        // case fields that should be cleared
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NOMS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IRC_NAME);
+
+        // case fields that should not be cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
+
+        // detention facility not cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.DETENTION_FACILITY);
+
+    }
+
+    @Test
+    void should_remove_irc_prison_details_if_now_other_facility_with_custodial_sentence_edit_appeal() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
+        when(asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of(DetentionFacility.OTHER.getValue()));
+        when(asylumCase.read(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response = detentionFacilityEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+
+        // case fields that should be cleared
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NOMS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IRC_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
+
+        // case fields that should not be cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
+
+        // detention facility not cleared
+        verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.DETENTION_FACILITY);
+
     }
 
     @Test

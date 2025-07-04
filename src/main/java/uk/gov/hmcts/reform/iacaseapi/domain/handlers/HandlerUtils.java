@@ -16,23 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.PRESIDENTIAL_PANEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -236,6 +220,10 @@ public class HandlerUtils {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
+        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
     public static boolean isInternalCase(AsylumCase asylumCase) {
         return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
@@ -373,5 +361,13 @@ public class HandlerUtils {
         return asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)
             .map(ENTRY_CLEARANCE_DECISION::equals)
             .orElse(false);
+    }
+
+    public static boolean isAdmin(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
+    public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
+        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 }

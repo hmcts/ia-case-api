@@ -1,0 +1,40 @@
+{
+  "description": "DIAC-967-updates-detention-address",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=ircName",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "updateDetentionLocation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantInDetention": "Yes",
+          "detentionFacility": "other",
+          "otherDetentionFacilityName": "Some other prison",
+          "appellantAddress": {
+            "County": "Middlesex",
+            "Country": "United Kingdom",
+            "PostCode": "UB3 4FS",
+            "PostTown": "Hayes",
+            "AddressLine1": "Flat 1",
+            "AddressLine2": "Laurina Apartments",
+            "AddressLine3": "10 Carnation Gardens"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "detentionBuilding": "Flat 1",
+        "detentionAddressLines": "Laurina Apartments, 10 Carnation Gardens, Hayes, Middlesex, United Kingdom",
+        "detentionPostcode": "UB3 4FS"
+      }
+    }
+  }
+}

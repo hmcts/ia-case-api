@@ -1947,10 +1947,10 @@ public enum AsylumCaseFieldDefinition {
         "otherDetentionFacilityName", new TypeReference<OtherDetentionFacilityName>(){}),
 
     CUSTODIAL_SENTENCE(
-        "custodialSentence", new TypeReference<YesOrNo>(){}),
+        "releaseDateProvided", new TypeReference<YesOrNo>(){}),
 
     DATE_CUSTODIAL_SENTENCE(
-        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+        "releaseDate", new TypeReference<CustodialSentenceDate>(){}),
 
     DATE_CUSTODIAL_SENTENCE_AO(
         "dateCustodialSentenceAo", new TypeReference<CustodialSentenceDate>(){}),
@@ -2826,6 +2826,17 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    GENERATE_LIST_CMR_TASK_REQUESTED(
+            "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
+
+      DETENTION_BUILDING(
+          "detentionBuilding", new TypeReference<String>(){}),
+
+    DETENTION_ADDRESS_LINES(
+          "detentionAddressLines", new TypeReference<String>(){}),
+
+    DETENTION_POSTCODE(
+          "detentionPostcode", new TypeReference<String>(){})
     ;
 
     private final String value;

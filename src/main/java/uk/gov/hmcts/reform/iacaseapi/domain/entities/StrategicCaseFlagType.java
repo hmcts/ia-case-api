@@ -15,7 +15,8 @@ public enum StrategicCaseFlagType {
     LITIGATION_FRIEND("PF0017", "Litigation friend"),
     LACKING_CAPACITY("PF0018", "Lacking capacity"),
     PRESIDENTIAL_PANEL("CF0011", "Presidential panel"),
-    FOREIGN_NATIONAL_OFFENDER("PF0012", "Foreign national offender");
+    FOREIGN_NATIONAL_OFFENDER("PF0012", "Foreign national offender"),
+    DETAINED_INDIVIDUAL("PF0019", "Detained individual");
 
     @JsonValue
     private final String flagCode;

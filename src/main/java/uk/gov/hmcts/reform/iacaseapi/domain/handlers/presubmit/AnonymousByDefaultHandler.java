@@ -6,19 +6,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.ANONYMITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FlagHandler;
 
 @Component
 class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -52,21 +49,9 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null);
 
         if (appealType == AppealType.PA || appealType == AppealType.RP) {
-            Optional<StrategicCaseFlag> strategicCaseFlagOptional = asylumCase
-                    .read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class);
-
-            createAnonymityFlag(asylumCase, strategicCaseFlagOptional);
+            FlagHandler.activateFlag(asylumCase, CASE_LEVEL_FLAGS, ANONYMITY, systemDateProvider);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private void createAnonymityFlag(AsylumCase asylumCase, Optional<StrategicCaseFlag> strategicCaseFlagOptional) {
-        StrategicCaseFlagService caseFlagService = strategicCaseFlagOptional.map(StrategicCaseFlagService::new)
-            .orElseGet(StrategicCaseFlagService::new);
-
-        if (caseFlagService.activateFlag(ANONYMITY, YesOrNo.YES, systemDateProvider.nowWithTime().toString())) {
-            asylumCase.write(CASE_LEVEL_FLAGS, caseFlagService.getStrategicCaseFlag());
-        }
     }
 }

@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -224,6 +226,46 @@ class ChangeRepresentationConfirmationTest {
     }
 
     @Test
+    void should_revoke_appellant_access_to_case_and_return_confirmation_for_appellant_in_person_manual() {
+
+        String assignmentId = "assignmentId";
+        QueryRequest queryRequest = QueryRequest.builder()
+                .roleType(List.of(RoleType.CASE))
+                .roleName(List.of(RoleName.CREATOR))
+                .roleCategory(List.of(RoleCategory.CITIZEN))
+                .attributes(Map.of(
+                        Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                        Attributes.CASE_TYPE, List.of("Asylum"),
+                        Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
+                )).build();
+
+        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().id(assignmentId).build()));
+
+        when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(CASE_ID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
+
+        PostSubmitCallbackResponse callbackResponse =
+                changeRepresentationConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# You have updated this case to Appellant in Person - Manual");
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next\n\n"
+                        + "This appeal will have to be continued by internal users\n\n");
+
+        verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+    }
+
+    @Test
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
@@ -234,7 +276,8 @@ class ChangeRepresentationConfirmationTest {
 
             if (event == Event.REMOVE_REPRESENTATION
                 || event == Event.REMOVE_LEGAL_REPRESENTATIVE
-                || event == Event.NOC_REQUEST) {
+                || event == Event.NOC_REQUEST
+                || event == Event.APPELLANT_IN_PERSON_MANUAL) {
 
                 assertTrue(canHandle);
             } else {
