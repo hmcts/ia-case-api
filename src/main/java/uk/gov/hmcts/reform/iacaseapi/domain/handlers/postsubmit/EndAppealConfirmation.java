@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Slf4j
@@ -32,9 +33,12 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         + "Contact the respondent to tell them what has changed, including any action they need to take.\n";
 
     private final RoleAssignmentService roleAssignmentService;
+    private final IdamService idamService;
 
-    public EndAppealConfirmation(RoleAssignmentService roleAssignmentService) {
+    public EndAppealConfirmation(RoleAssignmentService roleAssignmentService,
+                                 IdamService idamService) {
         this.roleAssignmentService = roleAssignmentService;
+        this.idamService = idamService;
     }
 
     @Override
@@ -59,7 +63,7 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
             asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class).orElse("");
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseManagerRole(caseId);
+        roleAssignmentService.removeCaseManagerRole(caseId, idamService.getServiceUserToken());
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
