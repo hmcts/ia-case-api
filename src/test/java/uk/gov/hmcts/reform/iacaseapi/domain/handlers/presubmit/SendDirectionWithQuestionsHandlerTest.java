@@ -1,23 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION_WITH_QUESTIONS;
-
-import java.time.LocalDate;
-import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
@@ -32,6 +19,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION_WITH_QUESTIONS;
+
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -42,9 +46,9 @@ class SendDirectionWithQuestionsHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
-    private DateProvider dateProvider;
+    private AsylumCase asylumCase;
     @Mock
     private DirectionAppender directionAppender;
 
@@ -52,33 +56,7 @@ class SendDirectionWithQuestionsHandlerTest {
 
     @BeforeEach
     public void setup() {
-        sendDirectionWithQuestionsHandler = new SendDirectionWithQuestionsHandler(dateProvider, directionAppender);
-    }
-
-    @Test
-    void error_if_direction_due_date_is_today() {
-        setupInvalidDirectionDueDate("2020-02-02");
-    }
-
-    @Test
-    void error_if_direction_due_date_is_in_past() {
-        setupInvalidDirectionDueDate("2020-02-01");
-    }
-
-    private void setupInvalidDirectionDueDate(String directionDueDate) {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(SEND_DIRECTION_WITH_QUESTIONS);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE, String.class))
-            .thenReturn(Optional.of(directionDueDate));
-
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-02-02"));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            sendDirectionWithQuestionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response.getErrors()).containsExactlyInAnyOrderElementsOf(
-            new HashSet<>(singletonList("Direction due date must be in the future")));
+        sendDirectionWithQuestionsHandler = new SendDirectionWithQuestionsHandler(directionAppender);
     }
 
     @Test
@@ -99,8 +77,6 @@ class SendDirectionWithQuestionsHandlerTest {
         );
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
             .thenReturn(Optional.of(singletonList(originalDirection)));
-
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-02-02"));
 
         List<IdValue<ClarifyingQuestion>> clarifyingQuestions = Arrays.asList(
             new IdValue<>("1", new ClarifyingQuestion("question 1")),
@@ -136,6 +112,8 @@ class SendDirectionWithQuestionsHandlerTest {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_QUESTIONS))
             .thenReturn(Optional.of(clarifyingQuestions));
+
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             sendDirectionWithQuestionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
