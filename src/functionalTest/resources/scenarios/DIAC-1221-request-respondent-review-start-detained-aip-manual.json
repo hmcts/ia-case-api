@@ -11,7 +11,7 @@
         "replacements": {
           "appellantInDetention": "Yes",
           "isAdmin": "Yes",
-          "journeyType": "aip",
+          "appellantsRepresentation": "Yes",
           "homeOfficeSearchStatus": "SUCCESS",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
