@@ -12,7 +12,7 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "master"
+def dmnBranch = "pr-490"
 def bpmnBranch = "master"
 
 def secrets = [
