@@ -347,6 +347,7 @@ security:
       - "updateTribunalDecision"
       - "generateListCmrTask"
       - "markAppealAsDetained"
+      - "appellantInPersonManual"
 
     caseworker-ia-admofficer:
       - "startAppeal"
@@ -409,6 +410,7 @@ security:
       - "progressMigratedCase"
       - "generateListCmrTask"
       - "hearingCancelled"
+      - "appellantInPersonManual"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
