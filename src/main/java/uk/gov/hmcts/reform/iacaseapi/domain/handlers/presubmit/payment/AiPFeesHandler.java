@@ -196,15 +196,6 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     }
                     break;
 
-                case RECEIVES_LEGAL_AID:
-                    asylumCase.write(REMISSION_OPTION, RemissionOption.RECEIVES_LEGAL_AID);
-                    asylumCase.write(FEE_REMISSION_TYPE, "Receives legal aid");
-                    asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-                    asylumCase.clear(HELP_WITH_FEES_OPTION);
-                    asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-                    asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-                    break;
-
                 default:
                     break;
 

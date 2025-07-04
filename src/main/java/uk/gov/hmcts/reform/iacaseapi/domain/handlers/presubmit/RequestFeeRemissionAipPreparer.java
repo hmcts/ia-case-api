@@ -219,14 +219,6 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                         existingRemissionDetails, remissionOption.toString(), helpWithFeesOption.toString(), helpWithFeesRefNumber);
                 break;
 
-            case RECEIVES_LEGAL_AID:
-                String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)
-                        .orElse("");
-                previousRemissionDetails = remissionDetailsAppender.appendLegalAidRemissionDetails(
-                        existingRemissionDetails, remissionOption.toString(), legalAidAccountNumber);
-                break;
-
-
             default:
                 break;
         }
