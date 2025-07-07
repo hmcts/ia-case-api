@@ -75,8 +75,14 @@ class RequestCaseBuildingPreparerTest {
     @ParameterizedTest
     @MethodSource("caseTypeScenarios")
     void should_prepare_send_direction_fields(YesOrNo yesOrNo, Parties expectedParties) {
-        final String expectedExplanationContains =
-            "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
+        String expectedExplanationContains;
+        if (yesOrNo == YES) {
+            // match detained direction text
+            expectedExplanationContains = "The form and content of this ASA must comply with the terms of Practice Direction";
+        } else {
+            // match non-detained direction text
+            expectedExplanationContains = "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
+        }
 
         final String expectedDueDate = "2019-10-08";
 
@@ -120,8 +126,14 @@ class RequestCaseBuildingPreparerTest {
         YesOrNo isLegallyRepresentedEjp,
         Parties party
     ) {
-        final String expectedExplanationContains =
-            "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
+        String expectedExplanationContains;
+        if (appellantInDetention == YES) {
+            // match detained direction text
+            expectedExplanationContains = "The form and content of this ASA must comply with the terms of Practice Direction";
+        } else {
+            // match non-detained direction text
+            expectedExplanationContains = "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
+        }
 
         final String expectedDueDate = "2019-10-08";
 
@@ -247,7 +259,7 @@ class RequestCaseBuildingPreparerTest {
     void should_return_current_date_plus_9_days_when_submission_is_an_ada_case() {
 
         final String expectedExplanationContains =
-                "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
+                "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2023-02-16";
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedDueDate).atStartOfDay(ZoneOffset.UTC);
