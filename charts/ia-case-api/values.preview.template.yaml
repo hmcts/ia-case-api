@@ -13,7 +13,7 @@ java:
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version.
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
-    IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+    IA_CASE_NOTIFICATIONS_API_URL: http://ia-case-notifications-api-pr-1376.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
