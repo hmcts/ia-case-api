@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.HARMONDSWORTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
@@ -86,7 +85,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 // for detained non-ADA non-AAA cases, set Hearing Centre according to Detention Facility
                 hearingCentre = getHearingCentreFromDetentionFacilityName(asylumCase);
             } else {
-                //assign Hearing Centre from post code or use default HC if post code is unknown
+                // assign Hearing Centre from post code or use default HC if post code is unknown
                 hearingCentre = getHearingCentreFromPostcode(asylumCase);
             }
 
@@ -114,7 +113,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
     private HearingCentre getHearingCentreFromPostcode(AsylumCase asylumCase) {
         Optional<String> optionalAppellantPostcode;
-        if(isAppellantInDetention(asylumCase)) {
+        if (isAppellantInDetention(asylumCase)) {
             optionalAppellantPostcode = asylumCase.read(DETENTION_POSTCODE, String.class);
         } else {
             optionalAppellantPostcode = getAppealPostcode(asylumCase);
