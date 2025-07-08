@@ -104,6 +104,7 @@ ia-case-payments-api:
       PAY_CALLBACK_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -154,6 +155,7 @@ ia-case-documents-api:
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -223,6 +225,7 @@ ia-case-notifications-api:
       CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     keyVaults:
       ia:
@@ -471,6 +474,7 @@ ia-timed-event-service:
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       POSTGRES_CONNECTION_OPTIONS: ""
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     postgresql:
       auth:
         username: ia_tes
@@ -516,6 +520,7 @@ ia-home-office-integration-api:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -1454,6 +1459,7 @@ ia-hearings-api:
       HMC_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
 
 ia-cron-hearings-processor:
   enabled: true
