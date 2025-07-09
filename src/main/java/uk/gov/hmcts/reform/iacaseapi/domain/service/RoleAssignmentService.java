@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.singletonList;
 
+import feign.FeignException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -107,6 +109,7 @@ public class RoleAssignmentService {
         );
     }
 
+    @Retryable(include = FeignException.class)
     public List<String> getAmRolesFromUser(String actorId,
                                            String authorization) {
         RoleAssignmentResource roleAssignmentResource = roleAssignmentApi.getRoleAssignments(
