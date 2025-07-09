@@ -22,7 +22,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '10.0.4'
     id 'org.sonarqube' version '6.2.0.5505'
     id 'org.springframework.boot' version '2.7.18'
-    id 'uk.gov.hmcts.java' version '0.12.66'
+    id 'uk.gov.hmcts.java' version '0.12.67'
     id 'au.com.dius.pact' version '4.6.17'
     id "io.freefair.lombok" version "6.6.3"
 }
@@ -36,8 +36,8 @@ apply plugin: 'idea'
 def versions = [
         reformLogging      : '6.1.9',
         serenity           : '3.9.8',
-        junit              : '5.13.2',
-        junitPlatform      : '1.13.2',
+        junit              : '5.13.3',
+        junitPlatform      : '1.13.3',
         sonarPitest        : '0.5',
         pitest             : '1.9.0',
         restAssured        : '5.5.5'
@@ -437,7 +437,7 @@ dependencies {
 
     testImplementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
 
-    testImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.0'
+    testImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
     testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
     testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version:  '4.5.14'
 
