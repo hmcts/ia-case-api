@@ -131,10 +131,10 @@ class EventTest {
         assertEquals("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString());
         assertEquals("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString());
         assertEquals("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString());
-        assertEquals("triggerCmrUpdated", Event.TRIGGER_CMR_UPDATED.toString());
+        assertEquals("cmrReListing", Event.CMR_RE_LISTING.toString());
         assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
-        assertEquals("triggerCmrListed", Event.TRIGGER_CMR_LISTED.toString());
+        assertEquals("cmrListing", Event.CMR_LISTING.toString());
         assertEquals("decisionWithoutHearingListed", Event.DECISION_WITHOUT_HEARING_LISTED.toString());
         assertEquals("updateDetentionLocation", Event.UPDATE_DETENTION_LOCATION.toString());
         assertEquals("applyForCosts", Event.APPLY_FOR_COSTS.toString());
@@ -157,11 +157,14 @@ class EventTest {
         assertEquals("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString());
         assertEquals("refundConfirmation", Event.REFUND_CONFIRMATION.toString());
         assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
+        assertEquals("UpdateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
+        assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
         assertEquals("generateListCmrTask", Event.GENERATE_LIST_CMR_TASK.toString());
+        assertEquals("appellantInPersonManual", Event.APPELLANT_IN_PERSON_MANUAL.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(153, Event.values().length);
+        assertEquals(156, Event.values().length);
     }
 }

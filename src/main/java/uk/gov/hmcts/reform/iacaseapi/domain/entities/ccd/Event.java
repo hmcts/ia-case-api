@@ -146,18 +146,21 @@ public enum Event {
     ARIA_CREATE_CASE("ariaCreateCase"),
     PROGRESS_MIGRATED_CASE("progressMigratedCase"),
     REFUND_CONFIRMATION("refundConfirmation"),
+    HEARING_CANCELLED("hearingCancelled"),
 
     UPDATE_INTERPRETER_BOOKING_STATUS("updateInterpreterBookingStatus"),
     UPDATE_INTERPRETER_DETAILS("updateInterpreterDetails"),
     UPDATE_HEARING_REQUEST("updateHearingRequest"),
     HANDLE_HEARING_EXCEPTION("handleHearingException"),
-    TRIGGER_CMR_UPDATED("triggerCmrUpdated"),
+    CMR_RE_LISTING("cmrReListing"),
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
-    TRIGGER_CMR_LISTED("triggerCmrListed"),
+    CMR_LISTING("cmrListing"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
+    UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
+    APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
