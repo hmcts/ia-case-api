@@ -511,6 +511,7 @@ security:
       - "ariaCreateCase"
       - "revokeCaseAccess"
       - "UpdateNextHearingInfo"
+      - "removeCaseManagerBulk"
       - "hearingCancelled"
     caseworker-ia-internal:
       - "revokeCaseAccess"
