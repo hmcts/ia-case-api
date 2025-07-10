@@ -29,6 +29,7 @@ public class PartyFlagIdValue {
         this.value = value;
     }
 
+
     public String getPartyId() {
         requireNonNull(partyId);
         return partyId;
