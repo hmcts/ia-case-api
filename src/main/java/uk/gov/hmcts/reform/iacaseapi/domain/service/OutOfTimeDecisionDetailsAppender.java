@@ -2,20 +2,24 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
-@Setter
-@Getter
 public class OutOfTimeDecisionDetailsAppender {
 
     private List<IdValue<OutOfTimeDecisionDetails>> allOutOfTimeDecisionDetails;
 
-    public List<IdValue<OutOfTimeDecisionDetails>> append(
+    public synchronized List<IdValue<OutOfTimeDecisionDetails>> getAllOutOfTimeDecisionDetails() {
+        return allOutOfTimeDecisionDetails;
+    }
+
+    public synchronized void setAllOutOfTimeDecisionDetails(List<IdValue<OutOfTimeDecisionDetails>> allOutOfTimeDecisionDetails) {
+        this.allOutOfTimeDecisionDetails = allOutOfTimeDecisionDetails;
+    }
+
+    public synchronized List<IdValue<OutOfTimeDecisionDetails>> append(
         List<IdValue<OutOfTimeDecisionDetails>> existingOutOfTimeDecisionDetails,
         OutOfTimeDecisionDetails outOfTimeDecisionDetails
     ) {
