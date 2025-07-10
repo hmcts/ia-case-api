@@ -159,11 +159,12 @@ class EventTest {
         assertEquals("revokeCaseAccess", Event.REVOKE_CASE_ACCESS.toString());
         assertEquals("UpdateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
         assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
+        assertEquals("removeCaseManagerBulk", Event.REMOVE_CASE_MANAGER_BULK.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(154, Event.values().length);
+        assertEquals(155, Event.values().length);
     }
 }
