@@ -42,13 +42,12 @@ public class AppellantInPersonManualPreparer implements PreSubmitCallbackHandler
                         .getCaseData();
 
         boolean isAdmin = HandlerUtils.isAdmin(asylumCase);
-        boolean hasAddedLegalRepDetails = HandlerUtils.hasAddedLegalRepDetails(asylumCase);
         boolean isRepJourney = HandlerUtils.isRepJourney(asylumCase);
+        boolean hasAddedLegalRepDetails = HandlerUtils.hasAddedLegalRepDetails(asylumCase);
 
         if (isAdmin || (hasAddedLegalRepDetails && isRepJourney)) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
             response.addError("You cannot request Appellant in Person - Manual for this appeal");
-
             return response;
         }
 
