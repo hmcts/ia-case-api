@@ -109,6 +109,7 @@ public class RemoveCaseManagerBulkHandlerTest {
         assertEquals("123", capturedCaseIds.get(0));
         assertEquals("456", capturedCaseIds.get(1));
         assertEquals("789", capturedCaseIds.get(2));
+        verify(asylumCase).clear(REMOVE_CASE_MANAGER_CASE_ID_LIST);
     }
 
 }

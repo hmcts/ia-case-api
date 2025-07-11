@@ -47,6 +47,7 @@ public class RemoveCaseManagerBulkHandler implements PreSubmitCallbackHandler<As
             .orElse("");
         Arrays.stream(removeCaseManageCaseIdList.split(","))
             .forEach(roleAssignmentService::removeCaseManagerRole);
+        asylumCase.clear(REMOVE_CASE_MANAGER_CASE_ID_LIST);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
