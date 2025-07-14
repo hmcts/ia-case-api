@@ -124,15 +124,15 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                     log.error("Unable to change representation (apply noc) for case id {}. Cause: {}",
                             callback.getCaseDetails().getId(), e);
                 }
-            }
 
-            postSubmitResponse.setConfirmationBody(
-                "### Something went wrong\n\n"
-                + "You have not stopped representing the appellant in this appeal.\n\n"
-                + "Use the [stop representing a client](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId()
-                + "/trigger/removeRepresentation/removeRepresentationSingleFormPageWithComplex) feature to try again."
-            );
+                postSubmitResponse.setConfirmationBody(
+                        "### Something went wrong\n\n"
+                                + "You have not stopped representing the appellant in this appeal.\n\n"
+                                + "Use the [stop representing a client](/case/IA/Asylum/"
+                                + callback.getCaseDetails().getId()
+                                + "/trigger/removeRepresentation/removeRepresentationSingleFormPageWithComplex) feature to try again."
+                );
+            }
         }
 
         return postSubmitResponse;
