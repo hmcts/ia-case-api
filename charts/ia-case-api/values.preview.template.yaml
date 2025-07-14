@@ -1459,7 +1459,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
+    image: hmctspublic.azurecr.io/ia/hearings-api:pr-502
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
