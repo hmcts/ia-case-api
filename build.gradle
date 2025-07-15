@@ -434,7 +434,7 @@ dependencies {
     }
 
     testImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
-    testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
+    testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
     testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version:  '4.5.14'
 
 
