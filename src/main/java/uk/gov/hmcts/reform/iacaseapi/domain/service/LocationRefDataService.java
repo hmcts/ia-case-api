@@ -87,7 +87,8 @@ public class LocationRefDataService {
     }
 
     public String getHearingCentreAddress(HearingCentre hearingCentre) {
-        if (Objects.equals(hearingCentre, REMOTE_HEARING)) {
+        if (Objects.equals(hearingCentre, REMOTE_HEARING)
+                && hearingCentre != HearingCentre.IAC_NATIONAL_VIRTUAL) {
             return "Remote hearing";
         }
 

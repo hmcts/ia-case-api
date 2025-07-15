@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
@@ -105,7 +106,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        // TODO isVirtualHearing() is "Yes", update payload?
         if (isCaseUsingLocationRefData(asylumCase)) {
             DynamicList listingLocation = asylumCase.read(LISTING_LOCATION, DynamicList.class)
                 .orElseThrow(() -> new IllegalStateException("Listing location is missing"));
@@ -117,6 +117,12 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                     String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
                         listingLocationId)));
             asylumCase.write(LIST_CASE_HEARING_CENTRE, listCaseHearingCentre);
+
+            if (HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId().equals(listingLocationId)) {
+                asylumCase.write(IS_VIRTUAL_HEARING, YesOrNo.YES);
+            } else {
+                asylumCase.write(IS_VIRTUAL_HEARING, NO);
+            }
 
             if (locationRefDataService.isCaseManagementLocation(listingLocationId)) {
                 HearingCentre hearingCentre = HearingCentre.fromEpimsId(listingLocationId, false)
@@ -157,12 +163,19 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 if (!hearingCentreFinder.hearingCentreIsActive(hearingCentre)) {
                     asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
                 }
-            } else if (!hearingCentreFinder.hearingCentreIsActive(listCaseHearingCentre)) {
+                asylumCase.write(IS_VIRTUAL_HEARING, YesOrNo.NO);
+            } else if (HearingCentre.IAC_NATIONAL_VIRTUAL.equals(listCaseHearingCentre)) {
+                asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.IAC_NATIONAL_VIRTUAL);
+                asylumCase.write(HEARING_CENTRE, listCaseHearingCentre);
+                asylumCase.write(IS_VIRTUAL_HEARING, YesOrNo.YES);
+            }  else if (!hearingCentreFinder.hearingCentreIsActive(listCaseHearingCentre)) {
                 asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
                 asylumCase.write(HEARING_CENTRE, HearingCentre.NEWPORT);
+                asylumCase.write(IS_VIRTUAL_HEARING, YesOrNo.NO);
             } else if (!hearingCentreFinder.isListingOnlyHearingCentre(listCaseHearingCentre)) {
                 //Should also update the designated hearing centre
                 asylumCase.write(HEARING_CENTRE, listCaseHearingCentre);
+                asylumCase.write(IS_VIRTUAL_HEARING, YesOrNo.NO);
             }
 
             asylumCase.write(LIST_CASE_HEARING_CENTRE_ADDRESS, locationRefDataService
