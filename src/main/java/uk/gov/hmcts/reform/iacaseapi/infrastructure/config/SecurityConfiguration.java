@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SpringAuthorizedRol
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration {
 
     private final List<String> anonymousPaths = new ArrayList<>();
@@ -47,7 +47,7 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().mvcMatchers(
+        return (web) -> web.ignoring().requestMatchers(
             anonymousPaths
                 .stream()
                 .toArray(String[]::new)
@@ -70,7 +70,7 @@ public class SecurityConfiguration {
             .csrf().disable()
             .formLogin().disable()
             .logout().disable()
-            .authorizeRequests().anyRequest().authenticated()
+            .authorizeHttpRequests().anyRequest().authenticated()
             .and()
             .oauth2ResourceServer()
             .jwt()

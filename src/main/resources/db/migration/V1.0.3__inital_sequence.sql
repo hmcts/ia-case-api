@@ -4,7 +4,7 @@
 INSERT INTO ia_case_api.appeal_reference_numbers (
   case_id,
   type,
-  year,
+  "year",
   sequence
 ) VALUES (
   -1,
@@ -16,7 +16,7 @@ INSERT INTO ia_case_api.appeal_reference_numbers (
 INSERT INTO ia_case_api.appeal_reference_numbers (
   case_id,
   type,
-  year,
+  "year",
   sequence
 ) VALUES (
   -2,

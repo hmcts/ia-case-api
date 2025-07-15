@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.iacaseapi.Application;
+import uk.gov.hmcts.reform.iacaseapi.SimpleRequestLoggingFilter;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
 
@@ -63,9 +65,8 @@ public abstract class SpringBootIntegrationTest {
     }
 
     @BeforeEach
-    void setUp() {
-        WebRequestTrackingFilter filter;
-        filter = new WebRequestTrackingFilter();
+    void setUp() throws ServletException {
+        Filter filter = new SimpleRequestLoggingFilter();
         filter.init(new MockFilterConfig());
         mockMvc = webAppContextSetup(wac).addFilters(filter).build();
     }

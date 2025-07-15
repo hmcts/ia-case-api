@@ -21,7 +21,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '10.0.3'
     id 'org.sonarqube' version '6.0.1.5171'
-    id 'org.springframework.boot' version '2.7.18'
+    id 'org.springframework.boot' version '3.0.13'
     id 'uk.gov.hmcts.java' version '0.12.43'
     id 'au.com.dius.pact' version '4.2.14'
     id "io.freefair.lombok" version "6.6.3"
@@ -34,11 +34,13 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-        reformLogging      : '6.0.1',
+        reformLogging      : '6.1.9',
         serenity           : '3.6.22',
         junit              : '5.8.2',
         junitPlatform      : '1.7.2',
         sonarPitest        : '0.5',
+        springStarter      : '3.0.13',
+        springCloud        : '4.3.0',
         pitest             : '1.9.0',
         restAssured        : '5.3.1'
 ]
@@ -209,7 +211,7 @@ task fortifyScan(type: JavaExec, description: 'Run fortify scan.')  {
 project.ext {
     pacticipant = 'ia_caseApi'
     pacticipantVersion = getCheckedOutGitCommitHash()
-    set('springCloudVersion', "2021.0.3")
+    set('springCloudVersion', "2022.0.5")
 }
 
 jacoco {
@@ -284,7 +286,7 @@ dependencyManagement {
             entry 'snakeyaml'
         }
 
-        dependencySet(group: 'commons-fileupload', version: '1.6') {
+        dependencySet(group: 'commons-fileupload', version: '1.6.0') {
             entry 'commons-fileupload'
         }
 
@@ -322,19 +324,20 @@ dependencies {
             replacedBy("org.apache.groovy:groovy-json", "conflicts in current rest-assured version")
         }
     }
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springStarter
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
     implementation group: 'org.springframework.security', name: 'spring-security-test'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springStarter
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springStarter
     implementation group: 'org.springframework', name: 'spring-context-support'
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core'
@@ -344,6 +347,7 @@ dependencies {
     implementation group: 'org.flywaydb', name: 'flyway-core'
     implementation group: 'org.yaml', name: 'snakeyaml'
     implementation group: 'org.apache.commons', name: 'commons-lang3'
+    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
 
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
     implementation (group: 'net.minidev', name: 'json-smart', version: '2.4.10'){
@@ -363,8 +367,8 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
 
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.13'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.13'
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
@@ -374,12 +378,13 @@ dependencies {
     implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud) {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: versions.springCloud) {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
+
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
@@ -393,10 +398,6 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
 
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.0.0'){
-        exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
-    }
-
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
@@ -408,16 +409,14 @@ dependencies {
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
     testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
 
-    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springStarter
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.3.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
 
-    testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.6') {
-        exclude group: "com.github.tomakehurst", module: "wiremock-standalone"
-    }
+    testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloud)
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
     testImplementation(group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured)
@@ -444,7 +443,7 @@ dependencies {
     //pact contract testing
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.2.14'
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
-    contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springStarter
     contractTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
     contractTestRuntime group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
 

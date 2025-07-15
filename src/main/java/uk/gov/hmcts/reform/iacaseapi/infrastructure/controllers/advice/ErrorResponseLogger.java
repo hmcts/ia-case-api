@@ -20,7 +20,7 @@ public class ErrorResponseLogger {
             String responseBody = cause.getResponseBodyAsString();
 
             log.error("Error returned with status: {}. \nWith response body: {}",
-                cause.getRawStatusCode(),
+                cause.getStatusCode().value(),
                 responseBody.contains("{\"data\":") ? "" : responseBody);
         }
 

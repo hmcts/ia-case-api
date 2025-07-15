@@ -83,7 +83,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.CREATED);
 
         ccdCaseAssignment.assignAccessToCase(callback);
 
@@ -142,7 +142,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.NO_CONTENT.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -163,7 +163,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.CREATED);
 
         ccdCaseAssignment.applyNoc(callback);
 

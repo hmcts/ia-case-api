@@ -98,7 +98,7 @@ public class CcdUpdater {
             );
         }
 
-        log.info("Http status received from CCD API; {}", response.getStatusCodeValue());
+        log.info("Http status received from CCD API; {}", response.getStatusCode().value());
 
     }
 }

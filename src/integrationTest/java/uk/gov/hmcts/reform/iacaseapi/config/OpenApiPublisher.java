@@ -4,7 +4,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,11 +20,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
+import uk.gov.hmcts.reform.iacaseapi.SimpleRequestLoggingFilter;
 
 /**
  * Built-in feature which saves service's swagger specs in temporary directory.
@@ -36,10 +45,12 @@ class OpenApiPublisher {
     @Autowired
     private WebApplicationContext wac;
 
+    @MockBean
+    private ServiceAuthFilter serviceAuthFilter;
+
     @BeforeEach
-    void setUp() {
-        WebRequestTrackingFilter filter;
-        filter = new WebRequestTrackingFilter();
+    void setUp() throws ServletException {
+        Filter filter = new SimpleRequestLoggingFilter();
         filter.init(new MockFilterConfig());
         mvc = webAppContextSetup(wac).addFilters(filter).build();
     }

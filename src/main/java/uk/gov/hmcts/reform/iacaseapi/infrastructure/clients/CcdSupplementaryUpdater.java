@@ -94,7 +94,7 @@ public class CcdSupplementaryUpdater {
                                 Object.class
                         );
 
-                log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCodeValue());
+                log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCode().value());
             } catch (RestClientResponseException e) {
                 log.info("Couldn't update CCD case supplementary data using API: [{}]", url, e);
             }

@@ -53,7 +53,7 @@ public class ErrorResponseLoggerTest {
 
         String jsonResponseBody = "{\"succeeded\":false}";
 
-        when(restClientResponseException.getRawStatusCode()).thenReturn(HttpStatus.BAD_GATEWAY.value());
+        when(restClientResponseException.getStatusCode()).thenReturn(HttpStatus.BAD_GATEWAY);
         when(restClientResponseException.getResponseBodyAsString()).thenReturn(jsonResponseBody);
 
         errorResponseLogger.maybeLogException(restClientResponseException);
@@ -66,7 +66,7 @@ public class ErrorResponseLoggerTest {
                         + ". \nWith response body: "
                         + jsonResponseBody);
 
-        verify(restClientResponseException).getRawStatusCode();
+        verify(restClientResponseException).getStatusCode().value();
         verify(restClientResponseException).getResponseBodyAsString();
     }
 
@@ -75,7 +75,7 @@ public class ErrorResponseLoggerTest {
 
         String jsonResponseBody = "{\"data\": {\"appellantGivenNames\":\"Test\",\"appellantFamilyName\":\"User\"}}";
 
-        when(restClientResponseException.getRawStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        when(restClientResponseException.getStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
         when(restClientResponseException.getResponseBodyAsString()).thenReturn(jsonResponseBody);
 
         errorResponseLogger.maybeLogException(restClientResponseException);
@@ -88,7 +88,7 @@ public class ErrorResponseLoggerTest {
                         + HttpStatus.INTERNAL_SERVER_ERROR.value()
                         + ". \nWith response body: ");
 
-        verify(restClientResponseException).getRawStatusCode();
+        verify(restClientResponseException).getStatusCode().value();
         verify(restClientResponseException).getResponseBodyAsString();
     }
 
