@@ -2843,6 +2843,12 @@ public enum AsylumCaseFieldDefinition {
 
     DETENTION_REMOVAL_REASON("detentionRemovalReason",
             new TypeReference<String>(){}),
+
+    REASON_APPELLANT_WAS_DETAINED("addReasonAppellantWasDetained",
+            new TypeReference<String>(){}),
+
+    APPELLANT_DETAINED_DATE("appellantDetainedDate",
+            new TypeReference<String>(){}),
     ;
 
     private final String value;
