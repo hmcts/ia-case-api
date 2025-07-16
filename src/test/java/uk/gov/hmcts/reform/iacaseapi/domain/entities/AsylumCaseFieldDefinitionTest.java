@@ -32,7 +32,8 @@ class AsylumCaseFieldDefinitionTest {
                 MANUAL_UPDATE_HEARING_REQUIRED,
                 MANUAL_CREATE_HEARING_REQUIRED,
                 CUSTODIAL_SENTENCE,
-                DATE_CUSTODIAL_SENTENCE
+                DATE_CUSTODIAL_SENTENCE,
+                REASON_APPELLANT_WAS_DETAINED
             ).contains(val))
             .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
                 .isEqualTo(v.value()));
