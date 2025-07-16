@@ -117,7 +117,8 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                                 + "The appellant's case access has not been revoked for this appeal.\n\n"
                 );
             } else {
-                if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
+                if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())
+                        || isAipManualEvent(callback.getEvent())) {
                     log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
                             callback.getCaseDetails().getId(), e);
                 } else {
