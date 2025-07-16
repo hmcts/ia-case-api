@@ -12,6 +12,7 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
+
 def dmnBranch = "feature/detained-appeals"
 def bpmnBranch = "feature/detained-appeals"
 
