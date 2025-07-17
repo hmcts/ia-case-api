@@ -74,7 +74,6 @@ class MarkAppealAsDetainedHandlerTest {
         verify(asylumCase).clear(CONTACT_PREFERENCE);
         verify(asylumCase).clear(EMAIL);
         verify(asylumCase).clear(MOBILE_NUMBER);
-
     }
 
     @Test
