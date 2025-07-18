@@ -348,7 +348,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "appellantInPersonManual"
-
+      - "removeDetainedStatus"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
