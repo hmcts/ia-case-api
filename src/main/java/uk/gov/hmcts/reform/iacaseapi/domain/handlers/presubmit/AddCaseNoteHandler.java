@@ -9,7 +9,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -21,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
+@Slf4j
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -81,6 +85,12 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
             buildFullName(),
             dateProvider.now().toString()
         );
+
+         log.info("----------asylumCase777");
+         Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+         log.info("{}", appealTypeOpt);
+         log.info("----------asylumCase888");
+
 
         caseNoteDocument.ifPresent(newCaseNote::setCaseNoteDocument);
 
