@@ -70,15 +70,11 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             HandlerUtils.setSelectedHearingCentreRefDataField(asylumCase, refDataHearingCentre.getLabel());
             maybeHearingCentre = HearingCentre.fromEpimsId(refDataHearingCentre.getCode(), false)
                 .orElse(NEWPORT);
-            log.info("maybeHearingCentre code: {}, value: {}",
-                    maybeHearingCentre.getEpimsId(), maybeHearingCentre.getValue());
 
             CaseManagementLocationRefData refDataCaseManagementLocation = caseManagementLocationService.getRefDataCaseManagementLocation(
                     StaffLocation.getLocation(maybeHearingCentre).getName());
             asylumCase.write(CASE_MANAGEMENT_LOCATION_REF_DATA,
                     refDataCaseManagementLocation);
-            log.info("caseManagementLocationRefData value: {}",
-                    refDataCaseManagementLocation.getBaseLocation().getValue());
         } else {
             maybeHearingCentre =
                 asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
@@ -86,12 +82,8 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
-        log.info("hearingCentre code: {}, value: {}",
-                maybeHearingCentre.getEpimsId(), maybeHearingCentre.getValue());
-        boolean isRemoteHearing = Objects.equals(maybeHearingCentre.getEpimsId(), HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId());
-        log.info("isRemoteHearing? {}", isRemoteHearing);
-        asylumCase.write(IS_VIRTUAL_HEARING,
-                isRemoteHearing ? YesOrNo.YES : YesOrNo.NO);
+        boolean isVirtualHearing = Objects.equals(maybeHearingCentre.getEpimsId(), HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId());
+        asylumCase.write(IS_VIRTUAL_HEARING, isVirtualHearing ? YesOrNo.YES : YesOrNo.NO);
 
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
