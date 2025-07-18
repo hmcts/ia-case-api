@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AllocateTheCaseConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 import java.util.ArrayList;
