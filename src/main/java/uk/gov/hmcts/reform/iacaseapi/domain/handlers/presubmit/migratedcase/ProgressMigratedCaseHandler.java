@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.migratedcase;
 
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AllocateTheCaseConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PROGRESS_M
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 
+@Slf4j
 @Component
 public class ProgressMigratedCaseHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
@@ -57,6 +61,9 @@ public class ProgressMigratedCaseHandler implements PreSubmitCallbackStateHandle
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        log.info("PreSubmitCallbackResponse ProgressMigratedCaseHandler for event: {}", callback.getEvent());
+
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         addCaseNotes(asylumCase);

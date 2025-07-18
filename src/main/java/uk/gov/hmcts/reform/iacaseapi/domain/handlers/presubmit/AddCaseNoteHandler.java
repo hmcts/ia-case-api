@@ -9,9 +9,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -25,12 +25,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final Logger log = getLogger(AddCaseNoteHandler.class);
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
@@ -63,6 +62,7 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("Handler add case for event: {}", callback.getEvent());
         AsylumCase asylumCase =
             callback
                 .getCaseDetails()
