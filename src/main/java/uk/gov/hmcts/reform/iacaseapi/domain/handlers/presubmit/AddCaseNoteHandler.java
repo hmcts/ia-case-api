@@ -24,14 +24,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.WelcomeController;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final Logger log = getLogger(WelcomeController.class);
+    private static final Logger log = getLogger(AddCaseNoteHandler.class);
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;

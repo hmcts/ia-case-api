@@ -1,6 +1,0 @@
-logging.level:
-  root: info
-  org.springframework.web: debug
-  uk.gov.hmcts: debug
-
-# ...other preview-specific configurations...

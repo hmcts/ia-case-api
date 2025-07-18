@@ -7,11 +7,9 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 
-@Slf4j
 public class PreSubmitCallbackResponse<T extends CaseData> {
 
     private T data;

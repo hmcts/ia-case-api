@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValid;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidCheckers;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
-@Slf4j
 @Component
 public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
