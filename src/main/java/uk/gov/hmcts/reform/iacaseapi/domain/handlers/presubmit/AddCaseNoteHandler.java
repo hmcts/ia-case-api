@@ -73,12 +73,6 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 .read(ADD_CASE_NOTE_DESCRIPTION, String.class)
                 .orElseThrow(() -> new IllegalStateException("addCaseNoteDescription is not present"));
 
-        Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes =
-            asylumCase.read(CASE_NOTES);
-
-        Optional<Document> caseNoteDocument =
-            asylumCase.read(ADD_CASE_NOTE_DOCUMENT, Document.class);
-
         final CaseNote newCaseNote = new CaseNote(
             caseNoteSubject,
             caseNoteDescription,
@@ -86,13 +80,17 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
             dateProvider.now().toString()
         );
 
-         log.info("----------asylumCase777");
-         Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
-         log.info("{}", appealTypeOpt);
-         log.info("----------asylumCase888");
+        log.info("----------asylumCase777");
+        Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealTypeOpt);
+        log.info("----------asylumCase888");
 
-
+        Optional<Document> caseNoteDocument =
+            asylumCase.read(ADD_CASE_NOTE_DOCUMENT, Document.class);
         caseNoteDocument.ifPresent(newCaseNote::setCaseNoteDocument);
+
+        Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes =
+            asylumCase.read(CASE_NOTES);
 
         List<IdValue<CaseNote>> allCaseNotes =
             caseNoteAppender.append(newCaseNote, maybeExistingCaseNotes.orElse(emptyList()));

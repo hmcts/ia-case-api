@@ -155,7 +155,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackResponse<T> callbackResponse,
         DispatchPriority dispatchPriority
     ) {
-              CaseDetails<T> caseDetails = callback.getCaseDetails();
+        CaseDetails<T> caseDetails = callback.getCaseDetails();
         AsylumCase asylumCase0 = (AsylumCase) caseDetails.getCaseData();
         log.info("----------asylumCase000");
         Optional<AppealType> appealType0Opt = asylumCase0.read(APPEAL_TYPE, AppealType.class);
@@ -194,22 +194,22 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
 
                     AsylumCase asylumCase2 = (AsylumCase)callbackResponseFromHandler.getData();
-                     log.info("----------asylumCase333");
-                     Optional<AppealType> appealType2Opt = asylumCase2.read(APPEAL_TYPE, AppealType.class);
+                    log.info("----------asylumCase333");
+                    Optional<AppealType> appealType2Opt = asylumCase2.read(APPEAL_TYPE, AppealType.class);
 
 
-                     log.info("{}", appealType2Opt);
-                     log.info("----------asylumCase444");
+                    log.info("{}", appealType2Opt);
+                    log.info("----------asylumCase444");
                     if (!callbackResponseFromHandler.getErrors().isEmpty()) {
                         callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
                     }
                     AsylumCase asylumCase3 = (AsylumCase)callbackResponse.getData();
-                     log.info("----------asylumCase555");
+                    log.info("----------asylumCase555");
 
 
-                     Optional<AppealType> appealType3Opt = asylumCase3.read(APPEAL_TYPE, AppealType.class);
-                     log.info("{}", appealType3Opt);
-                     log.info("----------asylumCase666");
+                    Optional<AppealType> appealType3Opt = asylumCase3.read(APPEAL_TYPE, AppealType.class);
+                    log.info("{}", appealType3Opt);
+                    log.info("----------asylumCase666");
                 }
             }
         }
