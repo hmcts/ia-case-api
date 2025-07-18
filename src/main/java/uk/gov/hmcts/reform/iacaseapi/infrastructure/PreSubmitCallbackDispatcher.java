@@ -1,11 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -19,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValid;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidCheckers;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
+@Slf4j
 @Component
 public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
@@ -148,8 +155,14 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackResponse<T> callbackResponse,
         DispatchPriority dispatchPriority
     ) {
+              CaseDetails<T> caseDetails = callback.getCaseDetails();
+        AsylumCase asylumCase0 = (AsylumCase) caseDetails.getCaseData();
+        log.info("----------asylumCase000");
+        Optional<AppealType> appealType0Opt = asylumCase0.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealType0Opt);
+        log.info("----------asylumCase000000");
         for (PreSubmitCallbackHandler<T> callbackHandler : callbackHandlers) {
-
+            log.info("----------asylumCase000 callbackHandler {}", callbackHandler.getClass().getSimpleName());
             if (callbackHandler.getDispatchPriority() == dispatchPriority) {
 
                 Callback<T> callbackForHandler = new Callback<>(
@@ -169,15 +182,34 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 callbackForHandler.setPageId(callback.getPageId());
 
                 if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
-
+                    AsylumCase asylumCase = (AsylumCase)callbackForHandler.getCaseDetails().getCaseData();
+                    log.info("----------asylumCase111");
+                    Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+                    log.info("{}", appealTypeOpt);
+                    log.info("----------asylumCase222");
                     PreSubmitCallbackResponse<T> callbackResponseFromHandler =
                         callbackHandler.handle(callbackStage, callbackForHandler);
 
                     callbackResponse.setData(callbackResponseFromHandler.getData());
 
+
+                    AsylumCase asylumCase2 = (AsylumCase)callbackResponseFromHandler.getData();
+                     log.info("----------asylumCase333");
+                     Optional<AppealType> appealType2Opt = asylumCase2.read(APPEAL_TYPE, AppealType.class);
+
+
+                     log.info("{}", appealType2Opt);
+                     log.info("----------asylumCase444");
                     if (!callbackResponseFromHandler.getErrors().isEmpty()) {
                         callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
                     }
+                    AsylumCase asylumCase3 = (AsylumCase)callbackResponse.getData();
+                     log.info("----------asylumCase555");
+
+
+                     Optional<AppealType> appealType3Opt = asylumCase3.read(APPEAL_TYPE, AppealType.class);
+                     log.info("{}", appealType3Opt);
+                     log.info("----------asylumCase666");
                 }
             }
         }
