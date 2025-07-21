@@ -49,7 +49,7 @@ public class AsylumCaseCallbackApiDelegator {
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
-        log.info(accessToken + " - Delegating callback to API: " + endpoint
+        log.info(accessToken + " - Delegating delegate callback to API: " + endpoint
             + ", caseId: " + callback.getCaseDetails().getId()
             + ", event: " + callback.getEvent()
             + ", state: " + callback.getCaseDetails().getState());
@@ -89,6 +89,11 @@ public class AsylumCaseCallbackApiDelegator {
         final String accessToken = accessTokenProvider.getAccessToken();
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
+
+        log.info(accessToken + " - Delegating PostSubmitCallbackResponse callback to API: " + endpoint
+        + ", caseId: " + callback.getCaseDetails().getId()
+        + ", event: " + callback.getEvent()
+        + ", state: " + callback.getCaseDetails().getState());
 
         try {
 

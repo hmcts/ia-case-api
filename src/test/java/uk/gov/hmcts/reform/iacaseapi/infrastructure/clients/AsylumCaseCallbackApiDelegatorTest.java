@@ -126,6 +126,11 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @Test
     void should_call_notifications_api_to_send_notifications_in_ccd_submitted() {
+        // Setup callback mocks for this test
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(12345L);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
@@ -229,6 +234,11 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @Test
     void wraps_http_client_exception_when_calling_notifications_api() {
+        // Setup callback mocks for this test
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(12345L);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
         final String expectedServiceToken = "ABCDEFG";
