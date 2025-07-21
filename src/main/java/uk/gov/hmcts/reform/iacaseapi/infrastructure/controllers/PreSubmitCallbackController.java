@@ -82,7 +82,7 @@ public class PreSubmitCallbackController {
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToStart(
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
     ) {
-        LOG.info("ccdAboutToStart callback: {}", callback.getEvent());
+        LOG.info("ccdAboutToStart callback: {}", callback);
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_START, callback);
     }
 
@@ -124,7 +124,7 @@ public class PreSubmitCallbackController {
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
     ) {
-        LOG.info("ccdAboutToSubmit callback: {}", callback.getEvent());
+        LOG.info("ccdAboutToSubmit callback: {}", callback);
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }
 
@@ -167,7 +167,7 @@ public class PreSubmitCallbackController {
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback,
         @RequestParam(name = "pageId", required = false) String pageId
     ) {
-        LOG.info("ccdMidEvent callback: {}", callback.getEvent());
+        LOG.info("ccdMidEvent callback: {}", callback);
         if (pageId != null) {
             callback.setPageId(pageId);
         }
