@@ -54,7 +54,7 @@ public class AsylumCaseCallbackApiDelegator {
             + ", event: " + callback.getEvent()
             + ", state: " + callback.getCaseDetails().getState());
         
-            try {
+        try {
 
             return Optional
                 .of(restTemplate
