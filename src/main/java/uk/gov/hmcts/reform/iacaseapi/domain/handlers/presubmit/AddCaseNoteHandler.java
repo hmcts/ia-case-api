@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_CASE_NOTE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -9,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +26,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.WelcomeController;
 
 
 @Slf4j
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private static final Logger LOG1 = getLogger(WelcomeController.class);
 
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
@@ -51,6 +56,9 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        LOG1.info("AddCaseNoteHandler canHandle called");
+        log.info("CanHandle 1 AddCaseNoteHandler: {}", callback.getEvent());
+
         return callbackStage.equals(ABOUT_TO_SUBMIT) && callback.getEvent().equals(ADD_CASE_NOTE);
     }
 
@@ -62,6 +70,7 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        LOG1.info("AddCaseNoteHandler PreSubmitCallbackResponse canHandle called");
         log.info("Handler add case for event: {}", callback.getEvent());
         AsylumCase asylumCase =
             callback
