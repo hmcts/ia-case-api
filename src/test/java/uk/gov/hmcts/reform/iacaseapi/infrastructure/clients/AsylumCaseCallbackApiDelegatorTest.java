@@ -28,6 +28,9 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -52,6 +55,8 @@ class AsylumCaseCallbackApiDelegatorTest {
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     @Mock
     private PostSubmitCallbackResponse postSubmitCallbackResponse;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
 
     private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
 
@@ -67,6 +72,11 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @Test
     void should_call_document_api_to_generate_document() {
+        // Setup callback mocks for this test
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(12345L);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
@@ -190,6 +200,11 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @Test
     void wraps_http_server_exception_when_calling_documents_api() {
+        // Setup callback mocks for this test
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(12345L);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
         final String expectedServiceToken = "ABCDEFG";
@@ -238,6 +253,11 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @Test
     void wraps_http_client_exception_when_calling_documents_api() {
+        // Setup callback mocks for this test
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(12345L);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
         final String expectedServiceToken = "ABCDEFG";
