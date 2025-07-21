@@ -91,9 +91,9 @@ public class AsylumCaseCallbackApiDelegator {
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
         log.info(accessToken + " - Delegating PostSubmitCallbackResponse callback to API: " + endpoint
-        + ", caseId: " + callback.getCaseDetails().getId()
-        + ", event: " + callback.getEvent()
-        + ", state: " + callback.getCaseDetails().getState());
+            + ", caseId: " + callback.getCaseDetails().getId()
+            + ", event: " + callback.getEvent()
+            + ", state: " + callback.getCaseDetails().getState());
 
         try {
 
