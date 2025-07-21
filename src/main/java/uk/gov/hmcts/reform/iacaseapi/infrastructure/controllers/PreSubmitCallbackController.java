@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static java.util.Objects.requireNonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.ResponseEntity.ok;
 
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +35,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 )
 @RestController
 public class PreSubmitCallbackController {
+
+    private static final Logger LOG = getLogger(WelcomeController.class);
 
     private final PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
 
@@ -77,6 +82,7 @@ public class PreSubmitCallbackController {
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToStart(
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
     ) {
+        LOG.info("ccdAboutToStart callback: {}", callback.getEvent());
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_START, callback);
     }
 
@@ -118,6 +124,7 @@ public class PreSubmitCallbackController {
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
     ) {
+        LOG.info("ccdAboutToSubmit callback: {}", callback.getEvent());
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }
 
@@ -160,6 +167,7 @@ public class PreSubmitCallbackController {
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback,
         @RequestParam(name = "pageId", required = false) String pageId
     ) {
+        LOG.info("ccdMidEvent callback: {}", callback.getEvent());
         if (pageId != null) {
             callback.setPageId(pageId);
         }
