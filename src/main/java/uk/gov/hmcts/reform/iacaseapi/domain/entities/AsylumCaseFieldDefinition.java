@@ -1600,7 +1600,7 @@ public enum AsylumCaseFieldDefinition {
     SCHEDULE_OF_ISSUES_AGREEMENT(
         "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>() {}),
 
-   SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
+    SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
         "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
 
     ANONYMITY_ORDER(
@@ -2753,7 +2753,7 @@ public enum AsylumCaseFieldDefinition {
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
 
-   FEE_UPDATE_TRIBUNAL_ACTION(
+    FEE_UPDATE_TRIBUNAL_ACTION(
            "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
 
     AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
@@ -2829,14 +2829,26 @@ public enum AsylumCaseFieldDefinition {
     GENERATE_LIST_CMR_TASK_REQUESTED(
             "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
 
-      DETENTION_BUILDING(
+    DETENTION_BUILDING(
           "detentionBuilding", new TypeReference<String>(){}),
 
     DETENTION_ADDRESS_LINES(
           "detentionAddressLines", new TypeReference<String>(){}),
 
     DETENTION_POSTCODE(
-          "detentionPostcode", new TypeReference<String>(){})
+          "detentionPostcode", new TypeReference<String>(){}),
+
+    DETENTION_REMOVAL_DATE("detentionRemovalDate",
+            new TypeReference<String>(){}),
+
+    DETENTION_REMOVAL_REASON("detentionRemovalReason",
+            new TypeReference<String>(){}),
+
+    REASON_APPELLANT_WAS_DETAINED("addReasonAppellantWasDetained",
+            new TypeReference<String>(){}),
+
+    APPELLANT_DETAINED_DATE("appellantDetainedDate",
+            new TypeReference<String>(){}),
     ;
 
     private final String value;
