@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import org.slf4j.Logger;
+;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +15,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.WelcomeControlle
 @Slf4j
 @Component
 public class AddCaseNoteConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
-
-    private static final Logger LOG1 = getLogger(WelcomeController.class);
     
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
-        LOG1.info("AddCaseNoteConfirmation canHandle called");
         log.info("CanHandle 1 AddCaseNoteConfirmation: {}", callback.getEvent());
 
         return callback.getEvent() == Event.ADD_CASE_NOTE;
