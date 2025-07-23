@@ -12,10 +12,10 @@ java:
     POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
     #Un comment APIs if you need to test a local version.
-    IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
+    IA_CASE_DOCUMENTS_API_URL: https://ia-case-documents-api-pr-1027.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
-    IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
+    IA_HOME_OFFICE_INTEGRATION_API_URL: https://ia-home-office-integration-api-pr-420.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     IA_HEARINGS_API_URL:  https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
@@ -135,8 +135,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    # image: hmctspublic.azurecr.io/ia/case-documents-api:latest
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1015
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -506,8 +505,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-#    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-413
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
