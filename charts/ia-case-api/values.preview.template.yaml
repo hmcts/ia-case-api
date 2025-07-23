@@ -135,7 +135,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1021
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1026
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -207,7 +207,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1391
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -542,7 +542,7 @@ ia-home-office-integration-api:
 ia-case-access-api:
   enabled: true
   java:
-    image: hmctspublic.azurecr.io/ia/case-access-api:pr-131
+    image: hmctspublic.azurecr.io/ia/case-access-api:pr-133
     # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
     keyVaults:
