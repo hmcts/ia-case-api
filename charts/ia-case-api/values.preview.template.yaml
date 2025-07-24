@@ -1199,6 +1199,7 @@ aac-manage-case-assignment:
       CCD_DEFINITION_STORE_ALLOWED_SERVICE: xui_webapp
       CCD_DATA_STORE_ALLOWED_SERVICE: xui_webapp
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+      logging.level.root: DEBUG
     autoscaling:
       enabled: false
     keyVaults:
