@@ -207,7 +207,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+#    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1385
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -729,7 +730,7 @@ xui-webapp:
       PROTOCOL: http
       PREVIEW_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
-      SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-hearings-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+      SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -1425,7 +1426,7 @@ ia-hearings-api:
     imagePullPolicy: Always
     image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-498'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
-    ingressHost: ia-hearings-api-${SERVICE_FQDN}
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
     devcpuLimits: 1
