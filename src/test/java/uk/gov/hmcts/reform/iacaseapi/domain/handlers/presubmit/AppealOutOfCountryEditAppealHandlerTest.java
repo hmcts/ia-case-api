@@ -77,6 +77,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
         verify(asylumCase, times(1)).clear(OUT_OF_COUNTRY_MOBILE_NUMBER);
+        verify(asylumCase, times(1)).clear(OOC_APPEAL_ADMIN_J);
         clearHumanRightsDecision(asylumCase);
         clearRefusalOfProtection(asylumCase);
     }
