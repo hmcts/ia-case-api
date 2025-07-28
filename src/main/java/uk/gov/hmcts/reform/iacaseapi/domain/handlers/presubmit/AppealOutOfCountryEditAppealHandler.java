@@ -76,6 +76,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);
                 asylumCase.clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
                 asylumCase.clear(OUT_OF_COUNTRY_DECISION_TYPE);
+                asylumCase.clear(OOC_APPEAL_ADMIN_J);
                 clearHumanRightsDecision(asylumCase);
                 clearRefusalOfProtection(asylumCase);
                 clearEntryClearanceDecision(asylumCase);
