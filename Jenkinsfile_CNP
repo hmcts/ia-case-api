@@ -12,8 +12,8 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "DIAC-1211"
-def bpmnBranch = "DIAC-1211"
+def dmnBranch = "DIAC-1211-test"
+def bpmnBranch = "DIAC-1211-test"
 
 def secrets = [
         'rpx-${env}': [
