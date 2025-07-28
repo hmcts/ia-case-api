@@ -65,7 +65,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseManagerRole(caseId);
+        roleAssignmentService.removeCaseRoleAssignments(caseId);
 
         switch (ftpaOutcomeType) {
 
