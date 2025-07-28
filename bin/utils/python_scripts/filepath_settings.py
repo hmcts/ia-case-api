@@ -24,6 +24,7 @@ class Settings:
         'notificationBody': 'redacted - notificationBody',
         'notificationSentTo': 'notificationSentTo@Address.com',
         'notificationSubject': 'redacted - notificationSubject',
+        'legalRepMobilePhoneNumber': 'redacted - legalRepMobilePhoneNumber',
         'document_url': 'http://dm-store-aat.service.core-compute-aat.internal/documents/9ce3f9d5-31ef-4021-9aa5-4d017c404cfe',
         'document_binary_url': 'http://dm-store-aat.service.core-compute-aat.internal/documents/9ce3f9d5-31ef-4021-9aa5-4d017c404cfe/binary',
         'name': 'redacted_name.pdf',
