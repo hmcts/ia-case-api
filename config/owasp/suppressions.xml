@@ -9,5 +9,6 @@
         <cve>CVE-2025-48988</cve>
         <cve>CVE-2025-46701</cve>
         <cve>CVE-2024-47554</cve>
+        <cve>CVE-2025-48924</cve>
     </suppress>
 </suppressions>
