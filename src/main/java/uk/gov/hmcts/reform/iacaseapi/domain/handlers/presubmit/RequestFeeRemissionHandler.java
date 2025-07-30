@@ -103,7 +103,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         if (lateRemissionTypeOpt.isPresent()) {
             RemissionType lateRemissionType = lateRemissionTypeOpt.get();
-
+            asylumCase.write(REMISSION_TYPE, lateRemissionType);
             if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
                 switch (remissionClaim) {
                     case "asylumSupport":

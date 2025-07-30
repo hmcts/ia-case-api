@@ -83,7 +83,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                         throw(new IllegalStateException("Previous fee remission type is not present"));
                     }
 
-                    asylumCase.clear(REMISSION_TYPE);
+                    clearPreviousRemissionData(asylumCase);
                 }
                 break;
 
@@ -103,5 +103,20 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                && remissionDecision.isPresent()
                && asList(APPROVED, PARTIALLY_APPROVED, REJECTED)
                    .contains(remissionDecision.get());
+    }
+
+    private void clearPreviousRemissionData(AsylumCase asylumCase) {
+        asylumCase.clear(REMISSION_TYPE);
+        asylumCase.clear(LATE_REMISSION_TYPE);
+        asylumCase.clear(REMISSION_CLAIM);
+        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+        asylumCase.clear(SECTION17_DOCUMENT);
+        asylumCase.clear(SECTION20_DOCUMENT);
+        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
+        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 }
