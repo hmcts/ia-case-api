@@ -285,7 +285,7 @@ dependencyManagement {
             entry 'snakeyaml'
         }
 
-        dependencySet(group: 'commons-fileupload', version: '1.5') {
+        dependencySet(group: 'commons-fileupload', version: '1.6.0') {
             entry 'commons-fileupload'
         }
 
@@ -352,7 +352,7 @@ dependencies {
             strictly('2.4.10')
         }
     }
-    implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.4'
@@ -381,7 +381,7 @@ dependencies {
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.74'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
@@ -400,7 +400,7 @@ dependencies {
 
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 
-    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+    implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
     implementation 'joda-time:joda-time:2.12.7'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.43'
