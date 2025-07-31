@@ -79,7 +79,7 @@ public class LocationRefDataService {
     }
 
     private boolean isOpenLocation(CourtVenue courtVenue) {
-        return Objects.equals(courtVenue.getCourtStatus(), OPEN);
+        return OPEN.equalsIgnoreCase(courtVenue.getCourtStatus());
     }
 
     private boolean isHearingLocation(CourtVenue courtVenue) {
@@ -87,7 +87,8 @@ public class LocationRefDataService {
     }
 
     public String getHearingCentreAddress(HearingCentre hearingCentre) {
-        if (Objects.equals(hearingCentre, REMOTE_HEARING)) {
+        if (Objects.equals(hearingCentre, REMOTE_HEARING)
+                && hearingCentre != HearingCentre.IAC_NATIONAL_VIRTUAL) {
             return "Remote hearing";
         }
 
