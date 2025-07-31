@@ -81,7 +81,8 @@ public class PinInPostGeneratorTest {
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                         && (event == Event.REMOVE_REPRESENTATION
-                            || event == Event.REMOVE_LEGAL_REPRESENTATIVE)) {
+                            || event == Event.REMOVE_LEGAL_REPRESENTATIVE
+                            || event == Event.GENERATE_PIN_IN_POST)) {
 
                     assertTrue(canHandle);
                 } else {
