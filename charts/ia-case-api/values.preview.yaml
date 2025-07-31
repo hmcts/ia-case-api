@@ -1,0 +1,1510 @@
+java:
+  image: hmctspublic.azurecr.io/ia/case-api:latest
+  ingressHost: ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+  devcpuRequests: 500m
+  devmemoryRequests: 1Gi
+  devcpuLimits: 2
+  devmemoryLimits: 4Gi
+  environment:
+    POSTGRES_HOST: ia-preview.postgres.database.azure.com
+    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
+    POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
+    POSTGRES_CONNECTION_OPTIONS: ""
+    #Un comment APIs if you need to test a local version.
+    IA_CASE_DOCUMENTS_API_URL: https://ia-case-api-edgraham-documents-api.preview.platform.hmcts.net
+    IA_CASE_NOTIFICATIONS_API_URL: https://ia-case-api-edgraham-notifications-api.preview.platform.hmcts.net
+    IA_CASE_PAYMENTS_API_URL: https://ia-case-api-edgraham-payments-api.preview.platform.hmcts.net
+    IA_HOME_OFFICE_INTEGRATION_API_URL: https://ia-case-api-edgraham-home-office-integration-api.preview.platform.hmcts.net
+    IA_TIMED_EVENT_SERVICE_URL: https://ia-case-api-edgraham-timed-event-service.preview.platform.hmcts.net
+    IA_HEARINGS_API_URL:  https://ia-case-api-edgraham-hearings-api.preview.platform.hmcts.net
+    IA_TIMED_EVENT_SERVICE_ENABLED: "true"
+    IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
+    IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+    CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+    CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+    DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+    IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    IS_SAVE_AND_CONTINUE_ENABLED: "false"
+    ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    CASE_DOCUMENT_AM_URL: https://ia-case-api-edgraham-ccd-case-document-am-api
+    AAC_URL: https://aac-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
+    LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+    FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    DUMMY_VAR: true
+    PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+  keyVaults:
+    ia:
+      resourceGroup: ia
+      secrets:
+        - name: ia-gov-notify-key
+          alias: IA_GOV_NOTIFY_KEY
+        - name: ia-bail-gov-notify-key
+          alias: IA_BAIL_GOV_NOTIFY_KEY
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: submit-hearing-requirements-enabled
+          alias: IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
+        - name: postgres-auth-values-password
+          alias: PG_AUTH_VALUES_YAML_PASS
+  secrets:
+    POSTGRES_PASSWORD:
+      secretRef: postgres
+      key: PASSWORD
+      disabled: false
+
+global:
+  postgresHostname: "ia-preview.postgres.database.azure.com"
+  postgresSecret: postgres
+  databaseNamePrefix: "pr-edgraham-dev-"
+
+
+ia-case-payments-api:
+  enabled: true #set to true if testing against a local branch
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
+    releaseNameOverride: ia-case-api-edgraham-case-payments-api
+    ingressHost: ia-case-api-edgraham-payments-api.preview.platform.hmcts.net
+    disableTraefikTls: true
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
+      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      PAY_CALLBACK_URL: https://ia-case-api-edgraham-payments-api.preview.platform.hmcts.net/service-request-update
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+
+ia-case-documents-api:
+  enabled: true #set to true if testing against a local branch
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    releaseNameOverride: ia-case-api-edgraham-case-documents-api
+    ingressHost: ia-case-api-edgraham-documents-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_BUNDLER_URL: https://em-ccdorc-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      CASE_DOCUMENT_AM_URL: http://ia-case-api-edgraham-ccd-case-document-am-api
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: docmosis-access-key
+            alias: DOCMOSIS_ACCESS_KEY
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: customer-services-telephone
+            alias: IA_CUSTOMER_SERVICES_TELEPHONE
+          - name: customer-services-email
+            alias: IA_CUSTOMER_SERVICES_EMAIL
+          - name: hearing-centre-bradford-email
+            alias: IA_HEARING_CENTRE_BRADFORD_EMAIL
+          - name: hearing-centre-manchester-email
+            alias: IA_HEARING_CENTRE_MANCHESTER_EMAIL
+          - name: hearing-centre-newport-email
+            alias: IA_HEARING_CENTRE_NEWPORT_EMAIL
+          - name: hearing-centre-taylor-house-email
+            alias: IA_HEARING_CENTRE_TAYLOR_HOUSE_EMAIL
+          - name: hearing-centre-north-shields-email
+            alias: IA_HEARING_CENTRE_NORTH_SHIELDS_EMAIL
+          - name: hearing-centre-birmingham-email
+            alias: IA_HEARING_CENTRE_BIRMINGHAM_EMAIL
+          - name: hearing-centre-hatton-cross-email
+            alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
+          - name: hearing-centre-glasgow-email
+            alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+
+ia-case-notifications-api:
+  enabled: true #set to true if testing against a local branch
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    releaseNameOverride: ia-case-api-edgraham-case-notifications-api
+    ingressHost: ia-case-api-edgraham-notifications-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
+      IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: ia-gov-notify-key
+            alias: IA_GOV_NOTIFY_KEY
+          - name: ia-bail-gov-notify-key
+            alias: IA_BAIL_GOV_NOTIFY_KEY
+          - name: admin-office-newport-email
+            alias: IA_ADMIN_NEWPORT_EMAIL
+          - name: admin-office-taylor-house-email
+            alias: IA_ADMIN_TAYLOR_HOUSE_EMAIL
+          - name: admin-office-hatton-cross-email
+            alias: IA_ADMIN_HATTON_CROSS_EMAIL
+          - name: admin-office-manchester-email
+            alias: IA_ADMIN_MANCHESTER_EMAIL
+          - name: admin-office-glasgow-email
+            alias: IA_ADMIN_GLASGOW_EMAIL
+          - name: admin-office-bradford-email
+            alias: IA_ADMIN_BRADFORD_EMAIL
+          - name: admin-office-birmingham-email
+            alias: IA_ADMIN_BIRMINGHAM_EMAIL
+          - name: hearing-centre-bradford-email
+            alias: IA_HEARING_CENTRE_BRADFORD_EMAIL
+          - name: hearing-centre-manchester-email
+            alias: IA_HEARING_CENTRE_MANCHESTER_EMAIL
+          - name: hearing-centre-newport-email
+            alias: IA_HEARING_CENTRE_NEWPORT_EMAIL
+          - name: hearing-centre-taylor-house-email
+            alias: IA_HEARING_CENTRE_TAYLOR_HOUSE_EMAIL
+          - name: hearing-centre-north-shields-email
+            alias: IA_HEARING_CENTRE_NORTH_SHIELDS_EMAIL
+          - name: hearing-centre-birmingham-email
+            alias: IA_HEARING_CENTRE_BIRMINGHAM_EMAIL
+          - name: hearing-centre-hatton-cross-email
+            alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
+          - name: hearing-centre-glasgow-email
+            alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: home-office-bradford-email
+            alias: IA_HOME_OFFICE_BRADFORD_EMAIL
+          - name: home-office-manchester-email
+            alias: IA_HOME_OFFICE_MANCHESTER_EMAIL
+          - name: home-office-newport-email
+            alias: IA_HOME_OFFICE_NEWPORT_EMAIL
+          - name: home-office-taylor-house-email
+            alias: IA_HOME_OFFICE_TAYLOR_HOUSE_EMAIL
+          - name: home-office-north-shields-email
+            alias: IA_HOME_OFFICE_NORTH_SHIELDS_EMAIL
+          - name: home-office-birmingham-email
+            alias: IA_HOME_OFFICE_BIRMINGHAM_EMAIL
+          - name: home-office-hatton-cross-email
+            alias: IA_HOME_OFFICE_HATTON_CROSS_EMAIL
+          - name: home-office-glasgow-email
+            alias: IA_HOME_OFFICE_GLASGOW_EMAIL
+          - name: home-office-apc-email
+            alias: IA_HOME_OFFICE_APC_EMAIL
+          - name: ftpa-home-office-bradford-email
+            alias: IA_FTPA_HOME_OFFICE_BRADFORD_EMAIL
+          - name: ftpa-home-office-taylor-house-email
+            alias: IA_FTPA_HOME_OFFICE_TAYLOR_HOUSE_EMAIL
+          - name: ftpa-home-office-north-shields-email
+            alias: IA_FTPA_HOME_OFFICE_NEWCASTLE_EMAIL
+          - name: ftpa-home-office-hatton-cross-email
+            alias: IA_FTPA_HOME_OFFICE_HATTON_CROSS_EMAIL
+          - name: hearing-centre-bradford-telephone
+            alias: IA_HEARING_CENTRE_BRADFORD_TELEPHONE
+          - name: hearing-centre-manchester-telephone
+            alias: IA_HEARING_CENTRE_MANCHESTER_TELEPHONE
+          - name: hearing-centre-newport-telephone
+            alias: IA_HEARING_CENTRE_NEWPORT_TELEPHONE
+          - name: hearing-centre-taylor-house-telephone
+            alias: IA_HEARING_CENTRE_TAYLOR_HOUSE_TELEPHONE
+          - name: hearing-centre-north-shields-telephone
+            alias: IA_HEARING_CENTRE_NORTH_SHIELDS_TELEPHONE
+          - name: hearing-centre-birmingham-telephone
+            alias: IA_HEARING_CENTRE_BIRMINGHAM_TELEPHONE
+          - name: hearing-centre-hatton-cross-telephone
+            alias: IA_HEARING_CENTRE_HATTON_CROSS_TELEPHONE
+          - name: hearing-centre-glasgow-telephone
+            alias: IA_HEARING_CENTRE_GLASGOW_TELEPHONE
+          - name: respondent-evidence-direction-email
+            alias: IA_RESPONDENT_EVIDENCE_DIRECTION_EMAIL
+          - name: respondent-review-direction-email
+            alias: IA_RESPONDENT_REVIEW_DIRECTION_EMAIL
+          - name: respondent-non-standard-direction-until-listing-email
+            alias: IA_RESPONDENT_NON_STANDARD_DIRECTION_UNTIL_LISTING_EMAIL
+          - name: home-office-end-appeal-email
+            alias: IA_HOME_OFFICE_END_APPEAL_EMAIL
+          - name: home-office-allowed-appeal-email
+            alias: IA_HOME_OFFICE_ALLOWED_APPEAL_EMAIL
+          - name: home-office-dismissed-appeal-email
+            alias: IA_HOME_OFFICE_DISMISSED_APPEAL_EMAIL
+          - name: admin-officer-review-hearing-requirements-email
+            alias: IA_ADMIN_OFFICER_REVIEW_HEARING_REQUIREMENTS_EMAIL
+          - name: case-officer-list-case-email
+            alias: IA_CASE_OFFICER_LIST_CASE_EMAIL
+          - name: ctsc-admin-ftpa-decision-email
+            alias: IA_CTSC_ADMIN_FTPA_DECISION
+          - name: ctsc-admin-ftpa-submitted-email
+            alias: IA_CTSC_ADMIN_FTPA_SUBMITTED
+          - name: respondent-ftpa-submitted-email
+            alias: IA_RESPONDENT_FTPA_SUBMITTED
+          - name: customer-services-telephone
+            alias: IA_CUSTOMER_SERVICES_TELEPHONE
+          - name: customer-services-email
+            alias: IA_CUSTOMER_SERVICES_EMAIL
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: dm-url
+            alias: DM_URL
+          - name: ccd-url
+            alias: CCD_URL
+          - name: idam-url
+            alias: IDAM_URL
+          - name: s2s-url
+            alias: S2S_URL
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: fees-admin-officer-email
+            alias: FEES_ADMIN_OFFICER_EMAIL
+          - name: payment-exceptions-admin-officer-email
+            alias: PAYMENT_EXCEPTIONS_ADMIN_OFFICER_EMAIL
+          - name: home-office-email-apc
+            alias: HOME_OFFICE_EMAIL_APC
+          - name: home-office-email-lart
+            alias: HOME_OFFICE_EMAIL_LART
+          - name: upper-tribunal-notices-email
+            alias: IA_UPPER_TRIBUNAL_NOTICES_EMAIL
+          - name: utiac-permission-applications-email
+            alias: IA_UPPER_TRIBUNAL_PERMISSION_APPLICATIONS_EMAIL
+          - name: nbc-email
+            alias: IA_NBC_EMAIL
+          - name: ctsc-email
+            alias: IA_CTSC_EMAIL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: bail-hearing-centre-bradford-email
+            alias: IA_BAIL_HEARING_CENTRE_BRADFORD_EMAIL
+          - name: bail-hearing-centre-birmingham-email
+            alias: IA_BAIL_HEARING_CENTRE_BIRMINGHAM_EMAIL
+          - name: bail-hearing-centre-newport-email
+            alias: IA_BAIL_HEARING_CENTRE_NEWPORT_EMAIL
+          - name: bail-hearing-centre-taylor-house-email
+            alias: IA_BAIL_HEARING_CENTRE_TAYLOR_HOUSE_EMAIL
+          - name: bail-hearing-centre-hatton-cross-email
+            alias: IA_BAIL_HEARING_CENTRE_HATTON_CROSS_EMAIL
+          - name: bail-hearing-centre-manchester-email
+            alias: IA_BAIL_HEARING_CENTRE_MANCHESTER_EMAIL
+          - name: bail-hearing-centre-glasgow-email
+            alias: IA_BAIL_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: bail-hearing-centre-yarlswood-email
+            alias: IA_BAIL_HEARING_CENTRE_YARLSWOOD_EMAIL
+          - name: bail-home-office-email
+            alias: IA_BAIL_HOME_OFFICE_EMAIL
+          - name: bail-test-applicant-mobile
+            alias: IA_TEST_APPLICANT_MOBILE
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+
+ia-bail-case-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
+    applicationPort: 8686
+    releaseNameOverride: ia-case-api-edgraham-bail-case-api
+    ingressHost: ia-case-api-edgraham-bail-case-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+      AAC_URL: https://aac-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      IA_IDAM_REDIRECT_URI: "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      IA_CASE_DOCUMENTS_API_URL: https://ia-case-api-edgraham-documents-api.preview.platform.hmcts.net
+      IA_CASE_NOTIFICATIONS_API_URL: https://ia-case-api-edgraham-notifications-api.preview.platform.hmcts.net
+      CASE_DOCUMENT_AM_URL: http://ia-case-api-edgraham-ccd-case-document-am-api
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: docmosis-enabled
+            alias: IA_DOCMOSIS_ENABLED
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: prof-ref-data-url
+            alias: PROF_REF_DATA_URL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+
+ia-timed-event-service:
+  enabled: ${ENABLE_TES}
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    releaseNameOverride: ia-case-api-edgraham-timed-event-service
+    ingressHost: ia-case-api-edgraham-timed-event-service.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+      S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
+      POSTGRES_NAME: "pr-edgraham-dev-ia_timed_event_service"
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: hmcts
+      POSTGRES_CONNECTION_OPTIONS: ""
+    postgresql:
+      auth:
+        username: ia_tes
+        password: ia_tes
+        database: ia_tes
+      service:
+        port: 5432
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+
+ia-home-office-integration-api:
+  enabled: true #set to true if testing against a local branch
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    releaseNameOverride: ia-case-api-edgraham-home-office-integration-api
+    ingressHost: ia-case-api-edgraham-home-office-integration-api.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: homeoffice-client-id
+            alias: IA_HOMEOFFICE_CLIENT_ID
+          - name: homeoffice-secret
+            alias: IA_HOMEOFFICE_SECRET
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+
+ia-case-access-api:
+  enabled: true
+  java:
+    image: hmctspublic.azurecr.io/ia/case-access-api:latest
+    # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
+    ingressHost: ia-case-api-edgraham-pr-1.preview.platform.hmcts.net-case-access-api.preview.platform.hmcts.net
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: idam-redirect-uri
+            alias: IA_IDAM_REDIRECT_URI
+          - name: ia-system-access-username
+            alias: IA_SYSTEM_ACCESS_USERNAME
+          - name: ia-system-access-password
+            alias: IA_SYSTEM_ACCESS_PASSWORD
+          - name: s2s-secret
+            alias: idam.s2s-auth.totp_secret
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+
+ia-aip-frontend:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/aip-frontend:latest
+    ingressHost: ia-case-api-edgraham-aip-frontend.preview.platform.hmcts.net # override in public facing environments
+    applicationPort: 3000
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      HTTP_PROTOCOL: http
+      NODE_ENV: development
+      S2S_MICROSERVICE_NAME: iac
+      MICROSERVICE: iac
+      CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      #IA_CASE_PAYMENTS_API_URL: https://ia-case-api-edgraham-payments-api.preview.platform.hmcts.net
+      PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
+      IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
+      # IDAM_WEB_URL: https://xui-ia-case-api-pr-1389.preview.platform.hmcts.net
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      # IDAM_API_URL: http://{{ .Release.Name }}-xui-webapp
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      REDIS_URL: redis://{{ .Release.Name }}-redis-master
+      PCQ_URL: https://pcq.aat.platform.hmcts.net
+      # PCQ_RETURN_URL: immigration-appeal.aat.platform.hmcts.net/about-appeal
+      PCQ_RETURN_URL: https://ia-case-api-edgraham-aip-frontend.preview.platform.hmcts.net/about-appeal
+      CASE_DOCUMENT_AM_URL: http://ia-case-api-edgraham-ccd-case-document-am-api
+      SECURE_SESSION: false
+      TRACKING_SCRIPTS: false
+      TIMELINE_ENABLED: true
+    keyVaults:
+      ia:
+        resourceGroup: ia
+        secrets:
+          - name: idam-secret
+            alias: idam-secret
+          - name: addressLookupToken
+            alias: addressLookupToken
+          - name: s2s-secret
+            alias: s2s-secret
+          - name: ia-redis-access-key
+            alias: ia-redis-access-key
+          - name: ia-redis-connection-string
+            alias: ia-redis-connection-string
+          - name: launch-darkly-sdk-key
+            alias: launch-darkly-sdk-key
+          - name: AppInsightsInstrumentationKey
+            alias: AppInsightsInstrumentationKey
+          - name: hearing-centre-bradford-email
+            alias: hearing-centre-bradford-email
+          - name: hearing-centre-manchester-email
+            alias: hearing-centre-manchester-email
+          - name: hearing-centre-newport-email
+            alias: hearing-centre-newport-email
+          - name: hearing-centre-taylor-house-email
+            alias: hearing-centre-taylor-house-email
+          - name: hearing-centre-north-shields-email
+            alias: hearing-centre-north-shields-email
+          - name: hearing-centre-birmingham-email
+            alias: hearing-centre-birmingham-email
+          - name: hearing-centre-hatton-cross-email
+            alias: hearing-centre-hatton-cross-email
+          - name: hearing-centre-glasgow-email
+            alias: hearing-centre-glasgow-email
+          - name: pcq-token-key
+            alias: pcq-token-key
+          - name: system-username
+            alias: system-username
+          - name: system-password
+            alias: system-password
+          - name: docmosis-access-key
+            alias: docmosis-access-key
+          - name: customer-services-telephone
+            alias: customer-services-telephone
+          - name: customer-services-email
+            alias: customer-services-email
+  redis:
+    enabled: false
+    architecture: standalone
+    master:
+      persistence:
+        enabled: false
+    auth:
+      enabled: false
+
+
+ccd-case-document-am-api:
+  enabled: true
+  java:
+    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+    releaseNameOverride: ia-case-api-edgraham-ccd-case-document-am-api
+    environment:
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
+
+# https://github.com/hmcts/rpx-xui-webapp/blob/master/charts/xui-webapp/Chart.yaml
+xui-webapp:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    releaseNameOverride: ia-case-api-edgraham-xui-webapp
+    image: hmctspublic.azurecr.io/xui/webapp:latest
+    ingressHost: xui-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    memoryRequests: 2Gi
+    cpuRequests: 2000m
+    memoryLimits: 4Gi
+    cpuLimits: 3500m
+    devmemoryRequests: 6Gi
+    devcpuRequests: 2000m
+    devmemoryLimits: 8Gi
+    devcpuLimits: 4500m
+    environment:
+      HEALTH_CCD_COMPONENT_API: http://gateway-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net/health
+      HEALTH_CCD_DATA_API: https://ccd-data-store-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net/health
+      HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net/health
+      SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+      SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      SERVICES_PRD_LOCATION_API: http://rd-location-ref-api-aat.service.core-compute-aat.internal
+      SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
+      SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
+      SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
+      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      SERVICES_DOCUMENTS_API_V2: http://ia-case-api-edgraham-ccd-case-document-am-api
+      SERVICES_WORK_ALLOCATION_TASK_API: ${SERVICES_WORK_ALLOCATION_TASK_API}
+      SERVICES_WA_WORKFLOW_API_URL: ${SERVICES_WA_WORKFLOW_API_URL}
+      SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
+      SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+      SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS}
+      JURISDICTIONS: IA
+      GLOBAL_SEARCH_SERVICES: IA
+      LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
+      FEATURE_REDIS_ENABLED: false
+      FEATURE_APP_INSIGHTS_ENABLED: false
+      FEATURE_SECURE_COOKIE_ENABLED: false
+      FEATURE_PROXY_ENABLED: false
+      FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
+      FEATURE_HELMET_ENABLED: false
+      FEATURE_OIDC_ENABLED: false
+      FEATURE_WORKALLOCATION_ENABLED: true
+      FEATURE_ACCESS_MANAGEMENT_ENABLED: true
+      FEATURE_SUBSTANTIVE_ROLE_ENABLED: true
+      NOW: false
+      REDISCLOUD_URL: http://dummyrediscloudurl
+      UV_THREADPOOL_SIZE: 128
+      PROTOCOL: http
+      PREVIEW_DEPLOYMENT_ID: "ia-edgraham-dev"
+      ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
+      SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-hearings-api-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+    keyVaults:
+      rpx:
+        resourceGroup: rpx
+        secrets:
+          - name: mc-s2s-client-secret
+            alias: mc-s2s-client-secret
+          - name: mc-idam-client-secret
+            alias: mc-idam-client-secret
+          - name: system-user-name
+            alias: system-user-name
+          - name: system-user-password
+            alias: system-user-password
+
+ccd:
+  enabled: true
+  ccd:
+    adminWeb:
+      enabled: true
+    managementWeb:
+      enabled: false
+    definitionImporter:
+      enabled: false
+    userProfileImporter:
+      enabled: false
+    apiGatewayWeb:
+      enabled: true
+    postgresql:
+      enabled: false
+    s2s:
+      enabled: false
+    elastic:
+      enabled: true
+    ras:
+      enabled: true
+  global:
+    ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
+    ccdAdminWebIngress: admin-web-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
+    ccdDefinitionStoreUrl: http://{{ .Release.Name }}-ccd-definition-store
+    ccdUserProfileUrl: https://ccd-user-profile-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
+    idamApiUrl: https://idam-api.aat.platform.hmcts.net
+    idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
+    s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    enableKeyVaults: true
+    devMode: true
+
+  ccd-api-gateway-web:
+    nodejs:
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66a4048-20250203150702
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
+      environment:
+        ADDRESS_LOOKUP_TOKEN: NDXNuOmAmh3EzzFXcd2wkNuO2OcGdBGv
+        IDAM_SERVICE_KEY: 2SL33JSNZF3IAO7I
+        IDAM_OAUTH2_CLIENT_SECRET: vUstam6brAsT38ranuwRut65rakec4u6
+        PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
+      ingressHost: gateway-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      ingressIP: ${INGRESS_IP}
+
+  ccd-user-profile-api:
+    java:
+      autoscaling:
+        enabled: false
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+      keyVaults: [ ]
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      environment:
+        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+        USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
+        USER_PROFILE_DB_NAME: "pr-edgraham-dev-user-profile"
+        USER_PROFILE_HOST: http://ia-case-api-edgraham-ccd-user-profile-api
+
+      ingressHost: ccd-user-profile-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+
+  ccd-data-store-api:
+    java:
+      imagePullPolicy: Always
+      devcpuRequests: 1000m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
+      autoscaling:
+        enabled: false
+      disableKeyVaults: true
+      environment:
+        DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+        DATA_STORE_DB_NAME: "pr-edgraham-dev-data-store"
+        DATA_STORE_DB_USERNAME: hmcts
+        DATA_STORE_DB_PASSWORD: hmcts
+        DATA_STORE_IDAM_KEY: KRUM7VO6WVA3BGBG        
+        DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
+        IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
+        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+        IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: YWF0IGNjZCBkYXRhIHN0b3JlIHNlY3JldA==
+        IDAM_DATA_STORE_SYSTEM_USER_USERNAME: data.store.idam.system.user@mailinator.com
+        IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: QUFUUGE1NXdvcmQxMQ==
+        CASE_DOCUMENT_AM_URL: http://ia-case-api-edgraham-ccd-case-document-am-api
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+        USER_PROFILE_HOST: https://ccd-user-profile-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+        DEFINITION_STORE_HOST: https://ccd-definition-store-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOSTS: ia-case-api-edgraham-es-master:9200
+        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://ia-case-api-edgraham-es-master:9200
+        ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
+        ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
+        ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
+      keyVaults: []
+      ingressHost: ccd-data-store-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+
+  am-role-assignment-service:
+    java:
+      autoscaling:
+        enabled: false
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/am/role-assignment-service:latest
+      ingressHost: am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
+      environment:
+        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
+        RUN_LD_ON_STARTUP: false
+        ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
+        ROLE_ASSIGNMENT_DB_NAME: "pr-edgraham-dev-role_assignment"
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
+      keyVaults:
+        am:
+          resourceGroup: am
+          secrets:
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
+
+  ccd-admin-web:
+    nodejs:
+      image: hmctspublic.azurecr.io/ccd/admin-web:latest
+      ingressHost: admin-web-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      environment:
+        IDAM_ADMIN_WEB_SERVICE_KEY: 43Z7RGIWRI4UIQ4Z
+        IDAM_OAUTH2_AW_CLIENT_SECRET: HoxnBugNkz9jE9QK0pvMVGjgEhBtN9Zv
+        ADMINWEB_ELASTIC_INDEX_URL: https://ccd-definition-store-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net/elastic-support/index
+        ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net/elastic-support/case-types
+        ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net/elastic-support/global-search/index
+      keyVaults: []
+
+  ccd-definition-store-api:
+    java:
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+      imagePullPolicy: Always
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      autoscaling:
+        enabled: false
+      environment:
+        DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+        DEFINITION_STORE_DB_NAME: "pr-edgraham-dev-definition-store"
+        DEFINITION_STORE_IDAM_KEY: TXEPBQPCMACANXKO
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
+        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOST: ia-case-api-edgraham-es-master
+        ELASTIC_SEARCH_FAIL_ON_IMPORT: false
+        USER_PROFILE_HOST: https://ccd-user-profile-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      keyVaults: [ ]
+      ingressHost: ccd-definition-store-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+
+  elasticsearch:
+    nameOverride: ia-case-api-edgraham-es
+    clusterName: "es"
+    replicas: 1
+    minimumMasterNodes: 1
+    antiAffinity: "soft"
+    esJavaOpts: "-Xmx512m -Xms512m"
+    # Their tests delete the pod after succeeding, we pass --logs to the test command which fail if the pod has already been deleted
+    # The tests do pass, at least as of 2023-01-19
+    tests:
+      enabled: false
+    extraEnvs:
+      - name: discovery.type
+        value: single-node
+      - name: cluster.initial_master_nodes
+        value: ""
+      - name: action.auto_create_index
+        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
+    persistence:
+      enabled: false
+    ingress:
+      enabled: false
+      className: traefik
+      # hosts:
+      #   - host: es-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      #     paths:
+      #       - path: /
+  logstash:
+    image: "hmctspublic.azurecr.io/imported/logstash/logstash"
+    imageTag: "7.16.1"
+    imagePullPolicy: "IfNotPresent"
+    logstashJavaOpts: "-Xmx1g -Xms512M"
+    extraInitContainers: |
+      - name: download-postgres-jdbc
+        image: hmctspublic.azurecr.io/curl:7.70.0
+        command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.2.18.jar', '-o', '/logstash-lib/postgresql.jar']
+        volumeMounts:
+        - name: logstash-lib
+          mountPath: /logstash-lib
+    extraVolumes: |
+      - name: logstash-lib
+        emptyDir: {}
+      - name: database-secret-volume
+        secret:
+          secretName: postgres
+    extraVolumeMounts: |
+      - name: logstash-lib
+        mountPath: /usr/share/logstash/ccd
+      - name: database-secret-volume
+        mountPath: /etc/logstash/secrets
+        readOnly: true
+    logstashConfig:
+      logstash.yml: |
+        http.host: 0.0.0.0
+        xpack.monitoring.enabled: false
+        xpack.monitoring.elasticsearch.hosts: ["http://{{ .Release.Name }}-es-master:9200"]
+        queue.type: persisted
+        dead_letter_queue.enable: true
+      pipelines.yml: |
+        - pipeline.id: main
+          path.config: "/usr/share/logstash/pipeline/{01_input,02_filter,03_output}.conf"
+          queue.type: persisted
+    logstashPipeline:
+      01_input.conf: |
+        input  {
+          jdbc {
+            jdbc_connection_string => "jdbc:postgresql://ia-preview.postgres.database.azure.com:5432/pr-edgraham-dev-data-store?sslmode=require&stringtype=unspecified"
+            jdbc_user => "hmcts"
+            jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
+            jdbc_validate_connection => true
+            jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
+            jdbc_driver_class => "org.postgresql.Driver"
+            jdbc_default_timezone => "UTC"
+            statement => "UPDATE case_data SET marked_by_logstash = true WHERE marked_by_logstash = false RETURNING id, created_date, last_modified, jurisdiction, case_type_id, state, last_state_modified_date, data::TEXT as json_data, data_classification::TEXT as json_data_classification, reference, security_classification, supplementary_data::TEXT as json_supplementary_data"
+            clean_run => false
+            schedule => "* * * * * *"
+          }
+        }
+      02_filter.conf: |
+        filter{
+          json{
+              source => "json_data"
+              target => "data"
+              remove_field => ["json_data"]
+              }
+              json{
+                  source => "json_supplementary_data"
+                  target => "supplementary_data"
+                  remove_field => ["json_supplementary_data"]
+              }
+              json{
+                  source => "json_data_classification"
+                  target => "data_classification"
+                  remove_field => ["json_data_classification"]
+              }
+              if [data][SearchCriteria] {
+                  clone {
+                      clones => ["SearchCriteria"]
+                  }
+              }
+              if [type] == "SearchCriteria" {
+                  if [data][SearchCriteria] {
+                      mutate {
+                        rename => {"[data][SearchCriteria]" => "[data_new][SearchCriteria]" }
+                      }
+                  }
+                  if [data][caseManagementLocation] {
+                      mutate {
+                        rename => {"[data][caseManagementLocation]" => "[data_new][caseManagementLocation]" }
+                      }
+                  }
+                  if [data][CaseAccessCategory] {
+                    mutate {
+                        rename => {"[data][CaseAccessCategory]" => "[data_new][CaseAccessCategory]" }
+                    }
+                  }
+                  if [data][caseNameHmctsInternal] {
+                      mutate {
+                        rename => {"[data][caseNameHmctsInternal]" => "[data_new][caseNameHmctsInternal]" }
+                      }
+                  }
+                  if [data][caseManagementCategory] {
+                      mutate {
+                        rename => {"[data][caseManagementCategory]" => "[data_new][caseManagementCategory]" }
+                      }
+                  }
+                  if [supplementary_data][HMCTSServiceId] {
+                      mutate {
+                        rename => {"[supplementary_data][HMCTSServiceId]" => "[supplementary_data_new][HMCTSServiceId]" }
+                      }
+                  }
+                  if [data_classification][SearchCriteria] {
+                      mutate {
+                        rename => {"[data_classification][SearchCriteria]" => "[data_classification_new][SearchCriteria]" }
+                      }
+                  }
+                  if [data_classification][CaseAccessCategory] {
+                    mutate {
+                          rename => {"[data_classification][CaseAccessCategory]" => "[data_classification_new][CaseAccessCategory]" }
+                    }
+                  }
+                  if [data_classification][caseManagementLocation] {
+                    mutate {
+                        rename => {"[data_classification][caseManagementLocation]" => "[data_classification_new][caseManagementLocation]" }
+                    }
+                  }
+                  if [data_classification][caseNameHmctsInternal] {
+                      mutate {
+                        rename => {"[data_classification][caseNameHmctsInternal]" => "[data_classification_new][caseNameHmctsInternal]" }
+                      }
+                  }
+                  if [data_classification][caseManagementCategory] {
+                      mutate {
+                        rename => {"[data_classification][caseManagementCategory]" => "[data_classification_new][caseManagementCategory]" }
+                      }
+                  }
+                  mutate { remove_field =>[ "data" ,"supplementary_data", "data_classification", "last_state_modified_date", "type","last_modified", "created_date" ] }
+                  mutate {
+                          rename => { "[data_new]" => "data" }
+                          rename => { "[supplementary_data_new]"  => "supplementary_data" }
+                          rename => { "[data_classification_new]"  => "data_classification" }
+                  }
+                  mutate {
+                    add_field => { "index_id" => "global_search" }
+                  }
+                  mutate {
+                    lowercase => [ "index_id" ]
+                  }
+              } else {
+                  mutate {
+                      add_field => { "index_id" => "%{case_type_id}_cases" }
+                }
+              mutate {
+                lowercase => [ "index_id" ]
+              }
+              }
+        }
+      03_output.conf: |
+        output {
+            elasticsearch {
+                hosts => ["http://{{ .Release.Name }}-es-master:9200"]
+                sniffing => false
+                index => "%{[index_id]}"
+                document_type => "_doc"
+                document_id => "%{id}"
+                timeout => 60
+            }
+        }
+
+em-ccdorc:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ia-case-api-edgraham-em-ccdorc
+    image: hmctspublic.azurecr.io/em/ccdorc:latest
+    ingressHost: em-ccdorc-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_STITCHING_API_URL: https://em-stitching-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_DATA_API_URL: https://ccd-data-store-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      CALLBACK_DOMAIN: em-ccdorc-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      CALLBACK_HTTP_SCHEME: https
+
+em-stitching:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ia-case-api-edgraham-em-stitching
+    image: hmctspublic.azurecr.io/em/stitching:latest
+    ingressHost: em-stitching-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
+    environment:
+      SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
+      SPRING_DATASOURCE_USERNAME: hmcts
+      SPRING_DATASOURCE_NAME: "pr-edgraham-dev-emstitch"
+      SPRING_DATASOURCE_PASSWORD: hmcts
+      SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+      ENABLE_DB_MIGRATE: true
+      RUN_DB_MIGRATION_ON_STARTUP: true
+      FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CDAM_URL: http://ia-case-api-edgraham-ccd-case-document-am-api
+      APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
+    secrets:
+      SPRING_DATASOURCE_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+
+aac-manage-case-assignment:
+  enabled: true
+  java:
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
+    imagePullPolicy: Always
+    releaseNameOverride: ia-case-api-edgraham-aac-manage-case-assignment
+    image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
+    ingressHost: aac-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    environment:
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
+      MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
+      MCA_CONDITIONAL_APIS_CASE_ASSIGNMENTS_ENABLED: "true"
+      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,ccd_gw,iac
+      CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      CCD_DEFINITION_STORE_API_BASE_URL: https://ccd-definition-store-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+      CCD_DEFINITION_STORE_ALLOWED_SERVICE: xui_webapp
+      CCD_DATA_STORE_ALLOWED_SERVICE: xui_webapp
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    autoscaling:
+      enabled: false
+    keyVaults:
+      aac:
+        resourceGroup: aac
+        secrets:
+          - name: aac-manage-case-s2s-secret
+            alias: MANAGE_CASE_S2S_KEY
+          - name: idam-mca-client-secret
+            alias: IDAM_CLIENT_SECRET
+          - name: idam-mca-system-user-username
+            alias: IDAM_CAA_USERNAME
+          - name: idam-mca-system-user-password
+            alias: IDAM_CAA_PASSWORD
+          - name: idam-noc-approver-username
+            alias: IDAM_NOC_APPROVER_USERNAME
+          - name: idam-noc-approver-password
+            alias: IDAM_NOC_APPROVER_PASSWORD
+          - name: notify-mca-api-key-secret
+            alias: NOTIFY_MCA_API_KEY
+
+
+# https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
+# 1.0.4
+wa:
+  enabled: ${ENABLE_WA}
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: ia-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-edgraham-dev-"
+  wa-initiation-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
+  wa-reconfiguration-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
+  wa-termination-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-termination-batch"
+  wa-message-cron-service:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
+
+  camunda-bpm:
+    java:
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      environment:
+        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
+  wa-task-management-api:
+    java:
+      ingressHost: wa-task-management-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      environment:
+        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
+        IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
+        S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+        ALLOWED_JURISDICTIONS: ia
+        ALLOWED_CASE_TYPES: asylum
+
+  wa-case-event-handler:
+    java:
+      ingressHost: wa-case-event-handler-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      releaseNameOverride: ia-case-api-edgraham-wa-case-event-handler
+      secrets:
+        AZURE_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: ia-sb-preview
+          key: connectionString
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      environment:
+        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
+        CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+        CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+        WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
+        WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
+        AZURE_SERVICE_BUS_TOPIC_NAME: ia-case-api-edgraham-ccd-case-events
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ia-case-api-edgraham-ccd-case-events
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ia-case-api-edgraham-ccd-case-events
+  wa-task-monitor:
+    java:
+      ingressHost: wa-task-monitor-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      environment:
+        WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
+  wa-workflow-api:
+    java:
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      environment:
+        DB_READER_USERNAME: "hmcts"
+  wa:
+    postgresql:
+      enabled: false
+
+
+servicebus:
+  enabled: true
+  releaseNameOverride: ia-case-api-edgraham
+  resourceGroup: ia-aso-preview-rg
+  sbNamespace: ia-servicebus-preview
+  setup:
+    topics:
+      - name: ccd-case-events
+        subscriptionNeeded: yes
+        requiresSession: true
+      - name: crd-topic
+        subscriptionNeeded: yes
+      - name: jrd-topic
+        subscriptionNeeded: yes
+      - name: ccd-events
+        subscriptionNeeded: yes
+        requiresSession: true
+    queues:
+      - name: tribunals-to-hearing-api
+
+ccd-message-publisher:
+  enabled: true
+  servicebus:
+    enabled: false
+  java:
+    ingressHost: ccd-message-publisher-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    releaseNameOverride: ia-case-api-edgraham-ccd-message-publisher
+    keyVaults:
+      ccd:
+        resourceGroup: ccd
+        secrets:
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+      DATA_STORE_DB_NAME: "pr-edgraham-dev-data-store"
+      DATA_STORE_DB_USERNAME: hmcts
+      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      CCD_CASE_EVENTS_DESTINATION: ia-case-api-edgraham-ccd-case-events
+    secrets:
+      SERVICE_BUS_CONNECTION_STRING:
+        secretRef: ia-sb-preview
+        key: connectionString
+      DATA_STORE_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+
+am-org-role-mapping-service:
+  enabled: true
+  java:
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    ingressHost: am-org-role-mapping-service-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    releaseNameOverride: ia-case-api-edgraham-am-org-role-mapping-service
+    secrets:
+      SB_ACCESS_KEY:
+        secretRef: ia-sb-preview
+        key: primaryKey
+      SB_CONNECTION_STRING:
+        secretRef: ia-sb-preview
+        key: connectionString
+      ORG_ROLE_MAPPING_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+    keyVaults:
+      am:
+        resourceGroup: am
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: am-org-role-mapping-service-s2s-secret
+            alias: AM_ORG_ROLE_MAPPING_SERVICE_SECRET
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: orm-IDAM-CLIENT-ID
+            alias: ORM_IDAM_CLIENT_ID
+          - name: orm-IDAM-CLIENT-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
+          - name: orm-IDAM-ADMIN-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
+      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
+      LAUNCH_DARKLY_ENV: pr
+      AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
+      AMQP_HOST: "ia-sb-preview.servicebus.windows.net"
+      CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-jrd-topic"
+      CRD_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
+      AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      ORG_ROLE_MAPPING_DB_HOST: ia-preview.postgres.database.azure.com
+      ORG_ROLE_MAPPING_DB_NAME: "pr-edgraham-dev-org_role_mapping"
+      ORG_ROLE_MAPPING_DB_USERNAME: hmcts
+      ORG_ROLE_MAPPING_DB_PORT: 5432
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      RUN_LD_ON_STARTUP: true
+      TESTING_SUPPORT_ENABLED: true
+
+ia-hearings-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
+    releaseNameOverride: ia-case-api-edgraham-hearings-api
+    ingressHost: ia-hearings-api-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      HEARINGS_API_URL: https://ia-case-api-edgraham-hearings-api.preview.platform.hmcts.net
+      DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: https://ccd-data-store-api-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_BUNDLER_URL: https://em-ccdorc-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
+      IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      CASE_DOCUMENT_AM_URL: http://ia-case-api-edgraham-ccd-case-document-am-api
+      IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      AAC_URL: https://aac-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      XUI_URL: "https://xui-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "ia-case-api-edgraham-hmcsb-ia"
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
+      HMC_DEPLOYMENT_ID: "ia-edgraham-dev"
+      ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+
+ia-cron-hearings-processor:
+  enabled: true
+  job:
+    kind: CronJob
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
+    releaseNameOverride: ia-case-api-edgraham-ia-cron-hearings-processor
+    name: ia-case-api-edgraham-ia-cron-hearings-processor
+    schedule: "*/5 * * * *"
+    environment:
+      HEARINGS_API_URL: https://ia-case-api-edgraham-hearings-api.preview.platform.hmcts.net
+      CCD_URL: https://ccd-data-store-api-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+      AAC_URL: https://aac-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net
+      CCD_GW_URL: http://dm-store-aat.service.core-compute-aat.internal
+      DM_URL: http://dm-store-aat.service.core-compute-aat.internal
+      IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
+      XUI_URL: "https://xui-ia-case-api-edgraham-pr-1.preview.platform.hmcts.net"
+      HMC_HEARINGS_TOPIC_NAME: "hmc-to-cft-aat"
+      HMC_HEARINGS_TOPIC_SUBSCRIPTION_NAME: "ia-case-api-edgraham-hmcsb-ia"
+      HMC_HEARINGS_TOPIC_NAMESPACE: "hmc-servicebus-aat"
+      HMC_DEPLOYMENT_ID: "ia-edgraham-dev"
+      ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-edgraham-dev.preview.platform.hmcts.net
+      LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+      TASK_NAME: UnNotifiedHearingsProcessor
+
+
+hmcsb:
+  enabled: true
+  resourceGroup: hmc-shared-aat
+  sbNamespace: hmc-servicebus-aat
+  #Each topic/queue matches up to one used in the config above
+  setup:
+    topics:
+      - name: ia
+        fullName: hmc-to-cft-aat
+        create: false
+        subscriptionNeeded: yes
+        ignoreSubscriptionDeletion: true
+        rules:
+          - name: "servicefilter"
+            filterType: CorrelationFilter
+            correlationFilter:
+              - name: "hmctsServiceId"
+                value: "BFA1"
+              - name: "hmctsDeploymentId"
+                value: "ia-edgraham-dev"
+
+postgresql:
+  enabled: true
+  flexibleserver: ia-preview
+  setup:
+    databases:
+      - name: "pr-edgraham-dev-data-store"
+      - name: "pr-edgraham-dev-definition-store"
+      - name: "pr-edgraham-dev-user-profile"
+      - name: "pr-edgraham-dev-role_assignment"
+      - name: "pr-edgraham-dev-ia-case-api"
+      - name: "pr-edgraham-dev-emstitch"
+      - name: "pr-edgraham-dev-wa-case-event-handler"
+      - name: "pr-edgraham-dev-wa_workflow_api"
+      - name: "pr-edgraham-dev-camunda"
+      - name: "pr-edgraham-dev-cft_task_db"
+      - name: "pr-edgraham-dev-cft_task_db_replica"
+      - name: "pr-edgraham-dev-org_role_mapping"
+      - name: "pr-edgraham-dev-ia_timed_event_service"
+      - name: "pr-edgraham-dev-hmc-cft-hearing-service"
+

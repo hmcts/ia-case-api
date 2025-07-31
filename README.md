@@ -229,14 +229,17 @@ NB2. Use aat env variable for preview environment user creation as it uses aat's
 
 ## Development / Debugging Environment - Preview with Mirrord
 
-As an alternative for a development environment there is a procedure in place where after running the command below the required services are created in Preview under the developer's name, so these will be exclusively for the named developer use.
+As an alternative for a development environment there is a procedure in place where after running the command below the required services are created in Preview under the developer's name, so these will be exclusively for the named developer to use.
 
-While connected to the VPN run one of the below command from your project's (ia-case-api) folder:
-Note: be sure to have Docker running
+**Note**: `helm` is required for this to work.  You also need to have Docker running.
+
+While connected to the VPN run the below command from your project's root (`ia-case-api`) folder:
 
 ```shell
 npx @hmcts/dev-env@latest && ./bin/setup-devuser-preview-env.sh
 ```
+
+If you don't have a `.env.local` file present in your root folder, you'll see a warning but it should still work.
 
 Then to check that the environment is up in preview
 
