@@ -9,6 +9,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
+@Slf4j
 @Service
 public class AsylumCaseCallbackApiDelegator {
 
@@ -46,6 +49,11 @@ public class AsylumCaseCallbackApiDelegator {
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
+        log.info(accessToken + " - Delegating delegate callback to API: " + endpoint
+            + ", caseId: " + callback.getCaseDetails().getId()
+            + ", event: " + callback.getEvent()
+            + ", state: " + callback.getCaseDetails().getState());
+        
         try {
 
             return Optional
@@ -81,6 +89,11 @@ public class AsylumCaseCallbackApiDelegator {
         final String accessToken = accessTokenProvider.getAccessToken();
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
+
+        log.info(accessToken + " - Delegating PostSubmitCallbackResponse callback to API: " + endpoint
+            + ", caseId: " + callback.getCaseDetails().getId()
+            + ", event: " + callback.getEvent()
+            + ", state: " + callback.getCaseDetails().getState());
 
         try {
 

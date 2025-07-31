@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -149,7 +150,6 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         DispatchPriority dispatchPriority
     ) {
         for (PreSubmitCallbackHandler<T> callbackHandler : callbackHandlers) {
-
             if (callbackHandler.getDispatchPriority() == dispatchPriority) {
 
                 Callback<T> callbackForHandler = new Callback<>(
@@ -169,7 +169,6 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 callbackForHandler.setPageId(callback.getPageId());
 
                 if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
-
                     PreSubmitCallbackResponse<T> callbackResponseFromHandler =
                         callbackHandler.handle(callbackStage, callbackForHandler);
 

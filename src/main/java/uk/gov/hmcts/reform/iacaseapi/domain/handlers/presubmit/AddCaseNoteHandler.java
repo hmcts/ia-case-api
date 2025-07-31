@@ -8,8 +8,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -21,6 +25,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
+
+@Slf4j
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -45,6 +51,8 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        log.info("CanHandle 1 AddCaseNoteHandler: {}", callback.getEvent());
+
         return callbackStage.equals(ABOUT_TO_SUBMIT) && callback.getEvent().equals(ADD_CASE_NOTE);
     }
 
@@ -55,6 +63,10 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        log.info("Handler add case for event: {}", callback.getEvent());
+         
+        //create a new class of aslym case and send it
 
         AsylumCase asylumCase =
             callback
@@ -69,12 +81,6 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 .read(ADD_CASE_NOTE_DESCRIPTION, String.class)
                 .orElseThrow(() -> new IllegalStateException("addCaseNoteDescription is not present"));
 
-        Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes =
-            asylumCase.read(CASE_NOTES);
-
-        Optional<Document> caseNoteDocument =
-            asylumCase.read(ADD_CASE_NOTE_DOCUMENT, Document.class);
-
         final CaseNote newCaseNote = new CaseNote(
             caseNoteSubject,
             caseNoteDescription,
@@ -82,7 +88,17 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
             dateProvider.now().toString()
         );
 
+        log.info("----------asylumCase777");
+        Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealTypeOpt);
+        log.info("----------asylumCase888");
+
+        Optional<Document> caseNoteDocument =
+            asylumCase.read(ADD_CASE_NOTE_DOCUMENT, Document.class);
         caseNoteDocument.ifPresent(newCaseNote::setCaseNoteDocument);
+
+        Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes =
+            asylumCase.read(CASE_NOTES);
 
         List<IdValue<CaseNote>> allCaseNotes =
             caseNoteAppender.append(newCaseNote, maybeExistingCaseNotes.orElse(emptyList()));
