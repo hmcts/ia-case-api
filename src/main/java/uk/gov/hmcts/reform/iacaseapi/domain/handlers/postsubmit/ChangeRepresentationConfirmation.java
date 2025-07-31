@@ -43,7 +43,9 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         requireNonNull(callback, "callback must not be null");
         return (callback.getEvent() == Event.REMOVE_REPRESENTATION
                 || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE
-                || callback.getEvent() == Event.NOC_REQUEST);
+                || callback.getEvent() == Event.NOC_REQUEST
+                || callback.getEvent() == Event.APPELLANT_IN_PERSON_MANUAL
+                || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED);
     }
 
     /**
@@ -60,13 +62,18 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             new PostSubmitCallbackResponse();
 
         try {
-            ccdCaseAssignment.applyNoc(callback);
+            if (!isAipManualEvent(callback.getEvent()) && !isMarkAppealAsDetainedEvent(callback.getEvent())) {
+                ccdCaseAssignment.applyNoc(callback);
+            }
 
-            if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
+            if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())
+                    || isAipManualEvent(callback.getEvent()) || isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 revokeAppellantAccessToCase(String.valueOf(callback.getCaseDetails().getId()));
             }
 
-            postNotificationSender.send(callback);
+            if (!isAipManualEvent(callback.getEvent()) && !isMarkAppealAsDetainedEvent(callback.getEvent())) {
+                postNotificationSender.send(callback);
+            }
 
             if (callback.getEvent() == Event.REMOVE_REPRESENTATION) {
                 postSubmitResponse.setConfirmationHeader(
@@ -86,6 +93,20 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                     "#### What happens next\n\n"
                     + "All parties will be notified."
                 );
+            } else if (callback.getEvent() == Event.APPELLANT_IN_PERSON_MANUAL) {
+                postSubmitResponse.setConfirmationHeader(
+                        "# You have updated this case to Appellant in Person - Manual");
+                postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\n"
+                                + "This appeal will have to be continued by internal users\n\n"
+                );
+            } else if (callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED) {
+                postSubmitResponse.setConfirmationHeader(
+                        "# You have marked the appeal as detained");
+                postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\nAll parties will be notified that the appeal has been marked an detained.\n\n"
+                                + "You should update the hearing center, if necessary."
+                );
             } else {
                 postSubmitResponse.setConfirmationHeader(
                     "# You have removed the legal representative from this appeal"
@@ -96,21 +117,33 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 );
             }
         } catch (Exception e) {
-            if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
+
+            if (isAipManualEvent(callback.getEvent()) || isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
-                    callback.getCaseDetails().getId(), e);
+                        callback.getCaseDetails().getId(), e);
+                postSubmitResponse.setConfirmationBody(
+                        "### Something went wrong\n\n"
+                                + "The appellant's case access has not been revoked for this appeal.\n\n"
+                );
             } else {
-                log.error("Unable to change representation (apply noc) for case id {}. Cause: {}",
-                    callback.getCaseDetails().getId(), e);
+                if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())
+                        || isAipManualEvent(callback.getEvent())) {
+                    log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
+                            callback.getCaseDetails().getId(), e);
+                } else {
+                    log.error("Unable to change representation (apply noc) for case id {}. Cause: {}",
+                            callback.getCaseDetails().getId(), e);
+                }
+
+                postSubmitResponse.setConfirmationBody(
+                        "### Something went wrong\n\n"
+                                + "You have not stopped representing the appellant in this appeal.\n\n"
+                                + "Use the [stop representing a client](/case/IA/Asylum/"
+                                + callback.getCaseDetails().getId()
+                                + "/trigger/removeRepresentation/removeRepresentationSingleFormPageWithComplex) feature to try again."
+                );
             }
 
-            postSubmitResponse.setConfirmationBody(
-                "### Something went wrong\n\n"
-                + "You have not stopped representing the appellant in this appeal.\n\n"
-                + "Use the [stop representing a client](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId()
-                + "/trigger/removeRepresentation/removeRepresentationSingleFormPageWithComplex) feature to try again."
-            );
         }
 
         return postSubmitResponse;
@@ -148,5 +181,13 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
 
     private boolean shouldRevokeAppellantAccess(Event event, AsylumCase asylumCase) {
         return event == Event.NOC_REQUEST && HandlerUtils.isAipToRepJourney(asylumCase);
+    }
+
+    private boolean isAipManualEvent(Event event) {
+        return event == Event.APPELLANT_IN_PERSON_MANUAL;
+    }
+
+    private boolean isMarkAppealAsDetainedEvent(Event event) {
+        return event == Event.MARK_APPEAL_AS_DETAINED;
     }
 }

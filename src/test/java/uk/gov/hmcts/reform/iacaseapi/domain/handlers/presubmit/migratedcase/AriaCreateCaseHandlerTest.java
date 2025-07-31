@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE_SELECTED_VALUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_MIGRATION_TASK_DUE_DAYS;
@@ -86,7 +85,7 @@ class AriaCreateCaseHandlerTest {
 
     @Test
     void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
-        when(appealReferenceNumberGenerator.generate(123, AppealType.PA, false))
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn(nextAppealReferenceNumber);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
@@ -104,27 +103,6 @@ class AriaCreateCaseHandlerTest {
         verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
         verify(asylumCase, times(1)).write(ARIA_DESIRED_STATE_SELECTED_VALUE, "Listing");
-    }
-
-    @Test
-    void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal_detained() {
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(appealReferenceNumberGenerator.generate(123, AppealType.PA, true))
-            .thenReturn(nextAppealReferenceNumber);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, nextAppealReferenceNumber);
-        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_DATE, now.toString());
-        verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
     }
 
     @Test

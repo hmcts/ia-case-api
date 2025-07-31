@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.HARMONDSWORTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
@@ -80,25 +79,27 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         if (hearingCentreNotSet(asylumCase)
                 || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
-            HearingCentre hearingCentre = getHearingCentreFromPostcode(asylumCase);
+            HearingCentre hearingCentre;
 
-            boolean appellantInDetention = asylumCase
-                .read(APPELLANT_IN_DETENTION, YesOrNo.class)
-                .map(inDetention -> YES == inDetention)
-                .orElse(false);
-
-            if (appellantInDetention && isDetainedNonAdaNonAaaAppeal(asylumCase)) {
+            if (isAppellantInDetention(asylumCase) && isDetainedNonAdaNonAaaAppeal(asylumCase)) {
                 // for detained non-ADA non-AAA cases, set Hearing Centre according to Detention Facility
                 hearingCentre = getHearingCentreFromDetentionFacilityName(asylumCase);
-            } else if (appellantInDetention) {
-                //assign dedicated Hearing Centre Harmondsworth for all other detained appeals
-                hearingCentre = HARMONDSWORTH;
+            } else {
+                // assign Hearing Centre from post code or use default HC if post code is unknown
+                hearingCentre = getHearingCentreFromPostcode(asylumCase);
             }
 
             setHearingCentre(asylumCase, hearingCentre);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private Boolean isAppellantInDetention(AsylumCase asylumCase) {
+        return asylumCase
+                .read(APPELLANT_IN_DETENTION, YesOrNo.class)
+                .map(inDetention -> YES == inDetention)
+                .orElse(false);
     }
 
     private boolean isDetainedNonAdaNonAaaAppeal(AsylumCase asylumCase) {
@@ -111,7 +112,12 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
     }
 
     private HearingCentre getHearingCentreFromPostcode(AsylumCase asylumCase) {
-        Optional<String> optionalAppellantPostcode = getAppealPostcode(asylumCase);
+        Optional<String> optionalAppellantPostcode;
+        if (isAppellantInDetention(asylumCase)) {
+            optionalAppellantPostcode = asylumCase.read(DETENTION_POSTCODE, String.class);
+        } else {
+            optionalAppellantPostcode = getAppealPostcode(asylumCase);
+        }
 
         return optionalAppellantPostcode
             .map(hearingCentreFinder::find)
