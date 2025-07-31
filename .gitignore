@@ -43,3 +43,9 @@ bin/utils/python_scripts/input_csv_files/
 bin/utils/python_scripts/output_csv_files/
 bin/utils/python_scripts/output_jsons/
 bin/utils/python_scripts/__pycache__/
+
+# Ignore everything in bin directory
+/bin/*
+# But don't ignore .sh files
+!/bin/*.sh
+.vscode

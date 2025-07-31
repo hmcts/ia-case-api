@@ -11,16 +11,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -33,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
+@Slf4j
 @Component
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -166,7 +166,21 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        log.info("----------asylumCase777");
+        Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealTypeOpt);
+        log.info("----------asylumCase888");
+
         AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
+
+        log.info("----------asylumCase999");
+        log.info("----------asylumCase999 {}", documentGenerator.getClass().getName());
+        log.info("----------asylumCase999 {}", documentGenerator.getClass().getCanonicalName());
+        log.info("----------asylumCase999 {}", documentGenerator.getClass().getSimpleName());
+        Optional<AppealType> appealType2Opt = asylumCaseWithGeneratedDocument.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealType2Opt);
+        log.info("----------asylumCase999999");
 
         if (Event.EDIT_CASE_LISTING.equals(callback.getEvent())) {
             removeFlagsForRecordedApplication(
