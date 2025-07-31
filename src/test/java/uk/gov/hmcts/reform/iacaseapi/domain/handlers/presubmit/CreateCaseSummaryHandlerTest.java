@@ -279,7 +279,44 @@ class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS_COLLECTION, listOfReheardDocs);
+    }
 
+    @Test
+    void should_add_case_summary_to_the_reheard_documents_complex_collection_when_empty() {
+        IdValue<DocumentWithMetadata> hearingDocWithMetadata = getDocumentWithMetadataIdValue();
+        final List<IdValue<DocumentWithMetadata>> listOfDocumentsWithMetadata = Lists.newArrayList(hearingDocWithMetadata);
+        IdValue<ReheardHearingDocuments> reheardHearingDocuments =
+            new IdValue<>("1", new ReheardHearingDocuments(listOfDocumentsWithMetadata));
+        final List<IdValue<ReheardHearingDocuments>> listOfReheardDocs = Lists.newArrayList(reheardHearingDocuments);
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("dlrm-remitted-feature-flag", false)).thenReturn(true);
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.of(listOfReheardDocs));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
+
+        verify(documentReceiver, times(1))
+            .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+
+        verify(documentsAppender, times(1)).append(
+            hearingDocumentsCaptor.capture(),
+            eq(Collections.singletonList(caseSummaryWithMetadata)),
+            eq(DocumentTag.CASE_SUMMARY)
+        );
+
+        verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS_COLLECTION, listOfReheardDocs);
     }
 
     @NotNull
