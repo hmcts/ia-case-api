@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
@@ -23,11 +24,13 @@ public class LaunchDarklyFeatureToggler implements FeatureToggler {
 
         return ldClient.boolVariation(
             key,
-            new LDUser.Builder(userDetails.getId())
-                .firstName(userDetails.getForename())
-                .lastName(userDetails.getSurname())
-                .email(userDetails.getEmailAddress())
-                .build(),
+            LDContext.fromUser(
+                new LDUser.Builder(userDetails.getId())
+                    .firstName(userDetails.getForename())
+                    .lastName(userDetails.getSurname())
+                    .email(userDetails.getEmailAddress())
+                    .build()
+            ),
             defaultValue
         );
     }
@@ -36,11 +39,13 @@ public class LaunchDarklyFeatureToggler implements FeatureToggler {
 
         return ldClient.jsonValueVariation(
             key,
-            new LDUser.Builder(userDetails.getId())
+            LDContext.fromUser(
+                new LDUser.Builder(userDetails.getId())
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname())
                 .email(userDetails.getEmailAddress())
-                .build(),
+                .build()
+            ),
             defaultValue
         );
     }

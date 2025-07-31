@@ -20,12 +20,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapSerializer;
 
 @SpringBootTest
 @ActiveProfiles("functional")
+@DirtiesContext
 @SuppressWarnings("Unchecked")
 public class DataFixingTest {
 
