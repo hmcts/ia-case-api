@@ -1424,7 +1424,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-498-009b77a-20250716123624'
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-498'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
