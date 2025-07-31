@@ -24,11 +24,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -109,12 +113,21 @@ class CreateCaseSummaryHandlerTest {
         )).thenReturn(allHearingDocuments);
     }
 
-    @Test
-    void should_append_case_summary_to_hearing_documents_for_the_case() {
+    static Stream<Arguments> emptyOrNoArguments() {
+        return Stream.of(
+            Arguments.of(Optional.empty()),
+            Arguments.of(Optional.of(YesOrNo.NO))
+        );
+    }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "rawtypes"})
+    @ParameterizedTest
+    @MethodSource("emptyOrNoArguments")
+    void should_append_case_summary_to_hearing_documents_for_the_case(Optional caseFlagSetAsideReheardExists) {
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
         when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(caseFlagSetAsideReheardExists);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
