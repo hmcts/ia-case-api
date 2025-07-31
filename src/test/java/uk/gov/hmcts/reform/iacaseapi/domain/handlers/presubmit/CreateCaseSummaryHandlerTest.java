@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
@@ -294,7 +295,7 @@ class CreateCaseSummaryHandlerTest {
         when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("dlrm-remitted-feature-flag", false)).thenReturn(true);
-        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.of(listOfReheardDocs));
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -316,7 +317,7 @@ class CreateCaseSummaryHandlerTest {
 
         verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
-        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS_COLLECTION, listOfReheardDocs);
+        verify(asylumCase, times(1)).write(eq(REHEARD_HEARING_DOCUMENTS_COLLECTION), refEq(listOfReheardDocs));
     }
 
     @NotNull

@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AdvancedFinalBundlingStitchingCallbackHandler.handleReheardDocumentsWrite;
 
 import java.util.List;
 import java.util.Optional;
@@ -84,35 +85,17 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
             );
 
         Optional<YesOrNo> caseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS);
-        boolean remittedFeatureFlag = featureToggler.getValue("dlrm-remitted-feature-flag", false);
+        boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
 
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
-                fetchHearingDocuments(asylumCase, caseFlagSetAsideReheardExists, remittedFeatureFlag),
+                fetchHearingDocuments(asylumCase, caseFlagSetAsideReheardExists, isRemittedFeature),
                 singletonList(caseSummaryDocumentWithMetadata),
                 DocumentTag.CASE_SUMMARY
             );
-
-        if (caseFlagSetAsideReheardExists.isPresent() && caseFlagSetAsideReheardExists.get() == YesOrNo.YES) {
-            if (remittedFeatureFlag) {
-                Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
-                        asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
-                List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
-                if (!existingReheardDocuments.isEmpty()) {
-                    existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
-                } else {
-                    Appender<ReheardHearingDocuments> documentsCollectionAppender =
-                        new Appender<>();
-                    ReheardHearingDocuments reheardHearingDocuments = new ReheardHearingDocuments(allHearingDocuments);
-                    existingReheardDocuments = documentsCollectionAppender.append(reheardHearingDocuments, existingReheardDocuments);
-                }
-                asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
-            } else {
-                asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
-            }
-        } else {
-            asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
-        }
+        boolean isReheardCase = caseFlagSetAsideReheardExists.isPresent()
+            && caseFlagSetAsideReheardExists.get() == YesOrNo.YES;
+        handleReheardDocumentsWrite(asylumCase, isReheardCase, isRemittedFeature, allHearingDocuments);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

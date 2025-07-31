@@ -202,6 +202,10 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     DocumentTag.HEARING_BUNDLE
                 );
         }
+        handleReheardDocumentsWrite(asylumCase, isReheardCase, isRemittedFeature, allHearingDocuments);
+    }
+
+    public static void handleReheardDocumentsWrite(AsylumCase asylumCase, boolean isReheardCase, boolean isRemittedFeature, List<IdValue<DocumentWithMetadata>> allHearingDocuments) {
         if (isReheardCase) {
             if (isRemittedFeature) {
                 Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
