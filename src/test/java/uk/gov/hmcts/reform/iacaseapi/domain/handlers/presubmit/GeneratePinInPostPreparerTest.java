@@ -67,13 +67,6 @@ class GeneratePinInPostPreparerTest {
     }
 
     @Test
-    void throws_if_cannot_handle_callback() {
-        assertThatThrownBy(() -> generatePinInPostPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
     void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> generatePinInPostPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -91,6 +84,13 @@ class GeneratePinInPostPreparerTest {
         assertThatThrownBy(() -> generatePinInPostPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void throws_if_cannot_handle_callback() {
+        assertThatThrownBy(() -> generatePinInPostPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @ParameterizedTest
