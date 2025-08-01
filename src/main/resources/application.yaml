@@ -341,6 +341,7 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generatePinInPost"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
