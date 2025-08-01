@@ -32,8 +32,7 @@
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "remissionDecision": "rejected",
-        "sendDirectionActionAvailable": "No",
-        "remissionClaim": null
+        "sendDirectionActionAvailable": "No"
       }
     }
   }

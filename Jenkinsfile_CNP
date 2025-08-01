@@ -191,7 +191,7 @@ enableSecurityScan()
 
     afterSuccess('akschartsinstall') {
         onPR {
-            if (env.ENABLE_WA == true) {
+            if (env.ENABLE_WA) {
                 githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
                 githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
                 env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
