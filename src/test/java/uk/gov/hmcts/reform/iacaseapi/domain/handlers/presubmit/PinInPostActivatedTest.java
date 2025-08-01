@@ -354,6 +354,7 @@ public class PinInPostActivatedTest {
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
         verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IS_AIP_TRANSFER);
     }
 
     @Test
