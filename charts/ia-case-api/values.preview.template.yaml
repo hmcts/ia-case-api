@@ -723,6 +723,7 @@ xui-webapp:
       FEATURE_WORKALLOCATION_ENABLED: true
       FEATURE_ACCESS_MANAGEMENT_ENABLED: true
       FEATURE_SUBSTANTIVE_ROLE_ENABLED: true
+      FEATURE_JRD_E_LINKS_V2_ENABLED: true
       NOW: false
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
