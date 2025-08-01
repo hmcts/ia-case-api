@@ -341,6 +341,7 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "appellantInPersonManual"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -401,6 +402,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "appellantInPersonManual"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
