@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,7 +64,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             ccdCaseAssignment.applyNoc(callback);
 
             if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
-                revokeAppellantAccessToCase(String.valueOf(callback.getCaseDetails().getId()));
+                revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()));
             }
 
             postNotificationSender.send(callback);
@@ -116,7 +117,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         return postSubmitResponse;
     }
 
-    private void revokeAppellantAccessToCase(String caseId) {
+    public static void revokeAppellantAccessToCase(RoleAssignmentService roleAssignmentService, String caseId) {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .roleName(List.of(RoleName.CREATOR))
@@ -134,7 +135,9 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             .queryRoleAssignments(queryRequest);
         log.debug("Found {} Citizen roles in the appeal with case ID {}", roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
 
-        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().findFirst();
+        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse()
+            .stream().min(Comparator.comparing(Assignment::getCreated));
+
         if (roleAssignment.isPresent()) {
             log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
 

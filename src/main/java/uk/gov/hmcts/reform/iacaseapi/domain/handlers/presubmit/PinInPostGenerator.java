@@ -24,7 +24,8 @@ public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && (callback.getEvent() == Event.REMOVE_REPRESENTATION
-                    || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
+                    || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE
+                    || callback.getEvent() == Event.GENERATE_PIN_IN_POST);
     }
 
     public PinInPostGenerator(
@@ -48,6 +49,10 @@ public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> 
                 .expiryDate(LocalDate.now().plusDays(accessCodeExpiryDays).toString())
                 .pinUsed(YesOrNo.NO)
                 .build());
+
+        if (callback.getEvent().equals(Event.GENERATE_PIN_IN_POST)) {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
