@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.ChangeRepresentationConfirmation.revokeAppellantAccessToCase;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,14 +27,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Component
 public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumCase> {
 
-    private UserDetailsProvider userDetailsProvider;
+    private final UserDetailsProvider userDetailsProvider;
+    private final RoleAssignmentService roleAssignmentService;
 
-    public PinInPostActivated(UserDetailsProvider userDetailsProvider) {
+    public PinInPostActivated(UserDetailsProvider userDetailsProvider,
+                              RoleAssignmentService roleAssignmentService) {
         this.userDetailsProvider = userDetailsProvider;
+        this.roleAssignmentService = roleAssignmentService;
     }
 
     @Override
@@ -52,11 +57,19 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        updateJourneyType(asylumCase);
-        removeLegalRepDetails(asylumCase);
+        YesOrNo isAipTransfer = asylumCase.read(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.class)
+            .orElse(YesOrNo.NO);
+
+        if (isAipTransfer.equals(YesOrNo.YES)) {
+            revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()));
+        } else {
+            updateJourneyType(asylumCase);
+            removeLegalRepDetails(asylumCase);
+            updateReasonForAppeal(asylumCase);
+            updatePaymentOption(asylumCase);
+        }
         updateSubscription(asylumCase);
-        updateReasonForAppeal(asylumCase);
-        updatePaymentOption(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase, updatedState(callback.getCaseDetails().getState()));
     }
 

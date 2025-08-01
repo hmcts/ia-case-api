@@ -68,6 +68,34 @@ public class PinInPostGeneratorTest {
     }
 
     @Test
+    public void appellantPinInPost_is_generated_for_generate_event() {
+        AsylumCase asylumCase = new AsylumCase();
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_PIN_IN_POST);
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostGenerator.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        assertEquals(2, response.getData().size());
+
+        Optional<PinInPostDetails> details = response.getData().read(AsylumCaseFieldDefinition.APPELLANT_PIN_IN_POST, PinInPostDetails.class);
+
+        assertTrue(details.isPresent());
+        assertNotNull(details.get().getAccessCode());
+        assertNotNull(details.get().getExpiryDate());
+        assertNotNull(details.get().getPinUsed());
+        assertEquals(LocalDate.now().plusDays(ACCESS_CODE_EXPIRY_DAYS).toString(), details.get().getExpiryDate());
+        assertEquals(YesOrNo.NO, details.get().getPinUsed());
+        Optional<YesOrNo> isAipTransfer = response.getData().read(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.class);
+        assertTrue(isAipTransfer.isPresent());
+        assertEquals(YesOrNo.YES, isAipTransfer.get());
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void it_can_handle_callback() {
 

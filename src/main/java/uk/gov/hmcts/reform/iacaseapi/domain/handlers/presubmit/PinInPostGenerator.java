@@ -50,6 +50,10 @@ public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> 
                 .pinUsed(YesOrNo.NO)
                 .build());
 
+        if (callback.getEvent().equals(Event.GENERATE_PIN_IN_POST)) {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.YES);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

@@ -7,7 +7,8 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -139,7 +140,8 @@ class ChangeRepresentationConfirmationTest {
                 Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
             )).build();
 
-        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().id(assignmentId).build()));
+        RoleAssignmentResource roleAssignmentResource =
+            new RoleAssignmentResource(Collections.singletonList(Assignment.builder().id(assignmentId).build()));
 
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -152,6 +154,45 @@ class ChangeRepresentationConfirmationTest {
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
         verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+    }
+
+    @Test
+    void should_revoke_eldest_appellant_access_to_case_if_multiple() {
+
+        String assignmentIdOld = "assignmentId";
+        String assignmentIdMiddle = "assignmentIdMiddle";
+        String assignmentIdNew = "assignmentIdNew";
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleName(List.of(RoleName.CREATOR))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
+            )).build();
+        Assignment assignmentOld = Assignment.builder().id(assignmentIdOld)
+            .created(LocalDateTime.of(2025, 2, 10, 0, 0, 0)).build();
+        Assignment assignmentMiddle = Assignment.builder().id(assignmentIdMiddle)
+            .created(LocalDateTime.of(2025, 2, 11, 0, 0, 0)).build();
+        Assignment assignmentNew = Assignment.builder().id(assignmentIdNew)
+            .created(LocalDateTime.of(2025, 2, 12, 0, 0, 0)).build();
+        List<Assignment> assignments = List.of(assignmentMiddle, assignmentOld, assignmentNew);
+        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(assignments);
+
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(CASE_ID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
+
+        changeRepresentationConfirmation.handle(callback);
+
+        verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentIdOld);
+        verify(roleAssignmentService, never()).deleteRoleAssignment(assignmentIdNew);
+        verify(roleAssignmentService, never()).deleteRoleAssignment(assignmentIdMiddle);
     }
 
     @Test
