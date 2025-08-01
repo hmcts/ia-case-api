@@ -62,6 +62,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
 
         if (isAipTransfer.equals(YesOrNo.YES)) {
             revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()));
+            asylumCase.clear(AsylumCaseFieldDefinition.IS_AIP_TRANSFER);
         } else {
             updateJourneyType(asylumCase);
             removeLegalRepDetails(asylumCase);
