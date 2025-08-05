@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -59,6 +60,7 @@ class MarkAppealAsDetainedHandlerTest {
         when(asylumCase.read(PRISON_NOMS_AO, PrisonNomsNumber.class)).thenReturn(Optional.of(prisonNomsNumber));
         when(asylumCase.read(DATE_CUSTODIAL_SENTENCE_AO, CustodialSentenceDate.class))
             .thenReturn(Optional.of(custodialSentenceDate));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("prison"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             markAppealAsDetainedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -111,6 +113,49 @@ class MarkAppealAsDetainedHandlerTest {
         assertThatThrownBy(() -> markAppealAsDetainedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_not_clear_appellant_address_when_detention_facility_is_other() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_AS_DETAINED);
+
+        when(asylumCase.read(PRISON_NOMS_AO, PrisonNomsNumber.class)).thenReturn(Optional.of(prisonNomsNumber));
+        when(asylumCase.read(DATE_CUSTODIAL_SENTENCE_AO, CustodialSentenceDate.class))
+            .thenReturn(Optional.of(custodialSentenceDate));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("other"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            markAppealAsDetainedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(PRISON_NOMS, prisonNomsNumber);
+        verify(asylumCase).write(DATE_CUSTODIAL_SENTENCE, custodialSentenceDate);
+        verify(asylumCase).write(APPELLANT_IN_DETENTION, YES);
+        verify(asylumCase).clear(APPELLANT_HAS_FIXED_ADDRESS);
+        verify(asylumCase, never()).clear(APPELLANT_ADDRESS);
+        verify(asylumCase).clear(CONTACT_PREFERENCE);
+        verify(asylumCase).clear(EMAIL);
+        verify(asylumCase).clear(MOBILE_NUMBER);
+    }
+
+    @Test
+    void should_throw_exception_when_detention_facility_is_missing() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_AS_DETAINED);
+
+        when(asylumCase.read(PRISON_NOMS_AO, PrisonNomsNumber.class)).thenReturn(Optional.of(prisonNomsNumber));
+        when(asylumCase.read(DATE_CUSTODIAL_SENTENCE_AO, CustodialSentenceDate.class))
+            .thenReturn(Optional.of(custodialSentenceDate));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> markAppealAsDetainedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("detentionFacility missing on when marking as detained")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 }
