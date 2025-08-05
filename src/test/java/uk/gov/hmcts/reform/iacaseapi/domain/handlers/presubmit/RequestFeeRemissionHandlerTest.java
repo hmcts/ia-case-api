@@ -343,7 +343,7 @@ class RequestFeeRemissionHandlerTest {
                 .write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
         verify(asylumCase, times(2))
                 .write(ArgumentMatchers.eq(TEMP_PREVIOUS_REMISSION_DETAILS), anyList());
-
+        verify(asylumCase, times(1)).write(REMISSION_TYPE, remissionType);
         if (remissionType == HO_WAIVER_REMISSION) {
             switch (remissionClaim) {
                 case "asylumSupport":
