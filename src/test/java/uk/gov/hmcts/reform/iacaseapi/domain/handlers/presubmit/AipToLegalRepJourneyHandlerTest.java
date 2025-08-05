@@ -15,6 +15,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -203,6 +205,20 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(asylumCase, times(1)).clear(SUBSCRIPTIONS);
     }
 
+    @Test
+    void should_migrate_pa_payment_option_from_aip_field_to_lr_field() {
+        when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.of("PA_PAYMENT_OPTION"));
+        PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase, times(1)).write(PA_APPEAL_TYPE_PAYMENT_OPTION, "PA_PAYMENT_OPTION");
+        verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
+    }
+
     @ParameterizedTest
     @MethodSource("providePaymentUpdateScenarios")
     void should_update_payment_details_when_payment_is_pending_and_remission_rejected(
@@ -241,6 +257,8 @@ public class AipToLegalRepJourneyHandlerTest {
             verify(asylumCase, never()).write(
                     AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         }
+        verify(asylumCase, never()).write(PA_APPEAL_TYPE_PAYMENT_OPTION, "PA_PAYMENT_OPTION");
+        verify(asylumCase, never()).clear(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
     }
 
     static Stream<Arguments> providePaymentUpdateScenarios() {
