@@ -10,7 +10,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantInDetention": "No"
+          "appellantInDetention": "No",
+          "detentionFacility": "immigrationRemovalCentre"
         }
       }
     }
