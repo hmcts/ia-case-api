@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
@@ -24,11 +25,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
     private final CcdCaseAssignment ccdCaseAssignment;
+    private final IdamService idamService;
 
     public RevokeCaseAccessHandler(RoleAssignmentService roleAssignmentService,
-                                   CcdCaseAssignment ccdCaseAssignment) {
+                                   CcdCaseAssignment ccdCaseAssignment,
+                                   IdamService idamService) {
         this.roleAssignmentService = roleAssignmentService;
         this.ccdCaseAssignment = ccdCaseAssignment;
+        this.idamService = idamService;
     }
 
     @Override
@@ -38,13 +42,13 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.REVOKE_CASE_ACCESS;
+            && callback.getEvent() == Event.REVOKE_CASE_ACCESS;
     }
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -57,21 +61,21 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
 
         String userIdToRevokeAccessFrom = asylumCase.read(
                 AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ID, String.class)
-                .orElseThrow(() -> new IllegalStateException(
-                        "IDAM user ID is not present."));
+            .orElseThrow(() -> new IllegalStateException(
+                "IDAM user ID is not present."));
 
         String legalRepOrgId = asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_FOR_USER_ORG_ID, String.class)
-                .orElse(null);
+            .orElse(null);
 
         RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
-                caseId, userIdToRevokeAccessFrom);
+            caseId, userIdToRevokeAccessFrom);
 
         log.info("Found '{}' '[CREATOR]' and '[LEGALREPRESENTATIVE]' case roles in the appeal with case ID {}",
-                roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
+            roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
 
         if (roleAssignmentResource.getRoleAssignmentResponse().isEmpty()) {
             response.addError("User doesn't have access to case: " + userIdToRevokeAccessFrom
-                    + " caseId: " + caseId);
+                + " caseId: " + caseId);
         } else {
             deleteCaseRoleAssignments(caseId, roleAssignmentResource, userIdToRevokeAccessFrom, legalRepOrgId);
         }
@@ -83,10 +87,10 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
     }
 
     private void deleteCaseRoleAssignments(
-            long caseId,
-            RoleAssignmentResource roleAssignmentResource,
-            String userIdToRevokeAccessFrom,
-            String organisationId
+        long caseId,
+        RoleAssignmentResource roleAssignmentResource,
+        String userIdToRevokeAccessFrom,
+        String organisationId
     ) {
         Assignment roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().get(0);
 
@@ -96,13 +100,13 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
             ccdCaseAssignment.revokeLegalRepAccessToCase(caseId, userIdToRevokeAccessFrom, organisationId);
 
             log.info("Successfully revoked Legal representative's access to appeal with case ID {},"
-                    + " role assignment ID {}", caseId, roleAssignment.getId());
+                + " role assignment ID {}", caseId, roleAssignment.getId());
         }
     }
 
     private void deleteRoleAssignment(String roleAssignmentId) {
         log.info("Revoking appellant's access to appeal with role assignment ID {}", roleAssignmentId);
-        roleAssignmentService.deleteRoleAssignment(roleAssignmentId);
+        roleAssignmentService.deleteRoleAssignment(roleAssignmentId, idamService.getServiceUserToken());
         log.info("Successfully revoked appellant's access to appeal with role assignment ID {}", roleAssignmentId);
     }
 

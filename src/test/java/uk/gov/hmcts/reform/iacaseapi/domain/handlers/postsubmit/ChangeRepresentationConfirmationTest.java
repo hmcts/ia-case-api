@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -40,9 +41,10 @@ class ChangeRepresentationConfirmationTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private RoleAssignmentService roleAssignmentService;
-
+    @Mock private IdamService idamService;
     private static final long CASE_ID = 1234567890L;
     private ChangeRepresentationConfirmation changeRepresentationConfirmation;
+    private final String serviceUserToken = "serviceUserToken";
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -50,7 +52,8 @@ class ChangeRepresentationConfirmationTest {
         changeRepresentationConfirmation = new ChangeRepresentationConfirmation(
             ccdCaseAssignment,
             postNotificationSender,
-            roleAssignmentService
+            roleAssignmentService,
+            idamService
         );
     }
 
@@ -153,7 +156,7 @@ class ChangeRepresentationConfirmationTest {
         changeRepresentationConfirmation.handle(callback);
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(eq(assignmentId), any());
     }
 
     @Test
@@ -174,7 +177,7 @@ class ChangeRepresentationConfirmationTest {
             )).build();
 
         verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId");
+        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId", serviceUserToken);
     }
 
     @Test
@@ -196,7 +199,7 @@ class ChangeRepresentationConfirmationTest {
             )).build();
 
         verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId");
+        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId", serviceUserToken);
     }
 
     @Test
