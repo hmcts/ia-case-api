@@ -89,6 +89,8 @@ class Settings:
         'endappealapprovername': 'redacted - endappealapprovername',
         'dateToAvoidReason': 'redacted - dateToAvoidReason',
         'sponsorNameForDisplay': 'redacted - sponsorNameForDisplay',
+        'sponsorFamilyName': 'redacted - sponsorFamilyName',
+        'sponsorGivenNames': 'redacted - sponsorGivenNames',
         'sponsorAddressForDisplay': '10 street',
         'sponsorMobileNumber': '07451111111',
         'Name': 'redacted - Name',
