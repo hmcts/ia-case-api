@@ -160,6 +160,7 @@ public enum Event {
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
+    APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
