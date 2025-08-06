@@ -341,6 +341,7 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "appellantInPersonManual"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -400,6 +401,8 @@ security:
       - "saveNotificationsToData"
       - "refundConfirmation"
       - "progressMigratedCase"
+      - "hearingCancelled"
+      - "appellantInPersonManual"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -498,9 +501,9 @@ security:
       - "listCase"
       - "editCaseListing"
       - "handleHearingException"
-      - "triggerCmrUpdated"
+      - "cmrReListing"
       - "recordAdjournmentDetails"
-      - "triggerCmrListed"
+      - "cmrListing"
       - "decisionWithoutHearingListed"
       - "saveNotificationsToData"
       - "reTriggerWaTasks"
@@ -509,6 +512,8 @@ security:
       - "sendPaymentReminderNotification"
       - "ariaCreateCase"
       - "revokeCaseAccess"
+      - "UpdateNextHearingInfo"
+      - "hearingCancelled"
     caseworker-ia-internal:
       - "revokeCaseAccess"
     caseworker-ia-task-retrigger:
@@ -516,6 +521,8 @@ security:
       - "reTriggerWaBulkTasks"
     caseworker-ia-rparobot:
       - "addCaseNote"
+    next-hearing-date-admin:
+      - "UpdateNextHearingInfo"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
