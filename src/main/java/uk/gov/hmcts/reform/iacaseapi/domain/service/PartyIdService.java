@@ -77,15 +77,11 @@ public class PartyIdService {
     }
 
     public static void setSponsorPartyId(AsylumCase asylumCase) {
-
-        boolean isAppealOutOfCountry = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
-            .map(flag -> flag == NO)
-            .orElse(false);
         boolean hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
             .map(flag -> flag == YES)
             .orElse(false);
 
-        if (isAppealOutOfCountry && hasSponsor) {
+        if (hasSponsor) {
             if (asylumCase.read(SPONSOR_PARTY_ID, String.class).orElse("").isEmpty()) {
                 asylumCase.write(SPONSOR_PARTY_ID, HearingPartyIdGenerator.generate());
             }
