@@ -49,5 +49,4 @@ echo "Setting up WA Users and role assignments..."
 
 echo -e "\nAdding system user roles..."
 ./bin/utils/system-user-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"
-./bin/utils/system-user-case-allocator-assignments.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"
 

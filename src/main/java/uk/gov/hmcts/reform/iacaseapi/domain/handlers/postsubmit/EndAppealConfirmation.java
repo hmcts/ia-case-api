@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Slf4j
 @Component
@@ -30,12 +29,6 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
         + "#### Do this next\n\n"
         + "Contact the respondent to tell them what has changed, including any action they need to take.\n";
-
-    private final RoleAssignmentService roleAssignmentService;
-
-    public EndAppealConfirmation(RoleAssignmentService roleAssignmentService) {
-        this.roleAssignmentService = roleAssignmentService;
-    }
 
     @Override
     public boolean canHandle(
@@ -57,9 +50,6 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final String hoEndAppealInstructStatus =
             asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class).orElse("");
-
-        String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseRoleAssignments(caseId);
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();

@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -64,6 +65,8 @@ class EndAppealHandlerTest {
     private CaseDetails<AsylumCase> previousCaseDetails;
     @Mock
     private IaHearingsApiService iaHearingsApiService;
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
 
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
@@ -85,7 +88,7 @@ class EndAppealHandlerTest {
     public void setup() {
 
         when(dateProvider.now()).thenReturn(date);
-        endAppealHandler = new EndAppealHandler(dateProvider, iaHearingsApiService);
+        endAppealHandler = new EndAppealHandler(dateProvider, iaHearingsApiService, roleAssignmentService);
         when(previousCaseDetails.getState()).thenReturn(previousState);
         when(callback
             .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
@@ -103,6 +106,7 @@ class EndAppealHandlerTest {
     void should_set_end_appeal_date_as_now_and_visibility_flags() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -114,6 +118,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
         verify(iaHearingsApiService).aboutToSubmit(callback);
+        verify(roleAssignmentService).removeCaseRoleAssignments(String.valueOf(1234L));
     }
 
 
@@ -121,6 +126,7 @@ class EndAppealHandlerTest {
     void should_set_state_before_end_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -141,6 +147,7 @@ class EndAppealHandlerTest {
     void should_throw_exception_if_previous_state_not_found() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(callback
             .getCaseDetailsBefore()).thenReturn(Optional.empty());
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -155,6 +162,7 @@ class EndAppealHandlerTest {
     void should_throw_exception_if_previous_case_state_is_ended() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
         when(caseDetails.getState()).thenReturn(State.ENDED);
@@ -175,6 +183,7 @@ class EndAppealHandlerTest {
     @Test
     void should_not_handle_paid_appeals() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
         when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
@@ -187,6 +196,7 @@ class EndAppealHandlerTest {
     @Test
     void should_handle_pending_payment_appeals() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
 
@@ -258,6 +268,7 @@ class EndAppealHandlerTest {
 
         when(callback.getEvent()).thenReturn(END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(expectedApplications));
 
@@ -282,6 +293,7 @@ class EndAppealHandlerTest {
     @EnumSource(value = Event.class, names = {"END_APPEAL", "END_APPEAL_AUTOMATICALLY"})
     void should_clear_appeal_ready_for_ut_transfer_field(Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(event);
 
@@ -297,6 +309,7 @@ class EndAppealHandlerTest {
     @Test
     void should_successfully_delete_hearings() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(END_APPEAL);
         when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -315,6 +328,7 @@ class EndAppealHandlerTest {
     @Test
     void should_fail_to_delete_hearings() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(END_APPEAL);
         when(asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class))
@@ -336,6 +350,7 @@ class EndAppealHandlerTest {
     @Test
     void should_fail_to_delete_hearings_when_hearings_service_is_down() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(END_APPEAL);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);

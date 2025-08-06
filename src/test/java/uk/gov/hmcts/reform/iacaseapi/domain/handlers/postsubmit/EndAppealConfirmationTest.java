@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +32,6 @@ class EndAppealConfirmationTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private RoleAssignmentService roleAssignmentService;
     @InjectMocks
     private EndAppealConfirmation endAppealConfirmation;
 
