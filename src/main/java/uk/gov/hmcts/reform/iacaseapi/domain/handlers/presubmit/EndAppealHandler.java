@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Slf4j
@@ -34,14 +33,11 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final IaHearingsApiService iaHearingsApiService;
-    private final RoleAssignmentService roleAssignmentService;
 
     public EndAppealHandler(DateProvider dateProvider,
-                            IaHearingsApiService iaHearingsApiService,
-                            RoleAssignmentService roleAssignmentService) {
+                            IaHearingsApiService iaHearingsApiService) {
         this.dateProvider = dateProvider;
         this.iaHearingsApiService = iaHearingsApiService;
-        this.roleAssignmentService = roleAssignmentService;
     }
 
     @Override
@@ -112,9 +108,6 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (callback.getEvent() == Event.END_APPEAL && !deleteHearings(callback)) {
             asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, YES);
         }
-
-        String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseRoleAssignments(caseId);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
