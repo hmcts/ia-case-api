@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.REMOTE_HEARING;
 
 import java.util.Collections;

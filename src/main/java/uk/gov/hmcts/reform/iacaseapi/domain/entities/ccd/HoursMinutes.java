@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 public class HoursMinutes {
 
