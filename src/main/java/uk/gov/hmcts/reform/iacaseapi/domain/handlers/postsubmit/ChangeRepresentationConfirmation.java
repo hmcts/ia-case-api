@@ -143,6 +143,8 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 );
             }
 
+        }
+
         return postSubmitResponse;
     }
 
