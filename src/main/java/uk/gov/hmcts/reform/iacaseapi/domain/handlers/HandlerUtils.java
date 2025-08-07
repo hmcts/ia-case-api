@@ -237,6 +237,10 @@ public class HandlerUtils {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
+        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
     public static boolean isInternalCase(AsylumCase asylumCase) {
         return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
@@ -374,5 +378,13 @@ public class HandlerUtils {
         return asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)
             .map(ENTRY_CLEARANCE_DECISION::equals)
             .orElse(false);
+    }
+
+    public static boolean isAdmin(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
+    public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
+        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 }
