@@ -126,6 +126,13 @@ class StaffLocationTest {
         assertEquals("Decision Without Hearing", result.getName());
     }
 
+    @Test
+    void should_get_correct_location_of_Virtual_Hearing() {
+        HearingCentre hearingCentre = HearingCentre.IAC_NATIONAL_VIRTUAL;
+        Location result = StaffLocation.getLocation(hearingCentre);
+        assertEquals("IAC National (Virtual)", result.getName());
+    }
+
     @ParameterizedTest
     @CsvSource({
         "Birmingham, 231596",
@@ -138,7 +145,8 @@ class StaffLocationTest {
         "Manchester, 512401",
         "Newcastle, 366796",
         "Newport, 227101",
-        "Taylor House, 765324"
+        "Taylor House, 765324",
+        "IAC National (Virtual), 999970"
     })
     void should_get_correct_location_of_staff(String locationName, String epimsId) {
         Location result = StaffLocation.getLocation(epimsId);

@@ -35,6 +35,7 @@ public enum HearingCentre {
     ALLOA_SHERRIF("alloaSherrif", "999971"),
     ARNHEM_HOUSE("arnhemHouse", "324339"),
     CROWN_HOUSE("crownHouse", "420587"),
+    IAC_NATIONAL_VIRTUAL("iacNationalVirtual", "999970"),
     REMOTE_HEARING("remoteHearing", ""),
     DECISION_WITHOUT_HEARING("decisionWithoutHearing", "");
 

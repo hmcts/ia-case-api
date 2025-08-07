@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -148,6 +149,7 @@ class ListEditCaseHandlerTest {
 
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, NEWPORT_ADDRESS);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
 
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
@@ -285,6 +287,42 @@ class ListEditCaseHandlerTest {
 
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.NEWPORT);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, remoteAddress);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
+
+        verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
+        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
+        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
+        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
+        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+    }
+
+    @Test
+    void should_set_is_virtual_hearing_flag_for_virtual_region() {
+
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(HearingCentre.IAC_NATIONAL_VIRTUAL));
+        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(HearingCentre.IAC_NATIONAL_VIRTUAL));
+        String virtualRegionAddress = "Virtual Region hearing centre";
+        when(locationRefDataService.getHearingCentreAddress(HearingCentre.IAC_NATIONAL_VIRTUAL))
+            .thenReturn(virtualRegionAddress);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.IAC_NATIONAL_VIRTUAL);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.IAC_NATIONAL_VIRTUAL);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE_ADDRESS, virtualRegionAddress);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, YES);
 
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
@@ -331,6 +369,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
     }
 
     @Test
@@ -364,6 +403,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
     }
 
     @ParameterizedTest
@@ -441,6 +481,62 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
         verify(asylumCase, times(1)).write(SELECTED_HEARING_CENTRE_REF_DATA,
             listingLocation.getValue().getLabel());
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE"})
+    void should_set_hearing_centre_dynamic_list_and_virtual_region_flag_and_hearing_centre_and_cml(Event event) {
+
+        final DynamicList listingLocation = new DynamicList(
+            new Value("999970", "IAC National (Virtual)"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("765324", "Taylor House Tribunal Hearing Centre"),
+                new Value("999970", "IAC National (Virtual)"))
+        );
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(locationRefDataService.isCaseManagementLocation("999970")).thenReturn(true);
+        when(asylumCase.read(LISTING_LOCATION, DynamicList.class))
+            .thenReturn(Optional.of(listingLocation));
+
+        CaseManagementLocationRefData expectedCml = new CaseManagementLocationRefData(Region.NATIONAL, listingLocation);
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
+            .thenReturn(expectedCml);
+
+        final DynamicList hearingCentreDynamicList = new DynamicList(
+            new Value("999970", "IAC National (Virtual)"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("999970", "IAC National (Virtual)"))
+        );
+
+        when(asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class))
+            .thenReturn(Optional.of(hearingCentreDynamicList));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        final DynamicList expectedHearingCentre = new DynamicList(
+            new Value("999970", "IAC National (Virtual)"),
+            List.of(
+                new Value("386417", "Hatton Cross Tribunal Hearing Centre"),
+                new Value("698118", "Bradford Tribunal Hearing Centre"),
+                new Value("999970", "IAC National (Virtual)"))
+        );
+
+        verify(asylumCase, times(1)).write(HEARING_CENTRE_DYNAMIC_LIST, expectedHearingCentre);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.IAC_NATIONAL_VIRTUAL);
+        verify(asylumCase, times(1)).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
+        verify(asylumCase, times(1)).write(SELECTED_HEARING_CENTRE_REF_DATA,
+            listingLocation.getValue().getLabel());
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, YES);
     }
 
     @ParameterizedTest
@@ -467,6 +563,7 @@ class ListEditCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).clear(IS_DECISION_WITHOUT_HEARING);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
     }
 
     @Test
@@ -520,6 +617,7 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+        verify(asylumCase, times(1)).write(IS_VIRTUAL_HEARING, NO);
     }
 
     @Test
