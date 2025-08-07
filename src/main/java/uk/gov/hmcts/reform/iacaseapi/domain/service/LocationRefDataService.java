@@ -105,8 +105,9 @@ public class LocationRefDataService {
     }
 
     private String assembleCourtVenueAddress(CourtVenue courtVenue) {
-        return defaultIfNull(courtVenue.getCourtName(), "") + ", "
-               + defaultIfNull(courtVenue.getCourtAddress(), "") + ", "
-               + defaultIfNull(courtVenue.getPostcode(), "");
+        return Objects.requireNonNullElse(courtVenue.getCourtName(), "") + ", "
+                + Objects.requireNonNullElse(courtVenue.getCourtAddress(), "") + ", "
+                + Objects.requireNonNullElse(courtVenue.getPostcode(), "");
     }
+
 }
