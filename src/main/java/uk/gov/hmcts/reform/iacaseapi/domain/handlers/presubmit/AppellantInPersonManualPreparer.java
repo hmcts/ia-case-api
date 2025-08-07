@@ -10,16 +10,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPELLANT_IN_PERSON_MANUAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Slf4j
 @Component
-public class AppellantInPersonManualHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AppellantInPersonManualPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -28,7 +23,7 @@ public class AppellantInPersonManualHandler implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                 && callback.getEvent() == APPELLANT_IN_PERSON_MANUAL;
     }
 
@@ -47,22 +42,14 @@ public class AppellantInPersonManualHandler implements PreSubmitCallbackHandler<
                         .getCaseData();
 
         boolean isAdmin = HandlerUtils.isAdmin(asylumCase);
-        boolean hasAddedLegalRepDetails = HandlerUtils.hasAddedLegalRepDetails(asylumCase);
         boolean isRepJourney = HandlerUtils.isRepJourney(asylumCase);
+        boolean hasAddedLegalRepDetails = HandlerUtils.hasAddedLegalRepDetails(asylumCase);
 
         if (isAdmin || (hasAddedLegalRepDetails && isRepJourney)) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
             response.addError("You cannot request Appellant in Person - Manual for this appeal");
-
             return response;
         }
-
-        asylumCase.write(APPELLANTS_REPRESENTATION, YES);
-        asylumCase.write(IS_ADMIN, YES);
-        asylumCase.clear(JOURNEY_TYPE);
-
-        // remove field which is used to suppress notifications after appeal is transferred to another Legal Rep firm
-        asylumCase.clear(CHANGE_ORGANISATION_REQUEST_FIELD);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
