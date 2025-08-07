@@ -117,7 +117,6 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 );
             }
         } catch (Exception e) {
-
             if (isAipManualEvent(callback.getEvent()) || isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
                         callback.getCaseDetails().getId(), e);
@@ -143,8 +142,6 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                                 + "/trigger/removeRepresentation/removeRepresentationSingleFormPageWithComplex) feature to try again."
                 );
             }
-
-        }
 
         return postSubmitResponse;
     }

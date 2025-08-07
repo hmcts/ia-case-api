@@ -345,9 +345,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "appellantInPersonManual"
       - "generateListCmrTask"
       - "markAppealAsDetained"
-      - "appellantInPersonManual"
       - "removeDetainedStatus"
     caseworker-ia-admofficer:
       - "startAppeal"

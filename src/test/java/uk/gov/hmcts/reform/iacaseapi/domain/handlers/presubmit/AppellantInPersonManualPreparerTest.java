@@ -23,18 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_ADDED_LEGAL_REP_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class AppellantInPersonManualHandlerTest {
+class AppellantInPersonManualPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -42,52 +38,54 @@ class AppellantInPersonManualHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private AppellantInPersonManualHandler appellantInPersonManualHandler;
+    private AppellantInPersonManualPreparer appellantInPersonManualPreparer;
 
     @BeforeEach
     public void setup() {
-        appellantInPersonManualHandler = new AppellantInPersonManualHandler();
+        appellantInPersonManualPreparer = new AppellantInPersonManualPreparer();
     }
 
     @Test
-    void should_update_case_appellant_in_person_manual() {
+    void should_respond_with_case() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
-        verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase).clear(JOURNEY_TYPE);
-        verify(asylumCase).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
     }
 
     @Test
-    void should_update_case_appellant_in_person_manual_has_added_legal_rep_details() {
+    void should_respond_with_case_hasAddedLegalRepDetails() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+    }
 
-        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
-        verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase).clear(JOURNEY_TYPE);
-        verify(asylumCase).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
+    @Test
+    void should_respond_with_case_journeyType_rep() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+
+        when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
     }
 
     @Test
@@ -95,20 +93,14 @@ class AppellantInPersonManualHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
         assertTrue(callbackResponse.getErrors().contains("You cannot request Appellant in Person - Manual for this appeal"));
-
-        verify(asylumCase, never()).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
-        verify(asylumCase, never()).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase, never()).clear(JOURNEY_TYPE);
-        verify(asylumCase, never()).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
     }
 
     @Test
@@ -121,16 +113,11 @@ class AppellantInPersonManualHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
         assertTrue(callbackResponse.getErrors().contains("You cannot request Appellant in Person - Manual for this appeal"));
-
-        verify(asylumCase, never()).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
-        verify(asylumCase, never()).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase, never()).clear(JOURNEY_TYPE);
-        verify(asylumCase, never()).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
     }
 
     @Test
@@ -142,16 +129,11 @@ class AppellantInPersonManualHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
         assertTrue(callbackResponse.getErrors().contains("You cannot request Appellant in Person - Manual for this appeal"));
-
-        verify(asylumCase, never()).write(APPELLANTS_REPRESENTATION, YesOrNo.YES);
-        verify(asylumCase, never()).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase, never()).clear(JOURNEY_TYPE);
-        verify(asylumCase, never()).clear(CHANGE_ORGANISATION_REQUEST_FIELD);
     }
 
 
@@ -161,7 +143,7 @@ class AppellantInPersonManualHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(
-                () -> appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+                () -> appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -171,8 +153,8 @@ class AppellantInPersonManualHandlerTest {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = appellantInPersonManualHandler.canHandle(callbackStage, callback);
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                boolean canHandle = appellantInPersonManualPreparer.canHandle(callbackStage, callback);
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                         && ((callback.getEvent() == Event.APPELLANT_IN_PERSON_MANUAL))) {
                     assertTrue(canHandle);
                 } else {
@@ -185,20 +167,20 @@ class AppellantInPersonManualHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> appellantInPersonManualHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> appellantInPersonManualPreparer.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-                () -> appellantInPersonManualHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                () -> appellantInPersonManualPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> appellantInPersonManualHandler.handle(null, callback))
+        assertThatThrownBy(() -> appellantInPersonManualPreparer.handle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> appellantInPersonManualHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> appellantInPersonManualPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }
