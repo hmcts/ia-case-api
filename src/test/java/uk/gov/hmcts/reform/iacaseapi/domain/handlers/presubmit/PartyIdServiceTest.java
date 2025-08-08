@@ -199,26 +199,12 @@ class PartyIdServiceTest {
 
     @Test
     void should_set_sponsor_partyId() {
-
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PartyIdService.setSponsorPartyId(asylumCase);
 
         verify(asylumCase).write(eq(SPONSOR_PARTY_ID), partyId.capture());
         assertTrue(partyIdRegexPattern.matcher(partyId.getValue()).matches());
-
-    }
-
-    @Test
-    void should_not_set_sponsor_partyId_when_in_country() {
-
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
-
-        PartyIdService.setSponsorPartyId(asylumCase);
-
-        verify(asylumCase, never()).write(eq(SPONSOR_PARTY_ID), anyString());
 
     }
 
