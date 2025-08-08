@@ -517,6 +517,7 @@ security:
       - "hearingCancelled"
     caseworker-ia-internal:
       - "revokeCaseAccess"
+      - "removeCaseManagerBulk"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
