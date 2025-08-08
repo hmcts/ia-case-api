@@ -29,6 +29,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
     private final boolean timedEventServiceEnabled;
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
+    private List<String> caseIdList;
     private String filePath;
 
 
@@ -72,13 +73,11 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
         int scheduleDelayInMinutes = 5;
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
 
-        List<String> caseIdList;
         try {
             caseIdList = readJsonFileList(filePath, "caseIdList");
         } catch (IOException | NullPointerException e) {
             log.error("filePath is " + filePath);
             log.error(e.getMessage());
-            caseIdList = null;
         }
         if (caseIdList != null && caseIdList.size() > 0) {
             for (int i = 0; i < caseIdList.size(); i++) {
