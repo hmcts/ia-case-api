@@ -2,12 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
@@ -32,7 +30,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -64,7 +61,7 @@ class AdjournWithoutDateHandlerTest {
     @ParameterizedTest
     @MethodSource("generateTestScenarios")
     void it_can_handle_callback(TestScenario scenario) {
-        given(callback.getEvent()).willReturn(scenario.getEvent());
+        when(callback.getEvent()).thenReturn(scenario.getEvent());
 
         boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
 
@@ -110,62 +107,55 @@ class AdjournWithoutDateHandlerTest {
 
     @Test
     void sets_hearing_date_to_adjourned() {
-        given(callback.getEvent()).willReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetails));
-        given(caseDetails.getState()).willReturn(State.PREPARE_FOR_HEARING);
-        given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
+        when(callback.getEvent()).thenReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
+        when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
-        then(asylumCase).should(times(1))
+        verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE_ADJOURNED), eq("Adjourned"));
-        then(asylumCase).should(times(1))
+        verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("prepareForHearing"));
-        then(asylumCase).should(times(1))
+        verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("05/05/2020"));
-        then(asylumCase).should(times(1))
+        verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED), eq(NO));
     }
 
     @Test
     void should_clear_next_hearing_date_and_list_case_hearing_date() {
-        given(callback.getEvent()).willReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetails));
-        given(caseDetails.getState()).willReturn(State.PREPARE_FOR_HEARING);
-        given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
-        given(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).willReturn(Optional.of(NO));
-        given(nextHearingDateService.enabled()).willReturn(true);
+        when(callback.getEvent()).thenReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
+        when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(nextHearingDateService.enabled()).thenReturn(true);
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
-        then(asylumCase).should(times(1))
-            .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
-        then(asylumCase).should(times(1))
-            .write(eq(AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS),
-                eq(NextHearingDetails.builder().hearingId(null).hearingDateTime(null).build()));
+        verify(nextHearingDateService, times(1)).clearHearingDateInformation(asylumCase);
     }
 
     @Test
     void should_not_clear_next_hearing_date_and_list_case_hearing_date_for_integrated_cases() {
-        given(callback.getEvent()).willReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetails));
-        given(caseDetails.getState()).willReturn(State.PREPARE_FOR_HEARING);
-        given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
-        given(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).willReturn(Optional.of(YES));
-        given(nextHearingDateService.enabled()).willReturn(true);
+        when(callback.getEvent()).thenReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
+        when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
+        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(nextHearingDateService.enabled()).thenReturn(true);
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
-        then(asylumCase).should(never())
-            .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
-        then(asylumCase).should(never())
-            .write(eq(AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS), any());
+        verify(nextHearingDateService, never()).clearHearingDateInformation(asylumCase);
     }
 
     @Value

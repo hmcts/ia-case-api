@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -54,10 +53,7 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
 
         if (nextHearingDateService.enabled()) {
             if (!HandlerUtils.isIntegrated(asylumCase)) {
-                asylumCase.clear(LIST_CASE_HEARING_DATE);
-                NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
-                    .hearingId(null).hearingDateTime(null).build();
-                asylumCase.write(NEXT_HEARING_DETAILS, nextHearingDetails);
+                nextHearingDateService.clearHearingDateInformation(asylumCase);
             }
         }
 
