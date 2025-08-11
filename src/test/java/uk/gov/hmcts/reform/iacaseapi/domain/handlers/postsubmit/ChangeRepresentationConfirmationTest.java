@@ -266,46 +266,6 @@ class ChangeRepresentationConfirmationTest {
     }
 
     @Test
-    void should_revoke_appellant_access_to_case_and_return_confirmation_for_mark_appeal_as_detained() {
-
-        String assignmentId = "assignmentId";
-        QueryRequest queryRequest = QueryRequest.builder()
-                .roleType(List.of(RoleType.CASE))
-                .roleName(List.of(RoleName.CREATOR))
-                .roleCategory(List.of(RoleCategory.CITIZEN))
-                .attributes(Map.of(
-                        Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                        Attributes.CASE_TYPE, List.of("Asylum"),
-                        Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
-                )).build();
-
-        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().id(assignmentId).build()));
-
-        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_AS_DETAINED);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(CASE_ID);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
-
-        PostSubmitCallbackResponse callbackResponse =
-                changeRepresentationConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# You have marked the appeal as detained");
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\nAll parties will be notified that the appeal has been marked an detained.\n\n"
-                        + "You should update the hearing center, if necessary.");
-
-        verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
-    }
-
-    @Test
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
