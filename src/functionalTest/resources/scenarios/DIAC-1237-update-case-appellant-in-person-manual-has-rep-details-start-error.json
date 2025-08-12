@@ -23,8 +23,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantsRepresentation": null,
         "isAdmin": "No",
+        "hasAddedLegalRepDetails": "Yes",
         "journeyType": "rep"
       }
     }
