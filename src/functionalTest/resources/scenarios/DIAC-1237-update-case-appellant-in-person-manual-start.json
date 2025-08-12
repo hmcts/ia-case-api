@@ -1,8 +1,8 @@
 {
-  "description": "DIAC-1160 Update Case Appellant In Person - Manual",
+  "description": "DIAC-1237 Update Case Appellant In Person - Manual - AboutToStart",
   "disabled": false,
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",
     "input": {
       "eventId": "appellantInPersonManual",
@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isAdmin": "Yes",
+          "isAdmin": "No",
           "hasAddedLegalRepDetails": "No"
         }
       }
@@ -18,12 +18,13 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot request Appellant in Person - Manual for this appeal"],
+    "errors": [],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantsRepresentation": null,
-        "isAdmin": "Yes"
+        "appellantsRepresentation": "Yes",
+        "isAdmin": "Yes",
+        "journeyType": null
       }
     }
   }

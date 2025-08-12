@@ -1,8 +1,8 @@
 {
-  "description": "DIAC-1160 Update Case Appellant In Person - Manual - AboutToSubmit - Error",
+  "description": "DIAC-1160 Update Case Appellant In Person - Manual - AboutToStart - Error",
   "disabled": false,
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",
     "input": {
       "eventId": "appellantInPersonManual",
