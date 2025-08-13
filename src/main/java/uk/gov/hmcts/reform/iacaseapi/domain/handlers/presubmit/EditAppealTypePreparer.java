@@ -31,7 +31,7 @@ public class EditAppealTypePreparer implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.EDIT_APPEAL);
+               && callback.getEvent() == Event.EDIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
