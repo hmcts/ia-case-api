@@ -133,7 +133,8 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
                     + "  5. If any documents are not in English, they must be translated into English by a translator. This translator must be approved by an official body. The "
                     + "translation must be certified, the translator must sign, stamp, and date it to confirm it’s a true and accurate copy of the original text.\n\n"
                     + "If you fail to submit an explanation of your case (AEC) and a bundle of evidence by the date below, you will need to request the permission of a Judge to rely on late evidence and you will have to provide an explanation for the delay.\n\n"
-                    + "This decision is made by a Legal Officer in exercise of a specified power granted by the Senior President of Tribunals under rules 3(1) and (2) of the Tribunals Procedure (First-tier Tribunal) (Immigration and Asylum Chamber) Rules 2014. You may within 14 days of the date of this decision apply in writing to the Tribunal for the decision to be considered afresh by a judge under rule 3(4)";
+                    + "This decision is made by a Legal Officer in exercise of a specified power granted by the Senior President of Tribunals under rules 3(1) and (2) of the Tribunals Procedure (First-tier Tribunal) (Immigration and Asylum Chamber) Rules 2014. "
+                    + "You may within 14 days of the date of this decision apply in writing to the Tribunal for the decision to be considered afresh by a judge under rule 3(4).";
         } else if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             return "You must now build your case to enable the respondent to conduct a thorough review of the appeal.\n\n"
                     + "By the date indicated below the Appellant is directed to:\n\n"

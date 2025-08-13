@@ -74,9 +74,12 @@ class RequestCaseBuildingPreparerTest {
 
     @ParameterizedTest
     @MethodSource("caseTypeScenarios")
-    void should_prepare_send_direction_fields(YesOrNo yesOrNo, Parties expectedParties) {
+    void should_prepare_send_direction_fields(YesOrNo yesOrNo, YesOrNo appellantsRepresentation, Parties expectedParties) {
         String expectedExplanationContains;
-        if (yesOrNo == YES) {
+        if (yesOrNo == YES && appellantsRepresentation == YES) {
+            // match detained direction text
+            expectedExplanationContains = "The Home Office has uploaded their bundle of evidence.";
+        } else if (yesOrNo == YES) {
             // match detained direction text
             expectedExplanationContains = "The form and content of this ASA must comply with the terms of Practice Direction";
         } else {
@@ -93,6 +96,7 @@ class RequestCaseBuildingPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantsRepresentation));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -293,8 +297,9 @@ class RequestCaseBuildingPreparerTest {
 
     static Stream<Arguments> caseTypeScenarios() {
         return Stream.of(
-                Arguments.of(YES, Parties.APPELLANT),
-                Arguments.of(NO, Parties.LEGAL_REPRESENTATIVE)
+                Arguments.of(YES, YES, Parties.APPELLANT),
+                Arguments.of(YES, NO, Parties.APPELLANT),
+                Arguments.of(NO, NO, Parties.LEGAL_REPRESENTATIVE)
         );
     }
 
