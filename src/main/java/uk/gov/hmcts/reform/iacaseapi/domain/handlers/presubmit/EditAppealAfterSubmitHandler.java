@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
+@Slf4j
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -88,10 +89,10 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseData();
 
         if (isLegalRepJourney(callback.getCaseDetails().getCaseData())) {
-            log.info('Legal rep journey');
+            log.info("Legal rep journey");
             asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         } else {
-            log.info('Not legal rep journey');
+            log.info("Not legal rep journey");
             asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
         }
 
