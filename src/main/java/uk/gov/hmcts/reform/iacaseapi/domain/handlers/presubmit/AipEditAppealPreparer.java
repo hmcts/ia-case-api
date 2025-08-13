@@ -50,10 +50,6 @@ public class AipEditAppealPreparer implements PreSubmitCallbackHandler<AsylumCas
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (HandlerUtils.isAipJourney(asylumCase)) {
-            response.addError("This option is not available for 'Appellant in person' appeals.");
-        }
-
         if (featureToggler.getValue("home-office-uan-feature", false)) {
 
             String homeOfficeReferenceNumber =
