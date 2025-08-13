@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,14 +53,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 class MakeAnApplicationTypesProviderTest {
 
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
-    private static final String ROLE_ADMIN = "caseworker-ia-admofficer";
     private static final String ROLE_HO_RESPONDENT = "caseworker-ia-respondentofficer";
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseCaseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock
+    Callback<AsylumCase> callback;
+    @Mock
+    CaseDetails<AsylumCase> caseCaseDetails;
+    @Mock
+    AsylumCase asylumCase;
 
-    @Mock UserDetails userDetails;
+    @Mock
+    UserDetails userDetails;
 
     @InjectMocks
     private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
@@ -190,7 +194,7 @@ class MakeAnApplicationTypesProviderTest {
     void should_return_correct_application_types_when_internal_ada_case(State state) {
         // For internal case, ADA, between AWAITING_RESPONDENT_EVIDENCE and DECIDED
 
-        when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
+        when(userDetails.isAdmin()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -237,7 +241,7 @@ class MakeAnApplicationTypesProviderTest {
         "DECISION"
     })
     void should_return_correct_application_types_when_internal_case_non_detained(State state) {
-        when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
+        when(userDetails.isAdmin()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -284,7 +288,7 @@ class MakeAnApplicationTypesProviderTest {
         // The state doesn't change for an ADA case after SUBMIT_HEARING_REQUIREMENTS (remains
         // AWAITING_RESPONDENT_EVIDENCE) but ADA_HEARING_REQUIREMENTS_TO_REVIEW will be set to YES
 
-        when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
+        when(userDetails.isAdmin()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -455,7 +459,7 @@ class MakeAnApplicationTypesProviderTest {
     @Test
     void should_return_given_application_types_in_listing_non_ada() {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(LISTING);
@@ -482,7 +486,7 @@ class MakeAnApplicationTypesProviderTest {
     @Test
     void should_return_given_application_types_in_listing_ada() {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(LISTING);
@@ -510,6 +514,93 @@ class MakeAnApplicationTypesProviderTest {
         assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
     }
 
+    @Test
+    void should_return_given_application_types_in_listing_ada_internal_admin_officer() {
+
+        when(userDetails.isAdmin()).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(LISTING);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+        DynamicList expectedList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+    }
+
+    @Test
+    void should_return_given_application_types_in_appeal_submitted_ada_internal_admin_officer() {
+
+        when(userDetails.isAdmin()).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+            new Value(UPDATE_APPEAL_DETAILS.name(),
+                UPDATE_APPEAL_DETAILS.toString()));
+        DynamicList expectedList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void should_return_given_application_types_in_final_bundling_ada_internal_admin_officer(boolean hasSubmittedHearingReqs) {
+
+        when(userDetails.isAdmin()).thenReturn(true);
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(FINAL_BUNDLING);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.class))
+            .thenReturn(hasSubmittedHearingReqs ? Optional.of(YesOrNo.YES) : Optional.empty());
+
+        final List<Value> values = new ArrayList<>();
+        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+        values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+            UPDATE_APPEAL_DETAILS.toString()));
+        if (hasSubmittedHearingReqs) {
+            values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                UPDATE_HEARING_REQUIREMENTS.toString()));
+        }
+        DynamicList expectedList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(actualList);
+        assertThat(actualList.getListItems()).containsAll(expectedList.getListItems());
+    }
+
 
     @ParameterizedTest
     @EnumSource(value = State.class, names = {
@@ -517,7 +608,8 @@ class MakeAnApplicationTypesProviderTest {
     })
     void should_return_transfer_types_when_state_from_hearing_to_decision_with_non_ada_in_ho_role(State state) {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_HO_RESPONDENT));
+        when(userDetails.isHomeOffice()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -541,7 +633,8 @@ class MakeAnApplicationTypesProviderTest {
     })
     void should_not_return_transfer_types_when_state_from_hearing_to_decision_with_ada_in_ho_role(State state) {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_HO_RESPONDENT));
+        when(userDetails.isHomeOffice()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -565,7 +658,8 @@ class MakeAnApplicationTypesProviderTest {
     })
     void should_return_adjourn_expedite_types_after_listing_state_with_non_ada_in_ho_role(State state) {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_HO_RESPONDENT));
+        when(userDetails.isHomeOffice()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -600,7 +694,8 @@ class MakeAnApplicationTypesProviderTest {
     })
     void should_return_adjourn_expedite_types_when_state_from_evidence_to_decision_with_ada_in_ho_role(State state) {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_HO_RESPONDENT));
+        when(userDetails.isHomeOffice()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -637,7 +732,7 @@ class MakeAnApplicationTypesProviderTest {
     @Test
     void should_return_given_application_types_in_decided_state_internal_ada() {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_ADMIN));
+        when(userDetails.isAdmin()).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(DECIDED);
@@ -696,16 +791,17 @@ class MakeAnApplicationTypesProviderTest {
     })
     void should_return_expedite_application_type_from_submitted_state_in_ho_role(State state) {
 
-        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_HO_RESPONDENT));
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_HO_RESPONDENT));
+        when(userDetails.isHomeOffice()).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-                new Value(EXPEDITE.name(), EXPEDITE.toString()));
+            new Value(EXPEDITE.name(), EXPEDITE.toString()));
         DynamicList expectedList =
-                new DynamicList(values.get(0), values);
+            new DynamicList(values.get(0), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -728,9 +824,9 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-                new Value(EXPEDITE.name(), EXPEDITE.toString()));
+            new Value(EXPEDITE.name(), EXPEDITE.toString()));
         DynamicList expectedList =
-                new DynamicList(values.get(0), values);
+            new DynamicList(values.get(0), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);

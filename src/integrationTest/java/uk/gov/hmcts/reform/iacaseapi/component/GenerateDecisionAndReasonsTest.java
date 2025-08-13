@@ -38,7 +38,7 @@ class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest implement
 
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
+    @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
     void handles_generate_decision_and_reasons_event() {
 
         addServiceAuthStub(server);
