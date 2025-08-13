@@ -138,8 +138,7 @@ public class EditAppealTypePreparerTest {
                 boolean canHandle = editAppealTypePreparer.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_START
-                    && event == EDIT_APPEAL
-                    && isAip.equals(Optional.empty())) {
+                    && event == EDIT_APPEAL) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
