@@ -108,8 +108,8 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
     private void checkPaymentConditions(AppealType appealType, AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse, Optional<RemissionType> remissionType, Optional<RemissionType> lateRemissionType, boolean isAipJourney) {
         Optional<String> paPaymentType = isAipJourney
-            ? asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-            : asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class);
+            ? asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class)
+            : asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
 
