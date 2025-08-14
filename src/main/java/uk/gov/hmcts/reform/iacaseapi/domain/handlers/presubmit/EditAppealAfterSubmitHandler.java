@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney;
 
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
@@ -88,7 +89,13 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        if (isLegalRepJourney(asylumCase)) {
+            log.info("Legal rep journey");
+            asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        } else {
+            log.info("Not legal rep journey");
+            asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
+        }
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
