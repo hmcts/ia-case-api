@@ -561,7 +561,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
-        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS).thenReturn(Optional.of(YesOrNo.YES)));
+        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class).thenReturn(Optional.of(YesOrNo.YES)));
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
