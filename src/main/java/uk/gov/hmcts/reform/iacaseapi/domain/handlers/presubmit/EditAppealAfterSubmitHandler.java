@@ -90,10 +90,10 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseData();
 
         if (isAipJourney(asylumCase)) {
-            log.info("Not legal rep journey");
+            log.info("Not legal rep journey " + asylumCase.journeyType);
             asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
         } else {
-            log.info("Legal rep journey");
+            log.info("Legal rep journey " + asylumCase.journeyType);
             asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         }
 
