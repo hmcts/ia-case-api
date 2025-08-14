@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1049 Request case building direction to legal representative - detained",
+  "description": "DIAC-1348 Request case building direction to legal representative - Detained - AiP Manual",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isAdmin": "Yes",
           "appellantInDetention": "Yes",
           "appellantsRepresentation": "Yes",
           "homeOfficeSearchStatus": "SUCCESS",
