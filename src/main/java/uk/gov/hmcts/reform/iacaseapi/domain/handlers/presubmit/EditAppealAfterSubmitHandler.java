@@ -89,7 +89,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        if (isLegalRepJourney(callback.getCaseDetails().getCaseData())) {
+        if (isLegalRepJourney(asylumCase)) {
             log.info("Legal rep journey");
             asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         } else {
