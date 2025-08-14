@@ -89,14 +89,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        if (isLegalRepJourney(asylumCase)) {
-            log.info("Legal rep journey");
-            asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
-        } else {
-            log.info("Not legal rep journey");
-            asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
-        }
-
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
 
