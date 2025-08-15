@@ -37,7 +37,9 @@ management:
     hearingsApi:
       uri: ${IA_HEARINGS_API_URL:http://127.0.0.1:8100}/health
       response: '"status":"UP"'
-
+    ccd:
+      uri: ${CCD_URL:http://127.0.0.1:4452}/health
+      response: '"status":"UP"'
 fees-register:
   api:
     url: ${FEES_REGISTER_API_URL:http://localhost:8991}
@@ -78,7 +80,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache
+    cache-names: userInfoCache, accessTokenCache, systemTokenCache
     caffeine:
       spec: expireAfterAccess=3600s
   datasource:
@@ -223,6 +225,8 @@ security:
     - "/swagger-ui/**"
     - "/v3/api-docs/**"
     - "/favicon.ico"
+    - "/csrf"
+    - "/testing-support/**"
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
@@ -559,12 +563,17 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,payment_app,refunds_api}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
     scope: "openid profile authorities acr roles create-user manage-user search-user"
-
+  system:
+    username: ${IA_SYSTEM_ACCESS_USERNAME:}
+    password: ${IA_SYSTEM_ACCESS_PASSWORD:}
+    scope: "openid profile roles"
+    client-id: ${IA_IDAM_CLIENT_ID:ia}
+    client-secret: ${IA_IDAM_SECRET:something}
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
 prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refdata/external/v1/organisations}
@@ -597,3 +606,15 @@ govnotify:
   key: ${IA_GOV_NOTIFY_KEY:gov-key}
   bail:
     key: ${IA_BAIL_GOV_NOTIFY_KEY:gov-bail-key}
+
+requestPagination.maxRecords: 100
+executorService.threadPoolSize: 10
+
+ccd:
+  case-data-api:
+    url: ${CCD_URL:http://127.0.0.1:4452}
+
+ia:
+  config:
+    validator:
+      secret: ${IA_CONFIG_VALIDATOR_SECRET:}
