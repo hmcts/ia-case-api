@@ -38,12 +38,9 @@ def versions = [
         junit              : '5.10.1',
         junitPlatform      : '1.10.1',
         reformLogging      : '6.0.1',
-//        serenity           : '3.6.22',
         serenity           : '3.9.8',
         sonarPitest        : '0.5',
-//        pitest             : '1.9.0',
-        pitest             : '1.15.3',
-        gradlePitest       : '1.15.0',
+        pitest             : '1.9.0',
         reformHealthStarter: '0.0.5',
         restAssured        : '5.3.2',
         springDoc          : '1.7.0',
@@ -361,7 +358,7 @@ dependencies {
             strictly('2.4.10')
         }
     }
-    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.4'
@@ -378,6 +375,9 @@ dependencies {
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
+
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.1'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
@@ -412,15 +412,19 @@ dependencies {
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
     implementation 'joda-time:joda-time:2.12.7'
 
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.17.15'
+
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.43'
 
     implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-    testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
+    testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.pitest
     testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
+
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.12.4'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
