@@ -14,22 +14,22 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @ExtendWith(MockitoExtension.class)
-public class TimedEventMessageConverterCustomizerTest {
+public class EmptyObjectProviderTest {
 
-    ObjectProvider<HttpMessageConverterCustomizer>  timedEventMessageConverterCustomizer = new TimedEventMessageConverterCustomizer<>();
+    ObjectProvider<HttpMessageConverterCustomizer>  emptyObjectProvider = new EmptyObjectProvider<>();
 
     @Test
     void should_return_message_converter_unchanged() {
         ObjectMapper objectMapper = new ObjectMapper();
         HttpMessageConverter jacksonConverter1 = new MappingJackson2HttpMessageConverter(objectMapper);
         HttpMessageConverter jacksonConverter2 = new MappingJackson2HttpMessageConverter(objectMapper);
-        timedEventMessageConverterCustomizer.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));
+        emptyObjectProvider.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));
 
         assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes());
-        assertNull(timedEventMessageConverterCustomizer.getObject());
-        assertNull(timedEventMessageConverterCustomizer.getIfAvailable());
-        assertNull(timedEventMessageConverterCustomizer.getObject(new Object()));
-        assertNull(timedEventMessageConverterCustomizer.getIfUnique());
+        assertNull(emptyObjectProvider.getObject());
+        assertNull(emptyObjectProvider.getIfAvailable());
+        assertNull(emptyObjectProvider.getObject(new Object()));
+        assertNull(emptyObjectProvider.getIfUnique());
 
     }
 

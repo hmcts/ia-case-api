@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.EmptyObjectProvider;
 
 @Configuration
 public class FeignConfiguration {
@@ -30,7 +31,7 @@ public class FeignConfiguration {
     public Decoder decoder() {
         HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper());
 
-        return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter)));
+        return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter), new EmptyObjectProvider<>()));
     }
 
     public ObjectMapper objectMapper() {
