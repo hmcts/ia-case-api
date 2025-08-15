@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
