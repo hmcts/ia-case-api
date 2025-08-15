@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
@@ -285,10 +284,10 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
 
         Optional<InterpreterLanguageRefData> oldLanguageField = Optional.empty();
 
-        if (StringUtils.equals(category, SPOKEN)) {
+        if (Objects.equals(category, SPOKEN)) {
             oldLanguageField = getExistingSpokenSelection(oldAsylumCase, i);
         }
-        if (StringUtils.equals(category, SIGN)) {
+        if (Objects.equals(category, SIGN)) {
             oldLanguageField = getExistingSignSelection(oldAsylumCase, i);
         }
 
