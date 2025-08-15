@@ -80,7 +80,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache, systemTokenCache
+    cache-names: userInfoCache, accessTokenCache
     caffeine:
       spec: expireAfterAccess=3600s
   datasource:
