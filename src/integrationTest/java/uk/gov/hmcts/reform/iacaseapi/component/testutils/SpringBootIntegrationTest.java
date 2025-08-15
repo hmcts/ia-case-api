@@ -37,7 +37,11 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsA
     "CCD_URL=http://127.0.0.1:8990/ccd-data-store",
     "AAC_URL=http://127.0.0.1:8990",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
-    "IA_DOCMOSIS_ENABLED=true"})
+    "IA_DOCMOSIS_ENABLED=true",
+    "IA_IDAM_CLIENT_ID=ia",
+    "IA_IDAM_SECRET=something",
+    "IA_S2S_SECRET=AAAAAAAAAAAAAAAC",
+    "IA_S2S_MICROSERVICE=ia"})
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

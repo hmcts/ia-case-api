@@ -1,12 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -14,10 +19,10 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallb
 @Slf4j
 public class IaCaseApiClient {
 
-    private static final String SERVICE_JWT_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O"
+    public static final String SERVICE_JWT_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O"
                                                     + "DkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJS"
                                                     + "MeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-    private static final String USER_JWT_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV"
+    public static final String USER_JWT_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV"
                                                  + "2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjY2QtaW1wb3J"
                                                  + "0QGZha2UuaG1jdHMubmV0IiwiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkI"
                                                  + "joiZDg3ODI3ODQtMWU0NC00NjkyLTg0NzgtNTI5MzE0NTVhNGI5IiwiaXNzIjoiaHR"
@@ -35,6 +40,8 @@ public class IaCaseApiClient {
                                                  + "Fe-ldi4EuhIxGbkPjyWwsdcgmYfIuFrSxqV0vrSI37DNZx_Sh5DVJpUgSrYKRzuMqe"
                                                  + "4rFN6WVyHIY_Qu52ER2yrNYtGbAQ5AyMabPTPj9VVxqpa5nYUAg";
 
+    public static final String USER_ID = "49154ae9-47be-4469-9edd-d43f68d245f0";
+
     private final ObjectMapper objectMapper;
     private final MockMvc mockMvc;
     private final String aboutToSubmitUrl;
@@ -47,6 +54,8 @@ public class IaCaseApiClient {
         this.aboutToSubmitUrl = "/asylum/ccdAboutToSubmit";
         this.aboutToStartUrl = "/asylum/ccdAboutToStart";
         this.ccdSubmittedUrl = "/asylum/ccdSubmitted";
+        objectMapper.registerModule(new Jdk8Module());
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public PreSubmitCallbackResponseForTest aboutToSubmit(CallbackForTest.CallbackForTestBuilder callback) {
@@ -114,6 +123,26 @@ public class IaCaseApiClient {
                 response.getResponse().getContentAsString(),
                 PostSubmitCallbackResponseForTest.class
             );
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            // test will fail
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String supplementaryResponseRequest(String request, ResultMatcher resultMatcher) {
+        try {
+            MvcResult response = mockMvc
+                .perform(
+                    post("/supplementary-details")
+                        .content(request)
+                        .contentType("application/json")
+                        .header("Authorization", USER_JWT_TOKEN)
+                        .header("ServiceAuthorization", SERVICE_JWT_TOKEN)
+                )
+                .andExpect(resultMatcher)
+                .andReturn();
+            return response.getResponse().getContentAsString();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             // test will fail
