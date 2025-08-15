@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1160 Update Case Appellant In Person - Manual",
+  "description": "DIAC-1160 Update Case Appellant In Person - Manual - AboutToSubmit - Error",
   "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
