@@ -13,9 +13,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedCcdApi;
-import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedIdamApi;
 import uk.gov.hmcts.reform.iacaseapi.testutils.data.DocumentManagementFilesFixture;
 import uk.gov.hmcts.reform.iacaseapi.testutils.data.DocumentManagementUploader;
 import uk.gov.hmcts.reform.iacaseapi.testutils.data.IdamAuthProvider;
@@ -47,7 +47,7 @@ public class FunctionalTest {
     protected ExtendedCcdApi ccdApi;
 
     @Autowired
-    protected ExtendedIdamApi idamApi;
+    protected IdamApi idamApi;
 
     @Autowired
     protected DocumentUploadClientApi documentUploadClientApi;

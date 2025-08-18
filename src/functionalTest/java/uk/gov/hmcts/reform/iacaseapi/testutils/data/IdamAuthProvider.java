@@ -4,21 +4,21 @@ import feign.FeignException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
-import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedIdamApi;
 
 public class IdamAuthProvider {
 
-    private final ExtendedIdamApi idamApi;
+    private final IdamApi idamApi;
     private final String idamRedirectUrl;
     private final String userScope;
     private final String idamClientId;
     private final String idamClientSecret;
 
     public IdamAuthProvider(
-        ExtendedIdamApi idamApi,
+        IdamApi idamApi,
         String idamRedirectUrl,
         String userScope,
         String idamClientId,
