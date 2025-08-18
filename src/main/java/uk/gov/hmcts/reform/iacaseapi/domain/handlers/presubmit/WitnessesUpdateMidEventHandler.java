@@ -284,10 +284,10 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
 
         Optional<InterpreterLanguageRefData> oldLanguageField = Optional.empty();
 
-        if (SPOKEN.equals(category)) {
+        if (Objects.equals(category, SPOKEN)) {
             oldLanguageField = getExistingSpokenSelection(oldAsylumCase, i);
         }
-        if (SIGN.equals(category)) {
+        if (Objects.equals(category, SIGN)) {
             oldLanguageField = getExistingSignSelection(oldAsylumCase, i);
         }
 

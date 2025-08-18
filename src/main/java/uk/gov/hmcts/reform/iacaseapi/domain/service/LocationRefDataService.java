@@ -109,4 +109,5 @@ public class LocationRefDataService {
                + getIfNull(courtVenue.getCourtAddress(), "") + ", "
                + getIfNull(courtVenue.getPostcode(), "");
     }
+
 }
