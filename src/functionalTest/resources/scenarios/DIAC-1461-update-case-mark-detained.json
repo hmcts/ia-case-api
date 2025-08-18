@@ -10,7 +10,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "prisonNOMSNumberAo": "12345",
+          "prisonNOMSNumberAo": {
+            "prison": "123456"
+          },
           "dateCustodialSentenceAo": "2025-01-01",
           "detentionFacility": "immigrationRemovalCentre",
           "appellantAddress": {
@@ -43,7 +45,9 @@
         "appealType": "protection",
         "sendDirectionActionAvailable": "Yes",
         "mobileNumber": null,
-        "prisonNOMSNumber" : "12345",
+        "prisonNOMSNumber": {
+          "prison": "123456"
+        },
         "releaseDate": "2025-01-01",
         "appellantAddress": null,
         "appellantHasFixedAddress": null,
