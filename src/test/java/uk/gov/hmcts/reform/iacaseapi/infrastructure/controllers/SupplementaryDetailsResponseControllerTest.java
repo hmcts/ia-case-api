@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +30,7 @@ class SupplementaryDetailsResponseControllerTest {
     private final ArrayList<String> ccdCaseNumberList = new ArrayList<>();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         supplementaryDetailsController
             = new SupplementaryDetailsController(ccdSupplementaryDetailsSearchService);
@@ -48,7 +47,7 @@ class SupplementaryDetailsResponseControllerTest {
 
         SupplementaryDetails supplementaryDetails = new SupplementaryDetails("Johnson", "EU/12345/2024");
 
-        ccdCaseNumberList.forEach((ccdCaseNumber) -> {
+        ccdCaseNumberList.forEach(ccdCaseNumber -> {
             SupplementaryInfo supplementaryInformation = new SupplementaryInfo(ccdCaseNumber, supplementaryDetails);
             supplementaryInfo.add(supplementaryInformation);
         });
@@ -73,8 +72,6 @@ class SupplementaryDetailsResponseControllerTest {
 
     @Test
     void should_return_supplementary_details_complete_on_request_duplicated_ccc_ids() {
-
-        ArrayList<String> ccdCaseNumberList = new ArrayList<>();
         ccdCaseNumberList.add("11111111111111");
         ccdCaseNumberList.add("11111111111111");
         ccdCaseNumberList.add("11111111111111");
@@ -85,7 +82,7 @@ class SupplementaryDetailsResponseControllerTest {
 
         SupplementaryDetails supplementaryDetails = new SupplementaryDetails("Johnson", "EU/12345/2024");
 
-        ccdCaseNumberList.stream().distinct().forEach((ccdCaseNumber) -> {
+        ccdCaseNumberList.stream().distinct().forEach(ccdCaseNumber -> {
             SupplementaryInfo supplementaryInformation = new SupplementaryInfo(ccdCaseNumber, supplementaryDetails);
             supplementaryInfo.add(supplementaryInformation);
         });
@@ -94,7 +91,7 @@ class SupplementaryDetailsResponseControllerTest {
             ccdCaseNumberList
                 .stream()
                 .distinct()
-                .collect(Collectors.toList()))
+                .toList())
         ).thenReturn(supplementaryInfo);
 
         SupplementaryDetailsRequest supplementaryDetailsRequest = new SupplementaryDetailsRequest(ccdCaseNumberList);

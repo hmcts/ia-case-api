@@ -128,7 +128,7 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
             .stream()
             .filter(p -> p.getCaseData() != null && p.getId() != null)
             .map(this::extractSupplementaryInfo)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private SupplementaryInfo extractSupplementaryInfo(CaseDetails caseDetails) {

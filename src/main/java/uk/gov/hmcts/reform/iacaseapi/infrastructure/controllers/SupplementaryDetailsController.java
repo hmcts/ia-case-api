@@ -7,11 +7,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,34 +40,32 @@ public class SupplementaryDetailsController {
                 @SecurityRequirement(name = "ServiceAuthorization")
             }
     )
-    @ApiResponses({
-        @ApiResponse(
-            responseCode  = "200",
-            description = "Supplementary details completely retrieved.",
-            content =  @Content(schema = @Schema(implementation = String.class))
-            ),
-        @ApiResponse(
-            responseCode = "206",
-            description = "Supplementary details partially retrieved.",
-            content =  @Content(schema = @Schema(implementation = String.class))
-            ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - missing or invalid S2S token."
-            ),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - system user does not have access to the resources."
-            ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Supplementary details not found for all the case numbers given."
-            ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Unexpected or Run time exception."
-            )
-    })
+    @ApiResponse(
+        responseCode = "200",
+        description = "Supplementary details completely retrieved.",
+        content = @Content(schema = @Schema(implementation = String.class))
+    )
+    @ApiResponse(
+        responseCode = "206",
+        description = "Supplementary details partially retrieved.",
+        content = @Content(schema = @Schema(implementation = String.class))
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized - missing or invalid S2S token."
+    )
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - system user does not have access to the resources."
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Supplementary details not found for all the case numbers given."
+    )
+    @ApiResponse(
+        responseCode = "500",
+        description = "Unexpected or Run time exception."
+    )
     @PostMapping(path = "/supplementary-details")
     public ResponseEntity<SupplementaryDetailsResponse> post(
         @RequestBody SupplementaryDetailsRequest supplementaryDetailsRequest) {
@@ -83,7 +79,7 @@ public class SupplementaryDetailsController {
             .getCcdCaseNumbers()
             .stream()
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
 
         if (ccdCaseNumberList.isEmpty()) {
 
@@ -101,7 +97,7 @@ public class SupplementaryDetailsController {
         }
 
         log.info("Request ccdNumberList:"
-                 + String.join(",", ccdCaseNumberList));
+            + String.join(",", ccdCaseNumberList));
 
         try {
 
@@ -129,6 +125,8 @@ public class SupplementaryDetailsController {
             } else {
                 return status(HttpStatus.INTERNAL_SERVER_ERROR).body(supplementaryDetailsResponse);
             }
+        } catch (NullPointerException e) {
+            return status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             Thread.currentThread().interrupt();
@@ -148,7 +146,7 @@ public class SupplementaryDetailsController {
         List<String> ccdCaseNumbersMissing = ccdCaseNumberList
             .stream()
             .filter(ccdNumber -> !ccdCaseNumbersFound.contains(ccdNumber))
-            .collect(Collectors.toList());
+            .toList();
 
         return ccdCaseNumbersMissing.isEmpty() ? null : new MissingSupplementaryInfo(ccdCaseNumbersMissing);
     }

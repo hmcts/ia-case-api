@@ -14,7 +14,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @ExtendWith(MockitoExtension.class)
-public class EmptyObjectProviderTest {
+class EmptyObjectProviderTest {
 
     ObjectProvider<HttpMessageConverterCustomizer>  emptyObjectProvider = new EmptyObjectProvider<>();
 

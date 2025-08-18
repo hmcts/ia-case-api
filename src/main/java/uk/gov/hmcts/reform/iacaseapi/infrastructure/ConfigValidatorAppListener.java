@@ -19,8 +19,12 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
 
     protected static final String CLUSTER_NAME = "CLUSTER_NAME";
 
-    @Autowired
     private Environment environment;
+
+    @Autowired
+    public ConfigValidatorAppListener(Environment environment)  {
+        this.environment = environment;
+    }
 
     @Value("${ia.config.validator.secret}")
     private String iaConfigValidatorSecret;

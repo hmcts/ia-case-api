@@ -55,7 +55,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
     private ExecutorService executorService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         data = new HashMap<>();
         data.put("appellantFamilyName", "Johnson");
 
