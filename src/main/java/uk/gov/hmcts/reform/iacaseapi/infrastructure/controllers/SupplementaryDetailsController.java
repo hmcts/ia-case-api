@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.SupplementaryDetailsService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.EmptySupplementaryInfoException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.LargeSupplementaryInfoException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.MissingSupplementaryInfo;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.NullSupplementaryInfoException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.SupplementaryDetailsRequest;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.SupplementaryDetailsResponse;
 
@@ -118,12 +120,14 @@ public class SupplementaryDetailsController {
             } else if (supplementaryDetailsResponse.getSupplementaryInfo().size() == ccdCaseNumberList.size()) {
                 return status(HttpStatus.OK).body(supplementaryDetailsResponse);
             } else {
-                return status(HttpStatus.INTERNAL_SERVER_ERROR).body(supplementaryDetailsResponse);
+                throw new LargeSupplementaryInfoException(supplementaryDetailsResponse);
             }
         } catch (NullSupplementaryInfoException e) {
             return status(HttpStatus.FORBIDDEN).build();
         } catch (EmptySupplementaryInfoException e) {
             return status(HttpStatus.NOT_FOUND).body(e.getSupplementaryDetailsResponse());
+        } catch (LargeSupplementaryInfoException e) {
+            return status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getSupplementaryDetailsResponse());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             Thread.currentThread().interrupt();
@@ -146,21 +150,5 @@ public class SupplementaryDetailsController {
             .toList();
 
         return ccdCaseNumbersMissing.isEmpty() ? null : new MissingSupplementaryInfo(ccdCaseNumbersMissing);
-    }
-
-    private static class NullSupplementaryInfoException extends RuntimeException {
-        private NullSupplementaryInfoException() {
-            super();
-        }
-    }
-
-    @Getter
-    private static class EmptySupplementaryInfoException extends RuntimeException {
-        private final SupplementaryDetailsResponse supplementaryDetailsResponse;
-
-        private EmptySupplementaryInfoException(SupplementaryDetailsResponse supplementaryDetailsResponse) {
-            super();
-            this.supplementaryDetailsResponse = supplementaryDetailsResponse;
-        }
     }
 }
