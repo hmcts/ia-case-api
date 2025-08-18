@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -203,5 +205,57 @@ class SupplementaryDetailsResponseControllerTest {
             = supplementaryDetailsController.post(supplementaryDetailsRequest);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void should_return_internal_server_error_on_invalid_request() {
+        SupplementaryDetails supplementaryDetails = new SupplementaryDetails("Johnson", "EU/12345/2024");
+
+        SupplementaryInfo supplementaryInformation = new SupplementaryInfo("11111111111111", supplementaryDetails);
+        List<SupplementaryInfo> supplementaryInfo = List.of(supplementaryInformation, supplementaryInformation,
+            supplementaryInformation, supplementaryInformation);
+
+        when(ccdSupplementaryDetailsSearchService.getSupplementaryDetails(ccdCaseNumberList)).thenReturn(
+            supplementaryInfo);
+
+        SupplementaryDetailsRequest supplementaryDetailsRequest = new SupplementaryDetailsRequest(ccdCaseNumberList);
+
+        ResponseEntity<SupplementaryDetailsResponse> response
+            = supplementaryDetailsController.post(supplementaryDetailsRequest);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getSupplementaryInfo());
+        assertEquals(4, response.getBody().getSupplementaryInfo().size());
+        assertEquals(supplementaryInfo, response.getBody().getSupplementaryInfo());
+    }
+
+    @Test
+    void should_return_forbidden_error_on_null_supplementary_info() {
+        when(ccdSupplementaryDetailsSearchService.getSupplementaryDetails(ccdCaseNumberList)).thenReturn(null);
+
+        SupplementaryDetailsRequest supplementaryDetailsRequest = new SupplementaryDetailsRequest(ccdCaseNumberList);
+
+        ResponseEntity<SupplementaryDetailsResponse> response
+            = supplementaryDetailsController.post(supplementaryDetailsRequest);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void should_return_not_found_error_on_empty_supplementary_info() {
+        when(ccdSupplementaryDetailsSearchService.getSupplementaryDetails(ccdCaseNumberList))
+            .thenReturn(Collections.emptyList());
+
+        SupplementaryDetailsRequest supplementaryDetailsRequest = new SupplementaryDetailsRequest(ccdCaseNumberList);
+
+        ResponseEntity<SupplementaryDetailsResponse> response
+            = supplementaryDetailsController.post(supplementaryDetailsRequest);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getSupplementaryInfo());
+        assertEquals(0, response.getBody().getSupplementaryInfo().size());
     }
 }

@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,32 +103,27 @@ public class SupplementaryDetailsController {
 
         try {
 
-            SupplementaryDetailsResponse supplementaryDetailsResponse = null;
+            SupplementaryDetailsResponse supplementaryDetailsResponse;
 
-            List<SupplementaryInfo> supplementaryInfo = supplementaryDetailsService
-                .getSupplementaryDetails(ccdCaseNumberList);
-
-            if (supplementaryInfo == null) {
-                return status(HttpStatus.FORBIDDEN).body(supplementaryDetailsResponse);
-            }
+            List<SupplementaryInfo> supplementaryInfo = Optional.ofNullable(supplementaryDetailsService
+                .getSupplementaryDetails(ccdCaseNumberList)).orElseThrow(NullSupplementaryInfoException::new);
 
             supplementaryDetailsResponse = new SupplementaryDetailsResponse(
                 supplementaryInfo, missingSupplementaryDetailsInfo(ccdCaseNumberList, supplementaryInfo));
 
             if (supplementaryDetailsResponse.getSupplementaryInfo().isEmpty()) {
-                return status(HttpStatus.NOT_FOUND).body(supplementaryDetailsResponse);
-
+                throw new EmptySupplementaryInfoException(supplementaryDetailsResponse);
             } else if (supplementaryDetailsResponse.getSupplementaryInfo().size() < ccdCaseNumberList.size()) {
                 return status(HttpStatus.PARTIAL_CONTENT).body(supplementaryDetailsResponse);
-
             } else if (supplementaryDetailsResponse.getSupplementaryInfo().size() == ccdCaseNumberList.size()) {
                 return status(HttpStatus.OK).body(supplementaryDetailsResponse);
-
             } else {
                 return status(HttpStatus.INTERNAL_SERVER_ERROR).body(supplementaryDetailsResponse);
             }
-        } catch (NullPointerException e) {
+        } catch (NullSupplementaryInfoException e) {
             return status(HttpStatus.FORBIDDEN).build();
+        } catch (EmptySupplementaryInfoException e) {
+            return status(HttpStatus.NOT_FOUND).body(e.getSupplementaryDetailsResponse());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             Thread.currentThread().interrupt();
@@ -149,5 +146,21 @@ public class SupplementaryDetailsController {
             .toList();
 
         return ccdCaseNumbersMissing.isEmpty() ? null : new MissingSupplementaryInfo(ccdCaseNumbersMissing);
+    }
+
+    private static class NullSupplementaryInfoException extends RuntimeException {
+        private NullSupplementaryInfoException() {
+            super();
+        }
+    }
+
+    @Getter
+    private static class EmptySupplementaryInfoException extends RuntimeException {
+        private final SupplementaryDetailsResponse supplementaryDetailsResponse;
+
+        private EmptySupplementaryInfoException(SupplementaryDetailsResponse supplementaryDetailsResponse) {
+            super();
+            this.supplementaryDetailsResponse = supplementaryDetailsResponse;
+        }
     }
 }
