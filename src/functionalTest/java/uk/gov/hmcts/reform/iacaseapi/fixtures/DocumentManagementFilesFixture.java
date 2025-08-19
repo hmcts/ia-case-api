@@ -49,6 +49,7 @@ public class DocumentManagementFilesFixture implements Fixture {
                     throw new RuntimeException("Missing content type mapping for document: " + filename);
                 }
 
+//                TODO fix issue here that no usertoken is available in functional tests
                 Document docStoreDocumentMetadata =
                     documentManagementUploader.upload(
                         documentResource,
