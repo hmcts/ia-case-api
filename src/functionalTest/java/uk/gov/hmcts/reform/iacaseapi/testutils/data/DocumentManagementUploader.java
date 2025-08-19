@@ -6,23 +6,24 @@ import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 
 public class DocumentManagementUploader {
 
-    private final DocumentUploadClientApi documentUploadClientApi;
+    private final CaseDocumentClient caseDocumentClient;
     private final IdamAuthProvider idamAuthProvider;
     private final AuthTokenGenerator s2sAuthTokenGenerator;
 
     public DocumentManagementUploader(
-        DocumentUploadClientApi documentUploadClientApi,
+        CaseDocumentClient caseDocumentClient,
         IdamAuthProvider idamAuthProvider,
         AuthTokenGenerator s2sAuthTokenGenerator
     ) {
-        this.documentUploadClientApi = documentUploadClientApi;
+        this.caseDocumentClient = caseDocumentClient;
         this.idamAuthProvider = idamAuthProvider;
         this.s2sAuthTokenGenerator = s2sAuthTokenGenerator;
     }
@@ -47,19 +48,17 @@ public class DocumentManagementUploader {
             );
 
             UploadResponse uploadResponse =
-                documentUploadClientApi
-                    .upload(
+                caseDocumentClient
+                    .uploadDocuments(
                         accessToken,
                         serviceAuthorizationToken,
-                        userId,
+                        "Asylum",
+                        "IA",
                         Collections.singletonList(file)
                     );
 
-            uk.gov.hmcts.reform.document.domain.Document uploadedDocument =
-                uploadResponse
-                    .getEmbedded()
-                    .getDocuments()
-                    .get(0);
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
+                uploadResponse.getDocuments().get(0);
 
             return new Document(
                 uploadedDocument

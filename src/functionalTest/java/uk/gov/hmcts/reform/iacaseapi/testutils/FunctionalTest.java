@@ -12,28 +12,32 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedCcdApi;
 import uk.gov.hmcts.reform.iacaseapi.testutils.data.DocumentManagementFilesFixture;
 import uk.gov.hmcts.reform.iacaseapi.testutils.data.DocumentManagementUploader;
-import uk.gov.hmcts.reform.iacaseapi.testutils.data.IdamAuthProvider;
 import uk.gov.hmcts.reform.iacaseapi.testutils.data.MapValueExpander;
+import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 
 
 @SpringBootTest(classes = {
-    DocumentUploadClientApiConfiguration.class,
     ServiceTokenGeneratorConfiguration.class,
     FunctionalSpringContext.class
 })
 @ActiveProfiles("functional")
 public class FunctionalTest {
-
-    @Value("${idam.redirectUrl}") protected String idamRedirectUrl;
-    @Value("${idam.system.scope}") protected String userScope;
-    @Value("${idam.system.client-id}") protected String idamClientId;
-    @Value("${idam.system.client-secret}") protected String idamClientSecret;
+    @Value("${idam.redirectUrl}")
+    protected String idamRedirectUri;
+    @Value("${idam.scope}")
+    protected String userScope;
+    @Value("${spring.security.oauth2.client.registration.oidc.client-id}")
+    protected String idamClientId;
+    @Value("${spring.security.oauth2.client.registration.oidc.client-secret}")
+    protected String idamClientSecret;
+    @Autowired
+    protected IdamApi idamApi;
 
     @Value("classpath:templates/minimal-appeal-started.json")
     protected Resource minimalAppealStarted;
@@ -41,16 +45,14 @@ public class FunctionalTest {
     @Autowired
     protected AuthTokenGenerator s2sAuthTokenGenerator;
 
+    @Autowired
     protected IdamAuthProvider idamAuthProvider;
 
     @Autowired
     protected ExtendedCcdApi ccdApi;
 
     @Autowired
-    protected IdamApi idamApi;
-
-    @Autowired
-    protected DocumentUploadClientApi documentUploadClientApi;
+    protected CaseDocumentClient caseDocumentClient;
 
     protected ObjectMapper objectMapper = new ObjectMapper();
 
@@ -71,16 +73,8 @@ public class FunctionalTest {
             .setRelaxedHTTPSValidation()
             .build();
 
-        idamAuthProvider = new IdamAuthProvider(
-            idamApi,
-            idamRedirectUrl,
-            userScope,
-            idamClientId,
-            idamClientSecret
-        );
-
         DocumentManagementUploader documentManagementUploader = new DocumentManagementUploader(
-            documentUploadClientApi,
+            caseDocumentClient,
             idamAuthProvider,
             s2sAuthTokenGenerator
         );

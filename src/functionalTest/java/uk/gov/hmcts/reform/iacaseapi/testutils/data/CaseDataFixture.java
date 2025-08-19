@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetail
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.StartEventTrigger;
 import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedCcdApi;
+import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 
 public class CaseDataFixture {
 

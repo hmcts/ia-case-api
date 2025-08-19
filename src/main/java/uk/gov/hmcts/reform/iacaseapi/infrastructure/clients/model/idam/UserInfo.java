@@ -16,9 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserInfo implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class UserInfo {
     @JsonProperty("sub")
     private String email;
     private String uid;
