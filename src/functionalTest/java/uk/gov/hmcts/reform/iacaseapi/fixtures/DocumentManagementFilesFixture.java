@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.util.BinaryResourceLoader;
+import uk.gov.hmcts.reform.iacaseapi.util.CDAMSystemDocumentManagementUploader;
 import uk.gov.hmcts.reform.iacaseapi.util.SystemDocumentManagementUploader;
 
 @Component
@@ -18,6 +19,7 @@ public class DocumentManagementFilesFixture implements Fixture {
     private static Map<String, String> metadata = new HashMap<>();
 
     @Autowired private SystemDocumentManagementUploader documentManagementUploader;
+    @Autowired private CDAMSystemDocumentManagementUploader cdamSystemDocumentManagementUploader;
 
     public void prepare() throws IOException {
 
@@ -49,11 +51,9 @@ public class DocumentManagementFilesFixture implements Fixture {
                     throw new RuntimeException("Missing content type mapping for document: " + filename);
                 }
 
-                Document docStoreDocumentMetadata =
-                    documentManagementUploader.upload(
-                        documentResource,
-                        contentType
-                    );
+
+                Document docStoreDocumentMetadata = cdamSystemDocumentManagementUploader
+                    .upload(documentResource, contentType);
 
                 String placeholder = filename.replace(".", "_");
 
