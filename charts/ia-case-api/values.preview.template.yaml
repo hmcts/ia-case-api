@@ -395,6 +395,8 @@ ia-case-notifications-api:
             alias: IA_TEST_APPLICANT_MOBILE
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-det-prison-email-mappings
+            alias: IA_DET_PRISON_EMAIL_MAPPINGS            
 
 ia-bail-case-api:
   enabled: true
