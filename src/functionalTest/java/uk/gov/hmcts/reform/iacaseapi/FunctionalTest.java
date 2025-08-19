@@ -39,7 +39,6 @@ public class FunctionalTest extends CcdCaseCreationTest {
     @Autowired
     protected IdamService idamService;
 
-
     @Value("classpath:templates/minimal-appeal-started.json")
     protected Resource minimalAppealStarted;
 
