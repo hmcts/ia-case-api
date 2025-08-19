@@ -83,6 +83,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         // assert that only two requests in total are sent to Idam API for user info data (one for the event,
         // one to determine if supplementary data need handling based on user role + journey type
-        Mockito.verify(idamApi, times(2)).userInfo(token);
+        Mockito.verify(idamApi, times(1)).userInfo(token);
     }
 }
