@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.testutils;
+package uk.gov.hmcts.reform.iacaseapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
@@ -13,13 +13,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.iacaseapi.fixtures.DocumentManagementFilesFixture;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
-import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedCcdApi;
-import uk.gov.hmcts.reform.iacaseapi.testutils.data.DocumentManagementFilesFixture;
-import uk.gov.hmcts.reform.iacaseapi.testutils.data.DocumentManagementUploader;
-import uk.gov.hmcts.reform.iacaseapi.testutils.data.MapValueExpander;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ExtendedCcdApi;
+import uk.gov.hmcts.reform.iacaseapi.util.FunctionalSpringContext;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
+import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 
 
 @SpringBootTest(classes = {
@@ -54,6 +54,9 @@ public class FunctionalTest {
     @Autowired
     protected CaseDocumentClient caseDocumentClient;
 
+    @Autowired
+    protected DocumentManagementFilesFixture documentManagementFilesFixture;
+
     protected ObjectMapper objectMapper = new ObjectMapper();
 
     protected final String targetInstance =
@@ -64,6 +67,7 @@ public class FunctionalTest {
 
     protected RequestSpecification requestSpecification;
 
+    @Autowired
     protected MapValueExpander mapValueExpander;
 
     @BeforeEach
@@ -73,16 +77,6 @@ public class FunctionalTest {
             .setRelaxedHTTPSValidation()
             .build();
 
-        DocumentManagementUploader documentManagementUploader = new DocumentManagementUploader(
-            caseDocumentClient,
-            idamAuthProvider,
-            s2sAuthTokenGenerator
-        );
-
-        DocumentManagementFilesFixture documentManagementFilesFixture = new DocumentManagementFilesFixture(
-            documentManagementUploader);
         documentManagementFilesFixture.prepare();
-
-        mapValueExpander = new MapValueExpander(documentManagementFilesFixture);
     }
 }

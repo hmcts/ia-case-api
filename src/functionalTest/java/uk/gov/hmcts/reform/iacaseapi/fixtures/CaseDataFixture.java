@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.testutils.data;
+package uk.gov.hmcts.reform.iacaseapi.fixtures;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -12,6 +12,7 @@ import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -19,8 +20,9 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDataCo
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.StartEventTrigger;
-import uk.gov.hmcts.reform.iacaseapi.testutils.clients.ExtendedCcdApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ExtendedCcdApi;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
+import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 
 public class CaseDataFixture {
 
@@ -34,11 +36,14 @@ public class CaseDataFixture {
     private final IdamAuthProvider idamAuthProvider;
     private final MapValueExpander mapValueExpander;
 
+    @Getter
     private String s2sToken;
 
+    @Getter
     private String legalRepToken;
     private String legalRepUserId;
 
+    @Getter
     private long caseId;
     private Map<String, Object> caseData;
 
@@ -56,18 +61,6 @@ public class CaseDataFixture {
         this.minimalAppealStarted = minimalAppealStarted;
         this.idamAuthProvider = idamAuthProvider;
         this.mapValueExpander = mapValueExpander;
-    }
-
-    public String getS2sToken() {
-        return s2sToken;
-    }
-
-    public String getLegalRepToken() {
-        return legalRepToken;
-    }
-
-    public long getCaseId() {
-        return caseId;
     }
 
     public void startAppeal() {

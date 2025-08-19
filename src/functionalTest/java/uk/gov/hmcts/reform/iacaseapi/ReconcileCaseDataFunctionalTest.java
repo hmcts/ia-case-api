@@ -15,8 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.iacaseapi.testutils.FunctionalTest;
-import uk.gov.hmcts.reform.iacaseapi.testutils.data.CaseDataFixture;
+import uk.gov.hmcts.reform.iacaseapi.fixtures.CaseDataFixture;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
@@ -162,7 +161,7 @@ public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
 
     private void createCase() {
 
-        ccdCaseNumbers = new ArrayList<String>();
+        ccdCaseNumbers = new ArrayList<>();
         cases = "";
 
         legalRepUserToken = idamAuthProvider.getLegalRepToken();

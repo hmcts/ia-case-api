@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.testutils.clients;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.StartEventTrigger;
