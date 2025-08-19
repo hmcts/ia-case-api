@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
     FunctionalSpringContext.class
 })
 @ActiveProfiles("functional")
-public class FunctionalTest {
+public class FunctionalTest extends CcdCaseCreationTest{
     @Value("${idam.redirectUrl}")
     protected String idamRedirectUri;
     @Value("${idam.scope}")
