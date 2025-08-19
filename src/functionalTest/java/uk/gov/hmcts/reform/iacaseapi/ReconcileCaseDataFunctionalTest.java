@@ -26,6 +26,7 @@ public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
 
     @BeforeEach
     public void setUp() {
+        fetchTokensAndUserIds();
         setupForLegalRep();
         ccdCaseNumbers.clear();
     }
@@ -157,8 +158,8 @@ public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
             .header(new Header("ServiceAuthorization", serviceToken))
             .contentType("application/json")
             .body("{\"ccd_case_numbers\":["
-                  + cases
-                  + "]}")
+                + cases
+                + "]}")
             .post("/supplementary-details")
             .then()
             .extract()
@@ -183,14 +184,14 @@ public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
     private void assertThatCaseIsInState(long caseId, String state) {
 
         await().pollInterval(2, SECONDS).atMost(60, SECONDS).until(() ->
-                                                                       ccdApi.get(
-                                                                           legalRepToken,
-                                                                           s2sToken,
-                                                                           legalRepUserId,
-                                                                           jurisdiction,
-                                                                           caseType,
-                                                                           String.valueOf(caseId)
-                                                                       ).getState().equals(state)
+            ccdApi.get(
+                legalRepToken,
+                s2sToken,
+                legalRepUserId,
+                jurisdiction,
+                caseType,
+                String.valueOf(caseId)
+            ).getState().equals(state)
         );
     }
 }
