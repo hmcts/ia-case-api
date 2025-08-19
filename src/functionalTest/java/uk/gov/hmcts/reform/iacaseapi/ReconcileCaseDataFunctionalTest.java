@@ -165,7 +165,7 @@ public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
         cases = "";
 
         legalRepUserToken = idamAuthProvider.getLegalRepToken();
-        legalRepUserId = idamApi.userInfo(legalRepUserToken).getUid();
+        legalRepUserId = idamService.getUserInfo(legalRepUserToken).getUid();
 
         caseDataFixture = new CaseDataFixture(
             ccdApi,

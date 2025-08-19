@@ -13,8 +13,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.DocumentManagementFilesFixture;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ExtendedCcdApi;
 import uk.gov.hmcts.reform.iacaseapi.util.FunctionalSpringContext;
@@ -37,7 +37,8 @@ public class FunctionalTest {
     @Value("${spring.security.oauth2.client.registration.oidc.client-secret}")
     protected String idamClientSecret;
     @Autowired
-    protected IdamApi idamApi;
+    protected IdamService idamService;
+
 
     @Value("classpath:templates/minimal-appeal-started.json")
     protected Resource minimalAppealStarted;
