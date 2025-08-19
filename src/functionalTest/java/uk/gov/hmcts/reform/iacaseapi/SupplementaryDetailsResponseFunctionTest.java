@@ -10,7 +10,7 @@ public class SupplementaryDetailsResponseFunctionTest extends FunctionalTest {
 
     @Test
     public void should_allow_unauthorized_requests_and_return_401_response_code() {
-
+        fetchTokensAndUserIds();
         SerenityRest
             .given()
             .when()
