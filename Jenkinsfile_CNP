@@ -205,25 +205,14 @@ enableSecurityScan()
         }
     }
 
-    before('functionalTest:preview') {
-        env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-case-documents-api"
-        env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-case-notifications-api"
-        env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-case-api-pr-${CHANGE_ID}-timed-event-service"
-        env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-case-payments-api"
-        env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-home-office-integration-api"
-        env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net/oauth2/callback"
-        env.CCD_URL = "http://ia-case-api-pr-${CHANGE_ID}-ccd-data-store-api"
-        env.CASE_DOCUMENT_AM_URL = "http://ia-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api"
+    afterAlways('functionalTest:preview') {
+        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        env.SERVICE_AUTH_PROVIDER_API_BASE_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         sh """
       ./bin/add-org-roles-to-users.sh
     """
-    }
-
-    afterAlways('functionalTest:preview') {
-        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
