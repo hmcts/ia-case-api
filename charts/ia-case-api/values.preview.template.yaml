@@ -17,7 +17,7 @@ java:
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
-    IA_HEARINGS_API_URL:  https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
+    IA_HEARINGS_API_URL:  https://ia-hearings-api-${SERVICE_NAME}.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_ENABLED: "true"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
@@ -36,8 +36,6 @@ java:
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
-    PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 5
-    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 5
   keyVaults:
     ia:
       resourceGroup: ia
@@ -246,6 +244,8 @@ ia-case-notifications-api:
             alias: IA_ADMIN_BRADFORD_EMAIL
           - name: admin-office-birmingham-email
             alias: IA_ADMIN_BIRMINGHAM_EMAIL
+          - name: admin-office-virtual-region-email
+            alias: IA_ADMIN_VIRTUAL_REGION_EMAIL
           - name: hearing-centre-bradford-email
             alias: IA_HEARING_CENTRE_BRADFORD_EMAIL
           - name: hearing-centre-manchester-email
@@ -262,6 +262,8 @@ ia-case-notifications-api:
             alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
           - name: hearing-centre-glasgow-email
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: hearing-centre-virtual-region-email
+            alias: IA_HEARING_CENTRE_VIRTUAL_REGION_EMAIL
           - name: home-office-bradford-email
             alias: IA_HOME_OFFICE_BRADFORD_EMAIL
           - name: home-office-manchester-email
@@ -278,6 +280,8 @@ ia-case-notifications-api:
             alias: IA_HOME_OFFICE_HATTON_CROSS_EMAIL
           - name: home-office-glasgow-email
             alias: IA_HOME_OFFICE_GLASGOW_EMAIL
+          - name: home-office-virtual-region-email
+            alias: IA_HOME_OFFICE_VIRTUAL_REGION_EMAIL
           - name: home-office-apc-email
             alias: IA_HOME_OFFICE_APC_EMAIL
           - name: ftpa-home-office-bradford-email
@@ -303,6 +307,8 @@ ia-case-notifications-api:
           - name: hearing-centre-hatton-cross-telephone
             alias: IA_HEARING_CENTRE_HATTON_CROSS_TELEPHONE
           - name: hearing-centre-glasgow-telephone
+            alias: IA_HEARING_CENTRE_GLASGOW_TELEPHONE
+          - name: hearing-centre-virtual-region-telephone
             alias: IA_HEARING_CENTRE_GLASGOW_TELEPHONE
           - name: respondent-evidence-direction-email
             alias: IA_RESPONDENT_EVIDENCE_DIRECTION_EMAIL
@@ -909,7 +915,7 @@ ccd:
         DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
+        DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
@@ -1460,7 +1466,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
+    image: hmctspublic.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
