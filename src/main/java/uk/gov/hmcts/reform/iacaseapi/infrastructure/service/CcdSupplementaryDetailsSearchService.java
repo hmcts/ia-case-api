@@ -132,11 +132,6 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
     }
 
     private SupplementaryInfo extractSupplementaryInfo(CaseDetails caseDetails) {
-        // TODO: remove logs after testing
-        log.info("Case Data retrieved for caseId {} - surname: {}, caseReferenceNumber: {}",
-                 caseDetails.getId(), caseDetails.getCaseData().get(APPELLANT_FAMILY_NAME),
-                 caseDetails.getCaseData().get(APPEAL_REFERENCE_NUMBER));
-
         SupplementaryDetails supplementaryDetails = new SupplementaryDetails(
             String.valueOf(caseDetails.getCaseData().get(APPELLANT_FAMILY_NAME)),
             String.valueOf(caseDetails.getCaseData().get(APPEAL_REFERENCE_NUMBER))

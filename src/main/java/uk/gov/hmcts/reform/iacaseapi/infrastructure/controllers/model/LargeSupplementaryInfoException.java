@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class LargeSupplementaryInfoException extends RuntimeException {
-    public final SupplementaryDetailsResponse supplementaryDetailsResponse;
+    public transient final SupplementaryDetailsResponse supplementaryDetailsResponse;
 
     public LargeSupplementaryInfoException(SupplementaryDetailsResponse supplementaryDetailsResponse) {
         super();

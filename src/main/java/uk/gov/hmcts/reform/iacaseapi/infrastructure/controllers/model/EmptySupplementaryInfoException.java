@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class EmptySupplementaryInfoException extends RuntimeException {
-    public final SupplementaryDetailsResponse supplementaryDetailsResponse;
+    public transient final SupplementaryDetailsResponse supplementaryDetailsResponse;
 
     public EmptySupplementaryInfoException(SupplementaryDetailsResponse supplementaryDetailsResponse) {
         super();
