@@ -161,6 +161,7 @@ withPipeline(type, product, component) {
     env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
     env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+    env.CASE_ACCESS_CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
     env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"

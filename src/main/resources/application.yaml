@@ -609,7 +609,7 @@ executorService.threadPoolSize: 10
 
 ccd:
   case-data-api:
-    url: ${CCD_URL:http://127.0.0.1:4452}
+    url: ${CASE_ACCESS_CCD_URL:http://127.0.0.1:4452}
 
 ia:
   config:
