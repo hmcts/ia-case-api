@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.DocumentManagementFilesFixture;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ExtendedCcdApi;
 import uk.gov.hmcts.reform.iacaseapi.util.FunctionalSpringContext;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
@@ -49,7 +49,7 @@ public class FunctionalTest extends CcdCaseCreationTest {
     protected IdamAuthProvider idamAuthProvider;
 
     @Autowired
-    protected ExtendedCcdApi ccdApi;
+    protected CoreCaseDataApi ccdApi;
 
     @Autowired
     protected CaseDocumentClient caseDocumentClient;

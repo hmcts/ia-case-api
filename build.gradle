@@ -456,7 +456,7 @@ dependencies {
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 
-    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
 
 
     //pact contract testing

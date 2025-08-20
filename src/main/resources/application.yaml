@@ -607,9 +607,10 @@ govnotify:
 requestPagination.maxRecords: 100
 executorService.threadPoolSize: 10
 
-ccd:
-  case-data-api:
-    url: ${CASE_ACCESS_CCD_URL:http://127.0.0.1:4452}
+core_case_data:
+  api:
+    non-preview:
+      url: ${CASE_ACCESS_CCD_URL:http://127.0.0.1:4452}
 
 ia:
   config:
