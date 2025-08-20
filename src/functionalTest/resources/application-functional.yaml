@@ -4,6 +4,7 @@ targetInstance: ${TEST_URL:http://localhost:8090}
 targetInstanceForHearingsTests: ${CASE_API_URL:http://localhost:8090}
 
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}
 
 spring.flyway.enabled: false
 
@@ -30,7 +31,7 @@ spring:
   cache:
     cache-names: userInfoCache, accessTokenCache, legalRepATokenCache, caseOfficerTokenCache, adminOfficerTokenCache, homeOfficeApcTokenCache, homeOfficeLartTokenCache, homeOfficePouTokenCache, homeOfficeGenericTokenCache, legalRepShareCaseATokenCache, legalRepOrgSuccessTokenCache, legalRepOrgDeletedTokenCache, judgeTokenCache, citizenTokenCache, systemTokenCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   security:
     oauth2:
       client:
