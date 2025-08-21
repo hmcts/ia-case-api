@@ -20,9 +20,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExists;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRemissionExistsAip;
 
 @Component
 public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -75,11 +73,11 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
     private void checkRemissionConditions(AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         final boolean isAipJourney = asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.AIP)
-                .orElse(false);
+            .map(journeyType -> journeyType == JourneyType.AIP)
+            .orElse(false);
 
         switch (appealType) {
             case EA, HU, PA, AG, EU -> {
@@ -88,11 +86,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
                 if (isDlrmFeeRemission) {
-                    if (isAipJourney) {
-                        processAipRemissionConditions(asylumCase, callbackResponse);
-                    } else {
-                        checkPaymentConditions(appealType, asylumCase, callbackResponse, remissionType, lateRemissionType);
-                    }
+                    checkPaymentConditions(appealType, asylumCase, callbackResponse, remissionType, lateRemissionType, isAipJourney);
                 } else if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
                     callbackResponse.addError("Payment is not required for this type of appeal.");
                 } else if (internalDetainedCase(asylumCase)) {
@@ -102,7 +96,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                         callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
                     }
                 } else {
-                    checkPaymentConditions(appealType, asylumCase, callbackResponse, remissionType, lateRemissionType);
+                    checkPaymentConditions(appealType, asylumCase, callbackResponse, remissionType, lateRemissionType, isAipJourney);
                 }
             }
 
@@ -112,15 +106,17 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         }
     }
 
-    private void checkPaymentConditions(AppealType appealType, AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse, Optional<RemissionType> remissionType, Optional<RemissionType> lateRemissionType) {
-        Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+    private void checkPaymentConditions(AppealType appealType, AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse, Optional<RemissionType> remissionType, Optional<RemissionType> lateRemissionType, boolean isAipJourney) {
+        Optional<String> paPaymentType = isAipJourney
+            ? asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class)
+            : asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
 
         // old cases
         if (!isRemissionExists(remissionType)
-                && !isRemissionExists(lateRemissionType)
-                && (appealType == PA && paPaymentType.isEmpty())) {
+            && !isRemissionExists(lateRemissionType)
+            && (appealType == PA && paPaymentType.isEmpty())) {
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 
@@ -129,16 +125,6 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
             && isEaHuEuAg
             && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
             callbackResponse.addError(NOT_AVAILABLE_LABEL);
-        }
-
-        if (appealType == PA && remissionType.isPresent()
-            && remissionType.get() == NO_REMISSION
-            && HandlerUtils.isAipJourney(asylumCase)) {
-            paPaymentType
-                .filter(option -> option.equals("payLater"))
-                .ifPresent(s ->
-                    callbackResponse.addError(NOT_AVAILABLE_LABEL)
-                );
         } else if (awaitingRemissionDecision(asylumCase, remissionType, lateRemissionType)) {
             callbackResponse.addError("You cannot mark this appeal as paid because the remission decision has not been recorded.");
         } else if (remissionDecisionApproved(asylumCase)) {
@@ -158,14 +144,5 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
     private boolean internalDetainedCase(AsylumCase asylumCase) {
         return HandlerUtils.isInternalCase(asylumCase) && HandlerUtils.isAppellantInDetention(asylumCase);
-    }
-
-    private void processAipRemissionConditions(AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
-        Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
-        Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
-        final boolean isDlrmFeeRemissionFlag = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
-        if (!isRemissionExistsAip(remissionOption, helpWithFeesOption, isDlrmFeeRemissionFlag)) {
-            callbackResponse.addError(NOT_AVAILABLE_LABEL);
-        }
     }
 }
