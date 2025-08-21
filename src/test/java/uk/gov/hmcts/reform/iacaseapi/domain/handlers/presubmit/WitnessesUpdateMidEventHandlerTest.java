@@ -37,6 +37,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessInterpreterLanguagesDynamicListUpdater.SIGN_LANGUAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SIGN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.WitnessesUpdateMidEventHandler.SPOKEN;
@@ -364,6 +366,34 @@ public class WitnessesUpdateMidEventHandlerTest {
                 reset(callback);
             }
         }
+    }
+
+    @Test
+    void should_read_spoken_language_field_when_category_is_spoken() {
+        int index = 0;
+        InterpreterLanguageRefData spokenLanguage = new InterpreterLanguageRefData();
+        spokenLanguage.setLanguageManualEntry(Collections.singletonList("Yes"));
+        when(oldAsylumCase.read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(index), InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(spokenLanguage));
+
+        boolean result = witnessesUpdateMidEventHandler.existingSelectionWasManual(oldAsylumCase, index, WitnessesUpdateMidEventHandler.SPOKEN);
+
+        assertTrue(result);
+        verify(oldAsylumCase).read(WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.get(index), InterpreterLanguageRefData.class);
+    }
+
+    @Test
+    void should_read_sign_language_field_when_category_is_sign() {
+        int index = 1;
+        InterpreterLanguageRefData signLanguage = new InterpreterLanguageRefData();
+        signLanguage.setLanguageManualEntry(Collections.singletonList("Yes"));
+        when(oldAsylumCase.read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(index), InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(signLanguage));
+
+        boolean result = witnessesUpdateMidEventHandler.existingSelectionWasManual(oldAsylumCase, index, WitnessesUpdateMidEventHandler.SIGN);
+
+        assertTrue(result);
+        verify(oldAsylumCase).read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(index), InterpreterLanguageRefData.class);
     }
 }
 
