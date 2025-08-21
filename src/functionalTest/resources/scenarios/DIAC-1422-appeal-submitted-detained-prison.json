@@ -1,0 +1,49 @@
+{
+  "description": "DIAC-1422 Submit Appeal - Detained - Prison",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "detentionFacility": "prison",
+          "prisonNOMSNumber": {
+            "prison": "123456"
+          },
+          "appellantInDetention": "Yes",
+          "prisonName": "Ashwell",
+          "detentionBuilding": "HMP Ashwell",
+          "detentionFacility": "prison",
+          "detentionPostcode": "LE15 7TU",
+          "detentionAddressLines": "Oakham, Rutland"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "appellantInDetention": "Yes",
+        "prisonName": "Ashwell",
+        "prisonNOMSNumber": {
+          "prison": "12345"
+        },
+        "detentionBuilding": "HMP Ashwell",
+        "detentionFacility": "prison",
+        "detentionPostcode": "LE15 7TU",
+        "detentionAddressLines": "Oakham, Rutland"
+      }
+    }
+  }
+}
