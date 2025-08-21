@@ -172,7 +172,7 @@ Standard output will show INFOs, WARNs and ERRORs logs. There is a need to check
 
 Intermediate CCD definitions must be imported to Production before any ia-case-api braking code changes is merged to master. Once it is done you can re-run validation script.
 
-There is `IGNORED` array defined in `validate_case_api.js` script. If you think validation script gives you false positives, please add new entry to the array.
+There is an `IGNORED` array defined in `validate_case_api.js` script. If you think validation script gives you false positives, please add new entry to the array.
 
 ### WA local env integration
 
