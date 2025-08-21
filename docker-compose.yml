@@ -40,7 +40,6 @@ services:
       POSTGRES_NAME: ia_case_api
       IA_CASE_DOCUMENTS_API_URL: http://ia-case-documents-api:8092
       IA_CASE_NOTIFICATIONS_API_URL: http://ia-case-notifications-api:8093
-      IA_CASE_PAYMENTS_API_URL: http://ia-case-payments-api:8096
       IA_HOME_OFFICE_INTEGRATION_API_URL: http://ia-home-office-integration-api:8094
       IA_IDAM_CLIENT_ID:
       IA_IDAM_SECRET:
@@ -65,7 +64,6 @@ services:
       - stitching-api
       - ia-case-documents-api
       - ia-case-notifications-api
-      - ia-case-payments-api
       - ia-home-office-integration-api
     ports:
       - ${SERVER_PORT:-8090}:${SERVER_PORT:-8090}
