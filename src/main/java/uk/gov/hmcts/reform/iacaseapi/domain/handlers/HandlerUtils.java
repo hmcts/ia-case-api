@@ -439,7 +439,7 @@ public class HandlerUtils {
                             clearLocalAuthorityLetters(asylumCase);
                         }
                         default -> {
-
+                            // do nothing
                         }
                     }
                     break;

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -157,7 +158,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (remissionOption.isPresent()) {
             switch (remissionOption.get()) {
                 case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
-                    asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
+                    asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
                     Optional<String> asylumSupportRefNumber = asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class);
 
                     if (asylumSupportRefNumber.isPresent()) {
@@ -167,7 +168,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     break;
 
                 case FEE_WAIVER_FROM_HOME_OFFICE:
-                    asylumCase.write(FEE_REMISSION_TYPE, "Home Office Waiver");
+                    asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
                     asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                     asylumCase.clear(HELP_WITH_FEES_OPTION);
                     asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
@@ -175,7 +176,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
                 case UNDER_18_GET_SUPPORT:
                 case PARENT_GET_SUPPORT:
-                    asylumCase.write(FEE_REMISSION_TYPE, "Local Authority Support");
+                    asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LOCAL_AUTHORITY_SUPPORT);
                     asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                     asylumCase.clear(HELP_WITH_FEES_OPTION);
                     asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
@@ -190,7 +191,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                             clearRemissionDetails(asylumCase);
                         }
                     } else {
-                        asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
                         asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                         asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
                     }

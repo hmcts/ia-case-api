@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
@@ -130,15 +131,15 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
             RemissionOption remissionOption = lateRemissionOption.get();
             asylumCase.write(REMISSION_OPTION, remissionOption);
             if (remissionOption == RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
                 asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
                 asylumCase.clear(HELP_WITH_FEES_OPTION);
                 asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
                 asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
             } else if (remissionOption == RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
             } else if (remissionOption == RemissionOption.UNDER_18_GET_SUPPORT || remissionOption == RemissionOption.PARENT_GET_SUPPORT) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Local Authority Support");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LOCAL_AUTHORITY_SUPPORT);
             }
         }
 
@@ -156,7 +157,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         Optional<String> lateHelpWithFeesRefNumber = asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class);
 
         if (lateHelpWithFees.isPresent() && lateHelpWithFeesRefNumber.isPresent()) {
-            asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
+            asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
             asylumCase.write(HELP_WITH_FEES_OPTION, lateHelpWithFees.get());
             asylumCase.write(HELP_WITH_FEES_REF_NUMBER, lateHelpWithFeesRefNumber.get());
 
@@ -203,21 +204,21 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 Document asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT, Document.class).orElse(null);
 
                 previousRemissionDetails = remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                    existingRemissionDetails, "Asylum support", asylumSupportReference, asylumSupportDocument);
+                    existingRemissionDetails, FeeRemissionType.ASYLUM_SUPPORT, asylumSupportReference, asylumSupportDocument);
                 break;
 
             case FEE_WAIVER_FROM_HOME_OFFICE:
                 Document homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT, Document.class)
                     .orElse(null);
                 previousRemissionDetails = remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
-                    existingRemissionDetails, "Home Office fee waiver", homeOfficeWaiverDocument);
+                    existingRemissionDetails, FeeRemissionType.HO_WAIVER, homeOfficeWaiverDocument);
                 break;
 
             case UNDER_18_GET_SUPPORT:
             case PARENT_GET_SUPPORT:
                 Optional<List<IdValue<DocumentWithMetadata>>> localAuthorityLetters = asylumCase.read(LOCAL_AUTHORITY_LETTERS);
                 previousRemissionDetails = remissionDetailsAppender.appendLocalAuthorityRemissionDetails(
-                    existingRemissionDetails, "Local Authority Support", localAuthorityLetters.orElse(null));
+                    existingRemissionDetails, FeeRemissionType.LOCAL_AUTHORITY_SUPPORT, localAuthorityLetters.orElse(null));
                 break;
 
             case I_WANT_TO_GET_HELP_WITH_FEES:
@@ -225,7 +226,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 String helpWithFeesRefNumber = asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse("");
 
                 previousRemissionDetails = remissionDetailsAppender.appendRemissionOptionDetails(
-                    existingRemissionDetails, "Help with Fees", helpWithFeesOption.toString(), helpWithFeesRefNumber);
+                    existingRemissionDetails, FeeRemissionType.HELP_WITH_FEES, helpWithFeesOption.toString(), helpWithFeesRefNumber);
                 break;
 
             default:
@@ -247,32 +248,32 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                     String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class).orElse("");
                     Document asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT, Document.class).orElse(null);
                     previousRemissionDetails = remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                        existingRemissionDetails, "Asylum support", asylumSupportReference, asylumSupportDocument);
+                        existingRemissionDetails, FeeRemissionType.ASYLUM_SUPPORT, asylumSupportReference, asylumSupportDocument);
                     break;
 
                 case "legalAid":
                     String legalAidNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class).orElse("");
                     previousRemissionDetails = remissionDetailsAppender.appendLegalAidRemissionDetails(
-                        existingRemissionDetails, "Legal Aid", legalAidNumber);
+                        existingRemissionDetails, FeeRemissionType.LEGAL_AID, legalAidNumber);
                     break;
 
                 case "section17":
                     Optional<Document> section17Document = asylumCase.read(SECTION17_DOCUMENT, Document.class);
                     previousRemissionDetails = remissionDetailsAppender.appendSection17RemissionDetails(
-                        existingRemissionDetails, "Section 17", section17Document.orElse(null));
+                        existingRemissionDetails, FeeRemissionType.SECTION_17, section17Document.orElse(null));
                     break;
 
                 case "section20":
                     Optional<Document> section20Document = asylumCase.read(SECTION20_DOCUMENT, Document.class);
                     previousRemissionDetails = remissionDetailsAppender.appendSection20RemissionDetails(
-                        existingRemissionDetails, "Section 20", section20Document.orElse(null));
+                        existingRemissionDetails, FeeRemissionType.SECTION_20, section20Document.orElse(null));
                     break;
 
                 case "homeOfficeWaiver":
                     Document homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT, Document.class)
                         .orElse(null);
                     previousRemissionDetails = remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
-                        existingRemissionDetails, "Home Office fee waiver", homeOfficeWaiverDocument);
+                        existingRemissionDetails, FeeRemissionType.HO_WAIVER, homeOfficeWaiverDocument);
                     break;
 
                 default:
@@ -282,14 +283,14 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
             String helpWithReference =
                 asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class).orElse("");
             previousRemissionDetails = remissionDetailsAppender.appendHelpWithFeeReferenceRemissionDetails(
-                existingRemissionDetails, "Help with Fees", helpWithReference);
+                existingRemissionDetails, FeeRemissionType.HELP_WITH_FEES, helpWithReference);
         } else if (remissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
             String exceptionalCircumstances = asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)
                 .orElseThrow(() -> new IllegalStateException("Exceptional circumstances details not present"));
             Optional<List<IdValue<Document>>> exceptionalCircumstancesDocuments =
                 asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS);
             previousRemissionDetails = remissionDetailsAppender.appendExceptionalCircumstancesRemissionDetails(
-                existingRemissionDetails, "Exceptional circumstances", exceptionalCircumstances,
+                existingRemissionDetails, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, exceptionalCircumstances,
                 exceptionalCircumstancesDocuments.orElse(null)
             );
         }

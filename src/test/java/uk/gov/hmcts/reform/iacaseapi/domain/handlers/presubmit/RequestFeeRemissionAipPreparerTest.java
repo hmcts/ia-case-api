@@ -494,10 +494,10 @@ class RequestFeeRemissionAipPreparerTest {
 
     String getExpectedFeeRemissionType(RemissionOption remissionOption) {
         return switch (remissionOption) {
-            case ASYLUM_SUPPORT_FROM_HOME_OFFICE -> "Asylum support";
-            case FEE_WAIVER_FROM_HOME_OFFICE -> "Home Office fee waiver";
-            case UNDER_18_GET_SUPPORT, PARENT_GET_SUPPORT -> "Local Authority Support";
-            case I_WANT_TO_GET_HELP_WITH_FEES -> "Help with Fees";
+            case ASYLUM_SUPPORT_FROM_HOME_OFFICE -> FeeRemissionType.ASYLUM_SUPPORT;
+            case FEE_WAIVER_FROM_HOME_OFFICE -> FeeRemissionType.HO_WAIVER;
+            case UNDER_18_GET_SUPPORT, PARENT_GET_SUPPORT -> FeeRemissionType.LOCAL_AUTHORITY_SUPPORT;
+            case I_WANT_TO_GET_HELP_WITH_FEES -> FeeRemissionType.HELP_WITH_FEES;
             default -> "";
         };
     }
@@ -505,15 +505,15 @@ class RequestFeeRemissionAipPreparerTest {
     String getExpectedFeeRemissionType(RemissionType remissionType, String remissionClaim) {
         return switch (remissionType) {
             case HO_WAIVER_REMISSION -> switch (remissionClaim) {
-                case "asylumSupport" -> "Asylum support";
-                case "legalAid" -> "Legal Aid";
-                case "section17" -> "Section 17";
-                case "section20" -> "Section 20";
-                case "homeOfficeWaiver" -> "Home Office fee waiver";
+                case "asylumSupport" -> FeeRemissionType.ASYLUM_SUPPORT;
+                case "legalAid" -> FeeRemissionType.LEGAL_AID;
+                case "section17" -> FeeRemissionType.SECTION_17;
+                case "section20" -> FeeRemissionType.SECTION_20;
+                case "homeOfficeWaiver" -> FeeRemissionType.HO_WAIVER;
                 default -> "";
             };
-            case HELP_WITH_FEES -> "Help with Fees";
-            case EXCEPTIONAL_CIRCUMSTANCES_REMISSION -> "Exceptional circumstances";
+            case HELP_WITH_FEES -> FeeRemissionType.HELP_WITH_FEES;
+            case EXCEPTIONAL_CIRCUMSTANCES_REMISSION -> FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES;
             default -> "";
         };
     }

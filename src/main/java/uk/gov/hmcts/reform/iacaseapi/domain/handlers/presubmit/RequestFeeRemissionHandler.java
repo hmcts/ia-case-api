@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
@@ -120,32 +121,32 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
                 switch (remissionClaim) {
                     case "asylumSupport":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
                         break;
 
                     case "legalAid":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Legal Aid");
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
                         break;
 
                     case "section17":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Section 17");
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
                         break;
 
                     case "section20":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Section 20");
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
                         break;
 
                     case "homeOfficeWaiver":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
                         break;
 
                     default:
                         break;
                 }
             } else if (lateRemissionType == RemissionType.HELP_WITH_FEES) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
             } else if (lateRemissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
             }
         }
     }
@@ -165,7 +166,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             String feeRemissionType = feeRemissionTypeOpt.get();
 
             switch (feeRemissionType) {
-                case "Asylum support":
+                case FeeRemissionType.ASYLUM_SUPPORT:
                     String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
                             .orElse("");
                     Optional<Document> asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
@@ -179,7 +180,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             );
                     break;
 
-                case "Legal Aid":
+                case FeeRemissionType.LEGAL_AID:
                     String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)
                             .orElse("");
 
@@ -191,7 +192,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             );
                     break;
 
-                case "Section 17":
+                case FeeRemissionType.SECTION_17:
                     Optional<Document> section17Document = asylumCase.read(SECTION17_DOCUMENT);
 
                     if (section17Document.isPresent()) {
@@ -205,7 +206,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     break;
 
-                case "Section 20":
+                case FeeRemissionType.SECTION_20:
                     Optional<Document> section20Document = asylumCase.read(SECTION20_DOCUMENT);
 
                     if (section20Document.isPresent()) {
@@ -219,7 +220,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     break;
 
-                case "Home Office fee waiver":
+                case FeeRemissionType.HO_WAIVER:
                     Optional<Document> homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
 
                     if (homeOfficeWaiverDocument.isPresent()) {
@@ -232,7 +233,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                     }
                     break;
 
-                case "Help with Fees":
+                case FeeRemissionType.HELP_WITH_FEES:
                     String helpWithReference =
                             asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class).orElse("");
 
@@ -244,7 +245,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             );
                     break;
 
-                case "Exceptional circumstances":
+                case FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES:
                     String exceptionalCircumstances = asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)
                             .orElseThrow(() -> new IllegalStateException("Exceptional circumstances details not present"));
                     Optional<List<IdValue<Document>>> exceptionalCircumstancesDocuments =
