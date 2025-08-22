@@ -2826,6 +2826,8 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    REMISSION_REQUESTED_BY(
+        "remissionRequestedBy", new TypeReference<UserRoleLabel>(){}),
     ;
 
     private final String value;

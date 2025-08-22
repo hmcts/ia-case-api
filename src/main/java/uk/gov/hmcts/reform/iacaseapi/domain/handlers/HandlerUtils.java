@@ -16,23 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.PRESIDENTIAL_PANEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -385,5 +369,146 @@ public class HandlerUtils {
 
     public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
         return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
+    public static void clearRequestRemissionFields(AsylumCase asylumCase) {
+        asylumCase.clear(REMISSION_TYPE);
+        asylumCase.clear(LATE_REMISSION_TYPE);
+        asylumCase.clear(REMISSION_CLAIM);
+        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+        asylumCase.clear(SECTION17_DOCUMENT);
+        asylumCase.clear(SECTION20_DOCUMENT);
+        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
+        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    public static void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
+        final Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
+
+        if (lateRemissionTypeOpt.isPresent()) {
+
+            switch (lateRemissionTypeOpt.get()) {
+                case HO_WAIVER_REMISSION:
+                    switch (remissionClaim) {
+                        case "asylumSupport" -> {
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                            clearLocalAuthorityLetters(asylumCase);
+                        }
+                        case "legalAid" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                            clearLocalAuthorityLetters(asylumCase);
+                        }
+                        case "section17" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "section20" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "homeOfficeWaiver" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                            clearLocalAuthorityLetters(asylumCase);
+                        }
+                        default -> {
+
+                        }
+                    }
+                    break;
+
+                case HELP_WITH_FEES:
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                    break;
+
+                case EXCEPTIONAL_CIRCUMSTANCES_REMISSION:
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                    break;
+
+                default:
+                    break;
+            }
+
+            asylumCase.clear(REMISSION_DECISION);
+            asylumCase.clear(AMOUNT_REMITTED);
+            asylumCase.clear(AMOUNT_LEFT_TO_PAY);
+            asylumCase.clear(REMISSION_DECISION_REASON);
+            asylumCase.clear(REMISSION_TYPE);
+        }
+    }
+
+    private static void clearAsylumSupportRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+    }
+
+    private static void clearLegalAidAccountNumberRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+    }
+
+    private static void clearSection17RemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(SECTION17_DOCUMENT);
+    }
+
+    private static void clearSection20RemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(SECTION20_DOCUMENT);
+    }
+
+    private static void clearLocalAuthorityLetters(AsylumCase asylumCase) {
+        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+    }
+
+    private static void clearHomeOfficeWaiverRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+    }
+
+    private static void clearHelpWithFeesRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
+    }
+
+    private static void clearExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
+        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 }

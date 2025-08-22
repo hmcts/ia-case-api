@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -32,6 +33,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -59,13 +62,19 @@ class RequestFeeRemissionHandlerTest {
 
     @Mock private FeatureToggler featureToggler;
 
+    @Mock private UserDetails userDetails;
+
+    @Mock private UserDetailsHelper userDetailsHelper;
+
     private RequestFeeRemissionHandler requestFeeRemissionHandler;
 
     @BeforeEach
     void setUp() {
         RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
-        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender);
+        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender,
+            userDetails, userDetailsHelper);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
     }
 
     @Test
@@ -344,6 +353,7 @@ class RequestFeeRemissionHandlerTest {
         verify(asylumCase, times(2))
                 .write(ArgumentMatchers.eq(TEMP_PREVIOUS_REMISSION_DETAILS), anyList());
         verify(asylumCase, times(1)).write(REMISSION_TYPE, remissionType);
+        verify(asylumCase, times(1)).write(REMISSION_REQUESTED_BY, UserRoleLabel.ADMIN_OFFICER);
         if (remissionType == HO_WAIVER_REMISSION) {
             switch (remissionClaim) {
                 case "asylumSupport":
@@ -587,5 +597,21 @@ class RequestFeeRemissionHandlerTest {
         assertThatThrownBy(() -> requestFeeRemissionHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_not_append_if_aip_journey_type() {
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.CITIZEN);
+
+        requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
+        verify(asylumCase, times(1)).write(REMISSION_REQUESTED_BY, UserRoleLabel.CITIZEN);
     }
 }
