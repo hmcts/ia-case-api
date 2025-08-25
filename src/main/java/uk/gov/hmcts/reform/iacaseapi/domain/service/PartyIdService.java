@@ -36,7 +36,8 @@ public class PartyIdService {
                 .map(idValue -> new IdValue<>(
                     String.valueOf(index.getAndIncrement()),
                     new WitnessDetails(
-                        defaultIfNull(idValue.getValue().getWitnessPartyId(), HearingPartyIdGenerator.generate()),
+                        Optional.ofNullable(idValue.getValue().getWitnessPartyId())
+                                .orElseGet(HearingPartyIdGenerator::generate),
                         idValue.getValue().getWitnessName(),
                         idValue.getValue().getWitnessFamilyName(),
                         idValue.getValue().getIsWitnessDeleted()
