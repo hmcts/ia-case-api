@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID;
@@ -14,6 +13,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -30,20 +30,7 @@ public class PartyIdService {
         Optional<List<IdValue<WitnessDetails>>> witnessDetailsOptional = asylumCase.read(WITNESS_DETAILS);
 
         AtomicInteger index = new AtomicInteger(1);
-        List<IdValue<WitnessDetails>> newWitnessDetails =
-            witnessDetailsOptional.orElse(emptyList())
-                .stream()
-                .map(idValue -> new IdValue<>(
-                    String.valueOf(index.getAndIncrement()),
-                    new WitnessDetails(
-                        Optional.ofNullable(idValue.getValue().getWitnessPartyId())
-                                .orElseGet(HearingPartyIdGenerator::generate),
-                        idValue.getValue().getWitnessName(),
-                        idValue.getValue().getWitnessFamilyName(),
-                        idValue.getValue().getIsWitnessDeleted()
-                    )
-                ))
-                .collect(toList());
+        List<IdValue<WitnessDetails>> newWitnessDetails = witnessDetailsOptional.orElse(emptyList()).stream().map(idValue -> new IdValue<>(String.valueOf(index.getAndIncrement()), new WitnessDetails(Optional.ofNullable(idValue.getValue().getWitnessPartyId()).orElseGet(HearingPartyIdGenerator::generate), idValue.getValue().getWitnessName(), idValue.getValue().getWitnessFamilyName(), idValue.getValue().getIsWitnessDeleted()))).collect(toList());
 
         asylumCase.write(WITNESS_DETAILS, newWitnessDetails);
     }
@@ -77,9 +64,7 @@ public class PartyIdService {
 
     public static void setSponsorPartyId(AsylumCase asylumCase) {
 
-        boolean hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
-            .map(flag -> flag == YES)
-            .orElse(false);
+        boolean hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class).map(flag -> flag == YES).orElse(false);
 
         if (hasSponsor) {
             if (asylumCase.read(SPONSOR_PARTY_ID, String.class).orElse("").isEmpty()) {
