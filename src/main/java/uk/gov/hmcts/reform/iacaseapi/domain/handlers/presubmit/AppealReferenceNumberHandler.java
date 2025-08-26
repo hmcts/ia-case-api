@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -87,13 +85,10 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                     .read(APPEAL_TYPE, AppealType.class)
                     .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
-            boolean isDetainedAppeal = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO) == YES;
-
             String appealReferenceNumber =
                 appealReferenceNumberGenerator.generate(
                     callback.getCaseDetails().getId(),
-                    appealType,
-                    isDetainedAppeal
+                    appealType
                 );
 
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);

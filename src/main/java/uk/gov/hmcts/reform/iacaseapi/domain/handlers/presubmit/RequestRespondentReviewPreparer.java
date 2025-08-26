@@ -24,17 +24,20 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
 
     private final int requestRespondentReviewDueInDays;
     private final int requestRespondentReviewDueInDaysForAda;
+    private final int requestRespondentReviewDueInDaysForDetained;
     private final DateProvider dateProvider;
     private final DueDateService dueDateService;
 
     public RequestRespondentReviewPreparer(
         @Value("${requestRespondentReview.dueInDays}") int requestRespondentReviewDueInDays,
         @Value("${requestRespondentReviewAda.dueInDays}") int requestRespondentReviewDueInDaysForAda,
+        @Value("${requestRespondentReviewDetained.dueInDays}") int requestRespondentReviewDueInDaysForDetained,
         DateProvider dateProvider,
         DueDateService dueDateService
     ) {
         this.requestRespondentReviewDueInDays = requestRespondentReviewDueInDays;
         this.requestRespondentReviewDueInDaysForAda = requestRespondentReviewDueInDaysForAda;
+        this.requestRespondentReviewDueInDaysForDetained = requestRespondentReviewDueInDaysForDetained;
         this.dateProvider = dateProvider;
         this.dueDateService = dueDateService;
     }
@@ -63,10 +66,40 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(SEND_DIRECTION_EXPLANATION,
-                "By the date below you must review the appellant’s ASA and bundle.\n"
-                        + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) Practice Direction (1.11.2024) Part 2, section 2.1 (e), Part 3, sections 7.11 – 7.12. Specifically, the review must:\n\n"
-                        + "- be meaningful.\n"
+        asylumCase.write(SEND_DIRECTION_EXPLANATION, getDirectionExplanation(asylumCase));
+
+        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
+
+        LocalDate dueDate = getDueDate(asylumCase);
+
+        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
+
+        asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
+
+        return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private LocalDate getDueDate(AsylumCase asylumCase) {
+        LocalDate dueDate;
+
+        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+            dueDate = dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentReviewDueInDaysForAda).toLocalDate();
+        } else if (HandlerUtils.isAppellantInDetention(asylumCase)) {
+            dueDate = dateProvider.now().plusDays(requestRespondentReviewDueInDaysForDetained);
+        } else {
+            dueDate = dateProvider.now().plusDays(requestRespondentReviewDueInDays);
+        }
+
+        return dueDate;
+    }
+
+    private String getDirectionExplanation(AsylumCase asylumCase) {
+        if (HandlerUtils.isAppellantInDetention(asylumCase)) {
+            if (HandlerUtils.isAppellantInPersonManual(asylumCase)) {
+                return "By the date below you must review the appellant’s explanation of case (AEC) and bundle.\n\n"
+                        + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) the Practice Direction Part 2, section 2.1 (e), Part 3.\n\n"
+                        + "Specifically, the review must:\n\n"
+                        + "- be meaningful and pragmatically address any evidence uploaded by the appellant subsequently to the decision under appeal.\n"
                         + "- explain whether you agree that the schedule of disputed issues is correct. If not, the review must set out the correct list of disputed issues, including whether there are any further issues that the respondent wishes to raise.\n"
                         + "- state whether you oppose or accept the appellant’s position on each issue and why.\n"
                         + "- cross-reference your submissions to paragraphs in the decision under appeal, pages in the respondent’s bundle, any country information evidence schedule, and/or any additional evidence relied upon.\n"
@@ -77,19 +110,44 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                         + "- not exceed 6 pages unless reasons are submitted in an accompanying application.\n"
                         + "- not contain standard or pro-forma paragraphs.\n"
                         + "- provide the name of the author of the review and the date.\n\n"
-                        + "Parties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. "
-                        + "Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24."
-        );
-
-        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
-        
-        LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentReviewDueInDaysForAda).toLocalDate()
-                : dateProvider.now().plusDays(requestRespondentReviewDueInDays);
-        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
-
-        asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
+                        + "Parties must ensure they conduct proceedings with procedural rigour.\n\n"
+                        + "The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal."
+                        + " Parties are reminded of the possible sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction.";
+            } else {
+                return "By the date below you must review the appellant’s ASA and bundle.\n\n"
+                        + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) the Practice Direction Part 2, section 2.1 (e), Part 3.\n\n"
+                        + "Specifically, the review must:\n\n"
+                        + "- be meaningful and pragmatically address any evidence uploaded by the appellant subsequently to the decision under appeal.\n"
+                        + "- explain whether you agree that the schedule of disputed issues is correct. If not, the review must set out the correct list of disputed issues, including whether there are any further issues that the respondent wishes to raise.\n"
+                        + "- state whether you oppose or accept the appellant’s position on each issue and why.\n"
+                        + "- cross-reference your submissions to paragraphs in the decision under appeal, pages in the respondent’s bundle, any country information evidence schedule, and/or any additional evidence relied upon.\n"
+                        + "- specify which, if any, witnesses you intend to cross-examine and if you do not intend to cross-examine a witness, outline any objections to that witness’s statement being read by a judge.\n"
+                        + "- address whether the appeal should be allowed on any ground if the appellant and/or their key witnesses are found to be credible according to the applicable standard of proof.\n"
+                        + "- identify whether you are prepared to withdraw the decision (or part of it).\n"
+                        + "- state whether the appeal can be resolved without a hearing.\n"
+                        + "- not exceed 6 pages unless reasons are submitted in an accompanying application.\n"
+                        + "- not contain standard or pro-forma paragraphs.\n"
+                        + "- provide the name of the author of the review and the date.\n\n"
+                        + "Parties must ensure they conduct proceedings with procedural rigour.\n\n"
+                        + "The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. "
+                        + "Parties are reminded of the possible sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction.";
+            }
+        } else {
+            return "By the date below you must review the appellant’s ASA and bundle.\n"
+                    + "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) Practice Direction (1.11.2024) Part 2, section 2.1 (e), Part 3, sections 7.11 – 7.12. Specifically, the review must:\n\n"
+                    + "- be meaningful.\n"
+                    + "- explain whether you agree that the schedule of disputed issues is correct. If not, the review must set out the correct list of disputed issues, including whether there are any further issues that the respondent wishes to raise.\n"
+                    + "- state whether you oppose or accept the appellant’s position on each issue and why.\n"
+                    + "- cross-reference your submissions to paragraphs in the decision under appeal, pages in the respondent’s bundle, any country information evidence schedule, and/or any additional evidence relied upon.\n"
+                    + "- specify which, if any, witnesses you intend to cross-examine and if you do not intend to cross-examine a witness, outline any objections to that witness’s statement being read by a judge.\n"
+                    + "- address whether the appeal should be allowed on any ground if the appellant and/or their key witnesses are found to be credible according to the applicable standard of proof.\n"
+                    + "- identify whether you are prepared to withdraw the decision (or part of it).\n"
+                    + "- state whether the appeal can be resolved without a hearing.\n"
+                    + "- not exceed 6 pages unless reasons are submitted in an accompanying application.\n"
+                    + "- not contain standard or pro-forma paragraphs.\n"
+                    + "- provide the name of the author of the review and the date.\n\n"
+                    + "Parties must ensure they conduct proceedings with procedural rigour. The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, nor failures to comply with directions issued by the Tribunal. "
+                    + "Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.";
+        }
     }
 }

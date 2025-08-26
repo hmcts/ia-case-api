@@ -15,7 +15,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
@@ -507,5 +509,81 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(0);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL"})
+    void should_clear_custodial_sentence_immigrationRemovalCentre(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("immigrationRemovalCentre"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(1)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL"})
+    void should_not_clear_custodial_sentence_not_immigrationRemovalCentre(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("prison"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL"})
+    void should_not_clear_custodial_sentence_detentionFacility_empty(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "EDIT_APPEAL_AFTER_SUBMIT"})
+    void should_not_clear_custodial_sentence_wrong_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("immigrationRemovalCentre"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
     }
 }
