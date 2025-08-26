@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -243,12 +245,12 @@ class RequestFeeRemissionAipPreparerTest {
             previousRemissionOption, mockDocument, localAuthorityLetters);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipPreparer.handle(ABOUT_TO_SUBMIT, callback);
 
+        verify(asylumCase, never()).write(eq(REMISSION_TYPE), any());
         assertNotNull(callbackResponse);
         assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
-
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -346,12 +348,12 @@ class RequestFeeRemissionAipPreparerTest {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipPreparer.handle(ABOUT_TO_SUBMIT, callback);
 
+        verify(asylumCase, times(1)).write(REMISSION_TYPE, previousRemissionType);
         assertNotNull(callbackResponse);
         assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
-
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -557,7 +559,7 @@ class RequestFeeRemissionAipPreparerTest {
         String exceptionalCircumstances = "Exceptional Circumstances";
         String helpWithFeesReferenceNumber = "HWF123";
         RemissionDetails.RemissionDetailsBuilder expectedRemissionDetailsBuilder = RemissionDetails.builder();
-        when(asylumCase.read(FEE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(previousRemissionType));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(previousRemissionType));
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.ofNullable(remissionClaim));
         when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of(asylumSupportReference));
         when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT, Document.class)).thenReturn(Optional.ofNullable(mockDocument));

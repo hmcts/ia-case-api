@@ -91,6 +91,11 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
             case PA:
             case EU:
                 Optional<RemissionOption> previousRemissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+                asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)
+                    .ifPresent(remissionType -> {
+                        asylumCase.write(REMISSION_TYPE, remissionType);
+                        asylumCase.clear(LATE_REMISSION_TYPE);
+                    });
                 Optional<RemissionType> previousRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<HelpWithFeesOption> previousHelpWithFeesOptionAip = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
@@ -126,7 +131,6 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
 
     private void assignLateRemissionValuesToRemissionValues(AsylumCase asylumCase) {
         Optional<RemissionOption> lateRemissionOption = asylumCase.read(LATE_REMISSION_OPTION, RemissionOption.class);
-
         if (lateRemissionOption.isPresent()) {
             RemissionOption remissionOption = lateRemissionOption.get();
             asylumCase.write(REMISSION_OPTION, remissionOption);
@@ -238,7 +242,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
     private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsNonAppellant(AsylumCase asylumCase,
                                                                                        List<IdValue<RemissionDetails>> previousRemissionDetails,
                                                                                        List<IdValue<RemissionDetails>> existingRemissionDetails) {
-        RemissionType remissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)
+        RemissionType remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class)
             .orElse(null);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
             .orElse("");
