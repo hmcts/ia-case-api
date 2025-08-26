@@ -242,6 +242,9 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
             .orElse(null);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
             .orElse("");
+        if (remissionType == null) {
+            return appendPreviousRemissionDetailsAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
+        }
         if (remissionType == RemissionType.HO_WAIVER_REMISSION) {
             switch (remissionClaim) {
                 case "asylumSupport":
