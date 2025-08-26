@@ -238,7 +238,7 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
     private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsNonAppellant(AsylumCase asylumCase,
                                                                                        List<IdValue<RemissionDetails>> previousRemissionDetails,
                                                                                        List<IdValue<RemissionDetails>> existingRemissionDetails) {
-        RemissionType remissionType = asylumCase.read(FEE_REMISSION_TYPE, RemissionType.class)
+        RemissionType remissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)
             .orElse(null);
         String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
             .orElse("");
