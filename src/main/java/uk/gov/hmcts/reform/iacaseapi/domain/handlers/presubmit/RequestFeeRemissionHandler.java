@@ -98,6 +98,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         clearPreviousRemissionCaseFields(asylumCase);
+        asylumCase.clear(REMISSION_TYPE);
 
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
         asylumCase.write(REMISSION_REQUESTED_BY, currentUser);

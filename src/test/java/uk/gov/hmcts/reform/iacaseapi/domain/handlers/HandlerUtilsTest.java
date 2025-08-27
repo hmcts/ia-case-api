@@ -540,7 +540,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -566,7 +565,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -592,7 +590,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -618,7 +615,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -644,7 +640,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -668,7 +663,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -692,7 +686,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
 
@@ -712,7 +705,6 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_REMITTED);
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
-        verify(asylumCase).clear(REMISSION_TYPE);
     }
 
     private static Stream<Arguments> appealHasRemissionOptionOrTypeTrue() {

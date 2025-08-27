@@ -473,7 +473,6 @@ public class HandlerUtils {
             asylumCase.clear(AMOUNT_REMITTED);
             asylumCase.clear(AMOUNT_LEFT_TO_PAY);
             asylumCase.clear(REMISSION_DECISION_REASON);
-            asylumCase.clear(REMISSION_TYPE);
         }
     }
 
