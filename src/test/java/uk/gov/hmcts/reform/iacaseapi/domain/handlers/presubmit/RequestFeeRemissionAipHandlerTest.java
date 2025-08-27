@@ -499,8 +499,6 @@ class RequestFeeRemissionAipHandlerTest {
             Arguments.of(UNDER_18_GET_SUPPORT, null, null),
             Arguments.of(PARENT_GET_SUPPORT, null, null),
             Arguments.of(I_WANT_TO_GET_HELP_WITH_FEES, null, null),
-            Arguments.of(ASYLUM_SUPPORT_FROM_HOME_OFFICE, mockDoc, null),
-            Arguments.of(FEE_WAIVER_FROM_HOME_OFFICE, mockDoc, null),
             Arguments.of(UNDER_18_GET_SUPPORT, null, mockDocMetadataList),
             Arguments.of(PARENT_GET_SUPPORT, null, mockDocMetadataList)
         );

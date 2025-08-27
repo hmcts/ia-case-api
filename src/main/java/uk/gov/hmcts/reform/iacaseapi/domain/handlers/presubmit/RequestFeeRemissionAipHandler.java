@@ -204,17 +204,14 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         switch (remissionOption) {
             case ASYLUM_SUPPORT_FROM_HOME_OFFICE:
                 String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class).orElse("");
-                Document asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT, Document.class).orElse(null);
 
                 previousRemissionDetails = remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                    existingRemissionDetails, FeeRemissionType.ASYLUM_SUPPORT, asylumSupportReference, asylumSupportDocument);
+                    existingRemissionDetails, FeeRemissionType.ASYLUM_SUPPORT, asylumSupportReference, null);
                 break;
 
             case FEE_WAIVER_FROM_HOME_OFFICE:
-                Document homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT, Document.class)
-                    .orElse(null);
                 previousRemissionDetails = remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
-                    existingRemissionDetails, FeeRemissionType.HO_WAIVER, homeOfficeWaiverDocument);
+                    existingRemissionDetails, FeeRemissionType.HO_WAIVER, null);
                 break;
 
             case UNDER_18_GET_SUPPORT:
