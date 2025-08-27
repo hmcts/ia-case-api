@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setFeeRemissionTypeDetails;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -63,6 +63,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
+               && !isAipJourney(callback.getCaseDetails().getCaseData())
                && featureToggler.getValue("remissions-feature", false);
     }
 
@@ -86,69 +87,23 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         log.info("Handle: getting temp previous remission details: " + tempPreviousRemissionDetails);
 
         setFeeRemissionTypeDetails(asylumCase);
-        if (!isAipJourney(asylumCase)) {
-            switch (appealType) {
-                case EA, HU, PA, EU -> {
-                    appendTempPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
-                    asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
-                    appendTempPreviousRemissionDetails(asylumCase);
-                }
-                default -> asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
-            }
 
-            asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
+        switch (appealType) {
+            case EA, HU, PA, EU -> {
+                appendTempPreviousRemissionDecisionDetails(tempPreviousRemissionDetails, asylumCase);
+                asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
+                appendTempPreviousRemissionDetails(asylumCase);
+            }
+            default -> asylumCase.write(PREVIOUS_REMISSION_DETAILS, tempPreviousRemissionDetails);
         }
 
         clearPreviousRemissionCaseFields(asylumCase);
 
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
         asylumCase.write(REMISSION_REQUESTED_BY, currentUser);
+        asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
-
-        log.info("Setting fee remission type details");
-
-        Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
-        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
-            .orElse("");
-
-        if (lateRemissionTypeOpt.isPresent()) {
-            RemissionType lateRemissionType = lateRemissionTypeOpt.get();
-            asylumCase.write(REMISSION_TYPE, lateRemissionType);
-            if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
-                switch (remissionClaim) {
-                    case "asylumSupport":
-                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
-                        break;
-
-                    case "legalAid":
-                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
-                        break;
-
-                    case "section17":
-                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
-                        break;
-
-                    case "section20":
-                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
-                        break;
-
-                    case "homeOfficeWaiver":
-                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
-                        break;
-
-                    default:
-                        break;
-                }
-            } else if (lateRemissionType == RemissionType.HELP_WITH_FEES) {
-                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
-            } else if (lateRemissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
-                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
-            }
-        }
     }
 
     private void appendTempPreviousRemissionDetails(AsylumCase asylumCase) {

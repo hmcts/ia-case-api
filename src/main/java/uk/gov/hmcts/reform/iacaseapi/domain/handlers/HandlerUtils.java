@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
@@ -373,7 +374,6 @@ public class HandlerUtils {
     }
 
     public static void clearRequestRemissionFields(AsylumCase asylumCase) {
-        asylumCase.clear(REMISSION_TYPE);
         asylumCase.clear(LATE_REMISSION_TYPE);
         asylumCase.clear(REMISSION_CLAIM);
         asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
@@ -511,5 +511,56 @@ public class HandlerUtils {
     private static void clearExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
         asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
+                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
+                                                         Optional<RemissionType> remissionType,
+                                                         Optional<RemissionType> lateRemissionType) {
+        return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
+            || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
+            || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
+            || (lateRemissionType.isPresent() && lateRemissionType.get() != RemissionType.NO_REMISSION);
+    }
+
+    public static void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
+        Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
+            .orElse("");
+
+        if (lateRemissionTypeOpt.isPresent()) {
+            RemissionType lateRemissionType = lateRemissionTypeOpt.get();
+            asylumCase.write(REMISSION_TYPE, lateRemissionType);
+            if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
+                switch (remissionClaim) {
+                    case "asylumSupport":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
+                        break;
+
+                    case "legalAid":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
+                        break;
+
+                    case "section17":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
+                        break;
+
+                    case "section20":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
+                        break;
+
+                    case "homeOfficeWaiver":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
+                        break;
+
+                    default:
+                        break;
+                }
+            } else if (lateRemissionType == RemissionType.HELP_WITH_FEES) {
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
+            } else if (lateRemissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
+            }
+        }
     }
 }

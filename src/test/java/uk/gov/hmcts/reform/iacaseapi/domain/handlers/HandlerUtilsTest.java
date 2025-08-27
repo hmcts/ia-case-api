@@ -31,7 +31,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -199,8 +202,8 @@ class HandlerUtilsTest {
         HandlerUtils.checkAndUpdateAutoHearingRequestEnabled(locationBasedFeatureToggler, asylumCase);
 
         verify(asylumCase, times(1)).write(
-                AUTO_HEARING_REQUEST_ENABLED,
-                value);
+            AUTO_HEARING_REQUEST_ENABLED,
+            value);
     }
 
     @Test
@@ -470,7 +473,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = OutOfCountryDecisionType.class, names = { "REFUSAL_OF_PROTECTION", "REMOVAL_OF_CLIENT" })
+    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_PROTECTION", "REMOVAL_OF_CLIENT"})
     public void outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit_returns_false(OutOfCountryDecisionType type) {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(type));
 
@@ -478,7 +481,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = OutOfCountryDecisionType.class, names = { "REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT" })
+    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
     public void outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit_returns_true(OutOfCountryDecisionType type) {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(type));
 
@@ -493,7 +496,7 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = OutOfCountryCircumstances.class, names = { "LEAVE_UK", "NONE" })
+    @EnumSource(value = OutOfCountryCircumstances.class, names = {"LEAVE_UK", "NONE"})
     public void outOfCountryCircumstances_returns_true(OutOfCountryCircumstances outOfCountryCircumstances) {
         when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(outOfCountryCircumstances));
 
@@ -504,7 +507,6 @@ class HandlerUtilsTest {
     void clearRequestRemissionFields_should_clear_all_fields() {
         HandlerUtils.clearRequestRemissionFields(asylumCase);
 
-        verify(asylumCase).clear(REMISSION_TYPE);
         verify(asylumCase).clear(LATE_REMISSION_TYPE);
         verify(asylumCase).clear(REMISSION_CLAIM);
         verify(asylumCase).clear(ASYLUM_SUPPORT_REFERENCE);
@@ -648,7 +650,7 @@ class HandlerUtilsTest {
 
     @Test
     void clearPreviousRemissionCaseFields_should_clear_fields_for_HELP_WITH_FEES() {
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HELP_WITH_FEES));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HELP_WITH_FEES));
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
@@ -672,7 +674,7 @@ class HandlerUtilsTest {
 
     @Test
     void clearPreviousRemissionCaseFields_should_clear_fields_for_EXCEPTIONAL_CIRCUMSTANCES_REMISSION() {
-        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
@@ -711,5 +713,80 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
         verify(asylumCase).clear(REMISSION_DECISION_REASON);
         verify(asylumCase).clear(REMISSION_TYPE);
+    }
+
+    private static Stream<Arguments> appealHasRemissionOptionOrTypeTrue() {
+        return Stream.of(
+            Arguments.of(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE), Optional.empty(), Optional.empty(), Optional.empty()),
+            Arguments.of(Optional.empty(), Optional.of(HelpWithFeesOption.WANT_TO_APPLY), Optional.empty(), Optional.empty()),
+            Arguments.of(Optional.empty(), Optional.empty(), Optional.of(RemissionType.HO_WAIVER_REMISSION), Optional.empty()),
+            Arguments.of(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(HELP_WITH_FEES)),
+            Arguments.of(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE),
+                Optional.of(HelpWithFeesOption.WANT_TO_APPLY),
+                Optional.of(RemissionType.HO_WAIVER_REMISSION),
+                Optional.of(HELP_WITH_FEES)
+            )
+        );
+    }
+
+    private static Stream<Arguments> appealHasRemissionOptionOrTypeFalse() {
+        return Stream.of(
+            Arguments.of(Optional.of(RemissionOption.NO_REMISSION), Optional.empty(), Optional.empty(), Optional.empty()),
+            Arguments.of(Optional.empty(), Optional.of(WILL_PAY_FOR_APPEAL), Optional.empty(), Optional.empty()),
+            Arguments.of(Optional.empty(), Optional.empty(), Optional.of(RemissionType.NO_REMISSION), Optional.empty()),
+            Arguments.of(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(RemissionType.NO_REMISSION)),
+            Arguments.of(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("appealHasRemissionOptionOrTypeTrue")
+    void appealHasRemissionOptionOrTypeMethod_returns_true(Optional<RemissionOption> remissionOption,
+                                                           Optional<HelpWithFeesOption> helpWithFeesOption,
+                                                           Optional<RemissionType> remissionType,
+                                                           Optional<RemissionType> lateRemissionType) {
+        assertTrue(appealHasRemissionOptionOrType(remissionOption, helpWithFeesOption, remissionType, lateRemissionType));
+    }
+
+    @ParameterizedTest
+    @MethodSource("appealHasRemissionOptionOrTypeFalse")
+    void appealHasRemissionOptionOrTypeMethod_returns_false(Optional<RemissionOption> remissionOption,
+                                                            Optional<HelpWithFeesOption> helpWithFeesOption,
+                                                            Optional<RemissionType> remissionType,
+                                                            Optional<RemissionType> lateRemissionType) {
+        assertFalse(appealHasRemissionOptionOrType(remissionOption, helpWithFeesOption, remissionType, lateRemissionType));
+    }
+
+    private static Stream<Arguments> remissionTypeAndClaimProvider() {
+        return Stream.of(
+            Arguments.of(HO_WAIVER_REMISSION, "asylumSupport", FeeRemissionType.ASYLUM_SUPPORT),
+            Arguments.of(HO_WAIVER_REMISSION, "legalAid", FeeRemissionType.LEGAL_AID),
+            Arguments.of(HO_WAIVER_REMISSION, "section17", FeeRemissionType.SECTION_17),
+            Arguments.of(HO_WAIVER_REMISSION, "section20", FeeRemissionType.SECTION_20),
+            Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", FeeRemissionType.HO_WAIVER),
+            Arguments.of(HO_WAIVER_REMISSION, "unknown", null), // Unknown claim
+            Arguments.of(HELP_WITH_FEES, "", FeeRemissionType.HELP_WITH_FEES),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "", FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("remissionTypeAndClaimProvider")
+    void should_set_fee_remission_type_details_correctly(RemissionType remissionType, String remissionClaim, String expectedFeeRemissionType) {
+        when(asylumCase.read(AsylumCaseFieldDefinition.LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
+
+        HandlerUtils.setFeeRemissionTypeDetails(asylumCase);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REMISSION_TYPE, remissionType);
+        verify(asylumCase, expectedFeeRemissionType != null ? times(1) : never())
+            .write(AsylumCaseFieldDefinition.FEE_REMISSION_TYPE, expectedFeeRemissionType);
+    }
+
+    @Test
+    void should_not_set_fee_remission_type_details_if_late_remission_type_not_present() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        HandlerUtils.setFeeRemissionTypeDetails(asylumCase);
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.REMISSION_TYPE), any());
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.FEE_REMISSION_TYPE), any());
     }
 }

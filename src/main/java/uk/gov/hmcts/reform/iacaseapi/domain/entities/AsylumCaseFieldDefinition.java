@@ -1633,6 +1633,9 @@ public enum AsylumCaseFieldDefinition {
     LATE_REMISSION_TYPE(
         "lateRemissionType", new TypeReference<RemissionType>(){}),
 
+    HAS_PREVIOUS_REMISSION(
+        "hasPreviousRemission", new TypeReference<YesOrNo>(){}),
+
     REMISSION_CLAIM(
         "remissionClaim", new TypeReference<String>(){}),
 

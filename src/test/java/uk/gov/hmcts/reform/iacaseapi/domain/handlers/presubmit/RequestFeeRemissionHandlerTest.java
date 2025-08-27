@@ -599,20 +599,4 @@ class RequestFeeRemissionHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
-
-    @Test
-    void should_not_append_if_aip_journey_type() {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.CITIZEN);
-
-        requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
-        verify(asylumCase, times(1)).write(REMISSION_REQUESTED_BY, UserRoleLabel.CITIZEN);
-    }
 }
