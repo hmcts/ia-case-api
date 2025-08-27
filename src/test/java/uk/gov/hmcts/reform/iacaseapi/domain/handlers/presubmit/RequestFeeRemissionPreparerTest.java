@@ -85,7 +85,6 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        verify(asylumCase, times(1)).clear(REMISSION_TYPE);
         verify(asylumCase, times(1)).clear(LATE_REMISSION_TYPE);
         verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
@@ -120,7 +119,6 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        verify(asylumCase, times(1)).clear(REMISSION_TYPE);
         verify(asylumCase, times(1)).clear(LATE_REMISSION_TYPE);
         verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
