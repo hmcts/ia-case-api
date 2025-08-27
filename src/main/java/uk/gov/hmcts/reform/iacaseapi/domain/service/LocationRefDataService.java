@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.REMOTE_HEARING;
 
 import java.util.Collections;
@@ -79,7 +78,7 @@ public class LocationRefDataService {
     }
 
     private boolean isOpenLocation(CourtVenue courtVenue) {
-        return Objects.equals(courtVenue.getCourtStatus(), OPEN);
+        return OPEN.equalsIgnoreCase(courtVenue.getCourtStatus());
     }
 
     private boolean isHearingLocation(CourtVenue courtVenue) {
@@ -87,7 +86,8 @@ public class LocationRefDataService {
     }
 
     public String getHearingCentreAddress(HearingCentre hearingCentre) {
-        if (Objects.equals(hearingCentre, REMOTE_HEARING)) {
+        if (Objects.equals(hearingCentre, REMOTE_HEARING)
+                && hearingCentre != HearingCentre.IAC_NATIONAL_VIRTUAL) {
             return "Remote hearing";
         }
 
@@ -105,8 +105,9 @@ public class LocationRefDataService {
     }
 
     private String assembleCourtVenueAddress(CourtVenue courtVenue) {
-        return defaultIfNull(courtVenue.getCourtName(), "") + ", "
-               + defaultIfNull(courtVenue.getCourtAddress(), "") + ", "
-               + defaultIfNull(courtVenue.getPostcode(), "");
+        return Objects.requireNonNullElse(courtVenue.getCourtName(), "") + ", "
+                + Objects.requireNonNullElse(courtVenue.getCourtAddress(), "") + ", "
+                + Objects.requireNonNullElse(courtVenue.getPostcode(), "");
     }
+
 }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID;
@@ -36,7 +35,8 @@ public class PartyIdService {
                 .map(idValue -> new IdValue<>(
                     String.valueOf(index.getAndIncrement()),
                     new WitnessDetails(
-                        defaultIfNull(idValue.getValue().getWitnessPartyId(), HearingPartyIdGenerator.generate()),
+                        Optional.ofNullable(idValue.getValue().getWitnessPartyId())
+                                .orElseGet(HearingPartyIdGenerator::generate),
                         idValue.getValue().getWitnessName(),
                         idValue.getValue().getWitnessFamilyName(),
                         idValue.getValue().getIsWitnessDeleted()
