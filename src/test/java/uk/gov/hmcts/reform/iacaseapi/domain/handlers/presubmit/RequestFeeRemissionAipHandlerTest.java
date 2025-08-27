@@ -213,11 +213,11 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("reason"));
         RemissionDetails expectedRemissionDetails = prepareExpectedRemissionDetailsAppellant(
             previousRemissionOption, mockDocument, localAuthorityLetters);
+        assertNotNull(expectedRemissionDetails);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, never()).write(eq(REMISSION_TYPE), any());
         assertNotNull(callbackResponse);
-        assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
@@ -250,10 +250,10 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("reason"));
         RemissionDetails expectedRemissionDetails = prepareExpectedRemissionDetailsAppellant(
             previousRemissionOption, mockDocument, localAuthorityLetters);
+        assertNotNull(expectedRemissionDetails);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
@@ -284,10 +284,10 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("reason"));
         RemissionDetails expectedRemissionDetails = prepareExpectedRemissionDetailsAppellant(
             previousRemissionOption, mockDocument, localAuthorityLetters);
+        assertNotNull(expectedRemissionDetails);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
@@ -319,12 +319,12 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("reason"));
         RemissionDetails expectedRemissionDetails = prepareExpectedRemissionDetailsNonAppellant(
             previousRemissionType, remissionClaim, mockDoc, documentList);
+        assertNotNull(expectedRemissionDetails);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(REMISSION_TYPE, previousRemissionType);
         assertNotNull(callbackResponse);
-        assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
@@ -354,13 +354,13 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of(amountLeftToPay));
         when(asylumCase.read(REMISSION_DECISION_REASON, String.class)).thenReturn(Optional.of("reason"));
         when(asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)).thenReturn(Optional.of(UserRoleLabel.ADMIN_OFFICER));
+        RemissionDetails expectedRemissionDetails = prepareExpectedRemissionDetailsAppellant(
+            previousRemissionOption, mockDocument, localAuthorityLetters);
+        assertNotNull(expectedRemissionDetails);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, never()).write(eq(REMISSION_TYPE), any());
         assertNotNull(callbackResponse);
-        RemissionDetails expectedRemissionDetails = prepareExpectedRemissionDetailsAppellant(
-            previousRemissionOption, mockDocument, localAuthorityLetters);
-        assertNotNull(expectedRemissionDetails);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
         RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
