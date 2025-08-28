@@ -468,7 +468,8 @@ public class HandlerUtils {
                 default:
                     break;
             }
-
+            asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+            asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
             asylumCase.clear(REMISSION_DECISION);
             asylumCase.clear(AMOUNT_REMITTED);
             asylumCase.clear(AMOUNT_LEFT_TO_PAY);
@@ -479,7 +480,6 @@ public class HandlerUtils {
     private static void clearAsylumSupportRemissionDetails(AsylumCase asylumCase) {
         asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
         asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
     }
 
     private static void clearLegalAidAccountNumberRemissionDetails(AsylumCase asylumCase) {
@@ -504,7 +504,6 @@ public class HandlerUtils {
 
     private static void clearHelpWithFeesRemissionDetails(AsylumCase asylumCase) {
         asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
     }
 
     private static void clearExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
