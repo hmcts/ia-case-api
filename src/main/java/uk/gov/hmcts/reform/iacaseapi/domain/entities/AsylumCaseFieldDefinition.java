@@ -2696,6 +2696,8 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
 
+    IS_VIRTUAL_HEARING("isVirtualHearing", new TypeReference<YesOrNo>(){}),
+
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
     OOC_APPEAL_ADMIN_J(
