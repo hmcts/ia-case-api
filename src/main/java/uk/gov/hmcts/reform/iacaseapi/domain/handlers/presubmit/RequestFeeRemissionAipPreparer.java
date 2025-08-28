@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
+@Slf4j
 @Component
 public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
