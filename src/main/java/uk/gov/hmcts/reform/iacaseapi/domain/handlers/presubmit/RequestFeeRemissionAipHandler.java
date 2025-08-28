@@ -353,11 +353,5 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         asylumCase.clear(LATE_HELP_WITH_FEES_OPTION);
         asylumCase.clear(LATE_HELP_WITH_FEES_REF_NUMBER);
         asylumCase.clear(LATE_LOCAL_AUTHORITY_LETTERS);
-
-        asylumCase.clear(REMISSION_DECISION);
-        asylumCase.clear(AMOUNT_REMITTED);
-        asylumCase.clear(AMOUNT_LEFT_TO_PAY);
-        asylumCase.clear(REMISSION_DECISION_REASON);
     }
-
 }
