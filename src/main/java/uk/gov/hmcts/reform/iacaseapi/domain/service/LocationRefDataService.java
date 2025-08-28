@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.REMOTE_HEARING;
 
 import java.util.Collections;
@@ -105,9 +106,9 @@ public class LocationRefDataService {
     }
 
     private String assembleCourtVenueAddress(CourtVenue courtVenue) {
-        return Objects.requireNonNullElse(courtVenue.getCourtName(), "") + ", "
-                + Objects.requireNonNullElse(courtVenue.getCourtAddress(), "") + ", "
-                + Objects.requireNonNullElse(courtVenue.getPostcode(), "");
+        return getIfNull(courtVenue.getCourtName(), "") + ", "
+               + getIfNull(courtVenue.getCourtAddress(), "") + ", "
+               + getIfNull(courtVenue.getPostcode(), "");
     }
 
 }
