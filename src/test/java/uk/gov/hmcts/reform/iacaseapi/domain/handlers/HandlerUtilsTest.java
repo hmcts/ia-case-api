@@ -534,7 +534,6 @@ class HandlerUtilsTest {
         asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
         asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
         asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
         asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
         verify(asylumCase).clear(REMISSION_DECISION);
