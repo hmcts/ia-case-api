@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJo
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
+@Slf4j
 @Component
 public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
