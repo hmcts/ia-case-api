@@ -88,10 +88,10 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
            "grantType": "STANDARD",
            "attributes": {
              "jurisdiction": "IA",
-             "primaryLocation": "765324"
+             "primaryLocation": "765324",
+             "substantive": "N"
            },
            "actorIdType": "IDAM"
          }
        ]
      }'
-
