@@ -129,6 +129,8 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             setFeeRemissionOptionDetails(asylumCase);
         } else {
             setFeeRemissionTypeDetails(asylumCase);
+            asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+            asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
         }
         clearPreviousAndLateRemissionFields(asylumCase);
         clearPreviousRemissionCaseFields(asylumCase);
