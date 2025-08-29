@@ -57,6 +57,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -114,13 +115,14 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        AsylumCase asylumCaseBefore = callback.getCaseDetailsBefore().map(CaseDetails::getCaseData).orElse(asylumCase);
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
         boolean hasPreviousRemission = asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
         if (hasPreviousRemission && remissionDecision != null) {
-            appendPreviousRemissionDetails(asylumCase);
+            appendPreviousRemissionDetails(asylumCaseBefore);
             asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);

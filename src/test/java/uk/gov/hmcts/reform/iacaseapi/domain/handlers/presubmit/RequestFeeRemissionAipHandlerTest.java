@@ -109,6 +109,8 @@ class RequestFeeRemissionAipHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
     private AsylumCase asylumCase;
     @Mock
     private FeatureToggler featureToggler;
@@ -135,6 +137,7 @@ class RequestFeeRemissionAipHandlerTest {
         remissionDetailsAppender = new RemissionDetailsAppender();
         requestFeeRemissionAipHandler = new RequestFeeRemissionAipHandler(featureToggler, remissionDetailsAppender, dateProvider, userDetails, userDetailsHelper);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
         when(dateProvider.now()).thenReturn(now);
