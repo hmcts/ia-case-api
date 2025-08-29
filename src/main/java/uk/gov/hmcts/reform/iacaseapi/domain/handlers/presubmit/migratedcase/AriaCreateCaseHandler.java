@@ -87,8 +87,7 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         String appealReferenceNumber =
             appealReferenceNumberGenerator.generate(
                 callback.getCaseDetails().getId(),
-                appealType,
-                isDetainedAppeal
+                appealType
             );
 
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);

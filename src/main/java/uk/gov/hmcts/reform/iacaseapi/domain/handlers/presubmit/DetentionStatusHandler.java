@@ -28,9 +28,9 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.START_APPEAL
-               || callback.getEvent() == Event.EDIT_APPEAL
-               || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED);
+                && (callback.getEvent() == Event.START_APPEAL
+                || callback.getEvent() == Event.EDIT_APPEAL
+                || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED);
     }
 
     @Override
@@ -60,7 +60,8 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
             }
         }
 
-        if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED)) {
+        Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+        if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED) && isAcceleratedDetainedAppeal.isPresent()) {
             asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
         }
 

@@ -7,15 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -49,6 +53,7 @@ class RequestRespondentReviewPreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
     private static final int ADA_DUE_IN_DAYS = 2;
+    private static final int DETAINED_DUE_IN_DAYS = 7;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -73,7 +78,7 @@ class RequestRespondentReviewPreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentReviewPreparer =
-            new RequestRespondentReviewPreparer(DUE_IN_DAYS, ADA_DUE_IN_DAYS, dateProvider, dueDateService);
+            new RequestRespondentReviewPreparer(DUE_IN_DAYS, ADA_DUE_IN_DAYS, DETAINED_DUE_IN_DAYS, dateProvider, dueDateService);
     }
 
     @ParameterizedTest
@@ -113,10 +118,6 @@ class RequestRespondentReviewPreparerTest {
 
         assertThat(
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .containsSequence("By the date below you must review the appellant’s ASA and bundle.");
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
             .containsSequence(expectedExplanationContains);
 
         assertThat(
@@ -126,6 +127,98 @@ class RequestRespondentReviewPreparerTest {
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, isAda.equals("YES")
                 ? expectedAdaDateDue : expectedDateDue);
+    }
+
+    @Test
+    void should_prepare_send_direction_fields_detained() {
+
+        final String expectedExplanationContains = "The review must comply with (i) Rule 24A (3) of the Tribunal Procedure Rules 2014 and (ii) the Practice Direction Part 2, section 2.1 (e), Part 3.";
+        final Parties expectedParties = Parties.RESPONDENT;
+        // detained appeals due date 7 calendar days in the future
+        final String expectedDateDue = "2018-11-30";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumValueCaptor.capture());
+
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumYesNoCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumValueCaptor.getAllValues();
+        List<YesOrNo> asylumYesNoValues = asylumYesNoCaptor.getAllValues();
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+                .containsSequence(expectedExplanationContains);
+
+        assertThat(
+                asylumYesNoValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)))
+                .isEqualByComparingTo(YesOrNo.YES);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+    }
+
+    @Test
+    void should_prepare_send_direction_fields_detained_aip_manual() {
+
+        final String expectedExplanationContains = "By the date below you must review the appellant’s explanation of case (AEC) and bundle.";
+        final Parties expectedParties = Parties.RESPONDENT;
+        // detained appeals due date 7 calendar days in the future
+        final String expectedDateDue = "2018-11-30";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.ofNullable(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumValueCaptor.capture());
+
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumYesNoCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumValueCaptor.getAllValues();
+        List<YesOrNo> asylumYesNoValues = asylumYesNoCaptor.getAllValues();
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+                .containsSequence(expectedExplanationContains);
+
+        assertThat(
+                asylumYesNoValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)))
+                .isEqualByComparingTo(YesOrNo.YES);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @Test
@@ -186,4 +279,64 @@ class RequestRespondentReviewPreparerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    void should_return_due_date_for_accelerated_detained_appeal() {
+        LocalDate today = LocalDate.of(2025, 5,5);
+        ZonedDateTime adaDueDate = today.plusDays(ADA_DUE_IN_DAYS).atStartOfDay(ZoneOffset.UTC);
+        String expectedDueDate = "2025-05-07";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(dueDateService.calculateDueDate(
+                any(), anyInt()))
+                .thenReturn(adaDueDate);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
+    }
+
+    @Test
+    void should_return_due_date_for_standard_case() {
+        LocalDate today = LocalDate.of(2025, 5,5);
+        String expectedDueDate = "2025-05-19";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
+    }
+
+    @Test
+    void should_return_due_date_for_detained_case() {
+        LocalDate today = LocalDate.of(2025, 5,5);
+        String expectedDueDate = "2025-05-12";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
+    }
+
 }

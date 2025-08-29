@@ -52,7 +52,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
         verify(asylumCase).clear(LEGAL_REP_COMPANY);
         verify(asylumCase).clear(LEGAL_REP_COMPANY_ADDRESS);
         verify(asylumCase).clear(LEGAL_REP_NAME);
@@ -73,7 +72,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).write(IS_ADMIN, YesOrNo.YES);
         verify(asylumCase).clear(LEGAL_REP_COMPANY);
         verify(asylumCase).clear(LEGAL_REP_COMPANY_ADDRESS);
         verify(asylumCase).clear(LEGAL_REP_NAME);
