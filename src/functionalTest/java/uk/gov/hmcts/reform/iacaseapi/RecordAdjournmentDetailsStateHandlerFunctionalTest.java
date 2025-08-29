@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
 
 @Slf4j
 @ActiveProfiles("functional")
+@DirtiesContext
 @Disabled
 public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseCreationTest {
 
