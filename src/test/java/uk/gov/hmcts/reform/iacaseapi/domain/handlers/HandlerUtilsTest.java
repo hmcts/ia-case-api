@@ -673,6 +673,101 @@ class HandlerUtilsTest {
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
     }
 
+    @Test
+    void clearPreviousRemissionCaseFieldsFromAip_should_clear_fields_for_ASYLUM_SUPPORT_FROM_HOME_OFFICE() {
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE));
+
+        HandlerUtils.clearPreviousRemissionCaseFieldsFromAip(asylumCase);
+
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    @Test
+    void clearPreviousRemissionCaseFieldsFromAip_should_clear_fields_for_UNDER_18_GET_SUPPORT() {
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.UNDER_18_GET_SUPPORT));
+
+        HandlerUtils.clearPreviousRemissionCaseFieldsFromAip(asylumCase);
+
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    @Test
+    void clearPreviousRemissionCaseFieldsFromAip_should_clear_fields_for_PARENT_GET_SUPPORT() {
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.PARENT_GET_SUPPORT));
+
+        HandlerUtils.clearPreviousRemissionCaseFieldsFromAip(asylumCase);
+
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    @Test
+    void clearPreviousRemissionCaseFieldsFromAip_should_clear_fields_for_FEE_WAIVER_FROM_HOME_OFFICE() {
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE));
+
+        HandlerUtils.clearPreviousRemissionCaseFieldsFromAip(asylumCase);
+
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    @Test
+    void clearPreviousRemissionCaseFieldsFromAip_should_clear_fields_for_HELP_WITH_FEES() {
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES));
+
+        HandlerUtils.clearPreviousRemissionCaseFieldsFromAip(asylumCase);
+
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    @Test
+    void clearPreviousRemissionCaseFieldsFromAip_should_not_clear_if_lateRemissionType_not_present() {
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.empty());
+        HandlerUtils.clearPreviousRemissionCaseFieldsFromAip(asylumCase);
+        verify(asylumCase, never()).clear(any());
+    }
+
     private static Stream<Arguments> appealHasRemissionOptionOrTypeTrue() {
         return Stream.of(
             Arguments.of(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE), Optional.empty(), Optional.empty(), Optional.empty()),

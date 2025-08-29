@@ -33,9 +33,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFieldsFromAip;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearRemissionDecisionFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setFeeRemissionTypeDetails;
@@ -128,13 +127,14 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
         if (currentUser == UserRoleLabel.CITIZEN) {
             setFeeRemissionOptionDetails(asylumCase);
+            clearPreviousRemissionCaseFieldsFromAip(asylumCase);
         } else {
             setFeeRemissionTypeDetails(asylumCase);
             asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
             asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
+            clearPreviousRemissionCaseFields(asylumCase);
         }
         clearLateRemissionFields(asylumCase);
-        clearPreviousRemissionCaseFields(asylumCase);
         clearRemissionDecisionFields(asylumCase);
         asylumCase.write(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE, dateProvider.now().toString());
         asylumCase.write(REMISSION_REQUESTED_BY, currentUser);

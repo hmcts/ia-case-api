@@ -630,14 +630,14 @@ class RequestFeeRemissionAipHandlerTest {
     void handle_should_set_fee_remission_option_details_for_citizen_asylum_support() {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.CITIZEN);
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(LATE_REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(ASYLUM_SUPPORT_FROM_HOME_OFFICE));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(ASYLUM_SUPPORT_FROM_HOME_OFFICE));
 
         PreSubmitCallbackResponse<AsylumCase> response = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertEquals(response.getData(), asylumCase);
         verify(asylumCase, times(1)).write(eq(REMISSION_REQUESTED_BY), eq(UserRoleLabel.CITIZEN));
-        verify(asylumCase, times(1)).read(LATE_REMISSION_TYPE, RemissionType.class);
-        verify(asylumCase, times(1)).read(REMISSION_CLAIM, String.class);
+        verify(asylumCase, times(1)).read(REMISSION_OPTION, RemissionOption.class);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
     }
 
     @Test

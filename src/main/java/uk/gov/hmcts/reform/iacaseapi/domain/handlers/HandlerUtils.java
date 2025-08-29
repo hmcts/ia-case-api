@@ -471,6 +471,51 @@ public class HandlerUtils {
         }
     }
 
+    public static void clearPreviousRemissionCaseFieldsFromAip(AsylumCase asylumCase) {
+        final Optional<RemissionOption> lateRemissionOptionOpt = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+        if (lateRemissionOptionOpt.isPresent()) {
+            switch (lateRemissionOptionOpt.get()) {
+                case ASYLUM_SUPPORT_FROM_HOME_OFFICE -> {
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                }
+                case UNDER_18_GET_SUPPORT, PARENT_GET_SUPPORT -> {
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                }
+                case FEE_WAIVER_FROM_HOME_OFFICE -> {
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                }
+                case I_WANT_TO_GET_HELP_WITH_FEES -> {
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                }
+                default -> {
+                    // do nothing
+                }
+            }
+        }
+    }
+
     public static void clearRemissionDecisionFields(AsylumCase asylumCase) {
         asylumCase.clear(REMISSION_DECISION);
         asylumCase.clear(AMOUNT_REMITTED);
