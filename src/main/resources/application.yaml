@@ -357,6 +357,7 @@ security:
       - "listCase"
       - "recordAttendeesAndDuration"
       - "editCaseListing"
+      - "editDocuments"
       - "addCaseNote"
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
