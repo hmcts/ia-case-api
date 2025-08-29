@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJo
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
+@Slf4j
 @Component
 public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -90,7 +92,9 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
                 Optional<HelpWithFeesOption> previousHelpWithFeesOptionAip = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
+                log.info("outside of if statement " + " Remission previous remission option " + previousRemissionOption + " Remission decision " + remissionDecision.isPresent());
                 if (previousRemissionOption.isPresent() && appealHasRemissionOption(previousRemissionOption, previousHelpWithFeesOptionAip) && !remissionDecision.isPresent()) {
+                    log.info("Remission previous remission option " + previousRemissionOption + " Remission decision " + remissionDecision.isPresent());
                     callbackResponse.addError("You cannot request a fee remission at this time because another fee remission request for this appeal has yet to be decided.");
 
                 } else if (previousRemissionExistsAndDecided(previousRemissionOption, previousHelpWithFeesOptionAip, remissionDecision)) {
