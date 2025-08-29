@@ -527,19 +527,15 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-        asylumCase.clear(SECTION17_DOCUMENT);
-        asylumCase.clear(SECTION20_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
 
@@ -550,21 +546,17 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-        asylumCase.clear(SECTION17_DOCUMENT);
-        asylumCase.clear(SECTION20_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
 
@@ -575,21 +567,16 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-        asylumCase.clear(SECTION20_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
 
@@ -600,21 +587,16 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-        asylumCase.clear(SECTION17_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
 
@@ -625,21 +607,17 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-        asylumCase.clear(SECTION17_DOCUMENT);
-        asylumCase.clear(SECTION20_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
 
@@ -649,20 +627,16 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-        asylumCase.clear(SECTION17_DOCUMENT);
-        asylumCase.clear(SECTION20_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
 
@@ -672,20 +646,16 @@ class HandlerUtilsTest {
 
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
 
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-        asylumCase.clear(SECTION17_DOCUMENT);
-        asylumCase.clear(SECTION20_DOCUMENT);
-        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
     }
 
 
@@ -701,10 +671,6 @@ class HandlerUtilsTest {
         when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of("invalid"));
         HandlerUtils.clearPreviousRemissionCaseFields(asylumCase);
-        verify(asylumCase).clear(REMISSION_DECISION);
-        verify(asylumCase).clear(AMOUNT_REMITTED);
-        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
-        verify(asylumCase).clear(REMISSION_DECISION_REASON);
     }
 
     private static Stream<Arguments> appealHasRemissionOptionOrTypeTrue() {
@@ -780,5 +746,15 @@ class HandlerUtilsTest {
         HandlerUtils.setFeeRemissionTypeDetails(asylumCase);
         verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.REMISSION_TYPE), any());
         verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.FEE_REMISSION_TYPE), any());
+    }
+
+    @Test
+    void clearRemissionDecisionFields_should_clear_all_fields() {
+        HandlerUtils.clearRemissionDecisionFields(asylumCase);
+
+        verify(asylumCase).clear(REMISSION_DECISION);
+        verify(asylumCase).clear(AMOUNT_REMITTED);
+        verify(asylumCase).clear(AMOUNT_LEFT_TO_PAY);
+        verify(asylumCase).clear(REMISSION_DECISION_REASON);
     }
 }

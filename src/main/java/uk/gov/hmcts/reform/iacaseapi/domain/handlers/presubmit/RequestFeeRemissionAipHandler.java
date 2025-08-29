@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.AP
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearRemissionDecisionFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setFeeRemissionTypeDetails;
 
@@ -132,8 +133,9 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
             asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
         }
-        clearPreviousAndLateRemissionFields(asylumCase);
+        clearLateRemissionFields(asylumCase);
         clearPreviousRemissionCaseFields(asylumCase);
+        clearRemissionDecisionFields(asylumCase);
         asylumCase.write(AsylumCaseFieldDefinition.REQUEST_FEE_REMISSION_DATE, dateProvider.now().toString());
         asylumCase.write(REMISSION_REQUESTED_BY, currentUser);
         return callbackResponse;
@@ -347,7 +349,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         remissionDetailsAppender.setRemissions(previousRemissionDetails);
     }
 
-    private void clearPreviousAndLateRemissionFields(AsylumCase asylumCase) {
+    private void clearLateRemissionFields(AsylumCase asylumCase) {
         asylumCase.clear(LATE_REMISSION_OPTION);
         asylumCase.clear(LATE_ASYLUM_SUPPORT_REF_NUMBER);
         asylumCase.clear(LATE_HELP_WITH_FEES_OPTION);

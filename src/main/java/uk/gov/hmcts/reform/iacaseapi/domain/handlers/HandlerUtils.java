@@ -85,35 +85,35 @@ public class HandlerUtils {
 
     public static void formatHearingAdjustmentResponses(AsylumCase asylumCase) {
         formatHearingAdjustmentResponse(asylumCase, VULNERABILITIES_TRIBUNAL_RESPONSE, IS_VULNERABILITIES_ALLOWED)
-                .ifPresent(response -> asylumCase.write(VULNERABILITIES_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(VULNERABILITIES_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE, IS_REMOTE_HEARING_ALLOWED)
-                .ifPresent(response -> asylumCase.write(REMOTE_HEARING_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(REMOTE_HEARING_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, MULTIMEDIA_TRIBUNAL_RESPONSE, IS_MULTIMEDIA_ALLOWED)
-                .ifPresent(response -> asylumCase.write(MULTIMEDIA_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(MULTIMEDIA_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, SINGLE_SEX_COURT_TRIBUNAL_RESPONSE, IS_SINGLE_SEX_COURT_ALLOWED)
-                .ifPresent(response -> asylumCase.write(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, IN_CAMERA_COURT_TRIBUNAL_RESPONSE, IS_IN_CAMERA_COURT_ALLOWED)
-                .ifPresent(response -> asylumCase.write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, ADDITIONAL_TRIBUNAL_RESPONSE, IS_ADDITIONAL_ADJUSTMENTS_ALLOWED)
-                .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
     }
 
     public static String getAppellantFullName(AsylumCase asylumCase) {
         return asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElseGet(() -> {
             final String appellantGivenNames = asylumCase
-                    .read(APPELLANT_GIVEN_NAMES, String.class)
-                    .orElseThrow(() -> new IllegalStateException("Appellant given names required"));
+                .read(APPELLANT_GIVEN_NAMES, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appellant given names required"));
             final String appellantFamilyName = asylumCase
-                    .read(APPELLANT_FAMILY_NAME, String.class)
-                    .orElseThrow(() -> new IllegalStateException("Appellant family name required"));
+                .read(APPELLANT_FAMILY_NAME, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appellant family name required"));
             return appellantGivenNames + " " + appellantFamilyName;
         });
     }
 
     private static Optional<String> formatHearingAdjustmentResponse(
-            AsylumCase asylumCase,
-            AsylumCaseFieldDefinition responseDefinition,
-            AsylumCaseFieldDefinition decisionDefinition) {
+        AsylumCase asylumCase,
+        AsylumCaseFieldDefinition responseDefinition,
+        AsylumCaseFieldDefinition decisionDefinition) {
         String response = asylumCase.read(responseDefinition, String.class).orElse(null);
         String decision = asylumCase.read(decisionDefinition, String.class).orElse(null);
 
@@ -317,8 +317,8 @@ public class HandlerUtils {
                 .map(remote -> YES == remote).orElse(false);
 
             return hearingCenterUnchanged(asylumCase, asylumCaseBefore)
-                   && hearingDateUnchanged(asylumCase, asylumCaseBefore)
-                   && prevHearingIsRemote && currentHearingIsRemote;
+                && hearingDateUnchanged(asylumCase, asylumCaseBefore)
+                && prevHearingIsRemote && currentHearingIsRemote;
         } else {
             return false;
         }
@@ -348,7 +348,7 @@ public class HandlerUtils {
             && remissionType.get() != RemissionType.NO_REMISSION;
     }
 
-    public  static boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption, boolean isDlrmFeeRemissionFlag) {
+    public static boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption, boolean isDlrmFeeRemissionFlag) {
         return isDlrmFeeRemissionFlag
             && ((remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL));
@@ -468,12 +468,14 @@ public class HandlerUtils {
                 default:
                     break;
             }
-
-            asylumCase.clear(REMISSION_DECISION);
-            asylumCase.clear(AMOUNT_REMITTED);
-            asylumCase.clear(AMOUNT_LEFT_TO_PAY);
-            asylumCase.clear(REMISSION_DECISION_REASON);
         }
+    }
+
+    public static void clearRemissionDecisionFields(AsylumCase asylumCase) {
+        asylumCase.clear(REMISSION_DECISION);
+        asylumCase.clear(AMOUNT_REMITTED);
+        asylumCase.clear(AMOUNT_LEFT_TO_PAY);
+        asylumCase.clear(REMISSION_DECISION_REASON);
     }
 
     private static void clearAsylumSupportRemissionDetails(AsylumCase asylumCase) {

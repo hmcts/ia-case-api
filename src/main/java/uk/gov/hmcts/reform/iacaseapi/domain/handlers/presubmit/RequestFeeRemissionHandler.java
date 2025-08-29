@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearRemissionDecisionFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setFeeRemissionTypeDetails;
 
@@ -98,6 +99,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         clearPreviousRemissionCaseFields(asylumCase);
+        clearRemissionDecisionFields(asylumCase);
         asylumCase.clear(REMISSION_TYPE);
 
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
