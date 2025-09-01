@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
@@ -40,8 +42,8 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.NOC_REQUEST
-                && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
+            && callback.getEvent() == Event.NOC_REQUEST
+            && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override
@@ -71,12 +73,18 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
 
         updatePaymentServiceRequestDetails(asylumCase);
 
+        asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class)
+            .ifPresent(s -> {
+                asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, s);
+                asylumCase.clear(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
+            });
+
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }
 
     private void updatePaymentServiceRequestDetails(AsylumCase asylumCase) {
         Optional<PaymentStatus> paymentStatusOptional = asylumCase.read(
-                AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class);
+            AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class);
 
         if (paymentStatusOptional.isPresent()
             && !PaymentStatus.PAID.equals(paymentStatusOptional.get())
@@ -95,12 +103,12 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
     private boolean hasNoRemission(AsylumCase asylumCase) {
         Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         Optional<RemissionDecision> optionalRemissionDecision =
-                asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+            asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
         return optRemissionType.isEmpty()
-                || optRemissionType.get() == RemissionType.NO_REMISSION
-                || (optionalRemissionDecision.isPresent()
-                && optionalRemissionDecision.get() != RemissionDecision.APPROVED);
+            || optRemissionType.get() == RemissionType.NO_REMISSION
+            || (optionalRemissionDecision.isPresent()
+            && optionalRemissionDecision.get() != RemissionDecision.APPROVED);
     }
 
     private void updateAppellantContactDetails(AsylumCase asylumCase) {

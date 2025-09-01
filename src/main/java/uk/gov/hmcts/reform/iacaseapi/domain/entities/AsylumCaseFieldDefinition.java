@@ -2696,6 +2696,8 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
 
+    IS_VIRTUAL_HEARING("isVirtualHearing", new TypeReference<YesOrNo>(){}),
+
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
     OOC_APPEAL_ADMIN_J(
@@ -2822,6 +2824,9 @@ public enum AsylumCaseFieldDefinition {
 
     HEARING_ID_LIST(
             "hearingIdList", new TypeReference<List<IdValue<String>>>(){}),
+
+    REMOVE_CASE_MANAGER_CASE_ID_LIST(
+        "removeCaseManagerCaseIdList", new TypeReference<String>() {}),
 
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
