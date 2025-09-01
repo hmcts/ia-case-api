@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -40,6 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 public class AppealTypeHandlerTest {
 
@@ -51,6 +54,10 @@ public class AppealTypeHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
+    private AsylumCase asylumCaseBefore;
 
     private AppealTypeHandler appealTypeHandler;
     @Mock private FeatureToggler featureToggler;
@@ -69,7 +76,14 @@ public class AppealTypeHandlerTest {
     void should_set_appealType_to_ag_if_ageAssessment_yes_and_appellant_not_in_detention() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("Rep name"));
+        when(asylumCaseBefore.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
+
         when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_NABA_ENABLED_OOC, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.empty());

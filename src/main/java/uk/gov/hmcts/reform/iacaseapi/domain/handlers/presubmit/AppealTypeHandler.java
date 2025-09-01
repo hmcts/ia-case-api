@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
@@ -62,7 +63,14 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
+        Optional<CaseDetails<AsylumCase>> caseDetailsBefore = callback.getCaseDetailsBefore();
+
+        if (caseDetailsBefore.isPresent()) {
+            AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
+            if (!HandlerUtils.isInternalCase(asylumCase) && HandlerUtils.hasUpdatedLegalRepFields(asylumCaseBefore, asylumCase)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+            }
+        }
 
         Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
 

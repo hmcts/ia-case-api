@@ -92,7 +92,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         if (caseDetailsBefore.isPresent()) {
             AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
             // TODO: need to check other details as well, can move to a method to compare all of the legal rep details
-            if (asylumCaseBefore.read(LEGAL_REP_GIVEN_NAME).equals(asylumCase.read(LEGAL_REP_GIVEN_NAME))) {
+            if (!HandlerUtils.isInternalCase(asylumCase) && hasUpdatedLegalRepFields(asylumCaseBefore, asylumCase)) {
                 asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
             }
         }
@@ -182,6 +182,15 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
             asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
         }
+    }
+
+    private boolean hasUpdatedLegalRepFields(AsylumCase asylumCaseBefore, AsylumCase asylumCase) {
+
+        return !asylumCaseBefore.read(LEGAL_REP_NAME).equals(asylumCase.read(LEGAL_REP_NAME))
+            || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
+            || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
+            || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
+            || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
     }
 
     private void changeEditAppealApplicationsToCompleted(AsylumCase asylumCase) {
