@@ -157,7 +157,7 @@ http://pitest.org/
 
 There is a need to check compatibility of ia-case-api Pull Request code changes and existing CCD definitions imported to Production before every release. We can't release changes to ia-case-api where there is a writing to non-existing case data field. Depends on the event scope it could block case data progress for particular event or for all events.
 
-Script has been prepared to identify approx. 95% potential issues by scanning local ia-case-api changes and existing CCD definitions. The script can't reduce the risk of eliminating braking change to none. If you do complex refactoring, it is always good to ask your colleagues for advice.
+The script has been prepared to identify approximately 95% of potential issues by scanning local `ia-case-api` changes and existing CCD definitions. The script can't eliminate breaking changes entirely, however. If you do complex refactoring, it is always good to ask your colleagues for advice.
 
 Before running the script make sure you setup correct branches on your local:
 - ia-ccd-definitions -> master branch
