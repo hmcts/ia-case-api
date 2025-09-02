@@ -499,4 +499,59 @@ class HandlerUtilsTest {
         assertFalse(isEntryClearanceDecision(asylumCase));
     }
 
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
+    void should_return_whether_appeal_is_internal(YesOrNo yesOrNo) {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+        assertEquals(yesOrNo == YES, isAdmin(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
+    void should_return_whether_legal_representative_details_added(YesOrNo yesOrNo) {
+        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+        assertEquals(yesOrNo == YES, hasAddedLegalRepDetails(asylumCase));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REP_NAME, Rep Name1, Rep Name1, false",
+        "LEGAL_REP_NAME, Old Rep Name1, New Rep Name, true",
+        "LEGAL_REP_FAMILY_NAME, Rep Family Name, Rep Family Name, false",
+        "LEGAL_REP_FAMILY_NAME, Rep Family Name, New Rep Family Name, true",
+        "LEGAL_REP_COMPANY, Rep Company Name, Rep Company Name, false",
+        "LEGAL_REP_COMPANY, Rep Company Name, New Rep Company Name, true",
+        "LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, rep@test.org, rep@test.org, false",
+        "LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, rep@test.org, newrep@test.org, true",
+        "LEGAL_REP_MOBILE_PHONE_NUMBER, 02032032032, 02032032032, false",
+        "LEGAL_REP_MOBILE_PHONE_NUMBER, 02032032032, 02032032111, true"
+    })
+    void test_hasUpdatedLegalRepFields_for_legal_rep_name_field(
+            AsylumCaseFieldDefinition definitionField,
+            String valueBefore,
+            String value,
+            boolean expected) {
+
+        when(asylumCaseBefore.read(definitionField)).thenReturn(Optional.of(valueBefore));
+        when(asylumCase.read(definitionField)).thenReturn(Optional.of(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        assertEquals(expected, hasUpdatedLegalRepFields(callback));
+    }
+
+    @Test
+    void hasUpdatedLegalRepFields_should_return_false_when_caseDetailsBefore_is_empty() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.empty());
+
+        assertFalse(hasUpdatedLegalRepFields(callback));
+    }
+
 }

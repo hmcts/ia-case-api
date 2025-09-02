@@ -58,6 +58,10 @@ class EditAppealAfterSubmitHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
+    private AsylumCase asylumCaseBefore;
+    @Mock
     private DateProvider dateProvider;
     @Mock
     private DueDateService dueDateService;
@@ -113,6 +117,12 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("Rep name"));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -124,7 +134,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        // verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
@@ -162,6 +172,7 @@ class EditAppealAfterSubmitHandlerTest {
             .write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
 
         verify(asylumCase).clear(NEW_MATTERS);
+        verify(asylumCase, never()).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
 
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }

@@ -388,12 +388,21 @@ public class HandlerUtils {
         return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
-    public static boolean hasUpdatedLegalRepFields(AsylumCase asylumCaseBefore, AsylumCase asylumCase) {
+    public static boolean hasUpdatedLegalRepFields(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        return !asylumCaseBefore.read(LEGAL_REP_NAME).equals(asylumCase.read(LEGAL_REP_NAME))
-                || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
-                || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
-                || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
-                || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
+        Optional<CaseDetails<AsylumCase>> caseDetailsBefore = callback.getCaseDetailsBefore();
+
+        if (caseDetailsBefore.isPresent()) {
+            AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
+
+            return !asylumCaseBefore.read(LEGAL_REP_NAME).equals(asylumCase.read(LEGAL_REP_NAME))
+                    || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
+                    || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
+                    || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
+                    || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
+        }
+        
+        return false;
     }
 }
