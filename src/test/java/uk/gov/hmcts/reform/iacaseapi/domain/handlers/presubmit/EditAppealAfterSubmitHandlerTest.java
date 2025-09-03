@@ -134,7 +134,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        // verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);

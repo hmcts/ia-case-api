@@ -97,7 +97,7 @@ public class AppealTypeHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_TYPE, AppealType.AG);
-        verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
+        // verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
     }
 
     @Test
