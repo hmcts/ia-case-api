@@ -59,7 +59,9 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (!HandlerUtils.isInternalCase(asylumCase) && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
+        if (HandlerUtils.hasRepresentation(asylumCase)
+                && !HandlerUtils.isInternalCase(asylumCase)
+                && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
             asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         }
 
