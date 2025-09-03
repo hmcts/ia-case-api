@@ -280,7 +280,7 @@ public class WitnessesUpdateMidEventHandler extends WitnessHandler
             .read(WITNESS_N_INTERPRETER_SIGN_LANGUAGE.get(i), InterpreterLanguageRefData.class);
     }
 
-    private boolean existingSelectionWasManual(AsylumCase oldAsylumCase, int i, String category) {
+    boolean existingSelectionWasManual(AsylumCase oldAsylumCase, int i, String category) {
 
         Optional<InterpreterLanguageRefData> oldLanguageField = Optional.empty();
 
