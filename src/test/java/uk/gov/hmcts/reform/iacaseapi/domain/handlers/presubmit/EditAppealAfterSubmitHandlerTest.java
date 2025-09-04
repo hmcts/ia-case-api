@@ -10,13 +10,7 @@ import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
-import java.util.Arrays;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -56,7 +50,6 @@ class EditAppealAfterSubmitHandlerTest {
     private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
     private static final int APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS = 5;
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
-    private List<IdValue<DocumentWithMetadata>> allLegalRepDocuments;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -68,37 +61,10 @@ class EditAppealAfterSubmitHandlerTest {
     private DateProvider dateProvider;
     @Mock
     private DueDateService dueDateService;
-    @Mock
-    private DocumentReceiver documentReceiver;
-    @Mock
-    private DocumentsAppender documentsAppender;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Mock
     private DocumentWithDescription appealWasNotSubmitted;
-    @Mock
-    private DocumentWithDescription noticeOfDecision1;
-    @Mock
-    private DocumentWithMetadata noticeOfDecision1WithMetadata;
-    private final Document someDoc = new Document(
-            "some url",
-            "some binary url",
-            "some filename");
-
-    private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
-            someDoc,
-            "some description",
-            "21/07/2021",
-            DocumentTag.APPEAL_SUBMISSION,
-            "some supplier"
-    );
-    private final DocumentWithMetadata homeOfficeDecisionLetter = new DocumentWithMetadata(
-            someDoc,
-            "the home office decision letter",
-            "21/07/2021",
-            DocumentTag.HO_DECISION_LETTER,
-            "the home office"
-    );
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -130,7 +96,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,documentReceiver,documentsAppender,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS);
+        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS);
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -140,85 +106,6 @@ class EditAppealAfterSubmitHandlerTest {
             .thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
         when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
     }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
-    void should_append_home_office_decision_letter_to_legal_rep_documents_if_not_present(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-
-        allLegalRepDocuments = Arrays.asList(
-                new IdValue<>("1", someLegalRepDocument)
-        );
-
-        List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
-                Arrays.asList(
-                        new IdValue<>("1", noticeOfDecision1)
-                );
-
-        List<DocumentWithMetadata> noticeOfDecisionWithMetadata =
-                Arrays.asList(
-                        noticeOfDecision1WithMetadata
-                );
-
-        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(noticeOfDecisionDocument));
-        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
-
-        when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
-                .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
-
-        when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
-                .thenReturn(allLegalRepDocuments);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = editAppealAfterSubmitHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertThat(callbackResponse).isNotNull();
-
-        verify(documentsAppender, times(1)).prepend(
-                allLegalRepDocuments,
-                noticeOfDecisionWithMetadata
-        );
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
-    void should_not_append_home_office_decision_letter_to_legal_rep_documents_if_already_present(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-
-        allLegalRepDocuments = Arrays.asList(
-                new IdValue<>("1", homeOfficeDecisionLetter)
-        );
-
-        List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
-                Arrays.asList(
-                        new IdValue<>("1", noticeOfDecision1)
-                );
-
-        List<DocumentWithMetadata> noticeOfDecisionWithMetadata =
-                Arrays.asList(
-                        noticeOfDecision1WithMetadata
-                );
-
-        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(noticeOfDecisionDocument));
-        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
-
-        when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
-                .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
-
-        when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
-                .thenReturn(allLegalRepDocuments);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = editAppealAfterSubmitHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertThat(callbackResponse).isNotNull();
-
-        verify(documentsAppender, times(0)).prepend(
-                allLegalRepDocuments,
-                noticeOfDecisionWithMetadata
-        );
-    }
-
 
     @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
@@ -674,7 +561,6 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
-        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 

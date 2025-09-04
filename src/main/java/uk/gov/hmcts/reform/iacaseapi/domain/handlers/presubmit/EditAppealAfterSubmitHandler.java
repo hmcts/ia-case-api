@@ -9,12 +9,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
@@ -43,12 +37,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
-@Slf4j
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final DocumentReceiver documentReceiver;
-    private final DocumentsAppender documentsAppender;
     private final DateProvider dateProvider;
     private final int appealOutOfTimeDaysUk;
     private final int appealOutOfTimeDaysOoc;
@@ -60,16 +51,11 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
         DueDateService dueDateService,
-        DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender,
-
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
         @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc,
         @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays
     ) {
         this.dateProvider = dateProvider;
-        this.documentReceiver = documentReceiver;
-        this.documentsAppender = documentsAppender;
         this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
         this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
         this.appealOutOfTimeAcceleratedDetainedWorkingDays = appealOutOfTimeAcceleratedDetainedWorkingDays;
@@ -101,11 +87,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        if (isAipJourney(asylumCase)) {
-            asylumCase.clear(HAS_ADDED_LEGAL_REP_DETAILS);
-        } else {
-            asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
-        }
+        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
@@ -138,36 +120,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             if (isInternalCase(asylumCase)) {
                 clearLegalRepFields(asylumCase);
             }
-        }
-
-        Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
-                asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
-
-        List<DocumentWithMetadata> noticeOfDecision =
-                maybeNoticeOfDecision
-                        .orElse(emptyList())
-                        .stream()
-                        .map(IdValue::getValue)
-                        .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList());
-
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
-                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
-
-        List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
-                maybeExistingLegalRepDocuments.orElse(emptyList());
-
-        if (!noticeOfDecision.isEmpty()) {
-            existingLegalRepDocuments = existingLegalRepDocuments.stream().filter(
-                            doc -> doc.getValue().getTag() != DocumentTag.HO_DECISION_LETTER)
-                    .toList();
-
-            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-                    documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
-
-            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
