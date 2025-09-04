@@ -127,6 +127,22 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 clearLegalRepFields(asylumCase);
             }
         }
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
+                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+
+        List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+                maybeExistingLegalRepDocuments.orElse(emptyList());
+
+        if (!noticeOfDecision.isEmpty()) {
+            existingLegalRepDocuments = existingLegalRepDocuments.stream().filter(
+                            doc -> doc.getValue().getTag() != DocumentTag.HO_DECISION_LETTER)
+                    .toList();
+
+            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                    documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
+
+            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
