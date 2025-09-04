@@ -392,7 +392,7 @@ public class HandlerUtils {
 
     public static boolean hasRepresentation(AsylumCase asylumCase) {
         Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
-        return !isAipJourney(asylumCase)
+        return isRepJourney(asylumCase)
                 && localAuthorityPolicy.isPresent()
                 && localAuthorityPolicy.get().getOrganisation() != null
                 && StringUtils.isNotBlank(localAuthorityPolicy.get().getOrganisation().getOrganisationID());
