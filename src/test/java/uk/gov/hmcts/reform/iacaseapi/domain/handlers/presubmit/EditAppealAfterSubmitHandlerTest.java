@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -77,6 +78,25 @@ class EditAppealAfterSubmitHandlerTest {
     private DocumentWithDescription noticeOfDecision1;
     @Mock
     private DocumentWithMetadata noticeOfDecision1WithMetadata;
+    private final Document someDoc = new Document(
+            "some url",
+            "some binary url",
+            "some filename");
+
+    private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
+            someDoc,
+            "some description",
+            "21/07/2021",
+            DocumentTag.APPEAL_SUBMISSION,
+            "some supplier"
+    );
+    private final DocumentWithMetadata homeOfficeDecisionLetter = new DocumentWithMetadata(
+            someDoc,
+            "the home office decision letter",
+            "21/07/2021",
+            DocumentTag.HO_DECISION_LETTER,
+            "the home office"
+    );
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
