@@ -10,6 +10,8 @@ import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -61,6 +63,10 @@ class EditAppealAfterSubmitHandlerTest {
     private DateProvider dateProvider;
     @Mock
     private DueDateService dueDateService;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Mock
