@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -72,7 +71,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
-@Slf4j
 public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
@@ -408,31 +406,12 @@ public class HandlerUtils {
         if (caseDetailsBefore.isPresent()) {
             AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
 
-            log.info("Legal Rep details: \n "
-                    + "LEGAL_REP_NAME before: {}, after: {}"
-                    + "LEGAL_REP_FAMILY_NAME before: {}, after: {}"
-                    + "LEGAL_REP_COMPANY before: {}, after: {}"
-                    + "LEGAL_REPRESENTATIVE_EMAIL_ADDRESS before: {}, after: {}"
-                    + "LEGAL_REP_MOBILE_PHONE_NUMBER before: {}, after: {}",
-                    asylumCaseBefore.read(LEGAL_REP_NAME),
-                    asylumCase.read(LEGAL_REP_NAME),
-                    asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME),
-                    asylumCase.read(LEGAL_REP_FAMILY_NAME),
-                    asylumCaseBefore.read(LEGAL_REP_COMPANY),
-                    asylumCase.read(LEGAL_REP_COMPANY),
-                    asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS),
-                    asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS),
-                    asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER),
-                    asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER)
-            );
-
             return !asylumCaseBefore.read(LEGAL_REP_NAME).equals(asylumCase.read(LEGAL_REP_NAME))
                     || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
                     || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
                     || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
                     || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
         }
-        
         return false;
     }
 }
