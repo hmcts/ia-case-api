@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -52,6 +53,7 @@ class EditAppealAfterSubmitHandlerTest {
     private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
     private static final int APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS = 5;
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private List<IdValue<DocumentWithMetadata>> allLegalRepDocuments;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -71,6 +73,11 @@ class EditAppealAfterSubmitHandlerTest {
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Mock
     private DocumentWithDescription appealWasNotSubmitted;
+    @Mock
+    private DocumentWithDescription noticeOfDecision1;
+    @Mock
+    private DocumentWithMetadata noticeOfDecision1WithMetadata;
+    private List<IdValue<DocumentWithMetadata>> allLegalRepDocuments;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -85,6 +92,14 @@ class EditAppealAfterSubmitHandlerTest {
     private ArgumentCaptor<YesOrNo> outOfTime;
     @Captor
     private ArgumentCaptor<YesOrNo> recordedOutOfTimeDecision;
+
+    private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
+            someDoc,
+            "some description",
+            "21/07/2021",
+            DocumentTag.APPEAL_SUBMISSION,
+            "some supplier"
+    );
 
     private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
