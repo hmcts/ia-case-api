@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
@@ -127,6 +128,20 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 clearLegalRepFields(asylumCase);
             }
         }
+
+        Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
+                asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+
+        List<DocumentWithMetadata> noticeOfDecision =
+                maybeNoticeOfDecision
+                        .orElse(emptyList())
+                        .stream()
+                        .map(IdValue::getValue)
+                        .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
                 asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
