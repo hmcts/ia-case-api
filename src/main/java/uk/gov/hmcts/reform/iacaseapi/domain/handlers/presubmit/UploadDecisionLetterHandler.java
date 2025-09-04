@@ -71,12 +71,6 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
                 .collect(Collectors.toList());
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
-            asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
-
-        List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
-            maybeExistingLegalRepDocuments.orElse(emptyList());
-
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
                 asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
         List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
