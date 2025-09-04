@@ -60,7 +60,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         DateProvider dateProvider,
         DueDateService dueDateService,
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender
+        DocumentsAppender documentsAppender,
 
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
         @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc,
