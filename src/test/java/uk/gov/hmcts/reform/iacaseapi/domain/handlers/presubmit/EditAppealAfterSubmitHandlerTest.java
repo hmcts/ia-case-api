@@ -102,7 +102,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS);
+        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,documentReceiver,documentsAppender,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS);
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
