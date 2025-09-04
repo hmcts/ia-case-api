@@ -231,9 +231,6 @@ pitest {
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
             'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
-            'uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.EditAppealAfterSubmitHandler.java',
-            'uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AppealTypeHandler.java',
-            'uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.java',
             'uk.gov.hmcts.reform.iacaseapi.Application'
     ]
     threads = 10

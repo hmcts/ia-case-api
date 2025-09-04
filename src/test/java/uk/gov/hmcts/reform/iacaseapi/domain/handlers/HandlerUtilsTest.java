@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -534,6 +536,7 @@ class HandlerUtilsTest {
             String value,
             boolean expected) {
 
+        when(asylumCaseBefore.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
         when(asylumCaseBefore.read(definitionField)).thenReturn(Optional.of(valueBefore));
         when(asylumCase.read(definitionField)).thenReturn(Optional.of(value));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -543,6 +546,34 @@ class HandlerUtilsTest {
 
         assertEquals(expected, hasUpdatedLegalRepFields(callback));
     }
+
+    @ParameterizedTest
+    @MethodSource("hasRepresentationTestSource")
+    void test_hasRepresentation(
+            OrganisationPolicy organisationPolicy,
+            String journeyType,
+            boolean expected) {
+
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(journeyType));
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertEquals(expected, hasRepresentation(asylumCase));
+    }
+
+    private static Stream<Arguments> hasRepresentationTestSource() {
+        return Stream.of(
+                Arguments.of(OrganisationPolicy.builder().build(), "aip", false),
+                Arguments.of(OrganisationPolicy.builder().build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(null).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().build()).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().organisationID(null).build()).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().organisationID("").build()).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().organisationID("Org1").build()).build(), "", true)
+        );
+    }
+
 
     @Test
     void hasUpdatedLegalRepFields_should_return_false_when_caseDetailsBefore_is_empty() {

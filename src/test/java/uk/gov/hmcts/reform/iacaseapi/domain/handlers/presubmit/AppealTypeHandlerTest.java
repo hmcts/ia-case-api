@@ -40,6 +40,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -80,6 +82,10 @@ public class AppealTypeHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY))
+                .thenReturn(Optional.of(OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("Org1").build()).build()));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("Rep name"));
         when(asylumCaseBefore.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
@@ -97,7 +103,7 @@ public class AppealTypeHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_TYPE, AppealType.AG);
-        // verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
+        verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
     }
 
     @Test

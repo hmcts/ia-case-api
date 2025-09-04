@@ -39,8 +39,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -117,6 +120,10 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY))
+                .thenReturn(Optional.of(OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("Org1").build()).build()));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
@@ -134,7 +141,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        // verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
