@@ -22,6 +22,7 @@
           "feeAmountGbp": "14000",
           "previousRemissionDetails": [],
           "journeyType": "aip",
+          "hasPreviousRemission": "Yes",
           "caseDataBefore": {
             "template": "minimal-appeal-submitted.json"
           }
@@ -42,6 +43,7 @@
         "lateRemissionOption": null,
         "lateAsylumSupportRefNumber": null,
         "remissionDecision": null,
+        "remissionRequestedBy": "Appellant",
         "amountRemitted": null,
         "amountLeftToPay": null,
         "previousRemissionDetails": [
@@ -51,7 +53,7 @@
               "feeAmount": "14000",
               "amountRemitted": "140.00",
               "amountLeftToPay": "00.00",
-              "feeRemissionType": "feeWaiverFromHo",
+              "feeRemissionType": "Home Office fee waiver",
               "remissionDecision": "Approved"
             }
           }

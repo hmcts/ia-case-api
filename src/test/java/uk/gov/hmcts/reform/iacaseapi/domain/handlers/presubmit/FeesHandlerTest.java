@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -238,7 +239,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
     }
 
@@ -261,7 +262,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Legal Aid");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
     }
@@ -281,7 +282,7 @@ class FeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(0)).write(FEE_REMISSION_TYPE, "Legal Aid");
+        verify(asylumCase, times(0)).write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(0)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
@@ -458,7 +459,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
         verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
@@ -490,7 +491,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Legal Aid");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
@@ -524,7 +525,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Section 17");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -557,7 +558,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Section 20");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -590,7 +591,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Home Office fee waiver");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -622,7 +623,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Help with Fees");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
         verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -656,7 +657,7 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Exceptional circumstances");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
         verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
