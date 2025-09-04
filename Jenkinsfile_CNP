@@ -157,7 +157,6 @@ withPipeline(type, product, component) {
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
-    env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
     env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
     env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
@@ -191,7 +190,7 @@ enableSecurityScan()
 
     afterSuccess('akschartsinstall') {
         onPR {
-            if (env.ENABLE_WA) {
+            if (env.ENABLE_WA == true) {
                 githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
                 githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
                 env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
