@@ -91,13 +91,6 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        if (!noticeOfDecision.isEmpty()) {
-            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-                documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
-            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
-        }
-
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
