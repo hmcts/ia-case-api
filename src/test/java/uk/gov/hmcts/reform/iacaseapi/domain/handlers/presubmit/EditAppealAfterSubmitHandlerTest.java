@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -111,14 +112,6 @@ class EditAppealAfterSubmitHandlerTest {
     private ArgumentCaptor<YesOrNo> outOfTime;
     @Captor
     private ArgumentCaptor<YesOrNo> recordedOutOfTimeDecision;
-
-    private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
-            someDoc,
-            "some description",
-            "21/07/2021",
-            DocumentTag.APPEAL_SUBMISSION,
-            "some supplier"
-    );
 
     private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
