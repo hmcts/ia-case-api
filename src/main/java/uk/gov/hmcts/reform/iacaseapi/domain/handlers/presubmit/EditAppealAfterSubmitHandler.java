@@ -11,6 +11,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCa
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
@@ -43,6 +46,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final DocumentReceiver documentReceiver;
+    private final DocumentsAppender documentsAppender;
     private final DateProvider dateProvider;
     private final int appealOutOfTimeDaysUk;
     private final int appealOutOfTimeDaysOoc;
@@ -54,11 +59,16 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
         DueDateService dueDateService,
+        DocumentReceiver documentReceiver,
+        DocumentsAppender documentsAppender
+
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
         @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc,
         @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays
     ) {
         this.dateProvider = dateProvider;
+        this.documentReceiver = documentReceiver;
+        this.documentsAppender = documentsAppender;
         this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
         this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
         this.appealOutOfTimeAcceleratedDetainedWorkingDays = appealOutOfTimeAcceleratedDetainedWorkingDays;
