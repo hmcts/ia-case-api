@@ -77,7 +77,6 @@ class EditAppealAfterSubmitHandlerTest {
     private DocumentWithDescription noticeOfDecision1;
     @Mock
     private DocumentWithMetadata noticeOfDecision1WithMetadata;
-    private List<IdValue<DocumentWithMetadata>> allLegalRepDocuments;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
