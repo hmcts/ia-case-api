@@ -156,7 +156,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
                 .thenReturn(allLegalRepDocuments);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = editAppealAfterSubmitHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(callbackResponse).isNotNull();
 
@@ -195,7 +195,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
                 .thenReturn(allLegalRepDocuments);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = editAppealAfterSubmitHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(callbackResponse).isNotNull();
 
