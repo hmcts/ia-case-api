@@ -56,7 +56,12 @@ export IA_WA_CTSC_ADMIN_USERNAME_2=$(az keyvault secret show --vault-name ia-aat
 export IA_WA_CTSC_ADMIN_PASSWORD_2=$(az keyvault secret show --vault-name ia-aat --name wa-test-ctsc-admin-password-2 --query value -o tsv)
 export TEST_JUDGE_X_USERNAME=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-username --query value -o tsv)
 export TEST_JUDGE_X_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name test-judge-x-password --query value -o tsv)
-
+export IA_WA_ADMINOFFICER_NO_IDAM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name wa-test-adminofficer-no-idam-username  --query value -o tsv)
+export IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name wa-test-adminofficer-no-idam-password  --query value -o tsv)
+export IA_WA_CASEOFFICER_NO_IDAM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name wa-test-caseofficer-no-idam-username  --query value -o tsv)
+export IA_WA_CASEOFFICER_NO_IDAM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name wa-test-caseofficer-no-idam-password  --query value -o tsv)
+export IA_WA_JUDGE_NO_IDAM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name wa-test-judge-no-idam-username  --query value -o tsv)
+export IA_WA_JUDGE_NO_IDAM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name wa-test-judge-no-idam-password  --query value -o tsv)
 export IA_SYSTEM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name system-username --query value -o tsv)
 export IA_SYSTEM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name system-password --query value -o tsv)
 

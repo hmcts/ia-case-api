@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,6 +48,8 @@ public class RemoveCaseManagerBulkHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private RoleAssignmentService roleAssignmentService;
+    @Mock
+    private IdamService idamService;
     @InjectMocks
     private RemoveCaseManagerBulkHandler removeCaseManagerBulkHandler;
 
@@ -54,7 +58,8 @@ public class RemoveCaseManagerBulkHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REMOVE_CASE_MANAGER_BULK);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        removeCaseManagerBulkHandler = new RemoveCaseManagerBulkHandler(roleAssignmentService);
+        when(idamService.getServiceUserToken()).thenReturn("Bearer Token");
+        removeCaseManagerBulkHandler = new RemoveCaseManagerBulkHandler(roleAssignmentService, idamService);
 
     }
 
@@ -103,7 +108,7 @@ public class RemoveCaseManagerBulkHandlerTest {
             removeCaseManagerBulkHandler.handle(ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
         ArgumentCaptor<String> caseIdCaptor = ArgumentCaptor.forClass(String.class);
-        verify(roleAssignmentService, times(3)).removeCaseManagerRole(caseIdCaptor.capture());
+        verify(roleAssignmentService, times(3)).removeCaseManagerRole(caseIdCaptor.capture(), eq("Bearer Token"));
         List<String> capturedCaseIds = caseIdCaptor.getAllValues();
         assertEquals(3, capturedCaseIds.size());
         assertEquals("123", capturedCaseIds.get(0));
