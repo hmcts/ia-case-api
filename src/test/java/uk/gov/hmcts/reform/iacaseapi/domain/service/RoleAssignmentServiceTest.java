@@ -284,7 +284,7 @@ class RoleAssignmentServiceTest {
         when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
             .thenReturn(roleAssignmentResource);
 
-        roleAssignmentService.removeCaseRoleAssignments("1234123412341234");
+        roleAssignmentService.removeCaseRoleAssignments("1234123412341234", systemAccessToken);
 
         verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
         verify(roleAssignmentApi).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);
@@ -308,7 +308,7 @@ class RoleAssignmentServiceTest {
         when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
             .thenReturn(roleAssignmentResource);
 
-        roleAssignmentService.removeCaseRoleAssignments("1234123412341234");
+        roleAssignmentService.removeCaseRoleAssignments("1234123412341234", systemAccessToken);
 
         verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
         verify(roleAssignmentApi, times(2)).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);
@@ -323,7 +323,7 @@ class RoleAssignmentServiceTest {
         when(roleAssignmentApi.queryRoleAssignments(accessToken, serviceToken, queryRequest))
             .thenReturn(roleAssignmentResource);
 
-        roleAssignmentService.removeCaseRoleAssignments("1234123412341234");
+        roleAssignmentService.removeCaseRoleAssignments("1234123412341234", serviceToken);
 
         verify(roleAssignmentApi).queryRoleAssignments(accessToken, serviceToken, queryRequest);
         verify(roleAssignmentApi, times(0)).deleteRoleAssignment(systemAccessToken, serviceToken, assignmentId);

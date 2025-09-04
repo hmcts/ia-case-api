@@ -163,7 +163,7 @@ public class RoleAssignmentService {
         }
     }
 
-    public void removeCaseRoleAssignments(String caseId) {
+    public void removeCaseRoleAssignments(String caseId, String authorisation) {
         List<RoleName> roleNames = List.of(
             RoleName.CASE_MANAGER,
             RoleName.TRIBUNAL_CASEWORKER,
@@ -197,7 +197,7 @@ public class RoleAssignmentService {
         if (!roleAssignment.isEmpty()) {
             roleAssignment.forEach(assignment -> {
                 log.info("Removing Case role: {}", assignment);
-                deleteRoleAssignment(assignment.getId());
+                deleteRoleAssignment(assignment.getId(), authorisation);
                 log.info("Successfully removed Case role assignment {} for case ID {}", assignment, caseId);
             });
         } else {

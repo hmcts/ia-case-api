@@ -152,11 +152,11 @@ class ChangeRepresentationConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
-
+        when(idamService.getServiceUserToken()).thenReturn(serviceUserToken);
         changeRepresentationConfirmation.handle(callback);
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(eq(assignmentId), any());
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, serviceUserToken);
     }
 
     @Test
@@ -176,8 +176,8 @@ class ChangeRepresentationConfirmationTest {
                 Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
             )).build();
 
-        verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId", serviceUserToken);
+        verify(roleAssignmentService, never()).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -198,8 +198,8 @@ class ChangeRepresentationConfirmationTest {
                 Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
             )).build();
 
-        verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId", serviceUserToken);
+        verify(roleAssignmentService, never()).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -249,7 +249,7 @@ class ChangeRepresentationConfirmationTest {
         when(caseDetails.getId()).thenReturn(CASE_ID);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
-
+        when(idamService.getServiceUserToken()).thenReturn(serviceUserToken);
         PostSubmitCallbackResponse callbackResponse =
                 changeRepresentationConfirmation.handle(callback);
 
@@ -265,7 +265,7 @@ class ChangeRepresentationConfirmationTest {
                         + "This appeal will have to be continued by internal users\n\n");
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, serviceUserToken);
     }
 
     @Test
