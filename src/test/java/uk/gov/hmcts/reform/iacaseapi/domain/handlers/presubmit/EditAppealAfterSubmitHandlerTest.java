@@ -113,6 +113,85 @@ class EditAppealAfterSubmitHandlerTest {
         when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
+    void should_append_home_office_decision_letter_to_legal_rep_documents_if_not_present(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+
+        allLegalRepDocuments = Arrays.asList(
+                new IdValue<>("1", someLegalRepDocument)
+        );
+
+        List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
+                Arrays.asList(
+                        new IdValue<>("1", noticeOfDecision1)
+                );
+
+        List<DocumentWithMetadata> noticeOfDecisionWithMetadata =
+                Arrays.asList(
+                        noticeOfDecision1WithMetadata
+                );
+
+        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(noticeOfDecisionDocument));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
+                .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
+
+        when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
+                .thenReturn(allLegalRepDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, times(1)).prepend(
+                allLegalRepDocuments,
+                noticeOfDecisionWithMetadata
+        );
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "REQUEST_CASE_BUILDING"})
+    void should_not_append_home_office_decision_letter_to_legal_rep_documents_if_already_present(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+
+        allLegalRepDocuments = Arrays.asList(
+                new IdValue<>("1", homeOfficeDecisionLetter)
+        );
+
+        List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
+                Arrays.asList(
+                        new IdValue<>("1", noticeOfDecision1)
+                );
+
+        List<DocumentWithMetadata> noticeOfDecisionWithMetadata =
+                Arrays.asList(
+                        noticeOfDecision1WithMetadata
+                );
+
+        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(noticeOfDecisionDocument));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
+                .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
+
+        when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
+                .thenReturn(allLegalRepDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, times(0)).prepend(
+                allLegalRepDocuments,
+                noticeOfDecisionWithMetadata
+        );
+    }
+
+
     @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
 
