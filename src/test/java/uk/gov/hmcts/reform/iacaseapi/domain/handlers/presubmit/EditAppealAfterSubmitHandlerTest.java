@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECIS
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
+import java.util.Arrays;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
