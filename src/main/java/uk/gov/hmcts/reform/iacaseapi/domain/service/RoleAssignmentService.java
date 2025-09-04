@@ -163,4 +163,46 @@ public class RoleAssignmentService {
         }
     }
 
+    public void removeCaseRoleAssignments(String caseId) {
+        List<RoleName> roleNames = List.of(
+            RoleName.CASE_MANAGER,
+            RoleName.TRIBUNAL_CASEWORKER,
+            RoleName.SENIOR_TRIBUNAL_CASEWORKER,
+            RoleName.HEARING_JUDGE,
+            RoleName.FTPA_JUDGE,
+            RoleName.LEAD_JUDGE,
+            RoleName.HEARING_PANEL_JUDGE);
+        List<RoleCategory> roleCategories = List.of(
+            RoleCategory.LEGAL_OPERATIONS,
+            RoleCategory.JUDICIAL,
+            RoleCategory.ADMIN,
+            RoleCategory.CTSC
+        );
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .grantType(List.of(GrantType.SPECIFIC))
+            .roleName(roleNames)
+            .roleCategory(roleCategories)
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(caseId)
+            ))
+            .build();
+        log.debug("Query role assignment with the parameters: {}", queryRequest);
+
+        RoleAssignmentResource roleAssignmentResource = queryRoleAssignments(queryRequest);
+        List<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().toList();
+
+        if (!roleAssignment.isEmpty()) {
+            roleAssignment.forEach(assignment -> {
+                log.info("Removing Case role: {}", assignment);
+                deleteRoleAssignment(assignment.getId());
+                log.info("Successfully removed Case role assignment {} for case ID {}", assignment, caseId);
+            });
+        } else {
+            log.error("Problem removing Case roles for case ID {}. No role assignment(s) found.", caseId);
+        }
+    }
+
 }

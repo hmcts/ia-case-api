@@ -40,7 +40,7 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()),
+        roleAssignmentService.removeCaseRoleAssignments(String.valueOf(callback.getCaseDetails().getId()),
             idamService.getServiceUserToken());
 
         PostSubmitCallbackResponse postSubmitResponse =

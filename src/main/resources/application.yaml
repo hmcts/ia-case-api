@@ -1237,9 +1237,11 @@ security:
       - "ariaCreateCase"
       - "revokeCaseAccess"
       - "UpdateNextHearingInfo"
+      - "removeCaseManagerBulk"
       - "hearingCancelled"
     caseworker-ia-internal:
       - "revokeCaseAccess"
+      - "removeCaseManagerBulk"
     caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
