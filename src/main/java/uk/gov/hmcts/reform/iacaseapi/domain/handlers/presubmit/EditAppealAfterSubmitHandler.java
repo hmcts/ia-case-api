@@ -115,12 +115,12 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 clearLegalRepFields(asylumCase);
             } else if (HandlerUtils.hasRepresentation(asylumCase)
                 && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
-                    asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
-                }
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
             }
             if (!HandlerUtils.hasRepresentation(asylumCase)) {
                 asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
             }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
