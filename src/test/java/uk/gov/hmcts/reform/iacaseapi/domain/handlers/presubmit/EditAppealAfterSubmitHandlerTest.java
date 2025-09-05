@@ -86,6 +86,8 @@ class EditAppealAfterSubmitHandlerTest {
     private ArgumentCaptor<YesOrNo> outOfTime;
     @Captor
     private ArgumentCaptor<YesOrNo> recordedOutOfTimeDecision;
+    @Captor
+    private ArgumentCaptor<YesOrNo> hasAddedLegalRepDetails;
 
     private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
@@ -586,10 +588,13 @@ class EditAppealAfterSubmitHandlerTest {
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2))
+                .write(asylumExtractor.capture(), hasAddedLegalRepDetails.capture());
 
-        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(asylumExtractor.getAllValues()).contains(SUBMISSION_OUT_OF_TIME, HAS_ADDED_LEGAL_REP_DETAILS);
         assertThat(outOfTime.getValue()).isEqualTo(NO);
+        assertThat(hasAddedLegalRepDetails.getValue()).isEqualTo(NO);
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
@@ -608,15 +613,19 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.empty());
 
         editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
-        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+        verify(asylumCase, times(3)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(3)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+        verify(asylumCase, times(3)).write(asylumExtractor.capture(), hasAddedLegalRepDetails.capture());
 
-        assertThat(asylumExtractor.getAllValues()).contains(SUBMISSION_OUT_OF_TIME);
-        assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(asylumExtractor.getAllValues())
+                .contains(SUBMISSION_OUT_OF_TIME, RECORDED_OUT_OF_TIME_DECISION, HAS_ADDED_LEGAL_REP_DETAILS);
         assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
         assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
     }
 

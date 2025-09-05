@@ -83,12 +83,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (HandlerUtils.hasRepresentation(asylumCase)
-                && !HandlerUtils.isInternalCase(asylumCase)
-                && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
-            asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
-        }
-
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
 
@@ -119,8 +113,14 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             clearNewMatters(asylumCase);
             if (isInternalCase(asylumCase)) {
                 clearLegalRepFields(asylumCase);
+            } else if (HandlerUtils.hasRepresentation(asylumCase)
+                && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
+                    asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+                }
             }
-        }
+            if (!HandlerUtils.hasRepresentation(asylumCase)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
+            }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
