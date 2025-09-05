@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1461 Update Case Mark Detained",
+  "description": "DIAC-1461 Update Case Mark Detained AiP Digital",
 
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

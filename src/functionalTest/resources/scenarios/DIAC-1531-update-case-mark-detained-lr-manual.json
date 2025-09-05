@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1461 Update Case Mark Detained Other",
+  "description": "DIAC-1531 Update Case Mark Detained Legally Represented - Manual",
 
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -16,7 +16,7 @@
           "dateCustodialSentenceAo": {
             "custodialDate": "2025-01-01"
           },
-          "detentionFacility": "other",
+          "detentionFacility": "immigrationRemovalCentre",
           "appellantAddress": {
             "AddressLine1": "123 Main Street",
             "AddressLine2": "Flat 1",
@@ -30,9 +30,9 @@
           "mobileNumber": "07444445555",
           "detentionRemovalReason": "some reason",
           "detentionRemovalDate": "2025-01-02",
-          "journeyType": "aip",
+          "journeyType": null,
           "appellantInDetention": "No",
-          "isAdmin": "No",
+          "isAdmin": "Yes",
           "appellantsRepresentation": "No"
         }
       }
@@ -53,13 +53,7 @@
         "releaseDate": {
           "custodialDate": "2025-01-01"
         },
-        "appellantAddress": {
-          "AddressLine1": "123 Main Street",
-          "AddressLine2": "Flat 1",
-          "PostTown": "London",
-          "County": "Greater London",
-          "PostCode": "E1 6AN"
-        },
+        "appellantAddress": null,
         "appellantHasFixedAddress": null,
         "contactPreference": null,
         "email": null,
@@ -69,7 +63,7 @@
         "journeyType": null,
         "appellantInDetention": "Yes",
         "isAdmin": "Yes",
-        "appellantsRepresentation": "Yes",
+        "appellantsRepresentation": "No",
         "appellantLevelFlags": {
           "partyName": null,
           "roleOnCase": null,
