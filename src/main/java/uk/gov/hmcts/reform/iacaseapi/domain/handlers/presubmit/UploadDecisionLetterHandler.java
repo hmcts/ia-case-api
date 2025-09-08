@@ -71,27 +71,29 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
                 .collect(Collectors.toList());
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
-                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+            asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
         List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
-                maybeExistingLegalRepDocuments.orElse(emptyList());
+            maybeExistingLegalRepDocuments.orElse(emptyList());
 
-        if (!noticeOfDecision.isEmpty()) {
-            existingLegalRepDocuments = existingLegalRepDocuments.stream().filter(
-                            doc -> doc.getValue().getTag() != DocumentTag.HO_DECISION_LETTER)
-                    .toList();
-
-            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-                    documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
-
-            legalRepDocumentsContainHoDecisionLetter = true;
-
-            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+        for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
+            if (existingLegalRepDocument.getValue().getTag() != null) {
+                if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.HO_DECISION_LETTER)) {
+                    legalRepDocumentsContainHoDecisionLetter = true;
+                }
+            }
         }
 
         if (legalRepDocumentsContainHoDecisionLetter) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
+
+        if (!noticeOfDecision.isEmpty()) {
+            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
+            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+        }
+
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

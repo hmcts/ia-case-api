@@ -35,6 +35,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -43,6 +45,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private final int appealOutOfTimeDaysUk;
     private final int appealOutOfTimeDaysOoc;
     private final int appealOutOfTimeAcceleratedDetainedWorkingDays;
+    private final DocumentReceiver documentReceiver;
+    private final DocumentsAppender documentsAppender;
 
     private final DueDateService dueDateService;
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
@@ -52,13 +56,17 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         DueDateService dueDateService,
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
         @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc,
-        @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays
+        @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays,
+        DocumentReceiver documentReceiver,
+        DocumentsAppender documentsAppender
     ) {
         this.dateProvider = dateProvider;
         this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
         this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
         this.appealOutOfTimeAcceleratedDetainedWorkingDays = appealOutOfTimeAcceleratedDetainedWorkingDays;
         this.dueDateService = dueDateService;
+        this.documentReceiver = documentReceiver;
+        this.documentsAppender = documentsAppender;
     }
 
     public boolean canHandle(
@@ -116,9 +124,40 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
+
+            Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
+                    asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+
+            List<DocumentWithMetadata> noticeOfDecision =
+                    maybeNoticeOfDecision
+                            .orElse(emptyList())
+                            .stream()
+                            .map(IdValue::getValue)
+                            .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toList());
+
+            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
+                    asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+
+            List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+                    maybeExistingLegalRepDocuments.orElse(emptyList());
+
+            existingLegalRepDocuments = existingLegalRepDocuments.stream()
+                    .filter(doc -> doc.getValue().getTag() != DocumentTag.HO_DECISION_LETTER)
+                    .toList();
+
+            if (!noticeOfDecision.isEmpty()) {
+                List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                        documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
+                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+            }
+
             if (isInternalCase(asylumCase)) {
                 clearLegalRepFields(asylumCase);
             }
+            updateHoDecisionLetter(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
