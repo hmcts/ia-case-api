@@ -45,7 +45,10 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
+            log.info("DateOfBirthValidationHandler: cannot handle callback");
             throw new IllegalStateException("Cannot handle callback");
+        } else {
+            log.info("DateOfBirthValidationHandler: handling callback");
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
@@ -57,9 +60,13 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
                 .orElseThrow(() -> new RequiredFieldMissingException("Appellant Date of Birth missing (Age Assessment)"));
 
             Optional<LocalDate> maybeAppellantDob = parseDate(appellantDobStr);
+            log.info("DateOfBirthValidationHandler: appellant DOB string `{}`", appellantDobStr);
             maybeAppellantDob.ifPresent(dateToCheck -> {
                 if (dateToCheck.isAfter(LocalDate.now())) {
+                    log.info("DateOfBirthValidationHandler: invalid date (future date)");
                     response.addError("The date must not be a future date.");
+                } else {
+                    log.info("DateOfBirthValidationHandler: valid date");
                 }
             });
         }
