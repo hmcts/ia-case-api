@@ -63,8 +63,11 @@ public class MarkAppealAsDetainedHandler implements PreSubmitCallbackHandler<Asy
         asylumCase.clear(MOBILE_NUMBER);
         asylumCase.clear(DETENTION_REMOVAL_REASON);
         asylumCase.clear(DETENTION_REMOVAL_DATE);
+        asylumCase.clear(JOURNEY_TYPE);
 
         asylumCase.write(APPELLANT_IN_DETENTION, YES);
+        asylumCase.write(IS_ADMIN, YES);
+        asylumCase.write(APPELLANTS_REPRESENTATION, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 

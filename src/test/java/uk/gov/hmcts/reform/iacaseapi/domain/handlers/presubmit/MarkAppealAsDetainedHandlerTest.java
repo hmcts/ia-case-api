@@ -71,11 +71,14 @@ class MarkAppealAsDetainedHandlerTest {
         verify(asylumCase).write(PRISON_NOMS, prisonNomsNumber);
         verify(asylumCase).write(DATE_CUSTODIAL_SENTENCE, custodialSentenceDate);
         verify(asylumCase).write(APPELLANT_IN_DETENTION, YES);
+        verify(asylumCase).write(IS_ADMIN, YES);
+        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YES);
         verify(asylumCase).clear(APPELLANT_HAS_FIXED_ADDRESS);
         verify(asylumCase).clear(APPELLANT_ADDRESS);
         verify(asylumCase).clear(CONTACT_PREFERENCE);
         verify(asylumCase).clear(EMAIL);
         verify(asylumCase).clear(MOBILE_NUMBER);
+        verify(asylumCase).clear(JOURNEY_TYPE);
     }
 
     @Test
