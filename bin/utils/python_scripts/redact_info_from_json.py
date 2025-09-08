@@ -20,6 +20,11 @@ replace data
 
 """
 
+if len(sys.argv) > 1:
+    var1 = sys.argv[1]
+else:
+    var1 = None
+
 replace_mapping_keys = [x.lower() for x in list(settings.replace_mapping_dict.keys())]
 replace_csv_mapping_keys = [x.lower() for x in list(settings.csv_rows_to_redact.keys())]
 
@@ -162,8 +167,9 @@ def replace_specific_field_in_csv_file_of_jsons(
 
 # example usage
 
+# will use command line argument as filepath if passed in
 # redact_values_from_json(
-#     'latest_data.json', replace_mapping_keys
+#     var1 if var1 else 'latest_data.json', replace_mapping_keys
 # )
 
 # redact_values_from_csv(
