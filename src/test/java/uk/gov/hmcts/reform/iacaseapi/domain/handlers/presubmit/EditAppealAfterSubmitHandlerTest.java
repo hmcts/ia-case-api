@@ -201,6 +201,44 @@ class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
+    void should_append_ho_decision_letter_to_legal_rep_documents_when_present() {
+
+        DocumentWithDescription uploadedDoc = mock(DocumentWithDescription.class);
+        DocumentWithMetadata receivedMetadata = mock(DocumentWithMetadata.class);
+        List<IdValue<DocumentWithDescription>> uploadedNoticeOfDecisionDocs =
+                List.of(new IdValue<>("1", uploadedDoc));
+
+        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(uploadedNoticeOfDecisionDocs));
+        when(documentReceiver.tryReceive(uploadedDoc, DocumentTag.HO_DECISION_LETTER))
+                .thenReturn(Optional.of(receivedMetadata));
+
+        DocumentWithMetadata existingDoc = mock(DocumentWithMetadata.class);
+        when(existingDoc.getTag()).thenReturn(DocumentTag.OTHER); // should be retained
+
+        List<IdValue<DocumentWithMetadata>> existingLegalRepDocs =
+                List.of(new IdValue<>("2", existingDoc));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(existingLegalRepDocs));
+
+        List<IdValue<DocumentWithMetadata>> finalLegalRepDocs = List.of(
+                new IdValue<>("3", receivedMetadata),
+                new IdValue<>("2", existingDoc)
+        );
+        when(documentsAppender.prepend(anyList(), anyList())).thenReturn(finalLegalRepDocs);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase).write(LEGAL_REPRESENTATIVE_DOCUMENTS, finalLegalRepDocs);
+    }
+
+
+    @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
