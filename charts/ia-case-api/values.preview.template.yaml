@@ -1278,7 +1278,7 @@ wa:
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         ALLOWED_JURISDICTIONS: ia
-        ALLOWED_CASE_TYPES: asylum
+        ALLOWED_CASE_TYPES: asylum,bail
 
   wa-case-event-handler:
     java:
