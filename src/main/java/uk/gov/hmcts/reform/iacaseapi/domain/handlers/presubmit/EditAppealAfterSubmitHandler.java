@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
@@ -157,7 +160,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             if (isInternalCase(asylumCase)) {
                 clearLegalRepFields(asylumCase);
             }
-            updateHoDecisionLetter(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
