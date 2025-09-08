@@ -29,6 +29,14 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+log.info(
+    "DateOfBirthValidationHandler: stage `{}`, event `{}`, case ID `{}`, page ID `{}`",
+    callbackStage,
+    callback.getEvent(),
+    callback.getCaseDetails().getId(),
+    callback.getPageId()
+);
+
         return callback.getEvent() == Event.START_APPEAL
             && callbackStage == PreSubmitCallbackStage.MID_EVENT
             && callback.getPageId().equals(AA_APPELLANT_DATE_OF_BIRTH.value());
