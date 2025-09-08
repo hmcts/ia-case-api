@@ -213,7 +213,7 @@ class EditAppealAfterSubmitHandlerTest {
                 .thenReturn(Optional.of(receivedMetadata));
 
         DocumentWithMetadata existingDoc = mock(DocumentWithMetadata.class);
-        when(existingDoc.getTag()).thenReturn(DocumentTag.OTHER); // should be retained
+        when(existingDoc.getTag()).thenReturn(DocumentTag.APPEAL_SUBMISSION);
 
         List<IdValue<DocumentWithMetadata>> existingLegalRepDocs =
                 List.of(new IdValue<>("2", existingDoc));
