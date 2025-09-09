@@ -870,6 +870,8 @@ ccd:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
         RUN_LD_ON_STARTUP: false
+        ORM_ENV: pr
+        APPLICATION_LOGGING_LEVEL: TRACE
         ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
         ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role_assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
@@ -887,6 +889,11 @@ ccd:
               alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
             - name: role-assignment-service-LD-SDK-KEY
               alias: LD_SDK_KEY
+      secrets:
+        ROLE_ASSIGNMENT_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
 
   ccd-admin-web:
     nodejs:
@@ -915,7 +922,7 @@ ccd:
         DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-        DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api,am_role_assignment_service
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
@@ -1425,6 +1432,8 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
+      REFRESH_BULK_ASSIGNMENT_INCLUDE_BOOKINGS: true
+      ORM_ENV: pr
 
 ia-hearings-api:
   enabled: true
@@ -1532,4 +1541,3 @@ postgresql:
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
       - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
-
