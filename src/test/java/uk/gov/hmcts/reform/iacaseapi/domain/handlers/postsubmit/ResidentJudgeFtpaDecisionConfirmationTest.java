@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 
@@ -52,15 +51,14 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     private FeatureToggler featureToggler;
     @Mock
     private RoleAssignmentService roleAssignmentService;
-    @Mock
-    private IdamService idamService;
     @InjectMocks
     private ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation;
+
 
     @BeforeEach
     void setup() {
         residentJudgeFtpaDecisionConfirmation =
-            new ResidentJudgeFtpaDecisionConfirmation(featureToggler, roleAssignmentService, idamService);
+            new ResidentJudgeFtpaDecisionConfirmation(featureToggler, roleAssignmentService);
     }
 
     @Test

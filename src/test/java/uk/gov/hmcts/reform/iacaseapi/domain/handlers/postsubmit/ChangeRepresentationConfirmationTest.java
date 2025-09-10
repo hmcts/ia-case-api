@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -41,10 +40,9 @@ class ChangeRepresentationConfirmationTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private RoleAssignmentService roleAssignmentService;
-    @Mock private IdamService idamService;
+
     private static final long CASE_ID = 1234567890L;
     private ChangeRepresentationConfirmation changeRepresentationConfirmation;
-    private final String serviceUserToken = "serviceUserToken";
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -52,8 +50,7 @@ class ChangeRepresentationConfirmationTest {
         changeRepresentationConfirmation = new ChangeRepresentationConfirmation(
             ccdCaseAssignment,
             postNotificationSender,
-            roleAssignmentService,
-            idamService
+            roleAssignmentService
         );
     }
 
@@ -152,11 +149,11 @@ class ChangeRepresentationConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
-        when(idamService.getServiceUserToken()).thenReturn(serviceUserToken);
+
         changeRepresentationConfirmation.handle(callback);
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, serviceUserToken);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
     }
 
     @Test
@@ -176,8 +173,8 @@ class ChangeRepresentationConfirmationTest {
                 Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
             )).build();
 
-        verify(roleAssignmentService, never()).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId");
     }
 
     @Test
@@ -198,8 +195,8 @@ class ChangeRepresentationConfirmationTest {
                 Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
             )).build();
 
-        verify(roleAssignmentService, never()).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId");
     }
 
     @Test
@@ -249,7 +246,7 @@ class ChangeRepresentationConfirmationTest {
         when(caseDetails.getId()).thenReturn(CASE_ID);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
-        when(idamService.getServiceUserToken()).thenReturn(serviceUserToken);
+
         PostSubmitCallbackResponse callbackResponse =
                 changeRepresentationConfirmation.handle(callback);
 
@@ -265,7 +262,7 @@ class ChangeRepresentationConfirmationTest {
                         + "This appeal will have to be continued by internal users\n\n");
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, serviceUserToken);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
     }
 
     @Test
