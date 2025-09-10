@@ -56,7 +56,7 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
             && !isEntryClearanceDecision(asylumCase)) {
 
             String homeOfficeReferenceNumber = asylumCase
-                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class) // Add it here
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
             if (homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
