@@ -75,7 +75,6 @@ public class PartyIdService {
     }
 
     public static void setSponsorPartyId(AsylumCase asylumCase) {
-
         boolean hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class)
             .map(flag -> flag == YES)
             .orElse(false);
