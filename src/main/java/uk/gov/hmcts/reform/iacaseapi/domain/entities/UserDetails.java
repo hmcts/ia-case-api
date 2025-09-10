@@ -10,10 +10,6 @@ public interface UserDetails {
 
     List<String> getRoles();
 
-    boolean isAdmin();
-
-    boolean isHomeOffice();
-
     String getEmailAddress();
 
     String getForename();

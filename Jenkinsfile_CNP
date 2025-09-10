@@ -74,12 +74,6 @@ def secrets = [
                 secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
                 secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
                 secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
-                secret('wa-test-adminofficer-no-idam-username', 'IA_WA_ADMINOFFICER_NO_IDAM_USERNAME'),
-                secret('wa-test-adminofficer-no-idam-password', 'IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD'),
-                secret('wa-test-caseofficer-no-idam-username', 'IA_WA_CASEOFFICER_NO_IDAM_USERNAME'),
-                secret('wa-test-caseofficer-no-idam-password', 'IA_WA_CASEOFFICER_NO_IDAM_PASSWORD'),
-                secret('wa-test-judge-no-idam-username', 'IA_WA_JUDGE_NO_IDAM_USERNAME'),
-                secret('wa-test-judge-no-idam-password', 'IA_WA_JUDGE_NO_IDAM_PASSWORD'),
 
                 secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
                 secret('pcq-token-key', 'PCQ_TOKEN_KEY'),

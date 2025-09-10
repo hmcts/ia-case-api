@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Slf4j
@@ -20,12 +19,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 public class RemoveCaseManagerBulkHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final RoleAssignmentService roleAssignmentService;
-    private final IdamService idamService;
 
-    public RemoveCaseManagerBulkHandler(RoleAssignmentService roleAssignmentService,
-                                        IdamService idamService) {
+    public RemoveCaseManagerBulkHandler(RoleAssignmentService roleAssignmentService) {
         this.roleAssignmentService = roleAssignmentService;
-        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -50,7 +46,7 @@ public class RemoveCaseManagerBulkHandler implements PreSubmitCallbackHandler<As
         String removeCaseManageCaseIdList = asylumCase.read(REMOVE_CASE_MANAGER_CASE_ID_LIST, String.class)
             .orElse("");
         Arrays.stream(removeCaseManageCaseIdList.split(","))
-            .forEach(caseId -> roleAssignmentService.removeCaseManagerRole(caseId, idamService.getServiceUserToken()));
+            .forEach(roleAssignmentService::removeCaseManagerRole);
         asylumCase.clear(REMOVE_CASE_MANAGER_CASE_ID_LIST);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

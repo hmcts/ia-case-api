@@ -16,8 +16,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @Service
 public class MakeAnApplicationTypesProvider {
 
+    private static final String ROLE_ADMIN = "caseworker-ia-admofficer";
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
+    private static final String ROLE_HO_APC = "caseworker-ia-homeofficeapc";
+    private static final String ROLE_HO_LART = "caseworker-ia-homeofficelart";
+    private static final String ROLE_HO_POU = "caseworker-ia-homeofficepou";
     private static final String ROLE_HO_RESPONDENT = "caseworker-ia-respondentofficer";
+    private static final List<String> HO_ROLES = List.of(ROLE_HO_APC, ROLE_HO_LART, ROLE_HO_POU, ROLE_HO_RESPONDENT);
 
     private final UserDetails userDetails;
 
@@ -33,8 +38,9 @@ public class MakeAnApplicationTypesProvider {
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        boolean hasHomeOfficeRole = userDetails.isHomeOffice();
-        boolean isInternalAndAdminRole = userDetails.isAdmin() && isInternalCase(asylumCase);
+        boolean hasHomeOfficeRole = userDetails.getRoles()
+            .stream().anyMatch(HO_ROLES::contains);
+        boolean isInternalAndAdminRole = hasRole(ROLE_ADMIN) && isInternalCase(asylumCase);
 
         DynamicList dynamicList;
         final List<Value> values = new ArrayList<>();
@@ -47,7 +53,7 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
 
-                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || (hasRole(ROLE_ADMIN) && isInternalCase(asylumCase))) {
                     values.remove(0); // remove JUDGE_REVIEW
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 }
@@ -57,7 +63,7 @@ public class MakeAnApplicationTypesProvider {
                         TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                 }
 
-                if (isAcceleratedDetainedAppeal(asylumCase) && isInternalAndAdminRole) {
+                if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_ADMIN) && isInternalCase(asylumCase)) {
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                         TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
@@ -91,7 +97,8 @@ public class MakeAnApplicationTypesProvider {
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
-                if (isInternalAndAdminRole
+                if (hasRole(ROLE_ADMIN)
+                    && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
 
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
@@ -160,7 +167,8 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
 
-                if (isInternalAndAdminRole
+                if (hasRole(ROLE_ADMIN)
+                    && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     if (hasSubmittedHearingRequirements(asylumCase)) {
                         values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
@@ -207,7 +215,8 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
                 }
 
-                if (isInternalAndAdminRole
+                if (hasRole(ROLE_ADMIN)
+                    && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
@@ -255,7 +264,8 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                 }
 
-                if (isInternalAndAdminRole
+                if (hasRole(ROLE_ADMIN)
+                    && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                     values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
@@ -303,7 +313,8 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_HEARING_REQUIREMENTS.toString()));
                 }
 
-                if (isInternalAndAdminRole
+                if (hasRole(ROLE_ADMIN)
+                    && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     if (hasSubmittedHearingRequirements(asylumCase)) {
                         values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
@@ -337,7 +348,8 @@ public class MakeAnApplicationTypesProvider {
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     }
                 }
-                if (isInternalAndAdminRole
+                if (hasRole(ROLE_ADMIN)
+                    && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                         TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
@@ -383,7 +395,10 @@ public class MakeAnApplicationTypesProvider {
     }
 
     private boolean hasRole(String roleName) {
-        return userDetails.getRoles().contains(roleName);
+
+        return userDetails
+            .getRoles()
+            .contains(roleName);
     }
 
     private boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {

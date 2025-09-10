@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -26,19 +25,16 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
     private final RoleAssignmentService roleAssignmentService;
     private final CcdCaseAssignment ccdCaseAssignment;
     private final PostNotificationSender<AsylumCase> postNotificationSender;
-    private final IdamService idamService;
 
     public ChangeRepresentationConfirmation(
         CcdCaseAssignment ccdCaseAssignment,
         PostNotificationSender<AsylumCase> postNotificationSender,
-        RoleAssignmentService roleAssignmentService,
-        IdamService idamService
+        RoleAssignmentService roleAssignmentService
     ) {
 
         this.ccdCaseAssignment = ccdCaseAssignment;
         this.postNotificationSender = postNotificationSender;
         this.roleAssignmentService = roleAssignmentService;
-        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -165,7 +161,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         if (roleAssignment.isPresent()) {
             log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
 
-            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId(), idamService.getServiceUserToken());
+            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId());
 
             log.info("Successfully revoked Appellant's access to appeal with case ID {}", caseId);
         } else {

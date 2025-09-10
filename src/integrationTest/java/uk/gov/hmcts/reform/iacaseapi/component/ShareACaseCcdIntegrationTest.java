@@ -24,7 +24,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -34,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 
 @Slf4j
 class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
-    WithUserDetailsStub, WithReferenceDataStub, WithRoleAssignmentStub {
+    WithUserDetailsStub, WithReferenceDataStub {
 
     private static final String ACTIVE_USER_ID = "6c4fd62d-9d3c-4d11-962c-57080df16871";
 
@@ -70,7 +69,7 @@ class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
-        addRoleAssignmentActorStub(server);
+
         dynamicList = new DynamicList(value2, values);
 
         //Userdetails stub will always return uid 1
@@ -103,7 +102,6 @@ class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
-        addRoleAssignmentActorStub(server);
 
         // invalid user is chosen in dropdown
         dynamicList = new DynamicList(value1, values);

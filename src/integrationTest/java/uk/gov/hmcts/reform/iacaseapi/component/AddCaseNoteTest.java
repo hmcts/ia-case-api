@@ -13,23 +13,21 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
-    WithRoleAssignmentStub, WithServiceAuthStub {
+class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     void adds_a_case_note() {
+
         addCaseWorkerUserDetailsStub(server);
-        addServiceAuthStub(server);
-        addRoleAssignmentActorStub(server);
+
+
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(ADD_CASE_NOTE)
             .caseDetails(someCaseDetailsWith()

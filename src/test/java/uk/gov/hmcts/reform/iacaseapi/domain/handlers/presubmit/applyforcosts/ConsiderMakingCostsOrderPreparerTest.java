@@ -69,7 +69,7 @@ class ConsiderMakingCostsOrderPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-iacjudge"));
         when(asylumCase.read(JUDGE_APPLIED_COSTS_TYPES, DynamicList.class)).thenReturn(Optional.of(typesOfAppliedCosts));
-        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.IDAM_JUDGE);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.JUDGE);
 
         considerMakingCostsOrderPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 

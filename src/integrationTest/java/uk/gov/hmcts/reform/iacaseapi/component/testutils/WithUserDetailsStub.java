@@ -28,7 +28,7 @@ public interface WithUserDetailsStub {
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
                     .withBody("{\"sub\":\"someone@somewhere.com\","
-                        + "\"uid\":\"1\",\"roles\":[\"caseworker-ia\",\"tribunal-caseworker\"],"
+                        + "\"uid\":\"1\",\"roles\":[\"caseworker-ia\",\"caseworker-ia-caseofficer\"],"
                         + "\"name\":null,\"given_name\":\"Case\",\"family_name\":\"Officer\"}")
                     .build()));
 
