@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @Component
@@ -23,12 +22,9 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
 
     static final String TOKEN_NAME = "tokenName";
 
-    private final IdamApi idamApi;
     private final IdamService idamService;
 
-    public IdamAuthoritiesConverter(IdamApi idamApi,
-           IdamService idamService) {
-        this.idamApi = idamApi;
+    public IdamAuthoritiesConverter(IdamService idamService) {
         this.idamService = idamService;
     }
 
@@ -47,7 +43,6 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
         try {
 
             UserInfo userInfo = idamService.getUserInfo("Bearer " + authorization);
-
             return userInfo
                 .getRoles()
                 .stream()
@@ -55,7 +50,7 @@ public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<Grant
                 .collect(Collectors.toList());
 
         } catch (FeignException e) {
-            throw new IdentityManagerResponseException("Could not get user details from IDAM", e);
+            throw new IdentityManagerResponseException("Could not get user details from IDAM or RoleAssignmentService", e);
         }
 
     }
