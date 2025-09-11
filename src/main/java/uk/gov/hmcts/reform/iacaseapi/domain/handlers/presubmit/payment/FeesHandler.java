@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -152,7 +153,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             .orElse("");
         switch (remissionClaim) {
             case "asylumSupport":
-                asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
                 asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
                 asylumCase.clear(SECTION17_DOCUMENT);
                 asylumCase.clear(SECTION20_DOCUMENT);
@@ -160,7 +161,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
 
             case "legalAid":
-                asylumCase.write(FEE_REMISSION_TYPE, "Legal Aid");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
                 asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
                 asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
                 asylumCase.clear(SECTION17_DOCUMENT);
@@ -169,7 +170,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
 
             case "section17":
-                asylumCase.write(FEE_REMISSION_TYPE, "Section 17");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
                 asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
                 asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
                 asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -178,7 +179,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
 
             case "section20":
-                asylumCase.write(FEE_REMISSION_TYPE, "Section 20");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
                 asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
                 asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
                 asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -187,7 +188,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
 
             case "homeOfficeWaiver":
-                asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
                 asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
                 asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
                 asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -204,7 +205,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private void setHelpWithFeesDetails(AsylumCase asylumCase) {
 
-        asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
+        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
         clearRemissionDetails(asylumCase);
         clearFeeOptionDetails(asylumCase);
 
@@ -212,7 +213,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private void setExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
 
-        asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
+        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
         clearRemissionDetails(asylumCase);
         clearFeeOptionDetails(asylumCase);
 

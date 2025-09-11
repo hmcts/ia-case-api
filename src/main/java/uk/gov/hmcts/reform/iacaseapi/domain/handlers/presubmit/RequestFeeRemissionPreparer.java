@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearRequestRemissionFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.util.Optional;
@@ -83,7 +84,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                         throw(new IllegalStateException("Previous fee remission type is not present"));
                     }
 
-                    asylumCase.clear(REMISSION_TYPE);
+                    clearRequestRemissionFields(asylumCase);
                 }
                 break;
 
