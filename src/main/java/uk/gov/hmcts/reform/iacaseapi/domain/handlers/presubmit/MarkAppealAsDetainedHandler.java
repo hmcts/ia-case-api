@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_DETAINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -63,11 +64,14 @@ public class MarkAppealAsDetainedHandler implements PreSubmitCallbackHandler<Asy
         asylumCase.clear(MOBILE_NUMBER);
         asylumCase.clear(DETENTION_REMOVAL_REASON);
         asylumCase.clear(DETENTION_REMOVAL_DATE);
-        asylumCase.clear(JOURNEY_TYPE);
 
         asylumCase.write(APPELLANT_IN_DETENTION, YES);
-        asylumCase.write(IS_ADMIN, YES);
-        asylumCase.write(APPELLANTS_REPRESENTATION, YES);
+
+        if (isAipJourney(asylumCase)) {
+            asylumCase.clear(JOURNEY_TYPE);
+            asylumCase.write(IS_ADMIN, YES);
+            asylumCase.write(APPELLANTS_REPRESENTATION, YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 

@@ -199,8 +199,6 @@ class PartyIdServiceTest {
 
     @Test
     void should_set_sponsor_partyId() {
-
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PartyIdService.setSponsorPartyId(asylumCase);

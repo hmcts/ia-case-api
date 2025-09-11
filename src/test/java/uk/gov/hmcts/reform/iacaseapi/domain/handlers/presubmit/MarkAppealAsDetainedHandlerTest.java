@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -71,13 +73,48 @@ class MarkAppealAsDetainedHandlerTest {
         verify(asylumCase).write(PRISON_NOMS, prisonNomsNumber);
         verify(asylumCase).write(DATE_CUSTODIAL_SENTENCE, custodialSentenceDate);
         verify(asylumCase).write(APPELLANT_IN_DETENTION, YES);
-        verify(asylumCase).write(IS_ADMIN, YES);
-        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YES);
         verify(asylumCase).clear(APPELLANT_HAS_FIXED_ADDRESS);
         verify(asylumCase).clear(APPELLANT_ADDRESS);
         verify(asylumCase).clear(CONTACT_PREFERENCE);
         verify(asylumCase).clear(EMAIL);
         verify(asylumCase).clear(MOBILE_NUMBER);
+
+        // aip only assertions
+        verify(asylumCase, times(0)).write(IS_ADMIN, YES);
+        verify(asylumCase, times(0)).write(APPELLANTS_REPRESENTATION, YES);
+        verify(asylumCase, times(0)).clear(JOURNEY_TYPE);
+    }
+
+    @Test
+    void should_mark_appeal_as_detained_and_update_case_data_aip() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_AS_DETAINED);
+
+        when(asylumCase.read(PRISON_NOMS_AO, PrisonNomsNumber.class)).thenReturn(Optional.of(prisonNomsNumber));
+        when(asylumCase.read(DATE_CUSTODIAL_SENTENCE_AO, CustodialSentenceDate.class))
+                .thenReturn(Optional.of(custodialSentenceDate));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("prison"));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                markAppealAsDetainedHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(PRISON_NOMS, prisonNomsNumber);
+        verify(asylumCase).write(DATE_CUSTODIAL_SENTENCE, custodialSentenceDate);
+        verify(asylumCase).write(APPELLANT_IN_DETENTION, YES);
+        verify(asylumCase).clear(APPELLANT_HAS_FIXED_ADDRESS);
+        verify(asylumCase).clear(APPELLANT_ADDRESS);
+        verify(asylumCase).clear(CONTACT_PREFERENCE);
+        verify(asylumCase).clear(EMAIL);
+        verify(asylumCase).clear(MOBILE_NUMBER);
+
+        // aip only assertions
+        verify(asylumCase).write(IS_ADMIN, YES);
+        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YES);
         verify(asylumCase).clear(JOURNEY_TYPE);
     }
 
