@@ -12,8 +12,8 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "master"
-def bpmnBranch = "master"
+def dmnBranch = "feature/detained-appeals"
+def bpmnBranch = "feature/detained-appeals"
 
 def secrets = [
         'rpx-${env}': [
@@ -116,7 +116,9 @@ def secrets = [
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
                 secret('system-username', 'IA_SYSTEM_USERNAME'),
-                secret('system-password', 'IA_SYSTEM_PASSWORD')
+                secret('system-password', 'IA_SYSTEM_PASSWORD'),
+                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')        
+          
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),

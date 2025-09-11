@@ -31,6 +31,7 @@
         "legalRepCompany": "j",
         "isAppellantMinor": "No",
         "submissionOutOfTime": "No",
+        "hearingCentre": "newport",
         "notificationsSent": [
           {
             "id": "1234_EDIT_APPEAL_AFTER_SUBMIT_LEGAL_REPRESENTATIVE",
