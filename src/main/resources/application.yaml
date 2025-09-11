@@ -346,6 +346,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -431,6 +434,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -516,6 +522,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
