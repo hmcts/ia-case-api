@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Gradle Clean",
+      "request": "launch",
+      "preLaunchTask": "gradle-clean",
+      "noDebug": true
+    },
+    {
+      "type": "java",
+      "name": "Gradle Compile Java",
+      "request": "launch",
+      "preLaunchTask": "gradle-compileJava",
+      "noDebug": true
+    },
+    {
+      "type": "java",
+      "name": "Run IA Case API",
+      "request": "launch",
+      "preLaunchTask": "gradle-bootrun",
+      "noDebug": true
+    },
+    {
+      "type": "java",
+      "name": "Debug IA Case API",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "gradle-bootrun-debug"
+    },
+    {
+      "type": "java",
+      "name": "Debug with Mirrord (Clean)",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "mirrord-gradle-bootrun-debug-clean"
+    }
+  ]
+}

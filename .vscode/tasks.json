@@ -1,0 +1,151 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "gradle-bootrun-debug",
+      "type": "shell",
+      "command": "./gradlew",
+      "args": ["bootRun"],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Tomcat initialized.*",
+          "endsPattern": "^.*Started.*Application.*"
+        }
+      }
+    },
+    {
+      "label": "gradle-bootrun",
+      "type": "shell",
+      "command": "./gradlew",
+      "args": ["bootRun"],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Tomcat initialized.*",
+          "endsPattern": "^.*Started.*Application.*"
+        }
+      }
+    },
+    {
+      "label": "gradle-clean",
+      "type": "shell",
+      "command": "./gradlew",
+      "args": ["clean"],
+      "group": "build",
+      "problemMatcher": "$gradle"
+    },
+    {
+      "label": "gradle-compileJava",
+      "type": "shell",
+      "command": "./gradlew",
+      "args": ["compileJava"],
+      "group": "build",
+      "problemMatcher": "$gradle"
+    },
+    {
+      "label": "mirrord-gradle-bootrun-debug",
+      "type": "shell",
+      "command": "mirrord",
+      "args": [
+        "exec",
+        "--config-file",
+        ".mirrord/mirrord.json",
+        "--",
+        "./gradlew",
+        "bootRun",
+        "--no-daemon",
+        "--no-parallel",
+        "--max-workers=1"
+      ],
+      "options": {
+        "env": {
+          "GRADLE_OPTS": "-Dorg.gradle.daemon=false"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Tomcat initialized.*",
+          "endsPattern": "^.*Started.*Application.*"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "stop-gradle-daemon",
+      "type": "shell",
+      "command": "./gradlew",
+      "args": ["--stop"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "mirrord-gradle-bootrun-debug-clean",
+      "dependsOrder": "sequence",
+      "dependsOn": ["stop-gradle-daemon"],
+      "type": "shell",
+      "command": "mirrord",
+      "args": [
+        "exec",
+        "--config-file",
+        ".mirrord/mirrord.json",
+        "--",
+        "./gradlew",
+        "bootRun",
+        "--no-daemon",
+        "--no-parallel",
+        "--max-workers=1",
+        "--info"
+      ],
+      "options": {
+        "env": {
+          "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Djava.net.useSystemProxies=false"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Tomcat initialized.*",
+          "endsPattern": "^.*Started.*Application.*"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+}
