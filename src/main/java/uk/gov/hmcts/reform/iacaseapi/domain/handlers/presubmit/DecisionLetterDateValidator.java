@@ -27,12 +27,15 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        log.info("DecisionLetterDateValidator: inside canHandle()");
+
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         Event event = callback.getEvent();
         String pageId = callback.getPageId();
 
+        log.info("DecisionLetterDateValidator: canHandle() for event {} at stage {} on page ID {}", event, callbackStage, pageId);
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && (event.equals(START_APPEAL) || event.equals(EDIT_APPEAL))
                && pageId.equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID);
@@ -42,10 +45,11 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        log.info("DecisionLetterDateValidator: inside handle()");
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-        log.info("Handling decision letter date validation");
+        log.info("DecisionLetterDateValidator: handling decision letter date validation");
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
