@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class DecisionLetterDateValidatorTest {
 
-    private static final String DECISION_LETTER_DETAILS_PAGE_ID = "decisionLetterDetails";
+    private static final String HOME_OFFICE_DECISION_LETTER_PAGE_ID = "homeOfficeDecisionLetter";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -61,11 +61,11 @@ public class DecisionLetterDateValidatorTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn(DECISION_LETTER_DETAILS_PAGE_ID);
+        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_LETTER_PAGE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { DECISION_LETTER_DETAILS_PAGE_ID, ""})
+    @ValueSource(strings = { HOME_OFFICE_DECISION_LETTER_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -79,7 +79,7 @@ public class DecisionLetterDateValidatorTest {
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == MID_EVENT
-                    && callback.getPageId().equals(DECISION_LETTER_DETAILS_PAGE_ID)) {
+                    && callback.getPageId().equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
