@@ -55,7 +55,7 @@ public class DateOfBirthValidationHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response = dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
         assertNotNull(response);
         assertEquals(1, response.getErrors().size());
-        assertTrue(response.getErrors().contains("The date must not be a future date."));
+        assertTrue(response.getErrors().contains("The date of birth must not be a future date."));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class DateOfBirthValidationHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response = dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
         assertNotNull(response);
         assertEquals(1, response.getErrors().size());
-        assertTrue(response.getErrors().contains("The date must not be a future date."));
+        assertTrue(response.getErrors().contains("The date of birth must not be a future date."));
     }
 
     @Test

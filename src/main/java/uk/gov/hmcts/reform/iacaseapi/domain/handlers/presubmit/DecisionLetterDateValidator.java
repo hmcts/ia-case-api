@@ -6,8 +6,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
+@Slf4j
 public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String HOME_OFFICE_DECISION_LETTER_PAGE_ID = "homeOfficeDecisionLetter";
@@ -42,21 +45,16 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-
-        final AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-
+        log.info("Handling decision letter date validation");
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<String> dateOnDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
+        String dateOnDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class)
+                .orElseThrow(() -> new RequiredFieldMissingException("Date of decision letter missing"));
 
-        dateOnDecisionLetter.ifPresent(date -> {
-            if (LocalDate.parse(date).isAfter(LocalDate.now())) {
-                response.addError("Date of letter must not be in the future");
-            }
-        });
+        if (LocalDate.parse(dateOnDecisionLetter).isAfter(LocalDate.now())) {
+            response.addError("Date of decision letter must not be in the future.");
+        }
 
         return response;
     }

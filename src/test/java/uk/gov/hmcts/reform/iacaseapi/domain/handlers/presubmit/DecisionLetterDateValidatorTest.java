@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -47,7 +49,7 @@ public class DecisionLetterDateValidatorTest {
     private AsylumCase asylumCase;
     private String today;
     private String tomorrow;
-    private String callbackErrorMessage = "Date of letter must not be in the future";
+    private String callbackErrorMessage = "Date of decision letter must not be in the future.";
     private DecisionLetterDateValidator decisionLetterDateValidator;
 
     @BeforeEach
@@ -140,6 +142,16 @@ public class DecisionLetterDateValidatorTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_error_when_date_is_not_there() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER, String.class))
+            .thenReturn(Optional.empty());
+        
+        assertThatThrownBy(() -> decisionLetterDateValidator.handle(MID_EVENT, callback))
+            .hasMessage("Date of decision letter missing")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);    
     }
 }
 

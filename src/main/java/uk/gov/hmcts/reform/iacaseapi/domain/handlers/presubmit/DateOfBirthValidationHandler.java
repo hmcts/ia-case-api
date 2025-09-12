@@ -61,7 +61,7 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
         }
         
         if (isAppellantDobInTheFuture) {
-            response.addError("The date must not be a future date.");
+            response.addError("The date of birth must not be a future date.");
         }
         return response;
     }
