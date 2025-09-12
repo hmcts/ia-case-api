@@ -109,7 +109,7 @@
       ],
       "options": {
         "env": {
-          "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Djava.net.useSystemProxies=false"
+          "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Djava.net.useSystemProxies=false -Dorg.gradle.debug=true"
         }
       },
       "group": "build",
