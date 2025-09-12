@@ -183,7 +183,7 @@ public class PreSubmitCallbackController {
 
         if (!callbackResponse.getErrors().isEmpty()) {
             log.warn(
-                "Asylum Case CCD `{}` event `{}` handled for Case ID `{}` with errors `{}`",
+                "AAAsylum Case CCD `{}` event `{}` handled for Case ID `{}` with errors `{}`",
                 callbackStage,
                 callback.getEvent(),
                 callback.getCaseDetails().getId(),
@@ -192,7 +192,7 @@ public class PreSubmitCallbackController {
         } else {
 
             log.info(
-                "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
+                "AAAsylum Case CCD `{}` event `{}` handled for Case ID `{}`",
                 callbackStage,
                 callback.getEvent(),
                 callback.getCaseDetails().getId()

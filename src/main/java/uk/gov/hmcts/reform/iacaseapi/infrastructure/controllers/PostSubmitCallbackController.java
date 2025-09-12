@@ -90,7 +90,7 @@ public class PostSubmitCallbackController {
             callbackDispatcher.handle(callback);
 
         log.info(
-            "Asylum Case CCD `ccdSubmitted` event `{}` handled for Case ID `{}`",
+            "AAAsylum Case CCD `ccdSubmitted` event `{}` handled for Case ID `{}`",
             callback.getEvent(),
             callback.getCaseDetails().getId()
         );

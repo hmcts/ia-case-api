@@ -68,6 +68,8 @@ java {
 
 compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
+    options.debug = true
+    options.debugOptions.debugLevel = "source,lines,vars"
 }
 
 compileTestJava {

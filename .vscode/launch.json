@@ -28,7 +28,25 @@
       "request": "attach",
       "hostName": "localhost",
       "port": 5005,
-      "preLaunchTask": "mirrord-gradle-bootrun-debug-clean"
+      "preLaunchTask": "mirrord-gradle-bootrun-debug-clean",
+      "sourcePaths": [
+        "${workspaceFolder}/src/main/java",
+        "${workspaceFolder}/build/classes/java/main"
+      ],
+      "projectName": "ia-case-api",
+      "vmArgs": ["-Dfile.encoding=UTF-8"]
+    },
+    {
+      "type": "java",
+      "name": "Attach Debugger to Port 5005",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005,
+      "sourcePaths": [
+        "${workspaceFolder}/src/main/java",
+        "${workspaceFolder}/build/classes/java/main"
+      ],
+      "projectName": "ia-case-api"
     }
   ]
 }
