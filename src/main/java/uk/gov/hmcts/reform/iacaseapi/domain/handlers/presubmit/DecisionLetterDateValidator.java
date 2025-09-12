@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String DECISION_LETTER_DETAILS_PAGE_ID = "decisionLetterDetails";
+    private static final String HOME_OFFICE_DECISION_LETTER_PAGE_ID = "homeOfficeDecisionLetter";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -32,7 +32,7 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && (event.equals(START_APPEAL) || event.equals(EDIT_APPEAL))
-               && pageId.equals(DECISION_LETTER_DETAILS_PAGE_ID);
+               && pageId.equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

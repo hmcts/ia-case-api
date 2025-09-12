@@ -23,6 +23,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Slf4j
 public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String APPELLANT_BASIC_DETAILS_PAGE_ID = "appellantBasicDetails";
+
     public DateOfBirthValidationHandler() {
     }
 
@@ -30,26 +32,15 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        log.info(
-            "DateOfBirthValidationHandler: stage `{}`, event `{}`, case ID `{}`, page ID `{}`",
-            callbackStage,
-            callback.getEvent(),
-            callback.getCaseDetails().getId(),
-            callback.getPageId()
-        );
-
         return callback.getEvent() == Event.START_APPEAL
             && callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && (callback.getPageId().equals(AA_APPELLANT_DATE_OF_BIRTH.value()) || callback.getPageId().equals("appellantBasicDetails"));
+            && (callback.getPageId().equals(AA_APPELLANT_DATE_OF_BIRTH.value()) || callback.getPageId().equals(APPELLANT_BASIC_DETAILS_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
-            log.info("DateOfBirthValidationHandler: cannot handle callback");
             throw new IllegalStateException("Cannot handle callback");
-        } else {
-            log.info("DateOfBirthValidationHandler: handling callback");
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
@@ -78,14 +69,10 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
     private Boolean isFutureAppellantDob(String appellantDobStr) {
         Boolean isAppellantDobInTheFuture = false;
         Optional<LocalDate> maybeAppellantDob = parseDate(appellantDobStr);
-        log.info("DateOfBirthValidationHandler: appellant DOB string `{}`", appellantDobStr);
         if (maybeAppellantDob.isPresent()) {
             LocalDate dateToCheck = maybeAppellantDob.get();
             if (dateToCheck.isAfter(LocalDate.now())) {
-                log.info("DateOfBirthValidationHandler: invalid date (future date)");
                 isAppellantDobInTheFuture = true;
-            } else {
-                log.info("DateOfBirthValidationHandler: valid date");
             }
         }
         return isAppellantDobInTheFuture;

@@ -32,6 +32,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class DateOfBirthValidationHandlerTest {
 
+    private static final String APPELLANT_BASIC_DETAILS_PAGE_ID = "appellantBasicDetails";
+
     DateOfBirthValidationHandler dateOfBirthValidationHandler;
     @Mock Callback<AsylumCase> callback;
     @Mock CaseDetails<AsylumCase> caseDetails;
@@ -49,7 +51,7 @@ public class DateOfBirthValidationHandlerTest {
     void should_log_error_for_invalid_date() {
         when(callback.getPageId()).thenReturn(AA_APPELLANT_DATE_OF_BIRTH.value());
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AA_APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2045-11-11"));
+        when(asylumCase.read(AA_APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2999-11-11"));
         PreSubmitCallbackResponse<AsylumCase> response = dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
         assertNotNull(response);
         assertEquals(1, response.getErrors().size());
@@ -58,8 +60,8 @@ public class DateOfBirthValidationHandlerTest {
 
     @Test
     void should_log_error_for_invalid_date_2() {
-        when(callback.getPageId()).thenReturn("appellantBasicDetails");
-        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2045-11-11"));
+        when(callback.getPageId()).thenReturn(APPELLANT_BASIC_DETAILS_PAGE_ID);
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2999-11-11"));
         PreSubmitCallbackResponse<AsylumCase> response = dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
         assertNotNull(response);
         assertEquals(1, response.getErrors().size());
@@ -78,7 +80,7 @@ public class DateOfBirthValidationHandlerTest {
 
     @Test
     void should_not_log_error_for_valid_date_2() {
-        when(callback.getPageId()).thenReturn("appellantBasicDetails");
+        when(callback.getPageId()).thenReturn(APPELLANT_BASIC_DETAILS_PAGE_ID);
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("2000-11-11"));
         PreSubmitCallbackResponse<AsylumCase> response = dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
         assertNotNull(response);
@@ -107,7 +109,7 @@ public class DateOfBirthValidationHandlerTest {
 
     @Test
     void should_throw_error_when_dob_missing_2() {
-        when(callback.getPageId()).thenReturn("appellantBasicDetails");
+        when(callback.getPageId()).thenReturn(APPELLANT_BASIC_DETAILS_PAGE_ID);
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
             .isExactlyInstanceOf(RequiredFieldMissingException.class)
@@ -132,7 +134,7 @@ public class DateOfBirthValidationHandlerTest {
 
     @Test
     void should_handle_valid_event_2() {
-        when(callback.getPageId()).thenReturn("appellantBasicDetails");
+        when(callback.getPageId()).thenReturn(APPELLANT_BASIC_DETAILS_PAGE_ID);
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
