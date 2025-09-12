@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Slf4j
@@ -16,9 +17,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private final RoleAssignmentService roleAssignmentService;
+    private final IdamService idamService;
 
-    public RemoveAppealFromOnlineConfirmation(RoleAssignmentService roleAssignmentService) {
+    public RemoveAppealFromOnlineConfirmation(RoleAssignmentService roleAssignmentService,
+                                              IdamService idamService) {
         this.roleAssignmentService = roleAssignmentService;
+        this.idamService = idamService;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
         }
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseRoleAssignments(caseId);
+        roleAssignmentService.removeCaseRoleAssignments(caseId, idamService.getServiceUserToken());
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
