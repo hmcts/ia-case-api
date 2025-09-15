@@ -21,67 +21,77 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
   -H "ServiceAuthorization: Bearer ${SERVICE_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-          "roleRequest": {
-              "assignerId": "'"${USER_ID}"'",
-              "process": "iac-system-users",
-              "reference": "iac-hearings-system-user",
-              "replaceExisting": true
-          },
-          "requestedRoles": [
-              {
-                  "actorId": "'"${USER_ID}"'",
-                  "roleType": "ORGANISATION",
-                  "classification": "PUBLIC",
-                  "roleName": "hearing-manager",
-                  "roleCategory": "SYSTEM",
-                  "grantType": "STANDARD",
-                  "attributes": {
-                      "jurisdiction": "IA",
-                      "caseType": "Asylum"
-                  },
-                  "actorIdType": "IDAM"
-              },
-              {
-                  "actorId": "'"${USER_ID}"'",
-                  "roleType": "ORGANISATION",
-                  "classification": "PUBLIC",
-                  "roleName": "hearing-viewer",
-                  "roleCategory": "SYSTEM",
-                  "grantType": "STANDARD",
-                  "attributes": {
-                      "jurisdiction": "IA",
-                      "caseType": "Asylum"
-                  },
-                  "actorIdType": "IDAM"
-              },
-              {
-                   "actorId": "'"${USER_ID}"'",
-                   "roleType": "ORGANISATION",
-                   "classification": "PUBLIC",
-                   "roleName": "hearing-manager",
-                   "roleCategory": "SYSTEM",
-                   "grantType": "STANDARD",
-                   "attributes": {
-                        "jurisdiction": "IA",
-                        "caseType": "Bail"
-                   },
-                   "actorIdType": "IDAM"
-               },
-               {
-                   "actorId": "'"${USER_ID}"'",
-                   "roleType": "ORGANISATION",
-                   "classification": "PUBLIC",
-                   "roleName": "hearing-viewer",
-                   "roleCategory": "SYSTEM",
-                   "grantType": "STANDARD",
-                   "attributes": {
-                         "jurisdiction": "IA",
-                         "caseType": "Bail"
-                    },
-                    "actorIdType": "IDAM"
-                 }
-          ]
-      }'
-
-
-
+       "roleRequest": {
+         "process": "iac-system-users",
+         "reference": "iac-hearings-system-user",
+         "replaceExisting": true
+       },
+       "requestedRoles": [
+         {
+           "actorId": "'"${USER_ID}"'",
+           "roleType": "ORGANISATION",
+           "classification": "PUBLIC",
+           "roleName": "hearing-manager",
+           "roleCategory": "SYSTEM",
+           "grantType": "STANDARD",
+           "attributes": {
+             "jurisdiction": "IA",
+             "caseType": "Asylum"
+           },
+           "actorIdType": "IDAM"
+         },
+         {
+           "actorId": "'"${USER_ID}"'",
+           "roleType": "ORGANISATION",
+           "classification": "PUBLIC",
+           "roleName": "hearing-viewer",
+           "roleCategory": "SYSTEM",
+           "grantType": "STANDARD",
+           "attributes": {
+             "jurisdiction": "IA",
+             "caseType": "Asylum"
+           },
+           "actorIdType": "IDAM"
+         },
+         {
+           "actorId": "'"${USER_ID}"'",
+           "roleType": "ORGANISATION",
+           "classification": "PUBLIC",
+           "roleName": "hearing-manager",
+           "roleCategory": "SYSTEM",
+           "grantType": "STANDARD",
+           "attributes": {
+             "jurisdiction": "IA",
+             "caseType": "Bail"
+           },
+           "actorIdType": "IDAM"
+         },
+         {
+           "actorId": "'"${USER_ID}"'",
+           "roleType": "ORGANISATION",
+           "classification": "PUBLIC",
+           "roleName": "hearing-viewer",
+           "roleCategory": "SYSTEM",
+           "grantType": "STANDARD",
+           "attributes": {
+             "jurisdiction": "IA",
+             "caseType": "Bail"
+           },
+           "actorIdType": "IDAM"
+         },
+         {
+           "actorId": "'"${USER_ID}"'",
+           "roleType": "ORGANISATION",
+           "classification": "PUBLIC",
+           "roleName": "case-allocator",
+           "roleCategory": "SYSTEM",
+           "grantType": "STANDARD",
+           "attributes": {
+             "jurisdiction": "IA",
+             "primaryLocation": "765324",
+             "substantive": "N"
+           },
+           "actorIdType": "IDAM"
+         }
+       ]
+     }'
