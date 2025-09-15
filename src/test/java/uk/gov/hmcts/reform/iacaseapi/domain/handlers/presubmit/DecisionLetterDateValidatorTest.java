@@ -49,7 +49,7 @@ public class DecisionLetterDateValidatorTest {
     private AsylumCase asylumCase;
     private String today;
     private String tomorrow;
-    private String callbackErrorMessage = "Home Office decision date must not be in the future.";
+    private String callbackErrorMessage = "Date of decision letter must not be in the future.";
     private DecisionLetterDateValidator decisionLetterDateValidator;
 
     @BeforeEach
@@ -118,7 +118,7 @@ public class DecisionLetterDateValidatorTest {
 
     @Test
     void should_error_when_date_is_future() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE, String.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER, String.class))
             .thenReturn(Optional.of(tomorrow));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -132,7 +132,7 @@ public class DecisionLetterDateValidatorTest {
 
     @Test
     void should_not_error_when_date_is_not_future() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE, String.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER, String.class))
             .thenReturn(Optional.of(today));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -150,7 +150,7 @@ public class DecisionLetterDateValidatorTest {
             .thenReturn(Optional.empty());
         
         assertThatThrownBy(() -> decisionLetterDateValidator.handle(MID_EVENT, callback))
-            .hasMessage("Home Office decision date missing")
+            .hasMessage("Date of decision letter missing")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);    
     }
 }
