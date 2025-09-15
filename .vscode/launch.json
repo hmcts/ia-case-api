@@ -24,8 +24,8 @@
     },
     {
       "type": "java",
-      "name": "Debug with Mirrord (Clean)",
-      "request": "attach",
+      "name": "With Mirrord (Clean)",
+      "request": "launch",
       "hostName": "localhost",
       "port": 5005,
       "preLaunchTask": "mirrord-gradle-bootrun-debug-clean",
@@ -47,6 +47,13 @@
         "${workspaceFolder}/build/classes/java/main"
       ],
       "projectName": "ia-case-api"
+    },
+    {
+      "type": "java",
+      "name": "Mirrord No Debug",
+      "request": "launch",
+      "preLaunchTask": "mirrord-gradle-bootrun",
+      "noDebug": true
     }
   ]
 }

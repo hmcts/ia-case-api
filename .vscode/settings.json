@@ -1,4 +1,12 @@
 {
+  "java.jdt.ls.java.home": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
+      "default": true
+    }
+  ],
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.compile.nullAnalysis.mode": "automatic"
 }
