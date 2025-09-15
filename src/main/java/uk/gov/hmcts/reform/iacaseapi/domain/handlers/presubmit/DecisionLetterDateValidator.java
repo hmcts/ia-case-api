@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 
@@ -53,11 +53,11 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        String dateOnDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class)
-                .orElseThrow(() -> new RequiredFieldMissingException("Date of decision letter missing"));
+        String homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class)
+                .orElseThrow(() -> new RequiredFieldMissingException("Home Office decision date missing"));
 
-        if (LocalDate.parse(dateOnDecisionLetter).isAfter(LocalDate.now())) {
-            response.addError("Date of decision letter must not be in the future.");
+        if (LocalDate.parse(homeOfficeDecisionDate).isAfter(LocalDate.now())) {
+            response.addError("Home Office decision date must not be in the future.");
         }
 
         return response;
