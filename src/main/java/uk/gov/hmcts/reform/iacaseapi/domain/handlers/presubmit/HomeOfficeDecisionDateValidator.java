@@ -1,0 +1,80 @@
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+
+import java.time.LocalDate;
+import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+@Component
+@Slf4j
+public class HomeOfficeDecisionDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private static final String HOME_OFFICE_DECISION_LETTER_PAGE_ID = "homeOfficeDecisionLetter";
+
+    public boolean canHandle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
+
+        Event event = callback.getEvent();
+        String pageId = callback.getPageId();
+
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT
+               && (event.equals(START_APPEAL) || event.equals(EDIT_APPEAL))
+               && pageId.equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID);
+    }
+
+    public PreSubmitCallbackResponse<AsylumCase> handle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
+        log.info("HomeOfficeDecisionDateValidator: handle callback invoked");
+        if (!canHandle(callbackStage, callback)) {
+            throw new IllegalStateException("Cannot handle callback");
+        }
+        log.info("HomeOfficeDecisionDateValidator: handling callback");
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new RequiredFieldMissingException("Appeal type is missing"));
+        log.info("Appeal type: {}", appealType);
+
+        if (appealType.equals(AppealType.AG)) {
+            String dateOfDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class)
+                    .orElseThrow(() -> new RequiredFieldMissingException("Date of decision letter missing"));
+            log.info("AG: Date of decision letter: {}", dateOfDecisionLetter);
+
+            if (LocalDate.parse(dateOfDecisionLetter).isAfter(LocalDate.now())) {
+                response.addError("Date of decision letter must not be in the future.");
+            }
+        } else {
+            String homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class)
+                    .orElseThrow(() -> new RequiredFieldMissingException("Home Office decision date missing"));
+            log.info("Non-AG: Home Office decision date: {}", homeOfficeDecisionDate);
+
+            if (LocalDate.parse(homeOfficeDecisionDate).isAfter(LocalDate.now())) {
+                response.addError("Home Office decision date must not be in the future.");
+            }
+        }
+
+        return response;
+    }
+}
