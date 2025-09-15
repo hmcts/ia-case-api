@@ -106,6 +106,47 @@
         "focus": false,
         "panel": "shared"
       }
+    },
+    {
+      "label": "mirrord-gradle-bootrun-with-debug",
+      "type": "shell",
+      "command": "mirrord",
+      "args": [
+        "exec",
+        "--config-file",
+        ".mirrord/mirrord.json",
+        "--",
+        "./gradlew",
+        "bootRun",
+        "--debug-jvm",
+        "--no-daemon",
+        "--no-parallel",
+        "--max-workers=1"
+      ],
+      "options": {
+        "env": {
+          "JAVA_HOME": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
+          "GRADLE_OPTS": "-Dorg.gradle.daemon=false"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Tomcat initialized.*",
+          "endsPattern": "^.*Started.*Application.*"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
     }
   ]
 }

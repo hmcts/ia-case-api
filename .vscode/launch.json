@@ -24,18 +24,11 @@
     },
     {
       "type": "java",
-      "name": "Mirrord Debug",
+      "name": "Mirrord With Debug",
       "request": "attach",
       "hostName": "localhost",
       "port": 5005,
-      "preLaunchTask": "mirrord-gradle-bootrun-debug"
-    },
-    {
-      "type": "java",
-      "name": "Attach",
-      "request": "attach",
-      "hostName": "localhost",
-      "port": 5005
+      "preLaunchTask": "mirrord-gradle-bootrun-with-debug"
     }
   ]
 }
