@@ -3,7 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 
@@ -19,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @Component
 @Slf4j
@@ -57,21 +62,31 @@ public class HomeOfficeDecisionDateValidator implements PreSubmitCallbackHandler
             .orElseThrow(() -> new RequiredFieldMissingException("Appeal type is missing"));
         log.info("Appeal type: {}", appealType);
 
-        if (appealType.equals(AppealType.AG)) {
-            String dateOfDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class)
-                    .orElseThrow(() -> new RequiredFieldMissingException("Date of decision letter missing"));
-            log.info("AG: Date of decision letter: {}", dateOfDecisionLetter);
+        if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO).equals(YES)) {
+            if (appealType.equals(AppealType.AG)) {
+                String dateOfDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class)
+                        .orElseThrow(() -> new RequiredFieldMissingException("Date of decision letter missing"));
+                log.info("AG: Date of decision letter: {}", dateOfDecisionLetter);
 
-            if (LocalDate.parse(dateOfDecisionLetter).isAfter(LocalDate.now())) {
-                response.addError("Date of decision letter must not be in the future.");
+                if (LocalDate.parse(dateOfDecisionLetter).isAfter(LocalDate.now())) {
+                    response.addError("Date of decision letter must not be in the future.");
+                }
+            } else {
+                String homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class)
+                        .orElseThrow(() -> new RequiredFieldMissingException("Home Office decision date missing"));
+                log.info("Non-AG: Home Office decision date: {}", homeOfficeDecisionDate);
+
+                if (LocalDate.parse(homeOfficeDecisionDate).isAfter(LocalDate.now())) {
+                    response.addError("Home Office decision date must not be in the future.");
+                }
             }
-        } else {
-            String homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class)
-                    .orElseThrow(() -> new RequiredFieldMissingException("Home Office decision date missing"));
-            log.info("Non-AG: Home Office decision date: {}", homeOfficeDecisionDate);
+        } else { // out-of-country appeal
+            String decisionLetterReceivedDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE, String.class)
+                    .orElseThrow(() -> new RequiredFieldMissingException("Decision letter received date missing"));
+            log.info("Decision letter received date: {}", decisionLetterReceivedDate);
 
-            if (LocalDate.parse(homeOfficeDecisionDate).isAfter(LocalDate.now())) {
-                response.addError("Home Office decision date must not be in the future.");
+            if (LocalDate.parse(decisionLetterReceivedDate).isAfter(LocalDate.now())) {
+                response.addError("Decision letter received date must not be in the future.");
             }
         }
 
