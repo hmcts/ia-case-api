@@ -308,6 +308,8 @@ dependencyManagement {
         dependencySet(group: 'com.fasterxml.jackson.module', version: '2.19.1') {
             entry 'jackson-module-parameter-names'
         }
+        // CVE-2023-3635
+        dependency 'com.squareup.okio:okio:3.5.0'
     }
 }
 
