@@ -34,9 +34,9 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && (callback.getEvent() == Event.START_APPEAL
-                || callback.getEvent() == Event.EDIT_APPEAL)
-                && HandlerUtils.isRepJourney(asylumCase);
+               && (callback.getEvent() == Event.START_APPEAL
+                    || callback.getEvent() == Event.EDIT_APPEAL)
+               && HandlerUtils.isRepJourney(asylumCase);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

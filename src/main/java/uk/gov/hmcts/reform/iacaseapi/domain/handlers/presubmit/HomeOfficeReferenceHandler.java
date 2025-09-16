@@ -39,14 +39,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && (callback.getEvent() == Event.START_APPEAL
-                || callback.getEvent() == Event.EDIT_APPEAL)
-                && callback.getPageId().equals("homeOfficeDecision")
-                && HandlerUtils.isRepJourney(asylumCase)){
-            System.out.println("Here we are");
-        }
-
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)

@@ -9,7 +9,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APP
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,6 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
     private final boolean isHomeOfficeIntegrationEnabled;
     private final FeatureToggler featureToggler;
     private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
-    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{16}$");
 
     public HomeOfficeCaseValidateHandler(
         FeatureToggler featureToggler,
@@ -75,15 +73,6 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             callback
                 .getCaseDetails()
                 .getCaseData();
-        String homeOfficeReferenceNumber = asylumCase
-                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
-
-        if (!isValidHomeOfficeReference(homeOfficeReferenceNumber)) {
-            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-            response.addError("Home Office Reference must be either 9 or 16 digits");
-            return response;
-        }
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
@@ -159,12 +148,7 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE,
                 featureToggler.getValue(HO_NOTIFICATION_FEATURE, false) ? YesOrNo.YES : YesOrNo.NO);
         }
-        // or there?
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private boolean isValidHomeOfficeReference(String reference) {
-        return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 
 
