@@ -113,7 +113,8 @@ Add in .vscode/launch.json
       "request": "attach",
       "hostName": "localhost",
       "port": 5005,
-      "preLaunchTask": "mirrord-gradle-bootrun-with-debug"
+      "preLaunchTask": "mirrord-gradle-bootrun-with-debug",
+      "projectName": "ia-case-api"
     }
   ]
 }
