@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,13 +14,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.regex.Pattern;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
+
 
 @Component
-public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<AsylumCase> {
+public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
     private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{16}$");
-    private static final Logger log = LoggerFactory.getLogger(HomeOfficeReferenceFormatter.class);
+    private static final Logger log = LoggerFactory.getLogger(HomeOfficeReferenceHandler.class);
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -44,7 +44,7 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 || callback.getEvent() == Event.EDIT_APPEAL)
                 && callback.getPageId().equals("homeOfficeDecision")
                 && HandlerUtils.isRepJourney(asylumCase)){
-            System.out.println("Here we are 2");
+            System.out.println("Here we are");
         }
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
@@ -74,13 +74,8 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-           /* if (!(homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH)) {
-                asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
-                    String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
-            }*/
 
-
-            if (isValidHomeOfficeReference(homeOfficeReferenceNumber)) {
+            if (!isValidHomeOfficeReference(homeOfficeReferenceNumber)) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                 response.addError("Home Office Reference must be either 9 or 16 digits");
                 return response;

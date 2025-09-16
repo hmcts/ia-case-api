@@ -71,6 +71,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         return callbackResponse;
     }
 
+    //good example
     private void checkRemissionConditions(AsylumCase asylumCase, PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
