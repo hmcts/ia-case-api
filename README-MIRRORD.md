@@ -23,11 +23,6 @@ az aks get-credentials --resource-group cft-preview-01-rg --name cft-preview-01-
   Look for the pod with -java- in the name
   Example: ia-case-api-pr-2711-java-559cb9c7c7-t5lrs
 
-# check if the agent has been created in a cluster
-When mirrord is started, it will create a mirrord-agent in the same namespace as the pod you want to debug.
-Check if the agent is created with:
-kubectl get pods -n ia | grep mirrord  
-
 # Installation with Visual Studio Code (Tested on 15/09/2025)
 
 The Mirrord VS Code plugin does not work correctly, so we'll use local mirrord and launch VS Code with launch.json and tasks.json.
@@ -41,7 +36,6 @@ brew install mirrord
 * Setup settings in VS Code. It's better to explicitly set the JDK that will be used by VS Code.
 Find your local JDK installation and set it in both settings.json and tasks.json. Replace `/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home` with your actual JDK path.
 
-Add the following to `.vscode/settings.json`:
 Add the following to `.vscode/settings.json`:
 ```json
 {
@@ -156,9 +150,18 @@ Create/update `.mirrord/mirrord.json`:
 ```
 
 * Restart VCS
-* In the left menu, click on Run and Debug, select "Mirrord With Debug" and click on the green triangle to start debugging
+* In the left menu, click on Run and Debug, select "Mirrord With Debug" and click on the green triangle to start debugging. 
+Wait to see in the log "Listening for transport dt_socket at address: 5005" to click on the "Debug Anyway Popup"
+In the terminal you should see the application starting with the usual Spring Boot logs.
+The bottom of VSC will become orange, meaning that the application is in debug mode.
+
+
 * Set breakpoints in your code, when the breakpoint is reached, the application in preview will be blocked until you continue in VS Code. Initially setup breakpoint in every Controller to test it's all working fine.
 
+# How to check if the agent has been created in a cluster
+When mirrord is started, it will create a mirrord-agent in the same namespace as the pod you want to debug.
+Check if the agent is created with:
+kubectl get pods -n ia | grep mirrord  
 
 # Installation and execution of mirrord in IntelliJ CE
 
