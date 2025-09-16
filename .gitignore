@@ -46,3 +46,6 @@ bin/utils/python_scripts/__pycache__/
 
 ### mirrord ###
 .mirrord/
+
+### VS Code ###
+.vscode/

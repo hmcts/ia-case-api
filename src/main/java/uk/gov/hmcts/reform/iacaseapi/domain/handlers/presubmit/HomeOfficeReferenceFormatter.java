@@ -9,8 +9,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -21,15 +19,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-import java.util.regex.Pattern;
 
 
 @Component
 public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
-    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{16}$");
-    private static final Logger log = LoggerFactory.getLogger(HomeOfficeReferenceFormatter.class);
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -38,14 +33,6 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        if (callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && (callback.getEvent() == Event.START_APPEAL
-                || callback.getEvent() == Event.EDIT_APPEAL)
-                && callback.getPageId().equals("homeOfficeDecision")
-                && HandlerUtils.isRepJourney(asylumCase)){
-            System.out.println("Here we are 2");
-        }
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
@@ -74,24 +61,14 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-           /* if (!(homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH)) {
+            if (!(homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH)) {
                 asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
                     String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
-            }*/
-
-
-            if (isValidHomeOfficeReference(homeOfficeReferenceNumber)) {
-                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("Home Office Reference must be either 9 or 16 digits");
-                return response;
             }
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private boolean isValidHomeOfficeReference(String reference) {
-        return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 
     private boolean isAgeAssessmentAppealType(AsylumCase asylumCase) {
