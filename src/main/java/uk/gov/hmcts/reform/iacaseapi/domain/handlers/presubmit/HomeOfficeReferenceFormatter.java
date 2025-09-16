@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 
-
 @Component
 public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -34,10 +33,9 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)
-                && callback.getPageId().equals("homeOfficeDecision")
                 && HandlerUtils.isRepJourney(asylumCase);
     }
 
@@ -61,11 +59,10 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-            if (!(homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH)) {
+            if (homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
                 asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
                     String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
             }
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

@@ -97,6 +97,7 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         } else {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
         }
+        
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
