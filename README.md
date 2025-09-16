@@ -269,5 +269,3 @@ npx @hmcts/dev-env@latest --delete
 ```
 
 
-
-
