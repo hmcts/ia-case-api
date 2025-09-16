@@ -1,67 +1,49 @@
-## How to setup mirrord
+# How to setup mirrord for local debugging 
+
+This document explains how to setup mirrord for:
+ * Visual Studio Code with launch.json file
+ * IntelliJ Community Edition with mirrord plugin
+ * IntelliJ Ultimate Edition with mirrord plugin and npx scripts
+
+# Mirrord in Steal mode vs Mirror mode
+Mirrord is a tool that allows you to debug locally an application deployed in a Kubernetes cluster. It has 2 modes: mirror and steal. For local debugging with preview, it must be used in steal mode.
 
 # Azure login
- Before any mirrord usage, login to azure with:
-    > az login
-    > az aks get-credentials --resource-group cft-preview-01-rg --name cft-preview-01-aks --subscription DCD-CFTAPPS-DEV --overwrite
+Before any mirrord usage, login to Azure with:
+```bash
+az login
+az aks get-credentials --resource-group cft-preview-01-rg --name cft-preview-01-aks --subscription DCD-CFTAPPS-DEV --overwrite
+```
 
 # Get Pods name
-    Get the pod name with:
-        > kubectl get pods -n ia | grep 2711
-        where 2711 is the PR number
-
-# Installation and execution of mirrord in intellij
-    * install mirrord plugin for intellij CE.
-    No need of intalling mirrord localy
-    * use the mirrod button on intellij, the first time it will create a .mirrord/mirrord.json
-    * Have the vpn on and have the application deployed in preview
-    * get the pod name with kubectl get pods -n ia | grep 2711
-    * update the .mirrord/mirrord.json with something like this:
-    {
-        "target": {
-            "path": "pod/ia-case-api-pr-2711-java-559cb9c7c7-t5lrs",
-            "namespace": "ia"
-        },
-        "agent": {
-        "startup_timeout": 300,
-        "namespace": "ia"
-        }
-    }
-Path is the java kubernete pod name
-* start mirrord with the mirrord button
-* then on the right menu, click on gradle and choose the task bootRun, right click to debug
-
-# Intellij Kotlin issue
-If issue with kotlin dependency, add this in the build.gradle in dependencies section:
-in dependencies {
-    modules {
-// Add Kotlin runtime for mirrord compatibility
-runtimeOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
-runtimeOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
-runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.9.22'
+  You local mirrord configuration need to know the pod name of the application you want to debug.
+  Get the pod name with:
+  > kubectl get pods -n ia | grep <PRNUMBER>
+  
+  Look for the pod with -java- in the name
+  Example: ia-case-api-pr-2711-java-559cb9c7c7-t5lrs
 
 # check if the agent has been created in a cluster
-kubectl get pods -n ia | grep mirrord
+When mirrord is started, it will create a mirrord-agent in the same namespace as the pod you want to debug.
+Check if the agent is created with:
+kubectl get pods -n ia | grep mirrord  
 
-# Failed to create mirrord-agent issue
-If this message:Failed to create mirrord-agent: Timeout waiting for agent to be ready
-Check the pod name in mirrord.json is same as returned by kubectl get pods -n ia | grep 2711
-If necessary update the name in mirrord.json
-Sometime jenkins build need to be rerun to get a new pod name working
+# Installation with Visual Studio Code (Tested on 15/09/2025)
 
-# Invalidate caches in intellij
-some time it can help to invalidate caches in intellij
-go in intellij menu to File -> Invalidate Caches / Restart -> Invalidate and Restart
+The Mirrord VS Code plugin does not work correctly, so we'll use local mirrord and launch VS Code with launch.json and tasks.json.
 
-# Docker
-Not need it. but sometime start it an stop fix some issues ???
+## Prerequisites
+* Install mirrord with Homebrew:
+```bash
+brew install mirrord
+```
 
-# installation with Visual Studio Code
-* Mirrord extension not working correctly instead vsc will the local mirrord
-* Install mirrord with homebrew
-    > brew install mirrord
-* Setup settings in vcs. It's better to explecitly set the jdk that will be used by VSC.
-So in .vscode/settings.json add
+* Setup settings in VS Code. It's better to explicitly set the JDK that will be used by VS Code.
+Find your local JDK installation and set it in both settings.json and tasks.json. Replace `/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home` with your actual JDK path.
+
+Add the following to `.vscode/settings.json`:
+Add the following to `.vscode/settings.json`:
+```json
 {
   "java.jdt.ls.java.home": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
   "java.configuration.runtimes": [
@@ -74,7 +56,10 @@ So in .vscode/settings.json add
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.compile.nullAnalysis.mode": "automatic"
 }
+```
+
 in .vscode/tasks.json add
+```json
 {
   "version": "2.0.0",
   "tasks": [
@@ -121,7 +106,10 @@ in .vscode/tasks.json add
     }
   ]
 }
+```
+
 Add in .vscode/launch.json
+```json
 {
   "version": "0.2.0",
   "configurations": [
@@ -135,12 +123,17 @@ Add in .vscode/launch.json
     }
   ]
 }
-* setup mirrord with steal mode to having breakpoints blocking the application in preview. The other mode is mirror that just mirror the traffic and do not block it (very useful for mirroring production traffic)
-in .mirrord/mirrord.json
-add 
+```json
+
+* Setup mirrord with steal mode to enable breakpoints that block the application in preview.
+Replace `<POD_NAME>` with the pod name you got with `kubectl get pods -n ia | grep <PRNUMBER>-j`
+where  here <PRNUMBER> is the PR number of your branch.
+example: > ia-case-api-pr-2711-java-559cb9c7c7-t5lrs
+Create/update `.mirrord/mirrord.json`:
+```json
 {
   "target": {
-    "path": "pod/ia-case-api-pr-2727-java-f49d45d6d-5ffhd",
+    "path": "pod/<POD_NAME>",
     "namespace": "ia"
   },
   "agent": {
@@ -160,6 +153,54 @@ add
     }
   }
 }
+
+* Restart VCS
+* In the left menu, click on Run and Debug, select "Mirrord With Debug" and click on the green triangle to start debugging
+* Set breakpoints in your code, when the breakpoint is reached, the application in preview will be blocked until you continue in VS Code. Initially setup breakpoint in every Controller to test it's all working fine.
+
+
+# Installation and execution of mirrord in IntelliJ CE
+
+## Prerequisites
+* Install mirrord plugin for IntelliJ CE
+* No need to install mirrord locally
+* Have the VPN connected and the application deployed in preview
+
+## Setup Steps
+1. Use the mirrord button in IntelliJ. The first time it will create a `.mirrord/mirrord.json` file
+2. Get the pod name with:
+   ```bash
+   kubectl get pods -n ia | grep <PRNUMBER>
+3. update the .mirrord/mirrord.json with something like this:
+```json    
+    {
+        "target": {
+            "path": "pod/<POD_NAME>",
+            "namespace": "ia"
+        },
+        "agent": {
+        "startup_timeout": 300,
+        "namespace": "ia"
+        }
+    }
+```
+
+* start mirrord with the mirrord button
+* then on the right menu, click on gradle and choose the task bootRun, right click to debug
+
+## Intellij CE Kotlin issue
+If issue with kotlin dependency, add this in the build.gradle in dependencies section:
+in dependencies 
+
+```gradle
+    modules {
+// Add Kotlin runtime for mirrord compatibility
+runtimeOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+runtimeOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.9.22'
+    
+```
+
 
 ## Using npx and bin scripts
 As an alternative for a development environment there is a procedure in place where after running the command below the required services are created in Preview under the developer's name, so these will be exclusively for the named developer use.
