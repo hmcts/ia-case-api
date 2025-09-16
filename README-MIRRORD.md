@@ -123,7 +123,7 @@ Add in .vscode/launch.json
     }
   ]
 }
-```json
+```
 
 * Setup mirrord with steal mode to enable breakpoints that block the application in preview.
 Replace `<POD_NAME>` with the pod name you got with `kubectl get pods -n ia | grep <PRNUMBER>-j`
@@ -153,6 +153,7 @@ Create/update `.mirrord/mirrord.json`:
     }
   }
 }
+```
 
 * Restart VCS
 * In the left menu, click on Run and Debug, select "Mirrord With Debug" and click on the green triangle to start debugging
@@ -171,6 +172,7 @@ Create/update `.mirrord/mirrord.json`:
 2. Get the pod name with:
    ```bash
    kubectl get pods -n ia | grep <PRNUMBER>
+    ```
 3. update the .mirrord/mirrord.json with something like this:
 ```json    
     {
