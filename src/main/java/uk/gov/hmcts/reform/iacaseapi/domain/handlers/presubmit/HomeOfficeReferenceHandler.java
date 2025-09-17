@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -28,8 +26,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCo
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
-    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{16}$");
-    private static final Logger log = LoggerFactory.getLogger(HomeOfficeReferenceHandler.class);
+    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{4}-\\d{4}-\\d{4}-\\d{4}$");
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -69,7 +66,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
             if (!isValidHomeOfficeReference(homeOfficeReferenceNumber)) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("Home Office Reference must be either 9 or 16 digits");
+                response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
                 return response;
             }
         }
@@ -77,7 +74,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean isValidHomeOfficeReference(String reference) {
+    public static boolean isValidHomeOfficeReference(String reference) {
         return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 
