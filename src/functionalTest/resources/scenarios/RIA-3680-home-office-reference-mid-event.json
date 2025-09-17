@@ -11,7 +11,7 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "homeOfficeReferenceNumber": "1234-4223-5678-8888AA"
+          "homeOfficeReferenceNumber": "1234-422321-5678-87562AC"
         }
       }
     }
@@ -24,7 +24,7 @@
       "replacements": {
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "appealReferenceNumber": "DRAFT",
-        "homeOfficeReferenceNumber": "1234-4223-5678-8888AA"
+        "homeOfficeReferenceNumber": "1234-422321-5678-87562AC"
       }
     }
   }
