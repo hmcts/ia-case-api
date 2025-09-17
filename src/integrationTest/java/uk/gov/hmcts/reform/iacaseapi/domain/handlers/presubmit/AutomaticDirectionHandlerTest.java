@@ -9,7 +9,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
@@ -19,8 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
 class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
-    WithServiceAuthStub, WithTimedEventServiceStub, WithNotificationsApiStub, WithRoleAssignmentStub,
-    WithDocumentApiStub {
+    WithServiceAuthStub, WithTimedEventServiceStub, WithNotificationsApiStub {
 
     @MockBean
     private RequestUserAccessTokenProvider requestTokenProvider;
@@ -28,16 +28,21 @@ class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements
     private String expectedId = "someId";
     private long caseId = 54321;
 
-    @Test
-    @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
-    void should_trigger_timed_event_service() {
+    @BeforeEach
+    void setupTimedEventServiceStub() {
         when(requestTokenProvider.getAccessToken()).thenReturn("Bearer token");
+    }
+
+
+
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
+    void should_trigger_timed_event_service() {
+
         addServiceAuthStub(server);
         addCaseWorkerUserDetailsStub(server);
         addTimedEventServiceStub(server);
         addNotificationsApiTransformerStub(server);
-        addRoleAssignmentActorStub(server);
-        addDocumentApiTransformerStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(
             callback()

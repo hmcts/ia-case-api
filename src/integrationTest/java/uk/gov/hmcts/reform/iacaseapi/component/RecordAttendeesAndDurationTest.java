@@ -38,7 +38,7 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
     private UserDetails userDetails;
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia", "ctsc"})
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
     void sets_flag_to_indicate_the_hearing_details_have_been_recorded() {
 
         addServiceAuthStub(server);
@@ -61,7 +61,7 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
     }
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia", "ctsc"})
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
     void returns_confirmation_page_content() {
 
         LDValue defaultValue = LDValue.parse("{\"epimsIds\":[]}");

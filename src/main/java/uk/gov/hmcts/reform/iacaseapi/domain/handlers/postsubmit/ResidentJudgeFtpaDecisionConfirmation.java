@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Component
@@ -21,15 +20,11 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
     public static final String DLRM_SETASIDE_FEATURE_FLAG = "dlrm-setaside-feature-flag";
     private final FeatureToggler featureToggler;
     private final RoleAssignmentService roleAssignmentService;
-    private final IdamService idamService;
-    private final String serviceToken = "serviceToken";
 
     ResidentJudgeFtpaDecisionConfirmation(FeatureToggler featureToggler,
-                                          RoleAssignmentService roleAssignmentService,
-                                          IdamService idamService) {
+                                          RoleAssignmentService roleAssignmentService) {
         this.featureToggler = featureToggler;
         this.roleAssignmentService = roleAssignmentService;
-        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -70,7 +65,7 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
-        roleAssignmentService.removeCaseRoleAssignments(caseId, idamService.getServiceUserToken());
+        roleAssignmentService.removeCaseRoleAssignments(caseId);
 
         switch (ftpaOutcomeType) {
 

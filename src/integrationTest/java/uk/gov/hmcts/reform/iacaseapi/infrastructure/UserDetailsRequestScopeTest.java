@@ -22,7 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
@@ -30,8 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
-class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements WithNotificationsApiStub,
-    WithServiceAuthStub, WithRoleAssignmentStub {
+class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements WithNotificationsApiStub, WithServiceAuthStub {
 
     @MockBean
     private RequestUserAccessTokenProvider requestTokenProvider;
@@ -63,7 +61,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         addServiceAuthStub(server);
         addNotificationsApiTransformerStub(server);
-        addRoleAssignmentActorStub(server);
 
         iaCaseApiClient.aboutToSubmit(
             callback()

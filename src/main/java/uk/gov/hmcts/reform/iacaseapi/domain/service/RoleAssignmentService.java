@@ -2,15 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.singletonList;
 
-import feign.FeignException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -37,13 +34,15 @@ public class RoleAssignmentService {
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
     private final RoleAssignmentApi roleAssignmentApi;
+    private final IdamService idamService;
 
     public RoleAssignmentService(AuthTokenGenerator serviceAuthTokenGenerator,
                                  RoleAssignmentApi roleAssignmentApi,
-                                 UserDetails userDetails) {
+                                 UserDetails userDetails, IdamService idamService) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.roleAssignmentApi = roleAssignmentApi;
         this.userDetails = userDetails;
+        this.idamService = idamService;
 
     }
 
@@ -86,15 +85,15 @@ public class RoleAssignmentService {
 
     public RoleAssignmentResource getCaseRoleAssignmentsForUser(long caseId, String idamUserId) {
         QueryRequest queryRequest = QueryRequest.builder()
-            .roleType(List.of(RoleType.CASE))
-            .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
-            .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
-            .actorId(List.of(idamUserId))
-            .attributes(Map.of(
-                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                Attributes.CASE_TYPE, List.of("Asylum"),
-                Attributes.CASE_ID, List.of(String.valueOf(caseId))
-            )).build();
+                .roleType(List.of(RoleType.CASE))
+                .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
+                .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
+                .actorId(List.of(idamUserId))
+                .attributes(Map.of(
+                        Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                        Attributes.CASE_TYPE, List.of("Asylum"),
+                        Attributes.CASE_ID, List.of(String.valueOf(caseId))
+                )).build();
 
         log.info("Query role assignment with the parameters: {}, for case reference: {}", queryRequest, caseId);
 
@@ -109,31 +108,15 @@ public class RoleAssignmentService {
         );
     }
 
-    @Retryable(include = FeignException.class)
-    public List<String> getAmRolesFromUser(String actorId,
-                                           String authorization) {
-        RoleAssignmentResource roleAssignmentResource = roleAssignmentApi.getRoleAssignments(
-            authorization,
-            serviceAuthTokenGenerator.generate(),
-            actorId
-        );
-        return Optional.ofNullable(roleAssignmentResource.getRoleAssignmentResponse()).orElse(Collections.emptyList())
-            .stream()
-            .map(Assignment::getRoleName)
-            .filter(roleName -> roleName != RoleName.UNKNOWN)
-            .map(RoleName::getValue)
-            .toList();
-    }
-
-    public void deleteRoleAssignment(String assignmentId, String authorisation) {
+    public void deleteRoleAssignment(String assignmentId) {
         if (assignmentId != null) {
             roleAssignmentApi.deleteRoleAssignment(
-                authorisation,
+                idamService.getServiceUserToken(),
                 serviceAuthTokenGenerator.generate(), assignmentId);
         }
     }
 
-    public void removeCaseManagerRole(String caseId, String authorisation) {
+    public void removeCaseManagerRole(String caseId) {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .grantType(List.of(GrantType.SPECIFIC))
@@ -155,7 +138,7 @@ public class RoleAssignmentService {
             String assignmentId = roleAssignment.get().getId();
             log.info("Removing Case Manager role from user: {} for case ID: {}, assignment ID: {}", actorId, caseId, assignmentId);
 
-            deleteRoleAssignment(assignmentId, authorisation);
+            deleteRoleAssignment(assignmentId);
 
             log.info("Successfully removed Case Manager role from user {} for case ID {}", actorId, caseId);
         } else {
@@ -163,7 +146,7 @@ public class RoleAssignmentService {
         }
     }
 
-    public void removeCaseRoleAssignments(String caseId, String authorisation) {
+    public void removeCaseRoleAssignments(String caseId) {
         List<RoleName> roleNames = List.of(
             RoleName.CASE_MANAGER,
             RoleName.TRIBUNAL_CASEWORKER,
@@ -197,7 +180,7 @@ public class RoleAssignmentService {
         if (!roleAssignment.isEmpty()) {
             roleAssignment.forEach(assignment -> {
                 log.info("Removing Case role: {}", assignment);
-                deleteRoleAssignment(assignment.getId(), authorisation);
+                deleteRoleAssignment(assignment.getId());
                 log.info("Successfully removed Case role assignment {} for case ID {}", assignment, caseId);
             });
         } else {

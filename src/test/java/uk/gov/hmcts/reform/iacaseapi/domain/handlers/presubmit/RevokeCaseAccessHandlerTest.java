@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
@@ -32,8 +31,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -53,8 +50,6 @@ class RevokeCaseAccessHandlerTest {
     @Mock
     private CcdCaseAssignment ccdCaseAssignment;
     @Mock
-    private IdamService idamService;
-    @Mock
     private RoleAssignmentService roleAssignmentService;
     @Mock
     private RoleAssignmentResource roleAssignmentResource;
@@ -65,7 +60,7 @@ class RevokeCaseAccessHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        revokeCaseAccessHandler = new RevokeCaseAccessHandler(roleAssignmentService, ccdCaseAssignment, idamService);
+        revokeCaseAccessHandler = new RevokeCaseAccessHandler(roleAssignmentService, ccdCaseAssignment);
         when(callback.getEvent()).thenReturn(Event.REVOKE_CASE_ACCESS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -128,7 +123,7 @@ class RevokeCaseAccessHandlerTest {
                         .actorIdType(ActorIdType.IDAM)
                         .build()));
 
-        doNothing().when(roleAssignmentService).deleteRoleAssignment(eq("1"), any());
+        doNothing().when(roleAssignmentService).deleteRoleAssignment("1");
 
         // when
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
