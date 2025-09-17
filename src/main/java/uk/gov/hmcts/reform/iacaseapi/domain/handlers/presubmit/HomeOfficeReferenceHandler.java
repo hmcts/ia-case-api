@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCo
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
-    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{4}-\\d{4}-\\d{4}-\\d{4}$");
+    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{4}-\\d{4}-\\d{4}-\\d{4}$");
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
