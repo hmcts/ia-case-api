@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -39,6 +38,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -57,6 +57,7 @@ import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("functional")
+@DirtiesContext
 public class CcdScenarioRunnerTest {
 
     @Value("${targetInstance}")
