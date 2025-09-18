@@ -57,12 +57,13 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YES);
+        if (HandlerUtils.hasRepresentation(asylumCase)
+                && !HandlerUtils.isInternalCase(asylumCase)
+                && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
+            asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        }
 
         Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
 
