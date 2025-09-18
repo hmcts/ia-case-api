@@ -64,9 +64,15 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
 
-            if (!isValidHomeOfficeReference(homeOfficeReferenceNumber)) {
+            if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                 response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
+                return response;
+            }
+
+            if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError("Enter the Home office reference or Case ID from your letter. The Home office reference provided does not match any existing case in home office systems.");
                 return response;
             }
         }
@@ -74,9 +80,13 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    public static boolean isValidHomeOfficeReference(String reference) {
+    public static boolean isWelformedHomeOfficeReference(String reference) {
         return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
+
+    // public static boolean isWelformedHomeOfficeReference(String reference) {
+    //    return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
+    // }
 
     private boolean isAgeAssessmentAppealType(AsylumCase asylumCase) {
         return asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);

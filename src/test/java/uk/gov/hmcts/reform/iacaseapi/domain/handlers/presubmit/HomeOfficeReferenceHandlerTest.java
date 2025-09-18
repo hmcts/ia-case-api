@@ -60,14 +60,14 @@ class HomeOfficeReferenceHandlerTest {
     @ParameterizedTest
     @ValueSource(strings = {"123456789", "1234-5678-9012-3456"})
     void should_accept_valid_home_office_reference_numbers_direct_validation(String validReference) {
-        assertTrue(HomeOfficeReferenceHandler.isValidHomeOfficeReference(validReference));
+        assertTrue(HomeOfficeReferenceHandler.isWelformedHomeOfficeReference(validReference));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"12345678", "12345678901234567", "1234567890123456", "abcdefghi", "123-456-789", "1234-5678-9012-345A", "", " ", "null"})
     void should_reject_invalid_home_office_reference_numbers_direct_validation(String invalidReference) {
         String testValue = "null".equals(invalidReference) ? null : invalidReference;
-        assertFalse(HomeOfficeReferenceHandler.isValidHomeOfficeReference(testValue));
+        assertFalse(HomeOfficeReferenceHandler.isWelformedHomeOfficeReference(testValue));
     }
 
     @Test
