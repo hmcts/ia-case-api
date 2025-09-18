@@ -17,6 +17,7 @@
             "custodialDate": "2025-01-01"
           },
           "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse",
           "appellantAddress": {
             "AddressLine1": "123 Main Street",
             "AddressLine2": "Flat 1",
