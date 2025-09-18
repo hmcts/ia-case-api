@@ -84,11 +84,11 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 
-    // public static boolean isWelformedHomeOfficeReference(String reference) {
-    //    return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
-    // }
-
     private boolean isAgeAssessmentAppealType(AsylumCase asylumCase) {
         return asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
+    }
+
+    public boolean isMatchingHomeOfficeCase(String reference) {
+        return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 }
