@@ -33,7 +33,17 @@
           "journeyType": null,
           "appellantInDetention": "No",
           "isAdmin": "Yes",
-          "appellantsRepresentation": "No"
+          "appellantsRepresentation": "No",
+          "legalRepHasAddress": "Yes",
+          "legalRepAddressUK": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "NW7 1BJ",
+            "PostTown": "London",
+            "AddressLine1": "Flat 1",
+            "AddressLine2": "Tamarind Court",
+            "AddressLine3": "1 Sanders Lane"
+          }
         }
       }
     }
