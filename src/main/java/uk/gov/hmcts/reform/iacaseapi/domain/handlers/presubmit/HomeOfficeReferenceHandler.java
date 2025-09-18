@@ -70,7 +70,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 return response;
             }
 
-            if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
+            if (!isMatchingHomeOfficeCase(homeOfficeReferenceNumber)) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                 response.addError("Enter the Home office reference or Case ID from your letter. The Home office reference provided does not match any existing case in home office systems.");
                 return response;
