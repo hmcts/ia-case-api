@@ -44,6 +44,8 @@ class Settings:
         'appellantemailaddress': 'apellant@emailAddress.com',
         'casenotedescription': 'redacted - casenotedescription',
         'casenotesubject': 'redacted - casenotesubject',
+        'notificationBody': 'redacted - notificationBody',
+        'notificationSentTo': 'email@email.com',
         'user': 'redacted - user',
         'question': 'redacted - question',
         'explanation': 'redacted - explanation',
