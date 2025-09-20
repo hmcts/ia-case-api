@@ -385,7 +385,9 @@ class GenerateDocumentHandlerTest {
                     SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                     UPDATE_TRIBUNAL_DECISION,
                     SAVE_NOTIFICATIONS_TO_DATA,
-                    MANAGE_FEE_UPDATE
+                    MANAGE_FEE_UPDATE,
+                    REMOVE_REPRESENTATION,
+                    REMOVE_LEGAL_REPRESENTATIVE
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -536,7 +538,9 @@ class GenerateDocumentHandlerTest {
                     SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                     UPDATE_TRIBUNAL_DECISION,
                     SAVE_NOTIFICATIONS_TO_DATA,
-                    MANAGE_FEE_UPDATE
+                    MANAGE_FEE_UPDATE,
+                    REMOVE_REPRESENTATION,
+                    REMOVE_LEGAL_REPRESENTATIVE
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
