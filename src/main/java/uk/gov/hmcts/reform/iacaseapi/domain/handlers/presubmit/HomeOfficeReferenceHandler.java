@@ -77,9 +77,9 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 return response;
             }
 
-            if (!isMatchingHomeOfficeCase(homeOfficeReferenceNumber)) {
+            if (!isMatchingHomeOfficeCaseNumber(homeOfficeReferenceNumber)) {
                 PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("Enter the Home office reference or Case ID from your letter. The Home office reference provided does not match any existing case in home office systems.");
+                response.addError("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems.");
                 return response;
             }
         }
@@ -95,10 +95,16 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
     }
 
-    public boolean isMatchingHomeOfficeCase(String reference) {
+    public boolean isMatchingHomeOfficeCaseNumber(String reference) {
         if (reference == null) {
             return false;
         }
-        return homeOfficeReferenceService.getHomeOfficeReferenceData(reference).isPresent();
+        
+        return homeOfficeReferenceService.getHomeOfficeReferenceData(reference)
+            .map(data -> {
+                String uan = data.getUan();
+                return uan != null && uan.trim().toLowerCase().equals(reference.trim().toLowerCase());
+            })
+            .orElse(false);
     }
 }
