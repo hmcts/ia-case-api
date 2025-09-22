@@ -84,7 +84,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                         .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                         .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-                if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
+                if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) { // need to update this as the Case ID is no longer used by the HO
                     response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
                 }
             }
