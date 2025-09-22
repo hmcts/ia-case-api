@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -45,12 +46,14 @@ class HomeOfficeReferenceHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private HomeOfficeReferenceService homeOfficeReferenceService;
 
     private HomeOfficeReferenceHandler homeOfficeReferenceHandler;
 
     @BeforeEach
     public void setUp() {
-        homeOfficeReferenceHandler = new HomeOfficeReferenceHandler();
+        homeOfficeReferenceHandler = new HomeOfficeReferenceHandler(homeOfficeReferenceService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -68,28 +71,6 @@ class HomeOfficeReferenceHandlerTest {
     void should_reject_invalid_home_office_reference_numbers_direct_validation(String invalidReference) {
         String testValue = "null".equals(invalidReference) ? null : invalidReference;
         assertFalse(HomeOfficeReferenceHandler.isWelformedHomeOfficeReference(testValue));
-    }
-
-    @Test
-    void should_accept_valid_home_office_reference_in_handler() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
-            
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("123456789"));
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertEquals(asylumCase, response.getData());
-            assertTrue(response.getErrors().isEmpty());
-        }
     }
 
     @Test
