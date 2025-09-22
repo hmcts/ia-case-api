@@ -10,11 +10,6 @@ public class HomeOfficeReferenceData {
     public HomeOfficeReferenceData() {
     }
 
-    public HomeOfficeReferenceData(String uan, List<Appellant> appellants) {
-        this.uan = uan;
-        this.appellants = appellants;
-    }
-
     public String getUan() {
         return uan;
     }
@@ -40,14 +35,6 @@ public class HomeOfficeReferenceData {
         private boolean roa;
 
         public Appellant() {
-        }
-
-        public Appellant(String familyName, String givenNames, String dateOfBirth, String nationality, boolean roa) {
-            this.familyName = familyName;
-            this.givenNames = givenNames;
-            this.dateOfBirth = dateOfBirth;
-            this.nationality = nationality;
-            this.roa = roa;
         }
 
         public String getFamilyName() {

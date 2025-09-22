@@ -154,6 +154,32 @@ class HomeOfficeReferenceHandlerTest {
         }
     }
 
+    @Test
+    void should_return_error_when_home_office_reference_does_not_match_existing_case() {
+        when(callback.getEvent()).thenReturn(START_APPEAL);
+        
+        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
+            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
+            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
+            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
+            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
+            
+            String validButNonMatchingReference = "123456789";
+            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(validButNonMatchingReference));
+            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+            
+            // Mock the homeOfficeReferenceService to return empty (no matching case)
+            when(homeOfficeReferenceService.getHomeOfficeReferenceData(validButNonMatchingReference)).thenReturn(Optional.empty());
+
+            PreSubmitCallbackResponse<AsylumCase> response = 
+                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
+
+            assertNotNull(response);
+            assertEquals(1, response.getErrors().size());
+            assertTrue(response.getErrors().contains("Enter the Home office reference or Case ID from your letter. The Home office reference provided does not match any existing case in home office systems."));
+        }
+    }
+
     private static Stream<Arguments> eventAndStageData() {
         return Stream.of(
             Arguments.of(START_APPEAL, MID_EVENT, true),
