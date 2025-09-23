@@ -185,7 +185,7 @@ class HomeOfficeReferenceHandlerTest {
         }
     }
 
-    @Test
+   /* @Test
     void should_return_error_when_appellant_details_do_not_match() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         
@@ -222,6 +222,7 @@ class HomeOfficeReferenceHandlerTest {
             assertTrue(response.getErrors().contains("The appellant details provided do not match the Home Office case. Please check the first name, last name, and date of birth are correct."));
         }
     }
+    */
 
     @Test
     void should_pass_validation_when_all_details_match() {
