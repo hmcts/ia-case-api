@@ -34,6 +34,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeReferenceData;
+
+import java.util.Arrays;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -155,7 +158,7 @@ class HomeOfficeReferenceHandlerTest {
     }
 
     @Test
-    void should_return_error_when_home_office_reference_does_not_match_existing_case() {
+    void should_return_error_when_home_office_case_number_does_not_match_uan() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         
         try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
@@ -164,19 +167,96 @@ class HomeOfficeReferenceHandlerTest {
             mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
             mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
             
-            String validButNonMatchingReference = "123456789";
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(validButNonMatchingReference));
+            String reference = "123456789";
+            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
             when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
             
-            // Mock the homeOfficeReferenceService to return empty (no matching case)
-            when(homeOfficeReferenceService.getHomeOfficeReferenceData(validButNonMatchingReference)).thenReturn(Optional.empty());
+            // Mock HomeOfficeReferenceData with different UAN
+            HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+            mockData.setUan("987654321"); // Different UAN
+            when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
 
             PreSubmitCallbackResponse<AsylumCase> response = 
                 homeOfficeReferenceHandler.handle(MID_EVENT, callback);
 
             assertNotNull(response);
             assertEquals(1, response.getErrors().size());
-            assertTrue(response.getErrors().contains("Enter the Home office reference or Case ID from your letter. The Home office reference provided does not match any existing case in home office systems."));
+            assertTrue(response.getErrors().contains("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems."));
+        }
+    }
+
+    @Test
+    void should_return_error_when_appellant_details_do_not_match() {
+        when(callback.getEvent()).thenReturn(START_APPEAL);
+        
+        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
+            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
+            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
+            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
+            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
+            
+            String reference = "123456789";
+            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
+            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+            when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+            when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Doe"));
+            when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+            
+            // Mock HomeOfficeReferenceData with matching UAN but different appellant details
+            HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+            mockData.setUan("123456789"); // Matching UAN
+            
+            HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+            appellant.setGivenNames("Jane"); // Different given name
+            appellant.setFamilyName("Smith"); // Different family name
+            appellant.setDateOfBirth("1985-05-15"); // Different date of birth
+            
+            mockData.setAppellants(Arrays.asList(appellant));
+            when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
+
+            PreSubmitCallbackResponse<AsylumCase> response = 
+                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
+
+            assertNotNull(response);
+            assertEquals(1, response.getErrors().size());
+            assertTrue(response.getErrors().contains("The appellant details provided do not match the Home Office case. Please check the first name, last name, and date of birth are correct."));
+        }
+    }
+
+    @Test
+    void should_pass_validation_when_all_details_match() {
+        when(callback.getEvent()).thenReturn(START_APPEAL);
+        
+        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
+            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
+            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
+            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
+            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
+            
+            String reference = "123456789";
+            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
+            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+            when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+            when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Doe"));
+            when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+            
+            // Mock HomeOfficeReferenceData with matching details
+            HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+            mockData.setUan("123456789"); // Matching UAN
+            
+            HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+            appellant.setGivenNames("John"); // Matching given name
+            appellant.setFamilyName("Doe"); // Matching family name
+            appellant.setDateOfBirth("1990-01-01"); // Matching date of birth
+            
+            mockData.setAppellants(Arrays.asList(appellant));
+            when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
+
+            PreSubmitCallbackResponse<AsylumCase> response = 
+                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
+
+            assertNotNull(response);
+            assertTrue(response.getErrors().isEmpty());
         }
     }
 

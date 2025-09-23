@@ -15,6 +15,9 @@ import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -82,6 +85,12 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 response.addError("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems.");
                 return response;
             }
+
+            if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase)) {
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError("The appellant details provided do not match the Home Office case. Please check the first name, last name, and date of birth are correct.");
+                return response;
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -106,5 +115,43 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 return uan != null && uan.trim().toLowerCase().equals(reference.trim().toLowerCase());
             })
             .orElse(false);
+    }
+
+    public boolean isMatchingHomeOfficeCaseDetails(String reference, AsylumCase asylumCase) {
+        if (reference == null) {
+            return false;
+        }
+        
+        return homeOfficeReferenceService.getHomeOfficeReferenceData(reference)
+            .map(data -> {
+                if (data.getAppellants() == null || data.getAppellants().isEmpty()) {
+                    return false;
+                }
+                
+                String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+                String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+                String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse("");
+                
+                return data.getAppellants().stream().anyMatch(appellant ->
+                    matchesName(appellant.getGivenNames(), appellantGivenNames) &&
+                    matchesName(appellant.getFamilyName(), appellantFamilyName) &&
+                    matchesDateOfBirth(appellant.getDateOfBirth(), appellantDateOfBirth)
+                );
+            })
+            .orElse(false);
+    }
+    
+    private boolean matchesName(String homeOfficeName, String appellantName) {
+        if (homeOfficeName == null || appellantName == null) {
+            return false;
+        }
+        return homeOfficeName.trim().toLowerCase().equals(appellantName.trim().toLowerCase());
+    }
+    
+    private boolean matchesDateOfBirth(String homeOfficeDob, String appellantDob) {
+        if (homeOfficeDob == null || appellantDob == null) {
+            return false;
+        }
+        return homeOfficeDob.trim().equals(appellantDob.trim());
     }
 }
