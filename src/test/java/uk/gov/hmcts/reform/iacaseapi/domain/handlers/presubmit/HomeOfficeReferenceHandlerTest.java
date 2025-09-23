@@ -185,45 +185,6 @@ class HomeOfficeReferenceHandlerTest {
         }
     }
 
-   /* @Test
-    void should_return_error_when_appellant_details_do_not_match() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
-            
-            String reference = "123456789";
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-            when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
-            when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Doe"));
-            when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
-            
-            // Mock HomeOfficeReferenceData with matching UAN but different appellant details
-            HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
-            mockData.setUan("123456789"); // Matching UAN
-            
-            HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
-            appellant.setGivenNames("Jane"); // Different given name
-            appellant.setFamilyName("Smith"); // Different family name
-            appellant.setDateOfBirth("1985-05-15"); // Different date of birth
-            
-            mockData.setAppellants(Arrays.asList(appellant));
-            when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertEquals(1, response.getErrors().size());
-            assertTrue(response.getErrors().contains("The appellant details provided do not match the Home Office case. Please check the first name, last name, and date of birth are correct."));
-        }
-    }
-    */
-
     @Test
     void should_pass_validation_when_all_details_match() {
         when(callback.getEvent()).thenReturn(START_APPEAL);

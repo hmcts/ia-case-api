@@ -86,11 +86,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 return response;
             }
 
-            /*if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase)) {
-                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("The appellant details provided do not match the Home Office case. Please check the first name, last name, and date of birth are correct.");
-                return response;
-            }*/
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
