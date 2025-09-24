@@ -6,11 +6,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 
 import static java.util.Objects.requireNonNull;
 
 @Component
 public class HearingCancelledConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private final PostNotificationSender<AsylumCase> postNotificationSender;
+
+    public HearingCancelledConfirmation(
+            PostNotificationSender<AsylumCase> postNotificationSender
+    ) {
+        this.postNotificationSender = postNotificationSender;
+    }
 
     public boolean canHandle(
             Callback<AsylumCase> callback
@@ -26,6 +35,8 @@ public class HearingCancelledConfirmation implements PostSubmitCallbackHandler<A
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        postNotificationSender.send(callback);
 
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
 
