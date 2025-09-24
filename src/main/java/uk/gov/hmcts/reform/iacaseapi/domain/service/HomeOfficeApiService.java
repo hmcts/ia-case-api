@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.service;
+ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
 

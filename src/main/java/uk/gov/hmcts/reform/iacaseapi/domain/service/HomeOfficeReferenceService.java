@@ -21,8 +21,11 @@ public class HomeOfficeReferenceService {
             return Optional.empty();
         }
 
+        // Use dummy data for now. Do not deploy that to production.
         HomeOfficeReferenceData data = createDummyHomeOfficeData();
-        log.debug("Created new data for reference: {}", homeOfficeReferenceString);
+        if (!data.getUan().equalsIgnoreCase(homeOfficeReferenceString)){
+            log.warn("The homeOfficeReferenceString provided {} do not match the home office uan from the dummy data.", homeOfficeReferenceString);
+        }
         
         return Optional.of(data);
     }
@@ -54,6 +57,8 @@ public class HomeOfficeReferenceService {
         data.setUan("123456789");
         data.setAppellants(Arrays.asList(homer, marge, bart));
         
+        log.info("Using dummy Home Office data: {}", data);
+
         return data;
     }
 }
