@@ -49,7 +49,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)
-                && callback.getPageId().equals("homeOfficeDecision")
+                && (callback.getPageId().equals("homeOfficeDecision") || 
+                    callback.getPageId().equals("appellantBasicDetails"))
                 && HandlerUtils.isRepJourney(asylumCase);
     }
 
@@ -73,17 +74,27 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
+                
+            if (callback.getPageId().equals("homeOfficeDecision")){    
+                if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
+                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                    response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
+                    return response;
+                }
 
-            if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
-                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
-                return response;
+                if (!isMatchingHomeOfficeCaseNumber(homeOfficeReferenceNumber)) {
+                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                    response.addError("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems.");
+                    return response;
+                }
             }
 
-            if (!isMatchingHomeOfficeCaseNumber(homeOfficeReferenceNumber)) {
-                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                response.addError("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems.");
-                return response;
+            if (callback.getPageId().equals("appellantBasicDetails")){  
+                if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase)) {
+                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                    response.addError("Enter the Home office details from the letters. The details provided does not match the case in the home office systems.");
+                    return response;
+                }
             }
 
         }

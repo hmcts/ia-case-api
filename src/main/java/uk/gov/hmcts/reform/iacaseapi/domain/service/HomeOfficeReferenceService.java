@@ -51,7 +51,7 @@ public class HomeOfficeReferenceService {
         bart.setRoa(true);
 
         HomeOfficeReferenceData data = new HomeOfficeReferenceData();
-        data.setUan("1234-5678-9012-3456");
+        data.setUan("123456789");
         data.setAppellants(Arrays.asList(homer, marge, bart));
         
         return data;
