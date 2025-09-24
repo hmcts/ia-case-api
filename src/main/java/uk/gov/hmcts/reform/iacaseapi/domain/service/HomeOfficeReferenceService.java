@@ -57,7 +57,16 @@ public class HomeOfficeReferenceService {
         data.setUan("123456789");
         data.setAppellants(Arrays.asList(homer, marge, bart));
         
-        log.info("Using dummy Home Office data: {}", data);
+        log.info("Using dummy Home Office data - UAN: {}, Appellants: {}", 
+                data.getUan(), 
+                data.getAppellants().stream()
+                    .map(appellant -> String.format("%s %s (DOB: %s, Nationality: %s, ROA: %s)", 
+                        appellant.getGivenNames(), 
+                        appellant.getFamilyName(),
+                        appellant.getDateOfBirth(),
+                        appellant.getNationality(),
+                        appellant.isRoa()))
+                    .toArray());
 
         return data;
     }
