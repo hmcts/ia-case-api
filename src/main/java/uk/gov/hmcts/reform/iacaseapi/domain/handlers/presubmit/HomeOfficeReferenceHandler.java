@@ -75,7 +75,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
                 
-            if (callback.getPageId().equals("homeOfficeDecision")){    
+            if (callback.getPageId().equals("homeOfficeDecision")) {    
                 if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
@@ -89,7 +89,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 }
             }
 
-            if (callback.getPageId().equals("appellantBasicDetails")){  
+            if (callback.getPageId().equals("appellantBasicDetails")) {  
                 if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     response.addError("Enter the Home office details from the letters. The details provided does not match the case in the home office systems.");

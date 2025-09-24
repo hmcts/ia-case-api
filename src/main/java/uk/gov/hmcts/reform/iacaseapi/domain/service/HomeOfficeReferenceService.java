@@ -23,7 +23,7 @@ public class HomeOfficeReferenceService {
 
         // Use dummy data for now. Do not deploy that to production.
         HomeOfficeReferenceData data = createDummyHomeOfficeData();
-        if (!data.getUan().equalsIgnoreCase(homeOfficeReferenceString)){
+        if (!data.getUan().equalsIgnoreCase(homeOfficeReferenceString)) {
             log.warn("The homeOfficeReferenceString provided {} do not match the home office uan from the dummy data.", homeOfficeReferenceString);
         }
         

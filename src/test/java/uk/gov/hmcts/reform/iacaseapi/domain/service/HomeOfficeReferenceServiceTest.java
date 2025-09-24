@@ -226,7 +226,6 @@ class HomeOfficeReferenceServiceTest {
 
     @Test
     void isMatchingHomeOfficeCaseDetails_should_return_false_when_appellants_list_is_empty() {
-        HomeOfficeReferenceHandler handler = new HomeOfficeReferenceHandler(mockHomeOfficeReferenceService);
         String reference = "1234567890";
         
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
@@ -236,6 +235,7 @@ class HomeOfficeReferenceServiceTest {
         when(mockHomeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
 
+        HomeOfficeReferenceHandler handler = new HomeOfficeReferenceHandler(mockHomeOfficeReferenceService);
         boolean result = handler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
 
         assertThat(result).isFalse();
@@ -243,7 +243,6 @@ class HomeOfficeReferenceServiceTest {
 
     @Test
     void isMatchingHomeOfficeCaseDetails_should_return_false_when_appellants_list_is_null() {
-        HomeOfficeReferenceHandler handler = new HomeOfficeReferenceHandler(mockHomeOfficeReferenceService);
         String reference = "1234567890";
         
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
@@ -253,6 +252,7 @@ class HomeOfficeReferenceServiceTest {
         when(mockHomeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
 
+        HomeOfficeReferenceHandler handler = new HomeOfficeReferenceHandler(mockHomeOfficeReferenceService);    
         boolean result = handler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
 
         assertThat(result).isFalse();
