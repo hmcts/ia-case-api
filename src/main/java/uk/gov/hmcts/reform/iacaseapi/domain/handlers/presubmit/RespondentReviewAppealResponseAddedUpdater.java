@@ -53,7 +53,6 @@ public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCall
                     asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class).orElse(NO)
             );
 
-            if
             asylumCase.write(END_APPEAL_OUTCOME_REASON,
                     "The Respondent has withdrawn the decision under appeal and invited the Tribunal to treat the appeal as withdrawn under Rule 17(2).\n\n"
                             + "Upon considering the documents in this appeal, the Tribunal is satisfied that there is no good reason not to treat the appeal as withdrawn.\n\n"
