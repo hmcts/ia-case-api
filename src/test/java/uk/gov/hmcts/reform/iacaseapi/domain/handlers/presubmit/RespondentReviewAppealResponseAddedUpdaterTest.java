@@ -45,6 +45,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    private String endAppealOutcome = WITHDRAWN.toString();
 
     private RespondentReviewAppealResponseAddedUpdater respondentReviewAppealResponseAddedUpdater =
         new RespondentReviewAppealResponseAddedUpdater();
@@ -69,8 +70,8 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
             when(caseDetails.getState()).thenReturn(state);
             when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+            when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of(endAppealOutcome));
 
-            String endAppealOutcome = WITHDRAWN.toString();
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -106,8 +107,9 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
                 when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class))
                     .thenReturn(appealResponseNotAvailableIndication);
+                when(asylumCase.read(END_APPEAL_OUTCOME, String.class))
+                        .thenReturn(Optional.of(endAppealOutcome));
 
-                String endAppealOutcome = WITHDRAWN.toString();
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     respondentReviewAppealResponseAddedUpdater
                         .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
