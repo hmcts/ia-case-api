@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaResidentJudgeDecisionOutcomeType.WITHDRAWN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED;
 
 import java.util.Arrays;
@@ -69,6 +70,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
             when(caseDetails.getState()).thenReturn(state);
             when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
+            String applicationDecision = WITHDRAWN.toString();
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
