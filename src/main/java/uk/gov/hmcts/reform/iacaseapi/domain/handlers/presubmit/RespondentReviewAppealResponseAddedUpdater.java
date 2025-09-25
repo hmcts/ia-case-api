@@ -59,7 +59,7 @@ public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCall
                     asylumCase
                             .read(END_APPEAL_OUTCOME, String.class)
                             .orElseThrow(() -> new IllegalStateException("endAppealOutcome is not present"));
-            if (if (WITHDRAWN.toString().equalsIgnoreCase(endAppealOutcome)) {
+            if (WITHDRAWN.toString().equalsIgnoreCase(endAppealOutcome)) {
                 asylumCase.write(END_APPEAL_OUTCOME_REASON,
                         "The Respondent has withdrawn the decision under appeal and invited the Tribunal to treat the appeal as withdrawn under Rule 17(2).\n\n"
                                 + "Upon considering the documents in this appeal, the Tribunal is satisfied that there is no good reason not to treat the appeal as withdrawn.\n\n"
