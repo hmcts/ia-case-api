@@ -70,7 +70,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
             when(caseDetails.getState()).thenReturn(state);
             when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-            String applicationDecision = WITHDRAWN.toString();
+            String endAppealOutcome = WITHDRAWN.toString();
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -107,6 +107,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
                 when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class))
                     .thenReturn(appealResponseNotAvailableIndication);
 
+                String endAppealOutcome = WITHDRAWN.toString();
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     respondentReviewAppealResponseAddedUpdater
                         .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
