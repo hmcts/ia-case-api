@@ -54,7 +54,7 @@ class HomeOfficeReferenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn("homeOfficeDecision");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
     }
 
     @ParameterizedTest
