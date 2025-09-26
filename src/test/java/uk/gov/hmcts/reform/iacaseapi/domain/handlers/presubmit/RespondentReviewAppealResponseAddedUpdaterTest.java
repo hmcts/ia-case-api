@@ -58,7 +58,6 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
-        when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of(endAppealOutcome));
     }
 
     @Test
@@ -73,6 +72,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
             when(caseDetails.getState()).thenReturn(state);
             when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+            when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of(endAppealOutcome));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
@@ -109,6 +109,8 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
                 when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class))
                     .thenReturn(appealResponseNotAvailableIndication);
+                when(asylumCase.read(END_APPEAL_OUTCOME, String.class))
+                        .thenReturn(Optional.of(endAppealOutcome));
 
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     respondentReviewAppealResponseAddedUpdater
