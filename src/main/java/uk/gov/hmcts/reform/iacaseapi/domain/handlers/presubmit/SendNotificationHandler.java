@@ -166,7 +166,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.RECORD_REMISSION_REMINDER,
             Event.MARK_APPEAL_AS_REMITTED,
-            Event.REFUND_CONFIRMATION
+            Event.REFUND_CONFIRMATION,
+            Event.HEARING_CANCELLED
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -252,7 +253,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
             Event.PROGRESS_MIGRATED_CASE,
-            Event.REFUND_CONFIRMATION
+            Event.REFUND_CONFIRMATION,
+            Event.HEARING_CANCELLED
         );
 
         if (!isSaveAndContinueEnabled) {
