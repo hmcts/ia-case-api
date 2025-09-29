@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED;
@@ -84,7 +82,9 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
     @Test
     void should_clear_flag_when_not_in_respondent_review_state() {
         for (State state : State.values()) {
-            if (state == State.RESPONDENT_REVIEW) continue;
+            if (state == State.RESPONDENT_REVIEW) {
+                continue;
+            }
 
             when(caseDetails.getState()).thenReturn(state);
 
