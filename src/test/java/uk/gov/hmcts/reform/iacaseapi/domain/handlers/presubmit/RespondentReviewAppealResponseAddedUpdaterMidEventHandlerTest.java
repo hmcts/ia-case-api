@@ -42,9 +42,6 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
     @BeforeEach
     void setUp() {
         handler = new RespondentReviewAppealResponseAddedUpdaterMidEventHandler();
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
