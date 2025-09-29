@@ -134,7 +134,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-984
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1079
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -208,7 +208,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
 #    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1385
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1518
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
