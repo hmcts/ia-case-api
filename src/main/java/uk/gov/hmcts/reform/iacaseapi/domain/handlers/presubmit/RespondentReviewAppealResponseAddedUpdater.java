@@ -17,10 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCallbackHandler<AsylumCase> {
 
-    @Override
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -28,24 +27,23 @@ public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCall
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         final State caseState =
-                callback
-                        .getCaseDetails()
-                        .getState();
+            callback
+                .getCaseDetails()
+                .getState();
 
         final AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
         if (caseState == State.RESPONDENT_REVIEW) {
 
