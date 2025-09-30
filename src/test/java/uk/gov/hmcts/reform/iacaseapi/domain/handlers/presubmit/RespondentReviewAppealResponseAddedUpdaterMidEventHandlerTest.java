@@ -41,6 +41,9 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
 
     @BeforeEach
     void setUp() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
         handler = new RespondentReviewAppealResponseAddedUpdaterMidEventHandler();
     }
 
@@ -97,7 +100,6 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
 
     @Test
     void should_throw_if_cannot_handle() {
-        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
 
         assertThatThrownBy(() ->
                 handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))

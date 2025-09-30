@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -34,15 +32,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class RespondentReviewAppealResponseAddedUpdaterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    private RespondentReviewAppealResponseAddedUpdater updater;
+    private RespondentReviewAppealResponseAddedUpdater respondentReviewAppealResponseAddedUpdater =
+        new RespondentReviewAppealResponseAddedUpdater();
 
     @BeforeEach
     public void setUp() {
-        updater = new RespondentReviewAppealResponseAddedUpdater();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -51,17 +52,36 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
     @Test
     void should_be_handled_late() {
-        assertEquals(DispatchPriority.LATE, updater.getDispatchPriority());
+        assertEquals(DispatchPriority.LATE, respondentReviewAppealResponseAddedUpdater.getDispatchPriority());
     }
 
     @Test
-    void should_set_flag_to_yes_when_state_is_respondent_review_and_appeal_response_available() {
-        when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+    void should_set_action_available_flag_to_yes_when_state_applies_and_appeal_response_available() {
 
-        PreSubmitCallbackResponse<AsylumCase> response = updater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        for (State state : State.values()) {
 
-        assertNotNull(response);
-        verify(asylumCase).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.YES);
+            when(caseDetails.getState()).thenReturn(state);
+            when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                respondentReviewAppealResponseAddedUpdater
+                    .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(asylumCase, callbackResponse.getData());
+
+            if (state == State.RESPONDENT_REVIEW) {
+
+                verify(asylumCase, times(1)).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.YES);
+
+            } else {
+                verify(asylumCase, never()).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.NO);
+                verify(asylumCase, never()).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.YES);
+                verify(asylumCase, times(1)).clear(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED);
+            }
+
+            reset(asylumCase);
+        }
     }
 
     @Test
@@ -71,7 +91,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
         for (Optional<YesOrNo> value : notAvailableOptions) {
             when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(value);
 
-            PreSubmitCallbackResponse<AsylumCase> response = updater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            PreSubmitCallbackResponse<AsylumCase> response = respondentReviewAppealResponseAddedUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(response);
             verify(asylumCase).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.NO);
@@ -88,7 +108,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
             when(caseDetails.getState()).thenReturn(state);
 
-            PreSubmitCallbackResponse<AsylumCase> response = updater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            PreSubmitCallbackResponse<AsylumCase> response = respondentReviewAppealResponseAddedUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(response);
             verify(asylumCase).clear(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED);
@@ -102,7 +122,7 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
-                boolean result = updater.canHandle(stage, callback);
+                boolean result = respondentReviewAppealResponseAddedUpdater.canHandle(stage, callback);
                 assertEquals(stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT, result);
             }
         }
@@ -110,26 +130,26 @@ class RespondentReviewAppealResponseAddedUpdaterTest {
 
     @Test
     void should_throw_on_invalid_handle_stage() {
-        assertThatThrownBy(() -> updater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot handle callback");
     }
 
     @Test
     void should_not_allow_null_arguments() {
-        assertThatThrownBy(() -> updater.canHandle(null, callback))
+        assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.canHandle(null, callback))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("callbackStage must not be null");
 
-        assertThatThrownBy(() -> updater.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("callback must not be null");
 
-        assertThatThrownBy(() -> updater.handle(null, callback))
+        assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.handle(null, callback))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("callbackStage must not be null");
 
-        assertThatThrownBy(() -> updater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("callback must not be null");
     }
