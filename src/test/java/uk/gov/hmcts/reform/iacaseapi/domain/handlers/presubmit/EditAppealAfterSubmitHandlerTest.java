@@ -58,6 +58,10 @@ class EditAppealAfterSubmitHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
+    private AsylumCase asylumCaseBefore;
+    @Mock
     private DateProvider dateProvider;
     @Mock
     private DueDateService dueDateService;
@@ -109,6 +113,10 @@ class EditAppealAfterSubmitHandlerTest {
 
     @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("LRRef"));
+        when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("NewLRRef"));
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
@@ -559,6 +567,11 @@ class EditAppealAfterSubmitHandlerTest {
         final ZonedDateTime zonedDateTime = LocalDate.parse(receivedLetterDate).atStartOfDay(ZoneOffset.UTC);
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
 
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("LRRef"));
+        when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("NewLRRef"));
+
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
@@ -593,8 +606,8 @@ class EditAppealAfterSubmitHandlerTest {
 
         editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(asylumCase, times(3)).write(asylumExtractor.capture(), outOfTime.capture());
-        verify(asylumCase, times(3)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
         assertThat(asylumExtractor.getAllValues()).contains(SUBMISSION_OUT_OF_TIME);
         assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
