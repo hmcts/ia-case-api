@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import lombok.Value;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,18 +27,7 @@ class HearingCancelledConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
-    @Mock
-    PostNotificationSender<AsylumCase> postNotificationSender;
-
-    private HearingCancelledConfirmation handler;
-
-    @BeforeEach
-    public void setUp() throws Exception {
-
-        handler = new HearingCancelledConfirmation(
-                postNotificationSender
-        );
-    }
+    private HearingCancelledConfirmation handler = new HearingCancelledConfirmation();
 
     @ParameterizedTest
     @MethodSource("generateTestScenarios")
@@ -88,8 +73,6 @@ class HearingCancelledConfirmationTest {
                 .contains("#### What happens next\n\n"
                     + "Add new hearing information as required."
             );
-
-        verify(postNotificationSender, times(1)).send(callback);
     }
 
     @Test
