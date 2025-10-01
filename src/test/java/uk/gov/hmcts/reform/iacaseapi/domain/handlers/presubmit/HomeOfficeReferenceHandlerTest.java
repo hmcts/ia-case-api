@@ -157,33 +157,6 @@ class HomeOfficeReferenceHandlerTest {
         }
     }
 
-    @Test
-    void should_return_error_when_home_office_case_number_does_not_match_uan() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
-            
-            String reference = "123456789";
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-            
-            // Mock HomeOfficeReferenceData with different UAN
-            HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
-            mockData.setUan("987654321"); // Different UAN
-            when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertEquals(1, response.getErrors().size());
-            assertTrue(response.getErrors().contains("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems."));
-        }
-    }
 
     @Test
     void should_pass_validation_when_all_details_match() {

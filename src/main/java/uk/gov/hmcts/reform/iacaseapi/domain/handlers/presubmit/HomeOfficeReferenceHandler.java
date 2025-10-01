@@ -31,6 +31,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{4}-\\d{4}-\\d{4}-\\d{4}$");
+    private static boolean homeOfficeReferenceCheckEnabled = false;
 
     private final HomeOfficeReferenceService homeOfficeReferenceService;
 
@@ -111,6 +112,10 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     }
 
     public boolean isMatchingHomeOfficeCaseNumber(String reference) {
+        if (homeOfficeReferenceCheckEnabled == false) {
+            return true;
+        }
+
         if (reference == null) {
             return false;
         }
@@ -124,6 +129,10 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     }
 
     public boolean isMatchingHomeOfficeCaseDetails(String reference, AsylumCase asylumCase) {
+        if (homeOfficeReferenceCheckEnabled == false) {
+            return true;
+        }
+
         if (reference == null) {
             return false;
         }

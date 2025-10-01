@@ -5,7 +5,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeReferenceData;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -20,54 +19,8 @@ public class HomeOfficeReferenceService {
             log.warn("Home Office reference string is null or empty");
             return Optional.empty();
         }
-
-        // Use dummy data for now. Do not deploy that to production.
-        HomeOfficeReferenceData data = createDummyHomeOfficeData();
-        if (!data.getUan().equalsIgnoreCase(homeOfficeReferenceString)) {
-            log.warn("The homeOfficeReferenceString provided {} do not match the home office uan from the dummy data.", homeOfficeReferenceString);
-        }
         
-        return Optional.of(data);
+        return Optional.empty();
     }
 
-    private HomeOfficeReferenceData createDummyHomeOfficeData() {
-        // Return dummy Homer Simpson family data
-        HomeOfficeReferenceData.Appellant homer = new HomeOfficeReferenceData.Appellant();
-        homer.setFamilyName("Simpson");
-        homer.setGivenNames("Homer Jay");
-        homer.setDateOfBirth("1956-05-12");
-        homer.setNationality("USA");
-        homer.setRoa(false);
-
-        HomeOfficeReferenceData.Appellant marge = new HomeOfficeReferenceData.Appellant();
-        marge.setFamilyName("Simpson");
-        marge.setGivenNames("Marjorie Jacqueline");
-        marge.setDateOfBirth("1956-10-01");
-        marge.setNationality("USA");
-        marge.setRoa(false);
-
-        HomeOfficeReferenceData.Appellant bart = new HomeOfficeReferenceData.Appellant();
-        bart.setFamilyName("Simpson");
-        bart.setGivenNames("Bartholomew JoJo");
-        bart.setDateOfBirth("2007-04-01");
-        bart.setNationality("USA");
-        bart.setRoa(true);
-
-        HomeOfficeReferenceData data = new HomeOfficeReferenceData();
-        data.setUan("123456789");
-        data.setAppellants(Arrays.asList(homer, marge, bart));
-        
-        log.info("Using dummy Home Office data - UAN: {}, Appellants: {}", 
-                data.getUan(), 
-                data.getAppellants().stream()
-                    .map(appellant -> String.format("%s %s (DOB: %s, Nationality: %s, ROA: %s)", 
-                        appellant.getGivenNames(), 
-                        appellant.getFamilyName(),
-                        appellant.getDateOfBirth(),
-                        appellant.getNationality(),
-                        appellant.isRoa()))
-                    .toArray());
-
-        return data;
-    }
 }
