@@ -397,7 +397,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_true_when_appellant_details_match() throws Exception {
         setHomeOfficeReferenceCheckEnabled(true);
-        String reference = "123456789";
         
         HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
         appellant.setGivenNames("John");
@@ -407,6 +406,7 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Arrays.asList(appellant));
         
+        String reference = "123456789";
         when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
@@ -421,7 +421,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_true_when_appellant_details_match_case_insensitive() throws Exception {
         setHomeOfficeReferenceCheckEnabled(true);
-        String reference = "123456789";
         
         HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
         appellant.setGivenNames("JOHN");
@@ -431,6 +430,7 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Arrays.asList(appellant));
         
+        String reference = "123456789";
         when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("john"));
@@ -445,7 +445,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_false_when_given_names_do_not_match() throws Exception {
         setHomeOfficeReferenceCheckEnabled(true);
-        String reference = "123456789";
         
         HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
         appellant.setGivenNames("John");
@@ -455,6 +454,7 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Arrays.asList(appellant));
         
+        String reference = "123456789";
         when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Jane"));
@@ -469,7 +469,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_false_when_family_name_does_not_match() throws Exception {
         setHomeOfficeReferenceCheckEnabled(true);
-        String reference = "123456789";
         
         HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
         appellant.setGivenNames("John");
@@ -479,6 +478,7 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Arrays.asList(appellant));
         
+        String reference = "123456789";
         when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
@@ -493,7 +493,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_false_when_date_of_birth_does_not_match() throws Exception {
         setHomeOfficeReferenceCheckEnabled(true);
-        String reference = "123456789";
         
         HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
         appellant.setGivenNames("John");
@@ -503,6 +502,7 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Arrays.asList(appellant));
         
+        String reference = "123456789";
         when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
@@ -530,7 +530,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_true_when_multiple_appellants_and_one_matches() throws Exception {
         setHomeOfficeReferenceCheckEnabled(true);
-        String reference = "123456789";
         
         HomeOfficeReferenceData.Appellant appellant1 = new HomeOfficeReferenceData.Appellant();
         appellant1.setGivenNames("Jane");
@@ -544,7 +543,8 @@ class HomeOfficeReferenceHandlerTest {
         
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Arrays.asList(appellant1, appellant2));
-        
+
+        String reference = "123456789";
         when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
             .thenReturn(Optional.of(mockData));
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
