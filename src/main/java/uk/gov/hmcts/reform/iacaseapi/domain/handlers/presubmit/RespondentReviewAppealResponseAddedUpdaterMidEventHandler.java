@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+@Slf4j
 @Component
 public class RespondentReviewAppealResponseAddedUpdaterMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -44,6 +45,7 @@ public class RespondentReviewAppealResponseAddedUpdaterMidEventHandler implement
                                 + "(First-tier Tribunal) (Immigration and Asylum Chamber) rules 2014.  Any Party may, within 14 days of the date of this decision, apply in writing to the Tribunal for the decision to be considered afresh by a judge under rule 3(4)."
                 ));
 
+        log.info("End appeal outcome: ", outcome);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
