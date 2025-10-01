@@ -11,6 +11,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeReferenceData;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -252,4 +255,310 @@ class HomeOfficeReferenceHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
+    @Test
+    void should_return_true_when_home_office_reference_check_disabled() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(false);
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber("123456789");
+        
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_return_false_when_reference_is_null() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(null);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_true_when_uan_matches_reference() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setUan(reference);
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
+        
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_return_true_when_uan_matches_reference_case_insensitive() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setUan("123456789");
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
+        
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_return_false_when_uan_does_not_match_reference() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setUan("987654321");
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_uan_is_null() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setUan(null);
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_home_office_data_not_found() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.empty());
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_true_when_case_details_check_disabled() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(false);
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails("123456789", asylumCase);
+        
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_return_false_when_case_details_reference_is_null() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(null, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_appellants_list_is_null() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(null);
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_appellants_list_is_empty() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Collections.emptyList());
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_true_when_appellant_details_match() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+        appellant.setGivenNames("John");
+        appellant.setFamilyName("Smith");
+        appellant.setDateOfBirth("1990-01-01");
+        
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Arrays.asList(appellant));
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_return_true_when_appellant_details_match_case_insensitive() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+        appellant.setGivenNames("JOHN");
+        appellant.setFamilyName("SMITH");
+        appellant.setDateOfBirth("1990-01-01");
+        
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Arrays.asList(appellant));
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("john"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("smith"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void should_return_false_when_given_names_do_not_match() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+        appellant.setGivenNames("John");
+        appellant.setFamilyName("Smith");
+        appellant.setDateOfBirth("1990-01-01");
+        
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Arrays.asList(appellant));
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("Jane"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_family_name_does_not_match() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+        appellant.setGivenNames("John");
+        appellant.setFamilyName("Smith");
+        appellant.setDateOfBirth("1990-01-01");
+        
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Arrays.asList(appellant));
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Jones"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_date_of_birth_does_not_match() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
+        appellant.setGivenNames("John");
+        appellant.setFamilyName("Smith");
+        appellant.setDateOfBirth("1990-01-01");
+        
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Arrays.asList(appellant));
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-02"));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_false_when_home_office_case_details_not_found() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.empty());
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_return_true_when_multiple_appellants_and_one_matches() throws Exception {
+        setHomeOfficeReferenceCheckEnabled(true);
+        String reference = "123456789";
+        
+        HomeOfficeReferenceData.Appellant appellant1 = new HomeOfficeReferenceData.Appellant();
+        appellant1.setGivenNames("Jane");
+        appellant1.setFamilyName("Doe");
+        appellant1.setDateOfBirth("1985-01-01");
+        
+        HomeOfficeReferenceData.Appellant appellant2 = new HomeOfficeReferenceData.Appellant();
+        appellant2.setGivenNames("John");
+        appellant2.setFamilyName("Smith");
+        appellant2.setDateOfBirth("1990-01-01");
+        
+        HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
+        mockData.setAppellants(Arrays.asList(appellant1, appellant2));
+        
+        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
+            .thenReturn(Optional.of(mockData));
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        
+        boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
+        
+        assertThat(result).isTrue();
+    }
+
+    private void setHomeOfficeReferenceCheckEnabled(boolean enabled) throws Exception {
+        Field field = HomeOfficeReferenceHandler.class.getDeclaredField("homeOfficeReferenceCheckEnabled");
+        field.setAccessible(true);
+        field.setBoolean(null, enabled);
+    }
 }
