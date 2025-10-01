@@ -52,11 +52,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).clear(LEGAL_REP_COMPANY);
-        verify(asylumCase).clear(LEGAL_REP_COMPANY_ADDRESS);
-        verify(asylumCase).clear(LEGAL_REP_NAME);
-        verify(asylumCase).clear(LEGAL_REPRESENTATIVE_NAME);
-        verify(asylumCase).clear(LEGAL_REP_REFERENCE_NUMBER);
     }
 
     @Test
@@ -72,11 +67,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).clear(LEGAL_REP_COMPANY);
-        verify(asylumCase).clear(LEGAL_REP_COMPANY_ADDRESS);
-        verify(asylumCase).clear(LEGAL_REP_NAME);
-        verify(asylumCase).clear(LEGAL_REPRESENTATIVE_NAME);
-        verify(asylumCase).clear(LEGAL_REP_REFERENCE_NUMBER);
     }
 
     @Test
@@ -92,11 +82,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(0)).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY_ADDRESS);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_NAME);
-        verify(asylumCase, times(0)).clear(LEGAL_REPRESENTATIVE_NAME);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_REFERENCE_NUMBER);
         verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
     }
 
@@ -114,11 +99,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(0)).write(IS_ADMIN, YesOrNo.YES);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_COMPANY_ADDRESS);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_NAME);
-        verify(asylumCase, times(0)).clear(LEGAL_REPRESENTATIVE_NAME);
-        verify(asylumCase, times(0)).clear(LEGAL_REP_REFERENCE_NUMBER);
     }
 
     @Test

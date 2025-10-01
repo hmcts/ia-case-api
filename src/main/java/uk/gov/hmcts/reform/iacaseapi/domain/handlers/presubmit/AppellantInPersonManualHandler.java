@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -10,10 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPELLANT_IN_PERSON_MANUAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -55,6 +53,18 @@ public class AppellantInPersonManualHandler implements PreSubmitCallbackHandler<
             response.addError("You cannot request Appellant in Person - Manual for this appeal");
 
             return response;
+        }
+
+        if (!hasAddedLegalRepDetails && isRepJourney) {
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID);
         }
 
         asylumCase.write(APPELLANTS_REPRESENTATION, YES);
