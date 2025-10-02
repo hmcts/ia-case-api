@@ -50,7 +50,7 @@ public class RespondentReviewAppealResponseAddedUpdaterMidEventHandler implement
                             log.info("End appeal outcome: {}", outcome);
                         },
                         () -> {
-                            asylumCase.clear(END_APPEAL_OUTCOME_REASON);
+                            asylumCase.write("");
                             log.info("End appeal outcome is not 'WITHDRAWN' — cleared END_APPEAL_OUTCOME_REASON.");
                             log.info("End appeal outcome ", END_APPEAL_OUTCOME_REASON);
                         }
