@@ -46,7 +46,8 @@ class CaseManagementLocationServiceTest {
         "Newport, NEWPORT",
         "Taylor House, TAYLOR_HOUSE",
         "Newcastle, NEWCASTLE",
-        "North Shields, NORTH_SHIELDS"
+        "North Shields, NORTH_SHIELDS",
+        "IAC National (Virtual), IAC_NATIONAL_VIRTUAL"
     })
     void given_staffLocationName_then_return_caseManagementLocation(
         String staffLocationName, BaseLocation baseLocation) {
