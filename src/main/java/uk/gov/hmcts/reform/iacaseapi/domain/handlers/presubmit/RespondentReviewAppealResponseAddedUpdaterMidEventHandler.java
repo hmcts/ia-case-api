@@ -53,7 +53,7 @@ public class RespondentReviewAppealResponseAddedUpdaterMidEventHandler implement
                             asylumCase.clear(END_APPEAL_OUTCOME_REASON);
                             log.info("End appeal outcome is not 'WITHDRAWN' — cleared END_APPEAL_OUTCOME_REASON.");
                         }
-                );
+            );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
